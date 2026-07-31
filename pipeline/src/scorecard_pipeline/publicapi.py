@@ -331,11 +331,13 @@ def coverage_endpoint(
     all four. Organization keys that fall back to a feed id remain explicitly
     provisional until a curator supplies ``organization_id``.
     """
-    identity = build_identity_ledger(agencies)
+    agency_list = list(agencies)
+    identity = build_identity_ledger(agency_list)
     rows = dataset.get("rows", [])
     return {
         "configured_feed_records": identity["configured_feed_records"],
         "active_canonical_feed_records": identity["active_canonical_feed_records"],
+        "country_count": len({agency.country for agency in agency_list if agency.country}),
         "distinct_organization_keys": identity["distinct_organization_keys"],
         "provisional_organization_keys": identity["provisional_organization_keys"],
         "published_scorecard_pages": len(index.get("agencies") or {}),
@@ -349,6 +351,9 @@ def coverage_endpoint(
             ),
             "active_canonical_feed_records": (
                 "Active registry entries that are not aliases of another feed record."
+            ),
+            "country_count": (
+                "Distinct ISO 3166-1 country codes represented in the curated feed registry."
             ),
             "distinct_organization_keys": (
                 "Distinct explicit organization IDs or provisional feed-ID fallbacks "

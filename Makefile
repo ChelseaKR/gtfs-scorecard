@@ -1,14 +1,14 @@
 # Convenience targets. CI runs the same commands directly (see .github/workflows);
 # these just give them stable names. `uv` runs inside the pipeline/ project.
 
-.PHONY: verify tiles tiles-geojsonl map-geometry render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav mutation mutation-results
+.PHONY: verify tiles tiles-geojsonl map-geometry render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav mutation mutation-results iac
 
 # The merge-blocking gate: lint, format, types, tests, the AAA contrast check,
 # and the plain-language readability check. Mirrors .github/workflows/ci.yml.
 verify:
 	cd pipeline && uv run python scripts/generate_iso3166.py --check
-	cd pipeline && uv run ruff check src tests scripts/generate_iso3166.py
-	cd pipeline && uv run ruff format --check src tests scripts/generate_iso3166.py
+	cd pipeline && uv run ruff check src tests scripts/generate_iso3166.py scripts/check_site_seo.py scripts/materialize_current_artifacts.py
+	cd pipeline && uv run ruff format --check src tests scripts/generate_iso3166.py scripts/check_site_seo.py scripts/materialize_current_artifacts.py
 	cd pipeline && uv run mypy
 	cd pipeline && uv run pytest -q --cov=scorecard_pipeline --cov-branch --cov-fail-under=92
 	cd pipeline && uv run python scripts/check_contrast.py
@@ -98,3 +98,15 @@ mutation:
 
 mutation-results:
 	cd pipeline && uv run mutmut results
+
+# QM-08's IaC half: the same Terraform checks .github/workflows/iac.yml runs
+# in CI. Needs terraform >= 1.5 locally. Validation is offline
+# (init -backend=false): no cloud credentials, no state, no plan, no apply.
+iac:
+	terraform fmt -check -recursive infra/
+	set -e; for dir in infra/*/; do \
+		[ -f "$${dir}main.tf" ] || continue; \
+		echo "== $${dir}"; \
+		terraform -chdir="$$dir" init -backend=false -input=false >/dev/null; \
+		terraform -chdir="$$dir" validate; \
+	done

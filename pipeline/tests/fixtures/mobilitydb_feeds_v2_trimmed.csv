@@ -1,0 +1,11 @@
+id,data_type,entity_type,location.country_code,location.subdivision_name,location.municipality,provider,is_official,name,note,feed_contact_email,static_reference,urls.direct_download,urls.authentication_type,urls.authentication_info,urls.api_key_parameter_name,urls.latest,urls.license,location.bounding_box.minimum_latitude,location.bounding_box.maximum_latitude,location.bounding_box.minimum_longitude,location.bounding_box.maximum_longitude,location.bounding_box.extracted_on,status,features,redirect.id,redirect.comment
+mdb-101,gtfs,,US,California,,DCT Catalog Copy,,,,,,https://example.org/dct.zip,0,,,,,,,,,,active,,,
+mdb-100,gtfs,,US,California,Davis,Davis Community Transit,True,"DCT Local,
+Regional schedule",Producer-reviewed feed,gtfs@example.org,,http://example.org/dct.zip,0,,,https://files.mobilitydatabase.org/mdb-100/latest.zip,https://example.org/license,38.50,38.60,-122.00,-121.90,2026-07-24 00:00:00+00:00,active,Fares V1|Headsigns,,
+mdb-200,gtfs,,US,California,Sacramento,Capitol Shuttle,,Capitol Shuttle,,,,https://example.org/cap.zip,,,,https://files.mobilitydatabase.org/mdb-200/latest.zip,,38.50,38.70,-121.60,-121.30,2026-07-24 00:00:00+00:00,active,,,
+mdb-rt-1,gtfs-rt,tu|vp,US,California,,Regional Realtime,True,Regional Realtime,,,101|mdb-200,https://example.org/regional.pb,0,,,,,,,,,,active,,,
+mdb-300,gtfs,,US,California,,Inactive Transit,True,Inactive Transit,,,,https://example.org/inactive.zip,0,,,,,,,,,,inactive,,,
+mdb-400,gtfs,,US,California,,Gated Transit,True,Gated Transit,,,,https://example.org/gated.zip,1,https://example.org/auth,token,,,,,,,,active,,,
+mdb-500,gtfs,,US,California,,Unofficial Transit,False,Unofficial Transit,,,,https://example.org/unofficial.zip,0,,,,,,,,,,active,,,
+mdb-600,gtfs,,US,California,,Broken Transit,True,Broken Transit,,,,not a URL,0,,,,,,,,,,active,,,
+gbfs-demo,gbfs,,US,California,,Bikeshare,True,Bikeshare,,,,https://example.org/gbfs.json,0,,,,,,,,,,active,,,

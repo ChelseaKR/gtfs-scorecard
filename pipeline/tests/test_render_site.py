@@ -30,7 +30,9 @@ from scorecard_pipeline.render_site import (
     _outreach_note,
     _outreach_section,
     _peer_context,
+    _remove_stale_agency_index_pages,
     _remove_unlisted_agency_pages,
+    _render_agency_index,
     _render_board_page,
     _render_claim_page,
     _render_equity_page,
@@ -41,10 +43,58 @@ from scorecard_pipeline.render_site import (
     _route_map_section,
     _rt_accuracy_section,
     _standards_section,
+    _states_by_agency,
     _vendor_request,
     _vendor_section,
     compute_changes,
 )
+
+
+def _jsonld_documents(html: str) -> list[dict[str, Any]]:
+    return [
+        json.loads(payload)
+        for payload in re.findall(
+            r'<script type="application/ld\+json">(.*?)</script>',
+            html,
+            flags=re.DOTALL,
+        )
+    ]
+
+
+def _assert_tech_article_identity(document: dict[str, Any], canonical: str) -> None:
+    organization = {
+        "@type": "Organization",
+        "name": "GTFS Scorecard",
+        "url": "https://gtfsscorecard.org",
+    }
+    assert document["@context"] == "https://schema.org"
+    assert document["@type"] == "TechArticle"
+    assert document["url"] == canonical
+    assert document["mainEntityOfPage"] == canonical
+    assert document["headline"]
+    assert document["description"]
+    assert document["image"] == {
+        "@type": "ImageObject",
+        "url": "https://gtfsscorecard.org/og.png",
+        "width": 1200,
+        "height": 630,
+    }
+    assert document["author"] == organization
+    assert document["publisher"] == organization
+
+
+def _authored_markdown(
+    body: str,
+    *,
+    date_published: str = "2026-07-03",
+    date_modified: str = "2026-07-08",
+) -> Any:
+    from scorecard_pipeline.render_site import _parse_authored_markdown
+
+    return _parse_authored_markdown(
+        f'---\ndate_published: "{date_published}"\ndate_modified: "{date_modified}"\n---\n{body}',
+        "test.md",
+    )
 
 
 def test_generated_agency_pages_are_bounded_to_published_index(tmp_path: Path) -> None:
@@ -58,6 +108,23 @@ def test_generated_agency_pages_are_bounded_to_published_index(tmp_path: Path) -
     assert (pages / "kept").is_dir()
     assert not (pages / "delisted").exists()
     assert (pages / "README.txt").exists()
+
+
+def test_stale_paginated_directory_cleanup_preserves_non_generated_files(
+    tmp_path: Path,
+) -> None:
+    pages = tmp_path / "agencies" / "page"
+    (pages / "2").mkdir(parents=True)
+    (pages / "99").mkdir()
+    (pages / "notes").mkdir()
+    (pages / "README.txt").write_text("keep")
+
+    _remove_stale_agency_index_pages(pages)
+
+    assert not (pages / "2").exists()
+    assert not (pages / "99").exists()
+    assert (pages / "notes").is_dir()
+    assert (pages / "README.txt").is_file()
 
 
 def test_liveness_status_is_bounded_to_current_published_ids() -> None:
@@ -82,7 +149,14 @@ def test_spanish_rider_page_is_localized_accessible_and_scoped() -> None:
     assert '<datalist id="agency-options-es">' in html
     assert 'id="agency-status-es" class="form-status" role="status"' in html
     assert 'src="/src/es.js"' in html
-    assert 'hreflang="en"' in html and 'hreflang="es"' in html
+    alternates = re.findall(
+        r'<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">',
+        html,
+    )
+    assert alternates == [
+        ("en", "https://gtfsscorecard.org/"),
+        ("es", "https://gtfsscorecard.org/es/"),
+    ]
     assert "No certifica la calidad del servicio" in html
 
 
@@ -153,8 +227,56 @@ def test_route_map_section_builds_accessible_table_and_skip_link() -> None:
     assert "Bus" in html and "green" in html and "Main Line" in html
     # Stop summary carries the count and the stop names.
     assert "2</strong>" in html and "First Stop" in html and "Second Stop" in html
-    # MapLibre is wired up for the enhancement.
+    # MapLibre is wired up for the enhancement, but only after an explicit request.
     assert "maplibregl" in html and "geometry.geojson" in html
+    assert 'id="route-map-load"' in html
+    assert '<script src="https://unpkg.com/maplibre-gl' not in html
+    assert 'script.src = "https://unpkg.com/maplibre-gl' in html
+    assert 'css.href = "https://unpkg.com/maplibre-gl' in html
+
+
+def test_route_map_section_limits_data_nosnippet_to_utility_details() -> None:
+    artifact = _artifact_with_route_map(
+        routes=[
+            {
+                "id": "A",
+                "label": "A",
+                "long": "Main Line",
+                "type_label": "Bus",
+                "color": "0E6734",
+                "color_name": "green",
+                "has_shape": True,
+            }
+        ],
+        route_count=1,
+        drawn_route_count=1,
+        stop_count=2,
+        has_shapes=True,
+        path="data/artifacts/demo/geometry.geojson",
+    )
+
+    html = _route_map_section(artifact, "demo", stop_names=["First Stop", "Second Stop"])
+
+    assert html.count("data-nosnippet") == 1
+    boundary_start = html.index("<div data-nosnippet>")
+    boundary_end = html.index("</div></section>")
+    eligible_copy = html[:boundary_start]
+    utility_details = html[boundary_start:boundary_end]
+
+    assert 'id="map-h"' in eligible_copy
+    assert "Each route is drawn once" in eligible_copy
+    assert "This feed has <strong>2</strong> stops." in eligible_copy
+
+    assert 'id="route-map-load"' in utility_details
+    assert "Basemap: OpenFreeMap" in utility_details
+    assert 'class="map-legend"' in utility_details
+    assert 'class="route-table"' in utility_details
+    assert 'class="stop-list-wrap"' in utility_details
+    assert "First Stop" in utility_details and "Second Stop" in utility_details
+
+    # The optional MapLibre bootstrap remains lazy and outside the static
+    # no-snippet boundary.
+    assert html.index("<script>") > boundary_end
 
 
 def test_route_map_section_keyboard_model_rides_on_the_table() -> None:
@@ -384,6 +506,7 @@ def test_changes_page_splits_improved_and_declined() -> None:
 
 def test_changes_page_has_friendly_empty_states() -> None:
     html = _changes_sections([])
+    assert "No material score or grade changes were detected" in html
     assert "No comparable upward moves" in html
     assert "No comparable downward moves" in html
 
@@ -1205,6 +1328,17 @@ def test_guide_shows_validator_stamp_and_methodology_changelog() -> None:
         assert f"Rubric v{entry['rubric_version']}" in html
 
 
+def test_guide_glossary_deep_link_has_a_matching_fragment() -> None:
+    from scorecard_pipeline.render_site import _render_guide
+    from scorecard_pipeline.site_shell import FOOTER_HTML
+
+    html = _render_guide()
+    assert 'href="#glossary"' in html
+    assert '<section id="glossary" aria-labelledby="glossary-h">' in html
+    assert 'id="glossary-h"' in html
+    assert 'href="/how-to-read/#glossary"' in FOOTER_HTML
+
+
 def test_guide_explains_grade_margins_and_weight_sensitivity() -> None:
     """FIX-07: the how-to-read page names the margin fields, frames a
     near-boundary grade as encouragement (never "almost failing"), and carries
@@ -1223,7 +1357,7 @@ def test_guide_explains_grade_margins_and_weight_sensitivity() -> None:
     assert "/data/artifacts/sensitivity.json" in html
 
 
-def test_vendor_request_lists_fixes_with_notice_codes() -> None:
+def test_vendor_request_lists_fixes_with_finding_codes() -> None:
     artifact = {
         "agency": {"id": "demo", "name": "Demo Transit"},
         "overall": {"grade": "C", "score": 72.0},
@@ -1244,7 +1378,8 @@ def test_vendor_request_lists_fixes_with_notice_codes() -> None:
     assert note is not None
     assert "Demo Transit" in note and "C (72.0 out of 100)" in note
     assert "Set wheelchair_boarding on every stop." in note
-    assert "Validator notice: scorecard_feed_expired" in note
+    assert "Finding code: scorecard_feed_expired" in note
+    assert "Validator notice:" not in note
     assert CANONICAL in note
 
 
@@ -1360,6 +1495,34 @@ def test_canonical_state_keeps_real_states_and_remaps_known_quirks() -> None:
     assert _canonical_state("") == ""
 
 
+def test_states_by_agency_joins_prefixed_v2_id_to_numeric_legacy_catalog(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import config, mobilitydb
+    from scorecard_pipeline.config import Agency
+
+    monkeypatch.setattr(
+        config,
+        "AGENCIES",
+        {
+            "v2-feed": Agency(
+                "v2-feed",
+                "V2 Feed",
+                "https://example.org/feed.zip",
+                mdb_id="mdb-00123",
+            )
+        },
+    )
+    catalog = mobilitydb.parse_catalog(
+        "mdb_source_id,data_type,location.subdivision_name,provider,"
+        "urls.direct_download\n"
+        "123,gtfs,California,V2 Feed,https://example.org/feed.zip\n"
+    )
+    monkeypatch.setattr(mobilitydb, "load_catalog", lambda: catalog)
+
+    assert _states_by_agency() == {"v2-feed": "California"}
+
+
 def test_peer_context_renders_only_catalog_location() -> None:
     html = _peer_context(
         {
@@ -1421,6 +1584,7 @@ def _board_artifact() -> dict:  # type: ignore[type-arg]
         "feed": {"static_url": "https://data.trilliumtransit.com/gtfs/demo.zip"},
         "top_fixes": [
             {
+                "code": "scorecard_wheelchair_boarding_unknown",
                 "fix": "Set wheelchair_boarding on every stop.",
                 "what": "12 stops blank.",
                 "why": "Riders using wheelchairs cannot plan trips.",
@@ -1456,6 +1620,48 @@ def test_board_page_leads_with_progress_and_frames_fixes_as_asks() -> None:
     # It says what the grade does and does not measure.
     assert "not service" in html
     assert '<meta name="robots" content="noindex,follow">' in html
+
+
+@pytest.mark.parametrize("agency_id", ["unitrans", "yolobus"])
+def test_selected_finding_survives_agency_brief_board_and_fix_guide(
+    agency_id: str,
+) -> None:
+    from scorecard_pipeline import render_site
+    from scorecard_pipeline.render_site import _render_agency, _render_brief, _render_fix
+    from scorecard_pipeline.site_shell import esc
+
+    root = Path(__file__).parent / "fixtures" / "golden_site"
+    artifact = json.loads((root / "data" / "artifacts" / agency_id / "latest.json").read_text())
+    code = artifact["top_fixes"][0]["code"]
+    render_site.FIX_CODES_WITH_PAGES.add(code)
+    try:
+        agency_html = _render_agency(artifact)
+        brief_html = _render_brief(artifact)
+        board_html = _render_board_page(artifact)
+    finally:
+        render_site.FIX_CODES_WITH_PAGES.discard(code)
+
+    expected = f"?finding={code}#finding-handoff"
+    for html in (agency_html, brief_html, board_html):
+        assert 'id="finding-handoff"' in html
+        assert f'data-finding-panel="{code}"' in html
+        assert expected in html
+        assert esc(artifact["top_fixes"][0]["what"]) in html
+        assert esc(artifact["top_fixes"][0]["fix"]) in html
+        assert "next complete, comparable scorecard run" in html
+        assert "this finding is no longer reported" in html
+        assert "Copy handoff text" in html
+
+    assert "Finding code:" in agency_html
+    assert "Validator rule:" not in agency_html
+
+    fix_html = _render_fix(
+        code,
+        _authored_markdown(f"# Fix {code}\n\nFollow the published guide.\n"),
+    )
+    assert f'data-fix-context="{code}"' in fix_html
+    assert "Keep " + code + " attached to the agency record" in fix_html
+    assert "[data-context-target]" in fix_html
 
 
 def test_board_page_never_publishes_individual_percentile_standing() -> None:
@@ -1499,6 +1705,246 @@ def test_fixlog_page_entries_are_dated_and_linkable() -> None:
     assert html.index("expired_calendar") < html.index("unused_shape")
     assert "Reported through 2026-06-30" in html
     assert "the 2026-07-01 check verified it gone" in html
+
+
+def test_fixlog_metadata_reuses_planned_feed_disambiguators() -> None:
+    from html import unescape
+
+    from scorecard_pipeline.config import Agency
+    from scorecard_pipeline.render_site import (
+        _plan_agency_seo_metadata,
+        _render_fixlog_page,
+    )
+
+    agency_name = "North County Transit District (NCTD)"
+    records = [
+        {
+            "id": "north-county-transit-district-nctd",
+            "name": agency_name,
+            "country": "US",
+            "subdivision_name": "California",
+        },
+        {
+            "id": "north-county-transit-district-nctd-3093",
+            "name": agency_name,
+            "country": "US",
+            "subdivision_name": "California",
+        },
+    ]
+    artifacts = {
+        record["id"]: {
+            "agency": {"id": record["id"], "name": agency_name},
+            "categories": {"realtime": {"status": "not_yet_measured"}},
+        }
+        for record in records
+    }
+    registry = {
+        records[0]["id"]: Agency(
+            records[0]["id"],
+            agency_name,
+            "https://example.test/nctd.zip",
+            mdb_id="14",
+        ),
+        records[1]["id"]: Agency(
+            records[1]["id"],
+            agency_name,
+            "https://example.test/nctd-3093.zip",
+            mdb_id="3093",
+        ),
+    }
+    planned = _plan_agency_seo_metadata(records, artifacts, registry)
+    receipts = [
+        {
+            "code": "expired_calendar",
+            "what": "The old calendar was replaced.",
+            "last_seen": "2026-06-30",
+            "cleared": "2026-07-01",
+        }
+    ]
+
+    pages = [
+        _render_fixlog_page(
+            artifacts[record["id"]],
+            receipts,
+            record,
+            seo_metadata=planned[record["id"]],
+        )
+        for record in records
+    ]
+    titles = [unescape(page.split("<title>", 1)[1].split("</title>", 1)[0]) for page in pages]
+    descriptions = [
+        unescape(page.split('<meta name="description" content="', 1)[1].split('">', 1)[0])
+        for page in pages
+    ]
+
+    assert "[MDB 14]" in planned[records[0]["id"]].title
+    assert "[MDB 3093]" in planned[records[1]["id"]].title
+    assert len(set(titles)) == len(set(descriptions)) == 2
+    assert all(len(title) <= 60 for title in titles)
+    assert all(len(description) <= 155 for description in descriptions)
+    assert "[MDB 14]" in titles[0] and "[MDB 3093]" in titles[1]
+    assert all(
+        f'<h1 class="page-title">Finding clearance log: {agency_name}</h1>' in page
+        for page in pages
+    )
+    assert (
+        f'<link rel="canonical" href="https://gtfsscorecard.org/agency/{records[0]["id"]}/fixes/">'
+        in pages[0]
+    )
+    assert (
+        f'<link rel="canonical" href="https://gtfsscorecard.org/agency/{records[1]["id"]}/fixes/">'
+        in pages[1]
+    )
+    assert f'<meta property="og:title" content="{titles[0]}">' in pages[0]
+    assert f'<meta property="og:title" content="{titles[1]}">' in pages[1]
+
+
+def test_fixlog_metadata_preserves_location_identity_and_bounds_long_names() -> None:
+    from html import unescape
+
+    from scorecard_pipeline.config import Agency
+    from scorecard_pipeline.render_site import (
+        _agency_seo_metadata,
+        _plan_agency_seo_metadata,
+        _render_fixlog_page,
+    )
+
+    records = [
+        {
+            "id": "capital-transit-alaska",
+            "name": "Capital Transit",
+            "country": "US",
+            "subdivision_name": "Alaska",
+        },
+        {
+            "id": "capital-transit-montana",
+            "name": "Capital Transit",
+            "country": "US",
+            "subdivision_name": "Montana",
+        },
+    ]
+    artifacts = {
+        record["id"]: {
+            "agency": {"id": record["id"], "name": record["name"]},
+            "categories": {"realtime": {"status": "not_yet_measured"}},
+        }
+        for record in records
+    }
+    registry = {
+        record["id"]: Agency(
+            record["id"],
+            record["name"],
+            f"https://example.test/{record['id']}.zip",
+        )
+        for record in records
+    }
+    planned = _plan_agency_seo_metadata(records, artifacts, registry)
+    receipts = [
+        {
+            "code": "expired_calendar",
+            "what": "The old calendar was replaced.",
+            "last_seen": "2026-06-30",
+            "cleared": "2026-07-01",
+        }
+    ]
+
+    pages = [
+        _render_fixlog_page(
+            artifacts[record["id"]],
+            receipts,
+            record,
+            seo_metadata=planned[record["id"]],
+        )
+        for record in records
+    ]
+    titles = [unescape(page.split("<title>", 1)[1].split("</title>", 1)[0]) for page in pages]
+    descriptions = [
+        unescape(page.split('<meta name="description" content="', 1)[1].split('">', 1)[0])
+        for page in pages
+    ]
+
+    assert "(Alaska)" in titles[0] and "(Montana)" in titles[1]
+    assert len(set(titles)) == len(set(descriptions)) == 2
+    assert all(len(title) <= 60 for title in titles)
+    assert all(len(description) <= 155 for description in descriptions)
+
+    long_name = (
+        "San Francisco Bay Area Water Emergency Transportation Authority "
+        "(WETA) Regional Ferry Service"
+    )
+    long_artifact = {"agency": {"id": "weta", "name": long_name}}
+    long_page = _render_fixlog_page(
+        long_artifact,
+        receipts,
+        seo_metadata=_agency_seo_metadata(long_name, location_label="California"),
+    )
+    long_title = unescape(long_page.split("<title>", 1)[1].split("</title>", 1)[0])
+    long_description = unescape(
+        long_page.split('<meta name="description" content="', 1)[1].split('">', 1)[0]
+    )
+    assert len(long_title) <= 60
+    assert len(long_description) <= 155
+    assert long_title.endswith("GTFS clearance log")
+
+
+def test_previous_artifact_requires_exact_index_identity_and_summary() -> None:
+    from scorecard_pipeline.render_site import _previous_indexed_artifact
+
+    history: list[dict[str, Any]] = [
+        {"date": "2026-06-27"},
+        {
+            "date": "2026-07-23",
+            "score": 73,
+            "grade": "C",
+            "feed_sha256": "expected-feed-hash",
+        },
+        {"date": "2026-07-25"},
+    ]
+    stale_checkout: list[dict[str, Any]] = [
+        {"agency": {"id": "agency-one"}, "snapshot_date": "2026-06-26"},
+        {"agency": {"id": "agency-one"}, "snapshot_date": "2026-06-27"},
+        {"agency": {"id": "agency-one"}, "snapshot_date": "2026-07-25"},
+    ]
+
+    assert _previous_indexed_artifact("agency-one", history, stale_checkout) is None
+    wrong_identity = {
+        "agency": {"id": "agency-two"},
+        "snapshot_date": "2026-07-23",
+        "overall": {"score": 73, "grade": "C"},
+        "feed": {"sha256": "expected-feed-hash"},
+    }
+    malformed_identity = {
+        "agency": "not-an-object",
+        "snapshot_date": "2026-07-23",
+    }
+    wrong_summary = {
+        "agency": {"id": "agency-one"},
+        "snapshot_date": "2026-07-23",
+        "overall": {"score": 72, "grade": "C"},
+        "feed": {"sha256": "stale-feed-hash"},
+    }
+    assert (
+        _previous_indexed_artifact(
+            "agency-one",
+            history,
+            [*stale_checkout, wrong_identity, malformed_identity, wrong_summary],
+        )
+        is None
+    )
+    exact_prior = {
+        "agency": {"id": "agency-one"},
+        "snapshot_date": "2026-07-23",
+        "overall": {"score": 73, "grade": "C"},
+        "feed": {"sha256": "expected-feed-hash"},
+    }
+    assert (
+        _previous_indexed_artifact(
+            "agency-one",
+            history,
+            [*stale_checkout, wrong_summary, exact_prior],
+        )
+        == exact_prior
+    )
 
 
 def test_non_us_fixlog_prefers_current_directory_country_over_a_stale_artifact() -> None:
@@ -1631,6 +2077,57 @@ def test_fix_rule_reference_for_direct_validator_notice() -> None:
     html = _fix_rule_reference("route_color_contrast")
     assert "canonical MobilityData GTFS Validator notice" in html
     assert "#route_color_contrast-rule" in html
+
+
+@pytest.mark.parametrize(
+    "code",
+    ["scorecard_feed_expired", "scorecard_feed_expiring_soon"],
+)
+def test_fix_rule_reference_describes_effective_expiry_provenance(code: str) -> None:
+    from scorecard_pipeline.render_site import _fix_rule_reference
+
+    html = _fix_rule_reference(code)
+
+    assert "combines feed_info and calendar service dates" in html
+    assert "no single validator rule uses this exact combined calculation" in html
+    assert "the field is valid GTFS when left empty" not in html
+    assert "Read the relevant GTFS Best Practice" in html
+
+
+@pytest.mark.parametrize(
+    "code",
+    [
+        "scorecard_missing_headsigns",
+        "scorecard_no_fare_data",
+        "scorecard_stop_names_all_caps",
+    ],
+)
+def test_fix_rule_reference_uses_neutral_best_practice_provenance(code: str) -> None:
+    from scorecard_pipeline.render_site import _fix_rule_reference
+
+    html = _fix_rule_reference(code)
+
+    assert "The GTFS Validator does not flag this" in html
+    assert "the field is valid GTFS when left empty" not in html
+    assert "Read the relevant GTFS Best Practice" in html
+
+
+def test_fix_rule_reference_does_not_overstate_realtime_reference() -> None:
+    from scorecard_pipeline.render_site import _fix_rule_reference
+
+    html = _fix_rule_reference("scorecard_rt_trip_coverage")
+
+    assert "reference defines the message this scorecard checks" in html
+    assert "expectation comes from" not in html
+
+
+def test_fix_rule_reference_does_not_overstate_schedule_reference() -> None:
+    from scorecard_pipeline.render_site import _fix_rule_reference
+
+    html = _fix_rule_reference("scorecard_wheelchair_boarding_unknown")
+
+    assert "reference defines the field or data this scorecard finding checks" in html
+    assert "expectation comes from" not in html
 
 
 def test_cleared_findings_lists_codes_gone_since_last_run() -> None:
@@ -1900,6 +2397,8 @@ def test_feeddiff_section_lists_new_and_resolved_findings() -> None:
     assert "What changed in this feed" in html
     assert "New since 2026-06-11" in html
     assert "a new issue" in html
+    assert "Finding code: new_one" in html
+    assert "Validator rule:" not in html
     assert "No longer reported since 2026-06-11" in html
     assert "an old issue" in html
     assert "does not establish who made a change or why" in html
@@ -2548,6 +3047,54 @@ def _map_features() -> list[dict[str, Any]]:
     return [f for f in feats if f is not None]
 
 
+def _directory_index(count: int) -> dict[str, Any]:
+    return {
+        "agencies": {
+            f"agency-{number:03d}": {
+                "name": f"Agency {number:03d}",
+                "history": [
+                    {
+                        "grade": "B",
+                        "score": 82.0,
+                        "date": "2026-07-28",
+                        "days_until_expiry": 30,
+                    }
+                ],
+            }
+            for number in range(count)
+        }
+    }
+
+
+def test_agency_directory_pagination_is_complete_canonical_and_crawlable() -> None:
+    index = _directory_index(7)
+    pages = [_render_agency_index(index, {}, page=page, page_size=3) for page in range(1, 4)]
+
+    assert '<link rel="canonical" href="https://gtfsscorecard.org/agencies/">' in pages[0]
+    assert 'rel="prev"' not in pages[0]
+    assert '<link rel="next" href="https://gtfsscorecard.org/agencies/page/2/">' in pages[0]
+    assert '<link rel="canonical" href="https://gtfsscorecard.org/agencies/page/2/">' in pages[1]
+    assert '<link rel="prev" href="https://gtfsscorecard.org/agencies/">' in pages[1]
+    assert '<link rel="next" href="https://gtfsscorecard.org/agencies/page/3/">' in pages[1]
+    assert '<link rel="canonical" href="https://gtfsscorecard.org/agencies/page/3/">' in pages[2]
+    assert 'rel="next"' not in pages[2]
+    links = [
+        agency_id
+        for html in pages
+        for agency_id in re.findall(r'href="/agency/(agency-\d{3})/"', html)
+    ]
+    assert links == [f"agency-{number:03d}" for number in range(7)]
+    assert len(links) == len(set(links))
+    assert "<title>Agency scorecards — GTFS Scorecard</title>" in pages[0]
+    assert "<title>Agency scorecards, page 2 — GTFS Scorecard</title>" in pages[1]
+    assert 'aria-current="page">Page 2 of 3' in pages[1]
+
+
+def test_agency_directory_rejects_a_page_outside_the_chain() -> None:
+    with pytest.raises(ValueError, match=r"outside 1\.\.2"):
+        _render_agency_index(_directory_index(4), {}, page=3, page_size=3)
+
+
 def test_render_map_page_has_accessible_table_and_skip_link() -> None:
     html = _render_map_page(_map_features())
     # The conformant primary: a bypass link and a real table of every agency.
@@ -2561,11 +3108,42 @@ def test_render_map_page_has_accessible_table_and_skip_link() -> None:
     assert 'data-grade="F"' in html and 'data-state="Ohio"' in html
 
 
+def test_render_map_page_bounds_initial_dom_and_hydrates_safely() -> None:
+    features = []
+    for number in range(55):
+        artifact = _sample_artifact("B", -120.0 + number / 10, 35.0)
+        artifact["agency"]["name"] = f"Agency {number:03d}"
+        feature = _map_feature(
+            f"agency-{number:03d}", artifact, "California", "US", "US-CA", "California"
+        )
+        assert feature is not None
+        features.append(feature)
+    features[-1]["properties"]["name"] = "ZZZ <unsafe> & agency"
+
+    html = _render_map_page(features)
+
+    assert html.count("<tr data-grade=") == 50
+    assert "Agency 049" in html
+    assert "ZZZ &lt;unsafe&gt;" not in html
+    assert html.count('fetch("/map.geojson"') == 1
+    assert "document.createDocumentFragment()" in html
+    assert "name.textContent =" in html
+    assert r"/^[a-z0-9][a-z0-9-]*$/.test(id)" in html
+    assert "var dataPromise = null;" in html
+    assert "if (!rowsHydrated)" in html
+    assert "Loading the complete scorecard list for this filter." in html
+    assert '<select id="map-grade"' in html and '<select id="map-grade" disabled' not in html
+    assert 'href="/agencies/">complete paginated agency directory</a>' in html
+
+
 def test_render_map_page_links_points_to_rows_with_keyboard_model() -> None:
     html = _render_map_page(_map_features())
-    # Each row names its map point so the two can brush each other.
-    assert 'data-id="alpha-transit"' in html
-    assert 'data-id="bravo-transit"' in html
+    # The existing agency link is the single ID source for linked brushing;
+    # avoid duplicating every slug in the full table's markup.
+    assert 'href="/agency/alpha-transit/"' in html
+    assert 'href="/agency/bravo-transit/"' in html
+    assert "function rowAgencyId(tr)" in html
+    assert "data-id=" not in html
     # A highlight layer enlarges one point at a time (the routes-hi pattern).
     assert '"agencies-hi"' in html
     assert '["==", ["get", "id"], NONE]' in html
@@ -2760,6 +3338,11 @@ def test_render_map_page_marker_shows_grade_not_color_only() -> None:
     assert 'id="map-load"' in html
     assert '<script src="https://unpkg.com/maplibre-gl' not in html
     assert 'script.src = "https://unpkg.com/maplibre-gl' in html
+    # Do not duplicate every agency name in an unused data attribute. On the
+    # full directory that dead payload materially delays first paint.
+    assert "data-name=" not in html
+    assert "data-id=" not in html
+    assert "rowAgencyId" in html
 
 
 # ---- equity choropleth (/equity/) ----
@@ -2965,6 +3548,18 @@ def test_shapes_page_explains_the_phase_in_and_carries_the_numbers() -> None:
     assert 'href="/ntd.json"' in html
     # No per-agency links: population framing only on this surface.
     assert 'href="/agency/' not in html
+    articles = _jsonld_documents(html)
+    assert len(articles) == 1
+    _assert_tech_article_identity(
+        articles[0],
+        "https://gtfsscorecard.org/ntd/shapes/",
+    )
+    assert articles[0]["about"] == {
+        "@type": "Thing",
+        "name": "GTFS shapes.txt NTD requirement",
+    }
+    assert "datePublished" not in articles[0]
+    assert "dateModified" not in articles[0]
 
 
 def test_shapes_page_without_data_keeps_the_explainer() -> None:
@@ -3190,6 +3785,21 @@ def test_page_shell_keeps_nav_reachable_without_js() -> None:
     assert ".nav-cluster { display: flex !important" in html
 
 
+def test_page_shell_describes_the_shared_social_image() -> None:
+    from scorecard_pipeline.site_shell import _page
+
+    html = _page(
+        title="t",
+        description="d",
+        canonical="https://gtfsscorecard.org/x/",
+        body="<p>hi</p>",
+    )
+
+    alt = "GTFS Scorecard: transit data quality for small agencies."
+    assert html.count(f'<meta property="og:image:alt" content="{alt}">') == 1
+    assert html.count(f'<meta name="twitter:image:alt" content="{alt}">') == 1
+
+
 def test_page_shell_uses_local_system_font_fallbacks() -> None:
     from scorecard_pipeline.site_shell import _page
 
@@ -3222,7 +3832,7 @@ def test_page_shell_can_mark_utility_pages_noindex() -> None:
 def test_map_page_names_its_cdn_fallback() -> None:
     html = _render_map_page(_map_features())
     assert "map-fallback" in html
-    assert "The scorecard list below carries the same feed records" in html
+    assert "Use the complete-list control or the paginated agency" in html
     assert 'id="map-load-status"' in html
     assert "The map could not load" in html
 
@@ -3369,6 +3979,34 @@ def test_pulse_page_combines_guarded_changes_and_trend_without_rankings() -> Non
     assert 'class="wrap wrap-wide"' in html
 
 
+def test_pulse_distinguishes_one_point_contract_baseline_from_quiet_comparison() -> None:
+    from scorecard_pipeline.render_site import _render_pulse_page
+
+    baseline_date = "2030-02-03"
+    html = _render_pulse_page(
+        {"comparison": {"eligible_count": 10}},
+        [],
+        [
+            {
+                "date": baseline_date,
+                "average_score": 68.4,
+                "agency_count": 10,
+                "expired_pct": 5.9,
+            }
+        ],
+        {"points": 1, "score_delta": None, "first": None, "last": None},
+        [],
+    )
+
+    assert "first comparable snapshot under the current scoring contract" in html
+    assert (
+        f"Comparable history under the current scoring contract begins on {baseline_date}" in html
+    )
+    assert "Any scores from earlier contracts are intentionally excluded" in html
+    assert "Rechecks on the same day update that day's snapshot" in html
+    assert "No material score or grade changes were detected" not in html
+
+
 def test_pulse_suppresses_change_and_trend_claims_without_a_guarded_cohort() -> None:
     from scorecard_pipeline.render_site import _render_pulse_page
 
@@ -3413,7 +4051,9 @@ def test_retired_urls_render_redirects() -> None:
     html = _redirect_page("/pulse/#changes", "What changed")
     assert 'http-equiv="refresh"' in html
     assert "url=/pulse/#changes" in html
-    assert 'rel="canonical"' in html
+    assert '<link rel="canonical" href="https://gtfsscorecard.org/pulse/">' in html
+    assert html.count('rel="canonical"') == 1
+    assert 'name="robots"' not in html
     # A no-JS, no-meta fallback link is always present.
     assert '<a href="/pulse/#changes">' in html
     # If refreshes are disabled, the fallback is still a complete mobile and
@@ -3422,6 +4062,43 @@ def test_retired_urls_render_redirects() -> None:
     assert '<a class="skip-link" href="#main">' in html
     assert '<main id="main"' in html
     assert html.count("<h1") == 1
+
+
+def test_retired_url_canonical_preserves_query_but_not_literal_fragment() -> None:
+    from scorecard_pipeline.site_shell import _redirect_page
+
+    html = _redirect_page(
+        "/pulse/?filter=route%23A&sort=score#changes",
+        "Route A changes",
+    )
+
+    assert (
+        '<meta http-equiv="refresh" '
+        'content="0; url=/pulse/?filter=route%23A&amp;sort=score#changes">'
+    ) in html
+    assert (
+        '<link rel="canonical" '
+        'href="https://gtfsscorecard.org/pulse/?filter=route%23A&amp;sort=score">'
+    ) in html
+    assert ('<a href="/pulse/?filter=route%23A&amp;sort=score#changes">Route A changes</a>') in html
+
+
+@pytest.mark.parametrize(
+    "target",
+    [
+        "pulse/#changes",
+        "https://example.com/pulse/#changes",
+        "//example.com/pulse/#changes",
+        r"/\evil.example/pulse/#changes",
+        "/pulse/\n#changes",
+        "/pulse/\t#changes",
+    ],
+)
+def test_retired_url_redirect_rejects_unsafe_target(target: str) -> None:
+    from scorecard_pipeline.site_shell import _redirect_page
+
+    with pytest.raises(ValueError, match="root-relative path"):
+        _redirect_page(target, "Unsafe redirect")
 
 
 def test_adoption_page_absorbs_access_coverage() -> None:
@@ -3832,6 +4509,97 @@ def test_agency_page_title_truncates_long_names_and_uses_state() -> None:
     assert "…" in title
 
 
+def test_agency_metadata_planner_disambiguates_truncated_feed_variants() -> None:
+    from scorecard_pipeline.config import Agency
+    from scorecard_pipeline.render_site import _plan_agency_seo_metadata
+
+    shared_prefix = "A Very Long Regional Transportation Authority and Municipal Transit "
+    records = [
+        {
+            "id": "demo-bus",
+            "name": f"{shared_prefix}Bus Network",
+            "country": "US",
+            "subdivision_name": "California",
+        },
+        {
+            "id": "demo-rail",
+            "name": f"{shared_prefix}Rail Network",
+            "country": "US",
+            "subdivision_name": "California",
+        },
+    ]
+    artifacts = {
+        record["id"]: {"categories": {"realtime": {"status": "not_yet_measured"}}}
+        for record in records
+    }
+    registry = {
+        "demo-bus": Agency(
+            "demo-bus",
+            records[0]["name"],
+            "https://example.com/bus.zip",
+            feed_variant="Bus",
+        ),
+        "demo-rail": Agency(
+            "demo-rail",
+            records[1]["name"],
+            "https://example.com/rail.zip",
+            feed_variant="Rail",
+        ),
+    }
+
+    planned = _plan_agency_seo_metadata(records, artifacts, registry)
+
+    assert "[Bus]" in planned["demo-bus"].title
+    assert "[Rail]" in planned["demo-rail"].title
+    assert len({item.title for item in planned.values()}) == 2
+    assert len({item.description for item in planned.values()}) == 2
+    assert len({item.dataset_name for item in planned.values()}) == 2
+    assert all(len(item.title) <= 60 for item in planned.values())
+    assert all(len(item.description) <= 155 for item in planned.values())
+
+
+def test_agency_metadata_bounds_long_subdivision_labels() -> None:
+    from scorecard_pipeline.render_site import _agency_seo_metadata
+
+    metadata = _agency_seo_metadata(
+        "Cardiff Bus (Bws Caerdydd)",
+        location_label="Cardiff [Caerdydd GB-CRD], United Kingdom",
+        rt_measured=True,
+    )
+
+    assert len(metadata.title) <= 60
+    assert "(United Kingdom) GTFS quality report" in metadata.title
+    assert len(metadata.description) <= 155
+    assert "United Kingdom" in metadata.description
+
+
+def test_registry_name_overlay_changes_current_index_only() -> None:
+    from scorecard_pipeline.config import Agency
+    from scorecard_pipeline.render_site import _apply_registry_agency_names
+
+    index = {
+        "agencies": {
+            "demo": {
+                "name": "Stale Export Name",
+                "history": [{"date": "2026-07-28", "score": 80, "grade": "B"}],
+            }
+        }
+    }
+    history = index["agencies"]["demo"]["history"]
+    registry = {
+        "demo": Agency(
+            "demo",
+            "Curated Demo Transit",
+            "https://example.com/demo.zip",
+        )
+    }
+
+    assert _apply_registry_agency_names(index, registry) is True
+    assert index["agencies"]["demo"]["name"] == "Curated Demo Transit"
+    assert index["agencies"]["demo"]["history"] is history
+    assert _apply_registry_agency_names(index, registry) is False
+
+
 def test_non_us_agency_title_and_peer_context_include_country() -> None:
     from scorecard_pipeline.render_site import _peer_context, _render_agency
 
@@ -4000,14 +4768,77 @@ def test_fix_guide_page_closes_the_loop_with_after_you_republish() -> None:
 
     html = _render_fix(
         "expired_calendar",
-        "# Fix expired calendars\n\nRe-export the feed.\n",
-        now=dt.datetime(2026, 7, 8, 12, 0, tzinfo=dt.UTC),
+        _authored_markdown("# Fix expired calendars\n\nRe-export the feed.\n"),
     )
     assert "After you republish" in html
     assert "dated finding clearance" in html
     assert "not who changed the feed or why" in html
     assert '<a class="backlink" href="/fix/">' in html
     assert '"author":{"@type":"Organization","name":"GTFS Scorecard"' in html
+    articles = _jsonld_documents(html)
+    assert len(articles) == 1
+    _assert_tech_article_identity(
+        articles[0],
+        "https://gtfsscorecard.org/fix/expired_calendar/",
+    )
+    assert articles[0]["about"] == {
+        "@type": "Thing",
+        "name": "GTFS validator notice expired_calendar",
+    }
+    assert articles[0]["datePublished"] == "2026-07-03"
+    assert articles[0]["dateModified"] == "2026-07-08"
+    assert '<time datetime="2026-07-03">3 July 2026</time>' in html
+    assert '<time datetime="2026-07-08">8 July 2026</time>' in html
+
+
+@pytest.mark.parametrize(
+    ("code", "expected_name"),
+    [
+        ("expired_calendar", "GTFS validator notice expired_calendar"),
+        (
+            "scorecard_missing_feed_info_dates",
+            "GTFS validator notice missing_feed_info_date",
+        ),
+        (
+            "scorecard_feed_expired",
+            "GTFS data-quality finding scorecard_feed_expired",
+        ),
+    ],
+)
+def test_fix_guide_about_matches_finding_provenance(code: str, expected_name: str) -> None:
+    from scorecard_pipeline.render_site import _render_fix
+
+    html = _render_fix(code, _authored_markdown(f"# Fix {code}\n\nDo the next step.\n"))
+    (article,) = _jsonld_documents(html)
+
+    assert article["about"] == {"@type": "Thing", "name": expected_name}
+
+
+def test_tech_article_helper_has_stable_identity_without_inventing_dates() -> None:
+    from scorecard_pipeline.render_site import _tech_article_jsonld
+
+    about = {"@type": "Thing", "name": "GTFS service calendars"}
+    article = _tech_article_jsonld(
+        headline="Fix a GTFS service calendar",
+        description="How to repair an expired service calendar.",
+        canonical="https://gtfsscorecard.org/fix/example/",
+        about=about,
+    )
+
+    _assert_tech_article_identity(
+        article,
+        "https://gtfsscorecard.org/fix/example/",
+    )
+    assert article["about"] == about
+    assert "datePublished" not in article
+    assert "dateModified" not in article
+
+    without_about = _tech_article_jsonld(
+        headline="Article",
+        description="Description",
+        canonical="https://gtfsscorecard.org/article/",
+    )
+    assert "about" not in without_about
 
 
 def test_fix_guide_description_skips_the_validator_code_line() -> None:
@@ -4015,16 +4846,25 @@ def test_fix_guide_description_skips_the_validator_code_line() -> None:
 
     html = _render_fix(
         "expired_calendar",
-        "# Fix expired calendars\n\n"
-        "Code: `expired_calendar` (MobilityData validator)\n\n"
-        "## What this means\n\n"
-        "The service calendar ended in the past, so the feed may stop showing trips.\n",
-        now=dt.datetime(2026, 7, 8, 12, 0, tzinfo=dt.UTC),
+        _authored_markdown(
+            "# Fix expired calendars\n\n"
+            "Code: `expired_calendar` (MobilityData validator)\n\n"
+            "## What this means\n\n"
+            "The service calendar ended in the past, so the feed may stop showing trips.\n"
+        ),
     )
 
     description = html.split('<meta name="description" content="', 1)[1].split('">', 1)[0]
     assert description.startswith("The service calendar ended")
     assert "Code:" not in description
+
+
+def test_fix_guide_description_fallback_is_provenance_neutral() -> None:
+    from scorecard_pipeline.render_site import _fix_description
+
+    assert _fix_description("<h1>Fix an unnamed issue</h1>", "scorecard_example") == (
+        "What the GTFS data-quality finding scorecard_example means and how to fix it."
+    )
 
 
 def test_md_to_html_renders_a_table() -> None:
@@ -4070,6 +4910,89 @@ def test_md_to_html_preserves_wrapped_paragraphs_and_list_continuations() -> Non
     assert "<li>A list item that wraps\nonto its continuation.</li>" in html
 
 
+def test_parse_authored_markdown_strips_dates_and_preserves_body_rules() -> None:
+    from scorecard_pipeline.render_site import _md_to_html, _parse_authored_markdown
+
+    document = _parse_authored_markdown(
+        "---\r\n"
+        "date_published: 2026-07-03\r\n"
+        'date_modified: "2026-07-14"\r\n'
+        "---\r\n"
+        "# Authored title\r\n\r\nFirst explanation.\r\n\r\n---\r\n",
+        "example.md",
+    )
+
+    assert document.date_published == "2026-07-03"
+    assert document.date_modified == "2026-07-14"
+    assert document.body.startswith("# Authored title")
+    html, title = _md_to_html(document.body)
+    assert title == "Authored title"
+    assert "<hr" in html
+    assert "date_published" not in html
+    assert "date_modified" not in html
+
+
+@pytest.mark.parametrize(
+    ("text", "message"),
+    [
+        (
+            "# No front matter\n",
+            "must start with YAML front matter",
+        ),
+        (
+            "---\ndate_published: 2026-07-03\ndate_modified: 2026-07-14\n",
+            "no exact closing delimiter",
+        ),
+        (
+            "---\ndate_published: 2026-07-03\n---\n# Missing modified\n",
+            "missing authored front matter keys",
+        ),
+        (
+            "---\n- 2026-07-03\n- 2026-07-14\n---\n# Sequence\n",
+            "must be a mapping",
+        ),
+        (
+            "---\n!!bool date_published: 2026-07-03\n"
+            "date_modified: 2026-07-14\n---\n# Tagged key\n",
+            "front matter keys must be strings",
+        ),
+        (
+            "---\ndate_published: true\ndate_modified: 2026-07-14\n---\n# Boolean\n",
+            "date_published must use YYYY-MM-DD",
+        ),
+        (
+            '---\ndate_published: "2026-02-30"\ndate_modified: 2026-07-14\n---\n# Bad date\n',
+            "date_published is not a valid calendar date",
+        ),
+        (
+            "---\ndate_published: 2026-07-03T10:30:00Z\ndate_modified: 2026-07-14\n"
+            "---\n# Timestamp\n",
+            "date_published must be an ISO date, not a timestamp",
+        ),
+        (
+            "---\ndate_published: 2026-07-14\ndate_modified: 2026-07-03\n---\n# Reversed\n",
+            "date_modified cannot be before date_published",
+        ),
+        (
+            "---\ndate_published: 2026-07-03\ndate_published: 2026-07-04\n"
+            "date_modified: 2026-07-14\n---\n# Duplicate\n",
+            "duplicate authored front matter key",
+        ),
+        (
+            "---\ndate_published: 2026-07-03\ndate_modified: 2026-07-14\n"
+            "reviewer: Transit team\n---\n# Unknown\n",
+            "unknown authored front matter keys",
+        ),
+    ],
+)
+def test_parse_authored_markdown_rejects_invalid_metadata(text: str, message: str) -> None:
+    from scorecard_pipeline.render_site import _parse_authored_markdown
+
+    with pytest.raises(ValueError, match=message) as exc_info:
+        _parse_authored_markdown(text, "example.md")
+    assert "example.md" in str(exc_info.value)
+
+
 def test_fix_index_groups_guides_and_publishes_collection_schema() -> None:
     from scorecard_pipeline.render_site import _render_fix_index
 
@@ -4086,22 +5009,43 @@ def test_fix_index_groups_guides_and_publishes_collection_schema() -> None:
 
     assert "GTFS errors and fixes" in html
     assert 'href="/fix/expired_calendar/"' in html
+    assert "Finding code: expired_calendar" in html
+    assert "Validator rule:" not in html
+    assert (
+        '<meta name="description" content="Plain-language guides for common GTFS findings,' in html
+    )
+    (metadata,) = _jsonld_documents(html)
+    assert metadata["description"] == "Plain-language guides for common GTFS findings."
     assert '"@type":"CollectionPage"' in html
 
 
 def test_render_crosswalk_page_links_the_authoritative_sources() -> None:
     from scorecard_pipeline.render_site import _render_crosswalk_page
 
-    md = (
+    document = _authored_markdown(
         "# How the grade maps to the standards\n\n"
         "This crosswalk explains the mapping.\n\n"
         "## The standards\n\n"
-        "- [NTD](https://www.transit.dot.gov/ntd)\n"
+        "- [NTD](https://www.transit.dot.gov/ntd)\n",
+        date_modified="2026-07-14",
     )
-    html = _render_crosswalk_page(md)
+    html = _render_crosswalk_page(document)
     assert "/crosswalk/" in html
     assert "How the grade maps to the standards" in html
     assert 'href="https://www.transit.dot.gov/ntd"' in html
+    articles = _jsonld_documents(html)
+    assert len(articles) == 1
+    _assert_tech_article_identity(
+        articles[0],
+        "https://gtfsscorecard.org/crosswalk/",
+    )
+    assert "about" not in articles[0]
+    assert articles[0]["datePublished"] == "2026-07-03"
+    assert articles[0]["dateModified"] == "2026-07-14"
+    assert '<time datetime="2026-07-03">3 July 2026</time>' in html
+    assert '<time datetime="2026-07-14">14 July 2026</time>' in html
+    assert "date_published" not in html
+    assert "date_modified" not in html
 
 
 def test_fixlog_page_frames_clearances_as_feed_state_not_causal_proof() -> None:

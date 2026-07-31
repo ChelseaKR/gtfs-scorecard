@@ -1,0 +1,50 @@
+# Setúbal (PT) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: fertagus
+    name: Fertagus
+    country: PT
+    subdivision_code: PT-15
+    subdivision_name: Setúbal
+    is_official: true
+    static_gtfs_url: https://www.fertagus.pt/GTFSTMLzip/Fertagus_GTFS.zip
+    license_note: >-
+      CC BY 4.0 through Portugal's National Access Point; credit Fertagus.
+    operating_note: >-
+      One suburban-rail feed crossing the Lisboa and Setúbal districts. It is
+      filed under the operator's Setúbal base and counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://nap-portugal.imt-ip.pt/nap/multimodalsupplydetail/185
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Fertagus - Travessia do Tejo, Transportes, S.A.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: metro-sul-do-tejo
+    name: Metro Sul do Tejo
+    country: PT
+    subdivision_code: PT-15
+    subdivision_name: Setúbal
+    is_official: true
+    static_gtfs_url: https://mts.pt/imt/MTS-20240129.zip
+    license_note: >-
+      CC BY 4.0 through Portugal's National Access Point; credit Metro
+      Transportes do Sul.
+    operating_note: >-
+      The official National Access Point still designates the dated archive as
+      the current MTS feed, and its service calendar passed the 60-day gate.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://nap-portugal.imt-ip.pt/nap/multimodalsupplydetail/200
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Metro Transportes do Sul, S.A.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: service calendars with no days switched on
 
 Code: `service_has_no_active_day_of_the_week` (MobilityData validator)

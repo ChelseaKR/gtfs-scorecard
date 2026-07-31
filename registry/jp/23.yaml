@@ -272,3 +272,361 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: owari-asahi-asapy-go
+    name: Owari Asahi Asapy-go (尾張旭市営バス あさぴー号)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/owariasahicity/feeds/communitybus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/owariasahi-city/asapygo/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/owariasahi-city/asapygo/VehiclePositions.pb
+      service_alerts: https://gtfs-rt-files.buscatch.jp/owariasahi-city/asapygo/ServiceAlert.pb
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Owari Asahi City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Owari Asahi City.
+    operating_note: >-
+      Owari Asahi City's Asapy-go community bus. The official catalog also
+      publishes keyless TripUpdates, VehiclePositions, and Service Alerts.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/owariasahicity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Owari Asahi City (尾張旭市). Published as GTFS-JP open data through
+        the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: tokoname-gruun
+    name: Tokoname Gruun (常滑市グルーン)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tokonamecity/feeds/Gruun/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://realtime.gtfs.info/gruun/trip_update.pb
+      vehicle_positions: https://realtime.gtfs.info/gruun/vehicle.pb
+      service_alerts: https://realtime.gtfs.info/gruun/alert.pb
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Tokoname City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Tokoname City's Gruun community bus. The official catalog also
+      publishes keyless TripUpdates, VehiclePositions, and Service Alerts.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tokonamecity.Gruun
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tokoname City (常滑市). Published as GTFS-JP open data (CC0 1.0)
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: aichi-miyoshicity-sansanbus
+    name: "みよし市さんさんバス"
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/aichi-miyoshicity/feeds/sansanbus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0; published by みよし市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      みよし市さんさんバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/aichi-miyoshicity.sansanbus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        みよし市. みよし市さんさんバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: amacity-amashijunkaibasu
+    name: "あま市巡回バス"
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/amacity/feeds/amashijunkaibasu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by あま市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      あま市巡回バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/amacity.amashijunkaibasu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        あま市. あま市巡回バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: chiryucity-communitybus
+    name: "知立市「ミニバス」（コミュニティバス）"
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chiryucity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP; published by 知立市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      知立市「ミニバス」（コミュニティバス） is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chiryucity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        知立市. 知立市「ミニバス」（コミュニティバス）, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: hekinancity-kurukuru-bus
+    name: "くるくるバス (碧南市)"
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hekinancity/feeds/kurukuru-bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 碧南市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      くるくるバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hekinancity.kurukuru-bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        碧南市. くるくるバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: higashiuratown-communitybus
+    name: "東浦町運行バス　う・ら・ら"
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/higashiuratown/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 東浦町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      東浦町運行バス　う・ら・ら is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/higashiuratown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        東浦町. 東浦町運行バス　う・ら・ら, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kitanagoyacity-communitybus
+    name: "北名古屋市　市内循環バス「きたバス」"
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kitanagoyacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 北名古屋市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      北名古屋市　市内循環バス「きたバス」 is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kitanagoyacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        北名古屋市. 北名古屋市　市内循環バス「きたバス」, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kitashitara-odekakehokusetsu
+    name: "おでかけ北設（設楽町・東栄町・豊根村） (北設楽郡公共交通活性化協議会)"
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kitashitara/feeds/odekakehokusetsu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 北設楽郡公共交通活性化協議会 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      おでかけ北設（設楽町・東栄町・豊根村） is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kitashitara.odekakehokusetsu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        北設楽郡公共交通活性化協議会. おでかけ北設（設楽町・東栄町・豊根村）, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: nisshincity-communitybus
+    name: "くるりんばす（日進市巡回バス）"
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nisshincity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 日進市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      くるりんばす（日進市巡回バス） is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nisshincity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        日進市. くるりんばす（日進市巡回バス）, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: oguchitown-communitybus
+    name: "大口町コミュニティバス"
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/oguchitown/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 大口町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      大口町コミュニティバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/oguchitown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        大口町. 大口町コミュニティバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: taketoyotown-communitybus
+    name: "武豊町コミュニティバス「ゆめころん」"
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/taketoyotown/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 武豊町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      武豊町コミュニティバス「ゆめころん」 is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/taketoyotown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        武豊町. 武豊町コミュニティバス「ゆめころん」, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: toyoakecity-himawaribus
+    name: "豊明市ひまわりバス"
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toyoakecity/feeds/himawaribus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0; published by 豊明市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      豊明市ひまわりバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toyoakecity.himawaribus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        豊明市. 豊明市ひまわりバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: toyoyamatown-communitybus
+    name: "とよやまタウンバス (豊山町)"
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toyoyamatown/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 豊山町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      とよやまタウンバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toyoyamatown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        豊山町. とよやまタウンバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

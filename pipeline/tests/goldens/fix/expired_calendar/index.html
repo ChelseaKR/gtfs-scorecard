@@ -13,11 +13,13 @@
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="GTFS Scorecard: transit data quality for small agencies.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
+  <meta name="twitter:image:alt" content="GTFS Scorecard: transit data quality for small agencies.">
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: service calendars that have already expired","description":"calendar.txt (and calendar_dates.txt) define the date ranges your service runs. Some of those ranges have an end date in the past, so they describe\u2026","url":"https://gtfsscorecard.org/fix/expired_calendar/","about":{"@type":"Thing","name":"GTFS validator notice expired_calendar"},"author":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"},"dateModified":"2026-07-02","mainEntityOfPage":"https://gtfsscorecard.org/fix/expired_calendar/","publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Fix: service calendars that have already expired","description":"calendar.txt (and calendar_dates.txt) define the date ranges your service runs. Some of those ranges have an end date in the past, so they describe\u2026","url":"https://gtfsscorecard.org/fix/expired_calendar/","image":{"@type":"ImageObject","url":"https://gtfsscorecard.org/og.png","width":1200,"height":630},"author":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"},"publisher":{"@type":"Organization","name":"GTFS Scorecard","url":"https://gtfsscorecard.org"},"mainEntityOfPage":"https://gtfsscorecard.org/fix/expired_calendar/","about":{"@type":"Thing","name":"GTFS validator notice expired_calendar"},"datePublished":"2026-07-03","dateModified":"2026-07-03"}</script>
   <script>
     /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
     try {
@@ -28,7 +30,6 @@
   </script>
   <script src="/src/theme.js" defer></script>
   <script src="/src/nav.js" defer></script>
-  <script src="/analytics.js" defer></script>
   <noscript><style>
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable
@@ -45,7 +46,8 @@
   <main id="main" class="wrap" tabindex="-1">
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/fix/"><span itemprop="name">GTFS errors and fixes</span></a><meta itemprop="position" content="2"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Fix: expired_calendar</span><meta itemprop="position" content="3"></li></ol></nav>
     <a class="backlink" href="/fix/">&larr; All GTFS fixes</a>
-    <article class="feed-details"><h1>Fix: service calendars that have already expired</h1>
+    <aside class="fix-context" id="finding-handoff" data-fix-context="expired_calendar" hidden><p class="handoff-kicker">Selected finding</p><h2>Keep expired_calendar attached to the agency record</h2><p>Agency record: <code data-context-agency></code>. Use this guide, publish the changed feed, then return to the selected scorecard for the comparable recheck.</p><nav class="handoff-links" aria-label="Selected agency links"><a data-context-target="scorecard" href="/agencies/">Scorecard</a><a data-context-target="brief" href="/agencies/">Call brief</a><a data-context-target="board" href="/agencies/">Board view</a><a data-context-target="history" href="/agencies/">Feed history</a></nav></aside>
+    <article class="feed-details"><h1>Fix: service calendars that have already expired</h1><p class="fineprint article-dates">Published: <time datetime="2026-07-03">3 July 2026</time>. Last reviewed: <time datetime="2026-07-03">3 July 2026</time>.</p>
 <p>Code: <code>expired_calendar</code> (MobilityData validator)</p>
 <h2 class="section-title">What this means</h2>
 <p><code>calendar.txt</code> (and <code>calendar_dates.txt</code>) define the date ranges your service
@@ -74,6 +76,77 @@ that is about to expire, which is the more urgent fix.</li>
 remaining service window is current is a quick look.</p>
 <h2 class="section-title">Authoritative rule</h2>
 <p><code>expired_calendar</code> is a canonical MobilityData GTFS Validator notice used in validator reports across the GTFS ecosystem. <a class="rule-ref" href="https://gtfs-validator.mobilitydata.org/rules.html#expired_calendar-rule">Read the authoritative rule for expired_calendar in the GTFS Validator rules</a>.<span class="visually-hidden"> (opens on an external site)</span></p><section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">After you republish</h2><p>Once the changed feed is live at your published URL, the next scorecard run checks it again. When the same complete producer contract no longer reports this finding, it can be recorded as a dated finding clearance. That confirms the later feed state, not who changed the feed or why.</p></section></article>
+    <script>
+(function () {
+  "use strict";
+  var safeCode = /^[A-Za-z0-9_-]+$/;
+  var safeAgency = /^[A-Za-z0-9_-]+$/;
+  var params = new URL(window.location.href).searchParams;
+  var requested = params.get("finding") || "";
+  if (!safeCode.test(requested)) requested = "";
+
+  document.querySelectorAll("[data-finding-handoff]").forEach(function (handoff) {
+    var panels = Array.from(handoff.querySelectorAll("[data-finding-panel]"));
+    if (!panels.length) return;
+    var selected = panels.some(function (panel) {
+      return panel.getAttribute("data-finding-panel") === requested;
+    }) ? requested : panels[0].getAttribute("data-finding-panel");
+    panels.forEach(function (panel) {
+      panel.hidden = panel.getAttribute("data-finding-panel") !== selected;
+    });
+    handoff.querySelectorAll("[data-finding-choice]").forEach(function (choice) {
+      if (choice.getAttribute("data-finding-choice") === selected) {
+        choice.setAttribute("aria-current", "true");
+      } else {
+        choice.removeAttribute("aria-current");
+      }
+    });
+    document.querySelectorAll("[data-finding-card]").forEach(function (card) {
+      card.classList.toggle(
+        "finding-selected",
+        card.getAttribute("data-finding-card") === selected
+      );
+    });
+  });
+
+  document.querySelectorAll("[data-handoff-copy]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      var panel = button.closest("[data-finding-panel]");
+      var field = panel && panel.querySelector("textarea");
+      var status = panel && panel.querySelector("[data-copy-status]");
+      if (!field) return;
+      var copied = navigator.clipboard && window.isSecureContext
+        ? navigator.clipboard.writeText(field.value)
+        : Promise.reject();
+      copied.catch(function () {
+        field.focus();
+        field.select();
+        document.execCommand("copy");
+      }).then(function () {
+        if (status) status.textContent = "Copied.";
+      });
+    });
+  });
+
+  document.querySelectorAll("[data-fix-context]").forEach(function (context) {
+    var agency = params.get("agency") || "";
+    var code = context.getAttribute("data-fix-context") || "";
+    if (!safeAgency.test(agency) || !safeCode.test(code)) return;
+    context.hidden = false;
+    var agencyLabel = context.querySelector("[data-context-agency]");
+    if (agencyLabel) agencyLabel.textContent = agency;
+    var base = "/agency/" + encodeURIComponent(agency) + "/";
+    var finding = "?finding=" + encodeURIComponent(code);
+    context.querySelectorAll("[data-context-target]").forEach(function (link) {
+      var target = link.getAttribute("data-context-target");
+      if (target === "scorecard") link.href = base + finding + "#finding-handoff";
+      if (target === "brief") link.href = base + "brief/" + finding + "#finding-handoff";
+      if (target === "board") link.href = base + "board/" + finding + "#finding-handoff";
+      if (target === "history") link.href = base + finding + "#trend-h";
+    });
+  });
+}());
+</script>
   </main>
   <footer class="site-footer">
     <div class="wrap">

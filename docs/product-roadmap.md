@@ -50,7 +50,7 @@ vendor causality, compliance, or certification.
 
 ## Where the product is today
 
-The service tracks more than 1,700 curated feed records, with numeric latest
+The service tracks more than 2,100 curated feed records, with numeric latest
 scores published for more than 1,100 of them. The public status page reports
 the exact current configured and published counts.
 It publishes per-agency grades, prioritized fixes, trends,
@@ -69,6 +69,32 @@ without accepted ownership still does not establish a verified remediation.
 The consumer feature finder now has a primary-navigation entry, language-aware
 `translations.txt` filters, CSV export, and the same row contract in
 `api/v1/features.json`. The interface states that the corpus is not a census.
+The finder has 45 product-need presets. The first 25 compose the existing
+accessibility, translation, fare, flexible-service, pathway, payment, mode,
+ferry, and generic latest-sample realtime filters. Twenty endpoint-specific
+presets add TripUpdates prediction review, VehiclePositions map review,
+ServiceAlerts disruption review, the complete three-endpoint stack, and
+fresh-header variants. They also compose that evidence with bus, rail, ferry,
+translation, fare, and accessibility requirements.
+
+Every preset retains its individual filters and thresholds in shared links.
+Generic realtime matches when at least one configured endpoint responded in
+the latest scorecard sample. Endpoint-specific filters match only the named
+configured endpoint kind. Freshness means the newest measured TripUpdates or
+VehiclePositions header was at most 60 seconds old. None of those fields
+certifies continuous uptime, service availability, prediction accuracy,
+alert content, or scheduled-trip coverage. The presets also do not certify
+physical accessibility, service usability, fare correctness, booking
+availability, or vessel capacity. The ferry accessibility preset
+requires a minimum stated share for both ferry terminals and ferry trips. It
+describes published wheelchair fields, not physical accessibility or boarding
+usability. The bicycle-aware preset composes the ferry service mode with a
+minimum share of ferry trips that state whether bicycles are allowed or
+prohibited. This is published policy evidence, not a claim about vessel space,
+boarding conditions, or whether a rider can take a bicycle on every trip.
+CSV exports repeat the selected geographic cohort and its reviewed-record
+denominator on every row, so a shortlist remains interpretable after it leaves
+the site.
 The European GTFS evidence and beta gate are in
 [`global-expansion.md`](global-expansion.md).
 

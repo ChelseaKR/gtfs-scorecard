@@ -133,11 +133,28 @@ def _feature_directory() -> dict[str, Any]:
         "translation_languages": None,
         "translated_tables": None,
         "feed_lang": None,
+        "realtime_measured": False,
+        "has_realtime": None,
+        "realtime_reachable": None,
+        "realtime_configured_kinds": None,
+        "realtime_reachable_kinds": None,
+        "realtime_reachable_kinds_list": None,
+        "realtime_trip_updates_reachable": None,
+        "realtime_vehicle_positions_reachable": None,
+        "realtime_service_alerts_reachable": None,
+        "realtime_coverage_pct": None,
+        "realtime_freshness": None,
+        "realtime_fresh": None,
         "modes_measured": False,
         "primary_mode": None,
         "modes": None,
         "has_ferry": None,
         "ferry_only": None,
+        "ferry_profile_measured": False,
+        "ferry_terminal_accessibility_stated_pct": None,
+        "ferry_trip_accessibility_stated_pct": None,
+        "ferry_bikes_stated_pct": None,
+        "ferry_bikes_allowed_pct": None,
     }
     for agency in directory["agencies"]:
         agency.update(feature_defaults)
@@ -156,18 +173,43 @@ def _feature_directory() -> dict[str, Any]:
                     "fare_model": "v2",
                     "has_pathways": True,
                     "has_step_free": True,
-                    "has_cemv": False,
+                    "has_cemv": True,
                     "translations_measured": True,
                     "has_translations": True,
                     "translation_count": 12,
                     "translation_languages": ["fr", "nl"],
                     "translated_tables": ["routes", "stops"],
                     "feed_lang": "mul",
+                    "realtime_measured": True,
+                    "has_realtime": True,
+                    "realtime_reachable": True,
+                    "realtime_configured_kinds": [
+                        "trip_updates",
+                        "vehicle_positions",
+                        "service_alerts",
+                    ],
+                    "realtime_reachable_kinds": 3,
+                    "realtime_reachable_kinds_list": [
+                        "trip_updates",
+                        "vehicle_positions",
+                        "service_alerts",
+                    ],
+                    "realtime_trip_updates_reachable": True,
+                    "realtime_vehicle_positions_reachable": True,
+                    "realtime_service_alerts_reachable": True,
+                    "realtime_coverage_pct": 98.0,
+                    "realtime_freshness": "fresh",
+                    "realtime_fresh": True,
                     "modes_measured": True,
                     "primary_mode": "ferry",
-                    "modes": ["bus", "ferry"],
+                    "modes": ["bus", "ferry", "rail"],
                     "has_ferry": True,
                     "ferry_only": False,
+                    "ferry_profile_measured": True,
+                    "ferry_terminal_accessibility_stated_pct": 100.0,
+                    "ferry_trip_accessibility_stated_pct": 100.0,
+                    "ferry_bikes_stated_pct": 100.0,
+                    "ferry_bikes_allowed_pct": 50.0,
                 }
             )
         elif agency["id"] == "london-transit-commission":
@@ -176,11 +218,11 @@ def _feature_directory() -> dict[str, Any]:
                     "capabilities_measured": True,
                     "accessibility_measured": True,
                     "has_accessibility": True,
-                    "wheelchair_boarding_pct": 80.0,
-                    "wheelchair_accessible_pct": 40.0,
-                    "accessibility_band": "some",
+                    "wheelchair_boarding_pct": 100.0,
+                    "wheelchair_accessible_pct": 100.0,
+                    "accessibility_band": "most",
                     "has_flex": True,
-                    "has_fares": True,
+                    "has_fares": False,
                     "has_fares_v2": False,
                     "fare_model": "legacy",
                     "has_pathways": False,
@@ -192,6 +234,18 @@ def _feature_directory() -> dict[str, Any]:
                     "translation_languages": [],
                     "translated_tables": [],
                     "feed_lang": "en",
+                    "realtime_measured": True,
+                    "has_realtime": True,
+                    "realtime_reachable": False,
+                    "realtime_configured_kinds": ["trip_updates"],
+                    "realtime_reachable_kinds": 0,
+                    "realtime_reachable_kinds_list": [],
+                    "realtime_trip_updates_reachable": False,
+                    "realtime_vehicle_positions_reachable": None,
+                    "realtime_service_alerts_reachable": None,
+                    "realtime_coverage_pct": 0.0,
+                    "realtime_freshness": "stale",
+                    "realtime_fresh": False,
                     "modes_measured": True,
                     "primary_mode": "bus",
                     "modes": ["bus"],
@@ -557,6 +611,23 @@ def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url
     assert '"capabilities_measured"' in csv.splitlines()[0]
     assert '"accessibility_fields"' in csv.splitlines()[0]
     assert '"translation_languages"' in csv.splitlines()[0]
+    assert '"realtime_measured"' in csv.splitlines()[0]
+    assert '"realtime_reachable"' in csv.splitlines()[0]
+    assert '"realtime_reachable_kinds_list"' in csv.splitlines()[0]
+    assert '"trip_updates_reachable"' in csv.splitlines()[0]
+    assert '"vehicle_positions_reachable"' in csv.splitlines()[0]
+    assert '"service_alerts_reachable"' in csv.splitlines()[0]
+    assert '"realtime_fresh"' in csv.splitlines()[0]
+    assert '"realtime_coverage_pct"' in csv.splitlines()[0]
+    assert '"ferry_profile_measured"' in csv.splitlines()[0]
+    assert '"ferry_terminal_accessibility_stated_pct"' in csv.splitlines()[0]
+    assert '"ferry_trip_accessibility_stated_pct"' in csv.splitlines()[0]
+    assert '"ferry_bikes_stated_pct"' in csv.splitlines()[0]
+    assert '"coverage_scope"' in csv.splitlines()[0]
+    assert '"coverage_denominator"' in csv.splitlines()[0]
+    assert '"matching_record_count"' in csv.splitlines()[0]
+    assert '"Ontario, Canada"' in csv
+    assert '"2"' in csv
     assert '"barrie-transit"' in csv
     assert '"london-transit-commission"' not in csv
     assert '"100"' in csv and '"96"' in csv
@@ -567,9 +638,641 @@ def test_feature_filters_thresholds_geography_and_csv_export(page: Page, app_url
     expect(page.locator(".feature-match-board")).to_have_attribute("data-active", "false")
     expect(page.locator('input[value="accessibility"]')).not_to_be_checked()
     expect(page.locator("#wheelchair-stops-min")).to_have_value("")
+    expect(page.locator("#feature-use-case")).to_have_value("")
     expect(page.locator("#download-feature-results")).to_be_disabled()
     expect(page.locator("#download-feature-results")).to_be_hidden()
     assert _hash_params(page) == {"sort": "za"}
+
+
+def test_product_use_case_preset_is_refinable_shareable_and_exported(
+    page: Page, app_url: str
+) -> None:
+    directory = _feature_directory()
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/?view=features")
+
+    page.locator("#feature-use-case").select_option("step-free-stations")
+
+    expect(page.locator('input[value="pathways"]')).to_be_checked()
+    expect(page.locator('input[value="step_free"]')).to_be_checked()
+    expect(page.locator(".agency-count")).to_have_text(
+        f"1 of {len(directory['agencies']):,} scorecard"
+    )
+    expect(page.get_by_role("link", name="Barrie Transit (Ontario)")).to_be_visible()
+    expect(page.locator(".feature-evidence")).to_contain_text("Station pathways · Step-free paths")
+    assert _hash_params(page) == {
+        "usecase": "step-free-stations",
+        "features": "pathways,step_free",
+        "view": "features",
+    }
+
+    with page.expect_download() as download_info:
+        page.get_by_role("button", name="Download 1 matching feed (CSV)").click()
+    csv = Path(download_info.value.path()).read_text()
+    assert '"Step-free station navigation"' in csv
+    assert '"All tracked feed records"' in csv
+    assert f'"{len(directory["agencies"])}"' in csv
+    assert '"1"' in csv
+    assert "usecase=step-free-stations" in csv
+
+    # Refining a preset makes the custom state explicit instead of leaving a
+    # misleading preset label attached to different conditions.
+    page.locator('input[value="step_free"]').uncheck()
+    expect(page.locator("#feature-use-case")).to_have_value("")
+    assert _hash_params(page) == {
+        "features": "pathways",
+        "view": "features",
+    }
+
+
+@pytest.mark.parametrize(
+    ("use_case", "feature", "agency_name", "evidence"),
+    [
+        (
+            "flexible-service-discovery",
+            "flex",
+            "London Transit Commission",
+            "Flexible service",
+        ),
+        (
+            "contactless-payment-metadata",
+            "cemv",
+            "Barrie Transit (Ontario)",
+            "Contactless fare payments",
+        ),
+        (
+            "modern-fare-model-integration",
+            "fares_v2",
+            "Barrie Transit (Ontario)",
+            "Fares v2",
+        ),
+    ],
+)
+def test_global_product_use_case_presets_reuse_published_capability_evidence(
+    page: Page,
+    app_url: str,
+    use_case: str,
+    feature: str,
+    agency_name: str,
+    evidence: str,
+) -> None:
+    directory = _feature_directory()
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/?view=features")
+
+    page.locator("#feature-use-case").select_option(use_case)
+
+    expect(page.locator(f'input[value="{feature}"]')).to_be_checked()
+    expect(page.locator(".agency-count")).to_have_text(
+        f"1 of {len(directory['agencies']):,} scorecard"
+    )
+    expect(page.get_by_role("link", name=agency_name)).to_be_visible()
+    expect(page.locator(".feature-evidence")).to_contain_text(evidence)
+    assert _hash_params(page) == {
+        "usecase": use_case,
+        "features": feature,
+        "view": "features",
+    }
+
+
+REALTIME_ENDPOINT_USE_CASES = [
+    (
+        "trip-prediction-endpoint-review",
+        ["trip_updates"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "vehicle-map-endpoint-review",
+        ["vehicle_positions"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "disruption-alert-endpoint-review",
+        ["service_alerts"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "complete-realtime-stack-review",
+        ["trip_updates", "vehicle_positions", "service_alerts"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-realtime-feed-review",
+        ["realtime", "realtime_fresh"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-trip-prediction-integration",
+        ["trip_updates", "realtime_fresh"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-vehicle-map-integration",
+        ["vehicle_positions", "realtime_fresh"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-live-bus-predictions",
+        ["trip_updates", "realtime_fresh"],
+        "bus",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-live-bus-map",
+        ["vehicle_positions", "realtime_fresh"],
+        "bus",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-live-rail-predictions",
+        ["trip_updates", "realtime_fresh"],
+        "rail",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-live-rail-map",
+        ["vehicle_positions", "realtime_fresh"],
+        "rail",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-live-ferry-predictions",
+        ["trip_updates", "realtime_fresh"],
+        "ferry",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fresh-live-ferry-map",
+        ["vehicle_positions", "realtime_fresh"],
+        "ferry",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "multilingual-trip-predictions",
+        ["trip_updates", "translations"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "multilingual-vehicle-map",
+        ["vehicle_positions", "translations"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "fare-aware-trip-predictions",
+        ["trip_updates", "fares"],
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "accessible-trip-predictions",
+        ["trip_updates", "accessibility"],
+        "",
+        "95",
+        "95",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "accessible-vehicle-map",
+        ["vehicle_positions", "accessibility"],
+        "",
+        "95",
+        "95",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "accessible-disruption-alerts",
+        ["service_alerts", "accessibility"],
+        "",
+        "95",
+        "95",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+    (
+        "accessible-complete-realtime-stack",
+        ["trip_updates", "vehicle_positions", "service_alerts", "accessibility"],
+        "",
+        "95",
+        "95",
+        "",
+        "",
+        "Barrie Transit (Ontario)",
+    ),
+]
+
+
+def _assert_realtime_feature_evidence(page: Page, features: list[str]) -> None:
+    if "realtime" in features:
+        expect(page.locator(".feature-evidence")).to_contain_text(
+            "Latest realtime sample: 3 of 3 configured endpoints reached, "
+            "98% scheduled-trip coverage"
+        )
+    if any(kind in features for kind in ("trip_updates", "vehicle_positions", "service_alerts")):
+        expect(page.locator(".feature-evidence")).to_contain_text("Latest realtime sample reached:")
+    if "realtime_fresh" in features:
+        expect(page.locator(".feature-evidence")).to_contain_text(
+            "Latest TripUpdates or VehiclePositions header was at most 60 seconds old"
+        )
+
+
+@pytest.mark.parametrize(
+    (
+        "use_case",
+        "features",
+        "mode",
+        "stops",
+        "trips",
+        "ferry_access",
+        "ferry_bikes",
+        "agency_name",
+    ),
+    [
+        (
+            "accessible-multilingual-rider-information",
+            ["accessibility", "translations"],
+            "",
+            "95",
+            "95",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "accessible-fare-aware-planning",
+            ["accessibility", "fares"],
+            "",
+            "95",
+            "95",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "accessible-flexible-service-planning",
+            ["accessibility", "flex"],
+            "",
+            "95",
+            "95",
+            "",
+            "",
+            "London Transit Commission",
+        ),
+        (
+            "accessible-rail-service-information",
+            ["accessibility"],
+            "rail",
+            "95",
+            "95",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "fully-stated-ferry-rider-information",
+            [],
+            "ferry",
+            "",
+            "",
+            "95",
+            "95",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "multilingual-rail-service-information",
+            ["translations"],
+            "rail",
+            "",
+            "",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "fare-aware-ferry-planning",
+            ["fares"],
+            "ferry",
+            "",
+            "",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "accessible-bus-service-information",
+            ["accessibility"],
+            "bus",
+            "95",
+            "95",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "multilingual-flexible-service-discovery",
+            ["translations", "flex"],
+            "",
+            "",
+            "",
+            "",
+            "",
+            "London Transit Commission",
+        ),
+        (
+            "accessible-modern-fare-integration",
+            ["accessibility", "fares_v2"],
+            "",
+            "95",
+            "95",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "latest-sample-realtime-review",
+            ["realtime"],
+            "",
+            "",
+            "",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "live-bus-data-integration",
+            ["realtime"],
+            "bus",
+            "",
+            "",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "multilingual-live-service-information",
+            ["realtime", "translations"],
+            "",
+            "",
+            "",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "fare-aware-live-service-planning",
+            ["realtime", "fares"],
+            "",
+            "",
+            "",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        (
+            "accessible-live-service-information",
+            ["realtime", "accessibility"],
+            "",
+            "95",
+            "95",
+            "",
+            "",
+            "Barrie Transit (Ontario)",
+        ),
+        *REALTIME_ENDPOINT_USE_CASES,
+    ],
+)
+def test_composed_use_case_presets_keep_every_published_evidence_gate(
+    page: Page,
+    app_url: str,
+    use_case: str,
+    features: list[str],
+    mode: str,
+    stops: str,
+    trips: str,
+    ferry_access: str,
+    ferry_bikes: str,
+    agency_name: str,
+) -> None:
+    directory = _feature_directory()
+    if use_case == "multilingual-flexible-service-discovery":
+        london = next(
+            agency
+            for agency in directory["agencies"]
+            if agency["id"] == "london-transit-commission"
+        )
+        london.update(
+            {
+                "has_translations": True,
+                "translation_count": 2,
+                "translation_languages": ["fr"],
+                "translated_tables": ["stops"],
+            }
+        )
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/?view=features")
+
+    page.locator("#feature-use-case").select_option(use_case)
+
+    for feature in features:
+        expect(page.locator(f'input[value="{feature}"]')).to_be_checked()
+    expect(page.locator("#wheelchair-stops-min")).to_have_value(stops)
+    expect(page.locator("#wheelchair-trips-min")).to_have_value(trips)
+    expect(page.locator("#service-mode")).to_have_value(mode)
+    expect(page.locator("#ferry-access-min")).to_have_value(ferry_access)
+    expect(page.locator("#ferry-bikes-min")).to_have_value(ferry_bikes)
+    matching = 2 if use_case == "accessible-bus-service-information" else 1
+    suffix = "s" if matching != 1 else ""
+    expect(page.locator(".agency-count")).to_have_text(
+        f"{matching} of {len(directory['agencies']):,} scorecard{suffix}"
+    )
+    expect(page.get_by_role("link", name=agency_name)).to_be_visible()
+    _assert_realtime_feature_evidence(page, features)
+
+    expected = {
+        "usecase": use_case,
+        "view": "features",
+    }
+    if stops:
+        expected["stops"] = stops
+    if trips:
+        expected["trips"] = trips
+    if features:
+        expected["features"] = ",".join(features)
+    if mode:
+        expected["mode"] = mode
+    if ferry_access:
+        expected["ferry_access"] = ferry_access
+    if ferry_bikes:
+        expected["ferry_bikes"] = ferry_bikes
+    assert _hash_params(page) == expected
+
+
+def test_ferry_use_case_preset_composes_and_refines_the_mode_filter(
+    page: Page, app_url: str
+) -> None:
+    directory = _feature_directory()
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/?view=features")
+
+    page.locator("#feature-use-case").select_option("ferry-service-discovery")
+
+    expect(page.locator("#service-mode")).to_have_value("ferry")
+    expect(page.locator(".agency-count")).to_have_text(
+        f"1 of {len(directory['agencies']):,} scorecard"
+    )
+    expect(page.get_by_role("link", name="Barrie Transit (Ontario)")).to_be_visible()
+    expect(page.locator(".feature-evidence")).to_contain_text("Mode: Ferry")
+    assert _hash_params(page) == {
+        "usecase": "ferry-service-discovery",
+        "view": "features",
+        "mode": "ferry",
+    }
+
+    page.locator("#service-mode").select_option("")
+    expect(page.locator("#feature-use-case")).to_have_value("")
+    assert _hash_params(page) == {"view": "features"}
+
+
+def test_bicycle_aware_ferry_preset_uses_scoped_policy_evidence(page: Page, app_url: str) -> None:
+    directory = _feature_directory()
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/?view=features")
+
+    page.locator("#feature-use-case").select_option("bicycle-aware-ferry-planning")
+
+    expect(page.locator("#service-mode")).to_have_value("ferry")
+    expect(page.locator("#ferry-bikes-min")).to_have_value("95")
+    expect(page.locator(".agency-count")).to_have_text(
+        f"1 of {len(directory['agencies']):,} scorecard"
+    )
+    expect(page.get_by_role("link", name="Barrie Transit (Ontario)")).to_be_visible()
+    expect(page.locator(".feature-evidence")).to_contain_text(
+        "Mode: Ferry · Ferry bicycle policy: 100% of trips state allowed or prohibited"
+    )
+    assert _hash_params(page) == {
+        "usecase": "bicycle-aware-ferry-planning",
+        "view": "features",
+        "mode": "ferry",
+        "ferry_bikes": "95",
+    }
+
+    page.locator("#ferry-bikes-min").select_option("100")
+    expect(page.locator("#feature-use-case")).to_have_value("")
+    assert _hash_params(page) == {
+        "view": "features",
+        "mode": "ferry",
+        "ferry_bikes": "100",
+    }
+
+
+def test_ferry_accessibility_preset_uses_scoped_published_fields(page: Page, app_url: str) -> None:
+    directory = _feature_directory()
+    _serve_directory(page, directory)
+    page.goto(f"{app_url}#/?view=features")
+
+    page.locator("#feature-use-case").select_option("ferry-accessibility-information")
+
+    expect(page.locator("#service-mode")).to_have_value("ferry")
+    expect(page.locator("#ferry-access-min")).to_have_value("95")
+    expect(page.locator(".agency-count")).to_have_text(
+        f"1 of {len(directory['agencies']):,} scorecard"
+    )
+    expect(page.get_by_role("link", name="Barrie Transit (Ontario)")).to_be_visible()
+    expect(page.locator(".feature-evidence")).to_contain_text(
+        "Mode: Ferry · Ferry accessibility fields: 100% of terminals "
+        "and 100% of trips state a value"
+    )
+    assert _hash_params(page) == {
+        "usecase": "ferry-accessibility-information",
+        "view": "features",
+        "mode": "ferry",
+        "ferry_access": "95",
+    }
+
+    page.locator("#ferry-access-min").select_option("100")
+    expect(page.locator("#feature-use-case")).to_have_value("")
+    assert _hash_params(page) == {
+        "view": "features",
+        "mode": "ferry",
+        "ferry_access": "100",
+    }
 
 
 def test_feature_nav_and_translation_language_deep_link(page: Page, app_url: str) -> None:
@@ -621,7 +1324,7 @@ def test_service_mode_filter_is_deep_linkable_and_exports_evidence(
     csv = Path(download_info.value.path()).read_text()
     assert '"modes_measured"' in csv.splitlines()[0]
     assert '"primary_mode"' in csv.splitlines()[0]
-    assert '"bus|ferry"' in csv
+    assert '"bus|ferry|rail"' in csv
 
 
 def test_feature_nav_is_available_from_mobile_menu(page: Page, app_url: str) -> None:

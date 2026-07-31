@@ -117,3 +117,239 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: fr-agglobus-foix
+    name: "Réseau urbain l'agglobus"
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: "Occitanie"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/8c9dd4f7-f6a2-4760-915e-89e8f9666c5b"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA Pays Foix-Varilhes and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/reseau-lagglo-bus-de-lagglo-foix-varilhes"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA Pays Foix-Varilhes"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-mio
+    name: "Réseau urbain Mio"
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: "Occitanie"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/b1b9a7a6-1baf-4113-a6c3-4c5713764ffd"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CC de Millau Grands Causses and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/fiches-horaires-reseau-urbain-mio-ccmillaugrandscausses"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CC de Millau Grands Causses"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-ole
+    name: "Réseau urbain Olé"
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: "Occitanie"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/83852/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA Lunel Agglo and the update date.
+    rt_urls:
+      trip_updates: "https://www.data.gouv.fr/api/1/datasets/r/693715b8-992c-43c3-a0e4-24666b713a40"
+      vehicle_positions: "https://www.data.gouv.fr/api/1/datasets/r/5511d6c1-1454-4045-a2f5-1223f22d7530"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-ole-lunel-agglo-gtfs-et-gtfs-rt"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA Lunel Agglo"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-transpor-pays-de-lor
+    name: "Réseau urbain Transp’Or"
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: "Occitanie"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/84a0902b-ed56-4a09-8eb7-bb58601ba084"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA du Pays de l'Or and the update date.
+    rt_urls:
+      trip_updates: "https://proxy.transport.data.gouv.fr/resource/transpor-gtfs-rt-trip-update"
+      vehicle_positions: "https://proxy.transport.data.gouv.fr/resource/transpor-gtfs-rt-vehicle-position"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/offre-transport-en-commun-du-reseau-transpor-gtfs"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA du Pays de l'Or"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-uggo
+    name: "Réseau urbain UGGO"
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: "Occitanie"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/3ba2db00-235a-4958-980e-5cdd20ce204e"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA du Gard Rhodanien and the update date.
+    rt_urls:
+      trip_updates: "https://www.data.gouv.fr/api/1/datasets/r/bb983834-bc52-4289-b837-13e3d43fbfa4"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/donnees-transport-2024"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA du Gard Rhodanien"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-pan-75062
+    name: Réseau urbain Alesy
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/b9a0f32e-4386-454c-8759-b82653fa861e
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Syndicat
+      Mixte du Bassin d'Alès - Réseau Ales'Y, identify the ODbL, and preserve share-alike terms where they
+      apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-des-lignes-urbaines-et-interurbaines-sur-le-reseau-alesy-gtfs
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-des-lignes-urbaines-et-interurbaines-sur-le-reseau-alesy-gtfs
+      scope:
+      - gtfs_schedule
+      attribution: Syndicat Mixte du Bassin d'Alès - Réseau Ales'Y
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-79508
+    name: Réseau urbain Libellus
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/70c9f936-129e-41f4-940a-8e6f272535d1
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA  de
+      CASTRES - MAZAMET, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-libellus-gtfs
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-libellus-gtfs
+      scope:
+      - gtfs_schedule
+      attribution: CA  de CASTRES - MAZAMET
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-79728
+    name: Réseau urbain du Grand Albigeois
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/15878ceb-7c8f-4546-bb0f-c540a15f2188
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Communauté
+      d'agglomération de l'Albigeois, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transports-du-grand-albigeois-gtfs
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transports-du-grand-albigeois-gtfs
+      scope:
+      - gtfs_schedule
+      attribution: Communauté d'agglomération de l'Albigeois
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81026
+    name: Réseau interurbain liO Occitanie
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/d747fe79-2915-4cdd-8cc5-51a810baaca5
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Occitanie / Pyrénées Méditerranée, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-lio-occitanie
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-lio-occitanie
+      scope:
+      - gtfs_schedule
+      attribution: Région Occitanie / Pyrénées Méditerranée
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81432
+    name: Réseau urbain Evidence
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/1f768fa6-ee56-44d8-b322-75b946128fd8
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Communauté
+      d'Agglomération du Grand Cahors, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/donnees-gtfs-du-reseau-de-transports-public-du-grand-cahors
+      terms_url: https://transport.data.gouv.fr/datasets/donnees-gtfs-du-reseau-de-transports-public-du-grand-cahors
+      scope:
+      - gtfs_schedule
+      attribution: Communauté d'Agglomération du Grand Cahors
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83155
+    name: TAD ligne Arrens-Marsous - Lourdes
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/382a2cc7-336b-49ff-9fbd-f355629701b6
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Communauté de Communes Pyrénées Vallées des Gaves
+      and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/tad-arrens-marsous-lourdes
+      terms_url: https://transport.data.gouv.fr/datasets/tad-arrens-marsous-lourdes
+      scope:
+      - gtfs_schedule
+      attribution: Communauté de Communes Pyrénées Vallées des Gaves
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true

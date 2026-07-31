@@ -13,16 +13,16 @@ on:
     inputs:
       shards:
         description: "number of parallel shards"
-        default: "12"
+        default: "32"
 
 # Least privilege by default; the collect and deploy jobs widen it per-job.
 permissions:
   contents: read
 
 env:
-  # National scale: ~1,166 agencies fan out across more shards to keep each
-  # shard's wall-clock down (ADR 0005). Override per-run via workflow_dispatch.
-  SHARD_COUNT: ${{ github.event.inputs.shards || '12' }}
+  # At 2,000+ feed records, 32 shards keeps each score job inside the one-hour
+  # AWS OIDC session. Override per-run via workflow_dispatch.
+  SHARD_COUNT: ${{ github.event.inputs.shards || '32' }}
 
 jobs:
   plan:
@@ -185,6 +185,7 @@ jobs:
       - name: Hydrate the authoritative current corpus and compact history
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |
+          set -euo pipefail
           # Hydrate before overlaying this run's shard outputs. latest.json is
           # the durable current artifact for a skipped feed; index.json proves
           # which snapshot it must represent. Reindex uses that verified pair
@@ -194,6 +195,21 @@ jobs:
             data/artifacts/index.json --only-show-errors
           aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
             --recursive --exclude "*" --include "*/latest.json" --only-show-errors
+          # index.json is the public commit pointer. A failed intraday run can
+          # upload a newer latest.json before it reaches the final index write,
+          # so hydrate the dated snapshots the index actually names as well.
+          # Reindex can then ignore any ahead-of-index latest safely and retain
+          # the last committed artifact instead of falling back to checkout.
+          jq -r '.agencies[].history[-1].date // empty' data/artifacts/index.json \
+            | sort -u | while IFS= read -r authoritative_date; do
+              if ! [[ "$authoritative_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+                echo "::error::Invalid authoritative artifact date: $authoritative_date"
+                exit 1
+              fi
+              aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
+                --recursive --exclude "*" \
+                --include "*/${authoritative_date}.json" --only-show-errors
+            done
           aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
             --exclude "*" --include "rollups/*.state.json" \
             --include "coverage-baseline.json" --only-show-errors
@@ -373,6 +389,15 @@ jobs:
             fi
             echo "Private object ${private_path} stayed private (HTTP ${status})."
           done
+      # Lifecycle tagging is intentionally sequential and currently takes
+      # roughly half an hour. Refresh the one-hour OIDC session here so corpus
+      # growth cannot expire the collect job's original credentials mid-step.
+      - name: Refresh AWS credentials before lifecycle tagging
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
       - name: Tag today's dated artifacts for lifecycle expiration
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |

@@ -177,9 +177,53 @@ def test_repo_registry_matches_documented_feed_record_counts(
     agencies = read_agencies()
     european = [agency for agency in agencies if agency.country in EUROPE_BETA_COUNTRY_CODES]
 
-    assert len(agencies) == 1_734
-    assert len(european) == 251
-    assert len({agency.country for agency in european}) == 22
+    assert len(agencies) == 2_185
+    assert len(european) == 528
+    assert len({agency.country for agency in european}) == 26
+
+
+def test_repo_registry_includes_france_pan_and_new_country_code_wave(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+    france_pan = [agency for agency in by_id.values() if agency.id.startswith("fr-pan-")]
+
+    assert len(france_pan) == 136
+    assert {agency.country for agency in france_pan} == {"FR"}
+    assert {agency.subdivision_code for agency in france_pan} >= {
+        "FR-20R",
+        "FR-973",
+        "FR-ARA",
+        "FR-BRE",
+        "FR-GES",
+        "FR-NAQ",
+        "FR-PAC",
+    }
+    for agency in france_pan:
+        assert agency.is_official is True
+        assert agency.reuse_evidence is not None
+        assert agency.reuse_evidence.source_kind == "official_portal"
+        assert agency.reuse_evidence.provider_source_url.startswith(
+            "https://transport.data.gouv.fr/datasets/"
+        )
+        assert agency.reuse_evidence.reviewed_on == "2026-07-23"
+        assert agency.reuse_evidence.identity_reviewed is True
+
+    taneo = by_id["nc-taneo-82780"]
+    assert taneo.country == "NC"
+    assert taneo.reuse_evidence is not None
+    assert taneo.reuse_evidence.source_kind == "official_portal"
+
+    ati = by_id["puerto-rico-ati"]
+    assert ati.country == "PR"
+    assert ati.reuse_evidence is not None
+    assert ati.reuse_evidence.source_kind == "official_portal"
+
+    mwasalat = by_id["mwasalat-oman"]
+    assert mwasalat.country == "OM"
+    assert mwasalat.reuse_evidence is not None
+    assert mwasalat.reuse_evidence.source_kind == "provider"
 
 
 def test_ntd_id_parses_and_defaults_empty() -> None:
@@ -424,6 +468,138 @@ def test_worldwide_cohort_preserves_public_names_and_realtime_semantics(
     uruguay = by_id["mtop-uruguay-metropolitan"]
     assert uruguay.name == "Servicios metropolitanos de ómnibus (MTOP Uruguay)"
     assert uruguay.rt_urls == {}
+
+
+def test_repo_registry_includes_hong_kong_frequency_canary(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+
+    agency = by_id["hong-kong-transport-department"]
+    assert agency.country == "HK"
+    assert agency.subdivision_code == ""
+    assert agency.subdivision_name == ""
+    assert agency.mdb_id == "1924"
+    assert agency.is_official is True
+    assert agency.static_gtfs_url == "https://static.data.gov.hk/td/pt-headway-en/gtfs.zip"
+    assert agency.reuse_evidence is not None
+    assert agency.reuse_evidence.decision == "approved"
+    assert agency.reuse_evidence.identity_reviewed is True
+    assert "frequencies.txt" in agency.operating_note
+    assert "unusually distant horizon" in agency.operating_note
+
+
+def test_repo_registry_includes_tasmania_official_aggregate(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+
+    agency = by_id["tasmania-public-transport"]
+    assert agency.country == "AU"
+    assert agency.subdivision_code == "AU-TAS"
+    assert agency.subdivision_name == "Tasmania"
+    assert agency.is_official is True
+    assert (
+        agency.static_gtfs_url
+        == "https://www.transport.tas.gov.au/__data/assets/file/0011/557615/tas_gtfs.zip"
+    )
+    assert agency.reuse_evidence is not None
+    assert agency.reuse_evidence.decision == "approved"
+    assert agency.reuse_evidence.provider_source_url.endswith("/public_transport/gtfs-data")
+    assert agency.reuse_evidence.identity_reviewed is True
+    assert "one feed record, not six agencies" in agency.operating_note
+
+
+def test_repo_registry_includes_reactivated_basmy_town_feeds(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+    expected = {
+        "basmy-alor-setar": ("MY-02", "Kedah", "mybas-alor-setar"),
+        "basmy-kota-bharu": ("MY-03", "Kelantan", "mybas-kota-bharu"),
+        "basmy-kuala-terengganu": (
+            "MY-11",
+            "Terengganu",
+            "mybas-kuala-terengganu",
+        ),
+        "basmy-kuching": ("MY-13", "Sarawak", "mybas-kuching"),
+    }
+
+    for agency_id, (subdivision_code, subdivision_name, endpoint) in expected.items():
+        agency = by_id[agency_id]
+        assert agency.country == "MY"
+        assert agency.subdivision_code == subdivision_code
+        assert agency.subdivision_name == subdivision_name
+        assert agency.is_official is True
+        assert agency.static_gtfs_url.endswith(endpoint)
+        assert agency.reuse_evidence is not None
+        assert agency.reuse_evidence.decision == "approved"
+        assert agency.reuse_evidence.identity_reviewed is True
+        assert "service through 2026-12-31" in agency.operating_note
+
+
+def test_repo_registry_includes_japan_five_loop_cohort(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+    cohort = {
+        "kamishihoro-autonomous-bus": ("JP-01", "Hokkaido", "kamishihorotown"),
+        "konan-railway": ("JP-02", "Aomori", "hirosakicity"),
+        "tsukubane-go": ("JP-08", "Ibaraki", "tsukubacity"),
+        "awaji-jenova-line": ("JP-28", "Hyogo", "awajicity"),
+        "hokushin-bus": ("JP-33", "Okayama", "hokushin-bus"),
+    }
+
+    for agency_id, (subdivision_code, subdivision_name, publisher) in cohort.items():
+        agency = by_id[agency_id]
+        assert agency.country == "JP"
+        assert agency.subdivision_code == subdivision_code
+        assert agency.subdivision_name == subdivision_name
+        assert agency.is_official is True
+        assert publisher in agency.static_gtfs_url
+        assert agency.static_gtfs_url.endswith("files/feed.zip?rid=current")
+        assert agency.reuse_evidence is not None
+        assert agency.reuse_evidence.decision == "approved"
+        assert agency.reuse_evidence.identity_reviewed is True
+        assert agency.reuse_evidence.reviewed_on == "2026-07-23"
+
+
+def test_repo_registry_includes_japan_operational_depth_cohort(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+    cohort = {
+        "jr-east-tsugaru-line-replacement-bus": ("JP-02", "Aomori", "jr-east-morioka"),
+        "mizuho-choisoko-demand-transit": ("JP-13", "Tokyo", "mizuhotown"),
+        "toyama-chitetsu-bus": ("JP-16", "Toyama", "chitetsu"),
+        "toba-municipal-ferry": ("JP-24", "Mie", "tobacity"),
+        "kochi-airport-shared-taxi": ("JP-39", "Kochi", "kochiap"),
+    }
+
+    for agency_id, (subdivision_code, subdivision_name, publisher) in cohort.items():
+        agency = by_id[agency_id]
+        assert agency.country == "JP"
+        assert agency.subdivision_code == subdivision_code
+        assert agency.subdivision_name == subdivision_name
+        assert agency.is_official is True
+        assert publisher in agency.static_gtfs_url
+        assert agency.static_gtfs_url.endswith("files/feed.zip?rid=current")
+        assert agency.reuse_evidence is not None
+        assert agency.reuse_evidence.decision == "approved"
+        assert agency.reuse_evidence.identity_reviewed is True
+        assert agency.reuse_evidence.reviewed_on == "2026-07-23"
+
+    assert by_id["mizuho-choisoko-demand-transit"].service_type == "demand_response"
+    assert by_id["kochi-airport-shared-taxi"].service_type == "demand_response"
+    assert set(by_id["toyama-chitetsu-bus"].rt_urls) == {
+        "trip_updates",
+        "vehicle_positions",
+    }
 
 
 def test_load_agencies_populates_registry(tmp_path: Path) -> None:

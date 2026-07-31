@@ -1,24 +1,28 @@
-# Competitive position: verify that a GTFS fix reached the published feed
+# Competitive position: verify feed fixes and correct bad recommendations
 
-Last reviewed: 2026-07-14
+Last reviewed: 2026-07-25
 
 ## Decision
 
 GTFS Scorecard should not compete to become another validator, feed editor,
 catalogue, or visual feed inspector. Those jobs are already served by capable
-open projects and public programs. The defensible job is to carry a finding
-through an accountable remediation workflow:
+open projects and public programs. The defensible job is to carry evidence
+through two accountable feedback loops:
 
 ```text
 alert -> named owner or vendor action -> exact-feed recheck ->
 provenance-stamped verified closure
+
+producer challenge -> exact-feed review -> bounded rule correction ->
+corrected result and explanation
 ```
 
 The grade remains a useful triage surface. The reusable GitHub Action is a
 distribution path. Neither is a durable advantage by itself. The product earns
 an advantage only if it can show, without overstating causality, that a specific
 problem was assigned, changed in newly published feed bytes, and independently
-rechecked.
+rechecked, or that a specific recommendation was challenged, tested against the
+feed's actual structure, and corrected without weakening unrelated cases.
 
 ## Where the work overlaps
 
@@ -27,7 +31,7 @@ does a job the scorecard should reuse, link to, or complement.
 
 | Project | Documented job | Implication for GTFS Scorecard |
 |---|---|---|
-| [Mobility Database](https://github.com/MobilityData/mobility-feed-api) | Publishes a worldwide catalogue and API of open mobility-data sources. | Use it for discovery and stable source identity. Do not build a competing feed registry. |
+| [Mobility Database catalogs](https://github.com/MobilityData/mobility-database-catalogs) | Publishes a worldwide catalogue with source identity, status, access, location, and license pointers. | Use it for discovery and source provenance. Do not build a competing feed registry or treat catalogue metadata as permission to republish a feed. |
 | [Transitland feed versions](https://www.transit.land/documentation/concepts/static-gtfs-feed-versions/) | Archives distinct static GTFS versions, records checksums, and derives version metadata. | Link to its archive where useful. The scorecard's dated artifacts should add remediation context, not duplicate a general archive. |
 | [MobilityData canonical GTFS Schedule validator](https://github.com/MobilityData/gtfs-validator) | Validates a local file or URL against GTFS Schedule rules and produces HTML and JSON reports. | Keep it as the rule engine and preserve its notice codes and version. Do not reimplement its taxonomy. |
 | [gtfs.guru](https://github.com/abasis-ltd/gtfs.guru) | Provides a fast Rust validator across desktop, CLI, Python, web, WebAssembly, and CI surfaces. | Validation speed, local processing, and CI portability are active areas of competition. They are not a credible moat for this project. |
@@ -49,6 +53,29 @@ begins only when an accepted action with accountable ownership is joined to
 exact before-and-after evidence for the intended published feed. Until that
 workflow is proven, call the shipped record a finding clearance, not a verified
 remediation or closure.
+
+Recommendation correction is a separate record. It does not claim that the
+producer changed a feed. It shows that a producer challenged the scorecard's
+advice, the project checked the affected rows and service pattern, and a bounded
+rule or explanation changed as a result. That loop matters because generic
+advice can be wrong even when its underlying completeness percentage is
+calculated correctly.
+
+### First recommendation-correction case
+
+In [issue #180](https://github.com/ChelseaKR/gtfs-scorecard/issues/180), the
+producer of MRC de Joliette's feed challenged advice to populate blank
+`trip_headsign` values on one-way loop routes. Review showed that 152 of 164
+trips already had headsigns. The 12 blanks were frequency templates for six
+routes, and each affected route had one closed stop pattern, one shape, and one
+direction. Repeating the route name would conflict with GTFS Best Practices,
+while inventing clockwise or counterclockwise labels was unsupported.
+
+The scoring rule was narrowed to credit only this verifiable simple-loop case.
+Ambiguous, malformed, multi-pattern, or incomplete cases retain the existing
+recommendation. The feed was rerun under the new contract, the headsign advice
+disappeared, and the producer received the evidence and corrected result. This
+is one useful trust-building case, not yet proof of a repeatable advantage.
 
 ## What not to build
 
@@ -87,6 +114,26 @@ the chain:
 This proves a published-data change, not a rider outcome. Claims about trip
 planning, accessibility, or ridership still require separate evidence.
 
+## The second loop: a recommendation-correction record
+
+A recommendation-correction record should preserve:
+
+1. The original scorecard, feed hash, raw metric, recommendation text, and
+   measurement contract.
+2. The producer's challenge and the operational context needed to test it,
+   without exposing private contact details.
+3. The exact source rows and structural facts that support or reject the
+   challenge.
+4. The bounded code, rubric, or wording change, including cases that must remain
+   unchanged.
+5. Focused regression tests, a rerun of the challenged feed, and a plain
+   explanation to the producer.
+
+Do not build a dedicated challenge form or public correction dashboard from one
+case. Keep the loop manual until at least three independent recommendation
+challenges from two organizations have been reviewed. Then decide whether the
+repeated evidence warrants a template, issue type, or API record.
+
 ## Advantages that can compound
 
 These advantages exist only after repeated real-world closures. They cannot be
@@ -95,9 +142,11 @@ created by adding more dashboard features.
 | Asset | How it compounds | Guardrail |
 |---|---|---|
 | Outcome corpus | Links each notice, requested action, export context, elapsed time, and verified result. More closures reveal which advice works. | Publish only evidence that participants may share. Never infer causality from a cleared notice alone. |
+| Recommendation-challenge corpus | Links producer context to exact feed structures, corrected advice, and protected regression cases. Repeated challenges reveal where generic guidance needs sharper boundaries. | Record accepted and rejected challenges. Do not tune a general rule to one feed without bounded evidence. |
 | Tested fix playbooks | Vendor-specific instructions can be ordered by observed closure evidence rather than author confidence. | Show sample size, tool version, and unsuccessful attempts. |
 | Workflow fit | Integrations with the ticketing, email, webhook, or repository surfaces maintainers already use reduce the cost of assigning work. | Integrate only after the concierge pilot shows the actual handoff. Do not build a new ticket system first. |
 | Feed-identity and provenance discipline | Reproducible receipts build trust with agencies, vendors, support programs, and researchers. | Fail closed on ambiguous identity or changed measurement contracts. |
+| Candidate-disposition evidence | A pinned catalog run can explain every mechanical omission, duplicate, conflict, registry match, or proposal instead of presenting coverage growth as an unexplained count. | Keep proposals distinct from human identity, rights, attribution, and admission decisions. |
 | Program and vendor learning | Aggregated, non-ranking evidence can identify recurring export defects and effective interventions across feeds. | Require a comparable cohort and avoid public claims about individual vendor performance from small samples. |
 | Open distribution | The site, API, MCP server, and reusable Action can put the same evidence in different workflows. | Treat reach as an acquisition channel, not proof of value or a moat. |
 
@@ -166,6 +215,9 @@ than attention.
 - **False attribution.** A finding may clear because the validator changed or a
   different feed was fetched. The receipt must fail closed when comparison is
   unsafe.
+- **Overcorrection.** A valid producer challenge may tempt the project to exempt
+  superficially similar feeds. Require structural evidence and regression cases
+  that preserve the recommendation for ambiguous patterns.
 - **Workflow capture by a larger program.** Cal-ITP, a vendor, or a catalogue
   could add closure tracking. The response is interoperability and an open,
   portable evidence format, not feature volume.

@@ -8,7 +8,7 @@ sync with this page; every metric's docstring links back here.
 ## Sources the rubric maps to
 
 This is a project-authored scoring profile, identified in artifacts as
-`gtfs-scorecard-1.2`. Its weights, deductions, thresholds, grade bands, and fix
+`gtfs-scorecard-1.3`. Its weights, deductions, thresholds, grade bands, and fix
 ranking are GTFS Scorecard choices. California guidance informed those choices
 and is the normative quality bar for California agencies; it is not worldwide
 authority. A score outside California is a feed-quality assessment under this
@@ -31,6 +31,25 @@ published profile, not a local compliance determination.
    — the canonical qualitative scheme for rider-facing accuracy. The scorecard
    automates a proxy for all seven of its fields; the field-by-field mapping is in
    [docs/crosswalk.md](crosswalk.md).
+
+## Ecosystem boundary
+
+GTFS Scorecard is downstream of MobilityData's validator, not an alternative to
+it. The validator owns specification and best-practice notices as GTFS evolves.
+The scorecard consumes those notice codes for correctness and links users back
+to their canonical rule documentation.
+
+This project owns the separate `gtfs-scorecard-1.3` policy layer: category
+weights, deductions, thresholds, grade bands, fix ordering, freshness and
+rider-facing completeness measures, and optional realtime observations. Those
+choices are versioned and inspectable, but they are not presented as an
+official MobilityData grade or a context-free quality standard.
+
+When a scorecard check overlaps a canonical validator concept, the canonical
+notice and rule remain authoritative. Reusable measurement should be consumed
+or contributed upstream where practical; presentation or scoring surface that a
+maintained ecosystem project already provides better should be retired rather
+than duplicated.
 
 ## Overall grade
 
@@ -162,8 +181,14 @@ a values statement and the most common real gap in small-agency feeds.
 | `wheelchair_accessible` on trips | 15 | share of trips marked 1 or 2 |
 | Fare data present | 15 | fare_attributes.txt or Fares v2 files non-empty; an agency marked fare-free is credited here, not docked |
 | Readable stop names | 15 | share of stop names not written in ALL CAPS (4+ letter words; short tokens like "4 & B" don't count) |
-| Headsigns | 15 | share of trips with trip_headsign |
+| Headsigns | 15 | share of trips with `trip_headsign`; single-pattern, single-direction loops are credited when every trip on the route omits it and one stop pattern and shape show there is nothing to distinguish |
 | Contact | 15 | half for a working agency_url, half for feed_contact_email/url in feed_info (v4.0 Recommended) |
+
+Loop applicability is optional, conservative analysis. The scorecard streams
+`stop_times.txt` and only retains patterns for candidate trips. If the table is
+more than 64 MiB uncompressed, the analysis is skipped and the ordinary
+headsign check remains; a large feed never fails scoring or receives an
+exemption without complete evidence.
 
 ### Reported but not graded
 
@@ -312,17 +337,24 @@ partial-feed artifacts projected 15 letter-band changes, with no downward
 changes. The report records the formula, transition table, affected agencies,
 and the limits of replaying rounded details instead of resampling live feeds.
 
-The rubric itself is versioned: the current `RUBRIC_VERSION` is `1.2`
+Rubric 1.3 corrects a headsign false positive found through feed-producer
+feedback in issue
+[#180](https://github.com/ChelseaKR/gtfs-scorecard/issues/180). The bounded
+before/after evidence and conservative loop-applicability rule are recorded in
+[ADR 0041](decisions/0041-context-aware-loop-headsigns.md). The literal field
+presence remains published separately from the context-adjusted score.
+
+The rubric itself is versioned: the current `RUBRIC_VERSION` is `1.3`
 (`pipeline/src/scorecard_pipeline/__init__.py`), stamped on every artifact,
 and the dated `METHODOLOGY_CHANGELOG` in `score.py` records what each version
 changed, so a trend reader can tell a feed change apart from a methodology
 change.
 
 Every artifact also carries a `scoring_profile` block with the stable profile
-identifier `gtfs-scorecard-1.2`, the rubric version, and this provenance boundary.
+identifier `gtfs-scorecard-1.3`, the rubric version, and this provenance boundary.
 The profile metadata is additive: it does not recalculate, rename, or move the
 overall score, category scores, grade, or top fixes. Jurisdiction overlays are
 not implemented by this contract.
 
-Last verified: 2026-07-13 (guidelines v4.0, validator v8.0.1, rubric v1.2) ·
+Last verified: 2026-07-24 (guidelines v4.0, validator v8.0.1, rubric v1.3) ·
 Recheck cadence: before each phase and before the rubric is cited publicly.

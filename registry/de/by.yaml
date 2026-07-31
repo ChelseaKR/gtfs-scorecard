@@ -28,6 +28,27 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: mvg-munich
+    name: Münchner Verkehrsgesellschaft (MVG)
+    country: DE
+    subdivision_code: DE-BY
+    subdivision_name: Bayern
+    mdb_id: "2333"
+    is_official: true
+    static_gtfs_url: https://www.mvg.de/static/gtfs/google_transit.zip
+    license_note: >-
+      MVG's official timetable-data page makes the GTFS feed available for
+      viewing and downstream processing, including routing services.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.mvg.de/verbindungen/Fahrplandaten.html
+      terms_url: https://www.mvg.de/verbindungen/Fahrplandaten.html
+      scope: [gtfs_schedule]
+      attribution: Münchner Verkehrsgesellschaft mbH (MVG).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
   - id: mvv-munchen
     name: Münchner Verkehrs- und Tarifverbund (MVV)
     country: DE

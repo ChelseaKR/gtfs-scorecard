@@ -19,6 +19,7 @@ from scorecard_pipeline.activation import (
     HydrationResult,
     _download_one,
     hydrate_activation_corpus,
+    materialize_local_current_artifacts,
 )
 
 LAST_MODIFIED = dt.datetime(2026, 7, 1, 12, 0, tzinfo=dt.UTC)
@@ -470,6 +471,66 @@ def test_divergent_current_dated_object_aborts(tmp_path: Path) -> None:
 
     with pytest.raises(ActivationHydrationError, match="latest/dated payload mismatch"):
         _hydrate(tmp_path, FakeS3(objects))
+
+
+def test_local_current_materializer_restores_lifecycle_expired_dated_record(
+    tmp_path: Path,
+) -> None:
+    root = tmp_path / "artifacts"
+    agency = root / "agency-one"
+    agency.mkdir(parents=True)
+    index = {
+        "agencies": {
+            "agency-one": {
+                "history": [{"date": "2026-07-10", "score": 80, "grade": "B"}],
+            }
+        }
+    }
+    (root / "index.json").write_text(json.dumps(index), encoding="utf-8")
+    latest = _artifact("agency-one", "2026-07-10")
+    (agency / "latest.json").write_bytes(latest)
+
+    assert materialize_local_current_artifacts(artifacts_root=root) == 1
+    assert (agency / "2026-07-10.json").read_bytes() == latest
+    assert materialize_local_current_artifacts(artifacts_root=root) == 0
+
+
+def test_local_current_materializer_rejects_divergent_dated_record(tmp_path: Path) -> None:
+    root = tmp_path / "artifacts"
+    agency = root / "agency-one"
+    agency.mkdir(parents=True)
+    index = {
+        "agencies": {
+            "agency-one": {
+                "history": [{"date": "2026-07-10", "score": 80, "grade": "B"}],
+            }
+        }
+    }
+    (root / "index.json").write_text(json.dumps(index), encoding="utf-8")
+    (agency / "latest.json").write_bytes(_artifact("agency-one", "2026-07-10"))
+    (agency / "2026-07-10.json").write_text("{}\n", encoding="utf-8")
+
+    with pytest.raises(ActivationHydrationError, match="latest/dated payload mismatch"):
+        materialize_local_current_artifacts(artifacts_root=root)
+
+
+def test_local_current_materializer_rejects_unsafe_agency_id(tmp_path: Path) -> None:
+    root = tmp_path / "artifacts"
+    root.mkdir()
+    (root / "index.json").write_text(
+        json.dumps(
+            {
+                "agencies": {
+                    "../escape": {"history": [{"date": "2026-07-10", "score": 80, "grade": "B"}]}
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ActivationHydrationError, match="unsafe agency id"):
+        materialize_local_current_artifacts(artifacts_root=root)
+    assert not (tmp_path / "escape").exists()
 
 
 @pytest.mark.parametrize("unsafe_date", ["../../escape", "20260710", "2026-7-10", "2026-02-30"])

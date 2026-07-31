@@ -199,3 +199,476 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: toyama-chitetsu-bus
+    name: Toyama Chitetsu Bus (富山地方鉄道バス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/chitetsu/feeds/chitetsubus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/chitetsu/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/chitetsu/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Toyama Chiho Railroad through the GTFS Data Repository
+      (gtfs-data.jp).
+    operating_note: >-
+      Toyama Chiho Railroad's regional route-bus network. The official
+      catalog also publishes keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/chitetsu.chitetsubus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyama Chiho Railroad. Published as GTFS-JP open data (CC0 1.0)
+        through the GTFS Data Repository (gtfs-data.jp), operated by
+        AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kaetsuno-himi-loop-bus
+    name: Kaetsuno Himi City Loop Bus (加越能バス 氷見市街地周遊バス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kaetsunou/feeds/kaetsunouhimi/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/kaetsuno_himi/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/kaetsuno_himi/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0; published as GTFS-JP open data by Kaetsuno Bus through the
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Kaetsuno Bus's Himi city loop service. The official catalog also
+      publishes keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kaetsunou.kaetsunouhimi
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kaetsuno Bus (加越能バス). Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kaetsuno-route-bus
+    name: Kaetsuno Route Bus (加越能バス 一般路線)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kaetsunou/feeds/kaetsunouippan/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/kaetsuno/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/kaetsuno/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0; published as GTFS-JP open data by Kaetsuno Bus through the
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Kaetsuno Bus's general route-bus network. The official catalog also
+      publishes keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kaetsunou.kaetsunouippan
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kaetsuno Bus (加越能バス). Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kamiichi-town-bus
+    name: Kamiichi Town Bus (上市町営バス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kamiichitown/feeds/kamiichi/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/kamiichi-town/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/kamiichi-town/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0; published as GTFS-JP open data by Kamiichi Town through the
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Kamiichi Town's municipal bus. The official catalog also publishes
+      keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kamiichitown.kamiichi
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kamiichi Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kurobe-city-bus
+    name: Kurobe City Bus (黒部市 新幹線生地・石田三日市・愛本・電動ミニバス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kurobecity/feeds/shinkansenikuji-ishida-aimoto-minibus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/kurobe_city_bus/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/kurobe_city_bus/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0; published as GTFS-JP open data by Kurobe City through the
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Kurobe City's four municipal bus services. The official catalog also
+      publishes keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kurobecity.shinkansenikuji-ishida-aimoto-minibus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kurobe City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: nyuzen-noran-my-car
+    name: Nyuzen Noran My Car (入善町 のらんマイ・カー)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nyuzentown/feeds/noranmaicar/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/nyuzen_noran/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/nyuzen_noran/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0; published as GTFS-JP open data by Nyuzen Town through the
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Nyuzen Town's Noran My Car service. The official catalog also
+      publishes keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nyuzentown.noranmaicar
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nyuzen Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: asahi-town-bus
+    name: Asahi Town Bus (あさひまちバス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toyama-asahitown/feeds/asahimachibus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/asahimachi/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/asahimachi/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0; published as GTFS-JP open data by Asahi Town through the
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Asahi Town's municipal bus. The official catalog also publishes
+      keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toyama-asahitown.asahimachibus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Asahi Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: toyama-yamada-community-bus
+    name: Toyama Yamada Community Bus (富山市 山田コミュニティバス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toyamacity/feeds/yamadacommunitybus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/toyama-city-yamada/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/toyama-city-yamada/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0; published as GTFS-JP open data by Toyama City through the
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Toyama City's Yamada community bus. The official catalog also
+      publishes keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toyamacity.yamadacommunitybus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: toyama-fuchu-community-bus
+    name: Toyama Fuchu Community Bus (富山市 婦中コミュニティバス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toyamacity/feeds/fuchucommunitybus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/toyama-city-fuchu/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/toyama-city-fuchu/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0; published as GTFS-JP open data by Toyama City through the
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Toyama City's Fuchu community bus. The official catalog also
+      publishes keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toyamacity.fuchucommunitybus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: toyama-oyama-community-bus
+    name: Toyama Oyama Community Bus (富山市 大山コミュニティバス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toyamacity/feeds/oyamacommunitybus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/toyama-city-oyama/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/toyama-city-oyama/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0; published as GTFS-JP open data by Toyama City through the
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Toyama City's Oyama community bus. The official catalog also
+      publishes keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toyamacity.oyamacommunitybus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: toyama-maidohaya-bus
+    name: Toyama Maidohaya Bus (富山市 まいどはやバス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toyamacity/feeds/maidohayabus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/toyama-city-maidohaya/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/toyama-city-maidohaya/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0; published as GTFS-JP open data by Toyama City through the
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Toyama City's Maidohaya bus. The official catalog also publishes
+      keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toyamacity.maidohayabus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: toyama-horikawa-minami-community-bus
+    name: Toyama Horikawa Minami Community Bus (富山市 堀川南コミュニティバス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toyamacity/feeds/horikawaminamicommunitybus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/toyama-city-horikawaminami/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/toyama-city-horikawaminami/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0; published as GTFS-JP open data by Toyama City through the
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Toyama City's Horikawa Minami community bus. The official catalog
+      also publishes keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toyamacity.horikawaminamicommunitybus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: toyama-yatsuo-community-bus
+    name: Toyama Yatsuo Community Bus (富山市 八尾コミュニティバス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toyamacity/feeds/yatsuocommunitybus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/toyama-city-yatsuo/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/toyama-city-yatsuo/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0; published as GTFS-JP open data by Toyama City through the
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Toyama City's Yatsuo community bus. The official catalog also
+      publishes keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toyamacity.yatsuocommunitybus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: toyama-kureha-ikiiki-bus
+    name: Toyama Kureha Ikiiki Bus (富山市 呉羽いきいきバス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toyamacity/feeds/kurehaikiikibus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/toyama-city-kureha/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/toyama-city-kureha/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0; published as GTFS-JP open data by Toyama City through the
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Toyama City's Kureha Ikiiki bus. The official catalog also publishes
+      keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toyamacity.kurehaikiikibus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kaetsuno-world-heritage-bus
+    name: Kaetsuno World Heritage Bus (加越能バス 世界遺産バス)
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kaetsunou/feeds/kaetsunousekaiisan/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://gtfs-rt-files.buscatch.jp/toyama/kaetsuno_sekaiisan/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt-files.buscatch.jp/toyama/kaetsuno_sekaiisan/VehiclePositions.pb
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data
+      by Kaetsuno Bus through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Kaetsuno Bus's World Heritage Bus service. The official catalog also
+      publishes keyless TripUpdates and VehiclePositions.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kaetsunou.kaetsunousekaiisan
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kaetsuno Bus (加越能バス). Published as GTFS-JP open data (CC0 1.0)
+        through the GTFS Data Repository (gtfs-data.jp), operated by
+        AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: namerikawacity-norumycar
+    name: "コミュニティバス「のるmycar」 (滑川市)"
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/namerikawacity/feeds/norumycar/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0; published by 滑川市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      コミュニティバス「のるmycar」 is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/namerikawacity.norumycar
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        滑川市. コミュニティバス「のるmycar」, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: tateyamatown-tateyama
+    name: "立山町営バス"
+    country: JP
+    subdivision_code: JP-16
+    subdivision_name: Toyama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tateyamatown/feeds/tateyama/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0; published by 立山町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      立山町営バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tateyamatown.tateyama
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        立山町. 立山町営バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

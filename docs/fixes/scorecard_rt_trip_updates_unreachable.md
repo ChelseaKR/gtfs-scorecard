@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-05"
+date_modified: "2026-07-05"
+---
+
 # Fix: the TripUpdates realtime feed failed during sampling
 
 Code: `scorecard_rt_trip_updates_unreachable`

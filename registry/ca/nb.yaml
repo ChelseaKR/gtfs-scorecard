@@ -1,0 +1,28 @@
+# New Brunswick (CA) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: saint-john-transit
+    name: Saint John Transit
+    country: CA
+    subdivision_code: CA-NB
+    subdivision_name: New Brunswick
+    mdb_id: "2131"
+    is_official: true
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/d6f4783521364429a2e51a64c60ae234/data
+    license_note: >-
+      Open Government Licence – City of Saint John; worldwide, royalty-free,
+      commercial reuse is permitted with attribution.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://catalogue-saintjohn.opendata.arcgis.com/datasets/d6f4783521364429a2e51a64c60ae234/about
+      terms_url: https://www.arcgis.com/sharing/rest/content/items/d6f4783521364429a2e51a64c60ae234?f=json
+      scope: [gtfs_schedule]
+      attribution: >-
+        Contains information licensed under the Open Government Licence –
+        City of Saint John.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

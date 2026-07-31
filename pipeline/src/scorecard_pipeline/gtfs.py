@@ -11,6 +11,7 @@ import csv
 import datetime as dt
 import io
 import zipfile
+from collections.abc import Iterator
 from dataclasses import dataclass
 
 
@@ -59,6 +60,40 @@ def read_tables(gtfs_zip_path: str, names: list[str]) -> dict[str, list[dict[str
     """Read several GTFS tables at once; missing files come back empty."""
     with zipfile.ZipFile(gtfs_zip_path) as zf:
         return {name: _read_table(zf, name) for name in names}
+
+
+def iter_table_rows(
+    gtfs_zip_path: str,
+    name: str,
+    *,
+    max_member_bytes: int = MAX_MEMBER_BYTES,
+) -> Iterator[dict[str, str]]:
+    """Yield one GTFS table without materializing its decoded CSV.
+
+    ``max_member_bytes`` lets a caller set a lower, task-specific analysis
+    budget than the general whole-table reader. The size check happens before
+    decompression, and a missing table yields no rows.
+    """
+    with zipfile.ZipFile(gtfs_zip_path) as zf:
+        try:
+            info = zf.getinfo(name)
+        except KeyError:
+            return
+        if info.file_size > max_member_bytes:
+            raise TableTooLargeError(
+                f"{name} is {info.file_size} bytes uncompressed, over the "
+                f"{max_member_bytes}-byte analysis cap"
+            )
+        with (
+            zf.open(info) as raw,
+            io.TextIOWrapper(
+                raw,
+                encoding="utf-8-sig",
+                errors="replace",
+                newline="",
+            ) as text,
+        ):
+            yield from csv.DictReader(text)
 
 
 def read_agency_ids(gtfs_zip_path: str) -> list[str]:

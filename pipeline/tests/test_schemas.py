@@ -9,6 +9,7 @@ never reach consumers as a surprise.
 from __future__ import annotations
 
 import datetime as dt
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -148,7 +149,34 @@ def test_a_schema_exists_for_every_published_document_type() -> None:
         "coverage.schema.json",
         "by-location.schema.json",
         "global-coverage.schema.json",
+        "sync-source-metadata.schema.json",
+        "sync-source-metadata-1.1.schema.json",
+        "sync-source-metadata-1.2.schema.json",
     } <= names
+
+
+def test_sync_source_metadata_11_contract_stays_frozen_and_retrievable() -> None:
+    compatibility_path = SCHEMA_DIR / "sync-source-metadata.schema.json"
+    compatibility_sha = hashlib.sha256(compatibility_path.read_bytes()).hexdigest()
+    assert compatibility_sha == "f32446988f9a67e3fc32eb0994d384d0a99f2024598c819475219db95eaf2fe9"
+
+    versioned = _load(SCHEMA_DIR / "sync-source-metadata-1.1.schema.json")
+    assert versioned["$ref"] == (
+        "https://gtfsscorecard.org/schemas/sync-source-metadata.schema.json"
+    )
+    assert versioned["x-referenced-schema-sha256"] == compatibility_sha
+
+
+def test_sync_source_metadata_12_contract_has_an_immutable_public_id() -> None:
+    schema_path = SCHEMA_DIR / "sync-source-metadata-1.2.schema.json"
+    schema = _load(schema_path)
+    schema_url = "https://gtfsscorecard.org/schemas/sync-source-metadata-1.2.schema.json"
+
+    assert hashlib.sha256(schema_path.read_bytes()).hexdigest() == (
+        "efe5468c02220fabb99c544b9b47c278f7c242b65ef7ec50dc7739c95e551a96"
+    )
+    assert schema["$id"] == schema_url
+    assert schema["properties"]["schema_url"]["const"] == schema_url
 
 
 @pytest.mark.parametrize(
@@ -411,7 +439,7 @@ def _country_contract_documents(country_code: str) -> dict[str, dict[str, Any]]:
 
 def test_country_contract_accepts_a_forward_compatible_iso_alpha_2_code() -> None:
     """Public schemas describe the portable shape, not the deployment allowlist."""
-    assert SCHEMA_VERSION == "1.15"
+    assert SCHEMA_VERSION == "1.17"
     for schema_name, document in _country_contract_documents("GB").items():
         _validator(schema_name).validate(document)
 

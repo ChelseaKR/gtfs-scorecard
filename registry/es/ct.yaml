@@ -24,6 +24,27 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: reus-transport
+    name: Reus Transport
+    country: ES
+    subdivision_code: ES-CT
+    subdivision_name: Catalunya [Cataluña]
+    mdb_id: "3081"
+    is_official: true
+    static_gtfs_url: https://api.sparelabs.com/v1/gtfs/generate/organization/78112279-c065-4987-be69-bc18ab604142
+    license_note: >-
+      Spain's National Access Point records the GTFS dataset as free of charge
+      under its reuse licence; credit Reus Transport and MITRAMS.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://nap.transportes.gob.es/Files/Detail/1517
+      terms_url: https://nap.transportes.gob.es/licencia-datos
+      scope: [gtfs_schedule]
+      attribution: Powered by MITRAMS; Reus Transport.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
   - id: gencat-interurban-bus
     name: Autobusos interurbans de la Generalitat de Catalunya
     country: ES

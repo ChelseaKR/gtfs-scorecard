@@ -172,6 +172,15 @@ def test_country_rollup_prefers_registry_country_over_artifact() -> None:
     assert [m["id"] for m in payload["members"]] == ["moved"]
 
 
+def test_rollup_prefers_curated_registry_name() -> None:
+    register(Agency("renamed", "Curated Transit", "https://example.com/renamed.zip"))
+    write_latest("renamed", "Stale Export Name", 80.0, "B")
+
+    payload = build_rollup(Rollup("one", "One", ("renamed",)), WHEN)
+
+    assert payload["members"][0]["name"] == "Curated Transit"
+
+
 def test_load_rollups_parses_country_selector(tmp_path: Path) -> None:
     config = tmp_path / "rollups.yaml"
     config.write_text("rollups:\n  - id: country-ca\n    name: Canada\n    country: ca\n")
@@ -350,6 +359,19 @@ def test_common_fixes_counts_shared_codes() -> None:
     assert common[0]["agencies"] == 2
     assert common[0]["code"] == "scorecard_wheelchair_boarding_unknown"
     assert payload["comparison"]["exclusion_counts"]["validator_version_mismatch"] == 1
+
+
+def test_rollup_members_carry_the_top_finding_code_for_handoff_links() -> None:
+    finding = {
+        "code": "scorecard_wheelchair_boarding_unknown",
+        "fix": "Set wheelchair_boarding on every stop.",
+    }
+    write_latest("a", "A", 70.0, "C", fixes=[finding])
+
+    payload = build_rollup(Rollup("all", "All", ()), WHEN)
+
+    assert payload["members"][0]["top_fix"] == finding["fix"]
+    assert payload["members"][0]["top_fix_code"] == finding["code"]
 
 
 def test_rollup_excludes_a_normalized_reader_profile_from_aggregates() -> None:

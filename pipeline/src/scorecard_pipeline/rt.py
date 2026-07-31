@@ -432,7 +432,8 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         if not assessed_kinds:
             raise ValueError("realtime requires at least one configured GTFS-Realtime feed kind")
 
-    kinds_ok = sum(1 for kind in assessed_kinds if window.kind_ok(kind))
+    reachable_kinds = [kind for kind in assessed_kinds if window.kind_ok(kind)]
+    kinds_ok = len(reachable_kinds)
     reachable_fraction = kinds_ok / len(assessed_kinds)
     for kind in assessed_kinds:
         if not window.kind_ok(kind):
@@ -540,6 +541,7 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     details: dict[str, object] = {
         "samples": len(window.samples),
         "configured_kinds": list(assessed_kinds),
+        "reachable_kinds": reachable_kinds,
         "kinds_configured": len(assessed_kinds),
         "kinds_reachable": kinds_ok,
         "worst_lag_seconds": worst,

@@ -11,6 +11,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import os
+import re
 import shutil
 import tempfile
 from pathlib import Path
@@ -108,6 +109,22 @@ def test_render_site_golden_output(golden_fixture_root: Path, golden_root: Path)
         assert not (web / "agency" / "unitrans" / "fixes").exists()
         assert not stale_ridership.exists()
         assert not legacy_change.exists()
+        sitemap = (web / "sitemap.xml").read_text()
+        assert (
+            "<loc>https://gtfsscorecard.org/fix/expired_calendar/</loc>"
+            "<lastmod>2026-07-03</lastmod>"
+        ) in sitemap
+        assert (
+            "<loc>https://gtfsscorecard.org/crosswalk/</loc><lastmod>2026-07-14</lastmod>"
+        ) in sitemap
+        assert "<loc>https://gtfsscorecard.org/concept/</loc>" not in sitemap
+        assert "<loc>https://gtfsscorecard.org/changes/</loc>" not in sitemap
+        assert "<loc>https://gtfsscorecard.org/access/</loc>" not in sitemap
+        assert "<loc>https://gtfsscorecard.org/trends/</loc>" not in sitemap
+        assert "<loc>https://gtfsscorecard.org/leaderboard/</loc>" not in sitemap
+        assert "<loc>https://gtfsscorecard.org/how-to-read/</loc>" in sitemap
+        assert "<loc>https://gtfsscorecard.org/pulse/</loc>" in sitemap
+        assert "<loc>https://gtfsscorecard.org/adoption/</loc>" in sitemap
 
         # Check that every rendered file matches its golden.
         mismatches = []
@@ -154,3 +171,38 @@ def test_render_site_golden_output(golden_fixture_root: Path, golden_root: Path)
             lines = "\n".join(f"  {m}" for m in sorted(missing))
             msg = "Files in goldens but not rendered:\n" + lines
             pytest.fail(msg)
+
+
+def test_render_site_emits_paginated_directory_chain_and_cleans_stale_pages(
+    golden_fixture_root: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    scratch_root = tmp_path / "paginated_site"
+    shutil.copytree(golden_fixture_root, scratch_root)
+    monkeypatch.setenv("SCORECARD_ROOT", str(scratch_root))
+
+    import scorecard_pipeline.render_site as renderer
+
+    monkeypatch.setattr(renderer, "_AGENCY_INDEX_PAGE_SIZE", 2)
+    stale = scratch_root / "web" / "agencies" / "page" / "99" / "index.html"
+    stale.parent.mkdir(parents=True)
+    stale.write_text("stale generated page")
+
+    renderer.render_site(now=dt.datetime(2026, 7, 2, 12, tzinfo=dt.UTC))
+
+    web = scratch_root / "web"
+    first = (web / "agencies" / "index.html").read_text()
+    second = (web / "agencies" / "page" / "2" / "index.html").read_text()
+    sitemap = (web / "sitemap.xml").read_text()
+
+    assert not stale.exists()
+    assert not (web / "agencies" / "page" / "3").exists()
+    assert 'rel="next" href="https://gtfsscorecard.org/agencies/page/2/"' in first
+    assert 'rel="prev" href="https://gtfsscorecard.org/agencies/"' in second
+    assert '<link rel="canonical" href="https://gtfsscorecard.org/agencies/page/2/">' in second
+    assert "https://gtfsscorecard.org/agencies/page/2/" in sitemap
+    agency_links = [
+        link for html in (first, second) for link in re.findall(r'href="/agency/([^/]+)/"', html)
+    ]
+    assert sorted(agency_links) == ["barrie-transit", "unitrans", "yolobus"]

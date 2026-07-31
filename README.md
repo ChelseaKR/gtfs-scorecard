@@ -1,25 +1,43 @@
 # GTFS Scorecard
 
-> Is your transit agency's GTFS feed any good? A plain-language quality grade,
-> the three things to fix, and why each one matters to riders.
+> Daily, plain-language GTFS quality scorecards for small transit agencies:
+> see the current grade, the three things to fix, and why each one matters.
 
 [![CI](https://github.com/ChelseaKR/gtfs-scorecard/actions/workflows/ci.yml/badge.svg)](https://github.com/ChelseaKR/gtfs-scorecard/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-GTFS%20Scorecard%20gate-2ea44f?logo=github)](https://github.com/marketplace/actions/gtfs-scorecard-gate)
 [![Live site](https://img.shields.io/badge/live-gtfsscorecard.org-2ea44f)](https://gtfsscorecard.org)
 
-[![GTFS Scorecard: a plain-language quality grade for a transit agency's feed](https://gtfsscorecard.org/og.png)](https://gtfsscorecard.org)
+[![GTFS Scorecard: plain-language GTFS quality and prioritized fixes](https://gtfsscorecard.org/og.png)](https://gtfsscorecard.org)
 
-A data quality scorecard for small transit agencies. It fetches an agency's
-**GTFS Schedule** feed and, when one is published and configured, its
-**GTFS-Realtime** feeds; runs the canonical MobilityData
-validator, and turns the results into a letter grade with a short list of
-concrete fixes, written for the transit
-manager who inherited the feed from a vendor, not for developers.
+GTFS Scorecard is a daily data-quality service for small transit agencies and
+the program staff, maintainers, and vendors who support them. It publishes
+dated grades, prioritized fixes, history, program views, practitioner tools,
+and open data. It does not implement a competing GTFS validator. Correctness
+findings come from MobilityData's canonical validator.
+
+## Where it fits
+
+GTFS Scorecard is the evidence and triage layer:
+
+1. [Mobility Database](https://mobilitydatabase.org/) and
+   [Transitland](https://www.transit.land/) help identify public feeds and
+   their sources or versions.
+2. The [MobilityData GTFS validator](https://github.com/MobilityData/gtfs-validator)
+   supplies canonical specification findings.
+3. An agency, vendor, editor, or support program changes and publishes the
+   feed through its existing workflow.
+4. A 90-day GTFS Scorecard pilot is testing the final handoff: link an accepted
+   action to the intended feed, run a comparable recheck, and preserve the
+   result.
+
+The [California GTFS Quality Dashboard](https://reports.dds.dot.ca.gov/)
+inspired the project's daily scorecard and support-program framing. GTFS
+Scorecard is independent and is not an official compliance determination.
 
 Pilot agencies: [Unitrans](https://unitrans.ucdavis.edu) (ASUCD / City of
 Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
-District). Beyond the pilots, the registry contains more than 1,700 curated
+District). Beyond the pilots, the registry contains more than 2,100 curated
 feed records, mostly in the United States and Canada, plus reviewed canaries
 across Europe, Asia-Pacific, and South America. The repository
 keeps the generated corpus registry-bounded, with more than 1,100 numeric
@@ -32,10 +50,30 @@ identity registry is reconciled.
 **Live:** [gtfsscorecard.org](https://gtfsscorecard.org/) — with the latest
 completed-run evidence at [gtfsscorecard.org/status](https://gtfsscorecard.org/status/).
 
-**Status:** Beta. The three schedule categories score for every published
-scorecard. Realtime quality is scored only when a usable realtime feed is
-configured and measured; otherwise it is shown neutrally as not yet measured.
-Any agency can be added through `registry/intake.yaml`.
+**Status:** Beta. The public scorecards and daily evidence service are live.
+The remediation workflow is being tested and is not yet a proven service.
+Realtime quality is scored only when a usable realtime feed is configured and
+measured; otherwise it is shown neutrally as not yet measured. Any agency can
+be added through `registry/intake.yaml`.
+
+## Use, adopt, or contribute
+
+- **Check a feed:** browse
+  [gtfsscorecard.org](https://gtfsscorecard.org/), or
+  request a [one-off score](https://github.com/ChelseaKR/gtfs-scorecard/issues/new?template=score-a-feed.yml).
+- **Track an agency:** use the
+  [self-serve submission form](https://gtfsscorecard.org/submit.html), or follow
+  the [repository walkthrough](docs/add-your-agency.md) to open a pull request.
+- **Gate a feed in CI:** add the
+  [GTFS Scorecard Marketplace Action](https://github.com/marketplace/actions/gtfs-scorecard-gate)
+  to a feed repository.
+- **Test what happens after the scorecard:** read
+  [the remediation pilot request](https://github.com/ChelseaKR/gtfs-scorecard/issues/185)
+  if you can take a finding through an accepted request and same-feed recheck.
+- **Contribute:** choose a
+  [bounded open issue](https://github.com/ChelseaKR/gtfs-scorecard/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
+  or read [CONTRIBUTING.md](CONTRIBUTING.md). Feed corrections, accessibility
+  review, and practitioner feedback are useful without changing scoring code.
 
 ## Quickstart
 
@@ -94,6 +132,8 @@ Guidelines v4.0 and the validator's rule taxonomy, is in
 [docs/rubric.md](docs/rubric.md). Methodology changes are governed: a
 validator-version bump must attach the shadow-run impact report from
 `scorecard canary` before it lands (rubric.md, "Governed upgrades").
+The grade, weights, thresholds, and fix order are GTFS Scorecard policy choices,
+not an official MobilityData grade or a universal quality standard.
 Feed sources and licenses are in
 [docs/feeds.md](docs/feeds.md). Forward planning is split in two: the
 infrastructure and scaling plan is in [docs/roadmap.md](docs/roadmap.md), and
@@ -172,6 +212,12 @@ scorecard alerts --out digest.md                  # expiry/regression digest
 scorecard notify                                  # per-subscriber digest (dry run)
 ```
 
+Add `--source-metadata-out <path>` to `scorecard sync` for a source receipt
+that accounts for every recognized Mobility Database Schedule row as excluded,
+filtered, already tracked, duplicate, conflicted, or proposed for review. It
+never edits the registry and does not treat a catalog proposal as permission to
+republish.
+
 `notify` builds a feed-health email for each opt-in subscriber in
 [`subscriptions.yaml`](subscriptions.yaml), containing only the agencies they
 follow and only when one needs attention. It prints the emails by default; the
@@ -207,8 +253,8 @@ current deployment status.
 
 The cohort drafted from the Mobility Database has grown well past the first
 California pass: the manifest-backed [`registry`](registry/README.md) now
-carries more than 1,700 curated feed records, mostly across the US and Canada,
-with a 148-record reviewed European cohort across 17 countries.
+carries more than 2,100 curated feed records, mostly across the US and Canada,
+with a 528-record reviewed European cohort across 26 countries.
 It now includes a geographically diverse reviewed canary cohort, scored daily
 (a 2026-07 dedupe pass removed ~350 records that duplicated an already-listed
 feed).
@@ -248,7 +294,7 @@ declared here; none is silently skipped.
 | AI Evaluation | N/A — no LLM/model component: no model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to APPLIES on first LLM SDK use. |
 | [Quality & Metrics](docs/standards/QUALITY-AND-METRICS-STANDARD.md) | Applies (data-quality/lineage named for this repo explicitly) |
 | [Documentation](docs/standards/DOCUMENTATION-STANDARD.md) | Applies |
-| [Release & Versioning](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.3.0`), monthly dataset releases, MCP registry entry |
+| [Release & Versioning](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.4.0`), monthly dataset releases, MCP registry entry |
 | [Responsible-Tech Framework](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies (audits A-F; AI-governance rows N/A — no AI system) |
 
 Open gaps per standard, as of the most recent conformance audit, are tracked
@@ -263,9 +309,14 @@ see [ADR 0031](docs/decisions/0031-observability-tier.md) for why. In short:
 the deployed system is a scheduled Actions batch job plus a static site, not
 a long-lived hosted service (`infra/compute`, the piece that would make this
 Tier A, is built but not applied). Tier C's health/tracing/SLO controls are
-N/A (no network surface to probe); Tier B's Core Web Vitals lab gate applies
-and is tracked as open work (Lighthouse currently asserts accessibility only).
-Real-user-monitoring beacons are declined by design — see the ADR.
+N/A (no network surface to probe). For Tier B, every fresh site build passes a
+blocking structural SEO check. Lighthouse gates code changes, and a weekly
+synthetic run checks representative production routes. Build-time SEO reports
+are retained for 14 days and production Lighthouse reports for 90 days.
+The public site has no analytics loader, visitor-tracking code, or real-user
+monitoring beacon. Search Console ownership verification and sitemap submission
+remain external domain-owner tasks; this repository stores no Search Console
+credentials or configuration. See the ADR and [deploy runbook](docs/deploy.md).
 
 ## Versioning
 

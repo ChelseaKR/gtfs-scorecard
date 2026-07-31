@@ -11,7 +11,7 @@
  *   pin a reader to an old build.
  * - Stylesheets, scripts, and artifact JSON are stale-while-revalidate: the
  *   saved copy renders at once and refreshes in the background.
- * - analytics.js is never cached, and nothing cross-origin is touched.
+ * - Only same-origin requests are considered; nothing cross-origin is touched.
  */
 (function () {
   "use strict";

@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "required": {
+    "index.html": 98304,
+    "agencies/index.html": 131072,
+    "compare/index.html": 524288,
+    "map/index.html": 131072,
+    "agency/unitrans/index.html": 131072
+  },
+  "patterns": {
+    "agencies/**/index.html": 131072,
+    "**/index.html": 3407872
+  }
+}

@@ -34,6 +34,8 @@
     "scorecard_no_expiry_date",
     "scorecard_planned_service_boundary",
   ]);
+  var COVERAGE_CACHE_KEY = "gtfs-scorecard-coverage-v1";
+  var COVERAGE_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
   var FALLBACKS = {
     unitrans: {
@@ -188,6 +190,9 @@
     scopeBriefLink: document.getElementById("scope-brief-link"),
     scopeBadgeLink: document.getElementById("scope-badge-link"),
     scopeFeedLink: document.getElementById("scope-feed-link"),
+    coverageRegistryCount: document.getElementById("coverage-registry-count"),
+    coveragePublishedCount: document.getElementById("coverage-published-count"),
+    coverageCountryCount: document.getElementById("coverage-country-count"),
     searchForm: document.getElementById("feed-picker"),
     searchInput: document.getElementById("feed-search"),
     searchResults: document.getElementById("feed-results"),
@@ -212,6 +217,75 @@
 
   function text(element, value) {
     if (element) element.textContent = value == null ? "" : String(value);
+  }
+
+  function validCoverageCounts(payload) {
+    return Boolean(
+      payload &&
+        Number.isInteger(payload.configured_feed_records) &&
+        payload.configured_feed_records >= 0 &&
+        Number.isInteger(payload.published_scorecard_pages) &&
+        payload.published_scorecard_pages >= 0 &&
+        Number.isInteger(payload.country_count) &&
+        payload.country_count >= 0
+    );
+  }
+
+  function renderCoverageCounts(payload) {
+    var formatter = new Intl.NumberFormat("en-US");
+    text(elements.coverageRegistryCount, formatter.format(payload.configured_feed_records));
+    text(elements.coveragePublishedCount, formatter.format(payload.published_scorecard_pages));
+    text(elements.coverageCountryCount, formatter.format(payload.country_count));
+  }
+
+  function readCoverageCache() {
+    try {
+      var cached = JSON.parse(window.localStorage.getItem(COVERAGE_CACHE_KEY) || "null");
+      if (
+        !cached ||
+        !Number.isFinite(cached.cached_at) ||
+        !validCoverageCounts(cached.counts)
+      ) {
+        return null;
+      }
+      return {
+        counts: cached.counts,
+        fresh: Date.now() - cached.cached_at < COVERAGE_CACHE_TTL_MS,
+      };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function writeCoverageCache(payload) {
+    try {
+      window.localStorage.setItem(
+        COVERAGE_CACHE_KEY,
+        JSON.stringify({ cached_at: Date.now(), counts: payload })
+      );
+    } catch (error) {
+      // The live response still renders when storage is unavailable.
+    }
+  }
+
+  async function loadCoverageCounts() {
+    var cached = readCoverageCache();
+    if (cached) renderCoverageCounts(cached.counts);
+    if (cached && cached.fresh) return;
+
+    try {
+      var response = await fetch("/api/v1/coverage.json", {
+        cache: "default",
+        headers: { Accept: "application/json" },
+      });
+      if (!response.ok) throw new Error();
+      var payload = await response.json();
+      if (!validCoverageCounts(payload)) throw new Error();
+      renderCoverageCounts(payload);
+      writeCoverageCache(payload);
+    } catch (error) {
+      // Keep the last cached response or the rounded HTML fallback.
+    }
   }
 
   function validId(value) {
@@ -362,6 +436,42 @@
     });
   }
 
+  function findingHref(path, code, anchor) {
+    if (!/^[A-Za-z0-9_-]+$/.test(code || "")) return path;
+    return path + "?finding=" + encodeURIComponent(code) + "#" + (anchor || "finding-handoff");
+  }
+
+  function updateContextLinks() {
+    if (!state.artifact) return;
+    var id = state.artifact.agency.id;
+    var encodedId = encodeURIComponent(id);
+    var fixes = state.artifact.top_fixes || [];
+    var fix = fixes[state.fixIndex] || null;
+    var code = fix && fix.code ? String(fix.code) : "";
+    var scorecardPath = "/agency/" + encodedId + "/";
+    var briefPath = scorecardPath + "brief/";
+    var boardPath = scorecardPath + "board/";
+
+    if (elements.fullLink) {
+      elements.fullLink.setAttribute("href", findingHref(scorecardPath, code));
+    }
+    if (elements.briefLink) {
+      elements.briefLink.setAttribute("href", findingHref(briefPath, code));
+    }
+    if (elements.traceRecordLink) {
+      elements.traceRecordLink.setAttribute("href", findingHref(scorecardPath, code));
+    }
+    if (elements.scopeScorecardLink) {
+      elements.scopeScorecardLink.setAttribute("href", findingHref(scorecardPath, code));
+    }
+    if (elements.scopeBoardLink) {
+      elements.scopeBoardLink.setAttribute("href", findingHref(boardPath, code));
+    }
+    if (elements.scopeBriefLink) {
+      elements.scopeBriefLink.setAttribute("href", findingHref(briefPath, code));
+    }
+  }
+
   function renderFix() {
     var fixes = state.artifact.top_fixes;
     if (elements.fixSelector) elements.fixSelector.hidden = fixes.length === 0;
@@ -386,6 +496,7 @@
         elements.traceRecordTitle,
         state.artifact.agency.name + " · " + formatDate(state.artifact.snapshot_date)
       );
+      updateContextLinks();
       return;
     }
     if (elements.effortLine) elements.effortLine.hidden = false;
@@ -423,6 +534,7 @@
       elements.traceRecordTitle,
       state.artifact.agency.name + " · " + formatDate(state.artifact.snapshot_date)
     );
+    updateContextLinks();
   }
 
   function renderArtifact(artifact, announcement) {
@@ -438,12 +550,6 @@
     text(elements.grade, artifact.overall.grade);
     if (elements.grade) elements.grade.setAttribute("aria-label", "Overall grade " + artifact.overall.grade);
     text(elements.score, formatScore(artifact.overall.score));
-    if (elements.fullLink) elements.fullLink.setAttribute("href", "/agency/" + encodeURIComponent(id) + "/");
-    if (elements.briefLink) elements.briefLink.setAttribute("href", "/agency/" + encodeURIComponent(id) + "/brief/");
-    if (elements.traceRecordLink) elements.traceRecordLink.setAttribute("href", "/agency/" + encodeURIComponent(id) + "/");
-    if (elements.scopeScorecardLink) elements.scopeScorecardLink.setAttribute("href", "/agency/" + encodeURIComponent(id) + "/");
-    if (elements.scopeBoardLink) elements.scopeBoardLink.setAttribute("href", "/agency/" + encodeURIComponent(id) + "/board/");
-    if (elements.scopeBriefLink) elements.scopeBriefLink.setAttribute("href", "/agency/" + encodeURIComponent(id) + "/brief/");
     if (elements.scopeBadgeLink) elements.scopeBadgeLink.setAttribute("href", "/data/artifacts/" + encodeURIComponent(id) + "/badge.svg");
     if (elements.scopeFeedLink) elements.scopeFeedLink.setAttribute("href", "/agency/" + encodeURIComponent(id) + "/feed.xml");
 
@@ -720,6 +826,7 @@
   if (Number.isInteger(requestedFix) && requestedFix >= 1 && requestedFix <= 3) state.fixIndex = requestedFix - 1;
 
   renderArtifact(FALLBACKS.unitrans, "Showing the Unitrans published snapshot.");
+  loadCoverageCounts();
   if (requestedFeed && validId(requestedFeed)) loadAgency(requestedFeed, requestedFeed);
   else loadAgency("unitrans", "Unitrans");
 })();

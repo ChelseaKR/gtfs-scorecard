@@ -33,6 +33,7 @@ from typing import Any
 from . import SCHEMA_VERSION
 from .comparisons import build_comparison_cohort, reader_archive_profile
 from .config import Agency
+from .identity import resolve_published_agency_name
 from .metrics import resolve_service_horizon_status
 
 # The four rubric categories, flattened into their own columns. "realtime" is
@@ -117,12 +118,19 @@ def build_quality_dataset(
     pipeline's SCHEMA_VERSION, so a downstream citation can pin the table layout.
     """
     entries = index.get("agencies") or {}
+    agency_records = list(agencies) if agencies is not None else None
+    registry_names = {agency.id: agency.name for agency in (agency_records or ())}
     rows: list[dict[str, Any]] = []
     for agency_id in sorted(entries):
         row = _row_for_agency(agency_id, entries[agency_id])
         if row is not None:
+            row["name"] = resolve_published_agency_name(
+                agency_id,
+                registry_name=registry_names.get(agency_id, ""),
+                artifact_name=str(row.get("name") or ""),
+            )
             rows.append(row)
-    comparable, comparison = build_comparison_cohort(rows, agencies=agencies)
+    comparable, comparison = build_comparison_cohort(rows, agencies=agency_records)
     comparable_ids = {str(row.get("id") or "") for row in comparable}
     for row in rows:
         row["comparison_eligible"] = str(row.get("id") or "") in comparable_ids

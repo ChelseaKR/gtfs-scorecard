@@ -15,11 +15,24 @@ every agency conversation.
 One file per code, named for the code: `docs/fixes/<code>.md`. Each page has the
 same short structure so a CSM can read it aloud on a call:
 
+- YAML front matter with the original publication date and latest substantive
+  review date:
+
+  ```yaml
+  ---
+  date_published: "YYYY-MM-DD"
+  date_modified: "YYYY-MM-DD"
+  ---
+  ```
+
 - **What this means** in plain language.
 - **Why it matters** to a rider or to the agency.
 - **How to fix it**, with the common scheduling tools named where the setting
   differs between them.
 - **How long it usually takes.**
+
+Keep `date_published` fixed. Update `date_modified` only after a substantive
+content review or change, not for a routine site rebuild or formatting-only edit.
 
 The frontend can deep-link to these pages from a finding by its code, so the
 "Fix" line on a scorecard becomes a link to the full walkthrough.

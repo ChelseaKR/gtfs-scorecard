@@ -170,6 +170,24 @@ def test_agencies_without_history_are_skipped() -> None:
     assert [r["id"] for r in rows] == ["real"]
 
 
+def test_dataset_prefers_curated_registry_name_without_rewriting_history() -> None:
+    from scorecard_pipeline.config import Agency
+
+    index = _sample_index()
+    index["agencies"]["unitrans"]["name"] = "Stale Export Name"
+    agency = Agency(
+        id="unitrans",
+        name="Unitrans",
+        static_gtfs_url="https://example.com/unitrans.zip",
+    )
+
+    dataset = build_quality_dataset(index, agencies=[agency])
+
+    row = next(item for item in dataset["rows"] if item["id"] == "unitrans")
+    assert row["name"] == "Unitrans"
+    assert index["agencies"]["unitrans"]["name"] == "Stale Export Name"
+
+
 def test_csv_round_trips_header_and_values() -> None:
     dataset = build_quality_dataset(_sample_index())
     text = to_csv(dataset)

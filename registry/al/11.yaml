@@ -1,0 +1,27 @@
+# Tiranë (AL) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: tirana-municipal-transit
+    name: Municipality of Tirana
+    country: AL
+    subdivision_code: AL-11
+    subdivision_name: Tiranë
+    mdb_id: "2345"
+    is_official: true
+    static_gtfs_url: https://pt.tirana.al/gtfs/gtfs.zip
+    license_note: >-
+      The Municipality of Tirana's open-data policy makes data available
+      without licence restrictions and for downstream informational,
+      research, academic, and journalistic use.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://tirana.al/faqe/open-data
+      terms_url: https://tirana.al/faqe/open-data
+      scope: [gtfs_schedule]
+      attribution: Municipality of Tirana.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
