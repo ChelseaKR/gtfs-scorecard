@@ -161,3 +161,14 @@ feed.
   the official checklist.
 - Accessibility and fares are first-class in the scorecard's Rider-experience
   category and absent from the Grading Scheme, which is a deliberate emphasis.
+
+---
+
+Last verified: 2026-07-17. The cited gtfs.org, MobilityData grading-scheme, and
+Caltrans guideline links resolve; transit.dot.gov answers automated checks with
+403, so the NTD pages were not re-verifiable from this pass. The layer
+descriptions above match the source-of-truth records in
+`pipeline/src/scorecard_pipeline/jurisdiction_guidance.py`.
+Recheck cadence: on any California Transit Data Guidelines revision, NTD
+reporting-year policy change, or gtfs-validator major release, and at minimum
+quarterly.

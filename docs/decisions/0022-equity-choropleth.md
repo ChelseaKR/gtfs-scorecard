@@ -71,3 +71,8 @@ either way.
 - The choropleth and grade legend are not colour-only: pattern + label + table.
 - Tract-level equity (ADR 0015) remains the future refinement; this stays
   state-level.
+
+Last verified: 2026-07-17. MapLibre GL remains pinned at 4.7.1 in
+`render_site.py`, and `/map/` and `/equity/` remain in the pa11y route list
+(`.pa11yci.json`). Recheck cadence: on any MapLibre upgrade, or when the map
+or equity page structure changes.

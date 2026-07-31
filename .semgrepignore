@@ -3,6 +3,12 @@
 # that transit agencies publish inside their public GTFS/GTFS-RT feed URLs
 # (sourced from the Mobility Database registry) — see .gitleaks.toml for the
 # matching secret-scan allowlist. Hand-written source stays in scope.
+#
+# Waiver review (SEC-10): this exclusion list expires 2026-10-17 and is
+# reviewed quarterly. At each review, re-run semgrep over the excluded paths,
+# drop any entry that no longer flags, and renew the expiry date in this
+# comment. A lapsed date here is itself a review finding.
+# Last reviewed: 2026-07-17.
 registry/**/*.yaml
 registry/**/*.yml
 data/
