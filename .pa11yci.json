@@ -1,4 +1,11 @@
 {
+  "_waivers": {
+    "color-contrast": {
+      "reason": "Contrast is owned by the dedicated AAA token gate (pipeline/scripts/check_contrast.py), which verifies every theme and sees through the gradient and texture backgrounds axe cannot. Ignoring the rule here avoids double-counting its false positives; see the comment in .github/workflows/a11y.yml.",
+      "last_reviewed": "2026-07-17",
+      "review": "quarterly, and on any axe-core or pa11y-ci major release"
+    }
+  },
   "defaults": {
     "standard": "WCAG2AA",
     "runners": [

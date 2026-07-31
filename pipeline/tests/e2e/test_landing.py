@@ -8,7 +8,7 @@ import pytest
 
 pytest.importorskip("playwright.sync_api", reason="the e2e dependency group is not installed")
 
-from playwright.sync_api import Page, expect
+from playwright.sync_api import Page, Route, expect
 
 pytestmark = pytest.mark.e2e
 
@@ -32,6 +32,96 @@ def test_landing_starts_with_a_real_unitrans_record(page: Page, base_url: str) -
     expect(page.locator("#trace-code")).to_have_text("scorecard_wheelchair_boarding_unknown")
 
 
+def test_landing_puts_the_operating_workflow_before_the_scorecard(
+    page: Page, base_url: str
+) -> None:
+    page.goto(f"{base_url}/")
+    _wait_for_scorecard(page)
+
+    expect(page.get_by_role("heading", level=1)).to_have_text(
+        "Find the next fix in a published GTFS feed."
+    )
+    expect(page.locator(".desk-summary")).to_have_text(
+        "Search an agency to open its latest scorecard and first recommended fix. "
+        "You can also check a GTFS ZIP before publishing it."
+    )
+    expect(page.locator(".workflow-step")).to_have_count(6)
+    expect(page.get_by_role("heading", name="Start with the work you need to do.")).to_be_visible()
+    expect(page.get_by_role("link", name="Check a GTFS ZIP")).to_be_visible()
+    expect(
+        page.get_by_label("Reuse public evidence").get_by_role("link", name="Feed features")
+    ).to_be_visible()
+
+    workflow_box = page.locator(".workflow-run").bounding_box()
+    tasks_box = page.locator(".task-board").bounding_box()
+    scorecard_box = page.locator(".scorecard-demo").bounding_box()
+    assert workflow_box is not None
+    assert tasks_box is not None
+    assert scorecard_box is not None
+    assert workflow_box["y"] < scorecard_box["y"]
+    assert tasks_box["y"] < scorecard_box["y"]
+
+
+def test_landing_workflow_stacks_without_horizontal_overflow_on_mobile(
+    page: Page, base_url: str
+) -> None:
+    page.set_viewport_size({"width": 390, "height": 844})
+    page.goto(f"{base_url}/")
+    _wait_for_scorecard(page)
+
+    expect(page.get_by_role("heading", level=1)).to_be_visible()
+    expect(page.locator(".workflow-run")).to_be_visible()
+    expect(page.locator(".task-register > li")).to_have_count(4)
+    assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
+
+    ledger_box = page.locator(".hero-ledger").bounding_box()
+    workflow_box = page.locator(".workflow-run").bounding_box()
+    assert ledger_box is not None
+    assert workflow_box is not None
+    assert ledger_box["y"] < workflow_box["y"]
+
+
+def test_landing_loads_and_caches_exact_coverage_counts(page: Page, base_url: str) -> None:
+    requests = 0
+
+    def fulfill_coverage(route: Route) -> None:
+        nonlocal requests
+        requests += 1
+        route.fulfill(
+            json={
+                "configured_feed_records": 2185,
+                "published_scorecard_pages": 1128,
+                "country_count": 46,
+            }
+        )
+
+    page.route("**/api/v1/coverage.json", fulfill_coverage)
+    page.goto(f"{base_url}/")
+
+    expect(page.locator("#coverage-registry-count")).to_have_text("2,185")
+    expect(page.locator("#coverage-published-count")).to_have_text("1,128")
+    expect(page.locator("#coverage-country-count")).to_have_text("46")
+    assert requests == 1
+
+    page.reload()
+    expect(page.locator("#coverage-registry-count")).to_have_text("2,185")
+    expect(page.locator("#coverage-published-count")).to_have_text("1,128")
+    expect(page.locator("#coverage-country-count")).to_have_text("46")
+    assert requests == 1
+
+
+def test_landing_keeps_conservative_coverage_fallbacks_when_request_fails(
+    page: Page, base_url: str
+) -> None:
+    page.route("**/api/v1/coverage.json", lambda route: route.abort())
+    page.goto(f"{base_url}/")
+
+    expect(page.locator("#coverage-registry-count")).to_have_text("2,100+")
+    expect(page.locator("#coverage-published-count")).to_have_text("1,100+")
+    expect(page.locator("#coverage-country-count")).to_have_text("40+")
+    expect(page.locator(".coverage-ledger")).to_contain_text("Countries in registry")
+
+
 def test_landing_switches_record_category_and_fix_without_reload(page: Page, base_url: str) -> None:
     page.goto(f"{base_url}/")
     _wait_for_scorecard(page)
@@ -42,8 +132,14 @@ def test_landing_switches_record_category_and_fix_without_reload(page: Page, bas
     expect(page.locator("#scorecard-score")).to_have_text("82.2")
     expect(page.locator('[data-category="realtime"] .category-value')).to_have_text("92.2")
     expect(page.locator('[data-agency-id="yolobus"]')).to_have_attribute("aria-pressed", "true")
-    expect(page.locator("#scope-scorecard-link")).to_have_attribute("href", "/agency/yolobus/")
-    expect(page.locator("#scope-brief-link")).to_have_attribute("href", "/agency/yolobus/brief/")
+    expect(page.locator("#scope-scorecard-link")).to_have_attribute(
+        "href",
+        "/agency/yolobus/?finding=scorecard_wheelchair_accessible_unknown#finding-handoff",
+    )
+    expect(page.locator("#scope-brief-link")).to_have_attribute(
+        "href",
+        "/agency/yolobus/brief/?finding=scorecard_wheelchair_accessible_unknown#finding-handoff",
+    )
 
     page.locator('[data-category="realtime"]').click()
     expect(page.locator("#category-detail-summary")).to_contain_text("Sampled 9 times")
@@ -51,6 +147,14 @@ def test_landing_switches_record_category_and_fix_without_reload(page: Page, bas
     page.locator('[data-fix-index="2"]').click()
     expect(page.locator("#trace-code")).to_have_text("scorecard_missing_feed_info_dates")
     expect(page.locator("#trace-source-files")).to_contain_text("feed_info.txt")
+    expect(page.locator("#scope-scorecard-link")).to_have_attribute(
+        "href",
+        "/agency/yolobus/?finding=scorecard_missing_feed_info_dates#finding-handoff",
+    )
+    expect(page.locator("#scope-board-link")).to_have_attribute(
+        "href",
+        "/agency/yolobus/board/?finding=scorecard_missing_feed_info_dates#finding-handoff",
+    )
     assert "feed=yolobus" in page.url
     assert "fix=3" in page.url
 

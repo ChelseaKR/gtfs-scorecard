@@ -30,9 +30,12 @@ Steps, in order:
    `PAGES_AWS_ROLE_ARN` Actions secret.
 2. **Assemble from S3 in `pages.yml` — done.** A live Pages job successfully
    assumed the read-only role. Pages hydrates the compact index, current agency
-   artifacts, and newest two dated snapshots before rendering. Complete trends
-   live in `index.json`; older records and corrected ZIPs remain on the artifact
-   CDN, keeping deployments bounded as the archive grows.
+   artifacts, and today/yesterday dated snapshots before rendering. It validates
+   each index/latest pair and materializes a missing current dated record from
+   those same bytes, so stale-but-current citations still resolve after bounded
+   hydration or lifecycle retention. Complete trends live in `index.json`;
+   older records and corrected ZIPs remain on the artifact CDN, keeping
+   deployments bounded as the archive grows.
 3. **Stop committing generated data and pages — done.** Daily and intraday jobs
    publish score artifacts to S3. Pages renders the public tree in CI. Git keeps
    the cutover snapshot as an outage/fork fallback. The intraday job publishes
@@ -58,7 +61,7 @@ history is not rewritten.
 
 ## Fan-out compute (`infra/compute`, roadmap Year 2)
 
-**Status: deferred, and not a plain `terraform apply`.** At ~1,734 configured feeds the
+**Status: deferred, and not a plain `terraform apply`.** At ~2,185 configured feeds the
 GitHub Actions matrix handles the daily run in well under an hour, so this is
 premature. More importantly, applying `infra/compute` stands up an EventBridge
 schedule that would run the pipeline **in addition to** the Actions cron — two

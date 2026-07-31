@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: a required column is missing from a file
 
 Code: `missing_required_column` (MobilityData validator)

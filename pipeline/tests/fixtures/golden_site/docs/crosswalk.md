@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-14"
+---
+
 # How the grade maps to the standards
 
 The scorecard's four categories are its own. The grade and thresholds do not

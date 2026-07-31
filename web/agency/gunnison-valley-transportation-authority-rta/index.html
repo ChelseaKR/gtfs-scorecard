@@ -29,7 +29,6 @@
   </script>
   <script src="/src/theme.js" defer></script>
   <script src="/src/nav.js" defer></script>
-  <script src="/analytics.js" defer></script>
   <noscript><style>
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable
@@ -74,7 +73,7 @@ Our GTFS feed (Gunnison Valley Transportation Authority (RTA)) scored A (98.2 ou
 
 1. Remove past service periods the next time you export the feed.
    What: Some service calendars in the feed have already expired.
-   Validator notice: expired_calendar
+   Finding code: expired_calendar
    Guide: https://gtfsscorecard.org/fix/expired_calendar/
 
 Full scorecard: https://gtfsscorecard.org/agency/gunnison-valley-transportation-authority-rta/</textarea><button type="button" class="copy-btn" data-copy="vendor-text">Copy request</button></section>
@@ -91,7 +90,7 @@ Full scorecard: https://gtfsscorecard.org/agency/gunnison-valley-transportation-
     <div class="route-rule" role="presentation"><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span><span class="seg"></span><span class="stopdot"></span></div>
     <section aria-labelledby="findings-h">
       <h2 class="section-title" id="findings-h">Everything we checked</h2>
-      <p class="findings-count">1 finding, ordered by severity.</p><details class="evidence-drawer"><summary>Show every finding</summary><ul class="findings"><li class="finding"><div class="finding-head"><span class="sev sev-warning">Warning</span><span class="count">1 instance</span></div><p class="what">Some service calendars in the feed have already expired.</p><p class="why">Expired calendars are dead weight and can hide real schedule problems from your staff and vendors.</p><p class="how"><strong>Fix:</strong> Remove past service periods the next time you export the feed. <em>(One setting in most export tools.)</em></p><p class="code">Validator rule: expired_calendar · <a class="fix-guide" href="/fix/expired_calendar/">Read the fix guide</a> · <a class="rule-ref" href="https://gtfs-validator.mobilitydata.org/rules.html#expired_calendar-rule">See MobilityData GTFS Validator rules</a><span class="visually-hidden"> (opens the validator rules on an external site)</span></p></li></ul></details>
+      <p class="findings-count">1 finding, ordered by severity.</p><details class="evidence-drawer"><summary>Show every finding</summary><ul class="findings"><li class="finding"><div class="finding-head"><span class="sev sev-warning">Warning</span><span class="count">1 instance</span></div><p class="what">Some service calendars in the feed have already expired.</p><p class="why">Expired calendars are dead weight and can hide real schedule problems from your staff and vendors.</p><p class="how"><strong>Fix:</strong> Remove past service periods the next time you export the feed. <em>(One setting in most export tools.)</em></p><p class="code">Finding code: expired_calendar · <a class="fix-guide" href="/fix/expired_calendar/">Read the fix guide</a> · <a class="rule-ref" href="https://gtfs-validator.mobilitydata.org/rules.html#expired_calendar-rule">See MobilityData GTFS Validator rules</a><span class="visually-hidden"> (opens the validator rules on an external site)</span></p></li></ul></details>
     </section>
     <section aria-labelledby="recs-h"><h2 class="section-title" id="recs-h">Beyond the grade</h2><p class="page-lede">Opportunities that do not change your grade today: fare detail, on-demand service, and deeper accessibility data.</p><ul class="recs"><li class="rec"><p class="rec-what">1 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (Gunnison - Mt. Crested Butte).</p><p class="rec-fix"><strong>Consider:</strong> Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.</p></li><li class="rec"><p class="rec-what">9 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (&quot;11th &amp; Virginia&quot;, &quot;Safeway (Pine &amp; Highway 50)&quot;, &quot;Teller &amp; Hwy 50&quot;, and more).</p><p class="rec-fix"><strong>Consider:</strong> Add tts_stop_name with the spoken form, e.g. &#x27;Main Street and Second Avenue&#x27;, for the affected stops.</p></li></ul></section>
 

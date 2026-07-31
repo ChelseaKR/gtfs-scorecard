@@ -100,3 +100,8 @@ not left implicit in code.
 
 ADR 0015 (US equity, state-level), 0026 (internationalization; equity-data
 update naming CIMD), and the tract-level data layer (`tract_data.py`) this reuses.
+
+Last verified: 2026-07-17. `cimd.py` and the `canada-equity.yml` workflow
+(feeding `/api/v1/canada-equity.json`) are present and match this record;
+the StatCan sources themselves were not re-fetched in this pass. Recheck
+cadence: on any StatCan CIMD revision or 2021 Census boundary-file update.

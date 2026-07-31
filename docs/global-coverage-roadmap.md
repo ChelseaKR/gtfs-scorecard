@@ -1,6 +1,6 @@
 # Global coverage roadmap
 
-Last updated: 2026-07-17
+Last updated: 2026-07-25
 
 This is the multi-region coverage plan. It sits above the Europe-specific
 [`global-expansion.md`](global-expansion.md), which owns the European GTFS beta
@@ -77,6 +77,40 @@ community-mapping projects that never registered with the Mobility Database.
 Sourcing, not curation effort, is the binding limit outside Europe and North
 America. Each phase below names where a region's feeds actually live.
 
+### The declared candidate universe
+
+A 2026-07-25 snapshot puts a hard boundary around the current discovery
+universe. [Mobility Database V2](https://files.mobilitydatabase.org/feeds_v2.csv)
+(SHA-256
+`86e46cb822b1aa11447837c2cdc87755ad8a6f571135d290095a62d4129a2834`)
+contains 2,574 active, keyless Schedule rows.
+[Transitland Atlas](https://github.com/transitland/transitland-atlas) at commit
+[`1df848a`](https://github.com/transitland/transitland-atlas/commit/1df848a98107189e6df16bad2ec28825cfb8f4c6)
+(archive SHA-256
+`c3b93c14c7f4162eb9e8c386e8486f18c94cc2d4ecab07a5d10422e3e50afe30`)
+contains 3,739 Schedule rows with a current, keyless URL.
+After applying the project's scheme-insensitive endpoint normalization, their
+union is about 5,092 endpoints before content, operator, aggregate, redirect,
+identity, and reuse review. The current registry contains 2,185 feed records.
+
+A literal 100-fold increase from that registry would require 218,500 records,
+far beyond the current public-catalog supply and contrary to this roadmap's
+curation rules. Here, a "100x coverage loop" means candidate-processing
+leverage: record a disposition for at least 95% of a declared, deduplicated
+eligible snapshot without weakening human review or auto-writing the registry.
+The loop is:
+
+```text
+source snapshot and hash -> cheap preflight -> identity/content clustering ->
+reuse decision -> 25-record canary -> three checks across seven days ->
+recommendation audit and upstream catalogue corrections
+```
+
+Each new admission is paired with one legacy rights or identity audit until at
+least 90% of the registry has current evidence. Duplicates, mirrors, aggregates,
+and alternate URLs never count as extra coverage merely because they are extra
+catalog rows.
+
 ## Phases
 
 The phases are ordered by defensibility, and each ships as its own reviewed
@@ -109,6 +143,13 @@ Gate: official government or provider source, an explicit open license
 (commonly CC BY 4.0), retained attribution, checked identity, within the
 ingestion caps.
 
+Tasmania's previous license and fetchability hold cleared on 2026-07-22. The
+Tasmanian Government now publishes one stable, keyless statewide aggregate on
+its official transport site under CC BY 4.0. A full preflight found a valid
+15 MiB archive for six listed publishers, bus and ferry routes, explicit
+`feed_info.txt` dates, and service through 2026-09-30. The registry counts the
+aggregate as one feed record, not six agencies.
+
 ### Phase 2 — Latin America official first-party
 
 Several Latin American authorities publish official GTFS under national
@@ -138,6 +179,143 @@ catalog.
 Gate: as Phase 2. Regions where the dominant standard is not GTFS, or where the
 official feed is only reachable behind an account, are out of scope for this
 phase and noted for the alternative-catalog work below.
+
+The Hong Kong Transport Department aggregate is now the phase's frequency-based
+schedule canary. DATA.GOV.HK publishes the keyless GTFS under terms permitting
+commercial and non-commercial reuse with attribution. Its calendar runs to
+2099, so admission required a full scorecard preflight: freshness remains
+measured, explicitly labels the horizon unusually distant, and deducts for
+missing `feed_info.txt` dates rather than treating the end date as evidence of
+active maintenance. Hong Kong has no ISO 3166-2 child in the portable location
+vocabulary, which exercises the supported country-only location contract.
+
+Four BAS.MY town feeds cleared an earlier data-quality hold on 2026-07-22.
+Malaysia's official open API republished Alor Setar, Kota Bharu, Kuala
+Terengganu, and Kuching with hundreds of trips and service through 2026-12-31.
+All four keyless archives passed the canonical validator preflight under the
+same CC BY 4.0 platform and now add reviewed coverage in Kedah, Kelantan,
+Terengganu, and Sarawak.
+
+Five official Japanese networks passed another bounded depth review on
+2026-07-23: Kamishihoro Town Autonomous Bus, Konan Railway, Tsukubane-go,
+Awaji Jenova Line, and Hokushin Bus. They use the three already admitted
+versioned Creative Commons licenses and add one record in each of five
+previously represented prefectures. The loop deliberately rejected Tsuku Bus:
+its current archive still gives four required GTFS files `.csv` names, so the
+canonical validator cannot recognize a usable service calendar. This is
+regional depth from an official source, not a new-country or census claim.
+
+Five additional licensed Japanese records passed an operational-depth review
+on 2026-07-23: JR East's Tsugaru Line replacement bus, Mizuho Town's
+reservation-based Choi-Soko service, Toyama Chitetsu's regional bus network,
+Toba City's island ferries, and Kochi's airport shared taxi. The set adds
+replacement-service, demand-responsive, regional-bus, ferry, airport-link, and
+keyless realtime evidence without changing the 40-prefecture denominator.
+Japan now has 235 reviewed feed records in the catalog. The seven prefectures
+without an admitted source remain empty; no unclear-license feed or mirror was
+used to change that count.
+
+Five more licensed Japanese bus records passed a realtime-evidence review on
+2026-07-23: Kaetsuno World Heritage Bus, Owari Asahi Asapy-go, Tokoname Gruun,
+Mie Kotsu's Shima-area service, and Kumamoto Dentetsu Bus. Each official
+catalog record supplies keyless TripUpdates and VehiclePositions endpoints.
+The admission check confirmed current schedule archives and endpoint
+responses, but does not treat a response as an uptime, prediction-quality, or
+trip-coverage guarantee. Japan now has 240 reviewed feed records across the
+same 40 prefectures.
+
+Twenty official Japanese records passed a larger endpoint-kind review on
+2026-07-23: thirteen CC0 services in Toyama and seven CC BY 4.0 services in
+Mie. Every current schedule archive passed the canonical validator path. The
+official catalog supplied 47 keyless realtime endpoints: all twenty records
+publish TripUpdates and VehiclePositions, and the seven Mie records also
+publish ServiceAlerts. Every endpoint returned a valid protobuf response
+during admission, although many were header-only at that moment.
+
+The public feature contract now distinguishes the exact endpoint kinds that
+responded and whether the newest TripUpdates or VehiclePositions header was
+fresh. This is latest-sample evidence, not continuous availability, rider
+information content, prediction quality, or trip coverage. Japan now has 260
+reviewed feed records across the same 40 prefectures. The batch adds regional
+depth and new product evidence without changing the national-coverage claim.
+
+An eleventh repository pass then admitted 119 official schedule records from
+publishers with exactly one current feed. Every downloaded archive passed the
+pinned canonical validator path, carried one of the three already reviewed
+versioned Creative Commons licenses, and retained at least 60 days of effective
+service. Two catalog records with expired calendars, one near-expiry record,
+one private residential shuttle, and publishers represented only by several
+line or area fragments stayed out. Japan now has 379 reviewed feed records
+across the same 40 prefectures. This remains depth in a reviewed sample, not a
+census or a claim of national coverage.
+
+A portal-first exhaustion pass on 2026-07-23 then added 70 reviewed feed
+records without weakening those gates. France's National Access Point supplied
+57 local-network records under Licence Ouverte 2.0. Existing-country depth also
+grew in Canada (four records), Germany (two), and the United Kingdom (two).
+Official city and national portals opened four new country samples: Albania
+(Tirana), Moldova (Ungheni), Serbia (Belgrade), and Ukraine (Kyiv and Lviv).
+Every schedule archive passed the complete scorecard path and retained at least
+60 days of effective service. Twenty-seven records also carry official,
+keyless realtime endpoints. This is a reviewed source cohort, not a country
+census.
+
+The same pass exhausted the remaining plausible official/open catalog set and
+kept its failures visible. Short or expired calendars excluded Canberra Light
+Rail, Brussels STIB/MIVB, Luxembourg's national feed, and Metlink Wellington.
+Unreachable or non-archive sources excluded METROFOR, four French local
+networks, Mexico City, Hyderabad Metro, and several Portuguese feeds. Santiago
+remained out because its official current-feed page did not state an explicit
+commercial-reuse licence. Bogotá's very large feed did not complete a bounded
+local score and its catalog licence is share-alike outside the project
+allowlist. Ambiguous source/licence identity excluded Cascais and Barreiro.
+These are future recheck targets, not silent omissions.
+
+A 20-loop continuation on 2026-07-23 then admitted 11 more records. Cyprus
+opened as a six-operator CC BY 4.0 sample, and TGSRTC Greater Hyderabad opened
+India under the operator's explicit commercial and non-commercial reuse terms.
+Existing-country depth added VBB's GTFS-Flex collection, Reus Transport, the
+Creuse regional network, and Belgrade's suburban feed. All 11 archives
+completed the pinned validator and full scorecard path with at least 60 days of
+effective service.
+
+The continuation also made its exhaustion results explicit. A 73-candidate
+official/licensed catalog set yielded 55 local score artifacts and 18 bounded
+source or archive failures before evidence review. Sardegna's eligible portal
+feeds were already tracked. Duplicate Madrid and Sardegna records, GTT Torino's
+non-commercial terms, Kraków's unresolved commercial licence, Bydgoszcz's
+community-converter provenance, Portugal's source/licence mismatches, Bogotá's
+share-alike licence, Santiago's unstated commercial grant, and short or expired
+calendars in Australia, New Zealand, Belgium, Luxembourg, Canada, and Mexico
+all stayed out. The pass increases the reviewed sample without loosening the
+identity, reuse, validator, or calendar gates.
+
+An API-level exhaustion of France's National Access Point followed on
+2026-07-23. All 774 catalog datasets were considered, and all 331 currently
+unmatched GTFS resources were run through the complete local scorecard and
+60-day calendar gate. Of 147 mechanical passes, overlap and source review
+retained 137: 136 French resources plus Tanéo in New Caledonia, which is
+correctly modeled under ISO `NC`. Six regional aggregates, three duplicate or
+superseded resource versions, and one anomalous stale export remained out.
+France's reviewed European cohort grows by 136 records across 15 regions and
+collectivities. Multiple resources belonging to one dataset share canonical
+organization identity instead of being presented as extra operators.
+
+The same loop opened Puerto Rico and Oman from official provider evidence.
+Puerto Rico ATI explicitly invites developers and companies to use its
+open-data GTFS. Mwasalat serves its current GTFS from its official Oman
+National Transport Company domain, labels its route-data surface as open data,
+and is covered by Oman's national license permitting commercial and
+non-commercial reuse with attribution. Both feeds passed the validator and
+calendar path. Grade was not an admission criterion.
+
+The rejected set establishes the next boundary. Sweden's national Trafiklab
+archive is useful but key-gated. Monaco and Iceland fell below the calendar
+horizon; Luxembourg was stale and Taiwan returned 401. Mexico, Argentina, and
+Chile did not supply a current candidate with the required source and
+commercial-reuse chain. Community-produced African feeds remain
+partnership-gated. The resulting 2,185-record, 46-country-code registry is a
+reviewed sample and not a census or national-coverage claim.
 
 ### Phase 4 — partnership-gated regions
 
@@ -255,7 +433,11 @@ These unblock more than one phase and are sequenced by first need.
   same scope line, and the `/status/` page states the European cohort's
   denominator with a per-country breakdown. A remaining refinement is to carry
   the per-region denominator into the CSV export headers as it is added to more
-  activated regions.
+  activated regions. **That refinement shipped in July 2026:** every feature
+  finder CSV row now repeats the selected coverage scope, its reviewed-record
+  denominator, the matching-record count, and the shareable filter URL. Keeping
+  the context in columns preserves a rectangular RFC 4180 file for downstream
+  analysis.
 
 ## Completion
 

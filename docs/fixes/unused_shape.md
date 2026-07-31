@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: the feed contains route shapes no trip uses
 
 Code: `unused_shape` (MobilityData validator)

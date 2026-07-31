@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: the feed contains a file that isn't part of GTFS
 
 Code: `unknown_file` (MobilityData validator)

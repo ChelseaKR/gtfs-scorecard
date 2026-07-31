@@ -45,8 +45,10 @@ HARDCODED_STRING_BASELINE = {
     # cohort denominator shown when a country or subdivision is filtered) added a
     # few more English literals to move into the catalog; the count is unchanged
     # here because this heuristic under-counts strings nested in the overview's
-    # template literals, not because the copy is exempt from localization.
-    "app.js": 378,
+    # template literals, not because the copy is exempt from localization. The
+    # feature-use-case selector adds one HTML option template, raising 378 to
+    # 379; its labels and surrounding copy live in the reviewed app catalog.
+    "app.js": 379,
     "config.js": 1,
     "es.js": 2,
     "i18n.js": 0,

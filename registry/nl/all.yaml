@@ -1,0 +1,29 @@
+# Netherlands (NL) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: ovapi-netherlands
+    name: OVapi Netherlands national aggregate
+    country: NL
+    mdb_id: "1077"
+    is_official: true
+    static_gtfs_url: http://gtfs.ovapi.nl/gtfs-nl.zip
+    license_note: >-
+      No formal licence is named. OVapi (Stichting OpenGeo) converts Dutch
+      operators' NDOV open data to GTFS and its README states the data is free
+      to use on a best-effort basis; identify your client in the User-Agent
+      header and credit OVapi and the source operators.
+    operating_note: >-
+      National multimodal aggregate of Dutch operators built from NDOV source
+      data. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: http://gtfs.ovapi.nl/
+      terms_url: http://gtfs.ovapi.nl/README
+      scope: [gtfs_schedule]
+      attribution: OVapi / Stichting OpenGeo and the Dutch source operators.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true

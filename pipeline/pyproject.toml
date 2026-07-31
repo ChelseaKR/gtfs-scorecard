@@ -4,7 +4,7 @@ name = "scorecard-pipeline"
 # in CITATION.cff and server.json; a `make verify` check (scripts/check_versions.py)
 # fails CI if they drift. A protected release tag is cut only after these
 # declarations and CI agree; this file never treats an uncut tag as published.
-version = "1.3.0"
+version = "1.4.0"
 description = "Ingestion and scoring pipeline for the small-agency GTFS quality scorecard"
 license = "Apache-2.0"
 requires-python = ">=3.12"
@@ -32,6 +32,9 @@ scorecard-mcp = "scorecard_pipeline.mcp_server:main"
 
 [dependency-groups]
 dev = [
+    # The structural SEO gate parses rendered sitemap XML. Keep entity
+    # expansion and external references disabled even for local build output.
+    "defusedxml>=0.7.1",
     "pytest>=8.0",
     "ruff>=0.15",
     "mypy>=1.10",
@@ -64,6 +67,12 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/scorecard_pipeline"]
+
+# Receipt generation validates against the exact public 1.2 contract. Map that
+# versioned schema into the wheel so an installed CLI does not depend on a
+# repository checkout having web/schemas beside it.
+[tool.hatch.build.targets.wheel.force-include]
+"../web/schemas/sync-source-metadata-1.2.schema.json" = "scorecard_pipeline/data/schemas/sync-source-metadata-1.2.schema.json"
 
 [tool.ruff]
 line-length = 100

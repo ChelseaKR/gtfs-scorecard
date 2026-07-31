@@ -5,7 +5,10 @@ from __future__ import annotations
 from collections.abc import Callable
 from pathlib import Path
 
+import pytest
+
 from scorecard_pipeline.completeness import WEIGHTS, _is_shouty, completeness
+from scorecard_pipeline.gtfs import TableTooLargeError
 
 COMPLETE_FEED = {
     "agency.txt": (
@@ -55,6 +58,156 @@ def test_bare_feed_scores_low_with_findings(make_gtfs_zip: Callable[..., Path]) 
     assert "scorecard_missing_headsigns" in codes
     assert "scorecard_no_feed_contact" in codes
     assert "scorecard_bad_agency_url" in codes
+
+
+def test_single_pattern_one_direction_loop_does_not_invent_a_headsign_fix(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    feed = {
+        **COMPLETE_FEED,
+        "trips.txt": (
+            "route_id,service_id,trip_id,trip_headsign,direction_id,shape_id,"
+            "wheelchair_accessible\n"
+            "A,WK,T1,,0,loop,1\n"
+            "A,SA,T2,,0,loop,1\n"
+        ),
+        "stop_times.txt": (
+            "trip_id,arrival_time,departure_time,stop_id,stop_sequence\n"
+            "T1,08:00:00,08:00:00,S1,1\n"
+            "T1,08:10:00,08:10:00,S2,2\n"
+            "T1,08:20:00,08:20:00,S1,3\n"
+            "T2,09:00:00,09:00:00,S1,1\n"
+            "T2,09:10:00,09:10:00,S2,2\n"
+            "T2,09:20:00,09:20:00,S1,3\n"
+        ),
+    }
+
+    result = completeness(str(make_gtfs_zip(feed)))
+
+    assert result.score == 100.0
+    assert not any(f.code == "scorecard_missing_headsigns" for f in result.findings)
+    assert result.details["headsign_pct"] == 0.0
+    assert result.details["headsign_scored_pct"] == 100.0
+    assert result.details["headsign_applicable_trips"] == 0
+    assert result.details["headsign_loop_exempt_trips"] == 2
+
+
+def test_linear_or_distinct_loop_patterns_still_need_headsigns(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    feed = {
+        **COMPLETE_FEED,
+        "trips.txt": (
+            "route_id,service_id,trip_id,trip_headsign,direction_id,shape_id,"
+            "wheelchair_accessible\n"
+            "L,WK,LINEAR,,0,line,1\n"
+            "B,WK,CLOCKWISE,,0,cw,1\n"
+            "B,WK,COUNTERCLOCKWISE,,1,ccw,1\n"
+        ),
+        "stop_times.txt": (
+            "trip_id,arrival_time,departure_time,stop_id,stop_sequence\n"
+            "LINEAR,08:00:00,08:00:00,S1,1\n"
+            "LINEAR,08:10:00,08:10:00,S2,2\n"
+            "CLOCKWISE,09:00:00,09:00:00,S1,1\n"
+            "CLOCKWISE,09:10:00,09:10:00,S2,2\n"
+            "CLOCKWISE,09:20:00,09:20:00,S1,3\n"
+            "COUNTERCLOCKWISE,10:00:00,10:00:00,S1,1\n"
+            "COUNTERCLOCKWISE,10:10:00,10:10:00,S2,2\n"
+            "COUNTERCLOCKWISE,10:20:00,10:20:00,S1,3\n"
+        ),
+    }
+
+    result = completeness(str(make_gtfs_zip(feed)))
+    finding = next(f for f in result.findings if f.code == "scorecard_missing_headsigns")
+
+    assert finding.count == 3
+    assert "Do not copy the route name" in finding.fix
+    assert result.details["headsign_scored_pct"] == 0.0
+    assert result.details["headsign_loop_exempt_trips"] == 0
+
+
+def test_out_and_back_pattern_still_needs_a_headsign(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    feed = {
+        **COMPLETE_FEED,
+        "trips.txt": (
+            "route_id,service_id,trip_id,trip_headsign,direction_id,shape_id,"
+            "wheelchair_accessible\n"
+            "L,WK,T1,,0,lollipop,1\n"
+        ),
+        "stop_times.txt": (
+            "trip_id,arrival_time,departure_time,stop_id,stop_sequence\n"
+            "T1,08:00:00,08:00:00,S1,1\n"
+            "T1,08:10:00,08:10:00,S2,2\n"
+            "T1,08:20:00,08:20:00,S3,3\n"
+            "T1,08:30:00,08:30:00,S2,4\n"
+            "T1,08:40:00,08:40:00,S1,5\n"
+        ),
+    }
+
+    result = completeness(str(make_gtfs_zip(feed)))
+
+    finding = next(f for f in result.findings if f.code == "scorecard_missing_headsigns")
+    assert finding.count == 1
+    assert result.details["headsign_loop_exempt_trips"] == 0
+
+
+def test_malformed_stop_times_cannot_earn_a_loop_exemption(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    feed = {
+        **COMPLETE_FEED,
+        "trips.txt": (
+            "route_id,service_id,trip_id,trip_headsign,direction_id,shape_id,"
+            "wheelchair_accessible\n"
+            "A,WK,T1,,0,loop,1\n"
+        ),
+        "stop_times.txt": (
+            "trip_id,arrival_time,departure_time,stop_id,stop_sequence\n"
+            "T1,08:00:00,08:00:00,S1,1\n"
+            "T1,08:10:00,08:10:00,,2\n"
+            "T1,08:20:00,08:20:00,S1,not-a-sequence\n"
+        ),
+    }
+
+    result = completeness(str(make_gtfs_zip(feed)))
+
+    assert any(f.code == "scorecard_missing_headsigns" for f in result.findings)
+    assert result.details["headsign_loop_exempt_trips"] == 0
+
+
+def test_oversized_stop_times_falls_back_to_the_ordinary_headsign_check(
+    make_gtfs_zip: Callable[..., Path],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    feed = {
+        **COMPLETE_FEED,
+        "trips.txt": (
+            "route_id,service_id,trip_id,trip_headsign,direction_id,shape_id,"
+            "wheelchair_accessible\n"
+            "A,WK,T1,,0,loop,1\n"
+        ),
+    }
+    path = make_gtfs_zip(feed)
+
+    def oversized_stop_times(
+        gtfs_zip_path: str,
+        name: str,
+        *,
+        max_member_bytes: int,
+    ) -> list[dict[str, str]]:
+        raise TableTooLargeError("stop_times.txt exceeds the analysis cap")
+
+    monkeypatch.setattr(
+        "scorecard_pipeline.completeness.iter_table_rows",
+        oversized_stop_times,
+    )
+
+    result = completeness(str(path))
+
+    assert any(f.code == "scorecard_missing_headsigns" for f in result.findings)
+    assert result.details["headsign_loop_exempt_trips"] == 0
 
 
 def test_uncased_scripts_are_not_misread_as_all_caps() -> None:

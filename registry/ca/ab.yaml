@@ -26,3 +26,24 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: lethbridge-transit
+    name: Lethbridge Transit
+    country: CA
+    subdivision_code: CA-AB
+    subdivision_name: Alberta
+    mdb_id: "1997"
+    is_official: true
+    static_gtfs_url: https://gis.lethbridge.ca/OpenData/DataSets/GTFS_Transit_Data.zip
+    license_note: >-
+      City of Lethbridge Open Data Licence; lawful reuse, including commercial
+      reuse, is permitted with attribution.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://opendata.lethbridge.ca/
+      terms_url: https://opendata.lethbridge.ca/pages/open-data-license
+      scope: [gtfs_schedule]
+      attribution: City of Lethbridge (Lethbridge Transit).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

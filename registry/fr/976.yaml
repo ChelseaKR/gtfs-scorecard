@@ -1,0 +1,26 @@
+# Mayotte (FR) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: fr-tmco
+    name: "Réseau urbain TMCO"
+    country: FR
+    subdivision_code: FR-976
+    subdivision_name: "Mayotte"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/83891/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CC du Centre-Ouest and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/gtfs-reseau-de-transport-tmco-3co-mayotte"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CC du Centre-Ouest"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

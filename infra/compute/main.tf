@@ -45,7 +45,7 @@ resource "aws_sqs_queue" "dlq" {
 
 resource "aws_sqs_queue" "work" {
   name                       = "${var.project}-work"
-  visibility_timeout_seconds = 300 # >= worker timeout
+  visibility_timeout_seconds = 300  # >= worker timeout
   sqs_managed_sse_enabled    = true # encrypt at rest with SQS-managed keys
   redrive_policy = jsonencode({
     deadLetterTargetArn = aws_sqs_queue.dlq.arn

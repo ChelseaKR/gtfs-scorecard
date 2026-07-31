@@ -19,7 +19,7 @@ from .fetch import (
     FLAT_SINGLE_ROOT_READER_ARCHIVE_PROFILE,
     RAW_READER_ARCHIVE_PROFILE,
 )
-from .identity import normalized_feed_url
+from .identity import normalized_feed_url, normalized_mdb_id
 from .validate import VALIDATOR_VERSION
 
 MIN_PUBLIC_COMPARISON_COHORT = 20
@@ -286,7 +286,8 @@ def _identity_exclusions(
                 canonical_agencies.append(agency)
 
         duplicate_ids = _duplicate_values(
-            (str(agency.mdb_id or ""), agency.id) for agency in canonical_agencies
+            (normalized_mdb_id(str(agency.mdb_id or "")), agency.id)
+            for agency in canonical_agencies
         )
         duplicate_ids.update(
             _duplicate_values(

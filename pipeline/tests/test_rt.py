@@ -105,6 +105,7 @@ class TestScoring:
         expected = (25 + 25 + 15 * (36 / 39)) / (25 + 25 + 15) * 100
         assert result.score == pytest.approx(expected)
         assert result.details["configured_kinds"] == ["vehicle_positions"]
+        assert result.details["reachable_kinds"] == ["vehicle_positions"]
         assert result.details["kinds_configured"] == 1
         assert result.details["kinds_reachable"] == 1
         assert result.details["coverage_pct"] is None
@@ -357,7 +358,23 @@ class TestScoring:
         assert result.findings[0].deduction == 100.0
         assert result.details["scheduled_trips_in_window"] == 1
         assert result.details["coverage_pct"] is None
+        assert result.details["reachable_kinds"] == []
         assert "outside service hours" not in result.summary
+
+    def test_reachable_kinds_identify_only_successful_endpoint_kinds(self) -> None:
+        result = realtime(
+            RtWindow(
+                samples=[
+                    sample("trip_updates"),
+                    sample("vehicle_positions", ok=False),
+                    sample("service_alerts"),
+                ]
+            ),
+            {"T1"},
+            configured_kinds={"trip_updates", "vehicle_positions", "service_alerts"},
+        )
+
+        assert result.details["reachable_kinds"] == ["trip_updates", "service_alerts"]
 
     def test_plausibility_folds_into_score(self) -> None:
         good = PlausibilityStats(vehicles_checked=4, plausible_share=1.0, worst_meters=40)

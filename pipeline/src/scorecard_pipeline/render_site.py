@@ -18,6 +18,7 @@ from __future__ import annotations
 # ruff: noqa: E501
 import csv
 import datetime as dt
+import hashlib
 import html as html_lib
 import io
 import json
@@ -27,10 +28,14 @@ import shutil
 import sys
 from collections import Counter
 from collections.abc import Callable
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlencode
 
+import yaml
 from markdown_it import MarkdownIt
+from yaml.nodes import MappingNode, ScalarNode
 
 from ._stats import _GRADES
 from .anomaly import latest_anomaly
@@ -40,7 +45,7 @@ from .comparisons import (
     reader_archive_profile,
     same_producer_contract,
 )
-from .config import artifacts_dir
+from .config import Agency, artifacts_dir
 from .conformance import assess as conformance_assess
 from .constants_export import GRADE_RANK
 from .directory import build_directory
@@ -57,6 +62,7 @@ from .i18n import (
     load_catalog,
     validate_catalogs,
 )
+from .identity import normalized_mdb_id, resolve_published_agency_name
 from .instance import ORG_NAME
 from .jurisdiction_guidance import guidance_for
 from .location import country_name, resolve_published_location
@@ -85,6 +91,9 @@ from .rule_links import (
 )
 from .score import letter_grade
 from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
+    _SOCIAL_IMAGE_HEIGHT,
+    _SOCIAL_IMAGE_URL,
+    _SOCIAL_IMAGE_WIDTH,
     BASE_URL,
     CATEGORY_LABELS,
     CATEGORY_ORDER,
@@ -126,7 +135,7 @@ def _finding_severity_badge(value: object) -> str:
 
 
 # Non-validator RuleLink.kind -> the phrase naming that authority, for the
-# "Validator rule" line's visually-hidden context. A dict, not an if/elif
+# "Finding code" line's visually-hidden context. A dict, not an if/elif
 # chain, so a kind added to rule_links.py without an entry here raises a
 # KeyError instead of silently falling through to the wrong authority name
 # (exactly the kind of drift ADR 0024 exists to prevent).
@@ -152,8 +161,202 @@ def _fix_guide_link(code: str) -> str:
     return ""
 
 
+_SAFE_FINDING_CODE = re.compile(r"^[A-Za-z0-9_-]+$")
+_SAFE_AGENCY_ID = re.compile(r"^[A-Za-z0-9_-]+$")
+
+
+def _safe_finding_code(value: object) -> str:
+    code = str(value or "")
+    return code if _SAFE_FINDING_CODE.fullmatch(code) else ""
+
+
+def _finding_card_attrs(fix: dict[str, Any]) -> str:
+    code = _safe_finding_code(fix.get("code"))
+    if not code:
+        return ""
+    return f' id="finding-{esc(code)}" data-finding-card="{esc(code)}"'
+
+
+def _finding_url(
+    path: str,
+    code: str,
+    *,
+    agency_id: str | None = None,
+    anchor: str = "finding-handoff",
+) -> str:
+    """Attach one validated finding to a route without accepting arbitrary URLs."""
+    safe_code = _safe_finding_code(code)
+    if not safe_code:
+        return path
+    query = {"finding": safe_code}
+    if agency_id and _SAFE_AGENCY_ID.fullmatch(agency_id):
+        query["agency"] = agency_id
+    fragment = f"#{anchor}" if anchor else ""
+    return f"{path}?{urlencode(query)}{fragment}"
+
+
+_FINDING_CONTEXT_SCRIPT = """<script>
+(function () {
+  "use strict";
+  var safeCode = /^[A-Za-z0-9_-]+$/;
+  var safeAgency = /^[A-Za-z0-9_-]+$/;
+  var params = new URL(window.location.href).searchParams;
+  var requested = params.get("finding") || "";
+  if (!safeCode.test(requested)) requested = "";
+
+  document.querySelectorAll("[data-finding-handoff]").forEach(function (handoff) {
+    var panels = Array.from(handoff.querySelectorAll("[data-finding-panel]"));
+    if (!panels.length) return;
+    var selected = panels.some(function (panel) {
+      return panel.getAttribute("data-finding-panel") === requested;
+    }) ? requested : panels[0].getAttribute("data-finding-panel");
+    panels.forEach(function (panel) {
+      panel.hidden = panel.getAttribute("data-finding-panel") !== selected;
+    });
+    handoff.querySelectorAll("[data-finding-choice]").forEach(function (choice) {
+      if (choice.getAttribute("data-finding-choice") === selected) {
+        choice.setAttribute("aria-current", "true");
+      } else {
+        choice.removeAttribute("aria-current");
+      }
+    });
+    document.querySelectorAll("[data-finding-card]").forEach(function (card) {
+      card.classList.toggle(
+        "finding-selected",
+        card.getAttribute("data-finding-card") === selected
+      );
+    });
+  });
+
+  document.querySelectorAll("[data-handoff-copy]").forEach(function (button) {
+    button.addEventListener("click", function () {
+      var panel = button.closest("[data-finding-panel]");
+      var field = panel && panel.querySelector("textarea");
+      var status = panel && panel.querySelector("[data-copy-status]");
+      if (!field) return;
+      var copied = navigator.clipboard && window.isSecureContext
+        ? navigator.clipboard.writeText(field.value)
+        : Promise.reject();
+      copied.catch(function () {
+        field.focus();
+        field.select();
+        document.execCommand("copy");
+      }).then(function () {
+        if (status) status.textContent = "Copied.";
+      });
+    });
+  });
+
+  document.querySelectorAll("[data-fix-context]").forEach(function (context) {
+    var agency = params.get("agency") || "";
+    var code = context.getAttribute("data-fix-context") || "";
+    if (!safeAgency.test(agency) || !safeCode.test(code)) return;
+    context.hidden = false;
+    var agencyLabel = context.querySelector("[data-context-agency]");
+    if (agencyLabel) agencyLabel.textContent = agency;
+    var base = "/agency/" + encodeURIComponent(agency) + "/";
+    var finding = "?finding=" + encodeURIComponent(code);
+    context.querySelectorAll("[data-context-target]").forEach(function (link) {
+      var target = link.getAttribute("data-context-target");
+      if (target === "scorecard") link.href = base + finding + "#finding-handoff";
+      if (target === "brief") link.href = base + "brief/" + finding + "#finding-handoff";
+      if (target === "board") link.href = base + "board/" + finding + "#finding-handoff";
+      if (target === "history") link.href = base + finding + "#trend-h";
+    });
+  });
+}());
+</script>"""
+
+
+def _finding_handoff(
+    artifact: dict[str, Any],
+    agency_id: str,
+    surface_path: str,
+) -> str:
+    """Render one operational handoff whose selection survives across surfaces.
+
+    The artifact remains the source of every statement. The handoff does not
+    claim who owns the change and does not create a ticket or workflow state.
+    """
+    agency_name = str(artifact.get("agency", {}).get("name") or agency_id)
+    fixes = [
+        fix for fix in artifact.get("top_fixes", [])[:3] if _safe_finding_code(fix.get("code"))
+    ]
+    if not fixes:
+        return ""
+
+    choices: list[str] = []
+    panels: list[str] = []
+    for index, fix in enumerate(fixes, start=1):
+        code = _safe_finding_code(fix.get("code"))
+        choice_href = _finding_url(surface_path, code)
+        choices.append(
+            f'<a href="{esc(choice_href)}" data-finding-choice="{esc(code)}">'
+            f"<span>0{index}</span> {esc(code)}</a>"
+        )
+        evidence_url = _finding_url(
+            f"{BASE_URL}/agency/{agency_id}/",
+            code,
+        )
+        recheck = (
+            "Publish the changed feed at the same URL. On the next complete, comparable "
+            "scorecard run, confirm that this finding is no longer reported."
+        )
+        handoff_text = (
+            f"Agency: {agency_name}\n"
+            f"Finding: {code}\n"
+            f"Feed evidence: {fix.get('what', '')}\n"
+            f"Why it matters: {fix.get('why', '')}\n"
+            f"Requested change: {fix.get('fix', '')}\n"
+            f"Recheck: {recheck}\n"
+            f"Evidence: {evidence_url}"
+        )
+        guide_link = (
+            f'<a href="{esc(_finding_url(f"/fix/{code}/", code, agency_id=agency_id))}">'
+            "Open fix guide</a>"
+            if code in FIX_CODES_WITH_PAGES
+            else ""
+        )
+        surface_links = [
+            guide_link,
+            f'<a href="{esc(_finding_url(f"/agency/{agency_id}/brief/", code))}">Call brief</a>',
+            f'<a href="{esc(_finding_url(f"/agency/{agency_id}/board/", code))}">Board view</a>',
+            f'<a href="{esc(_finding_url(f"/agency/{agency_id}/", code, anchor="trend-h"))}">Feed history</a>',
+        ]
+        panels.append(
+            f'<div class="handoff-panel" data-finding-panel="{esc(code)}"'
+            f"{' hidden' if index > 1 else ''}>"
+            '<dl class="handoff-grid">'
+            f"<div><dt>Feed evidence</dt><dd>{esc(fix.get('what', ''))}</dd></div>"
+            f"<div><dt>Next action</dt><dd>{esc(fix.get('fix', ''))}</dd></div>"
+            f"<div><dt>Recheck</dt><dd>{esc(recheck)}</dd></div>"
+            "</dl>"
+            f'<nav class="handoff-links" aria-label="Finding {esc(code)} links">'
+            f"{''.join(link for link in surface_links if link)}</nav>"
+            '<details class="handoff-copy">'
+            "<summary>Copy handoff text</summary>"
+            f'<textarea readonly rows="8" aria-label="Handoff text for {esc(code)}">{esc(handoff_text)}</textarea>'
+            '<div class="handoff-copy-actions"><button type="button" class="copy-btn" '
+            "data-handoff-copy>Copy handoff</button>"
+            '<span class="copy-status" data-copy-status aria-live="polite"></span></div>'
+            "</details></div>"
+        )
+
+    return (
+        '<section class="finding-handoff" id="finding-handoff" '
+        'data-finding-handoff aria-labelledby="finding-handoff-h">'
+        '<div class="handoff-head"><div>'
+        '<p class="handoff-kicker">Finding handoff</p>'
+        '<h2 id="finding-handoff-h">Move one finding to a recheck</h2></div>'
+        "<p>Select one finding. Copy the request, make the change in the "
+        "feed-producing tool, then compare the next complete run.</p></div>"
+        '<nav class="finding-picker" aria-label="Select a prioritized finding">'
+        f"{''.join(choices)}</nav>{''.join(panels)}</section>{_FINDING_CONTEXT_SCRIPT}"
+    )
+
+
 def _rule_ref_link(code: str) -> str:
-    """Inline link to a finding's authoritative rule, for the 'Validator rule'
+    """Inline link to a finding's authoritative rule, for the 'Finding code'
     line on agency findings. Links the canonical gtfs-validator notice (or the
     relevant GTFS Best Practice / reference) so the Cal-ITP / state-DOT reader
     lands on the canonical rule used across validator reports. Empty when no
@@ -191,23 +394,31 @@ def _fix_rule_reference(code: str) -> str:
             )
         link_text = f"Read the authoritative rule for {notice} in the GTFS Validator rules"
     elif link.kind == BEST_PRACTICE:
-        lead = (
-            "The GTFS Validator does not flag this (the field is valid GTFS when "
-            "left empty), so the expectation comes from the community GTFS Best "
-            "Practices."
-        )
+        if code in {"scorecard_feed_expired", "scorecard_feed_expiring_soon"}:
+            lead = (
+                "This scorecard finding combines feed_info and calendar service "
+                "dates to estimate when riders lose trip-planning coverage. The "
+                "GTFS Validator has related expiry notices, but no single validator "
+                "rule uses this exact combined calculation, so the operational "
+                "expectation comes from the community GTFS Best Practices."
+            )
+        else:
+            lead = (
+                "The GTFS Validator does not flag this, so the expectation comes "
+                "from the community GTFS Best Practices."
+            )
         link_text = "Read the relevant GTFS Best Practice"
     elif link.kind == REALTIME_REFERENCE:
         lead = (
-            "This scores GTFS-Realtime, which the GTFS Validator does not check "
-            "(it validates GTFS Schedule), so the expectation comes from the "
-            "GTFS-Realtime reference's message definition."
+            "This scorecard finding concerns GTFS-Realtime, while the MobilityData "
+            "GTFS Validator validates GTFS Schedule. The linked GTFS-Realtime "
+            "reference defines the message this scorecard checks."
         )
         link_text = "Read the relevant GTFS-Realtime reference section"
     else:  # reference
         lead = (
-            "The GTFS Validator does not flag this, so the expectation comes from "
-            "the field's definition in the GTFS Schedule reference."
+            "The linked GTFS Schedule reference defines the field or data this "
+            "scorecard finding checks."
         )
         link_text = "Read the relevant GTFS Schedule reference section"
     return (
@@ -229,6 +440,41 @@ def _cleared_findings(prev: dict[str, Any] | None, cur: dict[str, Any]) -> list[
         return []
     current = _finding_codes(cur)
     return [(code, what) for code, what in _finding_codes(prev).items() if code not in current]
+
+
+def _previous_indexed_artifact(
+    agency_id: str,
+    history: list[dict[str, Any]],
+    dated_artifacts: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    """Return the exact prior indexed snapshot when it is locally hydrated.
+
+    A bounded Pages checkout can contain old cutover artifacts plus the current
+    record without containing the immediately preceding record. Treating the
+    second-to-last local file as "previous" would then compare non-adjacent
+    checks and could claim a finding cleared in the wrong interval.
+    """
+    if len(history) < 2:
+        return None
+    indexed_previous = history[-2]
+    previous_date = str(indexed_previous.get("date") or "")
+    if not previous_date:
+        return None
+    from .publish import _history_entry
+
+    for artifact in reversed(dated_artifacts):
+        try:
+            if str(artifact.get("snapshot_date") or "") != previous_date:
+                continue
+            if str(artifact.get("agency", {}).get("id") or "") != agency_id:
+                continue
+            candidate_summary = _history_entry(artifact)
+        except (AttributeError, KeyError, TypeError, ValueError):
+            continue
+        if any(candidate_summary.get(field) != value for field, value in indexed_previous.items()):
+            continue
+        return artifact
+    return None
 
 
 def _history_section(
@@ -588,7 +834,7 @@ def _feeddiff_finding_cards(changes: list[Any]) -> str:
             f"{_finding_severity_badge(c.severity)}"
             f'<span class="count">{count} {noun}</span></div>'
             f'<p class="what">{esc(c.what)}</p>'
-            f'<p class="code">Validator rule: {esc(c.code)}{_fix_guide_link(str(c.code))}{_rule_ref_link(str(c.code))}</p></li>'
+            f'<p class="code">Finding code: {esc(c.code)}{_fix_guide_link(str(c.code))}{_rule_ref_link(str(c.code))}</p></li>'
         )
     return "".join(items)
 
@@ -1215,7 +1461,7 @@ def _outreach_section(artifact: dict[str, Any], canonical: str) -> str:
 def _vendor_request(artifact: dict[str, Any], canonical: str) -> str | None:
     """A ready-to-send fix request a manager can forward to whoever runs their
     GTFS export (the vendor or scheduling tool). Built from the top fixes so the
-    words match the scorecard, with the validator notice codes and the fix-guide
+    words match the scorecard, with the finding codes and the fix-guide
     links, so a non-technical manager can act without translating anything."""
     fixes = artifact.get("top_fixes", [])
     if not fixes:
@@ -1234,7 +1480,7 @@ def _vendor_request(artifact: dict[str, Any], canonical: str) -> str | None:
         if what:
             lines.append(f"   What: {what}")
         if code:
-            lines.append(f"   Validator notice: {code}")
+            lines.append(f"   Finding code: {code}")
             if code in FIX_CODES_WITH_PAGES:
                 lines.append(f"   Guide: {BASE_URL}/fix/{code}/")
         lines.append("")
@@ -1286,7 +1532,7 @@ _AGENCY_MAP_STOP_LIST_CAP = 250
 # each drawable route's row focusable (so a page without the script gains no
 # inert tab stops), focus brushes its line, and Enter or Space pins it, the
 # keyboard equivalent of hovering and clicking a line on the canvas.
-_AGENCY_MAP_JS = r"""      (function () {
+_AGENCY_MAP_JS = r"""      function initAgencyMap() {
         if (!window.maplibregl) return;
         var geoUrl = __GEO_URL_JSON__;
         var reduce = window.matchMedia
@@ -1401,6 +1647,8 @@ _AGENCY_MAP_JS = r"""      (function () {
             if (!b.isEmpty()) { map.fitBounds(b, { padding: 36, animate: !reduce, duration: reduce ? 0 : 600 }); }
 
             mapReady = true;
+            var statusEl = document.getElementById("route-map-load-status");
+            if (statusEl) statusEl.textContent = "Interactive route map loaded.";
             if (current !== null) {
               map.setFilter("routes-hi", ["==", ["get", "route_id"], current]);
             }
@@ -1435,9 +1683,13 @@ _AGENCY_MAP_JS = r"""      (function () {
             map.on("click", "stops", popup);
             map.on("mouseenter", "stops", function () { map.getCanvas().style.cursor = "pointer"; });
             map.on("mouseleave", "stops", function () { map.getCanvas().style.cursor = ""; });
-          }).catch(function () {});
+          }).catch(function () {
+            var statusEl = document.getElementById("route-map-load-status");
+            if (statusEl) statusEl.textContent =
+              "The route data could not load. The complete route and stop data is still below.";
+          });
         });
-      })();"""
+      }"""
 
 
 def _agency_map_script(geo_url: str) -> str:
@@ -1449,11 +1701,40 @@ def _agency_map_script(geo_url: str) -> str:
     its row in the table and the reverse; clicking names the route or stop. The
     same rows carry the keyboard model: the script makes each drawable route's
     row focusable, focusing it brushes its line, and Enter or Space pins the
-    selection exactly as a click does. Loads only on pages that have geometry."""
+    selection exactly as a click does. MapLibre and the route geometry load only
+    after an explicit request, so the optional canvas cannot block the scorecard."""
     js = _AGENCY_MAP_JS.replace("__GEO_URL_JSON__", json.dumps(geo_url))
     return (
-        f'    <script src="https://unpkg.com/maplibre-gl@{_MAP_LIB_VERSION}/dist/maplibre-gl.js"></script>\n'
-        "    <script>\n" + js + "\n    </script>"
+        "    <script>\n"
+        "      (function () {\n"
+        '        var loadEl = document.getElementById("route-map-load");\n'
+        '        var statusEl = document.getElementById("route-map-load-status");\n'
+        '        var mapEl = document.getElementById("route-map");\n' + js + "\n"
+        '        loadEl.addEventListener("click", function () {\n'
+        "          loadEl.disabled = true;\n"
+        '          loadEl.textContent = "Loading map…";\n'
+        '          if (statusEl) statusEl.textContent = "Loading the interactive route map.";\n'
+        '          var css = document.createElement("link");\n'
+        '          css.rel = "stylesheet";\n'
+        f'          css.href = "https://unpkg.com/maplibre-gl@{_MAP_LIB_VERSION}/dist/maplibre-gl.css";\n'
+        "          document.head.appendChild(css);\n"
+        '          var script = document.createElement("script");\n'
+        f'          script.src = "https://unpkg.com/maplibre-gl@{_MAP_LIB_VERSION}/dist/maplibre-gl.js";\n'
+        "          script.onload = function () {\n"
+        "            loadEl.hidden = true;\n"
+        '            if (mapEl) mapEl.textContent = "";\n'
+        "            initAgencyMap();\n"
+        "          };\n"
+        "          script.onerror = function () {\n"
+        "            loadEl.disabled = false;\n"
+        '            loadEl.textContent = "Try loading the map again";\n'
+        "            if (statusEl) statusEl.textContent =\n"
+        '              "The map could not load. The complete route and stop data is still below.";\n'
+        "          };\n"
+        "          document.head.appendChild(script);\n"
+        "        });\n"
+        "      })();\n"
+        "    </script>"
     )
 
 
@@ -1548,8 +1829,9 @@ def _route_map_section(
     else:
         route_table = '<p class="page-lede">This feed lists no routes.</p>'
 
-    # Stop summary: the count, and the stop names as a collapsible list so the map
-    # points have a text equivalent without weighing the page down by default.
+    # Keep the stop count eligible for search snippets, while the stop names stay
+    # in the utility-detail boundary with the map and route table. The names form
+    # the map points' text equivalent without weighing the page down by default.
     if stop_count:
         names = stop_names or []
         shown = names[:_AGENCY_MAP_STOP_LIST_CAP]
@@ -1561,18 +1843,19 @@ def _route_map_section(
             if more > 0
             else ""
         )
-        stop_block = (
+        stop_summary = (
             f'<p class="map-stopcount">This feed has <strong>{stop_count}</strong> '
             f"{stop_noun if stop_count == 1 else stop_noun_plural}.</p>"
-            + (
-                f'<details class="stop-list-wrap"><summary>List every {stop_noun}</summary>'
-                f'<ul class="stop-list">{stop_items}{remainder}</ul></details>'
-                if stop_items
-                else ""
-            )
+        )
+        stop_details = (
+            f'<details class="stop-list-wrap"><summary>List every {stop_noun}</summary>'
+            f'<ul class="stop-list">{stop_items}{remainder}</ul></details>'
+            if stop_items
+            else ""
         )
     else:
-        stop_block = f'<p class="page-lede">This feed has no located {stop_noun_plural}.</p>'
+        stop_summary = f'<p class="page-lede">This feed has no located {stop_noun_plural}.</p>'
+        stop_details = ""
 
     # Legend: a swatch plus the route label and color word, so the legend reads
     # without relying on color. Only drawn routes carry a line on the map.
@@ -1601,7 +1884,18 @@ def _route_map_section(
     if geo_path:
         map_html = (
             f'<a class="skip-link-inline" href="#route-data">Skip to route and {stop_noun} data</a>'
-            '<div id="route-map" class="agency-map" aria-hidden="true"></div>'
+            '<div class="map-load-panel">'
+            '<button type="button" class="button button-secondary" id="route-map-load" '
+            'aria-controls="route-map">'
+            "Load interactive route map"
+            "</button>"
+            '<p id="route-map-load-status" class="fineprint" role="status">'
+            f"The route and {stop_noun} data is ready below. Load the map only when you want "
+            "the geographic view. It uses additional data.</p>"
+            "</div>"
+            '<div id="route-map" class="agency-map" aria-hidden="true">'
+            '<p class="map-fallback">The interactive map has not loaded. '
+            f"The route and {stop_noun} data below carries the same information.</p></div>"
             '<p class="fineprint">Basemap: OpenFreeMap, &copy; OpenStreetMap contributors. '
             f"Routes and {stop_noun_plural}: this "
             "agency's GTFS feed.</p>"
@@ -1612,12 +1906,14 @@ def _route_map_section(
         '<section aria-labelledby="map-h" class="route-map-section">'
         f'<h2 class="section-title" id="map-h">Routes and {stop_noun_plural}</h2>'
         + (f'<p class="page-lede">{intro}</p>' if intro else "")
+        + stop_summary
+        + "<div data-nosnippet>"
         + map_html
         + legend
         + '<div id="route-data" tabindex="-1">'
         + route_table
-        + stop_block
-        + "</div></section>"
+        + stop_details
+        + "</div></div></section>"
         + script
     )
 
@@ -2043,6 +2339,182 @@ def _location_label(record: dict[str, Any] | None) -> str:
     return country_label or legacy_state
 
 
+@dataclass(frozen=True)
+class AgencySeoMetadata:
+    """Unique search metadata planned for one published feed record."""
+
+    title: str
+    description: str
+    dataset_name: str
+
+
+def _ellipsize(value: str, limit: int) -> str:
+    """Fit human text within ``limit`` without cutting a trailing separator."""
+    if len(value) <= limit:
+        return value
+    if limit <= 1:
+        return "…"[:limit]
+    return value[: limit - 1].rstrip(" ,-/;:") + "…"
+
+
+def _seo_location_label(location_label: str, limit: int) -> str:
+    """Keep a useful location within a metadata budget."""
+    if len(location_label) <= limit:
+        return location_label
+    country = location_label.rsplit(",", 1)[-1].strip()
+    if country and len(country) <= limit:
+        return country
+    return _ellipsize(location_label, limit)
+
+
+def _agency_seo_metadata(
+    agency_name: str,
+    *,
+    location_label: str = "",
+    rt_measured: bool = False,
+    disambiguator: str = "",
+) -> AgencySeoMetadata:
+    """Build bounded metadata while keeping any disambiguator visible."""
+    if disambiguator:
+        title_disambiguator = _ellipsize(disambiguator, 20)
+        title_suffix = f" [{title_disambiguator}] GTFS quality report"
+    else:
+        title_location = _seo_location_label(location_label, 25)
+        title_qualifier = f" ({title_location})" if title_location else ""
+        title_suffix = f"{title_qualifier} GTFS quality report"
+    title_name = _ellipsize(agency_name, max(1, 60 - len(title_suffix)))
+    title = f"{title_name}{title_suffix}"
+
+    desc_tail = (
+        ": service dates, validator findings, rider information, realtime, and fixes."
+        if rt_measured
+        else ": service dates, validator findings, rider information, and fixes."
+    )
+    desc_prefix = "GTFS quality report for "
+    desc_disambiguator = _ellipsize(disambiguator, 24)
+    identity_prefix = f"[{desc_disambiguator}] " if desc_disambiguator else ""
+    desc_location = _seo_location_label(location_label, 35)
+    location_suffix = f" in {desc_location}" if desc_location else ""
+    max_desc_name = max(
+        1,
+        155 - len(desc_prefix) - len(identity_prefix) - len(location_suffix) - len(desc_tail),
+    )
+    desc_name = _ellipsize(agency_name, max_desc_name)
+    description = f"{desc_prefix}{identity_prefix}{desc_name}{location_suffix}{desc_tail}"
+
+    dataset_context = ", ".join(value for value in (location_label, disambiguator) if value)
+    dataset_name = (
+        f"{agency_name} ({dataset_context}) GTFS data quality report"
+        if dataset_context
+        else f"{agency_name} GTFS data quality report"
+    )
+    if len(title) > 60 or len(description) > 155:
+        raise ValueError(f"agency SEO metadata exceeds its length budget for {agency_name!r}")
+    return AgencySeoMetadata(title, description, dataset_name)
+
+
+def _metadata_collision_components(
+    planned: dict[str, AgencySeoMetadata],
+) -> list[set[str]]:
+    """Return connected groups that collide on any indexable metadata field."""
+    parent = {agency_id: agency_id for agency_id in planned}
+
+    def find(agency_id: str) -> str:
+        while parent[agency_id] != agency_id:
+            parent[agency_id] = parent[parent[agency_id]]
+            agency_id = parent[agency_id]
+        return agency_id
+
+    def union(left: str, right: str) -> None:
+        left_root, right_root = find(left), find(right)
+        if left_root != right_root:
+            parent[right_root] = left_root
+
+    for field in ("title", "description", "dataset_name"):
+        seen: dict[str, str] = {}
+        for agency_id, metadata in planned.items():
+            value = str(getattr(metadata, field)).casefold()
+            if value in seen:
+                union(agency_id, seen[value])
+            else:
+                seen[value] = agency_id
+
+    groups: dict[str, set[str]] = {}
+    for agency_id in planned:
+        groups.setdefault(find(agency_id), set()).add(agency_id)
+    return [group for group in groups.values() if len(group) > 1]
+
+
+def _plan_agency_seo_metadata(
+    records: list[dict[str, Any]],
+    artifacts_by_id: dict[str, dict[str, Any]],
+    registry_by_id: dict[str, Agency],
+) -> dict[str, AgencySeoMetadata]:
+    """Plan unique titles, descriptions, and Dataset names for the corpus."""
+    planned: dict[str, AgencySeoMetadata] = {}
+    record_by_id = {str(record["id"]): record for record in records}
+    for agency_id, record in record_by_id.items():
+        artifact = artifacts_by_id[agency_id]
+        planned[agency_id] = _agency_seo_metadata(
+            str(record.get("name") or agency_id),
+            location_label=_location_label(record),
+            rt_measured=(
+                artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
+            ),
+        )
+
+    for group in _metadata_collision_components(planned):
+        agencies = [registry_by_id.get(agency_id) for agency_id in sorted(group)]
+        variants = [agency.feed_variant.strip() if agency else "" for agency in agencies]
+        mdb_ids = [
+            normalized_mdb_id(agency.mdb_id) if agency and agency.mdb_id else ""
+            for agency in agencies
+        ]
+        if all(variants) and len({value.casefold() for value in variants}) == len(group):
+            qualifiers = dict(zip(sorted(group), variants, strict=True))
+        elif all(mdb_ids) and len(set(mdb_ids)) == len(group):
+            qualifiers = {
+                agency_id: f"MDB {mdb_id.removeprefix('mdb-')}"
+                for agency_id, mdb_id in zip(sorted(group), mdb_ids, strict=True)
+            }
+        else:
+            qualifiers = {
+                agency_id: f"record {hashlib.sha256(agency_id.encode()).hexdigest()[:8]}"
+                for agency_id in group
+            }
+        for agency_id in group:
+            record = record_by_id[agency_id]
+            artifact = artifacts_by_id[agency_id]
+            planned[agency_id] = _agency_seo_metadata(
+                str(record.get("name") or agency_id),
+                location_label=_location_label(record),
+                rt_measured=(
+                    artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
+                ),
+                disambiguator=qualifiers[agency_id],
+            )
+
+    remaining = _metadata_collision_components(planned)
+    for group in remaining:
+        for agency_id in group:
+            record = record_by_id[agency_id]
+            artifact = artifacts_by_id[agency_id]
+            planned[agency_id] = _agency_seo_metadata(
+                str(record.get("name") or agency_id),
+                location_label=_location_label(record),
+                rt_measured=(
+                    artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
+                ),
+                disambiguator=(f"record {hashlib.sha256(agency_id.encode()).hexdigest()[:8]}"),
+            )
+
+    remaining = _metadata_collision_components(planned)
+    if remaining:
+        collisions = ", ".join(",".join(sorted(group)) for group in remaining)
+        raise ValueError(f"agency SEO metadata is not unique: {collisions}")
+    return planned
+
+
 def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     artifact: dict[str, Any],
     history: list[dict[str, Any]] | None = None,
@@ -2054,6 +2526,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     now: dt.datetime | None = None,
     artifacts: list[dict[str, Any]] | None = None,
     effort_bands: dict[str, str] | None = None,
+    seo_metadata: AgencySeoMetadata | None = None,
 ) -> str:
     name = artifact["agency"]["id"], artifact["agency"]["name"]
     agency_id, agency_name = name
@@ -2077,30 +2550,14 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     from .mode_language import adapt_artifact_language
 
     artifact = adapt_artifact_language(artifact)
-    title_qualifier = f" ({location_label})" if location_label else ""
-    title_suffix = f"{title_qualifier} GTFS quality report"
-    max_name = max(18, 60 - len(title_suffix))
-    title_name = (
-        agency_name
-        if len(agency_name) <= max_name
-        else agency_name[: max_name - 1].rstrip(" ,-/") + "…"
-    )
-    title = f"{title_name}{title_suffix}"
     rt_measured = artifact.get("categories", {}).get("realtime", {}).get("status") == "measured"
-    desc_tail = (
-        ": current service dates, validator findings, rider information, realtime quality, "
-        "and prioritized fixes."
-        if rt_measured
-        else ": current service dates, validator findings, rider information, and prioritized fixes."
+    metadata = seo_metadata or _agency_seo_metadata(
+        agency_name,
+        location_label=location_label,
+        rt_measured=rt_measured,
     )
-    desc_prefix = "GTFS quality report for "
-    max_desc_name = max(18, 155 - len(desc_prefix) - len(desc_tail))
-    desc_name = (
-        agency_name
-        if len(agency_name) <= max_desc_name
-        else agency_name[: max_desc_name - 1].rstrip(" ,-/") + "…"
-    )
-    desc = f"{desc_prefix}{desc_name}{desc_tail}"
+    title = metadata.title
+    desc = metadata.description
 
     map_section = _route_map_section(artifact, agency_id, stop_names)
     # Insert the map and a closing rule only when there is a map, so a feed without
@@ -2113,6 +2570,10 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         for i, f in enumerate(fixes):
             sev = str(f.get("severity", "")).upper()
             cls = " sev-warning" if sev == "WARNING" else " sev-info" if sev == "INFO" else ""
+            code = _safe_finding_code(f.get("code"))
+            finding_attrs = (
+                f' id="finding-{esc(code)}" data-finding-card="{esc(code)}"' if code else ""
+            )
             pts = f.get("points")
             worth = (
                 f'<span class="aworth">worth about +{round(float(pts))} '
@@ -2123,7 +2584,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             owner = f.get("owner")
             owner_tag = f'<span class="aowner">{esc(owner)}</span>' if owner else ""
             alerts.append(
-                f'<div class="alert"><span class="badge{cls}">Fix {i + 1:02d}</span>'
+                f'<div class="alert"{finding_attrs}><span class="badge{cls}">Fix {i + 1:02d}</span>'
                 f'<div><p class="afix">{esc(f["fix"])}{owner_tag}</p>'
                 f'<p class="awhy">{esc(f["what"])} {esc(f["why"])}</p>'
                 f'<p class="aeta">⏱ {esc(f["effort"])}{worth}</p>'
@@ -2202,7 +2663,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         f'<p class="what">{esc(f.get("what", ""))}</p><p class="why">{esc(f.get("why", ""))}</p>'
         f'<p class="how"><strong>Fix:</strong> {esc(f.get("fix", ""))} <em>({esc(f.get("effort", ""))})</em></p>'
         f"{_effort_band_html(str(f.get('code', '')), effort_bands)}"
-        f'<p class="code">Validator rule: {esc(f.get("code", ""))}{_fix_guide_link(str(f.get("code", "")))}{_rule_ref_link(str(f.get("code", "")))}</p></li>'
+        f'<p class="code">Finding code: {esc(f.get("code", ""))}{_fix_guide_link(str(f.get("code", "")))}{_rule_ref_link(str(f.get("code", "")))}</p></li>'
         for f in findings
     )
     if findings_html:
@@ -2312,6 +2773,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     <section aria-labelledby="fixes-h">
       <h2 class="section-title" id="fixes-h">Top things to fix</h2>
       {fixes_html}
+      {_finding_handoff(artifact, agency_id, f"/agency/{agency_id}/")}
       {_guided_fix_flow(artifact, agency_id, has_fixlog)}
     </section>
     {_rider_impact_section(artifact)}{ferry_profile_block}
@@ -2355,7 +2817,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     jsonld = {
         "@context": "https://schema.org",
         "@type": "Dataset",
-        "name": f"{agency_name} GTFS data quality report",
+        "name": metadata.dataset_name,
         "description": desc,
         "url": canonical,
         "identifier": [
@@ -2390,12 +2852,6 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         f'<link rel="alternate" type="application/atom+xml" '
         f'title="{esc(agency_name)} feed quality changes" href="{canonical}feed.xml">'
     )
-    # The map stylesheet loads only on pages that actually draw a map.
-    if map_section:
-        atom += (
-            f'\n  <link rel="stylesheet" '
-            f'href="https://unpkg.com/maplibre-gl@{_MAP_LIB_VERSION}/dist/maplibre-gl.css">'
-        )
     return _page(
         title=title,
         description=desc,
@@ -2508,7 +2964,8 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     fixes = artifact.get("top_fixes", [])[:3]
     if fixes:
         fix_items = "".join(
-            f'<li class="brief-fix"><p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
+            f'<li class="brief-fix"{_finding_card_attrs(f)}>'
+            f'<p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
             f'<p class="brief-fix-why">{esc(f.get("what", ""))} {esc(f.get("why", ""))}</p>'
             f'<p class="brief-fix-eta">Effort: {esc(f.get("effort", ""))}</p>'
             f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</li>"
@@ -2675,6 +3132,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
       <h2 id="brief-fixes-h">Top three things to fix</h2>
       {fixes_html}
     </section>
+    {_finding_handoff(artifact, agency_id, f"/agency/{agency_id}/brief/")}
     {outreach_html}
 {ntd_section}
     {standards_html}
@@ -2747,7 +3205,8 @@ def _render_board_page(
     fixes = artifact.get("top_fixes", [])[:3]
     if fixes:
         ask_items = "".join(
-            f'<li class="brief-fix"><p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
+            f'<li class="brief-fix"{_finding_card_attrs(f)}>'
+            f'<p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
             f'<p class="brief-fix-why">{esc(f.get("what", ""))} {esc(f.get("why", ""))}</p>'
             f'<p class="brief-fix-eta">Estimated effort: {esc(f.get("effort", ""))}</p>'
             f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</li>"
@@ -2793,6 +3252,7 @@ def _render_board_page(
       {asks_html}
       {who_makes}
     </section>
+    {_finding_handoff(artifact, agency_id, f"/agency/{agency_id}/board/")}
     <p class="brief-foot">Produced by the GTFS Scorecard, an open-source data quality
       tool. A data-quality read to support the board conversation, not an official
       compliance determination. Live scorecard: {esc(f"{BASE_URL}/agency/{agency_id}/")}.
@@ -2823,6 +3283,7 @@ def _render_fixlog_page(
     artifact: dict[str, Any],
     receipts: list[dict[str, str]],
     dir_record: dict[str, Any] | None = None,
+    seo_metadata: AgencySeoMetadata | None = None,
 ) -> str:
     """The durable clearance log (/agency/<id>/fixes/), newest first.
 
@@ -2872,12 +3333,25 @@ def _render_fixlog_page(
       Pair a clearance with the owner or vendor's action record when you need evidence of a
       specific intervention. <a href="/agency/{esc(agency_id)}/">Return to the current scorecard</a>.</p>
     </section>"""
-    desc = (
-        f"Dated, linkable record of {len(receipts)} finding "
-        f"{'clearance' if len(receipts) == 1 else 'clearances'} observed on "
-        f"{agency_name}'s GTFS feed."
+    metadata = seo_metadata or _agency_seo_metadata(
+        agency_name,
+        location_label=_location_label(dir_record),
     )
-    title = f"{agency_name} finding clearance log — GTFS Scorecard"
+    report_suffix = " GTFS quality report"
+    if not metadata.title.endswith(report_suffix):
+        raise ValueError(f"agency SEO title has an unexpected shape for {agency_name!r}")
+    # The planned title is corpus-unique and reserves 20 characters for the
+    # report suffix. Reusing its complete identity stem preserves location or
+    # feed disambiguation, while the shorter clearance suffix remains bounded.
+    identity = metadata.title.removesuffix(report_suffix)
+    title = f"{identity} GTFS clearance log"
+    clearance_label = "clearance" if len(receipts) == 1 else "clearances"
+    desc = (
+        f"Dated, linkable record of {len(receipts)} finding {clearance_label} "
+        f"observed for {identity}."
+    )
+    if len(title) > 60 or len(desc) > 155:
+        raise ValueError(f"fix-log SEO metadata exceeds its length budget for {agency_name!r}")
     country = str(
         (dir_record or {}).get("country") or artifact.get("agency", {}).get("country") or "US"
     )
@@ -3747,148 +4221,253 @@ def _index_card(aid: str, a: dict[str, Any], note: str = "") -> str:
     )
 
 
-def _render_agency_index(index: dict[str, Any], liveness: dict[str, dict[str, Any]]) -> str:
-    canonical = f"{BASE_URL}/agencies/"
-    agencies = sorted(index["agencies"].items(), key=lambda kv: kv[1]["name"].lower())
+_AGENCY_INDEX_PAGE_SIZE = 80
 
-    # Pull expired feeds out of the grade sections so the actionable ones aren't
-    # buried in a long alphabetical wall of grade F. Split them: a recently
-    # lapsed feed is a one-line re-export the agency can still fix; a feed that
-    # has been dead for over a year usually means the URL itself is stale and the
-    # canonical endpoint should be re-checked in the Mobility Database. Within
-    # "expired over a year", a further automatic split (metrics.operating_signal,
-    # from the intraday liveness check, not a curator's manual note): a feed
-    # whose URL has itself failed every check for a sustained month reads
-    # differently in a caseload view than one whose stale calendar sits on a
-    # still-answering host. Neither is "the agency stopped" -- that stays a
-    # human call -- but a liaison should not have to guess which one they are
-    # looking at from the same one-line caption.
+
+def _agency_index_href(page: int) -> str:
+    """Stable public URL for one human-readable directory page."""
+    return "/agencies/" if page == 1 else f"/agencies/page/{page}/"
+
+
+def _agency_index_groups(
+    index: dict[str, Any], liveness: dict[str, dict[str, Any]]
+) -> tuple[int, list[dict[str, Any]]]:
+    """Directory rows grouped in their practitioner-facing reading order.
+
+    The returned rows are already ordered. Pagination happens after grouping so
+    every feed appears exactly once and the page chain stays deterministic.
+    """
+    agencies = sorted(index["agencies"].items(), key=lambda kv: kv[1]["name"].lower())
     lapsed: list[tuple[str, dict[str, Any], int]] = []
     stale_reachable: list[tuple[str, dict[str, Any], int]] = []
     stale_unreachable: list[tuple[str, dict[str, Any], int]] = []
-    graded: list[tuple[str, dict[str, Any]]] = []
-    for aid, a in agencies:
-        last = a["history"][-1]
+    current: list[tuple[str, dict[str, Any], int | None]] = []
+    for aid, agency in agencies:
+        last = agency["history"][-1]
         days = last.get("days_until_expiry")
         status = expiry_status(days)
         if status == "lapsed":
-            lapsed.append((aid, a, int(days)))
+            lapsed.append((aid, agency, int(days)))
         elif status == "stale":
             failures = int((liveness.get(aid) or {}).get("consecutive_failures") or 0)
             if operating_signal(status, failures) == "unreachable":
-                stale_unreachable.append((aid, a, int(days)))
+                stale_unreachable.append((aid, agency, int(days)))
             else:
-                stale_reachable.append((aid, a, int(days)))
+                stale_reachable.append((aid, agency, int(days)))
         else:
-            graded.append((aid, a))
-    # Most recently expired first: the closest to recovery, and the most likely
-    # to still be operating.
-    lapsed.sort(key=lambda t: t[2], reverse=True)
-    stale_reachable.sort(key=lambda t: t[2], reverse=True)
-    stale_unreachable.sort(key=lambda t: t[2], reverse=True)
-    stale_total = len(stale_reachable) + len(stale_unreachable)
+            current.append((aid, agency, None))
 
-    nav = []
-    expired_section = ""
-    if lapsed or stale_total:
-        nav.append(f'<a href="#expired">Expired ({len(lapsed) + stale_total})</a>')
-        groups = []
-        if lapsed:
-            rows = "".join(
-                _index_card(aid, a, f"Feed expired {_expired_ago(d)} · likely still running")
-                for aid, a, d in lapsed
-            )
-            groups.append(
-                '<section aria-labelledby="lapsed-h">'
-                '<h3 class="section-sub" id="lapsed-h">Recently lapsed '
-                f'<span class="grade-count">{len(lapsed)} '
-                f"{'feed' if len(lapsed) == 1 else 'feeds'}</span></h3>"
-                '<p class="group-note">Expired within the last year. These feeds are '
-                "almost certainly still running. Re-exporting the feed with a calendar that "
-                "reaches further out brings them back into trip planners.</p>"
-                f'<ul class="agency-list">{rows}</ul></section>'
-            )
-        if stale_reachable:
-            rows = "".join(
-                _index_card(aid, a, f"Feed expired {_expired_ago(d)} · check the feed URL")
-                for aid, a, d in stale_reachable
-            )
-            groups.append(
-                '<section aria-labelledby="stale-h">'
-                '<h3 class="section-sub" id="stale-h">Expired over a year ago '
-                f'<span class="grade-count">{len(stale_reachable)} '
-                f"{'feed' if len(stale_reachable) == 1 else 'feeds'}</span></h3>"
-                '<p class="group-note">Expired more than a year ago. For these, the feed URL on '
-                "file is still the one listed in the Mobility Database, so the stale data is at "
-                "the source: the agency or its vendor stopped refreshing the export. Worth "
-                "confirming the agency still runs before reading the grade as a current failure.</p>"
-                f'<ul class="agency-list">{rows}</ul></section>'
-            )
-        if stale_unreachable:
-            rows = "".join(
-                _index_card(
-                    aid, a, f"Feed expired {_expired_ago(d)} · link unreachable for 30+ checks"
+    # Most recently expired first: the closest to recovery, and the most likely
+    # to still be operating. Current records retain alphabetical order.
+    lapsed.sort(key=lambda row: row[2], reverse=True)
+    stale_reachable.sort(key=lambda row: row[2], reverse=True)
+    stale_unreachable.sort(key=lambda row: row[2], reverse=True)
+    return len(agencies), [
+        {
+            "key": "lapsed",
+            "heading": "Recently lapsed",
+            "note": (
+                "Expired within the last year. These feeds are almost certainly still running. "
+                "Re-exporting the feed with a calendar that reaches further out brings them "
+                "back into trip planners."
+            ),
+            "rows": [
+                (aid, agency, f"Feed expired {_expired_ago(days)} · likely still running")
+                for aid, agency, days in lapsed
+            ],
+        },
+        {
+            "key": "stale",
+            "heading": "Expired over a year ago",
+            "note": (
+                "Expired more than a year ago. For these, the feed URL on file is still the one "
+                "listed in the Mobility Database, so the stale data is at the source: the agency "
+                "or its vendor stopped refreshing the export. Worth confirming the agency still "
+                "runs before reading the grade as a current failure."
+            ),
+            "rows": [
+                (aid, agency, f"Feed expired {_expired_ago(days)} · check the feed URL")
+                for aid, agency, days in stale_reachable
+            ],
+        },
+        {
+            "key": "unreachable",
+            "heading": "Long unreachable",
+            "note": (
+                "Expired more than a year ago, and the feed URL itself has not answered the last "
+                "30 checks in a row — a stronger signal than an old calendar alone. This may "
+                "mean the feed moved, the listing is stale, or service has changed; we cannot "
+                "tell which from here. Worth confirming directly before reading it either way."
+            ),
+            "rows": [
+                (
+                    aid,
+                    agency,
+                    f"Feed expired {_expired_ago(days)} · link unreachable for 30+ checks",
                 )
-                for aid, a, d in stale_unreachable
-            )
-            groups.append(
-                '<section aria-labelledby="unreachable-h">'
-                '<h3 class="section-sub" id="unreachable-h">Long unreachable '
-                f'<span class="grade-count">{len(stale_unreachable)} '
-                f"{'feed' if len(stale_unreachable) == 1 else 'feeds'}</span></h3>"
-                '<p class="group-note">Expired more than a year ago, and the feed URL itself '
-                "has not answered the last 30 checks in a row &mdash; a stronger signal than "
-                "an old calendar alone. This may mean the feed moved, the listing is stale, or "
-                "service has changed; we cannot tell which from here. Worth confirming directly "
-                "before reading it either way.</p>"
-                f'<ul class="agency-list">{rows}</ul></section>'
-            )
+                for aid, agency, days in stale_unreachable
+            ],
+        },
+        {
+            "key": "current",
+            "heading": "Current and upcoming service",
+            "note": (
+                "Listed alphabetically. Each grade describes only that feed's published bytes "
+                "under its stated scoring contract; this list is not a cross-feed ranking."
+            ),
+            "rows": [(aid, agency, "") for aid, agency, _ in current],
+        },
+    ]
+
+
+def _agency_index_pager(page: int, page_count: int, *, label: str) -> str:
+    """Compact crawlable previous/next navigation for the directory."""
+    if page_count <= 1:
+        return ""
+    previous = (
+        f'<a rel="prev" href="{_agency_index_href(page - 1)}">&larr; Previous page</a>'
+        if page > 1
+        else '<span aria-hidden="true">&larr; Previous page</span>'
+    )
+    following = (
+        f'<a rel="next" href="{_agency_index_href(page + 1)}">Next page &rarr;</a>'
+        if page < page_count
+        else '<span aria-hidden="true">Next page &rarr;</span>'
+    )
+    return (
+        f'<nav class="directory-pager" aria-label="{esc(label)}">{previous}'
+        f'<span aria-current="page">Page {page} of {page_count}</span>{following}</nav>'
+    )
+
+
+def _agency_index_head_links(page: int, page_count: int) -> str:
+    """HTML discovery links for the adjacent directory documents."""
+    links = []
+    if page > 1:
+        links.append(f'<link rel="prev" href="{BASE_URL}{_agency_index_href(page - 1)}">')
+    if page < page_count:
+        links.append(f'<link rel="next" href="{BASE_URL}{_agency_index_href(page + 1)}">')
+    return "\n  ".join(links)
+
+
+def _agency_index_jump_nav(*, has_expired: bool, has_current: bool) -> str:
+    """On-page links only for sections present in the current bounded page."""
+    links = []
+    if has_expired:
+        links.append('<a href="#expired">Expired feeds on this page</a>')
+    if has_current:
+        links.append('<a href="#current">Current service on this page</a>')
+    if not links:
+        return ""
+    return (
+        f'<nav class="grade-jump" aria-label="Jump to section">Jump to: {" · ".join(links)}</nav>'
+    )
+
+
+def _render_agency_index(
+    index: dict[str, Any],
+    liveness: dict[str, dict[str, Any]],
+    *,
+    page: int = 1,
+    page_size: int = _AGENCY_INDEX_PAGE_SIZE,
+) -> str:
+    """Render one bounded page of the crawlable agency directory."""
+    total, groups = _agency_index_groups(index, liveness)
+    page_count = max(1, math.ceil(total / page_size))
+    if page < 1 or page > page_count:
+        raise ValueError(f"directory page {page} is outside 1..{page_count}")
+
+    flat_rows: list[tuple[str, str, dict[str, Any], str]] = []
+    group_by_key = {str(group["key"]): group for group in groups}
+    for group in groups:
+        flat_rows.extend(
+            (str(group["key"]), aid, agency, note) for aid, agency, note in group["rows"]
+        )
+    start = (page - 1) * page_size
+    page_rows = flat_rows[start : start + page_size]
+    end = start + len(page_rows)
+
+    rows_by_group: dict[str, list[tuple[str, dict[str, Any], str]]] = {}
+    for key, aid, agency, note in page_rows:
+        rows_by_group.setdefault(key, []).append((aid, agency, note))
+
+    expired_keys = ("lapsed", "stale", "unreachable")
+    expired_total = sum(len(group_by_key[key]["rows"]) for key in expired_keys)
+    expired_groups = []
+    for key in expired_keys:
+        selected = rows_by_group.get(key, [])
+        if not selected:
+            continue
+        group = group_by_key[key]
+        rows = "".join(_index_card(aid, agency, note) for aid, agency, note in selected)
+        expired_groups.append(
+            f'<section aria-labelledby="{key}-h">'
+            f'<h3 class="section-sub" id="{key}-h">{esc(group["heading"])} '
+            f'<span class="grade-count">{len(selected)} on this page · '
+            f"{len(group['rows'])} total</span></h3>"
+            f'<p class="group-note">{esc(group["note"])}</p>'
+            f'<ul class="agency-list">{rows}</ul></section>'
+        )
+    expired_section = ""
+    if expired_groups:
         expired_section = (
             '<section class="expired-panel" aria-labelledby="expired">'
             '<h2 class="section-title" id="expired">Expired feeds '
-            f'<span class="grade-count">{len(lapsed) + stale_total} '
-            f"{'feed' if len(lapsed) + stale_total == 1 else 'feeds'}</span></h2>"
+            f'<span class="grade-count">{expired_total} total</span></h2>'
             '<p class="page-lede">A feed whose calendar has run out is invisible to trip '
-            "planners even while service continues. These are pulled out of the grade list "
-            "below so the fixable ones are easy to find.</p>"
-            f"{''.join(groups)}</section>"
+            "planners even while service continues. These are pulled out of the current-service "
+            "list so the fixable ones are easy to find.</p>"
+            f"{''.join(expired_groups)}</section>"
         )
 
-    sections: list[str] = []
-    if graded:
-        # ``agencies`` was sorted by name before the expiry split, so this stays
-        # alphabetical. Each row keeps its own grade, but the page does not turn
-        # mixed-contract feed records into a high-to-low list or grade aggregate.
-        nav.append('<a href="#current">Current and upcoming service</a>')
-        rows = "".join(_index_card(aid, agency) for aid, agency in graded)
-        sections.append(
+    current_section = ""
+    selected_current = rows_by_group.get("current", [])
+    if selected_current:
+        current_group = group_by_key["current"]
+        rows = "".join(_index_card(aid, agency, note) for aid, agency, note in selected_current)
+        current_section = (
             '<section aria-labelledby="current">'
-            '<h2 class="section-title" id="current">Current and upcoming service</h2>'
-            '<p class="group-note">Listed alphabetically. Each grade describes only that '
-            "feed's published bytes under its stated scoring contract; this list is not a "
-            "cross-feed ranking.</p>"
+            '<h2 class="section-title" id="current">Current and upcoming service '
+            f'<span class="grade-count">{len(selected_current)} on this page · '
+            f"{len(current_group['rows'])} total</span></h2>"
+            f'<p class="group-note">{esc(current_group["note"])}</p>'
             f'<ul class="agency-list">{rows}</ul></section>'
         )
 
+    canonical_path = _agency_index_href(page)
+    canonical = f"{BASE_URL}{canonical_path}"
+    page_suffix = f", page {page}" if page > 1 else ""
+    title = f"Agency scorecards{page_suffix} — GTFS Scorecard"
     desc = (
-        f"GTFS data quality scorecards for {len(agencies)} published feed records. Expired feeds are "
-        "listed first, split into recently lapsed and long dead, then the rest alphabetically."
+        f"Page {page} of {page_count} for {total} published GTFS feed scorecards, "
+        "including current, recently expired, and older published feeds."
     )
+    jump_nav = _agency_index_jump_nav(
+        has_expired=bool(expired_groups),
+        has_current=bool(selected_current),
+    )
+    pager_top = _agency_index_pager(page, page_count, label="Directory pages before the list")
+    pager_bottom = _agency_index_pager(page, page_count, label="Directory pages after the list")
     body = f"""    {_breadcrumb([("Home", "/"), ("All agencies", None)])}
     <h1 class="page-title">Agency scorecards</h1>
-    <p class="page-lede">{len(agencies)} published feed scorecards, each with a
+    <p class="page-lede">{total} published feed scorecards, each with a
     <abbr title="General Transit Feed Specification">GTFS</abbr> data
     quality grade and the fixes to start with.</p>
+    <p class="fineprint">Showing records {start + 1 if total else 0}&ndash;{end} of {total}.
+      Use the page links to browse the complete directory.</p>
     <nav class="grade-jump" aria-label="Other views of the same scorecards">Same scorecards, other
     views: <a href="/app/">live search and filters</a> · <a href="/map/">on a map</a> ·
     <a href="/routes/">every route</a> · <a href="/compare/">compare two</a></nav>
-    <nav class="grade-jump" aria-label="Jump to section">Jump to: {" · ".join(nav)}</nav>
-    {expired_section}
-    {"".join(sections)}"""
+{pager_top}
+{jump_nav}
+{expired_section}
+{current_section}
+{pager_bottom}"""
     return _page(
-        title="Agency scorecards — GTFS Scorecard",
+        title=title,
         description=desc,
         canonical=canonical,
+        head_extra=_agency_index_head_links(page, page_count),
         body=body,
         wide=True,
     )
@@ -3979,6 +4558,13 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     )
     rows_parts = []
     for m in rollup["members"]:
+        top_fix_code = _safe_finding_code(m.get("top_fix_code"))
+        handoff_link = (
+            f' · <a class="program-next" href="{esc(_finding_url(f"/agency/{m['id']}/", top_fix_code))}">'
+            "Open next finding</a>"
+            if top_fix_code
+            else ""
+        )
         attn = (
             f' <span class="pill-warn">{esc(m.get("attention_reason") or "needs attention")}</span>'
             if m.get("needs_attention")
@@ -3988,7 +4574,8 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
             f'<li class="program-row"><span class="grade-chip {_grade_class(m["grade"])}">'
             f'{esc(m["grade"])}<span class="visually-hidden"> grade</span></span>'
             f'<div><h3><a href="/agency/{esc(m["id"])}/">{esc(m["name"])}</a>{attn}</h3>'
-            f'<p class="meta">{m["score"]} out of 100 · checked {esc(m["snapshot_date"])}</p>'
+            f'<p class="meta">{m["score"]} out of 100 · checked {esc(m["snapshot_date"])}'
+            f"{handoff_link}</p>"
             "</div></li>"
         )
     rows = "".join(rows_parts)
@@ -4082,12 +4669,20 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
 
 def _rollup_member_row(m: dict[str, Any], note: str) -> str:
     """A program-list row for the expired worklist, with a how-long-ago flag."""
+    top_fix_code = _safe_finding_code(m.get("top_fix_code"))
+    handoff_link = (
+        f' · <a class="program-next" href="{esc(_finding_url(f"/agency/{m['id']}/", top_fix_code))}">'
+        "Open next finding</a>"
+        if top_fix_code
+        else ""
+    )
     return (
         f'<li class="program-row"><span class="grade-chip {_grade_class(m["grade"])}">'
         f'{esc(m["grade"])}<span class="visually-hidden"> grade</span></span>'
         f'<div><h3><a href="/agency/{esc(m["id"])}/">{esc(m["name"])}</a> '
         f'<span class="pill-warn">{esc(note)}</span></h3>'
-        f'<p class="meta">{m["score"]} out of 100 · checked {esc(m["snapshot_date"])}</p>'
+        f'<p class="meta">{m["score"]} out of 100 · checked {esc(m["snapshot_date"])}'
+        f"{handoff_link}</p>"
         "</div></li>"
     )
 
@@ -4219,6 +4814,134 @@ def _rollup_common_fixes_section(rollup: dict[str, Any]) -> str:
 # --- CommonMark rendering for the fix knowledge base ---------------------------
 
 _FIX_MARKDOWN = MarkdownIt("commonmark", {"html": False, "linkify": False}).enable("table")
+_AUTHORED_FRONT_MATTER = re.compile(
+    r"\A---\r?\n(?P<header>.*?)(?:\r?\n)---(?:\r?\n|\Z)",
+    flags=re.DOTALL,
+)
+_AUTHORED_DATE_KEYS = frozenset({"date_published", "date_modified"})
+_MONTH_NAMES = (
+    "",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+)
+
+
+@dataclass(frozen=True)
+class _AuthoredMarkdown:
+    """Markdown body with dates supplied and reviewed by its author."""
+
+    body: str
+    date_published: str
+    date_modified: str
+
+
+def _parse_authored_date(value: object, *, field: str, source: str) -> str:
+    if isinstance(value, dt.datetime):
+        raise ValueError(f"{source}: {field} must be an ISO date, not a timestamp")
+    if isinstance(value, dt.date):
+        return value.isoformat()
+    if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+        raise ValueError(f"{source}: {field} must use YYYY-MM-DD")
+    try:
+        parsed = dt.date.fromisoformat(value)
+    except ValueError as exc:
+        raise ValueError(f"{source}: {field} is not a valid calendar date") from exc
+    if parsed.isoformat() != value:
+        raise ValueError(f"{source}: {field} must use canonical YYYY-MM-DD")
+    return value
+
+
+def _load_authored_metadata(header: str, source: str) -> dict[str, object]:
+    try:
+        node = yaml.compose(header)
+    except yaml.YAMLError as exc:
+        raise ValueError(f"{source}: authored front matter is invalid YAML") from exc
+    if not isinstance(node, MappingNode):
+        raise ValueError(f"{source}: authored front matter must be a mapping")
+
+    keys: list[str] = []
+    for key_node, _value_node in node.value:
+        if not isinstance(key_node, ScalarNode) or key_node.tag != "tag:yaml.org,2002:str":
+            raise ValueError(f"{source}: authored front matter keys must be strings")
+        key = key_node.value
+        if key in keys:
+            raise ValueError(f"{source}: duplicate authored front matter key {key!r}")
+        keys.append(key)
+
+    actual_keys = set(keys)
+    unknown = sorted(actual_keys - _AUTHORED_DATE_KEYS)
+    missing = sorted(_AUTHORED_DATE_KEYS - actual_keys)
+    if unknown:
+        raise ValueError(f"{source}: unknown authored front matter keys: {', '.join(unknown)}")
+    if missing:
+        raise ValueError(f"{source}: missing authored front matter keys: {', '.join(missing)}")
+    try:
+        metadata = yaml.safe_load(header)
+    except yaml.YAMLError as exc:
+        raise ValueError(f"{source}: authored front matter is invalid YAML") from exc
+    if not isinstance(metadata, dict):
+        raise ValueError(f"{source}: authored front matter must be a mapping")
+    return {key: metadata[key] for key in keys}
+
+
+def _parse_authored_markdown(text: str, source: str) -> _AuthoredMarkdown:
+    """Parse strict leading YAML dates without leaking metadata into article prose."""
+    match = _AUTHORED_FRONT_MATTER.match(text)
+    if match is None:
+        if text.startswith("---"):
+            raise ValueError(f"{source}: authored front matter has no exact closing delimiter")
+        raise ValueError(f"{source}: authored Markdown must start with YAML front matter")
+
+    metadata = _load_authored_metadata(match.group("header"), source)
+    date_published = _parse_authored_date(
+        metadata["date_published"],
+        field="date_published",
+        source=source,
+    )
+    date_modified = _parse_authored_date(
+        metadata["date_modified"],
+        field="date_modified",
+        source=source,
+    )
+    if date_modified < date_published:
+        raise ValueError(f"{source}: date_modified cannot be before date_published")
+    return _AuthoredMarkdown(
+        body=text[match.end() :],
+        date_published=date_published,
+        date_modified=date_modified,
+    )
+
+
+def _authored_dates_html(document: _AuthoredMarkdown) -> str:
+    def visible_date(value: str) -> str:
+        date = dt.date.fromisoformat(value)
+        return f"{date.day} {_MONTH_NAMES[date.month]} {date.year}"
+
+    return (
+        '<p class="fineprint article-dates">Published: '
+        f'<time datetime="{document.date_published}">'
+        f"{visible_date(document.date_published)}</time>. "
+        "Last reviewed: "
+        f'<time datetime="{document.date_modified}">'
+        f"{visible_date(document.date_modified)}</time>.</p>"
+    )
+
+
+def _insert_authored_dates(body_html: str, document: _AuthoredMarkdown) -> str:
+    dates = _authored_dates_html(document)
+    if "</h1>" not in body_html:
+        return dates + body_html
+    return body_html.replace("</h1>", f"</h1>{dates}", 1)
 
 
 def _plain_html_text(fragment: str) -> str:
@@ -4248,7 +4971,7 @@ def _md_to_html(md: str) -> tuple[str, str]:
 
 
 def _fix_description(body_html: str, code: str) -> str:
-    """Use the first explanatory paragraph, never the validator-code line."""
+    """Use the first explanatory paragraph, never the finding-code line."""
     for paragraph in re.findall(r"<p>(.*?)</p>", body_html, flags=re.DOTALL):
         text = _plain_html_text(paragraph)
         if not text or text.lower().startswith("code:"):
@@ -4256,7 +4979,18 @@ def _fix_description(body_html: str, code: str) -> str:
         if len(text) > 155:
             text = text[:152].rsplit(" ", 1)[0].rstrip(" ,;:") + "…"
         return text
-    return f"What the GTFS validator notice {code} means and how to fix it."
+    return f"What the GTFS data-quality finding {code} means and how to fix it."
+
+
+def _fix_article_about(code: str) -> dict[str, str]:
+    """Describe a fix article without overstating the finding's provenance."""
+    link = rule_link_for(code)
+    if link is not None and link.is_validator:
+        notice = link.canonical or code
+        name = f"GTFS validator notice {notice}"
+    else:
+        name = f"GTFS data-quality finding {code}"
+    return {"@type": "Thing", "name": name}
 
 
 def _fix_category(code: str) -> str:
@@ -4269,6 +5003,39 @@ def _fix_category(code: str) -> str:
     if any(term in code for term in ("fare", "currency")):
         return "Fares"
     return "Feed structure and publishing"
+
+
+def _tech_article_jsonld(
+    *,
+    headline: str,
+    description: str,
+    canonical: str,
+    about: dict[str, str] | None = None,
+) -> dict[str, Any]:
+    """Build the stable identity shared by crawlable practitioner articles.
+
+    Publication dates are intentionally outside this helper so their
+    provenance and lifecycle stay with the authored-content renderer.
+    """
+    article: dict[str, Any] = {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": headline,
+        "description": description,
+        "url": canonical,
+        "image": {
+            "@type": "ImageObject",
+            "url": _SOCIAL_IMAGE_URL,
+            "width": _SOCIAL_IMAGE_WIDTH,
+            "height": _SOCIAL_IMAGE_HEIGHT,
+        },
+        "author": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
+        "publisher": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
+        "mainEntityOfPage": canonical,
+    }
+    if about is not None:
+        article["about"] = about
+    return article
 
 
 def _render_fix_index(guides: list[dict[str, str]]) -> str:
@@ -4293,7 +5060,7 @@ def _render_fix_index(guides: list[dict[str, str]]) -> str:
             f'<p class="what"><a href="/fix/{esc(entry["code"])}/">'
             f"{esc(entry['title'])}</a></p>"
             f'<p class="why">{esc(entry["description"])}</p>'
-            f'<p class="code">Validator rule: {esc(entry["code"])}</p></li>'
+            f'<p class="code">Finding code: {esc(entry["code"])}</p></li>'
             for entry in entries
         )
         section_id = f"fix-{len(sections)}"
@@ -4305,7 +5072,7 @@ def _render_fix_index(guides: list[dict[str, str]]) -> str:
     body = f"""    {_breadcrumb([("Home", "/"), ("GTFS errors and fixes", None)])}
     <a class="backlink" href="/problems/">&larr; Common problems</a>
     <h1 class="page-title">GTFS errors and fixes.</h1>
-    <p class="page-lede">Plain-language guides to the validator notices and data gaps that
+    <p class="page-lede">Plain-language guides to GTFS findings and data gaps that
     affect riders most. Start with the code on your scorecard, then follow the steps and
     republish the feed.</p>
     {"".join(sections)}"""
@@ -4313,7 +5080,7 @@ def _render_fix_index(guides: list[dict[str, str]]) -> str:
         "@context": "https://schema.org",
         "@type": "CollectionPage",
         "name": "GTFS errors and fixes",
-        "description": "Plain-language guides for common GTFS validator notices.",
+        "description": "Plain-language guides for common GTFS findings.",
         "url": canonical,
         "hasPart": [
             {"@type": "TechArticle", "name": guide["title"], "url": f"{canonical}{guide['code']}/"}
@@ -4322,18 +5089,19 @@ def _render_fix_index(guides: list[dict[str, str]]) -> str:
     }
     return _page(
         title="GTFS errors and fixes — GTFS Scorecard",
-        description="Plain-language guides for common GTFS validator notices, with rider impact, repair steps, and what to check after republishing.",
+        description="Plain-language guides for common GTFS findings, with rider impact, repair steps, and what to check after republishing.",
         canonical=canonical,
         body=body,
         jsonld=jsonld,
     )
 
 
-def _render_fix(code: str, md: str, now: dt.datetime) -> str:
+def _render_fix(code: str, document: _AuthoredMarkdown) -> str:
     canonical = f"{BASE_URL}/fix/{code}/"
-    body_html, title_text = _md_to_html(md)
+    body_html, title_text = _md_to_html(document.body)
     title_text = title_text or f"Fix: {code}"
     desc = _fix_description(body_html, code)
+    body_html = _insert_authored_dates(body_html, document)
     crumb = _breadcrumb([("Home", "/"), ("GTFS errors and fixes", "/fix/"), (f"Fix: {code}", None)])
     after_republish = (
         '<section aria-labelledby="afterfix-h"><h2 class="section-title" id="afterfix-h">'
@@ -4343,21 +5111,32 @@ def _render_fix(code: str, md: str, now: dt.datetime) -> str:
         "finding, it can be recorded as a dated finding clearance. That confirms the later "
         "feed state, not who changed the feed or why.</p></section>"
     )
+    fix_context = (
+        f'<aside class="fix-context" id="finding-handoff" data-fix-context="{esc(code)}" hidden>'
+        '<p class="handoff-kicker">Selected finding</p>'
+        f"<h2>Keep {esc(code)} attached to the agency record</h2>"
+        "<p>Agency record: <code data-context-agency></code>. Use this guide, publish the "
+        "changed feed, then return to the selected scorecard for the comparable recheck.</p>"
+        '<nav class="handoff-links" aria-label="Selected agency links">'
+        '<a data-context-target="scorecard" href="/agencies/">Scorecard</a>'
+        '<a data-context-target="brief" href="/agencies/">Call brief</a>'
+        '<a data-context-target="board" href="/agencies/">Board view</a>'
+        '<a data-context-target="history" href="/agencies/">Feed history</a>'
+        "</nav></aside>"
+    )
     body = f"""    {crumb}
     <a class="backlink" href="/fix/">&larr; All GTFS fixes</a>
-    <article class="feed-details">{body_html}{_fix_rule_reference(code)}{after_republish}</article>"""
-    jsonld = {
-        "@context": "https://schema.org",
-        "@type": "TechArticle",
-        "headline": title_text,
-        "description": desc,
-        "url": canonical,
-        "about": {"@type": "Thing", "name": f"GTFS validator notice {code}"},
-        "author": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
-        "dateModified": now.date().isoformat(),
-        "mainEntityOfPage": canonical,
-        "publisher": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
-    }
+    {fix_context}
+    <article class="feed-details">{body_html}{_fix_rule_reference(code)}{after_republish}</article>
+    {_FINDING_CONTEXT_SCRIPT}"""
+    jsonld = _tech_article_jsonld(
+        headline=title_text,
+        description=desc,
+        canonical=canonical,
+        about=_fix_article_about(code),
+    )
+    jsonld["datePublished"] = document.date_published
+    jsonld["dateModified"] = document.date_modified
     return _page(
         title=f"{title_text} — GTFS Scorecard",
         description=desc,
@@ -4367,7 +5146,7 @@ def _render_fix(code: str, md: str, now: dt.datetime) -> str:
     )
 
 
-def _render_crosswalk_page(md: str) -> str:
+def _render_crosswalk_page(document: _AuthoredMarkdown) -> str:
     """The standards crosswalk (docs/crosswalk.md) as a crawlable page.
 
     Previously linked only as a raw GitHub blob from agency pages; rendering it
@@ -4375,7 +5154,7 @@ def _render_crosswalk_page(md: str) -> str:
     as every other page, for the same reason /fix/<code>/ pages exist rather
     than pointing at the Markdown source."""
     canonical = f"{BASE_URL}/crosswalk/"
-    body_html, title_text = _md_to_html(md)
+    body_html, title_text = _md_to_html(document.body)
     title_text = title_text or "How the grade maps to the standards"
     para = next((re.sub("<[^>]+>", "", p) for p in re.findall(r"<p>(.*?)</p>", body_html)), "")
     desc = (
@@ -4383,17 +5162,17 @@ def _render_crosswalk_page(md: str) -> str:
         or "How the scorecard's categories map to NTD, California's "
         "guidelines, the GTFS Grading Scheme, and Google Transit."
     ).strip()
+    body_html = _insert_authored_dates(body_html, document)
     crumb = _breadcrumb([("Home", "/"), ("How to read this", "/how-to-read/"), ("Crosswalk", None)])
     body = f"""    {crumb}
     <article class="feed-details">{body_html}</article>"""
-    jsonld = {
-        "@context": "https://schema.org",
-        "@type": "TechArticle",
-        "headline": title_text,
-        "description": desc,
-        "url": canonical,
-        "publisher": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
-    }
+    jsonld = _tech_article_jsonld(
+        headline=title_text,
+        description=desc,
+        canonical=canonical,
+    )
+    jsonld["datePublished"] = document.date_published
+    jsonld["dateModified"] = document.date_modified
     return _page(
         title=f"{title_text} — GTFS Scorecard",
         description=desc,
@@ -5049,7 +5828,7 @@ def _render_guide() -> str:
 {_methodology_versions_section()}
 
     {_route_rule()}
-    <section aria-labelledby="glossary-h"><h2 class="section-title" id="glossary-h">Glossary</h2>
+    <section id="glossary" aria-labelledby="glossary-h"><h2 class="section-title" id="glossary-h">Glossary</h2>
     <p class="page-lede">Plain-language definitions for the abbreviations and jargon used across
     the scorecard. Each term is also defined inline the first time it appears on a page.</p>
     <dl class="standards-list">
@@ -5117,9 +5896,14 @@ def _states_by_agency() -> dict[str, str]:
     if not needs_catalog:
         return states
     try:
+        from .identity import normalized_mdb_id
         from .mobilitydb import load_catalog
 
-        by_mdb = {f.mdb_id: f.subdivision for f in load_catalog() if f.mdb_id and f.subdivision}
+        by_mdb = {
+            normalized_mdb_id(f.mdb_id): f.subdivision
+            for f in load_catalog()
+            if f.mdb_id and f.subdivision
+        }
     except Exception as exc:
         # The live catalog is the authoritative source, but a transient outage
         # must not silently wipe every agency's state from the rendered site.
@@ -5129,7 +5913,7 @@ def _states_by_agency() -> dict[str, str]:
         return _published_states() | states
     for aid, agency in AGENCIES.items():
         if aid not in states and agency.mdb_id:
-            sub = by_mdb.get(agency.mdb_id)
+            sub = by_mdb.get(normalized_mdb_id(agency.mdb_id))
             canonical = _canonical_state(sub) if sub else ""
             if canonical:
                 states[aid] = canonical
@@ -5217,7 +6001,7 @@ def compute_changes(
     return out
 
 
-def _changes_sections(changes: list[dict[str, Any]]) -> str:
+def _changes_sections(changes: list[dict[str, Any]], *, baseline_date: str | None = None) -> str:
     """The upward/downward sections of the change feed
     (compute_changes), side by side on wide screens. Rendered inside the
     national pulse page; reuses the delta-* styles from the per-agency trend
@@ -5254,7 +6038,14 @@ def _changes_sections(changes: list[dict[str, Any]]) -> str:
             )
         return "".join(rows)
 
-    return f"""{_movement_balance(changes)}
+    movement = (
+        '<p class="page-lede">This is the first comparable snapshot under the current '
+        f"scoring contract, dated {esc(baseline_date)}. Any scores from earlier contracts "
+        "are intentionally excluded, so there is no prior comparable snapshot yet.</p>"
+        if not changes and baseline_date
+        else _movement_balance(changes)
+    )
+    return f"""{movement}
     <div class="section-grid">
     <section aria-labelledby="improved-h">
       <h2 class="section-title" id="improved-h">Most improved</h2>
@@ -5324,7 +6115,10 @@ def _render_pulse_page(
         and raw_eligible_count > 0
     )
     if guarded_comparisons_available:
-        changes_content = _changes_sections(changes)
+        baseline_date = (
+            str(trend_points[0].get("date") or "").strip() if len(trend_points) == 1 else None
+        )
+        changes_content = _changes_sections(changes, baseline_date=baseline_date)
         trend_content = _trend_sections(trend_points, trend_sum, improvers)
     else:
         changes_content = (
@@ -5574,6 +6368,7 @@ def _map_feature(
 
 
 _MAP_LIB_VERSION = "4.7.1"
+_MAP_TABLE_INITIAL_ROWS = 50
 
 
 def _render_map_page(features: list[dict[str, Any]]) -> str:
@@ -5581,20 +6376,21 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
     grade letter and coloured by grade, rendered client-side by MapLibre over the
     keyless OpenFreeMap basemap and clustered at low zoom.
 
-    The map is an enhancement. The conformant primary is the filterable agency
-    table below it (grade, state, score, link), reached by a 'Skip to the agency
-    list' bypass before the map; the same grade and state selectors filter the
-    map and the table together. The MapLibre canvas is marked aria-hidden and
-    kept out of the tab order, so a keyboard or screen-reader user works the
-    table, never the canvas (docs/vpat.md).
+    The map is an enhancement. The conformant primary is the agency table below
+    it (grade, state, score, link), reached by a 'Skip to the agency list'
+    bypass before the map. A bounded first set is server-rendered; a reader can
+    explicitly load the complete filterable table, or follow the crawlable
+    paginated directory without JavaScript. The MapLibre canvas is marked
+    aria-hidden and kept out of the tab order, so a keyboard or screen-reader
+    user works the table, never the canvas (docs/vpat.md).
 
     Linked brushing ties each point to its row: hovering a point lights up its
     row (scrolled into view unless reduced motion is set), and hovering or
     focusing a row enlarges its point through a highlight layer, mirroring the
     agency map's routes-hi pattern. The rows' existing agency links are the tab
     stops (no extra tabindex); Space pins the highlight, Enter keeps its meaning
-    and follows the link. After a user-driven filter, focus moves to the results
-    region so a keyboard or screen-reader user lands on the updated count."""
+    and follows the link. A user-driven filter updates a live result count
+    without moving focus out of the native control."""
     count = len(features)
     legend_items = "".join(
         f'<li><span class="map-dot" style="background:{color}">'
@@ -5602,8 +6398,9 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         f"Grade {grade}</li>"
         for grade, color in _MAP_GRADE_COLOR.items()
     )
-    # The accessible primary: one row per located agency, the same set the map
-    # plots. Sorted by name for a stable, scannable order.
+    # The accessible primary's bounded first set. The same sorted records become
+    # the complete table only after an explicit load, keeping the initial DOM
+    # stable at national scale.
     rows_data = sorted(
         (
             {
@@ -5624,20 +6421,20 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         ),
         key=lambda r: r["name"].lower(),
     )
-    # data-id ties the row to its map point (the GeoJSON feature's ``id``
-    # property) for the linked brushing the page script wires up.
+    # The agency link ties each row to its GeoJSON feature for linked brushing.
+    # Do not duplicate that identifier in a data attribute: at full coverage,
+    # repeated row metadata has a measurable first-paint cost.
     table_rows = "".join(
-        f'<tr data-id="{esc(r["id"])}" data-grade="{esc(r["grade"])}" '
+        f'<tr data-grade="{esc(r["grade"])}" '
         f'data-state="{esc(r["state"])}" '
         f'data-country="{esc(r["country"])}" '
         f'data-subdivision="{esc(r["subdivision_code"])}" '
-        f'data-has-flex="{str(r["has_flex"]).lower()}" '
-        f'data-name="{esc(r["name"].lower())}">'
+        f'data-has-flex="{str(r["has_flex"]).lower()}">'
         f'<td><a href="/agency/{esc(r["id"])}/"><bdi>{esc(r["name"])}</bdi></a></td>'
         f"<td>{esc(r['grade'])}</td>"
         f"<td><bdi>{esc(_location_label(r)) or '&mdash;'}</bdi></td>"
         f"<td>{esc(r['score'])}</td></tr>"
-        for r in rows_data
+        for r in rows_data[:_MAP_TABLE_INITIAL_ROWS]
     )
     # Countries are the primary scope. Every covered ISO subdivision is a
     # namespaced drill-down, so adding a country needs no renderer branch and
@@ -5692,6 +6489,18 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         else ""
     )
     grade_opts = "".join(f'<option value="{g}">Grade {g}</option>' for g in _MAP_GRADE_COLOR)
+    country_labels_json = json.dumps(
+        {code: name for code, name in countries}, ensure_ascii=False, separators=(",", ":")
+    ).replace("</", "<\\/")
+    initial_count = min(count, _MAP_TABLE_INITIAL_ROWS)
+    needs_complete_load = count > _MAP_TABLE_INITIAL_ROWS
+    list_button_hidden = "" if needs_complete_load else " hidden"
+    list_status = (
+        f"The first {initial_count} of {count} scorecards are ready. Choose a filter or load the "
+        "complete list to fetch the remaining records."
+        if needs_complete_load
+        else f"All {count} scorecards are ready, and the filters are available."
+    )
     body = f"""    {_breadcrumb([("Home", "/"), ("Agency map", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Agency map.</h1>
@@ -5707,30 +6516,37 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
       <p class="map-filters-intro">Filter by grade, location, or flexible service. The map and the list update together.</p>
       <div class="map-filter-row">
         <label for="map-grade">Grade</label>
-        <select id="map-grade" name="grade"><option value="">All grades</option>{grade_opts}</select>
+        <select id="map-grade" name="grade" aria-describedby="map-list-status"><option value="">All grades</option>{grade_opts}</select>
         <label for="map-state">Location</label>
-        <select id="map-state" name="state"><option value="">All locations</option>{location_opts}</select>
+        <select id="map-state" name="state" aria-describedby="map-list-status"><option value="">All locations</option>{location_opts}</select>
       </div>
       <div class="map-filter-row">
-        <label><input type="checkbox" id="map-flex" name="flex"> Offers GTFS-Flex (demand-responsive service)</label>
+        <label><input type="checkbox" id="map-flex" name="flex" aria-describedby="map-list-status"> Offers GTFS-Flex (demand-responsive service)</label>
       </div>
     </form>
+    <div class="map-load-panel">
+      <button type="button" class="button button-secondary" id="map-list-load"{list_button_hidden}>
+        Load the complete filterable list
+      </button>
+      <p id="map-list-status" class="fineprint" role="status">{esc(list_status)}
+        <a href="/agencies/">Browse the paginated agency directory.</a></p>
+    </div>
     <div class="map-load-panel">
       <button type="button" class="button button-secondary" id="map-load">
         Load interactive map
       </button>
-      <p id="map-load-status" class="fineprint" role="status">The scorecard list is ready now.
-        Load the map only when you want the geographic view. It uses additional data.</p>
+      <p id="map-load-status" class="fineprint" role="status">The first scorecard rows are ready
+        now. Load the map only when you want the geographic view. It also loads the complete list.</p>
     </div>
     <div id="map" class="national-map national-map-pending" aria-hidden="true"><p class="map-fallback">
-      The interactive map has not loaded. The scorecard list below carries the same feed records,
-      grades, locations, and scorecard links.</p></div>
+      The interactive map has not loaded. Use the complete-list control or the paginated agency
+      directory for the same feed records, grades, locations, and scorecard links.</p></div>
     <ul class="map-legend" aria-label="Grade colours">{legend_items}</ul>
     <p class="fineprint">Points are placed at each feed's median stop. Basemap:
       OpenFreeMap, &copy; OpenStreetMap contributors. Data: this scorecard, CC BY 4.0.</p>
     <section id="agency-list" tabindex="-1" aria-labelledby="agency-list-h">
       <h2 class="section-title" id="agency-list-h">Every feed scorecard on the map</h2>
-      <p class="map-count" role="status"><span id="map-result-count">{count}</span> of {count}
+      <p class="map-count" role="status"><span id="map-result-count">{initial_count}</span> of {count}
         feed scorecards shown.</p>
       <table class="leaderboard map-table">
         <caption class="visually-hidden">Feed scorecards on the coverage map, with grade, location,
@@ -5740,19 +6556,142 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         <tbody id="map-tbody">{table_rows}</tbody>
       </table>
     </section>
+    <noscript><p class="fineprint">The first {initial_count} map records are listed above.
+      Browse the <a href="/agencies/">complete paginated agency directory</a> for every
+      scorecard without JavaScript.</p></noscript>
     <script>
       (function () {{
         var gradeEl = document.getElementById("map-grade");
         var stateEl = document.getElementById("map-state");
         var flexEl = document.getElementById("map-flex");
         var countEl = document.getElementById("map-result-count");
+        var tbodyEl = document.getElementById("map-tbody");
+        var agencyListEl = document.getElementById("agency-list");
+        var listLoadEl = document.getElementById("map-list-load");
+        var listStatusEl = document.getElementById("map-list-status");
         var loadEl = document.getElementById("map-load");
         var loadStatusEl = document.getElementById("map-load-status");
         var mapEl = document.getElementById("map");
         var rows = Array.prototype.slice.call(
           document.querySelectorAll("#map-tbody tr"));
+        var countryNames = {country_labels_json};
         var all = null;  // the full FeatureCollection, fetched once
+        var dataPromise = null;
+        var rowsHydrated = {str(not needs_complete_load).lower()};
         var map = null;
+
+        function rowAgencyId(tr) {{
+          var link = tr.querySelector('a[href^="/agency/"]');
+          var href = link ? link.getAttribute("href") : "";
+          var match = /^\\/agency\\/([^/]+)\\/$/.exec(href);
+          return match ? match[1] : "";
+        }}
+
+        function textValue(value) {{
+          return value === null || value === undefined ? "" : String(value);
+        }}
+
+        function locationLabel(properties) {{
+          var country = textValue(properties.country || "US").toUpperCase();
+          var subdivision = textValue(properties.subdivision_name);
+          var state = textValue(properties.state);
+          if (country === "US") return subdivision || state || "—";
+          var parent = countryNames[country] || country;
+          return subdivision ? subdivision + ", " + parent : parent || state || "—";
+        }}
+
+        function tableRow(feature) {{
+          var p = feature && feature.properties ? feature.properties : {{}};
+          var id = textValue(p.id);
+          if (!/^[a-z0-9][a-z0-9-]*$/.test(id)) return null;
+          var tr = document.createElement("tr");
+          tr.setAttribute("data-grade", textValue(p.grade || "?"));
+          tr.setAttribute("data-state", textValue(p.state));
+          tr.setAttribute("data-country", textValue(p.country));
+          tr.setAttribute("data-subdivision", textValue(p.subdivision_code));
+          tr.setAttribute("data-has-flex", p.has_flex ? "true" : "false");
+
+          var nameCell = document.createElement("td");
+          var link = document.createElement("a");
+          link.href = "/agency/" + id + "/";
+          var name = document.createElement("bdi");
+          name.textContent = textValue(p.name || id);
+          link.appendChild(name);
+          nameCell.appendChild(link);
+          tr.appendChild(nameCell);
+
+          [textValue(p.grade || "?"), locationLabel(p), textValue(p.score)].forEach(
+            function (value, index) {{
+              var cell = document.createElement("td");
+              if (index === 1) {{
+                var bdi = document.createElement("bdi");
+                bdi.textContent = value;
+                cell.appendChild(bdi);
+              }} else {{
+                cell.textContent = value;
+              }}
+              tr.appendChild(cell);
+            }}
+          );
+          return tr;
+        }}
+
+        function setFiltersDisabled(disabled) {{
+          gradeEl.disabled = disabled;
+          stateEl.disabled = disabled;
+          if (flexEl) flexEl.disabled = disabled;
+        }}
+
+        function hydrateRows(geojson) {{
+          if (rowsHydrated) return;
+          var features = geojson && Array.isArray(geojson.features) ? geojson.features.slice() : [];
+          features.sort(function (left, right) {{
+            var a = textValue((left.properties || {{}}).name).toLowerCase();
+            var b = textValue((right.properties || {{}}).name).toLowerCase();
+            return a < b ? -1 : a > b ? 1 : 0;
+          }});
+          var fragment = document.createDocumentFragment();
+          features.forEach(function (feature) {{
+            var tr = tableRow(feature);
+            if (tr) fragment.appendChild(tr);
+          }});
+          while (tbodyEl.firstChild) tbodyEl.removeChild(tbodyEl.firstChild);
+          tbodyEl.appendChild(fragment);
+          rows = Array.prototype.slice.call(tbodyEl.querySelectorAll("tr"));
+          rowsHydrated = true;
+          setFiltersDisabled(false);
+          if (listLoadEl) listLoadEl.hidden = true;
+          if (listStatusEl) {{
+            listStatusEl.textContent =
+              "Complete list loaded. Grade, location, and flexible-service filters are ready.";
+          }}
+        }}
+
+        function loadData(afterRows) {{
+          if (!dataPromise) {{
+            dataPromise = fetch("/map.geojson", {{ headers: {{ Accept: "application/geo+json" }} }})
+              .then(function (response) {{
+                if (!response.ok) throw new Error("map data " + response.status);
+                return response.json();
+              }})
+              .then(function (geojson) {{
+                if (!geojson || !Array.isArray(geojson.features)) {{
+                  throw new Error("map data has no feature list");
+                }}
+                all = geojson;
+                hydrateRows(geojson);
+                return geojson;
+              }})
+              .catch(function (error) {{
+                dataPromise = null;
+                throw error;
+              }});
+          }}
+          return dataPromise.then(function (geojson) {{
+            if (afterRows) afterRows();
+            return geojson;
+          }});
+        }}
 
         function matches(grade, state, country, subdivision, hasFlex) {{
           var g = gradeEl.value, loc = stateEl.value, f = flexEl && flexEl.checked;
@@ -5817,10 +6756,6 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         // Agency id -> table row, so a hovered map point can light up its row
         // and the reverse. Visual only: the row text is the accessible source.
         var rowById = {{}};
-        rows.forEach(function (tr) {{
-          var id = tr.getAttribute("data-id");
-          if (id) rowById[id] = tr;
-        }});
         var current = null;   // agency id currently brushed, or null
         var pinned = null;    // sticky selection from Space or a row tap, or null
         var hiReady = false;  // the highlight layer exists once the map loads
@@ -5848,23 +6783,30 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
         // focus reaching it brushes through focusin; Space pins the highlight,
         // while Enter keeps its meaning and follows the link. A click outside
         // the link pins too, for touch.
-        rows.forEach(function (tr) {{
-          var id = tr.getAttribute("data-id");
-          if (!id) return;
-          tr.addEventListener("mouseenter", function () {{ highlight(id); }});
-          tr.addEventListener("mouseleave", function () {{ highlight(pinned); }});
-          tr.addEventListener("focusin", function () {{ highlight(id); }});
-          tr.addEventListener("focusout", function () {{ highlight(pinned); }});
-          tr.addEventListener("click", function (e) {{
-            if (e.target && e.target.closest && e.target.closest("a")) return;
-            togglePin(id);
+        function wireRows() {{
+          rowById = {{}};
+          rows.forEach(function (tr) {{
+            var id = rowAgencyId(tr);
+            if (!id) return;
+            rowById[id] = tr;
+            if (tr.getAttribute("data-map-wired") === "true") return;
+            tr.setAttribute("data-map-wired", "true");
+            tr.addEventListener("mouseenter", function () {{ highlight(id); }});
+            tr.addEventListener("mouseleave", function () {{ highlight(pinned); }});
+            tr.addEventListener("focusin", function () {{ highlight(id); }});
+            tr.addEventListener("focusout", function () {{ highlight(pinned); }});
+            tr.addEventListener("click", function (e) {{
+              if (e.target && e.target.closest && e.target.closest("a")) return;
+              togglePin(id);
+            }});
+            tr.addEventListener("keydown", function (e) {{
+              if (e.key !== " ") return;
+              e.preventDefault();  // Space pins, never scrolls the page
+              togglePin(id);
+            }});
           }});
-          tr.addEventListener("keydown", function (e) {{
-            if (e.key !== " ") return;
-            e.preventDefault();  // Space pins, never scrolls the page
-            togglePin(id);
-          }});
-        }});
+        }}
+        wireRows();
 
         function filtered() {{
           if (!all) return {{ type: "FeatureCollection", features: [] }};
@@ -5991,10 +6933,19 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
             map.setFilter("agencies-hi", ["==", ["get", "id"], current]);
           }}
           mapEl.classList.remove("national-map-pending");
-          if (loadStatusEl) loadStatusEl.textContent = "Interactive map loaded.";
-          fetch("/map.geojson").then(function (r) {{ return r.json(); }})
-            .then(function (gj) {{ all = gj; applyFilter(); }})
-            .catch(function () {{}});
+          if (loadStatusEl) loadStatusEl.textContent =
+            "Interactive basemap loaded. Loading the scorecard points and complete list.";
+          loadData(wireRows)
+            .then(function () {{
+              applyFilter();
+              if (loadStatusEl) loadStatusEl.textContent =
+                "Interactive map and complete scorecard list loaded.";
+            }})
+            .catch(function () {{
+              if (loadStatusEl) loadStatusEl.textContent =
+                "The basemap loaded, but the scorecard points did not. The paginated agency " +
+                "directory is still available.";
+            }});
 
           map.on("click", "clusters", function (e) {{
             var f = map.queryRenderedFeatures(e.point, {{ layers: ["clusters"] }})[0];
@@ -6038,15 +6989,61 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
           map.on("mouseleave", "clusters", function () {{ map.getCanvas().style.cursor = ""; }});
         }});
         }}
-        function onFilterChange() {{
-          // Filtering the accessible table never depends on the optional map.
-          if (!map || !all) {{ filterTable(); return; }}
+        function syncFilters() {{
+          if (!map || !all || !map.getSource || !map.getSource("agencies")) {{
+            filterTable();
+            return;
+          }}
           applyFilter();
+        }}
+        function onFilterChange() {{
+          // The first filter choice is also an explicit request for the
+          // complete dataset. Keep the chosen value, announce the short load,
+          // then apply it to every row and (when present) every map point.
+          if (!rowsHydrated) {{
+            if (listStatusEl) listStatusEl.textContent =
+              "Loading the complete scorecard list for this filter.";
+            loadData()
+              .then(syncFilters)
+              .catch(function () {{
+                setFiltersDisabled(false);
+                filterTable();
+                if (listStatusEl) listStatusEl.textContent =
+                  "The complete list could not load. This filter applies to the first " +
+                  "{initial_count} rows only; use the paginated agency directory for every " +
+                  "scorecard.";
+              }});
+            return;
+          }}
+          syncFilters();
         }}
         gradeEl.addEventListener("change", onFilterChange);
         stateEl.addEventListener("change", onFilterChange);
         if (flexEl) flexEl.addEventListener("change", onFilterChange);
         filterTable();
+
+        listLoadEl.addEventListener("click", function () {{
+          if (listLoadEl.getAttribute("aria-disabled") === "true") return;
+          listLoadEl.setAttribute("aria-disabled", "true");
+          listLoadEl.textContent = "Loading complete list…";
+          if (listStatusEl) listStatusEl.textContent = "Loading the complete scorecard list.";
+          loadData()
+            .then(function () {{
+              syncFilters();
+              // This explicit action asked to open the complete result set, so
+              // move focus to its existing tabindex="-1" region after the
+              // initiating button is removed. Filter-triggered hydration never
+              // moves focus out of the selected control.
+              if (agencyListEl) agencyListEl.focus();
+            }})
+            .catch(function () {{
+              listLoadEl.removeAttribute("aria-disabled");
+              listLoadEl.textContent = "Try loading the complete list again";
+              if (listStatusEl) listStatusEl.textContent =
+                "The complete list could not load. The first scorecards and paginated agency " +
+                "directory are still available.";
+            }});
+        }});
 
         loadEl.addEventListener("click", function () {{
           loadEl.disabled = true;
@@ -6066,7 +7063,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
             loadEl.disabled = false;
             loadEl.textContent = "Try loading the map again";
             if (loadStatusEl) loadStatusEl.textContent =
-              "The map could not load. The complete agency list is still available below.";
+              "The map could not load. Use the complete-list control or paginated agency directory.";
           }};
           document.head.appendChild(script);
         }});
@@ -6899,18 +7896,15 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
     <p class="fineprint">This page is a data-quality heads-up, not an official compliance
     determination or legal advice. The official record is each agency's own NTD filing and
     annual <a href="https://www.transit.dot.gov/ntd">D-10 certification</a>.</p>"""
-    jsonld = {
-        "@context": "https://schema.org",
-        "@type": "TechArticle",
-        "headline": "Does your GTFS feed need shapes.txt? The RY2026 NTD requirement, explained",
-        "description": (
+    jsonld = _tech_article_jsonld(
+        headline="Does your GTFS feed need shapes.txt? The RY2026 NTD requirement, explained",
+        description=(
             "Who FTA's shapes.txt requirement covers, the Report Year 2026 phase-in for "
             "small transit agencies, and how to check and fix a GTFS feed."
         ),
-        "url": canonical,
-        "about": {"@type": "Thing", "name": "GTFS shapes.txt NTD requirement"},
-        "publisher": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
-    }
+        canonical=canonical,
+        about={"@type": "Thing", "name": "GTFS shapes.txt NTD requirement"},
+    )
     return _page(
         title=(
             "Does your GTFS feed need shapes.txt? The RY2026 NTD requirement, explained "
@@ -8311,6 +9305,14 @@ def _trend_sections(
             f"(now {esc(summary['last']['average_score'])})."
         )
         chart = f'<section class="feed-details"><h2 class="section-title">Covered-corpus average score</h2><p>{spark}</p>{axis}</section>'
+    elif len(points) == 1:
+        table = chart = ""
+        date = esc(str(points[0].get("date") or ""))
+        lead = (
+            f"Comparable history under the current scoring contract begins on {date}. "
+            "A trend appears after the corpus is checked on a later date. Rechecks on "
+            "the same day update that day's snapshot instead of adding another point."
+        )
     else:
         table = chart = ""
         lead = (
@@ -8365,6 +9367,15 @@ def _remove_unlisted_agency_pages(agency_pages: Path, published_ids: set[str]) -
             shutil.rmtree(page_dir)
 
 
+def _remove_stale_agency_index_pages(page_root: Path) -> None:
+    """Remove only generated numeric directory pages before rebuilding them."""
+    if not page_root.exists():
+        return
+    for page_dir in page_root.iterdir():
+        if page_dir.is_dir() and page_dir.name.isdigit():
+            shutil.rmtree(page_dir)
+
+
 def _scope_liveness_state(
     liveness_state: dict[str, dict[str, Any]], published_ids: set[str]
 ) -> dict[str, dict[str, Any]]:
@@ -8411,6 +9422,27 @@ def _prune_unverifiable_change_snapshots(changes_dir: Path) -> None:
             payload = None
         if not _has_auditable_change_contract(payload):
             path.unlink(missing_ok=True)
+
+
+def _apply_registry_agency_names(
+    index: dict[str, Any],
+    registry_by_id: dict[str, Agency],
+) -> bool:
+    """Overlay mutable curated names onto the current derived index."""
+    changed = False
+    for agency_id, entry in (index.get("agencies") or {}).items():
+        if not isinstance(entry, dict):
+            continue
+        registry = registry_by_id.get(str(agency_id))
+        name = resolve_published_agency_name(
+            str(agency_id),
+            registry_name=registry.name if registry else "",
+            artifact_name=str(entry.get("name") or ""),
+        )
+        if entry.get("name") != name:
+            entry["name"] = name
+            changed = True
+    return changed
 
 
 def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
@@ -8472,8 +9504,8 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         if md_file.stem == "README":
             continue
         code = md_file.stem
-        md = md_file.read_text()
-        body_html, title_text = _md_to_html(md)
+        document = _parse_authored_markdown(md_file.read_text(), str(md_file))
+        body_html, title_text = _md_to_html(document.body)
         fix_guides.append(
             {
                 "code": code,
@@ -8484,8 +9516,9 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         )
         write(
             f"fix/{code}/index.html",
-            _render_fix(code, md, now),
+            _render_fix(code, document),
             f"{BASE_URL}/fix/{code}/",
+            lastmod=document.date_modified,
         )
     write("fix/index.html", _render_fix_index(fix_guides), f"{BASE_URL}/fix/")
 
@@ -8536,10 +9569,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     )
     crosswalk_file = root / "docs" / "crosswalk.md"
     if crosswalk_file.exists():
+        crosswalk = _parse_authored_markdown(crosswalk_file.read_text(), str(crosswalk_file))
         write(
             "crosswalk/index.html",
-            _render_crosswalk_page(crosswalk_file.read_text()),
+            _render_crosswalk_page(crosswalk),
             f"{BASE_URL}/crosswalk/",
+            lastmod=crosswalk.date_modified,
         )
 
     # web/ is committed between renders. Remove generated scorecard directories
@@ -8549,19 +9584,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     _remove_unlisted_agency_pages(web / "agency", published_ids)
     from .publish import enrich_index_history_provenance
 
-    if enrich_index_history_provenance(index, art):
-        index_file.write_text(json.dumps(index, indent=2, sort_keys=True) + "\n")
-    # Per-feed score histories, keyed by id, for compact trend graphics on
-    # named change, NTD one-fix, and realtime tables.
-    histories: dict[str, list[dict[str, Any]]] = {
-        str(aid): (entry or {}).get("history") or []
-        for aid, entry in (index.get("agencies") or {}).items()
-    }
-    # Per-feed change-detection freshness from the intraday refresh; loaded once,
-    # early, so both the directory's expired-feed split and each agency page
-    # (below) read the same state.
-    write("agencies/index.html", _render_agency_index(index, liveness_state))
-    states = _states_by_agency()
+    index_changed = enrich_index_history_provenance(index, art)
     from .config import AGENCIES
 
     # CLI renders have the registry loaded already. Direct library callers use
@@ -8571,6 +9594,40 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         from .agencies import read_agencies
 
         registry_by_id = {agency.id: agency for agency in read_agencies()}
+    index_changed |= _apply_registry_agency_names(index, registry_by_id)
+    if index_changed:
+        index_file.write_text(json.dumps(index, indent=2, sort_keys=True) + "\n")
+    # Per-feed score histories, keyed by id, for compact trend graphics on
+    # named change, NTD one-fix, and realtime tables.
+    histories: dict[str, list[dict[str, Any]]] = {
+        str(aid): (entry or {}).get("history") or []
+        for aid, entry in (index.get("agencies") or {}).items()
+    }
+    # Per-feed change-detection freshness from the intraday refresh; loaded once,
+    # early, so both the directory's expired-feed split and each agency page
+    # (below) read the same state. Keep every directory document bounded: the
+    # production corpus is large enough that one giant HTML list delays first
+    # paint even though the content itself is static.
+    agency_page_root = web / "agencies" / "page"
+    _remove_stale_agency_index_pages(agency_page_root)
+    agency_count = len(index.get("agencies") or {})
+    agency_page_count = max(1, math.ceil(agency_count / _AGENCY_INDEX_PAGE_SIZE))
+    for page_number in range(1, agency_page_count + 1):
+        page_href = _agency_index_href(page_number)
+        page_rel = (
+            "agencies/index.html" if page_number == 1 else f"agencies/page/{page_number}/index.html"
+        )
+        write(
+            page_rel,
+            _render_agency_index(
+                index,
+                liveness_state,
+                page=page_number,
+                page_size=_AGENCY_INDEX_PAGE_SIZE,
+            ),
+            f"{BASE_URL}{page_href}" if page_number > 1 else None,
+        )
+    states = _states_by_agency()
 
     # Pass 1: read each scorecard once to build the catalog records the
     # directory needs (grade, score, location, size, and comparison provenance).
@@ -8601,6 +9658,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         days = fresh.get("days_until_expiry")
         agency_cfg = registry_by_id.get(agency_id)
         artifact_agency = artifact.setdefault("agency", {})
+        artifact_agency["name"] = resolve_published_agency_name(
+            agency_id,
+            registry_name=agency_cfg.name if agency_cfg else "",
+            artifact_name=str(artifact_agency.get("name") or ""),
+        )
         location = resolve_published_location(
             registry_country=agency_cfg.country if agency_cfg else "",
             registry_subdivision_code=agency_cfg.subdivision_code if agency_cfg else "",
@@ -8688,6 +9750,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     )
     (art / "directory.json").write_text(json.dumps(directory, indent=2, sort_keys=True) + "\n")
     by_id = {r["id"]: r for r in directory["agencies"]}
+    agency_seo_metadata = _plan_agency_seo_metadata(
+        directory["agencies"],
+        artifacts_by_id,
+        registry_by_id,
+    )
     # build_directory adds the existing catalog's size and comparison fields.
     # Copy only those established fields back; feature measurements belong to
     # directory.json and features.json, not the older flat catalog contract.
@@ -8879,6 +9946,13 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             artifact = json.loads(latest.read_text())
         except (json.JSONDecodeError, OSError):
             continue  # already warned in pass 1
+        agency_cfg = registry_by_id.get(agency_id)
+        artifact_agency = artifact.setdefault("agency", {})
+        artifact_agency["name"] = resolve_published_agency_name(
+            agency_id,
+            registry_name=agency_cfg.name if agency_cfg else "",
+            artifact_name=str(artifact_agency.get("name") or ""),
+        )
         # Feed every public narrative surface the same mode-aware copy. This
         # covers the full scorecard, call brief, and board one-pager together.
         from .mode_language import adapt_artifact_language
@@ -8906,7 +9980,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 dated_artifacts.append(json.loads(dated_path.read_text()))
             except (json.JSONDecodeError, OSError):
                 continue
-        prev_artifact = dated_artifacts[-2] if len(dated_artifacts) >= 2 else None
+        prev_artifact = _previous_indexed_artifact(agency_id, history, dated_artifacts)
         # Stop names for the map's accessible equivalent come from the geometry
         # artifact (the map's own data), kept out of the per-day JSON to avoid
         # bloating it. Absent or unreadable geometry simply means no stop list.
@@ -8925,6 +9999,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                 now=now,
                 artifacts=dated_artifacts,
                 effort_bands=effort_bands,
+                seo_metadata=agency_seo_metadata[agency_id],
             ),
             f"{BASE_URL}/agency/{agency_id}/",
             lastmod=str(artifact.get("snapshot_date") or "") or None,
@@ -8958,7 +10033,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         if receipts:
             write(
                 f"agency/{agency_id}/fixes/index.html",
-                _render_fixlog_page(artifact, receipts, by_id[agency_id]),
+                _render_fixlog_page(
+                    artifact,
+                    receipts,
+                    by_id[agency_id],
+                    seo_metadata=agency_seo_metadata[agency_id],
+                ),
                 f"{BASE_URL}/agency/{agency_id}/fixes/",
             )
         elif fixlog_page_dir.exists():

@@ -175,3 +175,528 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: fluo-grand-est-ardennes
+    name: Réseau interurbain Fluo Grand Est - Ardennes
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80413/download
+    license_note: >-
+      Licence Ouverte 2.0; published by Fluo Grand Est (Région Grand Est)
+      through France's National Access Point. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-ardennes-08
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Fluo Grand Est (Région Grand Est).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: fluo-grand-est-aube
+    name: Réseau interurbain Fluo Grand Est - Aube
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80415/download
+    license_note: >-
+      Licence Ouverte 2.0; published by Fluo Grand Est (Région Grand Est)
+      through France's National Access Point. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-aube-10
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Fluo Grand Est (Région Grand Est).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: fluo-grand-est-bas-rhin
+    name: Réseau interurbain Fluo Grand Est - Bas-Rhin
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80417/download
+    license_note: >-
+      Licence Ouverte 2.0; published by Fluo Grand Est (Région Grand Est)
+      through France's National Access Point. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-bas-rhin-67
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Fluo Grand Est (Région Grand Est).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-17"
+      identity_reviewed: true
+  - id: fr-cabus
+    name: "Réseau urbain CABUS"
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: "Grand-Est"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/80469/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA Sarreguemines Confluences and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/fr-200052264-t0001-0000-1"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA Sarreguemines Confluences"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-cmonbus-chaumont
+    name: "Réseau urbain Cmonbus"
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: "Grand-Est"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/80410/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA de Chaumont and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-cmonbus-communaute-dagglomeration-de-chaumont"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA de Chaumont"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-colibri
+    name: "Réseau urbain Colibri"
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: "Grand-Est"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/80463/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CC Terres Touloises and the update date.
+    rt_urls:
+      trip_updates: "https://proxy.transport.data.gouv.fr/resource/fluo-colibri-terres-touloises-gtfs-rt-trip-update"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/fr-200052264-t0027-0000-1"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CC Terres Touloises"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-forbus
+    name: "Réseau urbain Forbus"
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: "Grand-Est"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/80467/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA de Forbach Porte de France and the update date.
+    rt_urls:
+      trip_updates: "https://proxy.transport.data.gouv.fr/resource/fluo-forbus-forbach-gtfs-rt-trip-update"
+      vehicle_positions: "https://proxy.transport.data.gouv.fr/resource/fluo-forbus-forbach-gtfs-rt-vehicle-position"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/fr-200052264-t0007-0000-1"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA de Forbach Porte de France"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-isibus
+    name: "Réseau urbain Isibus"
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: "Grand-Est"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/80447/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CC Sarrebourg Moselle Sud and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/fr-200052264-t0026-0000-1"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CC Sarrebourg Moselle Sud"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-le-sit
+    name: "Réseau urbain Le SIT"
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: "Grand-Est"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/80475/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CC du Bassin de Pompey and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/fr-200052264-t0022-0000-1"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CC du Bassin de Pompey"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-pass-o
+    name: "Réseau urbain Pass'O"
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: "Grand-Est"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/80439/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CC du Pays de Sainte-Odile and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/fr-200052264-t0041-0000-1"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CC du Pays de Sainte-Odile"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-rezo
+    name: "Réseau urbain Rezo"
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: "Grand-Est"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/80772/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA du Grand Verdun and the update date.
+    rt_urls:
+      trip_updates: "https://proxy.transport.data.gouv.fr/resource/fluo-rezo-verdun-gtfs-rt-trip-update"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/fr-200052264-t0011-0000-1"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA du Grand Verdun"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-riv-connect
+    name: "Réseau urbain Riv'Connect"
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: "Grand-Est"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/83277/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CC Rives de Moselle and the update date.
+    rt_urls:
+      trip_updates: "https://proxy.transport.data.gouv.fr/resource/fluo-rivconnect-rives-de-moselle-gtfs-rt"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-rivconnect-communaute-de-communes-rives-de-moselle"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CC Rives de Moselle"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-ticea
+    name: "Réseau urbain Ticéa"
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: "Grand-Est"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/80477/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA de Saint-Dizier Der et Blaise and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/fr-200052264-t0010-0000-1"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA de Saint-Dizier Der et Blaise"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-tub
+    name: "Réseau urbain TUB"
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: "Grand-Est"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/80441/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA de Bar-le-Duc - Sud Meuse and the update date.
+    rt_urls:
+      trip_updates: "https://proxy.transport.data.gouv.fr/resource/fluo-tub-bar-le-duc-gtfs-rt"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/fr-200052264-t0003-0000-1"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA de Bar-le-Duc - Sud Meuse"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-pan-80419
+    name: Réseau interurbain Fluo Grand-Est - Haut-Rhin (68)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80419/download
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Fluo Grand Est and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-haut-rhin-68
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-haut-rhin-68
+      scope:
+      - gtfs_schedule
+      attribution: Fluo Grand Est
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-80421
+    name: Réseau interurbain Fluo Grand-Est - Marne (51)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80421/download
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Fluo Grand Est and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-marne-51
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-marne-51
+      scope:
+      - gtfs_schedule
+      attribution: Fluo Grand Est
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-80423
+    name: Réseau interurbain Fluo Grand-Est - Meurthe-et-Moselle (54)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80423/download
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Fluo Grand Est and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-meurthe-et-moselle-54
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-meurthe-et-moselle-54
+      scope:
+      - gtfs_schedule
+      attribution: Fluo Grand Est
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-80425
+    name: Réseau interurbain Fluo Grand-Est - Meuse (55)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80425/download
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Fluo Grand Est and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-meuse-55
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-meuse-55
+      scope:
+      - gtfs_schedule
+      attribution: Fluo Grand Est
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-80427
+    name: Réseau interurbain Fluo Grand-Est - Moselle (57)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80427/download
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Fluo Grand Est and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-moselle-57
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-moselle-57
+      scope:
+      - gtfs_schedule
+      attribution: Fluo Grand Est
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-80429
+    name: Réseau interurbain Fluo Grand-Est - Vosges (88)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80429/download
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Fluo Grand Est and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-vosges-88
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-vosges-88
+      scope:
+      - gtfs_schedule
+      attribution: Fluo Grand Est
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-80443
+    name: Réseau urbain Mouvéo
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80443/download
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Fluo Grand Est and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0012-0000-1
+      terms_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0012-0000-1
+      scope:
+      - gtfs_schedule
+      attribution: Fluo Grand Est
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-80461
+    name: Réseau urbain Imagine
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80461/download
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Fluo Grand Est and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0009-0000-1
+      terms_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0009-0000-1
+      scope:
+      - gtfs_schedule
+      attribution: Fluo Grand Est
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-80465
+    name: Réseau urbain Le Bus
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80465/download
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Fluo Grand Est and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0023-0000-1
+      terms_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0023-0000-1
+      scope:
+      - gtfs_schedule
+      attribution: Fluo Grand Est
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-80471
+    name: Réseau urbain TUM
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80471/download
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Fluo Grand Est and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0030-0000-1
+      terms_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0030-0000-1
+      scope:
+      - gtfs_schedule
+      attribution: Fluo Grand Est
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81989
+    name: Réseau interurbain Fluo Grand-Est - Haute-Marne (52)
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/81989/download
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Fluo Grand Est and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-haute-marne-52
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-fluo-grand-est-haute-marne-52
+      scope:
+      - gtfs_schedule
+      attribution: Fluo Grand Est
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true

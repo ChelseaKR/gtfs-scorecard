@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: a recommended GTFS file is missing
 
 Code: `missing_recommended_file` (MobilityData validator)

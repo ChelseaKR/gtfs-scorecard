@@ -107,6 +107,11 @@
             "enum": ["current", "expiring_soon", "lapsed", "stale", "unknown"]
           },
           "top_fix": { "type": ["string", "null"] },
+          "top_fix_code": {
+            "type": ["string", "null"],
+            "pattern": "^[A-Za-z0-9_-]+$",
+            "description": "Finding code for the member's highest-priority fix, used to preserve evidence context when opening its scorecard."
+          },
           "shapes_status": {
             "enum": ["ready", "at_risk", "not_ready", null]
           },

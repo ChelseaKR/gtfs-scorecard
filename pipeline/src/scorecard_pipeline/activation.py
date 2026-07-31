@@ -578,6 +578,52 @@ def _validate_and_materialize_current(
             _atomic_write(dated_path, latest_bytes)
 
 
+def materialize_local_current_artifacts(*, artifacts_root: Path) -> int:
+    """Validate the local current corpus and restore missing dated records.
+
+    Pages intentionally hydrates a bounded artifact set instead of the full
+    retained archive. A feed that did not score today can therefore have a
+    valid ``latest.json`` without its current ``<snapshot_date>.json`` in the
+    ephemeral checkout. Validate the index/latest identity and summary contract
+    used by activation hydration, then recreate only that byte-identical current
+    dated record. Existing dated records must already match.
+
+    Returns the number of dated records materialized.
+    """
+    index_path = artifacts_root / "index.json"
+    try:
+        index = json.loads(index_path.read_text(encoding="utf-8"))
+        agencies = index["agencies"]
+    except (KeyError, TypeError, json.JSONDecodeError, OSError) as exc:
+        raise ActivationHydrationError(f"local artifact index is malformed: {exc}") from exc
+    if not isinstance(agencies, dict):
+        raise ActivationHydrationError("local artifact index agencies must be an object")
+
+    agency_ids: list[str] = []
+    for raw_id in agencies:
+        agency_id = str(raw_id)
+        if raw_id != agency_id or ID_PATTERN.fullmatch(agency_id) is None:
+            raise ActivationHydrationError(
+                f"local artifact index contains an unsafe agency id: {raw_id!r}"
+            )
+        agency_ids.append(agency_id)
+    agency_ids.sort()
+
+    current_dates = _indexed_current_dates(index, agency_ids)
+    missing = sum(
+        not (artifacts_root / agency_id / f"{current_dates[agency_id]}.json").is_file()
+        for agency_id in agency_ids
+    )
+    _validate_and_materialize_current(
+        artifacts_root,
+        index,
+        agency_ids,
+        targets=(),
+        current_dates=current_dates,
+    )
+    return missing
+
+
 def hydrate_activation_corpus(
     *,
     bucket: str,

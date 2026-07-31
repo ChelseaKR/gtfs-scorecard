@@ -1,0 +1,138 @@
+# Cyprus (CY) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: osypa-pafos
+    name: ΟΣΥΠΑ (Pafos)
+    country: CY
+    subdivision_code: CY-05
+    subdivision_name: Pafos
+    mdb_id: "1915"
+    is_official: true
+    static_gtfs_url: https://www.motionbuscard.org.cy/opendata/downloadfile?file=GTFS%5C2_google_transit.zip&rel=True
+    license_note: >-
+      CC BY 4.0 through the Republic of Cyprus open-data portal; credit the
+      Cyprus Public Works Department.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.gov.cy/index.php/en/dataset/1069
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Republic of Cyprus, Public Works Department.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: osea-ammochostos
+    name: ΟΣΕΑ (Ammochostos)
+    country: CY
+    subdivision_code: CY-04
+    subdivision_name: Ammochostos
+    mdb_id: "1916"
+    is_official: true
+    static_gtfs_url: https://www.motionbuscard.org.cy/opendata/downloadfile?file=GTFS%5C4_google_transit.zip&rel=True
+    license_note: >-
+      CC BY 4.0 through the Republic of Cyprus open-data portal; credit the
+      Cyprus Public Works Department.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.gov.cy/index.php/en/dataset/1069
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Republic of Cyprus, Public Works Department.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: intercity-buses-cyprus
+    name: Intercity Buses Cyprus
+    country: CY
+    mdb_id: "1917"
+    is_official: true
+    static_gtfs_url: https://www.motionbuscard.org.cy/opendata/downloadfile?file=GTFS%5C5_google_transit.zip&rel=True
+    license_note: >-
+      CC BY 4.0 through the Republic of Cyprus open-data portal; credit the
+      Cyprus Public Works Department.
+    operating_note: >-
+      One intercity network serving multiple districts; counted as one feed
+      record, not as a country-wide coverage claim.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.gov.cy/index.php/en/dataset/1069
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Republic of Cyprus, Public Works Department.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: npt-lefkosia
+    name: Nicosia Public Transport (NPT)
+    country: CY
+    subdivision_code: CY-01
+    subdivision_name: Lefkosia
+    mdb_id: "1918"
+    organization_id: cyprus-public-transport
+    feed_variant: Lefkosia bus
+    is_official: true
+    static_gtfs_url: https://www.motionbuscard.org.cy/opendata/downloadfile?file=GTFS%5C9_google_transit.zip&rel=True
+    license_note: >-
+      CC BY 4.0 through the Republic of Cyprus open-data portal; credit the
+      Cyprus Public Works Department.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.gov.cy/index.php/en/dataset/1069
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Republic of Cyprus, Public Works Department.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: lpt-larnaka
+    name: Larnaka Public Transport (LPT)
+    country: CY
+    subdivision_code: CY-03
+    subdivision_name: Larnaka
+    mdb_id: "1919"
+    organization_id: cyprus-public-transport
+    feed_variant: Larnaka bus
+    is_official: true
+    static_gtfs_url: https://www.motionbuscard.org.cy/opendata/downloadfile?file=GTFS%5C10_google_transit.zip&rel=True
+    license_note: >-
+      CC BY 4.0 through the Republic of Cyprus open-data portal; credit the
+      Cyprus Public Works Department.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.gov.cy/index.php/en/dataset/1069
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Republic of Cyprus, Public Works Department.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: pame-express-lefkosia
+    name: PAME Express (Lefkosia)
+    country: CY
+    subdivision_code: CY-01
+    subdivision_name: Lefkosia
+    mdb_id: "2901"
+    organization_id: cyprus-public-transport
+    feed_variant: PAME Express
+    is_official: true
+    static_gtfs_url: https://www.motionbuscard.org.cy/opendata/downloadfile?file=GTFS%5C11_google_transit.zip&rel=True
+    license_note: >-
+      CC BY 4.0 through the Republic of Cyprus open-data portal; credit the
+      Cyprus Public Works Department.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.gov.cy/index.php/en/dataset/1069
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Republic of Cyprus, Public Works Department.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

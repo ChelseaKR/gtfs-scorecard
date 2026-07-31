@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-03"
+date_modified: "2026-07-03"
+---
+
 # Fix: service calendars that have already expired
 
 Code: `expired_calendar` (MobilityData validator)

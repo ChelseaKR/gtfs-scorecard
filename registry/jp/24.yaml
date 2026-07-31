@@ -273,3 +273,542 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: toba-municipal-ferry
+    name: Toba Municipal Ferry (鳥羽市営定期船)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tobacity/feeds/teikisen/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Toba City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Toba City.
+    operating_note: >-
+      Toba City's scheduled municipal ferry network serving its inhabited
+      islands; all published routes are represented by one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tobacity.teikisen
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toba City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: mie-kotsu-shima
+    name: Mie Kotsu Shima (三重交通 志摩地域)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mie-kotsu/feeds/sancoshima/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://bus-vision.jp/realtime/shima_trip_update_v2.bin
+      vehicle_positions: https://bus-vision.jp/realtime/shima_vpos_update_v2.bin
+      service_alerts: https://bus-vision.jp/realtime/shima_alrt_update_v2.bin
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Mie Kotsu through the
+      GTFS Data Repository (gtfs-data.jp). Credit Mie Kotsu.
+    operating_note: >-
+      Mie Kotsu's scheduled bus service in the Shima area. The official
+      catalog also publishes keyless TripUpdates, VehiclePositions, and
+      Service Alerts.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mie-kotsu.sancoshima
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mie Kotsu (三重交通). Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: ise-okage-bus
+    name: Ise Okage Bus (伊勢市 おかげバス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/isecity/feeds/communitybus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://bus-vision.jp/realtime/iseshi_trip_update_v2.bin
+      vehicle_positions: https://bus-vision.jp/realtime/iseshi_vpos_update_v2.bin
+      service_alerts: https://bus-vision.jp/realtime/iseshi_alrt_update_v2.bin
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ise City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Ise City.
+    operating_note: >-
+      Ise City's Okage Bus network. The official catalog also publishes
+      keyless TripUpdates, VehiclePositions, and Service Alerts.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/isecity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ise City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: komono-kamoshika-bus
+    name: Komono Kamoshika Bus (菰野町 かもしか号)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/komonotown/feeds/communitybus/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://bus-vision.jp/realtime/komono_trip_update_v2.bin
+      vehicle_positions: https://bus-vision.jp/realtime/komono_vpos_update_v2.bin
+      service_alerts: https://bus-vision.jp/realtime/komono_alrt_update_v2.bin
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Komono Town through the
+      GTFS Data Repository (gtfs-data.jp). Credit Komono Town.
+    operating_note: >-
+      Komono Town's Kamoshika community bus. The official catalog also
+      publishes keyless TripUpdates, VehiclePositions, and Service Alerts.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/komonotown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Komono Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: mie-kotsu-iga
+    name: Mie Kotsu Iga (三重交通 伊賀営業所)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mie-kotsu/feeds/sancoiga/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://bus-vision.jp/realtime/iga_trip_update_v2.bin
+      vehicle_positions: https://bus-vision.jp/realtime/iga_vpos_update_v2.bin
+      service_alerts: https://bus-vision.jp/realtime/iga_alrt_update_v2.bin
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Mie Kotsu through the
+      GTFS Data Repository (gtfs-data.jp). Credit Mie Kotsu.
+    operating_note: >-
+      Mie Kotsu's scheduled bus service from its Iga office. The official
+      catalog also publishes keyless TripUpdates, VehiclePositions, and
+      Service Alerts.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mie-kotsu.sancoiga
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mie Kotsu (三重交通). Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: mie-kotsu-matsusaka
+    name: Mie Kotsu Matsusaka (三重交通 松阪営業所)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mie-kotsu/feeds/sancomatsusaka/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://bus-vision.jp/realtime/matsusaka_trip_update_v2.bin
+      vehicle_positions: https://bus-vision.jp/realtime/matsusaka_vpos_update_v2.bin
+      service_alerts: https://bus-vision.jp/realtime/matsusaka_alrt_update_v2.bin
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Mie Kotsu through the
+      GTFS Data Repository (gtfs-data.jp). Credit Mie Kotsu.
+    operating_note: >-
+      Mie Kotsu's scheduled bus service from its Matsusaka office. The
+      official catalog also publishes keyless TripUpdates, VehiclePositions,
+      and Service Alerts.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mie-kotsu.sancomatsusaka
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mie Kotsu (三重交通). Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: mie-kotsu-yokkaichi
+    name: Mie Kotsu Yokkaichi (三重交通 四日市営業所)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mie-kotsu/feeds/sancoyokkaichi/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://bus-vision.jp/realtime/yokkaichi_trip_update_v2.bin
+      vehicle_positions: https://bus-vision.jp/realtime/yokkaichi_vpos_update_v2.bin
+      service_alerts: https://bus-vision.jp/realtime/yokkaichi_alrt_update_v2.bin
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Mie Kotsu through the
+      GTFS Data Repository (gtfs-data.jp). Credit Mie Kotsu.
+    operating_note: >-
+      Mie Kotsu's scheduled bus service from its Yokkaichi office. The
+      official catalog also publishes keyless TripUpdates, VehiclePositions,
+      and Service Alerts.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mie-kotsu.sancoyokkaichi
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mie Kotsu (三重交通). Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: mie-kotsu-kuwana
+    name: Mie Kotsu Kuwana (三重交通 桑名営業所)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mie-kotsu/feeds/sancokuwana/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://bus-vision.jp/realtime/kuwana_trip_update_v2.bin
+      vehicle_positions: https://bus-vision.jp/realtime/kuwana_vpos_update_v2.bin
+      service_alerts: https://bus-vision.jp/realtime/kuwana_alrt_update_v2.bin
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Mie Kotsu through the
+      GTFS Data Repository (gtfs-data.jp). Credit Mie Kotsu.
+    operating_note: >-
+      Mie Kotsu's scheduled bus service from its Kuwana office. The official
+      catalog also publishes keyless TripUpdates, VehiclePositions, and
+      Service Alerts.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mie-kotsu.sancokuwana
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mie Kotsu (三重交通). Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: mie-kotsu-ise
+    name: Mie Kotsu Ise (三重交通 伊勢営業所)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mie-kotsu/feeds/sancoise/files/feed.zip?rid=current
+    rt_urls:
+      trip_updates: https://bus-vision.jp/realtime/ise_trip_update_v2.bin
+      vehicle_positions: https://bus-vision.jp/realtime/ise_vpos_update_v2.bin
+      service_alerts: https://bus-vision.jp/realtime/ise_alrt_update_v2.bin
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Mie Kotsu through the
+      GTFS Data Repository (gtfs-data.jp). Credit Mie Kotsu.
+    operating_note: >-
+      Mie Kotsu's scheduled bus service from its Ise office. The official
+      catalog also publishes keyless TripUpdates, VehiclePositions, and
+      Service Alerts.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mie-kotsu.sancoise
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mie Kotsu (三重交通). Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: inabecity-fukushibus
+    name: "いなべ市福祉バス"
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/inabecity/feeds/fukushibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by いなべ市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      いなべ市福祉バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/inabecity.fukushibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        いなべ市. いなべ市福祉バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kawagoetown-fureaibus
+    name: "川越町ふれあいバス"
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kawagoetown/feeds/fureaibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 川越町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      川越町ふれあいバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kawagoetown.fureaibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        川越町. 川越町ふれあいバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kihotown-chominbus
+    name: "紀宝町民バス"
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kihotown/feeds/chominbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 紀宝町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      紀宝町民バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kihotown.chominbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        紀宝町. 紀宝町民バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: kisosakitown-communitybus
+    name: "木曽岬町自主運行バス"
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kisosakitown/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 木曽岬町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      木曽岬町自主運行バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kisosakitown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        木曽岬町. 木曽岬町自主運行バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: mie-meiwatown-chominbus
+    name: "明和町町民バス"
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mie-meiwatown/feeds/chominbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 明和町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      明和町町民バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mie-meiwatown.chominbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        明和町. 明和町町民バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: minamiisetown-choeibus
+    name: "南伊勢町営バス"
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamiisetown/feeds/choeibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 南伊勢町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      南伊勢町営バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamiisetown.choeibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        南伊勢町. 南伊勢町営バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: odaitown-choeibus
+    name: "大台町営バス"
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/odaitown/feeds/choeibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 大台町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      大台町営バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/odaitown.choeibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        大台町. 大台町営バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: owasecity-fureaibus
+    name: "尾鷲市ふれあいバス"
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/owasecity/feeds/fureaibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 尾鷲市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      尾鷲市ふれあいバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/owasecity.fureaibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        尾鷲市. 尾鷲市ふれあいバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: takitown-choeibus
+    name: "多気町営バス"
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/takitown/feeds/choeibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 多気町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      多気町営バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/takitown.choeibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        多気町. 多気町営バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: tointown-communitybus
+    name: "東員町「オレンジバス」"
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tointown/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 東員町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      東員町「オレンジバス」 is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tointown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        東員町. 東員町「オレンジバス」, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: wataraitown-choeibus
+    name: "度会町営バス"
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/wataraitown/feeds/choeibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 度会町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      度会町営バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/wataraitown.choeibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        度会町. 度会町営バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

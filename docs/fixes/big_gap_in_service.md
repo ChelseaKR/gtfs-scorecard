@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-09"
+date_modified: "2026-07-09"
+---
+
 # Fix: a service calendar has a gap longer than 13 days
 
 Code: `big_gap_in_service` (MobilityData validator)

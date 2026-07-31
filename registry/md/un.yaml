@@ -1,0 +1,26 @@
+# Ungheni (MD) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: ungheni-public-transport
+    name: Transport Public Ungheni
+    country: MD
+    subdivision_code: MD-UN
+    subdivision_name: Ungheni
+    mdb_id: "3046"
+    is_official: true
+    static_gtfs_url: https://github.com/UngheniTransport/gtfs/raw/refs/heads/main/ungheni_gtfs.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0) on the operator's open-data
+      page; commercial reuse is permitted with attribution.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://unghenitransport.md/retea-de-transport/open-data
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Transport Public Ungheni.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

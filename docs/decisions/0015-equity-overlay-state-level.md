@@ -73,3 +73,10 @@ The `equity.yml` workflow reads an optional `CENSUS_API_KEY` repo secret (a free
 key from api.census.gov) and appends it to the queries; with it set, the overlay
 populates real need tiers on every run. Without it, the counts-only overlay still
 publishes, so the page and endpoint always work.
+
+Last verified: 2026-07-17. `equity.py`, the `equity.yml` workflow, and its
+optional `CENSUS_API_KEY` path are present and match this record. Since this
+decision, `tract_equity.py` has landed the pure point-in-polygon and
+aggregation core; the published overlay is still state-level, so the decision
+stands. Recheck cadence: on each ACS release the overlay ingests, or when
+tract-level data loading lands.

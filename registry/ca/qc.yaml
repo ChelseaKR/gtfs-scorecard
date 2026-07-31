@@ -25,6 +25,48 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: rimouski-transit
+    name: Société des transports de Rimouski
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "2276"
+    is_official: true
+    static_gtfs_url: https://www.donneesquebec.ca/recherche/dataset/d2d92b84-4361-42f0-81eb-3c395bc54597/resource/bd4021ba-d3ae-4d3b-b8fd-016405166761/download/gtfsrimouskibus.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0) as recorded by Données
+      Québec for the Ville de Rimouski transport dataset.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.donneesquebec.ca/recherche/dataset/d2d92b84-4361-42f0-81eb-3c395bc54597
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Ville de Rimouski.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: rtl-longueuil
+    name: Réseau de transport de Longueuil
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "751"
+    is_official: true
+    static_gtfs_url: https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip
+    license_note: >-
+      RTL's GTFS terms permit worldwide, royalty-free, non-exclusive lawful
+      reuse with attribution to Réseau de transport de Longueuil.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.rtl-longueuil.qc.ca/transit/latestfeed/RTL.zip
+      terms_url: https://old.rtl-longueuil.qc.ca/CMS/MediaFree/file/GTFS/Conditions_GTFS.pdf
+      scope: [gtfs_schedule]
+      attribution: Réseau de transport de Longueuil (RTL).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
   - id: exo-sud-ouest
     name: exo Sud-Ouest
     country: CA

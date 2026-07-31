@@ -113,3 +113,655 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: fr-cherpa
+    name: "Réseau urbain Cherpa"
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: "Auvergne-Rhône-Alpes"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/7d54a219-8fe7-4635-a9fc-cefe5e57462e"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA Agglo Pays d'Issoire and the update date.
+    rt_urls:
+      service_alerts: "https://www.data.gouv.fr/api/1/datasets/r/bbc60d61-bf8f-40ec-9e3b-9c040cc2b06e"
+      trip_updates: "https://www.data.gouv.fr/api/1/datasets/r/bbc60d61-bf8f-40ec-9e3b-9c040cc2b06e"
+      vehicle_positions: "https://www.data.gouv.fr/api/1/datasets/r/bbc60d61-bf8f-40ec-9e3b-9c040cc2b06e"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/cherpa-horaires-lignes-regulieres"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA Agglo Pays d'Issoire"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-rubis
+    name: "Réseau urbain Rubis"
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: "Auvergne-Rhône-Alpes"
+    is_official: true
+    static_gtfs_url: "https://transport.data.gouv.fr/resources/83842/download"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      CA du Bassin de Bourg-en-Bresse and the update date.
+    rt_urls:
+      trip_updates: "https://proxy.transport.data.gouv.fr/resource/rubis-bourg-en-bresse-gtfs-rt-trip-update"
+      vehicle_positions: "https://proxy.transport.data.gouv.fr/resource/rubis-bourg-en-bresse-gtfs-rt-vehicle-position"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/rubis-grand-bourg-mobilites-offre-de-transport-theorique-et-temps-reel"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "CA du Bassin de Bourg-en-Bresse"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-tout-enbus
+    name: "Réseau urbain Tout'enbus"
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: "Auvergne-Rhône-Alpes"
+    is_official: true
+    static_gtfs_url: "https://www.data.gouv.fr/api/1/datasets/r/e91ff63e-2c15-4c86-8e69-499ceec7bd97"
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point;
+      reuse including commercial reuse is permitted with attribution to
+      Région Auvergne-Rhône-Alpes (CC du Bassin d'Aubenas) and the update date.
+    rt_urls:
+      service_alerts: "https://www.data.gouv.fr/api/1/datasets/r/af576ebf-d3a4-4a0f-b692-8ee580cb1877"
+      trip_updates: "https://www.data.gouv.fr/api/1/datasets/r/af576ebf-d3a4-4a0f-b692-8ee580cb1877"
+      vehicle_positions: "https://www.data.gouv.fr/api/1/datasets/r/af576ebf-d3a4-4a0f-b692-8ee580cb1877"
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: "https://transport.data.gouv.fr/datasets/donnees-theoriques-et-temps-reel"
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: "Région Auvergne-Rhône-Alpes (CC du Bassin d'Aubenas)"
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: fr-pan-38881
+    name: Réseau interurbain - Haute-Loire (43)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/6dc48e22-edc4-478d-896d-7fdd02bbcda9
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Auvergne-Rhône-Alpes, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-haute-loire-43
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-haute-loire-43
+      scope:
+      - gtfs_schedule
+      attribution: Région Auvergne-Rhône-Alpes
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-38888
+    name: Réseau interurbain - Puy-de-Dôme (63)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/fff9c08f-6172-4c94-b46e-c0144ae0bd10
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Auvergne-Rhône-Alpes, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-puy-de-dome-63
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-puy-de-dome-63
+      scope:
+      - gtfs_schedule
+      attribution: Région Auvergne-Rhône-Alpes
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-38889
+    name: Réseau interurbain - Allier (03)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/edf15063-dbbb-4543-a39d-60a39a418ee3
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Auvergne-Rhône-Alpes, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-allier-03
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-allier-03
+      scope:
+      - gtfs_schedule
+      attribution: Région Auvergne-Rhône-Alpes
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-40287
+    name: Réseau interurbain - Isère (38)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/40ee9d6c-3bb9-409e-b670-986212de63f2
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Auvergne-Rhône-Alpes, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-isere-38-1
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-isere-38-1
+      scope:
+      - gtfs_schedule
+      attribution: Région Auvergne-Rhône-Alpes
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-52917
+    name: Réseau urbain L'va
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/e0831d78-5577-4cae-aa00-de5eeaf3ecb6
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Vienne
+      Condrieu Agglomération, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-lva
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-lva
+      scope:
+      - gtfs_schedule
+      attribution: Vienne Condrieu Agglomération
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-52937
+    name: Réseau urbain Ruban
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/34d2cc17-3eb5-4581-917b-a8c06a112e61
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Communauté
+      d'agglomération Porte de l'Isère, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-ruban
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-ruban
+      scope:
+      - gtfs_schedule
+      attribution: Communauté d'agglomération Porte de l'Isère
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-79272
+    name: Réseau urbain et scolaire T'CAP — dsp24data-gtfs-2024-09-23-15-45-06.zip
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    organization_id: fr-pan-5cb42b2a8b4c4178f85e4a16
+    feed_variant: dsp24data-gtfs-2024-09-23-15-45-06.zip
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/ba477c37-93d1-4900-8958-baf3c6de9d57
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Communauté d'Agglomération Privas Centre Ardèche
+      and the update date.
+    operating_note: One of 2 distinct schedule resources in the same official dataset; each resource is
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-interurbain-et-scolaire-de-la-communaute-dagglomeration-privas-centre-ardeche
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-interurbain-et-scolaire-de-la-communaute-dagglomeration-privas-centre-ardeche
+      scope:
+      - gtfs_schedule
+      attribution: Communauté d'Agglomération Privas Centre Ardèche
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-79859
+    name: Réseau urbain Saônibus
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/19a7a109-54c0-4a40-ab60-4d5ca43ce823
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Oùra,
+      identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/saonibus-horaires-theoriques-et-temps-reel-du-reseau-de-transport-urbain-de-la-cc-dsv
+      terms_url: https://transport.data.gouv.fr/datasets/saonibus-horaires-theoriques-et-temps-reel-du-reseau-de-transport-urbain-de-la-cc-dsv
+      scope:
+      - gtfs_schedule
+      attribution: Oùra
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-79864
+    name: Réseau urbain Ticobus
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/10bf603d-9302-435e-a1dd-a60d91a645ee
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Oùra,
+      identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/tico-bus-horaires-theoriques-du-reseau-de-transport-urbain-tico
+      terms_url: https://transport.data.gouv.fr/datasets/tico-bus-horaires-theoriques-du-reseau-de-transport-urbain-tico
+      scope:
+      - gtfs_schedule
+      attribution: Oùra
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-79865
+    name: Réseau urbain Tam
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/317b003c-dca6-4908-8829-6d2842a5f47c
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Oùra,
+      identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/tam-horaires-theoriques-du-reseau-de-transport-urbain-sur-la-ville-damberieu-en-bugey
+      terms_url: https://transport.data.gouv.fr/datasets/tam-horaires-theoriques-du-reseau-de-transport-urbain-sur-la-ville-damberieu-en-bugey
+      scope:
+      - gtfs_schedule
+      attribution: Oùra
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-80960
+    name: Réseau interurbain et scolaire - Drôme (26)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/fda59af2-0eb3-4a8a-8e59-593f768f836a
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Auvergne-Rhône-Alpes, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-et-scolaire-cars-region-drome-26
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-et-scolaire-cars-region-drome-26
+      scope:
+      - gtfs_schedule
+      attribution: Région Auvergne-Rhône-Alpes
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-80961
+    name: Réseau interurbain - Ardèche (07)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/4e69fff6-6ae5-4ac0-9fa4-9c24ac92f291
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Auvergne-Rhône-Alpes, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-ardeche-07
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-ardeche-07
+      scope:
+      - gtfs_schedule
+      attribution: Région Auvergne-Rhône-Alpes
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-80964
+    name: Réseau interurbain - Haute-Savoie (74)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/71926816-92f8-4620-8b8f-e1804f645e26
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Auvergne-Rhône-Alpes, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-haute-savoie-74
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-haute-savoie-74
+      scope:
+      - gtfs_schedule
+      attribution: Région Auvergne-Rhône-Alpes
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81244
+    name: Réseau interurbain - Savoie (73)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/4b74f1b9-fcc0-4e59-bf48-7ed4102e5222
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Auvergne-Rhône-Alpes, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-savoie-73
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-savoie-73
+      scope:
+      - gtfs_schedule
+      attribution: Région Auvergne-Rhône-Alpes
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81245
+    name: Réseau interurbain - Cantal (15)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/2053f06d-439c-43fe-87fb-528179a8502e
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Auvergne-Rhône-Alpes, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-cantal-15
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-cantal-15
+      scope:
+      - gtfs_schedule
+      attribution: Région Auvergne-Rhône-Alpes
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81342
+    name: Réseau urbain et scolaire T'CAP — sco24data-gtfs-2024-10-16-10-39-46.zip
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    organization_id: fr-pan-5cb42b2a8b4c4178f85e4a16
+    feed_variant: sco24data-gtfs-2024-10-16-10-39-46.zip
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/5120cc52-6cc0-46b7-83b0-4c5cfd8f920c
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Communauté d'Agglomération Privas Centre Ardèche
+      and the update date.
+    operating_note: One of 2 distinct schedule resources in the same official dataset; each resource is
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-interurbain-et-scolaire-de-la-communaute-dagglomeration-privas-centre-ardeche
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-interurbain-et-scolaire-de-la-communaute-dagglomeration-privas-centre-ardeche
+      scope:
+      - gtfs_schedule
+      attribution: Communauté d'Agglomération Privas Centre Ardèche
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81585
+    name: Réseau urbain du Pays de Gex
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/95c73b12-d117-4faf-bb6f-abfe3c95eee1
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Pays de Gex Agglo and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/transports-publics-urbains-sur-le-territoire-de-la-ca-du-pays-de-gex-1
+      terms_url: https://transport.data.gouv.fr/datasets/transports-publics-urbains-sur-le-territoire-de-la-ca-du-pays-de-gex-1
+      scope:
+      - gtfs_schedule
+      attribution: Pays de Gex Agglo
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81617
+    name: Lignes de covoiturage M covoit' Lignes+
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/91dbf9cb-4ab2-42a3-9f40-0791a53d58d2
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Syndicat
+      Mixte des Mobilités de l'Aire Grenobloise, identify the ODbL, and preserve share-alike terms where
+      they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-des-lignes-m-covoit-ligne-plus
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-des-lignes-m-covoit-ligne-plus
+      scope:
+      - gtfs_schedule
+      attribution: Syndicat Mixte des Mobilités de l'Aire Grenobloise
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81618
+    name: Téléphérique de la Bastille - Bulles de Grenoble
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/3ec51aee-ce59-4608-b721-faae118ea1d0
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Syndicat
+      Mixte des Mobilités de l'Aire Grenobloise, identify the ODbL, and preserve share-alike terms where
+      they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-du-telepherique-de-la-bastille
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-du-telepherique-de-la-bastille
+      scope:
+      - gtfs_schedule
+      attribution: Syndicat Mixte des Mobilités de l'Aire Grenobloise
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-81794
+    name: Réseau urbain Tougo
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/c1067233-c35e-4c53-93b3-050f707bf6a2
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Syndicat
+      Mixte des Mobilités de l'Aire Grenobloise, identify the ODbL, and preserve share-alike terms where
+      they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-du-reseau-tougo
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-du-reseau-tougo
+      scope:
+      - gtfs_schedule
+      attribution: Syndicat Mixte des Mobilités de l'Aire Grenobloise
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83112
+    name: Réseau interurbain Cars Région Express
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/c379471b-c554-4838-9c00-39d7ced7b53a
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Auvergne-Rhône-Alpes, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-express
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-express
+      scope:
+      - gtfs_schedule
+      attribution: Région Auvergne-Rhône-Alpes
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83113
+    name: Réseau interurbain - Ain (01)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/723f0cc2-476a-464c-a40e-bf8686f7bd8d
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Auvergne-Rhône-Alpes, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-ain-01
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-ain-01
+      scope:
+      - gtfs_schedule
+      attribution: Région Auvergne-Rhône-Alpes
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83114
+    name: Réseau interurbain - Loire (42)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/d22ab458-e6b4-4334-96dc-18590a3d9e5d
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Auvergne-Rhône-Alpes, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-loire-42
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-interurbain-cars-region-loire-42
+      scope:
+      - gtfs_schedule
+      attribution: Région Auvergne-Rhône-Alpes
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83258
+    name: Réseau urbain 3CMA
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/ff226a89-a0f7-4e6d-af0c-3b34b54306ae
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to COMMUNAUTE DE COMMUNES COEUR DE MAURIENNE ARVAN
+      and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/transport-urbain-3cma-bus
+      terms_url: https://transport.data.gouv.fr/datasets/transport-urbain-3cma-bus
+      scope:
+      - gtfs_schedule
+      attribution: COMMUNAUTE DE COMMUNES COEUR DE MAURIENNE ARVAN
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83462
+    name: Réseau urbain Transports du Pays Voironnais
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/2ee1e02f-da22-4b86-8451-5ef67ae32cdd
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Syndicat
+      Mixte des Mobilités de l'Aire Grenobloise, identify the ODbL, and preserve share-alike terms where
+      they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-du-reseau-transport-du-pays-voironnais
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-du-reseau-transport-du-pays-voironnais
+      scope:
+      - gtfs_schedule
+      attribution: Syndicat Mixte des Mobilités de l'Aire Grenobloise
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83626
+    name: Navettes saisonnières Bourg-Saint-Maurice
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    service_type: seasonal
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/76210b43-2647-413a-84ed-adf07b0a7392
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Communauté de Communes Haute-Tarentaise and the
+      update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/navettes-bourg-saint-maurice
+      terms_url: https://transport.data.gouv.fr/datasets/navettes-bourg-saint-maurice
+      scope:
+      - gtfs_schedule
+      attribution: Communauté de Communes Haute-Tarentaise
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83725
+    name: Réseau urbain Le 37
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83725/download
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Oùra,
+      identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/le-37-horaires-theoriques-du-reseau-de-transport-urbain-de-la-communaute-de-communes-entre-bievre-et-rhone
+      terms_url: https://transport.data.gouv.fr/datasets/le-37-horaires-theoriques-du-reseau-de-transport-urbain-de-la-communaute-de-communes-entre-bievre-et-rhone
+      scope:
+      - gtfs_schedule
+      attribution: Oùra
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-84112
+    name: Réseau urbain Duobus
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/84112/download
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Oùra,
+      identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/duobus-horaires-du-reseau-doyonnax-01
+      terms_url: https://transport.data.gouv.fr/datasets/duobus-horaires-du-reseau-doyonnax-01
+      scope:
+      - gtfs_schedule
+      attribution: Oùra
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true

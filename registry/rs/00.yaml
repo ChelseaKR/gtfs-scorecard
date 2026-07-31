@@ -1,0 +1,54 @@
+# Beograd (RS) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: belgrade-public-transport
+    name: Belgrade Public Transport
+    country: RS
+    subdivision_code: RS-00
+    subdivision_name: Beograd
+    mdb_id: "1027"
+    organization_id: belgrade-public-transport
+    feed_variant: urban network
+    is_official: true
+    static_gtfs_url: https://data.gov.rs/sr/datasets/r/729be9a1-7ed9-453d-9a3d-68fa30f07529
+    license_note: >-
+      Serbia's national open-data terms permit copying, distribution,
+      adaptation, and commercial or non-commercial reuse with attribution.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.rs/sr/datasets/gradski-javni-prevoz-u-beogradu-gtfs/
+      terms_url: https://data.gov.rs/sr/terms/
+      scope: [gtfs_schedule]
+      attribution: Republic of Serbia open-data portal.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: belgrade-suburban-transport
+    name: Belgrade Suburban Public Transport
+    country: RS
+    subdivision_code: RS-00
+    subdivision_name: Beograd
+    mdb_id: "2925"
+    organization_id: belgrade-public-transport
+    feed_variant: suburban network
+    is_official: true
+    static_gtfs_url: https://data.gov.rs/sr/datasets/r/60f82229-16c7-4939-961b-2c24873d3e06
+    license_note: >-
+      Serbia's national open-data terms permit copying, distribution,
+      adaptation, and commercial or non-commercial reuse with attribution.
+    operating_note: >-
+      The separately published suburban network for Belgrade; counted as one
+      feed record and linked to the urban feed under one organization.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.rs/sr/datasets/prigradski-javni-prevoz-u-u-beogradu-gtfs/
+      terms_url: https://data.gov.rs/sr/terms/
+      scope: [gtfs_schedule]
+      attribution: Republic of Serbia open-data portal.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

@@ -70,3 +70,8 @@ runs.
   `ntd_id` are skipped, so it only ever adds.
 - The `/realtime/` page and `/ntd/` page now give a program the two national views
   the research asked for, both off data already on disk.
+
+Last verified: 2026-07-17. `rt_national.py` (writing `api/v1/realtime.json` and
+the `/realtime/` page) and the idempotent `ntd_crosswalk.py` are present and
+match this record. Recheck cadence: when the realtime monitor cadence, the
+NTD Atlas source, or the rollup's published fields change.

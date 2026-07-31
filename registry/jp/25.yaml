@@ -198,3 +198,53 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: moriyamacity-kuruttobus
+    name: "草津市、守山市、栗東市　くるっとバス"
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/moriyamacity/feeds/kuruttobus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 守山市 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      草津市、守山市、栗東市　くるっとバス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/moriyamacity.kuruttobus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        守山市. 草津市、守山市、栗東市　くるっとバス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true
+  - id: shiga-hinotown-choueibus
+    name: "日野町営バス"
+    country: JP
+    subdivision_code: JP-25
+    subdivision_name: Shiga
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shiga-hinotown/feeds/choueibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published by 日野町 through the official Japanese
+      GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      日野町営バス is the public schedule named by the repository. This
+      registry item represents one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shiga-hinotown.choueibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        日野町. 日野町営バス, published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

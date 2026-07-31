@@ -185,3 +185,29 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: mizuho-choisoko-demand-transit
+    name: Mizuho Town Choi-Soko Demand Transit (チョイソコみずほまち)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mizuhotown/feeds/DemandResponsiveTransport/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Mizuho Town through
+      the GTFS Data Repository (gtfs-data.jp). Credit Mizuho Town.
+    operating_note: >-
+      Mizuho Town's reservation-based Choi-Soko shared service in
+      western Tokyo.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mizuhotown.DemandResponsiveTransport
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Mizuho Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-07-23"
+      identity_reviewed: true

@@ -6,7 +6,7 @@
     "url": "https://github.com/ChelseaKR/gtfs-scorecard",
     "source": "github"
   },
-  "version": "1.3.0",
+  "version": "1.4.0",
   "_meta": {
     "dev.chelseakr/gap": {
       "note": "No packages[] entry: scorecard-pipeline is not published to PyPI (or npm/oci/nuget/mcpb) — the real install is `uvx --from git+https://github.com/ChelseaKR/gtfs-scorecard#subdirectory=pipeline scorecard-mcp`, or `uv run --project <checkout>/pipeline scorecard-mcp` from a local clone (see docs/mcp.md). A prior revision of this file declared `registryType: pypi`, which was false (that field's five valid enum values per the server.schema.json have no 'installed from a git subdirectory' option, and the package was never actually on PyPI). Removed 2026-07-05 rather than leave a false registry claim standing (RELEASE-AND-VERSIONING-STANDARD REL-05). Re-add packages[] correctly if/when this is actually published to PyPI (with Trusted Publishing, tracked as a P1-10 follow-up) or the MCP registry schema adds a git-source registryType.",

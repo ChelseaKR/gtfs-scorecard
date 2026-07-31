@@ -1,3 +1,8 @@
+---
+date_published: "2026-07-04"
+date_modified: "2026-07-04"
+---
+
 # Fix: flexible service with no booking rules
 
 Code: `scorecard_flex_no_booking_rules`

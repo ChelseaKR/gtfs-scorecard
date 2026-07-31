@@ -2,9 +2,10 @@
 
 The static generator emits thousands of pages from a small set of templates.
 These routes cover each distinct shell: landing, SPA, agency, program, national
-data views, maps, forms, fix guides, redirects' destination, and the standalone
-design concept. The ABQ RIDE page intentionally carries long validator rule
-names, making it the regression fixture for min-content horizontal overflow.
+data views, maps, forms, fix guides, redirect aliases and destinations, and the
+standalone design concept. The ABQ RIDE page intentionally carries long
+validator rule names, making it the regression fixture for min-content
+horizontal overflow.
 """
 
 from __future__ import annotations
@@ -43,6 +44,28 @@ MOBILE_ROUTES = [
     "/check/",
     "/how-to-read/",
 ]
+
+
+@pytest.mark.parametrize(
+    ("alias", "destination", "fragment_target"),
+    [
+        ("/changes/", "/pulse/#changes", "#changes"),
+        ("/trends/", "/pulse/#trend", "#trend"),
+        ("/access/", "/adoption/#access", "#access"),
+    ],
+)
+def test_retired_alias_preserves_destination_fragment(
+    page: Page,
+    base_url: str,
+    alias: str,
+    destination: str,
+    fragment_target: str,
+) -> None:
+    """Meta-refresh aliases retain the anchor that identifies absorbed content."""
+    page.goto(f"{base_url}{alias}")
+
+    expect(page).to_have_url(f"{base_url}{destination}")
+    expect(page.locator(fragment_target)).to_be_attached()
 
 
 @pytest.mark.parametrize("path", MOBILE_ROUTES)

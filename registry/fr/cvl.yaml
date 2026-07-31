@@ -92,3 +92,104 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: fr-pan-79576
+    name: Réseau urbain Nosbus
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/5f1dfae0-7972-4caa-8a5d-e2d90a285585
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Transdev
+      • Centre-Val de Loire, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-nosbus
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-nosbus
+      scope:
+      - gtfs_schedule
+      attribution: Transdev • Centre-Val de Loire
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-82150
+    name: Réseau urbain CVL Mobilité
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/6348dadb-600c-42c8-bbea-f6ac09505ed3
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Communauté de Communes Chinon Vienne et Loire and
+      the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-cvlmobilite-plan-de-transport-theorique-ligne-a-format-gtfs
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-cvlmobilite-plan-de-transport-theorique-ligne-a-format-gtfs
+      scope:
+      - gtfs_schedule
+      attribution: Communauté de Communes Chinon Vienne et Loire
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83528
+    name: Réseau urbain Le Bus de la Ville d’Amboise
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/937d0757-36c0-4f96-95a4-287b58048c2d
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit JVMALIN,
+      identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/ville-damboise-offre-theorique-mobilite-reseau-urbain
+      terms_url: https://transport.data.gouv.fr/datasets/ville-damboise-offre-theorique-mobilite-reseau-urbain
+      scope:
+      - gtfs_schedule
+      attribution: JVMALIN
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83530
+    name: Réseau interurbain Rémi
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/6c52238c-1c1e-4c5a-922b-8b66c0415a9e
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit JVMALIN,
+      identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/remi-offre-theorique-mobilite-reseau-interurbain-regional
+      terms_url: https://transport.data.gouv.fr/datasets/remi-offre-theorique-mobilite-reseau-interurbain-regional
+      scope:
+      - gtfs_schedule
+      attribution: JVMALIN
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
+  - id: fr-pan-83531
+    name: Réseau urbain TIG
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/485e9781-ac86-44c7-8289-3a7df46abe9d
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit JVMALIN,
+      identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/issoudun-offre-theorique-mobilite-reseau-urbain
+      terms_url: https://transport.data.gouv.fr/datasets/issoudun-offre-theorique-mobilite-reseau-urbain
+      scope:
+      - gtfs_schedule
+      attribution: JVMALIN
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-07-23'
+      identity_reviewed: true
