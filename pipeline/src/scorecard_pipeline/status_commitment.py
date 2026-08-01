@@ -28,7 +28,7 @@ import datetime as dt
 from typing import Any
 
 from . import DATA_ATTRIBUTION, DATA_LICENSE
-from .cadence import STANDARD_PERIOD
+from .cadence import REFRESH_STEP_HOURS, STANDARD_PERIOD
 from .metrics import STALE_FEED_DAYS, UNREACHABLE_STREAK_CHECKS
 
 # The two workflows this commitment describes (ADR 0010). Kept as plain
@@ -36,7 +36,7 @@ from .metrics import STALE_FEED_DAYS, UNREACHABLE_STREAK_CHECKS
 # deliberate edit here too rather than a silent drift -- the CI check in
 # test_status_commitment.py cross-reads the workflow files to catch that drift.
 DAILY_FULL_SCORE_CRON = "23 13 * * *"  # .github/workflows/scorecard.yml
-INTRADAY_REFRESH_CRON = "23 * * * *"  # .github/workflows/refresh.yml
+INTRADAY_REFRESH_CRON = f"23 */{REFRESH_STEP_HOURS} * * *"  # .github/workflows/refresh.yml
 
 
 def cadence_commitment() -> list[dict[str, Any]]:
@@ -50,7 +50,7 @@ def cadence_commitment() -> list[dict[str, Any]]:
                 "expiry danger or recovery window (expiring soon, or recently "
                 "lapsed)"
             ),
-            "cadence": "one direct liveness check every hour",
+            "cadence": f"one direct liveness check every {REFRESH_STEP_HOURS} hours",
             "schedule_cron": INTRADAY_REFRESH_CRON,
         },
         {

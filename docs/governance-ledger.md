@@ -55,19 +55,21 @@ Measured 2026-07-17 over the trailing 30 days (2026-06-17 to 2026-07-17), from
 they are.
 
 - **Deployment frequency:** continuous. The site redeploys on merge and on the
-  hourly refresh; of the last 100 "Deploy site" runs, 89 succeeded, 9 failed,
+  intraday refresh; of the last 100 "Deploy site" runs, 89 succeeded, 9 failed,
   2 were cancelled. The intraday refresh over the last 7 days: 78 success,
-  8 failure, 1 cancelled.
+  8 failure, 1 cancelled. Those counts were recorded while the refresh ran
+  hourly; it moved to every three hours in 2026-08 (ADR 0010), so the next
+  window's run counts will be about a third of these.
 - **Lead time for changes:** across the last 30 merged PRs, median 6 minutes
   and mean 54 minutes from PR open to merge. PRs open pre-verified in this
   workflow, so this measures the merge path, not development time.
 - **Change failure rate:** no merge to `main` was reverted in the window
-  (0 revert commits). 9 of the last 100 deploy runs failed; the hourly cadence
-  supersedes a failed deploy within the hour.
+  (0 revert commits). 9 of the last 100 deploy runs failed; the intraday
+  cadence supersedes a failed deploy within three hours.
 - **Time to restore:** not instrumented as a metric yet. The watchdog workflow
   surfaces failed scheduled runs, and the practical restore bound for the site
-  is the next hourly refresh. Recording a measured value is future work, not a
-  claim.
+  is the next intraday refresh, so at most three hours. Recording a measured
+  value is future work, not a claim.
 
 Context for scale: 119 PRs merged in the window.
 

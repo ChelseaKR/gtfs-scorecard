@@ -5,14 +5,14 @@
     "tiers": [
       {
         "applies_to": "feeds with a measured realtime publisher, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)",
-        "cadence": "every intraday refresh cycle (hourly)",
-        "schedule_cron": "23 * * * *",
+        "cadence": "every intraday refresh cycle (every 3 hours)",
+        "schedule_cron": "23 */3 * * *",
         "tier": "priority"
       },
       {
         "applies_to": "every other tracked feed",
         "cadence": "once per 6-hour period, on a stable per-feed schedule so load spreads evenly instead of checking every host at once",
-        "schedule_cron": "23 * * * *",
+        "schedule_cron": "23 */3 * * *",
         "tier": "standard"
       },
       {

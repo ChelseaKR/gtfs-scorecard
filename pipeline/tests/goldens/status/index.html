@@ -82,7 +82,7 @@
     scheduled once daily for every registered feed. The latest-run section below records what
     that daily work completed.</p>
     <div class="table-wrap"><table><thead><tr><th scope="col">Check</th><th scope="col">Cadence</th>
-    <th scope="col">Applies to</th></tr></thead><tbody><tr><td>Priority</td><td>one direct liveness check every hour</td><td>feeds with measured realtime data, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)</td></tr><tr><td>Standard</td><td>one direct liveness check in each 6-hour period, on a stable per-feed schedule that spreads requests across the period</td><td>every other tracked feed</td></tr><tr><td>Full Validation</td><td>one full validation each day</td><td>every registered feed</td></tr></tbody></table></div></section>
+    <th scope="col">Applies to</th></tr></thead><tbody><tr><td>Priority</td><td>one direct liveness check every 3 hours</td><td>feeds with measured realtime data, and any feed in the expiry danger or recovery window (expiring soon, or recently lapsed)</td></tr><tr><td>Standard</td><td>one direct liveness check in each 6-hour period, on a stable per-feed schedule that spreads requests across the period</td><td>every other tracked feed</td></tr><tr><td>Full Validation</td><td>one full validation each day</td><td>every registered feed</td></tr></tbody></table></div></section>
 
     <section aria-labelledby="degradation-h"><h3 class="section-title" id="degradation-h">When a check fails</h3>
     <p>The scorecard keeps the last successful evidence available and makes the degraded state visible:</p>

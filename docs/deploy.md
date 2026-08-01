@@ -127,7 +127,7 @@ Deployments created before the validator cache moved to the private
    Raw validator caches, structural fingerprints, finding-clearance state, and
    generated feed copies remain private; the renderer still turns reconciled
    receipts into public HTML.
-3. Remove the old public-path objects from S3. The daily, hourly, and targeted
+3. Remove the old public-path objects from S3. The daily, intraday, and targeted
    publishers do this idempotently; an operator can perform the cleanup
    immediately with:
 
@@ -221,7 +221,7 @@ Actions; this is the inventory an operator should know exists:
 | Workflow | Cadence | What it does |
 | --- | --- | --- |
 | `scorecard.yml` | daily | The full sharded re-score, commit, deploy, optional S3 mirror and SES digest. |
-| `refresh.yml` | hourly | Cheap intraday tier: change/down detection by conditional GET, no validator (ADR 0010). |
+| `refresh.yml` | every 3 h | Cheap intraday tier: change/down detection by conditional GET, no validator (ADR 0010). |
 | `targeted-score.yml` | manual | Activates up to 25 reviewed registry agencies against the authoritative S3 corpus, then deploys. |
 | `rt-monitor.yml` | every 3 h | Short realtime sampling burst across agencies into `data/rt-health` (ADR 0012). |
 | `rt-archive.yml` | manual | Bounded high-resolution realtime polling session for one agency (ADR 0012). |
@@ -237,10 +237,13 @@ Actions; this is the inventory an operator should know exists:
 | `mutation.yml` | weekly | Advisory mutation testing of the scoring math. |
 | `ci.yml`, `a11y.yml`, `e2e.yml`, `security.yml`, `pages.yml` | push/PR | The merge and deploy gates. |
 
-`pages.yml` also runs as the deploy job of the daily, hourly, and targeted data
-workflows. Its own push trigger ignores `data/rt-health/**`, so the three-hourly
-realtime observation commit does not add a redundant site build of its own; the
-observations go out with the next hourly refresh deploy, at most an hour later.
+`pages.yml` also runs as the deploy job of the daily, intraday, and targeted
+data workflows. Its own push trigger ignores `data/rt-health/**`, so the
+three-hourly realtime observation commit does not add a redundant site build of
+its own; the observations go out with the next intraday refresh deploy, at most
+three hours later. The refresh and the realtime sampler both run every three
+hours, so an observation is never more than one sampling interval behind the
+site.
 
 ### What each site build downloads from S3
 
@@ -308,8 +311,8 @@ the daily publisher. It is intentionally unavailable to Pages-only forks:
 without the authoritative bucket, a partial checkout cannot safely rebuild the
 worldwide directory.
 
-The workflow serializes with the daily collect and hourly refresh writer jobs.
-Their shared concurrency group uses the 100-run FIFO queue, so a new hourly
+The workflow serializes with the daily collect and intraday refresh writer jobs.
+Their shared concurrency group uses the 100-run FIFO queue, so a new intraday
 refresh cannot replace a waiting activation or daily collect. The activation
 captures the authoritative `index.json` bytes and ETag in one request, then uses
 that compact manifest to fetch every registered `latest.json`, its indexed
