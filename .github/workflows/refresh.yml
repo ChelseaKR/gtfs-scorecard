@@ -170,8 +170,26 @@ jobs:
 
           # Only feeds detected as changed or actually freshness-swept are in
           # the staging tree. Never traverse/upload the full public corpus.
-          aws s3 sync "$public_stage" "$artifact_uri" \
-            --cache-control "max-age=300" --only-show-errors
+          #
+          # Not `aws s3 sync`: it transfers when the local mtime is newer than
+          # the object, and CI checks out fresh every run, so every staged file
+          # always looked newer. A refreshed feed's directory carries its whole
+          # dated history, so the sync re-PUT that history on every cycle even
+          # though a dated artifact cannot change once written. Rewriting an
+          # object also drops its tags and resets its age, so the bucket's
+          # expire-dated-artifacts lifecycle rule -- which filters on
+          # artifact-class=dated -- could never fire on the history this step
+          # kept touching, and the pipeline was paying for PUTs to defeat its
+          # own retention. `publish-artifacts` (the same publisher the daily
+          # collect job uses, .github/workflows/scorecard.yml) compares the
+          # local MD5 against each object's ETag and uploads on any doubt.
+          # Additive, like the sync it replaces: nothing is deleted.
+          uv run --project pipeline --with boto3 scorecard publish-artifacts \
+            --root "$public_stage" \
+            --bucket "$ARTIFACTS_BUCKET" --prefix data/artifacts \
+            --exclude "*/validator-cache.json" --exclude "*/structure.json" \
+            --exclude "*/fixlog.json" --exclude "*/corrected.zip" \
+            --cache-control "max-age=300"
 
           # Reindex/rollups produce a small bounded aggregate set. index.json
           # is the public commit pointer and is uploaded last.

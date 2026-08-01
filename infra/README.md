@@ -93,8 +93,9 @@ terraform apply -var="bucket_name=gtfs-scorecard-artifacts" -var="project=gtfs-s
 Outputs the bucket name and the CloudFront domain. Set the `ARTIFACTS_BUCKET`
 and `ARTIFACTS_CDN` repository **variables** (Settings → Secrets and variables
 → Actions) and the `AWS_ROLE_ARN` secret; the daily workflow's collect job
-already carries the `aws s3 sync` of `data/artifacts`, gated on those
-variables, so it is a no-op until they are set and forks keep working.
+already carries the `scorecard publish-artifacts` upload of `data/artifacts`,
+gated on those variables, so it is a no-op until they are set and forks keep
+working.
 
 ## The gtfsscorecard.com redirect
 
@@ -128,10 +129,21 @@ is not worth owning for a parked redirect nobody is asked to type.
 
 ## Cost
 
-At a few thousand small JSON files refreshed daily, S3 storage and request
-costs are cents, and CloudFront egress for a low-traffic civic site is within
-the free tier or close to it. The single-digit-dollars-a-month budget in
-`CLAUDE.md` holds well into Year 2; see the roadmap's cost notes per tier.
+Measured, not estimated: S3 was **$50.07 in July 2026**, against about 92,000
+objects in `gtfs-scorecard-artifacts-ckr`. Storage is not what costs that —
+the published bytes are a couple of gigabytes, a dollar or so a month at
+Standard rates. Requests are: the publish path re-uploaded objects whose
+content had not changed, because `aws s3 sync` transfers on a newer local
+mtime and CI checks out fresh on every run. The daily job stopped doing that
+in `scorecard.yml`, and the intraday refresh in `refresh.yml`; expect the
+figure to fall, and re-read the bill rather than this paragraph before
+trusting a number.
+
+CloudFront egress for a low-traffic civic site is still within the free tier
+or close to it. The single-digit-dollars-a-month budget in `CLAUDE.md` did not
+hold through Year 1 and should be treated as a target to defend, not a
+description of the bill; the roadmap's per-tier cost notes are estimates that
+have not been reconciled against actual spend.
 
 `instant-score/` is the one deliberate exception once applied: each request
 runs a JVM validator invocation, estimated at roughly $20-60/month at

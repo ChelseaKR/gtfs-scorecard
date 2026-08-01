@@ -222,6 +222,36 @@ def test_daily_publish_compares_content_not_timestamps() -> None:
     )
 
 
+def test_intraday_publish_compares_content_not_timestamps() -> None:
+    """The intraday refresh stages each refreshed feed's whole directory, so the
+    mtime-driven `aws s3 sync` re-PUT that feed's entire dated history every
+    cycle from a fresh checkout. Rewriting an object also drops its tags, which
+    is what stopped the tag-filtered expire-dated-artifacts lifecycle rule from
+    ever matching. The refresh publishes through the same content-comparing
+    publisher as the daily run."""
+    workflow = _workflow("refresh.yml")
+
+    assert "scorecard publish-artifacts" in workflow
+    assert '--root "$public_stage"' in workflow
+    assert "--prefix data/artifacts" in workflow
+    # The mtime-driven upload of the staged public tree is gone.
+    assert 'aws s3 sync "$public_stage"' not in workflow
+    # The same private files stay out of the published tree.
+    for private in (
+        "*/validator-cache.json",
+        "*/structure.json",
+        "*/fixlog.json",
+        "*/corrected.zip",
+    ):
+        assert f'--exclude "{private}"' in workflow
+    assert '--cache-control "max-age=300"' in workflow
+    # Publication still happens after the staging tree is built and after the
+    # credentials renewal that precedes the first public write.
+    assert workflow.index("Renew AWS credentials before publishing") < workflow.index(
+        "scorecard publish-artifacts"
+    )
+
+
 def test_no_workflow_publishes_with_a_size_only_comparison() -> None:
     """`--size-only` cannot see a change that keeps the same byte length."""
     for path in sorted((ROOT / ".github" / "workflows").glob("*.yml")):
