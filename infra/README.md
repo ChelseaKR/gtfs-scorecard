@@ -96,6 +96,36 @@ and `ARTIFACTS_CDN` repository **variables** (Settings → Secrets and variables
 already carries the `aws s3 sync` of `data/artifacts`, gated on those
 variables, so it is a no-op until they are set and forks keep working.
 
+## The gtfsscorecard.com redirect
+
+`infra/artifacts/redirect.tf` parks the defensive `.com` domain and 301s it to
+the canonical `.org`. It is one S3 website bucket per hostname, because an S3
+website endpoint chooses the bucket from the request's `Host` header: the
+apex is served by a bucket named `gtfsscorecard.com`, `www` by one named
+`www.gtfsscorecard.com`. Route 53 resolves an S3-website alias by matching the
+record name to the bucket name, so both alias targets must be the *regional*
+`website_domain` (`s3-website-us-west-2.amazonaws.com`), never the
+bucket-prefixed `website_endpoint`.
+
+The module is already applied, so adding the `www` bucket is an incremental
+plan: two new resources (`aws_s3_bucket.redirect_com_www` and its public
+access block plus website configuration) and one in-place update to
+`aws_route53_record.com_www`'s alias target. Nothing existing is destroyed and
+the apex is untouched.
+
+Run `terraform plan` with the same variables as the apply block above. Expect
+`3 to add, 1 to change, 0 to destroy`. After the apply, allow the
+Route 53 change a minute to propagate, then check the redirect on both names:
+
+```sh
+curl -sSI http://gtfsscorecard.com/     | head -2   # 301 -> https://gtfsscorecard.org/
+curl -sSI http://www.gtfsscorecard.com/ | head -2   # 301 -> https://gtfsscorecard.org/
+```
+
+Both hostnames are HTTP-only; S3 website endpoints cannot serve TLS. Adding
+`https://` on the `.com` would take CloudFront plus an ACM certificate, which
+is not worth owning for a parked redirect nobody is asked to type.
+
 ## Cost
 
 At a few thousand small JSON files refreshed daily, S3 storage and request
