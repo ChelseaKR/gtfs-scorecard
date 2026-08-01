@@ -66,8 +66,9 @@ more often.
 
 ## Cadence tiers (follow-up)
 
-The intraday refresh now runs hourly, and `scorecard cadence` decides which feeds
-are checked each hour so the tightest cadence goes to the feeds that need it:
+The intraday refresh runs on a fixed interval, and `scorecard cadence` decides
+which feeds are checked on each cycle so the tightest cadence goes to the feeds
+that need it:
 
 - **Priority (every cycle):** realtime publishers, and feeds in the expiry danger
   or recovery window (expiring soon, or recently lapsed).
@@ -76,8 +77,43 @@ are checked each hour so the tightest cadence goes to the feeds that need it:
   cycles instead of every host being hit at once.
 
 This keeps detection latency tight for at-risk feeds without checking all ~1,100
-hosts every hour. `liveness --only` consumes the due list; the full validator
+hosts on every cycle. `liveness --only` consumes the due list; the full validator
 still runs only on the feeds that actually changed.
+
+## Intraday interval (revised, 2026-08)
+
+The intraday refresh ran hourly from the follow-up above until 2026-08. It now
+runs every three hours (`23 */3 * * *`).
+
+The reason is cost, not correctness. Each refresh cycle rehydrates a fixed slice
+of the artifact bucket regardless of how few feeds are due, and its deploy job
+rebuilds the site, so the bill scales with the number of cycles rather than with
+the amount of work. Twenty-four cycles a day was buying almost nothing: the
+standard tier is already once per six hours, so the long tail was unaffected by
+the other twenty cycles, and only the priority tier was genuinely checked hourly.
+
+What changed and what did not:
+
+- **Standard tier: unchanged.** Still one check per six-hour period, four checks
+  a day. Two cycles now fall inside each period instead of six, so the long tail
+  spreads across two buckets rather than six. `UNREACHABLE_STREAK_CHECKS = 30`
+  still works out to roughly a week, as the published degradation policy says.
+- **Priority tier: hourly becomes three-hourly.** Worst-case detection latency
+  for a realtime publisher going down, or a feed lapsing inside its danger
+  window, goes from an hour to three hours. The Consequences section above
+  promises "a few hours" rather than "up to a day", and three hours keeps that
+  promise. The daily full score is still the correctness floor underneath.
+- **Realtime observations reach the site up to three hours after sampling**
+  rather than up to an hour, because the refresh deploy is what publishes them.
+  `rt-monitor.yml` samples every three hours too, so an observation is never more
+  than one sampling interval behind.
+
+The interval is not free-floating. `cadence.py` holds it as `REFRESH_STEP_HOURS`
+because the due-list arithmetic is keyed to which cycle a run belongs to, and
+`status_commitment.py` publishes the cron string verbatim on `/status/`. A test
+reads `.github/workflows/refresh.yml` and fails if any of the three drift, which
+is what stops the interval changing without the published claim changing with
+it.
 
 ## Validator-result cache (follow-up)
 

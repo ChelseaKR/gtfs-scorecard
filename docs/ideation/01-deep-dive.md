@@ -10,7 +10,7 @@ The README's framing ("a scorecard for two pilot agencies, generalizing") is
 long outdated in the best way. As of 2026-07-01 this is a **live national data
 product**: ~1,166 active agencies in `agencies.yaml` (a 447 KB registry),
 ~1,449 prerendered agency pages under `web/agency/`, a daily 12-shard scoring
-run (`.github/workflows/scorecard.yml`), an hourly cadence-tiered intraday
+run (`.github/workflows/scorecard.yml`), a three-hourly cadence-tiered intraday
 refresh (`refresh.yml`, ADR 0010), realtime health monitoring, a versioned read
 API (`docs/api.md`, schema 1.4), a Parquet export, monthly citable dataset
 releases (`dataset-release.yml`), a GitHub Marketplace CI action (`action.yml`),

@@ -25,6 +25,6 @@ set, so no human approval stands between a merge to `main` and a Pages deploy.
 Adding a reviewer requirement is a repository setting only the owner can
 change: Settings → Environments → `github-pages` → Required reviewers. Until
 then, this note records the gap rather than claiming the control exists. Note
-the trade-off before enabling it: the hourly scheduled refresh deploys through
-the same environment, and a required reviewer would hold every hourly deploy
-for manual approval.
+the trade-off before enabling it: the intraday scheduled refresh deploys
+through the same environment, and a required reviewer would hold every
+scheduled deploy for manual approval.

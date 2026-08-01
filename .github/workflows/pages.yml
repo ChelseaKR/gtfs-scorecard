@@ -5,11 +5,11 @@ on:
     branches: [main]
     # `rt-monitor.yml` pushes a data-only observation commit every three hours
     # (ADR 0012). Each push used to trigger a whole extra site build, which
-    # re-hydrates the published corpus from S3 for data the hourly `refresh.yml`
-    # deploy republishes anyway. Ignoring the path drops eight redundant builds
-    # a day; the observations still reach the site at the next hourly refresh
-    # (at most one hour later), which is well inside the three-hour sampling
-    # cadence they are recorded at.
+    # re-hydrates the published corpus from S3 for data the `refresh.yml` deploy
+    # republishes anyway. Ignoring the path drops eight redundant builds a day;
+    # the observations still reach the site at the next intraday refresh (at
+    # most three hours later), which matches the three-hour sampling cadence
+    # they are recorded at.
     paths-ignore:
       - "data/rt-health/**"
   workflow_call:
@@ -121,7 +121,7 @@ jobs:
       # and ~380 MB, against ~190 MB for everything else in the bounded set
       # above. It only changes when an agency publishes new shapes, yet every
       # site build re-downloaded all of it, and this workflow runs on each
-      # hourly refresh as well as on push. Keep a runner-side mirror in the
+      # intraday refresh as well as on push. Keep a runner-side mirror in the
       # Actions cache instead and let `aws s3 sync` fetch just the objects S3
       # has modified since the mirror was taken. `sync` transfers an object when
       # its size differs or its S3 last-modified is newer than the local copy,

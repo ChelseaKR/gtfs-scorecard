@@ -30,9 +30,20 @@ from .metrics import expiry_status
 PRIORITY = "priority"
 STANDARD = "standard"
 
-# How many cycles a standard feed waits between checks. With an hourly refresh
-# this is once every six hours, spread across six buckets.
+# How many hours a standard feed waits between checks: one check per six-hour
+# period, whatever the refresh cadence is.
 STANDARD_PERIOD = 6
+
+# Hours between intraday refresh cycles. Must match the cron in
+# .github/workflows/refresh.yml; test_status_commitment.py cross-reads that file
+# and fails if the two drift.
+#
+# This has to be known here, not inferred from the clock, because the due-list
+# math is keyed to the cycle a run belongs to. `hour % STANDARD_PERIOD` worked
+# only while a run happened every hour: at a three-hour cadence the run hours are
+# 0, 3, 6, ... and `hour % 6` can only ever equal 0 or 3, so feeds in buckets
+# 1, 2, 4 and 5 would silently never come due again.
+REFRESH_STEP_HOURS = 3
 
 
 def cadence_tier(artifact: dict[str, Any]) -> str:
@@ -46,21 +57,53 @@ def cadence_tier(artifact: dict[str, Any]) -> str:
     return STANDARD
 
 
-def _bucket(agency_id: str, period: int) -> int:
-    """A stable 0..period-1 bucket for a feed, so standard checks spread evenly."""
+def _bucket(agency_id: str, buckets: int) -> int:
+    """A stable 0..buckets-1 bucket for a feed, so standard checks spread evenly."""
     digest = hashlib.sha256(agency_id.encode()).hexdigest()
-    return int(digest, 16) % period
+    return int(digest, 16) % buckets
 
 
-def is_due(agency_id: str, tier: str, hour: int, *, period: int = STANDARD_PERIOD) -> bool:
-    """Whether a feed should be checked on the cycle at `hour` (0-23)."""
+def cycles_per_period(period: int = STANDARD_PERIOD, step: int = REFRESH_STEP_HOURS) -> int:
+    """How many refresh cycles fall inside one standard period.
+
+    That count is also the number of buckets the long tail spreads across: a
+    six-hour period at a three-hour cadence gives two cycles, so half the
+    standard feeds are checked on each. Never less than one, so a cadence slower
+    than the period degrades to "every cycle" rather than to "never".
+    """
+    return max(1, period // step)
+
+
+def is_due(
+    agency_id: str,
+    tier: str,
+    hour: int,
+    *,
+    period: int = STANDARD_PERIOD,
+    step: int = REFRESH_STEP_HOURS,
+) -> bool:
+    """Whether a feed should be checked on the cycle at `hour` (0-23).
+
+    Keyed to the cycle index (`hour // step`) rather than to the raw hour, so
+    every bucket still comes round exactly once per period no matter how far
+    apart the cycles are. At `step=1` this is the same arithmetic as before.
+    """
     if tier == PRIORITY:
         return True
-    return hour % period == _bucket(agency_id, period)
+    buckets = cycles_per_period(period, step)
+    return (hour // step) % buckets == _bucket(agency_id, buckets)
 
 
-def due_now(tiers_by_id: dict[str, str], hour: int, *, period: int = STANDARD_PERIOD) -> list[str]:
+def due_now(
+    tiers_by_id: dict[str, str],
+    hour: int,
+    *,
+    period: int = STANDARD_PERIOD,
+    step: int = REFRESH_STEP_HOURS,
+) -> list[str]:
     """The feed ids due to be checked on the cycle at `hour`, sorted."""
     return sorted(
-        aid for aid, tier in tiers_by_id.items() if is_due(aid, tier, hour, period=period)
+        aid
+        for aid, tier in tiers_by_id.items()
+        if is_due(aid, tier, hour, period=period, step=step)
     )

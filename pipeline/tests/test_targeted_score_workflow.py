@@ -21,10 +21,11 @@ def _workflow(name: str) -> dict[str, Any]:
 
 def test_artifact_writers_share_one_job_level_lock() -> None:
     daily = _workflow("scorecard.yml")
-    hourly = _workflow("refresh.yml")
+    intraday = _workflow("refresh.yml")
     targeted = _workflow("targeted-score.yml")
 
-    for job in (daily["jobs"]["collect"], hourly["jobs"]["refresh"], targeted["jobs"]["activate"]):
+    jobs = (daily["jobs"]["collect"], intraday["jobs"]["refresh"], targeted["jobs"]["activate"])
+    for job in jobs:
         assert job["concurrency"] == {
             "group": "artifacts-publish",
             "cancel-in-progress": False,
@@ -34,7 +35,7 @@ def test_artifact_writers_share_one_job_level_lock() -> None:
     # store take the shared lock.
     assert "concurrency" not in daily
     assert "concurrency" not in daily["jobs"]["score"]
-    assert "concurrency" not in hourly
+    assert "concurrency" not in intraday
 
 
 def test_targeted_dispatch_is_required_bounded_and_registry_validated() -> None:
@@ -98,7 +99,7 @@ def test_artifact_publishers_regenerate_and_prune_named_change_claims() -> None:
         assert "--delete --cache-control" in text
 
 
-def test_hourly_refresh_publishes_only_changed_or_swept_feed_directories() -> None:
+def test_intraday_refresh_publishes_only_changed_or_swept_feed_directories() -> None:
     text = (WORKFLOWS / "refresh.yml").read_text()
 
     assert '--changed-out "$RUNNER_TEMP/swept.txt"' in text
@@ -110,7 +111,7 @@ def test_hourly_refresh_publishes_only_changed_or_swept_feed_directories() -> No
     assert 'aws s3 rm "s3://${ARTIFACTS_BUCKET}/data/artifacts" --recursive' not in text
 
 
-def test_hourly_refresh_renews_aws_credentials_before_publishing() -> None:
+def test_intraday_refresh_renews_aws_credentials_before_publishing() -> None:
     workflow = _workflow("refresh.yml")
     steps = workflow["jobs"]["refresh"]["steps"]
     names = [step.get("name") for step in steps]

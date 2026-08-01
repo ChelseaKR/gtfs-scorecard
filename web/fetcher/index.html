@@ -56,7 +56,8 @@
         <li><strong>Your GTFS Schedule zip, scheduled once a day.</strong> Each scheduled
         scoring run downloads a configured feed one time, in the early afternoon UTC. The
         <a href="/status/">status page</a> records when that work actually completed.</li>
-        <li><strong>Cheap liveness checks in between.</strong> Scheduled hourly refreshes use
+        <li><strong>Cheap liveness checks in between.</strong> Scheduled refreshes every three
+        hours use
         conditional requests (<code>If-None-Match</code> / <code>If-Modified-Since</code>),
         so an unchanged feed answers with an empty 304 and transfers nothing.</li>
         <li><strong>GTFS-Realtime in short bursts.</strong> Realtime endpoints are sampled in

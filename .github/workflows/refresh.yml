@@ -9,10 +9,16 @@ name: Intraday refresh
 
 on:
   schedule:
-    # Hourly. Cadence tiers (ADR 0010) decide which feeds are actually checked
-    # each hour: priority feeds (realtime, near expiry) every cycle, the stable
-    # long tail spread once per six-hour period.
-    - cron: "23 * * * *"
+    # Every three hours. Cadence tiers (ADR 0010) decide which feeds are
+    # actually checked each cycle: priority feeds (realtime, near expiry) every
+    # cycle, the stable long tail spread once per six-hour period.
+    #
+    # This interval must stay in step with `REFRESH_STEP_HOURS` in
+    # pipeline/src/scorecard_pipeline/cadence.py, which the due-list arithmetic
+    # depends on, and with `INTRADAY_REFRESH_CRON` in status_commitment.py,
+    # which is published verbatim on /status/ and in api/v1/status.json.
+    # `test_status_commitment.py` reads this file and fails if they drift.
+    - cron: "23 */3 * * *"
   workflow_dispatch:
 
 permissions:
@@ -73,7 +79,7 @@ jobs:
       # Export fingerprints are read by `export_diff` (exportdiff.py), which runs
       # inside `scorecard run` and therefore only for the feeds this cycle
       # actually re-scores. Hydrating the whole prefix pulled ~2,200 objects and
-      # ~82 MB out of S3 every hour to serve the handful of feeds that changed;
+      # ~82 MB out of S3 every cycle to serve the handful of feeds that changed;
       # fetch them by exact key instead, once the changed list exists. A feed
       # with no stored fingerprint simply has no diff to report, which is the
       # same behaviour as its first ever run.

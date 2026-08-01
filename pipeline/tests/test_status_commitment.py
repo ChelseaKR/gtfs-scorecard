@@ -3,9 +3,14 @@
 from __future__ import annotations
 
 import datetime as dt
+import re
+from pathlib import Path
 
+from scorecard_pipeline.cadence import REFRESH_STEP_HOURS
 from scorecard_pipeline.metrics import STALE_FEED_DAYS, UNREACHABLE_STREAK_CHECKS
 from scorecard_pipeline.status_commitment import (
+    DAILY_FULL_SCORE_CRON,
+    INTRADAY_REFRESH_CRON,
     build_status_commitment,
     cadence_commitment,
     degradation_policy,
@@ -13,6 +18,19 @@ from scorecard_pipeline.status_commitment import (
 )
 
 NOW = dt.datetime(2026, 7, 8, 12, 0, tzinfo=dt.UTC)
+
+WORKFLOWS = Path(__file__).resolve().parents[2] / ".github" / "workflows"
+
+
+def _workflow_crons(name: str) -> list[str]:
+    """Every `- cron: "..."` line in a workflow, read as text.
+
+    Deliberately a regex over the raw file rather than a YAML parse: the point
+    is to compare the literal string a reader sees in the workflow against the
+    literal string this module publishes, with no normalization in between.
+    """
+    text = (WORKFLOWS / name).read_text()
+    return re.findall(r"^\s*-\s*cron:\s*[\"'](.+?)[\"']\s*$", text, flags=re.MULTILINE)
 
 
 def _feed(checked_at: str, *, failures: int = 0) -> dict[str, object]:
@@ -27,6 +45,26 @@ def test_cadence_commitment_has_all_three_tiers_with_a_cadence() -> None:
         assert t["cadence"]
         assert t["applies_to"]
         assert t["schedule_cron"]
+
+
+def test_published_crons_match_the_workflows_they_name() -> None:
+    """The guardrail the module docstring has always claimed.
+
+    `schedule_cron` is published verbatim on /status/ and in api/v1/status.json,
+    so a cron edited in the workflow and nowhere else would publish a false
+    statement about how often the pipeline runs. Nothing else in the suite
+    catches that, because every other assertion here is about the shape of the
+    document rather than its content.
+    """
+    assert _workflow_crons("refresh.yml") == [INTRADAY_REFRESH_CRON]
+    assert _workflow_crons("scorecard.yml") == [DAILY_FULL_SCORE_CRON]
+
+
+def test_refresh_cron_matches_the_cadence_step_the_due_list_uses() -> None:
+    """The due-list arithmetic in cadence.py assumes runs land on multiples of
+    REFRESH_STEP_HOURS. If the cron said something else, standard feeds in the
+    buckets those hours never reach would silently stop being checked at all."""
+    assert f"23 */{REFRESH_STEP_HOURS} * * *" == INTRADAY_REFRESH_CRON
 
 
 def test_degradation_policy_uses_the_real_code_thresholds() -> None:
