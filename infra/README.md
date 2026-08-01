@@ -84,10 +84,21 @@ untagged in past bills, so the tags only show up in the budget after the next
 
 ## Apply (artifacts CDN)
 
+> **Do not pass `-var` overrides here.** `terraform.tfvars` in this directory
+> already carries the correct values. The `-var="bucket_name=gtfs-scorecard-artifacts"`
+> this block used to show is **wrong** -- the live bucket is
+> `gtfs-scorecard-artifacts-ckr`, and running with the wrong name plans **6
+> destroys**, replacing the artifacts bucket (44.9 GB / ~72k objects).
+>
+> Also note `aws_iam_openid_connect_provider.github` exists in AWS but not in
+> state, so a first apply fails with `EntityAlreadyExists` unless you pass
+> `-var="create_oidc_provider=false"`.
+
 ```sh
 cd infra/artifacts
 terraform init
-terraform apply -var="bucket_name=gtfs-scorecard-artifacts" -var="project=gtfs-scorecard"
+terraform plan            # read the plan; expect 0 destroys
+terraform apply           # values come from terraform.tfvars
 ```
 
 Outputs the bucket name and the CloudFront domain. Set the `ARTIFACTS_BUCKET`
