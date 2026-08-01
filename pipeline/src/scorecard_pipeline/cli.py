@@ -8,6 +8,7 @@ scorecard sync --country US --state California   # propose registry entries
 scorecard discover --expired [--apply]            # find feeds whose URL moved
 scorecard vendors [--rollup <id>]                 # expiry status by feed host
 scorecard shards --count 4                        # CI fan-out plan (JSON)
+scorecard publish-artifacts --root data/artifacts --bucket b --prefix data/artifacts  # changed only
 scorecard activation-targets --ids "unitrans yolobus"  # validate manual publish scope
 scorecard activation-hydrate --bucket name --targets-file ids.txt  # exact current S3 corpus
 scorecard run-summary build --shard 0 --outcomes o.ndjson --started <iso> --out s.json
@@ -57,6 +58,7 @@ from .metrics import CategoryResult, correctness, freshness
 from .publish import build_artifact, publish
 from .rt import capture_window, realtime, scheduled_trip_ids_at
 from .rt_drift import compute_drift, vehicle_plausibility
+from .s3_publish import DEFAULT_PUBLISH_WORKERS, MAX_PUBLISH_WORKERS
 from .score import build_scorecard
 from .validate import (
     country_scoped_output_dir,
@@ -2424,6 +2426,34 @@ def _cmd_shards(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     return 0
 
 
+def _cmd_publish_artifacts(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Publish a local tree to S3, uploading only objects whose bytes changed."""
+    from .s3_publish import PublishError, publish_tree, s3_client
+
+    try:
+        result = publish_tree(
+            s3_client(args.workers),
+            root=args.root,
+            bucket=args.bucket,
+            prefix=args.prefix,
+            excludes=args.exclude,
+            cache_control=args.cache_control,
+            workers=args.workers,
+        )
+    except PublishError as exc:
+        parser.error(str(exc))
+    log.info(
+        "Published %d of %d local objects to s3://%s/%s (%d unchanged, %d objects listed).",
+        result.uploaded,
+        result.considered,
+        args.bucket,
+        args.prefix.strip("/"),
+        result.skipped,
+        result.listed,
+    )
+    return 0
+
+
 def _cmd_activation_targets(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     """Validate and materialize a bounded manual activation selection."""
     from .activation import ActivationTargetError, parse_activation_targets
@@ -3117,6 +3147,33 @@ def main(argv: list[str] | None = None) -> int:
     shards = sub.add_parser("shards", help="emit a JSON fan-out plan for CI")
     shards.add_argument("--count", type=int, default=4, help="number of shards")
 
+    publish_artifacts = sub.add_parser(
+        "publish-artifacts",
+        help="publish a tree to S3, uploading only objects whose content changed",
+    )
+    publish_artifacts.add_argument(
+        "--root", type=Path, required=True, help="local directory to publish"
+    )
+    publish_artifacts.add_argument("--bucket", required=True, help="destination S3 bucket")
+    publish_artifacts.add_argument(
+        "--prefix", required=True, help="destination key prefix, e.g. data/artifacts"
+    )
+    publish_artifacts.add_argument(
+        "--exclude",
+        action="append",
+        default=[],
+        help="glob of paths under --root never to publish (repeatable)",
+    )
+    publish_artifacts.add_argument(
+        "--cache-control", help="Cache-Control header to set on every uploaded object"
+    )
+    publish_artifacts.add_argument(
+        "--workers",
+        type=int,
+        default=DEFAULT_PUBLISH_WORKERS,
+        help=f"parallel hash/upload workers (maximum {MAX_PUBLISH_WORKERS})",
+    )
+
     activation_targets = sub.add_parser(
         "activation-targets",
         help="validate a bounded manual agency selection against the registry",
@@ -3447,6 +3504,7 @@ def main(argv: list[str] | None = None) -> int:
         "ntd-crosswalk": _cmd_ntd_crosswalk,
         "ntd-ridership": _cmd_ntd_ridership,
         "shards": _cmd_shards,
+        "publish-artifacts": _cmd_publish_artifacts,
         "activation-targets": _cmd_activation_targets,
         "activation-hydrate": _cmd_activation_hydrate,
         "run-summary": _cmd_run_summary,
