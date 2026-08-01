@@ -78,21 +78,39 @@ cache.
    score instead of docking it and shows a neutral note. Leave it off (the
    default) if you charge a fare.
 
-3. Check your work locally if you like (needs Python 3.11+,
-   [uv](https://docs.astral.sh/uv/), and Java 17+):
+3. Check the entry itself (needs Python 3.11+ and
+   [uv](https://docs.astral.sh/uv/); no Java, no downloads):
 
    ```sh
    cd pipeline
    uv sync
+   uv run scorecard lint --strict
+   ```
+
+   This is the same registry gate CI runs on your pull request, so a green
+   result here means a green check there. It reads the YAML and nothing else:
+   a missing `static_gtfs_url`, an unassigned `country`, a `subdivision_code`
+   whose country prefix disagrees with `country`, or an `id` already in the
+   registry each fail with one line naming the file, your entry, and the
+   field. Run this first — it is seconds, and it catches the mistakes that are
+   actually common.
+
+4. Score your feed locally if you like (additionally needs Java 17+, and
+   downloads your zip):
+
+   ```sh
    uv run scorecard run --agency my-agency
    ```
 
-   A bad URL or typo'd field fails immediately with a plain message. The
-   command prints the path of your scorecard JSON; to see the page, serve
+   A bad URL fails with a plain message, not a stack trace. The command
+   prints the path of your scorecard JSON; to see the page, serve
    the repo root (`python3 -m http.server`) and open
    `http://localhost:8000/web/#/agency/my-agency`.
 
-4. Open a pull request with the one-file change. After merge, the daily
+   Debugging the pipeline rather than your entry? `SCORECARD_TRACEBACK=1`
+   restores the full traceback for any of these commands.
+
+5. Open a pull request with the one-file change. After merge, the daily
    pipeline scores your feed each morning and your agency appears on the
    live site.
 

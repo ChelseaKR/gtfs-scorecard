@@ -8,7 +8,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 from scorecard_pipeline.autofix import apply_fixes, autofix_zip, render_report
-from scorecard_pipeline.cli import main, run_agency
+from scorecard_pipeline.cli import _dispatch, run_agency
 from scorecard_pipeline.gtfs import read_tables
 
 
@@ -110,4 +110,8 @@ def test_daily_scoring_does_not_generate_or_advertise_a_corrected_feed() -> None
 
 
 def test_autofix_remains_an_explicit_local_cli_command() -> None:
-    assert '"autofix": _cmd_autofix' in inspect.getsource(main)
+    """Auto-fix must stay something a person opts into by name, never something the
+    daily pipeline reaches on its own. The subcommand table moved from `main` into
+    `_dispatch` when `main` grew its contributor-facing error handling (#188); the
+    guarantee is about the table, not about which function holds it."""
+    assert '"autofix": _cmd_autofix' in inspect.getsource(_dispatch)

@@ -1001,3 +1001,65 @@ def test_ntd_crosswalk_applies_only_to_the_owning_manifest_shard(
 
     assert 'ntd_id: "90001"' in first.read_text()
     assert second.read_bytes() == untouched
+
+
+# --- contributor-facing error messages (docs/add-your-agency.md, #188) ---------
+#
+# `docs/add-your-agency.md` promises that "a bad URL or typo'd field fails
+# immediately with a plain message". Walking that doc from a clean fork, both
+# cases produced an uncaught twenty-frame Python traceback instead. These pin the
+# promise so it cannot silently regress back into a stack trace.
+
+
+def _plain_message_case(monkeypatch: pytest.MonkeyPatch, exc: Exception) -> tuple[int, str]:
+    """Run `main` with a subcommand that raises *exc*, returning (exit code, stderr)."""
+    import scorecard_pipeline.cli as cli
+
+    def boom(_args: argparse.Namespace, _parser: argparse.ArgumentParser) -> int:
+        raise exc
+
+    monkeypatch.delenv("SCORECARD_TRACEBACK", raising=False)
+    monkeypatch.setattr(cli, "_dispatch", boom)
+    return cli.main(["lint"]), ""
+
+
+def test_malformed_registry_entry_reports_a_plain_message(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    from scorecard_pipeline.agencies import AgencyConfigError
+
+    message = "registry/intake.yaml, agency 'my-agency': country must be an assigned code"
+    code, _ = _plain_message_case(monkeypatch, AgencyConfigError(message))
+
+    assert code == 1
+    err = capsys.readouterr().err
+    assert err.strip() == f"scorecard: {message}"
+    assert "Traceback" not in err
+
+
+def test_unfetchable_feed_reports_a_plain_message(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    import requests
+
+    code, _ = _plain_message_case(monkeypatch, requests.HTTPError("404 Client Error"))
+
+    assert code == 1
+    err = capsys.readouterr().err
+    assert "could not fetch the feed: 404 Client Error" in err
+    assert "Traceback" not in err
+
+
+def test_traceback_escape_hatch_still_raises(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Anyone debugging the pipeline itself, rather than adding an agency, still
+    needs the stack — swallowing it for them would be its own bug."""
+    import scorecard_pipeline.cli as cli
+    from scorecard_pipeline.agencies import AgencyConfigError
+
+    def boom(_args: argparse.Namespace, _parser: argparse.ArgumentParser) -> int:
+        raise AgencyConfigError("boom")
+
+    monkeypatch.setenv("SCORECARD_TRACEBACK", "1")
+    monkeypatch.setattr(cli, "_dispatch", boom)
+    with pytest.raises(AgencyConfigError):
+        cli.main(["lint"])

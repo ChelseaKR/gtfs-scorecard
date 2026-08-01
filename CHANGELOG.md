@@ -45,6 +45,18 @@ the declared public surface).
 
 ### Changed
 
+- Make the contributor-facing failures in `docs/add-your-agency.md` plain
+  messages instead of Python tracebacks (#188). Walking that walkthrough from a
+  clean fork, both cases the doc promises "fail immediately with a plain
+  message" — a malformed registry entry and an unreachable feed URL — produced
+  an uncaught twenty-frame traceback. The underlying messages were already
+  precise; they were just buried. `main` now reports `AgencyConfigError`,
+  `UnsafeURLError`, and `requests` failures as one line and exits 1, and a
+  single-agency `scorecard run` logs the failure without a stack (a `--all`
+  batch keeps the stack, because whoever is debugging 900 feeds wants it).
+  `SCORECARD_TRACEBACK=1` restores the full traceback for either audience.
+  The walkthrough now also names `scorecard lint --strict` — the registry gate
+  CI actually runs on the pull request — as a fast, Java-free first check.
 - Harden the newly published sync-receipt contract as schema 1.2. The 1.1
   schema stays frozen at its existing URL and both versions have stable,
   retrievable schema references. New receipts validate before either output
