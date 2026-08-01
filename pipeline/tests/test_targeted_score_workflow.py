@@ -106,7 +106,13 @@ def test_intraday_refresh_publishes_only_changed_or_swept_feed_directories() -> 
     assert 'sort -u "$RUNNER_TEMP/changed.txt" "$RUNNER_TEMP/swept.txt"' in text
     assert '"data/artifacts/${id}/" "$public_stage/$id/"' in text
     assert 'done < "$RUNNER_TEMP/refreshed.txt"' in text
-    assert 'aws s3 sync "$public_stage" "$artifact_uri"' in text
+    # The staging tree is still the whole publish scope, but it is published by
+    # content comparison rather than by mtime: an `aws s3 sync` of the stage
+    # re-PUT each refreshed feed's entire dated history on every cycle, because
+    # a fresh checkout makes every staged file newer than its object.
+    assert 'aws s3 sync "$public_stage"' not in text
+    assert '--root "$public_stage"' in text
+    assert "scorecard publish-artifacts" in text
     assert 'aws s3 sync data/artifacts "' not in text
     assert 'aws s3 rm "s3://${ARTIFACTS_BUCKET}/data/artifacts" --recursive' not in text
 
