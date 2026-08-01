@@ -328,10 +328,22 @@ jobs:
           aws s3 sync \
             "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/structure-staging/${GITHUB_RUN_ID}/${GITHUB_RUN_ATTEMPT}" \
             data/cache/structure --only-show-errors
-          aws s3 sync data/artifacts "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" \
+          # Not `aws s3 sync`: it transfers when the local mtime is newer than
+          # the object, and a fresh checkout makes every one of the ~28,700
+          # local files newer on every run, so the whole tree was re-PUT daily
+          # to change about 3,100 objects. `publish-artifacts` compares the
+          # local MD5 against each object's ETag (single-part, SSE-S3, so the
+          # ETag is the content MD5) and uploads on any doubt: missing object,
+          # different size, non-MD5 ETag, or hash mismatch. `--size-only` would
+          # also have cut the PUTs, but it would silently stop publishing a
+          # re-score that kept the same byte length. Additive, like the sync it
+          # replaces: nothing is deleted, lifecycle handles pruning.
+          uv run --project pipeline --with boto3 scorecard publish-artifacts \
+            --root data/artifacts \
+            --bucket "${{ vars.ARTIFACTS_BUCKET }}" --prefix data/artifacts \
             --exclude "*/validator-cache.json" --exclude "*/structure.json" \
             --exclude "*/fixlog.json" --exclude "*/corrected.zip" \
-            --cache-control "max-age=300" --only-show-errors
+            --cache-control "max-age=300"
           # Remove legacy public-path pipeline state after every upload.
           aws s3 rm "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" --recursive \
             --exclude "*" --include "*/validator-cache.json" \

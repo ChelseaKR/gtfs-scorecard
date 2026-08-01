@@ -90,6 +90,31 @@ Then:
    workflow's CDN privacy canary falls back to the maintainer's CloudFront
    domain, which a fork does not want to inherit.
 
+### How the daily run decides what to upload
+
+The daily publish step does not use `aws s3 sync`. That command transfers a
+file whenever the local modification time is newer than the object, and CI
+checks the repository out fresh every run, so it re-uploaded all ~28,700
+published objects each day to change about 3,100 of them.
+
+`scorecard publish-artifacts` replaces it. It lists the destination prefix once
+and compares each local file's MD5 against the object's ETag. The bucket uses
+SSE-S3 and the command writes with a single `PutObject`, so a published
+object's ETag is the MD5 of its bytes. A file is skipped only when its size and
+its hash both match. A missing object, a different size, an ETag that is not a
+content MD5, or a hash mismatch all upload. Measured against the live bucket,
+that skips about 89% of the daily uploads and still publishes every change,
+including the ones that keep the same byte length. `--size-only` would have cut
+the same requests but would silently stop publishing a re-score whose length
+did not change, so it is not used anywhere and a test in
+`pipeline/tests/test_workflow_safety.py` keeps it out.
+
+A useful side effect: the bucket's `expire-dated-artifacts` lifecycle rule
+matches objects tagged `artifact-class=dated`, and rewriting an object drops
+its tags and restarts its age. While every dated artifact was rewritten daily,
+none of them could ever reach the 400-day expiry. Dated artifacts that stop
+being rewritten keep the tag the run that created them applied.
+
 ### One-time validator-cache privacy migration
 
 Deployments created before the validator cache moved to the private

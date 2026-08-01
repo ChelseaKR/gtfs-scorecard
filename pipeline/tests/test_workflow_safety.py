@@ -193,3 +193,38 @@ def test_production_lighthouse_contract_and_report_retention() -> None:
     assert "lhci-production.log" in production
     assert "if-no-files-found: error" in production
     assert "retention-days: 90" in production
+
+
+def test_daily_publish_compares_content_not_timestamps() -> None:
+    """`aws s3 sync` re-uploads the whole tree from a fresh checkout, and
+    `--size-only` would silently drop a same-length re-score. The daily publish
+    therefore goes through `scorecard publish-artifacts`, which compares each
+    local file's MD5 against the object's ETag."""
+    workflow = _workflow("scorecard.yml")
+
+    assert "scorecard publish-artifacts" in workflow
+    assert "--root data/artifacts" in workflow
+    assert "--prefix data/artifacts" in workflow
+    # The mtime-driven upload of the whole public tree is gone.
+    assert 'aws s3 sync data/artifacts "s3://' not in workflow
+    # The same private files stay out of the published tree.
+    for private in (
+        "*/validator-cache.json",
+        "*/structure.json",
+        "*/fixlog.json",
+        "*/corrected.zip",
+    ):
+        assert f'--exclude "{private}"' in workflow
+    assert '--cache-control "max-age=300"' in workflow
+    # The upload must still precede the lifecycle tagging of today's artifacts.
+    assert workflow.index("scorecard publish-artifacts") < workflow.index(
+        "Tag today's dated artifacts for lifecycle expiration"
+    )
+
+
+def test_no_workflow_publishes_with_a_size_only_comparison() -> None:
+    """`--size-only` cannot see a change that keeps the same byte length."""
+    for path in sorted((ROOT / ".github" / "workflows").glob("*.yml")):
+        for line in path.read_text(encoding="utf-8").splitlines():
+            code = line.split("#", 1)[0]
+            assert "--size-only" not in code, f"{path.name}: {line.strip()}"
