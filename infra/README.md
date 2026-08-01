@@ -47,6 +47,41 @@ reference.
   `web/try.html`'s inline form stays disabled and the page falls back to its
   existing GitHub Issue Form path.
 
+## Cost-allocation tags
+
+Every module sets provider-level `default_tags`, so each taggable resource it
+creates carries:
+
+| tag | value |
+| --- | --- |
+| `project` | `gtfs-scorecard` (from `var.project`) |
+| `component` | the module directory: `artifacts`, `alerts`, `submit`, `compute`, `instant-score` |
+| `managed-by` | `terraform` |
+
+`project` is the activated cost-allocation tag key in Cost Explorer, so an
+untagged resource shows up as account-wide untagged spend and never reaches
+this project's budget. Declaring the tags on the provider rather than on each
+resource means resources added later are covered by default.
+
+Two limits are worth knowing before reading a bill:
+
+- Some resource types take no tags at all (S3 bucket sub-configurations, IAM
+  inline policies and policy attachments, CloudFront functions, origin access
+  controls, response-headers policies, API Gateway routes and integrations,
+  Route 53 records, Lambda permissions). Their cost either rolls up into the
+  parent resource or is zero.
+- Resources this repo only reads through a data source are not covered: the
+  `gtfs-scorecard-subscriptions` and `gtfs-scorecard-ratelimit` DynamoDB
+  tables, the SES identity for `gtfsscorecard.org`, the `gtfsscorecard.com`
+  hosted zone, the Terraform state bucket, the ECR repositories holding the
+  container images, and the log groups Lambda creates on first invocation.
+  Tag those in the console (or bring them under Terraform) if their spend
+  needs to be attributed too.
+
+Cost allocation is not retroactive: usage recorded before a tag exists stays
+untagged in past bills, so the tags only show up in the budget after the next
+`terraform apply` and the following billing period.
+
 ## Apply (artifacts CDN)
 
 ```sh

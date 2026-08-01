@@ -22,8 +22,23 @@ terraform {
   }
 }
 
+# Cost allocation: see the note in infra/artifacts/main.tf. This module is the
+# one deliberate exception to the cost ceiling (ADR 0029), so its spend is the
+# spend most worth being able to isolate in Cost Explorer.
+locals {
+  default_tags = {
+    project    = var.project
+    component  = "instant-score"
+    managed-by = "terraform"
+  }
+}
+
 provider "aws" {
   region = var.region
+
+  default_tags {
+    tags = local.default_tags
+  }
 }
 
 data "aws_caller_identity" "current" {}

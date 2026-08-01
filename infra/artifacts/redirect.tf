@@ -12,7 +12,6 @@ data "aws_route53_zone" "com" {
 
 resource "aws_s3_bucket" "redirect_com" {
   bucket = "gtfsscorecard.com"
-  tags   = { project = var.project }
 }
 
 # A redirect-all website bucket serves no objects, so it needs no public read.
