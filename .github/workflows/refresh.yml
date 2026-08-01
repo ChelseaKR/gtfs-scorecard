@@ -47,7 +47,6 @@ jobs:
       - name: Hydrate current artifacts from S3
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |
-          mkdir -p data/cache/structure
           today=$(date -u +%Y-%m-%d)
           yesterday=$(date -u -d yesterday +%Y-%m-%d)
           aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts" data/artifacts \
@@ -56,8 +55,6 @@ jobs:
             --include "*/${today}.json" --include "*/${yesterday}.json" \
             --only-show-errors
           aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/fixlog" data/artifacts \
-            --only-show-errors
-          aws s3 sync "s3://${{ vars.ARTIFACTS_BUCKET }}/cache/structure" data/cache/structure \
             --only-show-errors
           aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
             data/liveness.json --only-show-errors || true
@@ -72,6 +69,28 @@ jobs:
           uv run scorecard liveness --apply \
             --only "$RUNNER_TEMP/due.txt" \
             --changed-out "$RUNNER_TEMP/changed.txt"
+
+      # Export fingerprints are read by `export_diff` (exportdiff.py), which runs
+      # inside `scorecard run` and therefore only for the feeds this cycle
+      # actually re-scores. Hydrating the whole prefix pulled ~2,200 objects and
+      # ~82 MB out of S3 every hour to serve the handful of feeds that changed;
+      # fetch them by exact key instead, once the changed list exists. A feed
+      # with no stored fingerprint simply has no diff to report, which is the
+      # same behaviour as its first ever run.
+      - name: Hydrate export fingerprints for the changed feeds
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        run: |
+          set -euo pipefail
+          mkdir -p data/cache/structure
+          [ -s "$RUNNER_TEMP/changed.txt" ] || exit 0
+          while IFS= read -r id; do
+            [ -n "$id" ] || continue
+            aws s3 cp \
+              "s3://${ARTIFACTS_BUCKET}/cache/structure/${id}.json" \
+              "data/cache/structure/${id}.json" --only-show-errors || true
+          done < "$RUNNER_TEMP/changed.txt"
 
       - name: Refresh expiry from calendar data (no fetch, no validator)
         working-directory: pipeline
