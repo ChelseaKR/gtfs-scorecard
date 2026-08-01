@@ -12,7 +12,6 @@ data "aws_route53_zone" "com" {
 
 resource "aws_s3_bucket" "redirect_com" {
   bucket = "gtfsscorecard.com"
-  tags   = { project = var.project }
 }
 
 # A redirect-all website bucket serves no objects, so it needs no public read.
@@ -33,24 +32,35 @@ resource "aws_s3_bucket_website_configuration" "redirect_com" {
   }
 }
 
+# Route 53 resolves an S3-website alias by matching the RECORD NAME to the
+# bucket name, so the alias target must be the *regional* website endpoint
+# (`s3-website-us-west-2.amazonaws.com`), not the bucket-prefixed
+# `website_endpoint`. With the bucket-prefixed form Route 53 accepts the record
+# but cannot evaluate it, and every query returns NOERROR with zero answers --
+# which is exactly how this redirect was silently dead. `website_domain` is the
+# regional form; `website_endpoint` is not.
 resource "aws_route53_record" "com_apex" {
   zone_id = data.aws_route53_zone.com.zone_id
   name    = "gtfsscorecard.com"
   type    = "A"
   alias {
-    name                   = aws_s3_bucket_website_configuration.redirect_com.website_endpoint
+    name                   = aws_s3_bucket_website_configuration.redirect_com.website_domain
     zone_id                = aws_s3_bucket.redirect_com.hosted_zone_id
     evaluate_target_health = false
   }
 }
 
+# There is no `www.gtfsscorecard.com` bucket, and Route 53 matches an
+# S3-website alias by record name -- so pointing www at the S3 endpoint can
+# never resolve. Alias it to the apex record in this zone instead; the apex
+# already 301s to https://gtfsscorecard.org/.
 resource "aws_route53_record" "com_www" {
   zone_id = data.aws_route53_zone.com.zone_id
   name    = "www.gtfsscorecard.com"
   type    = "A"
   alias {
-    name                   = aws_s3_bucket_website_configuration.redirect_com.website_endpoint
-    zone_id                = aws_s3_bucket.redirect_com.hosted_zone_id
+    name                   = aws_route53_record.com_apex.name
+    zone_id                = data.aws_route53_zone.com.zone_id
     evaluate_target_health = false
   }
 }

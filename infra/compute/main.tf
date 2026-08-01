@@ -15,8 +15,23 @@ terraform {
   }
 }
 
+# Cost allocation: see the note in infra/artifacts/main.tf. This module is not
+# applied yet, so tagging it now means the fan-out compute is attributable from
+# its first apply rather than after a spend surprise.
+locals {
+  default_tags = {
+    project    = var.project
+    component  = "compute"
+    managed-by = "terraform"
+  }
+}
+
 provider "aws" {
   region = var.region
+
+  default_tags {
+    tags = local.default_tags
+  }
 }
 
 variable "project" {
