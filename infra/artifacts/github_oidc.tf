@@ -65,7 +65,6 @@ data "aws_iam_policy_document" "deploy_assume" {
 resource "aws_iam_role" "deploy" {
   name               = "${var.project}-artifacts-deploy"
   assume_role_policy = data.aws_iam_policy_document.deploy_assume.json
-  tags               = { project = var.project }
 }
 
 # Least privilege: write/list only the artifacts bucket, plus SES send for the
@@ -143,7 +142,6 @@ data "aws_iam_policy_document" "pages_read_assume" {
 resource "aws_iam_role" "pages_read" {
   name               = "${var.project}-artifacts-pages-read"
   assume_role_policy = data.aws_iam_policy_document.pages_read_assume.json
-  tags               = { project = var.project }
 }
 
 # Least privilege: GetObject + ListBucket only, scoped to the artifacts

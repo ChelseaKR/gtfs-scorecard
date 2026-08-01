@@ -18,8 +18,24 @@ terraform {
   }
 }
 
+# Cost allocation: see the note in infra/artifacts/main.tf. `project` is the
+# activated cost-allocation tag key, so untagged resources are invisible to the
+# per-project budget; declaring it here covers every taggable resource in this
+# module.
+locals {
+  default_tags = {
+    project    = var.project
+    component  = "submit"
+    managed-by = "terraform"
+  }
+}
+
 provider "aws" {
   region = var.region
+
+  default_tags {
+    tags = local.default_tags
+  }
 }
 
 variable "project" {
