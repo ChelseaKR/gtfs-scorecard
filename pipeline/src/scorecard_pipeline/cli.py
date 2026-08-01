@@ -47,14 +47,16 @@ from pathlib import Path
 from typing import Any
 
 import jsonschema
+import requests
 
-from .agencies import load_agencies
+from .agencies import AgencyConfigError, load_agencies
 from .completeness import completeness
 from .config import AGENCIES, Agency, raw_dir, repo_root
 from .constants_export import GRADE_RANK
 from .fetch import FetchResult, fetch_static, prepare_reader_archive
 from .gtfs import read_feed_dates
 from .metrics import CategoryResult, correctness, freshness
+from .net import UnsafeURLError
 from .publish import build_artifact, publish
 from .rt import capture_window, realtime, scheduled_trip_ids_at
 from .rt_drift import compute_drift, vehicle_plausibility
@@ -604,6 +606,23 @@ def _liveness_unchanged(agency_id: str) -> bool:
     return classification == UNCHANGED
 
 
+def _log_run_failure(agency_id: str, exc: Exception, *, single: bool) -> None:
+    """Report one agency's failure at the right level of detail for who is reading.
+
+    A batch run over the whole registry must not stop for one bad feed, and whoever
+    is debugging 900 of them wants the stack. A SINGLE-agency run is a different
+    audience entirely: it is the check-your-work step in `docs/add-your-agency.md`,
+    which promises "a bad URL or typo'd field fails immediately with a plain
+    message". A twenty-frame traceback through the retry and mirror-fallback layers
+    is not that message — it reads as "the tool is broken" rather than "your URL
+    404s". `SCORECARD_TRACEBACK=1` brings the stack back for either audience.
+    """
+    if single and not os.environ.get("SCORECARD_TRACEBACK"):
+        log.error("%s: %s", agency_id, exc)
+    else:
+        log.exception("%s: pipeline run failed", agency_id)
+
+
 def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     if not args.all and not args.agency:
         parser.error("pass --agency <id> or --all")
@@ -655,9 +674,9 @@ def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
                         wall_seconds=time.monotonic() - started,
                     ),
                 )
-        except Exception:
+        except Exception as exc:
             failures += 1
-            log.exception("%s: pipeline run failed", agency_id)
+            _log_run_failure(agency_id, exc, single=len(targets) == 1)
             if outcome_out:
                 from .run_summary import AgencyOutcome, append_outcome
 
@@ -3481,6 +3500,33 @@ def main(argv: list[str] | None = None) -> int:
     # action and installed-wheel entry point for checking one supplied URL.
     # Every registry-backed command loads only after argparse has handled help,
     # so `scorecard --help` and `scorecard try` work from a standalone wheel.
+    # `SCORECARD_TRACEBACK=1` restores the raw traceback for anyone debugging the
+    # pipeline itself rather than adding an agency.
+    if os.environ.get("SCORECARD_TRACEBACK"):
+        return _dispatch(args, parser)
+    try:
+        return _dispatch(args, parser)
+    except (AgencyConfigError, UnsafeURLError) as exc:
+        # A malformed registry entry is a typo, not a crash. The message these
+        # exceptions carry is already precise — it names the file, the agency id,
+        # and the offending field — but it arrived at the bottom of a twenty-frame
+        # traceback, which reads as "the tool is broken" to the first-time
+        # contributor `docs/add-your-agency.md` is written for. That doc promises
+        # "a bad URL or typo'd field fails immediately with a plain message"; this
+        # is what makes the promise true.
+        print(f"scorecard: {exc}", file=sys.stderr)
+        return 1
+    except requests.RequestException as exc:
+        # The other half of that sentence. A feed URL that 404s is the single most
+        # common thing to get wrong when adding an agency, and a stack trace
+        # through the retry and mirror-fallback layers tells the contributor
+        # nothing they can act on.
+        print(f"scorecard: could not fetch the feed: {exc}", file=sys.stderr)
+        return 1
+
+
+def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Load the registry (except for the registry-free `try`) and run the subcommand."""
     if args.command != "try":
         load_agencies()
         agency_id = getattr(args, "agency", None)
