@@ -3,6 +3,15 @@ name: Deploy site
 on:
   push:
     branches: [main]
+    # `rt-monitor.yml` pushes a data-only observation commit every three hours
+    # (ADR 0012). Each push used to trigger a whole extra site build, which
+    # re-hydrates the published corpus from S3 for data the hourly `refresh.yml`
+    # deploy republishes anyway. Ignoring the path drops eight redundant builds
+    # a day; the observations still reach the site at the next hourly refresh
+    # (at most one hour later), which is well inside the three-hour sampling
+    # cadence they are recorded at.
+    paths-ignore:
+      - "data/rt-health/**"
   workflow_call:
     inputs:
       perf_gate:
@@ -70,6 +79,9 @@ jobs:
           # step validates each index/latest pair and restores a missing current
           # dated record from those same latest.json bytes. This bounded set
           # avoids downloading the 400-day archive or any private pipeline files.
+          # Route geometry is deliberately not in this set: it is two thirds of
+          # the corpus by bytes and almost never changes, so the cached mirror
+          # below fetches only the objects S3 has actually modified.
           today=$(date -u +%Y-%m-%d)
           yesterday=$(date -u -d yesterday +%Y-%m-%d)
           retry_s3_sync() {
@@ -97,7 +109,6 @@ jobs:
             --include "changes/*" --include "rollups/*" --include "run/*" \
             --include "*/latest.json" --include "*/badge.json" --include "*/badge.svg" \
             --include "*/conformance.json" --include "*/mark.svg" \
-            --include "*/geometry.geojson" \
             --include "*/${today}.json" --include "*/${yesterday}.json" \
             --only-show-errors
           retry_s3_sync "fix-log cache" aws s3 sync \
@@ -105,6 +116,66 @@ jobs:
             --only-show-errors
           aws s3 cp "s3://${{ vars.ARTIFACTS_BUCKET }}/data/liveness.json" \
             data/liveness.json --only-show-errors || true
+
+      # Route geometry is the heaviest thing the renderer reads: ~2,300 objects
+      # and ~380 MB, against ~190 MB for everything else in the bounded set
+      # above. It only changes when an agency publishes new shapes, yet every
+      # site build re-downloaded all of it, and this workflow runs on each
+      # hourly refresh as well as on push. Keep a runner-side mirror in the
+      # Actions cache instead and let `aws s3 sync` fetch just the objects S3
+      # has modified since the mirror was taken. `sync` transfers an object when
+      # its size differs or its S3 last-modified is newer than the local copy,
+      # and the cache preserves the mirrored files' mtimes, so a same-size
+      # rewrite is still picked up. The mirror is a copy of published public
+      # data, so it carries nothing private.
+      - name: Restore the route-geometry mirror
+        id: geometry-mirror
+        if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' }}
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: data/artifacts/*/geometry.geojson
+          key: route-geometry-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            route-geometry-v1-
+
+      - name: Sync changed route geometry from S3
+        id: geometry
+        if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' }}
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        run: |
+          set -euo pipefail
+          log="$RUNNER_TEMP/geometry-sync.log"
+          for attempt in 1 2 3; do
+            if aws s3 sync \
+              "s3://${ARTIFACTS_BUCKET}/data/artifacts" data/artifacts \
+              --exclude "*" --include "*/geometry.geojson" \
+              --no-progress > "$log" 2>&1; then
+              break
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              cat "$log" >&2
+              echo "Route geometry did not sync after ${attempt} attempts." >&2
+              exit 1
+            fi
+            echo "S3 changed during the route-geometry sync; retrying (${attempt}/3)." >&2
+            sleep $((attempt * 5))
+          done
+          # One line per transferred object; the count decides whether the
+          # mirror is worth re-saving below.
+          downloads=$(grep -c '^download:' "$log" || true)
+          echo "Route geometry objects refreshed from S3: ${downloads}"
+          echo "downloads=${downloads}" >> "$GITHUB_OUTPUT"
+
+      # Saving on every run would push a fresh ~400 MB entry into the repo's
+      # 10 GB cache 25 times a day and evict everything else. Save only when the
+      # mirror actually moved, or when there was no mirror to restore.
+      - name: Save the route-geometry mirror
+        if: ${{ vars.ARTIFACTS_BUCKET != '' && env.PAGES_AWS_ROLE_ARN != '' && (steps.geometry.outputs.downloads != '0' || steps.geometry-mirror.outputs.cache-matched-key == '') }}
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: data/artifacts/*/geometry.geojson
+          key: route-geometry-v1-${{ github.run_id }}-${{ github.run_attempt }}
       - name: Materialize validated current dated records
         working-directory: pipeline
         run: >-
