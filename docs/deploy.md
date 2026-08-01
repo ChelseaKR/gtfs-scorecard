@@ -237,6 +237,27 @@ Actions; this is the inventory an operator should know exists:
 | `mutation.yml` | weekly | Advisory mutation testing of the scoring math. |
 | `ci.yml`, `a11y.yml`, `e2e.yml`, `security.yml`, `pages.yml` | push/PR | The merge and deploy gates. |
 
+`pages.yml` also runs as the deploy job of the daily, hourly, and targeted data
+workflows. Its own push trigger ignores `data/rt-health/**`, so the three-hourly
+realtime observation commit does not add a redundant site build of its own; the
+observations go out with the next hourly refresh deploy, at most an hour later.
+
+### What each site build downloads from S3
+
+A site build hydrates a deliberately bounded slice of the authoritative bucket:
+the root documents, the program exports, and per-agency `latest.json`,
+`badge.json`, `badge.svg`, `conformance.json`, `mark.svg`, plus today's and
+yesterday's dated snapshots. The 400-day dated archive and every private
+pipeline file stay in S3.
+
+Per-agency `geometry.geojson` is handled separately because it is roughly two
+thirds of that slice by bytes and changes only when an agency publishes new
+route shapes. The workflow keeps a mirror of it in the Actions cache
+(`route-geometry-v1-*`) and re-syncs from S3 only the objects S3 has modified
+since the mirror was taken, then re-saves the mirror only when something moved.
+The mirror holds published public data only. If it is ever wrong, deleting the
+cache entry makes the next build fetch the geometry in full.
+
 ### Site structure and production Lighthouse checks
 
 Both `a11y.yml` and `pages.yml` first validate every index/current-artifact

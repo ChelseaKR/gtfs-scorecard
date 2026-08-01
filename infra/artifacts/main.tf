@@ -15,13 +15,31 @@ terraform {
   }
 }
 
+# Cost allocation. `project` is an activated cost-allocation tag key in Cost
+# Explorer, so anything carrying it can be attributed to this project's budget
+# and anything without it lands in the account-wide untagged pile. Setting the
+# tags here rather than per resource means every taggable resource in this
+# module gets them, including ones added later. `component` names the module so
+# spend can be split within the project; `managed-by` marks what Terraform owns,
+# which is the fast way to spot resources created out of band.
+locals {
+  default_tags = {
+    project    = var.project
+    component  = "artifacts"
+    managed-by = "terraform"
+  }
+}
+
 provider "aws" {
   region = var.region
+
+  default_tags {
+    tags = local.default_tags
+  }
 }
 
 resource "aws_s3_bucket" "artifacts" {
   bucket = var.bucket_name
-  tags   = { project = var.project }
 }
 
 # Artifacts are public data, but they are reached through the CDN, not the
@@ -206,8 +224,6 @@ resource "aws_cloudfront_distribution" "artifacts" {
   viewer_certificate {
     cloudfront_default_certificate = true
   }
-
-  tags = { project = var.project }
 }
 
 # Allow only this distribution to read the bucket.
