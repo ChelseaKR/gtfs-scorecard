@@ -45,6 +45,14 @@ class UnsafeURLError(ValueError):
     oversized response, or too many redirects)."""
 
 
+class UnresolvableHostError(UnsafeURLError):
+    """A syntactically valid public URL whose hostname has no DNS answer.
+
+    Unlike a private-address or malformed-URL rejection, this is an origin
+    availability failure and callers may safely use an identity-pinned mirror.
+    """
+
+
 @dataclass
 class FetchTrace:
     """Metadata from the successful guarded fetch attempt.
@@ -79,7 +87,7 @@ def validate_public_url(url: str) -> None:
     try:
         infos = socket.getaddrinfo(host, port, proto=socket.IPPROTO_TCP)
     except socket.gaierror as exc:
-        raise UnsafeURLError(f"cannot resolve host {host!r}: {exc}") from exc
+        raise UnresolvableHostError(f"cannot resolve host {host!r}: {exc}") from exc
     for info in infos:
         ip = ipaddress.ip_address(info[4][0])
         if (
