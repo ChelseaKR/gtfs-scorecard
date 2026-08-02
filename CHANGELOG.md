@@ -45,6 +45,11 @@ the declared public surface).
 
 ### Changed
 
+- Resolve legacy numeric Mobility Database mirror records through the current
+  `files.mobilitydatabase.org/mdb-N/latest.zip` endpoint. The retired GCS
+  object path no longer blocks recovery when a publisher endpoint is offline.
+  Track Danville Mass Transit's latest first-party document URL even though its
+  host currently rejects unattended fetches.
 - Recover the final missing coverage cohort with current first-party Schedule
   downloads for DCTA, Rockford Mass Transit, and SamTrans. Their retired,
   archived, or key-gated registry URLs now point to the agencies' public GTFS
