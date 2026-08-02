@@ -45,6 +45,9 @@ the declared public surface).
 
 ### Changed
 
+- Move the Alice Springs registry source to the Northern Territory publisher's
+  current canonical download. The retired URL now takes six redirects across a
+  renamed department and filenames, beyond the scorer's guarded redirect cap.
 - Treat a vanished public publisher hostname as an availability failure eligible
   for an identity-pinned mirror. Private, malformed, and otherwise unsafe URLs
   still fail closed and can never route through fallback infrastructure.
