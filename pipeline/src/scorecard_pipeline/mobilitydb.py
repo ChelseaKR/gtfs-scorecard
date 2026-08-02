@@ -1029,8 +1029,8 @@ def hosted_mirror_url(
 ) -> str | None:
     """MobilityData's hosted mirror (``urls.latest``) for an agency, if any.
 
-    The mirror lives on Google Cloud Storage, reachable even when the agency's
-    own server firewalls datacenter IPs or sits behind a bot filter. Because
+    The current mirror lives at ``files.mobilitydatabase.org``, reachable even
+    when the agency's own server firewalls datacenter IPs or sits behind a bot filter. Because
     these bytes are scored and published as the agency's feed, the match is
     deliberately stricter than discovery: only a pinned exact ``mdb_id`` or an
     exact normalized current download URL may select a mirror. Names are never
@@ -1041,17 +1041,25 @@ def hosted_mirror_url(
     except Exception:
         return None
     schedule = [feed for feed in feeds if feed.data_type == "gtfs" and feed.hosted_url]
+
+    def current_mirror_url(feed: CatalogFeed) -> str:
+        """Upgrade legacy numeric mirror records to the current V2 endpoint."""
+        normalized = normalized_mdb_id(feed.mdb_id)
+        if re.fullmatch(r"mdb-[0-9]+", normalized):
+            return f"https://files.mobilitydatabase.org/{normalized}/latest.zip"
+        return feed.hosted_url
+
     if mdb_id:
         mdb_key = normalized_mdb_id(mdb_id)
         for feed in schedule:
             if normalized_mdb_id(feed.mdb_id) == mdb_key:
-                return feed.hosted_url
+                return current_mirror_url(feed)
 
     current_key = _feed_url_key(current_url)
     if current_key:
         for feed in schedule:
             if _feed_url_key(feed.direct_download) == current_key:
-                return feed.hosted_url
+                return current_mirror_url(feed)
     return None
 
 

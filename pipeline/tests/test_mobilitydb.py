@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+from dataclasses import replace
 from pathlib import Path
 
 import pytest
@@ -1061,7 +1062,7 @@ def test_hosted_mirror_url_resolves_by_exact_pinned_mdb_id(
         "1295",
     )
 
-    assert url is not None and url.endswith("us-ca-yolo.zip?alt=media")
+    assert url == "https://files.mobilitydatabase.org/mdb-1295/latest.zip"
 
 
 def test_hosted_mirror_url_resolves_by_exact_normalized_current_url(
@@ -1078,7 +1079,32 @@ def test_hosted_mirror_url_resolves_by_exact_normalized_current_url(
         "https://www.yolobus.com/GTFS/google_transit.zip/",
     )
 
-    assert url is not None and url.endswith("us-ca-yolo.zip?alt=media")
+    assert url == "https://files.mobilitydatabase.org/mdb-1295/latest.zip"
+
+
+def test_hosted_mirror_url_keeps_nonlegacy_catalog_url(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import mobilitydb as m
+
+    feeds = [
+        replace(
+            parse_catalog(MIRROR_CATALOG)[0],
+            mdb_id="community-feed",
+            hosted_url="https://mirror.example.org/community.zip",
+        )
+    ]
+    monkeypatch.setattr(m, "load_catalog", lambda **_: feeds)
+
+    assert (
+        m.hosted_mirror_url(
+            "community",
+            "Community Transit",
+            "https://unreachable.example.org/feed.zip",
+            "community-feed",
+        )
+        == "https://mirror.example.org/community.zip"
+    )
 
 
 @pytest.mark.parametrize(
