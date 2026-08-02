@@ -222,6 +222,15 @@ def test_daily_publish_compares_content_not_timestamps() -> None:
     )
 
 
+def test_lifecycle_tagging_retries_transient_s3_failures() -> None:
+    for name in ("scorecard.yml", "targeted-score.yml"):
+        workflow = _workflow(name)
+        assert "tag_dated_artifact()" in workflow
+        assert "for attempt in 1 2 3 4" in workflow
+        assert "--output text >/dev/null" in workflow
+        assert "::error title=lifecycle tagging failed::" in workflow
+
+
 def test_intraday_publish_compares_content_not_timestamps() -> None:
     """The intraday refresh stages each refreshed feed's whole directory, so the
     mtime-driven `aws s3 sync` re-PUT that feed's entire dated history every

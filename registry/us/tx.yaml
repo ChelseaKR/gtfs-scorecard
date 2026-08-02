@@ -28,12 +28,12 @@ agencies:
     name: Denton County Transportation Authority (DCTA)
     subdivision_code: US-TX
     subdivision_name: Texas
-    static_gtfs_url: http://trilliumtransit.com/transit_feeds/dentoncounty-tx-us/dentoncounty-tx-us.zip
+    static_gtfs_url: https://gtfs.remix.com/dcta_denton_tx_us.zip
     mdb_id: 151
     rt_urls:
       trip_updates: http://api.transitime.org/api/v1/key/dca04420/agency/dcta/command/gtfs-rt/tripUpdates?format=bin
       vehicle_positions: http://api.transitime.org/api/v1/key/dca04420/agency/dcta/command/gtfs-rt/vehiclePositions?format=bin
-    license_note: No stated data license in the Mobility Database; verify before publishing.
+    license_note: "License: https://www.dcta.net/resources/open-data"
 
   - id: dallas-area-rapid-transit-dart
     name: Dallas Area Rapid Transit (DART)
