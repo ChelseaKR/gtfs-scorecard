@@ -363,12 +363,12 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
 
     # Contact: a working agency_url plus a feed contact (v4.0 Recommended).
     agency_url_ok = any(
-        row.get("agency_url", "").strip().startswith(("http://", "https://")) for row in agency
+        (row.get("agency_url") or "").strip().startswith(("http://", "https://")) for row in agency
     )
     feed_info = tables["feed_info.txt"][0] if tables["feed_info.txt"] else {}
     feed_contact_ok = bool(
-        feed_info.get("feed_contact_email", "").strip()
-        or feed_info.get("feed_contact_url", "").strip()
+        (feed_info.get("feed_contact_email") or "").strip()
+        or (feed_info.get("feed_contact_url") or "").strip()
     )
     contact_fraction = (0.5 if agency_url_ok else 0.0) + (0.5 if feed_contact_ok else 0.0)
     parts["contact"] = contact_fraction * WEIGHTS["contact"]
