@@ -45,6 +45,9 @@ the declared public surface).
 
 ### Changed
 
+- Cap oversized per-agency route tables at 500 rows while preserving the total
+  route count and linking the complete current JSON record. Normal agency pages
+  remain unchanged; national aggregates no longer produce multi-megabyte HTML.
 - Move the Alice Springs registry source to the Northern Territory publisher's
   current canonical download. The retired URL now takes six redirects across a
   renamed department and filenames, beyond the scorer's guarded redirect cap.

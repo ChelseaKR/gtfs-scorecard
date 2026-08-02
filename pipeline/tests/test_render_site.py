@@ -340,6 +340,37 @@ def test_route_map_section_falls_back_to_stops_only_without_shapes() -> None:
     assert 'class="map-legend"' not in html
 
 
+def test_route_map_section_caps_aggregate_route_tables() -> None:
+    routes = [
+        {
+            "id": f"R{i}",
+            "label": f"Route {i}",
+            "type_label": "Bus",
+            "color": "1A7A46",
+            "color_name": "green",
+            "has_shape": False,
+        }
+        for i in range(502)
+    ]
+    artifact = _artifact_with_route_map(
+        routes=routes,
+        route_count=len(routes),
+        drawn_route_count=0,
+        stop_count=1,
+        has_shapes=False,
+        path="data/artifacts/demo/geometry.geojson",
+    )
+
+    html = _route_map_section(artifact, "demo", stop_names=["Only Stop"])
+
+    assert html.count('<th scope="row">') == 500
+    assert "First 500 of 502 routes" in html
+    assert "Showing 500 of 502 routes" in html
+    assert 'href="/data/artifacts/demo/latest.json"' in html
+    assert "Route 499" in html
+    assert "Route 500" not in html
+
+
 def test_route_map_section_empty_when_no_geometry() -> None:
     assert _route_map_section({"agency": {"id": "x", "name": "X"}}, "x") == ""
     assert _route_map_section(_artifact_with_route_map(routes=[], stop_count=0), "x") == ""

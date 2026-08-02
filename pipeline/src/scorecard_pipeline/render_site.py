@@ -1522,6 +1522,11 @@ def _vendor_section(artifact: dict[str, Any], canonical: str) -> str:
 # here once; bumped in one place. The agency map adds it to the page only when the
 # feed actually has geometry to draw, so a feed without shapes pays nothing.
 _AGENCY_MAP_STOP_LIST_CAP = 250
+# A national or statewide aggregate can contain tens of thousands of routes.
+# Rendering every row makes the scorecard unusably large even though the same
+# complete data already ships in the per-agency JSON artifact. Keep ordinary
+# agency tables unchanged while bounding aggregate pages.
+_AGENCY_MAP_ROUTE_LIST_CAP = 500
 
 
 # The agency map's client script. Kept as a plain string with a JSON-encoded
@@ -1796,7 +1801,9 @@ def _route_map_section(
 
     # The accessible route table: route, type, and the line color described in
     # words (never color alone). Scoped headers for screen-reader navigation.
-    drawn = [r for r in routes if r.get("has_shape")]
+    shown_routes = routes[:_AGENCY_MAP_ROUTE_LIST_CAP]
+    hidden_route_count = max(0, len(routes) - len(shown_routes))
+    drawn = [r for r in shown_routes if r.get("has_shape")]
     if routes:
         rows = "".join(
             f"<tr{_brush_key_attr(r)}>"
@@ -1817,14 +1824,26 @@ def _route_map_section(
                 else ' <span class="route-noline">(no shape in feed)</span>'
             )
             + "</td></tr>"
-            for r in routes
+            for r in shown_routes
+        )
+        route_caption = (
+            f"First {len(shown_routes):,} of {len(routes):,} routes in {agency_name}'s feed"
+            if hidden_route_count
+            else f"Routes in {agency_name}'s feed"
+        )
+        route_remainder = (
+            f'<p class="fineprint">Showing {len(shown_routes):,} of {len(routes):,} routes. '
+            f'The <a href="/data/artifacts/{esc(agency_id)}/latest.json">current scorecard JSON</a> '
+            "contains the complete route list.</p>"
+            if hidden_route_count
+            else ""
         )
         route_table = (
             '<div class="table-wrap"><table class="route-table">'
-            f"<caption>Routes in {agency_name}'s feed</caption>"
+            f"<caption>{route_caption}</caption>"
             '<thead><tr><th scope="col">Route</th><th scope="col">Type</th>'
             '<th scope="col">Line color</th></tr></thead>'
-            f"<tbody>{rows}</tbody></table></div>"
+            f"<tbody>{rows}</tbody></table></div>{route_remainder}"
         )
     else:
         route_table = '<p class="page-lede">This feed lists no routes.</p>'
