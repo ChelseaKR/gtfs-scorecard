@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import Agency, raw_dir
-from .net import FetchTrace, UnsafeURLError, safe_download, safe_get
+from .net import FetchTrace, UnresolvableHostError, UnsafeURLError, safe_download, safe_get
 
 log = logging.getLogger(__name__)
 
@@ -410,7 +410,9 @@ def _download_with_mirror_fallback(
         from .mobilitydb import hosted_mirror_url
 
         mirror = None
-        if not isinstance(origin_exc, UnsafeURLError):
+        if not isinstance(origin_exc, UnsafeURLError) or isinstance(
+            origin_exc, UnresolvableHostError
+        ):
             mirror = hosted_mirror_url(
                 agency.id, agency.name, agency.static_gtfs_url, agency.mdb_id
             )

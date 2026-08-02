@@ -45,6 +45,9 @@ the declared public surface).
 
 ### Changed
 
+- Treat a vanished public publisher hostname as an availability failure eligible
+  for an identity-pinned mirror. Private, malformed, and otherwise unsafe URLs
+  still fail closed and can never route through fallback infrastructure.
 - Resolve legacy numeric Mobility Database mirror records through the current
   `files.mobilitydatabase.org/mdb-N/latest.zip` endpoint. The retired GCS
   object path no longer blocks recovery when a publisher endpoint is offline.

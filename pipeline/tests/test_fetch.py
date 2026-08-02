@@ -14,7 +14,7 @@ import requests
 
 from scorecard_pipeline import fetch as fetchmod
 from scorecard_pipeline.config import Agency, raw_dir
-from scorecard_pipeline.net import FetchTrace, UnsafeURLError
+from scorecard_pipeline.net import FetchTrace, UnresolvableHostError, UnsafeURLError
 
 ORIGIN = "https://origin.example.org/g.zip"
 ORIGIN_FINAL = "https://cdn.example.org/releases/current.zip"
@@ -116,6 +116,25 @@ def test_falls_back_to_mirror_when_origin_times_out(
     assert prov.source == "mirror"
     assert prov.final_url == MIRROR
     assert prov.origin_error == "ConnectTimeout"
+
+
+def test_falls_back_to_pinned_mirror_when_origin_dns_is_gone(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    def fake_safe_get(url: str, **_: object) -> bytes:
+        if url == AGENCY.static_gtfs_url:
+            raise UnresolvableHostError("cannot resolve host 'publisher.example.org'")
+        assert url == MIRROR
+        return _zip_bytes()
+
+    monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
+    monkeypatch.setattr("scorecard_pipeline.mobilitydb.hosted_mirror_url", lambda *a, **k: MIRROR)
+
+    _body, prov = _invoke_download(AGENCY, tmp_path)
+
+    assert prov.source == "mirror"
+    assert prov.final_url == MIRROR
+    assert prov.origin_error == "UnresolvableHostError"
 
 
 def test_mirror_redirect_records_the_url_that_served_the_bytes(
