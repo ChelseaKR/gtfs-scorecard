@@ -413,6 +413,7 @@ jobs:
       - name: Tag today's dated artifacts for lifecycle expiration
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         run: |
+          set -euo pipefail
           # The bucket's expire-dated-artifacts lifecycle rule (infra/artifacts)
           # only matches objects tagged artifact-class=dated, so tag today's
           # newly-synced <agency>/<date>.json files here. latest.json,
@@ -422,13 +423,28 @@ jobs:
           # step existed stays untagged
           # (fails open: it never expires rather than expiring by surprise)
           # until a future run happens to touch it again.
+          tag_dated_artifact() {
+            local key="$1"
+            local attempt
+            for attempt in 1 2 3 4; do
+              if aws s3api put-object-tagging \
+                --bucket "${{ vars.ARTIFACTS_BUCKET }}" \
+                --key "$key" \
+                --tagging 'TagSet=[{Key=artifact-class,Value=dated}]' \
+                --output text >/dev/null; then
+                return 0
+              fi
+              if [ "$attempt" -eq 4 ]; then
+                echo "::error title=lifecycle tagging failed::Could not tag ${key} after ${attempt} attempts"
+                return 1
+              fi
+              sleep $((attempt * 2))
+            done
+          }
           today=$(date -u +%Y-%m-%d)
           find data/artifacts -mindepth 2 -maxdepth 2 -type f -name "${today}.json" | while read -r f; do
             key="${f#./}"
-            aws s3api put-object-tagging \
-              --bucket "${{ vars.ARTIFACTS_BUCKET }}" \
-              --key "$key" \
-              --tagging 'TagSet=[{Key=artifact-class,Value=dated}]'
+            tag_dated_artifact "$key"
           done
 
       # Send opt-in feed-health emails to confirmed subscribers in the DynamoDB

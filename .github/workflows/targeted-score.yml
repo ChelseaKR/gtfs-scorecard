@@ -131,6 +131,24 @@ jobs:
           ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
         run: |
           set -euo pipefail
+          tag_dated_artifact() {
+            local key="$1"
+            local attempt
+            for attempt in 1 2 3 4; do
+              if aws s3api put-object-tagging \
+                --bucket "$ARTIFACTS_BUCKET" \
+                --key "$key" \
+                --tagging 'TagSet=[{Key=artifact-class,Value=dated}]' \
+                --output text >/dev/null; then
+                return 0
+              fi
+              if [ "$attempt" -eq 4 ]; then
+                echo "::error title=lifecycle tagging failed::Could not tag ${key} after ${attempt} attempts"
+                return 1
+              fi
+              sleep $((attempt * 2))
+            done
+          }
           artifact_uri="s3://${ARTIFACTS_BUCKET}/data/artifacts"
           expected_etag=$(<"$RUNNER_TEMP/index.etag")
           current_etag=$(aws s3api head-object \
@@ -163,10 +181,7 @@ jobs:
             fi
             aws s3 cp "$dated" "${artifact_uri}/${id}/${snapshot_date}.json" \
               --cache-control "max-age=300" --only-show-errors
-            aws s3api put-object-tagging \
-              --bucket "$ARTIFACTS_BUCKET" \
-              --key "data/artifacts/${id}/${snapshot_date}.json" \
-              --tagging 'TagSet=[{Key=artifact-class,Value=dated}]'
+            tag_dated_artifact "data/artifacts/${id}/${snapshot_date}.json"
 
             # Publish each remaining selected-directory file, never the whole
             # tree. Additive sync only: no --delete or unrelated agency path.

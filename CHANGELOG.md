@@ -45,6 +45,14 @@ the declared public surface).
 
 ### Changed
 
+- Recover the final missing coverage cohort with current first-party Schedule
+  downloads for DCTA, Rockford Mass Transit, and SamTrans. Their retired,
+  archived, or key-gated registry URLs now point to the agencies' public GTFS
+  downloads; feeds whose publisher is still unavailable continue to use the
+  explicitly disclosed Mobility Database mirror fallback.
+- Retry lifecycle tagging after transient S3 connection failures in both daily
+  and targeted publication. A single dropped response no longer leaves an
+  otherwise successful daily corpus refresh red or triggers the watchdog.
 - Keep reviewed national aggregates scoreable when `stop_times.txt` exceeds
   the 1 GiB whole-table reader cap. The graded scorecard now publishes while
   the zero-deduction routability block says it was not measured, instead of
