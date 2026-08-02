@@ -60,6 +60,24 @@ def test_bare_feed_scores_low_with_findings(make_gtfs_zip: Callable[..., Path]) 
     assert "scorecard_bad_agency_url" in codes
 
 
+def test_null_feed_contact_values_are_treated_as_missing(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    feed = {
+        **COMPLETE_FEED,
+        "feed_info.txt": (
+            "feed_publisher_name,feed_publisher_url,feed_lang,feed_contact_email,"
+            "feed_contact_url\n"
+            "Kagoshima City,https://example.jp,ja\n"
+        ),
+    }
+
+    result = completeness(str(make_gtfs_zip(feed)))
+
+    assert any(f.code == "scorecard_no_feed_contact" for f in result.findings)
+    assert result.details["components"]["contact"] == WEIGHTS["contact"] * 0.5
+
+
 def test_single_pattern_one_direction_loop_does_not_invent_a_headsign_fix(
     make_gtfs_zip: Callable[..., Path],
 ) -> None:

@@ -141,6 +141,32 @@ def _realtime_category(
     )
 
 
+def _routability_block(reader_path: Path) -> dict[str, Any]:
+    """Build the ungraded routability block without failing a national feed.
+
+    National aggregates can safely clear archive validation while carrying a
+    stop_times.txt too large for Scorecard's whole-table reader. Routability is
+    descriptive and zero-deduction, so report that it was not measured rather
+    than withholding the feed's graded scorecard.
+    """
+    from .gtfs import TableTooLargeError
+    from .routability import assess_routability
+
+    try:
+        routability = assess_routability(str(reader_path))
+    except TableTooLargeError as exc:
+        log.warning("%s: routability not measured: %s", reader_path, exc)
+        return {
+            "measured": False,
+            "reason": "table_too_large",
+            "findings": [],
+        }
+    return {
+        **routability.to_details(),
+        "findings": [finding.to_json() for finding in routability.findings],
+    }
+
+
 def run_agency(  # noqa: C901
     agency_id: str,
     date: dt.date,
@@ -306,13 +332,7 @@ def run_agency(  # noqa: C901
 
     # Routing-flavored usability checks (single-stop trips, orphan stops): a
     # zero-deduction block so the grade is unchanged, attached for the page.
-    from .routability import assess_routability
-
-    routability = assess_routability(str(reader_path))
-    artifact["routability"] = {
-        **routability.to_details(),
-        "findings": [f.to_json() for f in routability.findings],
-    }
+    artifact["routability"] = _routability_block(reader_path)
     # NTD GTFS readiness and optional NTD-ID equality are US-only surfaces:
     # they map the feed onto the FTA National Transit Database, which has no
     # meaning abroad. A non-US agency is scored on the same rubric but skips both,

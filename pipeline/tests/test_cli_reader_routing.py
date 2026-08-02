@@ -361,3 +361,25 @@ def test_realtime_category_routes_the_reader_view_to_schedule_analyses(
     assert result.name == "realtime"
     assert paths == [reader_path, reader_path, reader_path]
     assert raw_path not in paths
+
+
+def test_oversized_routability_table_is_reported_as_unmeasured(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    reader_path = tmp_path / "national.reader.zip"
+
+    def oversized(_path: str) -> routability.RoutabilityProfile:
+        raise gtfs.TableTooLargeError("stop_times.txt exceeds the safety cap")
+
+    monkeypatch.setattr(routability, "assess_routability", oversized)
+
+    block = cli._routability_block(reader_path)
+
+    assert block == {
+        "measured": False,
+        "reason": "table_too_large",
+        "findings": [],
+    }
+    assert "routability not measured" in caplog.text

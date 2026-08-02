@@ -45,6 +45,13 @@ the declared public surface).
 
 ### Changed
 
+- Keep reviewed national aggregates scoreable when `stop_times.txt` exceeds
+  the 1 GiB whole-table reader cap. The graded scorecard now publishes while
+  the zero-deduction routability block says it was not measured, instead of
+  failing the entire feed. Nullable contact fields are also treated as missing
+  data rather than a pipeline error. Mark the OVapi national aggregate for the
+  reviewed large-feed tier and move Cache Valley, Greenlink, and Jacksonville
+  to their current catalog-confirmed Schedule sources.
 - Make the contributor-facing failures in `docs/add-your-agency.md` plain
   messages instead of Python tracebacks (#188). Walking that walkthrough from a
   clean fork, both cases the doc promises "fail immediately with a plain

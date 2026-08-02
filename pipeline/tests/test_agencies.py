@@ -182,6 +182,27 @@ def test_repo_registry_matches_documented_feed_record_counts(
     assert len({agency.country for agency in european}) == 26
 
 
+def test_repo_registry_carries_reviewed_coverage_recovery_updates(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+
+    assert by_id["ovapi-netherlands"].large_feed is True
+    assert by_id["cache-valley-transit-district"].static_gtfs_url == (
+        "https://www.mycvtdbus.org/gtfs"
+    )
+    assert by_id["cache-valley-transit-district"].mdb_id == "ntd-80028"
+    assert by_id["greenville-transit-authority-greenlink"].static_gtfs_url == (
+        "https://gtfs.greenlink.cadavl.com/GTA/GTFS/GTFS_GTA.zip"
+    )
+    assert by_id["greenville-transit-authority-greenlink"].mdb_id == "tld-490"
+    assert by_id["jacksonville-transportation-authority-jta"].static_gtfs_url == (
+        "https://ride.jtafla.com/gtfs-archive/gtfs.zip"
+    )
+    assert by_id["jacksonville-transportation-authority-jta"].mdb_id == "tld-764"
+
+
 def test_repo_registry_includes_france_pan_and_new_country_code_wave(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
