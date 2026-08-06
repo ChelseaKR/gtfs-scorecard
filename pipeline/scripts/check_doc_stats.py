@@ -101,6 +101,18 @@ RULES: list[tuple[str, str, str, str]] = [
         "pages",
         "floor",
     ),
+    # CLAUDE.md's scorecard count was gated; its registry count was not, and it
+    # sat at an exact 1,286 while the registry grew past 2,100. Every gated
+    # claim in this list stayed correct through that period, which is the whole
+    # argument for gating a figure rather than trusting a doc edit to catch it.
+    # (AGENTS.md carried the same stale figure, but it is excluded from the
+    # repo, so a rule naming it would fail on a clean CI checkout.)
+    (
+        r"CLAUDE.md",
+        r"registry carries more than ([\d,]+)\s+curated feed",
+        "registry",
+        "floor",
+    ),
     (
         r"web/support/index.html",
         r"more than\s+([\d,]+)\s+configured feed records in the current worldwide coverage",

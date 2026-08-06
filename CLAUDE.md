@@ -2,8 +2,9 @@
 
 > Root instruction file for the `gtfs-scorecard` repo. Read fully before writing code.
 
-> **Status (2026-07):** the four build phases below have shipped, and the pilot
-> grew into a live service: 1,286 curated feed records and more than 1,100
+> **Status (2026-08):** the four build phases below have shipped, and the pilot
+> grew into a live service: the registry carries more than 2,100 curated feed
+> records, with more than 1,100
 > published scorecards, still concentrated in the US and Canada and now
 > carrying reviewed global canaries, scored daily at gtfsscorecard.org, with a
 > versioned read API, a GitHub Marketplace action, and an MCP server. This file
@@ -185,6 +186,11 @@ original four build phases have shipped; current direction lives in the
 roadmaps and `docs/ideation/`. Hard rules: every metric ships with its
 plain-language explanation; accessibility (WCAG 2.2 AAA) is non-negotiable in
 the web app; agencies without realtime are shown neutrally, never shamed.
-(Per DOCUMENTATION-STANDARD §9 [DOC-18], agent-facing instructions live here,
-not in the README; the README states the same guardrails for visitors under
-"Guardrails".)
+(Agent-facing instructions live here, not in the README; the README states the
+same guardrails for visitors under "Guardrails" and points here. This is a
+deliberate divergence from the vendored DOCUMENTATION-STANDARD v1.0.1, whose §2
+table assigns the Claude Code build entrypoint to the README and whose §7 tells
+an agent to start there. An earlier version of this note cited a
+"DOCUMENTATION-STANDARD §9 [DOC-18]" as authority; the pinned standard has
+eight sections and no such rule, so the divergence is now declared as one in
+`docs/standards-conformance-gaps.md` instead of claimed as conformance.)

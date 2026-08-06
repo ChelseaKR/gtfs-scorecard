@@ -105,6 +105,23 @@ the declared public surface).
   contradictions are rejected, while Mobility Database-only receipt runs reuse
   one proposer evaluation.
 
+### Fixed
+
+- Correct a stale registry figure in `CLAUDE.md`. Its status banner claimed
+  1,286 curated feed records; the registry holds 2,185, so the published
+  number understated the corpus by roughly half. The count is now stated as a
+  floor ("more than 2,100") in line with the README, and `check_doc_stats.py`
+  gates it. Every figure that already had a rule in that script stayed
+  correct through the same period, which is why the missing rule, not the
+  wrong number, is the actual defect being fixed.
+- Stop citing a nonexistent rule as authority for where agent instructions
+  live. `CLAUDE.md` attributed its "agent-facing instructions live here, not
+  in the README" note to "DOCUMENTATION-STANDARD §9 [DOC-18]"; the pinned
+  v1.0.1 standard has eight sections and no `DOC-18`, and its §2 and §7 place
+  the agent entrypoint in the README. The arrangement is unchanged and still
+  deliberate, but it is now declared as a divergence in
+  `docs/standards-conformance-gaps.md` rather than presented as conformance.
+
 ## [1.4.0] - 2026-07-25
 
 ### Added
