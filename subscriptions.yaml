@@ -13,8 +13,12 @@
 #   email      where the digest goes (required)
 #   agencies   list of agency ids to follow
 #   all: true  follow every tracked agency (e.g. a statewide program liaison)
-#   kinds      which alerts to receive: [expiry], [regression], or both. Omit for
-#              every kind. "expiry" warns before a feed expires (the expiry opt-in).
+#   kinds      which alerts to receive, as a list drawn from: expiry,
+#              lapse_risk, regression, export_change, anomaly. Omit for every
+#              kind. "expiry" warns before a feed expires (the expiry opt-in);
+#              "export_change" warns when the export's structure changed
+#              (a route dropped, stops moved) even though nothing was invalid,
+#              so the grade didn't move to flag it.
 #   rollups    list of rollup (cohort) ids to also receive a weekly portfolio
 #              digest for. A liaison opts into a cohort rollup here; the digest
 #              summarizes week-over-week movement across that whole cohort. Same

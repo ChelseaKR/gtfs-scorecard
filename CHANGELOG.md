@@ -28,6 +28,16 @@ the declared public surface).
 ## [Unreleased]
 
 ### Added
+- Deliver the structural export diff (EXP-18) through the alert channels, not
+  just the agency page. A run whose export changed shape now produces an
+  `export_change` item in the email digest (its own section, deliverable to
+  webhooks), an `export_change` entry in the site-wide Atom feed, and one in
+  that agency's own Atom feed. Subscribers can opt into or out of the kind by
+  name in `subscriptions.yaml`. Site-wide entries are gated to the same
+  comparison-eligible cohort as grade-change entries, so a duplicate feed
+  identity cannot announce one change twice. `changes/latest.json` is
+  unchanged and still carries grade and score moves only; `docs/api.md` states
+  the difference.
 - Move proposal-only `scorecard sync` intake to Mobility Database
   `feeds_v2.csv`, while keeping mirror recovery and replacement discovery on
   the legacy catalog. Normalize numeric Mobility Database identities across

@@ -16,6 +16,7 @@ from scorecard_pipeline.render_site import (
     _accessibility_depth_signals,
     _accessibility_score,
     _accessibility_substat,
+    _agency_feed_events,
     _board_hero,
     _california_guideline_checklist,
     _california_guideline_html,
@@ -47,6 +48,7 @@ from scorecard_pipeline.render_site import (
     _vendor_request,
     _vendor_section,
     compute_changes,
+    compute_export_changes,
 )
 
 
@@ -1513,6 +1515,98 @@ def test_compute_changes_flags_moves_and_sorts_regressions_first() -> None:
     assert changes[0]["regressed"] is True  # the regression sorts first
     assert changes[0]["from_grade"] == "B" and changes[0]["to_grade"] == "D"
     assert changes[1]["regressed"] is False
+
+
+def test_compute_export_changes_reads_the_latest_artifacts_export_diff_block() -> None:
+    artifacts_by_id = {
+        "moved": {
+            "agency": {"name": "Moved Transit"},
+            "snapshot_date": "2026-06-19",
+            "export_diff": {
+                "from_sha256": "a" * 64,
+                "to_sha256": "b" * 64,
+                "changes": ["Route 5 (E Street Express) is no longer in the export."],
+            },
+        },
+        "steady": {
+            "agency": {"name": "Steady Transit"},
+            "snapshot_date": "2026-06-19",
+            # No export_diff at all: most runs, since most exports don't
+            # change structurally between checks.
+        },
+        "empty": {
+            "agency": {"name": "Empty Transit"},
+            "snapshot_date": "2026-06-19",
+            # Defensively-empty block should not produce a record either.
+            "export_diff": {"from_sha256": "a" * 64, "to_sha256": "c" * 64, "changes": []},
+        },
+    }
+    changes = compute_export_changes(artifacts_by_id)
+    assert [c["id"] for c in changes] == ["moved"]
+    assert changes[0]["name"] == "Moved Transit"
+    assert changes[0]["changes"] == ["Route 5 (E Street Express) is no longer in the export."]
+
+
+def test_compute_export_changes_never_emits_a_none_date() -> None:
+    # The date lands in a reader-visible sentence ("On <date>, X's GTFS export
+    # changed"). An artifact missing snapshot_date must produce an empty date,
+    # not the string "None".
+    artifacts_by_id = {
+        "undated": {
+            "agency": {"name": "Undated Transit"},
+            "export_diff": {"from_sha256": "a" * 64, "to_sha256": "b" * 64, "changes": ["x"]},
+        }
+    }
+    changes = compute_export_changes(artifacts_by_id)
+    assert changes[0]["date"] == ""
+
+
+def test_compute_export_changes_respects_allowed_ids() -> None:
+    artifacts_by_id = {
+        "in": {
+            "agency": {"name": "In Transit"},
+            "snapshot_date": "2026-06-19",
+            "export_diff": {"from_sha256": "a" * 64, "to_sha256": "b" * 64, "changes": ["x"]},
+        },
+        "out": {
+            "agency": {"name": "Out Transit"},
+            "snapshot_date": "2026-06-19",
+            "export_diff": {"from_sha256": "a" * 64, "to_sha256": "b" * 64, "changes": ["y"]},
+        },
+    }
+    changes = compute_export_changes(artifacts_by_id, allowed_ids={"in"})
+    assert [c["id"] for c in changes] == ["in"]
+
+
+def test_agency_feed_events_prepends_export_change_before_history_events() -> None:
+    artifact = {
+        "snapshot_date": "2026-06-19",
+        "export_diff": {
+            "from_sha256": "a" * 64,
+            "to_sha256": "b" * 64,
+            "changes": ["Route 5 (E Street Express) is no longer in the export."],
+        },
+    }
+    history = _with_contract(
+        [
+            {"date": "2026-06-18", "grade": "B", "score": 85.0},
+            {"date": "2026-06-19", "grade": "D", "score": 62.0},
+        ]
+    )
+    events = _agency_feed_events(artifact, history)
+    assert events[0].kind == "export_change"
+    assert "Route 5" in events[0].detail
+    assert any(e.kind == "grade_change" for e in events[1:])
+
+
+def test_agency_feed_events_without_export_diff_matches_history_events_only() -> None:
+    artifact = {"snapshot_date": "2026-06-19"}
+    history = [
+        {"date": "2026-06-18", "grade": "B", "score": 85.0},
+        {"date": "2026-06-19", "grade": "D", "score": 62.0},
+    ]
+    events = _agency_feed_events(artifact, history)
+    assert all(e.kind != "export_change" for e in events)
 
 
 def test_canonical_state_keeps_real_states_and_remaps_known_quirks() -> None:

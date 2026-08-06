@@ -110,8 +110,8 @@ from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
     esc,
     sync_static_navs,
 )
+from .timemachine import Event, grade_story, history_events
 from .timemachine import finding_codes as _finding_codes
-from .timemachine import grade_story, history_events
 from .tool_profiles import detect_tool
 
 FIX_CODES_WITH_PAGES: set[str] = set()  # filled in by render_fixes()
@@ -599,6 +599,27 @@ def _current_rubric_history(history: list[dict[str, Any]]) -> list[dict[str, Any
     return current_producer_contract_suffix(history)
 
 
+def _agency_feed_events(artifact: dict[str, Any], history: list[dict[str, Any]]) -> list[Any]:
+    """Grade/score/expiry events plus, when the latest run's export changed
+    structurally (EXP-18), a synthetic ``export_change`` event naming what
+    moved. Feeds the per-agency Atom feed (``agency_change_feed``) so a
+    subscriber hears about a structural export change the same way they hear
+    about a grade drop, not just from the agency page."""
+    events: list[Any] = list(history_events(_current_rubric_history(history)))
+    export = artifact.get("export_diff")
+    changes = (export or {}).get("changes") or []
+    if changes:
+        events.insert(
+            0,
+            Event(
+                date=str(artifact.get("snapshot_date") or ""),
+                kind="export_change",
+                detail=" ".join(str(c) for c in changes),
+            ),
+        )
+    return events
+
+
 def _service_bar_chart(
     rows: list[tuple[str, float, str]],
     *,
@@ -892,7 +913,8 @@ def _feeddiff_section(
     feed_url = f"/agency/{esc(agency_id)}/feed.xml"
     subscribe = (
         '<p class="fineprint"><a href="' + feed_url + '">Subscribe to this feed’s '
-        "changes (Atom)</a> to hear about grade drops in a reader, with no sign-up.</p>"
+        "changes (Atom)</a> to hear about grade drops and export changes in a "
+        "reader, with no sign-up.</p>"
     )
     if not diff.has_changes:
         return (
@@ -6020,6 +6042,44 @@ def compute_changes(
     return out
 
 
+def compute_export_changes(
+    artifacts_by_id: dict[str, dict[str, Any]],
+    *,
+    allowed_ids: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    """Agencies whose export changed structurally on the latest run (EXP-18).
+
+    A grade or score move (``compute_changes``) and a structural export change
+    are different events: a route can drop out of an export with no notice the
+    validator catches, so the grade never moves even though a rider-facing
+    change happened. Feeds the site-wide Atom feed
+    (``atomfeed.site_change_feed``) so a subscriber hears about both kinds of
+    change. Pure over the already-assembled per-agency artifacts, mirroring
+    ``compute_changes``'s shape over the index.
+    """
+    out: list[dict[str, Any]] = []
+    for agency_id, artifact in artifacts_by_id.items():
+        if allowed_ids is not None and agency_id not in allowed_ids:
+            continue
+        export = artifact.get("export_diff")
+        changes = (export or {}).get("changes") or []
+        if not changes:
+            continue
+        out.append(
+            {
+                "id": agency_id,
+                "name": artifact.get("agency", {}).get("name", agency_id),
+                # Coerced here, not at the Atom entry: a missing snapshot_date
+                # would otherwise reach the feed as the string "None" inside a
+                # reader-visible sentence ("On None, X's GTFS export changed").
+                "date": str(artifact.get("snapshot_date") or ""),
+                "changes": list(changes),
+            }
+        )
+    out.sort(key=lambda c: (str(c["date"]), str(c["id"])), reverse=True)
+    return out
+
+
 def _changes_sections(changes: list[dict[str, Any]], *, baseline_date: str | None = None) -> str:
     """The upward/downward sections of the change feed
     (compute_changes), side by side on wide screens. Rendered inside the
@@ -6076,8 +6136,9 @@ def _changes_sections(changes: list[dict[str, Any]], *, baseline_date: str | Non
     </section>
     </div>
     <p class="subscribe-line"><a href="/changes/feed.xml">Subscribe to changes (Atom)</a>
-    to get grade drops in a feed reader or a webhook, with no sign-up. Each agency
-    also has its own feed at <code>/agency/&lt;id&gt;/feed.xml</code>.</p>"""
+    to get grade drops and export changes in a feed reader or a webhook, with no
+    sign-up. Each agency also has its own feed at
+    <code>/agency/&lt;id&gt;/feed.xml</code>.</p>"""
 
 
 def _ridership_impact_line(impact: dict[str, Any] | None) -> str:
@@ -9876,9 +9937,18 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # webhook can subscribe to grade drops without an opt-in store or an email
     # sender (the email digest covers confirmed subscribers; this covers everyone
     # else). Deterministic: timestamps come from snapshot dates, not wall-clock.
+    # Structural export changes (EXP-18) ride the same feed, comparison-gated
+    # the same way, so a subscriber hears about both kinds of change in one
+    # place.
+    export_changes = compute_export_changes(artifacts_by_id, allowed_ids=comparable_ids)
     write(
         "changes/feed.xml",
-        site_change_feed(changes, base_url=BASE_URL, comparison=_comparison_metadata),
+        site_change_feed(
+            changes,
+            base_url=BASE_URL,
+            comparison=_comparison_metadata,
+            export_changes=export_changes,
+        ),
     )
 
     # Machine-readable methodology (category weights, grade bands, correctness
@@ -10063,14 +10133,17 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         elif fixlog_page_dir.exists():
             shutil.rmtree(fixlog_page_dir)
         # This feed's own Atom history (grade moves, expiry crossings, score
-        # swings), so anyone supporting the agency can subscribe to just it. The
-        # events are the same ones the "What changed over time" timeline shows.
+        # swings, and any structural export change on the latest run), so
+        # anyone supporting the agency can subscribe to just it. The grade/
+        # score/expiry events are the same ones the "What changed over time"
+        # timeline shows; the export-change event mirrors the "What changed
+        # inside the export" block on the agency page (EXP-18).
         write(
             f"agency/{agency_id}/feed.xml",
             agency_change_feed(
                 agency_id,
                 artifact["agency"]["name"],
-                history_events(_current_rubric_history(history)),
+                _agency_feed_events(artifact, history),
                 base_url=BASE_URL,
             ),
         )

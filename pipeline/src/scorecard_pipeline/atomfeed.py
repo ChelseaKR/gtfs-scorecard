@@ -11,9 +11,18 @@ backend. It complements the email digest rather than replacing it.
 Two feeds are produced:
 
 * a site-wide feed of every agency whose grade or score moved on the latest run
-  (built from ``render_site.compute_changes``), and
+  (built from ``render_site.compute_changes``), plus any agency whose export's
+  own structure changed on the latest run (EXP-18's ``export_diff`` block, from
+  ``exportdiff.py``), and
 * a per-agency feed of that feed's own history of grade moves, expiry crossings,
-  and notable score swings (built from ``timemachine.history_events``).
+  notable score swings (built from ``timemachine.history_events``), and the
+  latest run's export-structure changes, when there were any.
+
+A structural export change is a distinct, concrete event from a grade or score
+move — the export itself changed, independent of whether that moved the grade —
+so it rides its own ``export_change`` category rather than folding into an
+existing one. The wording stays descriptive, matching the agency-page rendering
+of the same block: change is normal, this is a heads-up, not an accusation.
 
 Everything here is pure and deterministic: the feed ``<updated>`` and each
 entry's timestamp are derived from snapshot dates, not wall-clock time, so a
@@ -157,25 +166,68 @@ def _change_entry(change: dict[str, object], base_url: str) -> Entry:
     )
 
 
+def _export_change_entry(record: dict[str, object], base_url: str) -> Entry:
+    """Map one per-agency export-structure-change record to an Atom entry.
+
+    ``record`` carries ``id``, ``name``, ``date``, and ``changes`` (the plain
+    sentences from ``exportdiff.diff_structures``). Distinct from
+    ``_change_entry``: this describes what moved in the feed file itself, not
+    the grade or score that file produced.
+    """
+    agency_id = str(record.get("id", ""))
+    name = str(record.get("name", agency_id))
+    date = str(record.get("date", ""))
+    raw_changes = record.get("changes")
+    changes = [str(c) for c in raw_changes] if isinstance(raw_changes, list) else []
+    summary = (
+        f"On {date}, {name}'s GTFS export changed: " + " ".join(changes)
+        if changes
+        else f"On {date}, {name}'s GTFS export structure changed."
+    )
+    return Entry(
+        id=f"{_TAG_BASE}agency/{agency_id}/{date}/export_change",
+        title=f"{name}: export structure changed",
+        updated=_date_to_dt(date),
+        summary=summary,
+        link=f"{base_url}/agency/{agency_id}/",
+        category="export_change",
+    )
+
+
 def site_change_feed(
     changes: list[dict[str, object]],
     *,
     base_url: str,
     max_entries: int = 60,
     comparison: dict[str, object] | None = None,
+    export_changes: list[dict[str, object]] | None = None,
 ) -> str:
-    """The site-wide Atom feed: every agency that moved on the latest run.
+    """The site-wide Atom feed: every agency that moved on the latest run, plus
+    every agency whose export structure changed on the latest run.
 
     ``changes`` is the output of ``render_site.compute_changes`` (regressions
-    first). The feed caps at ``max_entries`` so a big swing day does not produce
-    an unbounded document.
+    first). ``export_changes`` is one record per agency with a non-empty
+    ``export_diff`` block on its latest artifact (EXP-18). ``render_atom``
+    interleaves the two kinds by timestamp.
+
+    Each list is capped at ``max_entries`` separately, so the document holds at
+    most ``2 * max_entries`` entries rather than ``max_entries``. Merging first
+    and then capping would sort by date, and ``changes`` is priority-ordered
+    (regressions first, then largest move) rather than date-ordered: a day with
+    many export changes would push the grade drops that matter most out of the
+    document. Two bounded lists keep both guarantees.
     """
     entries = [_change_entry(c, base_url) for c in changes[:max_entries]]
+    entries.extend(_export_change_entry(c, base_url) for c in (export_changes or [])[:max_entries])
     eligible = (comparison or {}).get("eligible_count")
     if isinstance(eligible, int) and not isinstance(eligible, bool):
         if eligible > 0:
+            # Names both entry kinds. A subtitle that promised only grade and
+            # score moves would be read as the feed's whole scope, and an
+            # export-change entry would then look like something the feed was
+            # not supposed to carry.
             subtitle = (
-                "Same-feed grade or score changes among "
+                "Same-feed grade or score changes, and structural export changes, among "
                 f"{eligible} current-contract, comparison-eligible feed records."
             )
         else:
@@ -188,7 +240,8 @@ def site_change_feed(
         # valid, but do not infer an eligibility denominator.
         subtitle = (
             "Transit feed records whose GTFS data quality grade or score moved "
-            "since their last like-for-like check."
+            "since their last like-for-like check, or whose export changed "
+            "structurally."
         )
     return render_atom(
         feed_id=f"{_TAG_BASE}changes",
@@ -210,9 +263,14 @@ def agency_change_feed(
 ) -> str:
     """A single agency's Atom feed of dated change events.
 
-    ``events`` is the output of ``timemachine.history_events`` (newest first):
-    each has ``date``, ``kind``, and ``detail``. A grade-drop event is tagged
-    ``grade_drop`` so a reader or webhook can filter for the alert that matters.
+    ``events`` is normally the output of ``timemachine.history_events``
+    (newest first): each has ``date``, ``kind``, and ``detail``. A grade-drop
+    event is tagged ``grade_drop`` so a reader or webhook can filter for the
+    alert that matters. The render_site call site prepends a synthetic
+    ``export_change`` event (any duck-typed object with the same three
+    attributes works) when the latest run's artifact carries a non-empty
+    ``export_diff`` block, so a subscriber hears about a structural export
+    change alongside grade and score history.
     """
     entries: list[Entry] = []
     for ev in events[:max_entries]:
@@ -235,7 +293,10 @@ def agency_change_feed(
     return render_atom(
         feed_id=f"{_TAG_BASE}agency/{agency_id}/changes",
         title=f"GTFS Scorecard: {agency_name} feed quality changes",
-        subtitle=f"Grade moves, expiry warnings, and score swings for {agency_name}'s GTFS feed.",
+        subtitle=(
+            f"Grade moves, expiry warnings, score swings, and export-structure "
+            f"changes for {agency_name}'s GTFS feed."
+        ),
         self_url=f"{base_url}/agency/{agency_id}/feed.xml",
         alternate_url=f"{base_url}/agency/{agency_id}/",
         entries=entries,

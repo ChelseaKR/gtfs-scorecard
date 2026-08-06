@@ -449,6 +449,73 @@ def test_subscriber_kinds_filter_anomaly_items() -> None:
     assert [i.kind for i in personal.items] == ["expiry"]
 
 
+def test_export_change_kind_is_subscriber_optable() -> None:
+    """'export_change' is in ALERT_KINDS so subscribers can opt into (or out
+    of) structural export-change alerts explicitly, just like the other
+    kinds (EXP-18's Atom-and-webhook delivery)."""
+    assert "export_change" in ALERT_KINDS
+
+
+def test_subscriber_kinds_filter_export_change_items() -> None:
+    """A subscriber with kinds=['expiry'] does not receive export_change items
+    even when they follow the agency."""
+    digest = Digest(
+        as_of=dt.date(2026, 6, 16),
+        items=[
+            AlertItem(
+                agency_id="unitrans",
+                agency_name="Unitrans",
+                kind="export_change",
+                headline="The export's structure changed",
+                detail="Route 5 (E Street Express) is no longer in the export.",
+                fix="Confirm this was intentional.",
+                scorecard_url="https://gtfsscorecard.org/agency/unitrans/",
+            ),
+            _item("unitrans", "Unitrans", kind="expiry"),
+        ],
+    )
+    sub = parse_subscribers(
+        {"subscribers": [{"email": "a@example.org", "agencies": ["unitrans"], "kinds": ["expiry"]}]}
+    )[0]
+    personal = personal_digest(sub, digest)
+    assert [i.kind for i in personal.items] == ["expiry"]
+
+
+def test_export_change_item_reaches_a_webhook_notification() -> None:
+    """A verified subscriber with a webhook_url and no kinds filter receives
+    an export_change item in their webhook payload, the same path a grade
+    drop already rides (build_webhook_notifications)."""
+    digest = Digest(
+        as_of=dt.date(2026, 6, 16),
+        items=[
+            AlertItem(
+                agency_id="unitrans",
+                agency_name="Unitrans",
+                kind="export_change",
+                headline="The export's structure changed",
+                detail="Route 5 (E Street Express) is no longer in the export.",
+                fix="Confirm this was intentional.",
+                scorecard_url="https://gtfsscorecard.org/agency/unitrans/",
+            ),
+        ],
+    )
+    sub = parse_subscribers(
+        {
+            "subscribers": [
+                {
+                    "email": "a@example.org",
+                    "all": True,
+                    "verified": True,
+                    "webhook_url": "https://hooks.example.org/incoming",
+                }
+            ]
+        }
+    )[0]
+    notes = build_webhook_notifications([sub], digest)
+    assert len(notes) == 1
+    assert "Route 5" in notes[0].payload["text"]
+
+
 # ---------------------------------------------------------------------------
 # Portfolio (cohort rollup) digest opt-in — the consent-model extension.
 # ---------------------------------------------------------------------------

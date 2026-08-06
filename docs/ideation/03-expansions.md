@@ -56,8 +56,9 @@ tell a fully-measured A from a two-category A without opening the docs.
 **Status: Done (verified 2026-07-12).** `timemachine.py` narrates the dated
 history and `feeddiff.py` reports what changed between the last two checks;
 both render on the agency page. Scope note: `feeddiff.py` diffs quality
-artifacts (findings appeared, cleared, moved), not the feed's own content —
-a structural export diff remains open as EXP-18 in `06-sweep-2026-07-12.md`.
+artifacts (findings appeared, cleared, moved), not the feed's own content.
+The structural export diff is EXP-18 in `06-sweep-2026-07-12.md`, shipped
+2026-07-12 and delivered to the digest and Atom feeds on 2026-08-05.
 
 **Pitch.** Auto-write a short, honest narrative of how a feed's grade moved and
 why, from the dated artifacts.

@@ -12,6 +12,14 @@ date itself says so. The behavioral read only fires for feeds the deterministic
 expiry check hasn't already flagged, so it stays a genuinely earlier warning
 rather than a duplicate.
 
+A fourth item, per EXP-18 (docs/ideation/06-sweep-2026-07-12.md), surfaces
+when the latest run's export changed structurally — a route dropped, stops
+moved, the service span shifted — even when nothing about it was invalid, so
+a grade never moved to flag it. Unlike the behavioral lapse-risk read, this
+one is not a private-only signal: it mirrors the "What changed inside the
+export" block the agency page already renders (`exportdiff.py`, `render_site.py`)
+so a subscriber hears the same finding here that a page visitor would see.
+
 The digest is rendered as Markdown and written to stdout or a file. Routing it
 to subscribers (email via SES, a Slack post) is a deploy concern handled by the
 caller; keeping the build and the send separate is what makes the logic
@@ -117,7 +125,7 @@ class AlertItem:
 
     agency_id: str
     agency_name: str
-    kind: str  # "expiry" | "lapse_risk" | "regression" | "anomaly"
+    kind: str  # "expiry" | "lapse_risk" | "regression" | "anomaly" | "export_change"
     headline: str
     detail: str
     fix: str
@@ -240,6 +248,36 @@ def _regression_item(history: list[dict[str, Any]], name: str, agency_id: str) -
     )
 
 
+def _export_change_item(
+    latest: dict[str, Any] | None, name: str, agency_id: str
+) -> AlertItem | None:
+    """An item when the latest run's export changed structurally (EXP-18):
+    routes added or removed, stops that moved, the service span, or trip
+    count. None when there is no ``export_diff`` block or it carries no
+    changes — most runs, since most exports are byte-identical or change only
+    in ways that don't move the structure fingerprint.
+
+    Descriptive only, matching the agency-page rendering of the same block:
+    the digest never claims the change was a mistake, only that it happened.
+    """
+    if not latest:
+        return None
+    export = latest.get("export_diff")
+    changes = (export or {}).get("changes") or []
+    if not changes:
+        return None
+    return AlertItem(
+        agency_id=agency_id,
+        agency_name=name,
+        kind="export_change",
+        headline="The export's structure changed",
+        detail=" ".join(str(c) for c in changes),
+        fix="Confirm this was intentional. If not, check your scheduling "
+        "software's export settings for what changed.",
+        scorecard_url=_scorecard_url(agency_id),
+    )
+
+
 def _anomaly_alert_items(
     history: list[dict[str, Any]], agency_id: str, agency_name: str
 ) -> list[AlertItem]:
@@ -306,11 +344,12 @@ def build_digest(  # noqa: C901
     today: dt.date | None = None,
     expiry_days: int = DEFAULT_EXPIRY_DAYS,
 ) -> Digest:
-    """Scan published artifacts for expiry and regression alerts.
+    """Scan published artifacts for expiry, regression, and export-change alerts.
 
-    Reads each agency's latest.json for the expiry window and index.json for
-    score history. Returns items sorted with the most urgent first (expired
-    feeds, then soonest-to-expire, then regressions).
+    Reads each agency's latest.json for the expiry window, the export-diff
+    block, and index.json for score history. Returns items sorted with the
+    most urgent first (expired feeds, then soonest-to-expire, then
+    regressions, then structural export changes, then anomalies).
     """
     as_of = today or dt.date.today()
     root = artifacts_dir()
@@ -338,6 +377,12 @@ def build_digest(  # noqa: C901
         regression = _regression_item(comparable_history, entry.get("name", agency_id), agency_id)
         if regression:
             items.append(_attach_finding_context(regression, latest))
+        # Not routed through _attach_finding_context: an export-structure
+        # change is not one of the validator's named findings, so there is no
+        # finding code to link. The plain scorecard URL is the honest link.
+        export_change = _export_change_item(latest, entry.get("name", agency_id), agency_id)
+        if export_change:
+            items.append(export_change)
         items.extend(
             _attach_finding_context(item, latest)
             for item in _anomaly_alert_items(
@@ -349,13 +394,17 @@ def build_digest(  # noqa: C901
 
     def _urgency(item: AlertItem) -> tuple[int, int, str]:
         # Expiry first (soonest/most overdue first), then behavioral lapse
-        # risk (the early warning), then regressions, then anomalies.
+        # risk (the early warning), then regressions, then structural export
+        # changes (a concrete, dated event but not yet known to have moved
+        # the grade), then anomalies.
         if item.kind == "expiry":
             days = item.days_until_expiry
             return (0, days if days is not None else 9999, item.agency_id)
         if item.kind == "lapse_risk":
             return (1, 0, item.agency_id)
         if item.kind == "anomaly":
+            return (4, 0, item.agency_id)
+        if item.kind == "export_change":
             return (3, 0, item.agency_id)
         return (2, 0, item.agency_id)
 
@@ -380,6 +429,7 @@ def render_digest(digest: Digest) -> str:  # noqa: C901 - tracked, see docs/lint
     expiring = [i for i in digest.items if i.kind == "expiry"]
     lapse_risks = [i for i in digest.items if i.kind == "lapse_risk"]
     regressions = [i for i in digest.items if i.kind == "regression"]
+    export_changes = [i for i in digest.items if i.kind == "export_change"]
     anomalies = [i for i in digest.items if i.kind == "anomaly"]
     lines.append(f"{len(digest.items)} item(s) need attention.")
     lines.append("")
@@ -432,6 +482,21 @@ def render_digest(digest: Digest) -> str:  # noqa: C901 - tracked, see docs/lint
         lines.append("## Grade changes")
         lines.append("")
         for item in regressions:
+            _emit(item)
+    if export_changes:
+        lines.append("## What changed inside the export")
+        lines.append("")
+        # Deliberately does not say "without moving the grade": an export can
+        # change structurally on the same run a grade drops, and this section
+        # renders alongside the regression section when it does. Claiming the
+        # grade held would be false in exactly that case.
+        lines.append(
+            "The feed file changed shape since the last check. A structural "
+            "change does not have to move the grade, so it can pass unnoticed. "
+            "Worth confirming it was intended."
+        )
+        lines.append("")
+        for item in export_changes:
             _emit(item)
     if anomalies:
         lines.append("## Unusual score changes")

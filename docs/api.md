@@ -598,6 +598,15 @@ comparison contract. Pre-contract snapshots were withdrawn because their named
 moves could not be audited against rubric, scoring-profile, validator, reader-
 archive-profile, measured-category, and canonical-identity boundaries.
 
+This JSON contract covers grade and score moves only. The Atom feed at
+`changes/feed.xml` is deliberately wider: it also carries `export_change`
+entries, meaning the feed file's own structure moved (a route left the export,
+stops moved past 100 m, the service span shifted) whether or not that changed
+the grade. Those entries are not in this JSON, so a consumer ingesting
+`changes/latest.json` alone will not see them. Adding them here would widen a
+published contract, which is a separate decision; the difference is stated
+rather than left for a consumer to discover.
+
 ```jsonc
 {
   "schema_version": "1.17",

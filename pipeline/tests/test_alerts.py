@@ -36,23 +36,28 @@ def comparable_history_point(
 
 
 def write_latest(
-    agency_id: str, name: str, score: float, grade: str, days_until_expiry: int | None
+    agency_id: str,
+    name: str,
+    score: float,
+    grade: str,
+    days_until_expiry: int | None,
+    *,
+    export_diff: dict[str, Any] | None = None,
 ) -> None:
     path = artifacts_dir() / agency_id
     path.mkdir(parents=True, exist_ok=True)
-    (path / "latest.json").write_text(
-        json.dumps(
-            {
-                "agency": {"id": agency_id, "name": name},
-                "snapshot_date": "2026-06-12",
-                "overall": {"score": score, "grade": grade},
-                "categories": {
-                    "freshness": {"details": {"days_until_expiry": days_until_expiry}},
-                },
-                "top_fixes": [],
-            }
-        )
-    )
+    artifact: dict[str, Any] = {
+        "agency": {"id": agency_id, "name": name},
+        "snapshot_date": "2026-06-12",
+        "overall": {"score": score, "grade": grade},
+        "categories": {
+            "freshness": {"details": {"days_until_expiry": days_until_expiry}},
+        },
+        "top_fixes": [],
+    }
+    if export_diff is not None:
+        artifact["export_diff"] = export_diff
+    (path / "latest.json").write_text(json.dumps(artifact))
 
 
 def write_index(entries: dict[str, dict]) -> None:  # type: ignore[type-arg]
@@ -150,6 +155,128 @@ def test_producer_change_is_not_a_regression() -> None:
     digest = build_digest(today=dt.date(2026, 6, 12))
 
     assert [i for i in digest.items if i.kind in {"regression", "anomaly"}] == []
+
+
+def test_changed_export_produces_an_export_change_item() -> None:
+    write_latest(
+        "moved",
+        "Moved Transit",
+        88.0,
+        "B",
+        days_until_expiry=200,
+        export_diff={
+            "from_sha256": "a" * 64,
+            "to_sha256": "b" * 64,
+            "changes": ["Route 5 (E Street Express) is no longer in the export."],
+        },
+    )
+    write_index({"moved": {"name": "Moved Transit", "history": []}})
+    digest = build_digest(today=dt.date(2026, 6, 12))
+    export_changes = [i for i in digest.items if i.kind == "export_change"]
+    assert len(export_changes) == 1
+    assert export_changes[0].agency_id == "moved"
+    assert "Route 5" in export_changes[0].detail
+
+
+def test_export_diff_with_no_changes_produces_no_item() -> None:
+    # The schema requires a non-empty changes list, but a defensively-empty
+    # block should not fabricate an alert either.
+    write_latest(
+        "quiet",
+        "Quiet Transit",
+        88.0,
+        "B",
+        days_until_expiry=200,
+        export_diff={"from_sha256": "a" * 64, "to_sha256": "b" * 64, "changes": []},
+    )
+    write_index({"quiet": {"name": "Quiet Transit", "history": []}})
+    digest = build_digest(today=dt.date(2026, 6, 12))
+    assert [i for i in digest.items if i.kind == "export_change"] == []
+
+
+def test_export_change_item_coexists_with_a_regression() -> None:
+    # A structural export change and a grade drop can happen the same run;
+    # both should surface, not just one.
+    write_latest(
+        "both",
+        "Both Transit",
+        70.0,
+        "C",
+        days_until_expiry=200,
+        export_diff={
+            "from_sha256": "a" * 64,
+            "to_sha256": "b" * 64,
+            "changes": ["12 stops moved more than 100 m."],
+        },
+    )
+    write_index(
+        {
+            "both": {
+                "name": "Both Transit",
+                "history": [
+                    comparable_history_point("2026-06-11", 90.0, "A"),
+                    comparable_history_point("2026-06-12", 70.0, "C"),
+                ],
+            }
+        }
+    )
+    digest = build_digest(today=dt.date(2026, 6, 12))
+    kinds = {i.kind for i in digest.items if i.agency_id == "both"}
+    assert {"regression", "export_change"} <= kinds
+
+
+def test_export_change_renders_in_its_own_digest_section() -> None:
+    write_latest(
+        "moved",
+        "Moved Transit",
+        88.0,
+        "B",
+        days_until_expiry=200,
+        export_diff={
+            "from_sha256": "a" * 64,
+            "to_sha256": "b" * 64,
+            "changes": ["Route 5 (E Street Express) is no longer in the export."],
+        },
+    )
+    write_index({"moved": {"name": "Moved Transit", "history": []}})
+    text = render_digest(build_digest(today=dt.date(2026, 6, 12)))
+    assert "## What changed inside the export" in text
+    assert "Route 5" in text
+
+
+def test_export_change_section_does_not_claim_the_grade_held() -> None:
+    # An export can change structurally on the same run the grade drops, and
+    # both sections then render in one digest. Section copy asserting the grade
+    # did not move would be false in exactly that case, so it says a structural
+    # change "does not have to" move the grade instead.
+    write_latest(
+        "both",
+        "Both Transit",
+        70.0,
+        "C",
+        days_until_expiry=200,
+        export_diff={
+            "from_sha256": "a" * 64,
+            "to_sha256": "b" * 64,
+            "changes": ["12 stops moved more than 100 m."],
+        },
+    )
+    write_index(
+        {
+            "both": {
+                "name": "Both Transit",
+                "history": [
+                    comparable_history_point("2026-06-11", 90.0, "A"),
+                    comparable_history_point("2026-06-12", 70.0, "C"),
+                ],
+            }
+        }
+    )
+    text = render_digest(build_digest(today=dt.date(2026, 6, 12)))
+    assert "## Grade changes" in text
+    assert "## What changed inside the export" in text
+    assert "does not have to move the grade" in text
+    assert "didn't move the grade" not in text
 
 
 def test_render_includes_fix_language() -> None:
