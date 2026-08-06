@@ -29,7 +29,14 @@ The response is deliberately smaller than a full international launch. It fixes
 the observed navigation problem and adds the requested GTFS signal now. It does
 not turn two European canaries into a representative dataset.
 
-## Current baseline
+## Baseline as of 2026-07-18
+
+> Every figure in this section is the registry as it stood on 2026-07-18, the
+> date this plan was written, and is deliberately not refreshed: the plan's
+> reasoning only makes sense against the numbers it was reasoning about. For
+> the current counts see the status API or `README.md`, both of which are
+> generated. `check_doc_stats.py` records this section as point-in-time so
+> the figures below are exempt from the drift gate rather than missed by it.
 
 The configured registry snapshot after the third depth wave and the parallel
 Nordic-Baltic and Central Europe waves contains 1,296 feed records: 1,139 in
@@ -475,10 +482,11 @@ named European partner and a bounded national-profile evaluation.
 
 **Operating cost at 2x and 5x feed count.** Actions minutes are free on a
 public repository, so CI compute does not gate growth. The real cost lines are
-storage. The tracked `data/artifacts` tree is about 500 MB at 1,163 configured
-feed records and the repository's git history is about 1 GB. Since the
-fail-closed publishing change (#102), run outputs go to S3 and Pages rather
-than back into git, so the committed tree grows with curation and cutover
+storage. Measured on 2026-07-18, the tracked `data/artifacts` tree was about
+500 MB at 1,163 configured feed records and the repository's git history about
+1 GB; the multiples below are projections from that measurement, not counts.
+Since the fail-closed publishing change (#102), run outputs go to S3 and Pages
+rather than back into git, so the committed tree grows with curation and cutover
 commits, not with every run. The S3 mirror holds every dated artifact under a
 lifecycle expiration policy and is the durable record. At double the registry,
 roughly 2,300 records, a fresh checkout carries about 1 GB of committed

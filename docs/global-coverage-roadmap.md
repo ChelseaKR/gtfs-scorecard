@@ -315,8 +315,10 @@ archive is useful but key-gated. Monaco and Iceland fell below the calendar
 horizon; Luxembourg was stale and Taiwan returned 401. Mexico, Argentina, and
 Chile did not supply a current candidate with the required source and
 commercial-reuse chain. Community-produced African feeds remain
-partnership-gated. The resulting 2,185-record, 46-country-code registry is a
-reviewed sample and not a census or national-coverage claim.
+partnership-gated. The registry these waves produced, 2,185 records across 46
+country codes on 2026-07-25, is a reviewed sample and not a census or
+national-coverage claim. That figure records what the phase delivered and is
+not refreshed as the registry grows.
 
 ### Phase 4 — partnership-gated regions
 
