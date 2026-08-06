@@ -126,6 +126,15 @@ RULES: list[tuple[str, str, str, str]] = [
         "registry",
         "floor",
     ),
+    # This one quoted an exact 2,185 in the present tense, and the paragraph
+    # under it multiplied that figure by 100. Both are now floors, so the scale
+    # argument survives a growing registry instead of decaying with it.
+    (
+        r"docs/global-coverage-roadmap.md",
+        r"current registry contains more than ([\d,]+)\s+feed\s+records",
+        "registry",
+        "floor",
+    ),
     # The European cohort is the one public figure quoted exactly rather than
     # as a floor, because it is the denominator behind the Europe beta gate
     # (ADR 0040) and a reader checking the gate's geography needs the real

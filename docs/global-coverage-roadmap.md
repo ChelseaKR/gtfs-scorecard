@@ -91,11 +91,12 @@ contains 2,574 active, keyless Schedule rows.
 contains 3,739 Schedule rows with a current, keyless URL.
 After applying the project's scheme-insensitive endpoint normalization, their
 union is about 5,092 endpoints before content, operator, aggregate, redirect,
-identity, and reuse review. The current registry contains 2,185 feed records.
+identity, and reuse review. The current registry contains more than 2,100 feed
+records.
 
-A literal 100-fold increase from that registry would require 218,500 records,
-far beyond the current public-catalog supply and contrary to this roadmap's
-curation rules. Here, a "100x coverage loop" means candidate-processing
+A literal 100-fold increase from that registry would require more than 200,000
+records, far beyond the current public-catalog supply and contrary to this
+roadmap's curation rules. Here, a "100x coverage loop" means candidate-processing
 leverage: record a disposition for at least 95% of a declared, deduplicated
 eligible snapshot without weakening human review or auto-writing the registry.
 The loop is:
