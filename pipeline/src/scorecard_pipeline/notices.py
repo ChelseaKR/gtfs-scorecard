@@ -190,6 +190,35 @@ TRANSLATIONS: dict[str, Translation] = {
         fix="Check the flagged stop times for transposed minutes.",
         effort="A few minutes per flagged trip.",
     ),
+    # These three had published fix guides in docs/fixes/ and no entry here, so every scorecard
+    # showed the generic validator fallback for them while the plain language sat written and
+    # shipped a directory away. missing_timepoint_value alone is 58.4% of all finding instances in
+    # the national corpus, so the single most common thing an agency saw was the one line this
+    # table exists to replace. A test now asserts that a fix page implies a curated entry.
+    "missing_timepoint_value": Translation(
+        what="Some rows in stop_times.txt leave the timepoint column blank.",
+        why="That column says whether a time is a real checkpoint or an estimate. "
+        "Blank leaves apps guessing, and they may show your estimates as promises.",
+        fix="Set timepoint=1 on stops that are real time checks and 0 on the rest. "
+        "If every published time is a scheduled one, mark them all 1.",
+        effort="Usually one export setting.",
+    ),
+    "fast_travel_between_far_stops": Translation(
+        what="Between two distant stops, the times imply a speed no bus reaches.",
+        why="A rider gets a trip plan that cannot happen. Live systems then "
+        "report delays that are not real.",
+        fix="Check the two stop times for a wrong digit first. Then check whether a "
+        "stop sits at the wrong coordinates, or a stop between them is missing.",
+        effort="Minutes per flagged trip once you open it.",
+    ),
+    "invalid_currency_amount": Translation(
+        what="A fare amount has the wrong number of decimals for its currency.",
+        why="Apps may reject the amount or show a price off by a factor of ten. "
+        "US dollars take two decimals, so 2.5 is wrong where 2.50 is meant.",
+        fix="Write every amount with the decimals its currency takes, and check "
+        "that currency_type is the right ISO code.",
+        effort="A quick edit of the fare file.",
+    ),
     # Added from a corpus-frequency scan of scored feeds: the untranslated
     # validator notices that showed up across the most distinct agencies, so the
     # generic fallback stopped covering the codes agencies actually hit.

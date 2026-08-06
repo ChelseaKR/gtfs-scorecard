@@ -311,6 +311,30 @@ measured value: 33.3% instance-weighted, 44 of 118 codes. Still open from
 the pitch: the mass curation itself (the queue's entries becoming
 `notices.py` entries and fix pages), which is sustained editorial work.
 
+**Read the instance-weighted number with its caveat (2026-08-05).** It is
+pathologically concentrated, so it moves in jumps that look like sweeping
+progress and are not. Curating three codes on 2026-08-05 —
+`missing_timepoint_value`, `fast_travel_between_far_stops`,
+`invalid_currency_amount` — took it from 36.2% to **94.6%** while the
+distinct-code count moved only 57 → 60 of 118. `missing_timepoint_value`
+alone is 58.4% of all national finding instances. Curating the top handful
+of remaining uncurated codes would reach ~99.9% with roughly half the
+taxonomy still untranslated.
+
+So the two numbers answer different questions and neither substitutes for
+the other: instance-weighted says *how often a reader meets curated text*,
+distinct-code says *how much of the taxonomy is covered*. Any report that
+the instance-weighted figure improved must name which codes moved it.
+Stated alone it reads as progress it isn't, and `/problems/` publishes both
+numbers for exactly this reason.
+
+Those three codes are also a caution about how the gap appeared: all three
+had published fix pages in `docs/fixes/` and no `notices.py` entry, so the
+plain language existed and shipped while every scorecard showed the generic
+fallback. Adding a fix page and adding a translation were separate acts with
+nothing checking they agreed. `test_every_published_fix_page_has_a_curated_translation`
+is now that check.
+
 **Pitch.** Turn "grow the translation table" from an intention into a managed
 metric: instance-weighted coverage, a frequency-ranked curation queue, and a
 readability gate.

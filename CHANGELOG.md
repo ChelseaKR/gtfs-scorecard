@@ -28,6 +28,20 @@ the declared public surface).
 ## [Unreleased]
 
 ### Fixed
+- **Three notice codes had a published fix guide and no plain-language entry**,
+  so every scorecard showed the generic "flagged by the MobilityData validator"
+  fallback for them while the wording sat finished in `docs/fixes/`:
+  `missing_timepoint_value`, `fast_travel_between_far_stops`, and
+  `invalid_currency_amount`. `missing_timepoint_value` alone is 58.4% of all
+  finding instances in the national corpus, so the line agencies met most often
+  was the one the translation table exists to replace. Adding a fix page and
+  adding a translation were separate acts with nothing checking they agreed;
+  `test_every_published_fix_page_has_a_curated_translation` is now that check,
+  scoped to validator codes since `scorecard_*` findings carry their own
+  wording. Instance-weighted plain-language coverage moves 36.2% to 94.6% as a
+  result, on 57 to 60 of 118 codes curated — a jump that is real but
+  concentrated, and `docs/ideation/02-large-scale-fixes.md` now states why that
+  number must never be reported without naming the codes that moved it.
 - **Correction to published behaviour: the subscribe form recorded a narrower
   consent than it appeared to offer.** `subscriptions.yaml` documents that
   omitting `kinds` means every kind, and the YAML path honours that. The form

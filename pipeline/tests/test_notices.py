@@ -72,3 +72,37 @@ def test_non_ascii_identifier_guidance_preserves_rider_facing_language() -> None
     assert "support in older apps" in t.why
     assert "original language" in t.fix
     assert "internal IDs" in t.what
+
+
+def test_every_published_fix_page_has_a_curated_translation() -> None:
+    """A written fix guide implies the plain language exists, so the scorecard must use it.
+
+    Three codes shipped a fix page in `docs/fixes/` with no entry in TRANSLATIONS, so every
+    scorecard rendered the generic "flagged by the MobilityData validator" fallback for them while
+    the plain-language wording sat finished one directory away. One of the three,
+    `missing_timepoint_value`, accounted for 58.4% of all finding instances in the national corpus
+    -- the single line agencies saw most often was the one this table exists to replace.
+
+    The gap was invisible because nothing connected the two surfaces: adding a fix page and adding
+    a translation were separate acts with no check that they agreed. This is that check.
+    """
+    from pathlib import Path
+
+    fixes_dir = Path(__file__).resolve().parents[2] / "docs" / "fixes"
+    assert fixes_dir.is_dir(), f"expected fix guides at {fixes_dir}"
+
+    # `scorecard_*` pages document this project's own checks, which are generated in the pipeline
+    # with their own wording (see metrics.py, completeness.py) and never pass through TRANSLATIONS.
+    # Only MobilityData validator codes belong to this table.
+    documented = {
+        p.stem
+        for p in fixes_dir.glob("*.md")
+        if not p.stem.startswith("scorecard_") and p.stem not in {"index", "README"}
+    }
+    assert documented, "no validator fix pages found; this test would pass vacuously"
+
+    missing = sorted(documented - set(TRANSLATIONS))
+    assert not missing, (
+        "these codes have a published fix page but no curated translation, so the scorecard "
+        f"shows the generic fallback for them: {missing}"
+    )
