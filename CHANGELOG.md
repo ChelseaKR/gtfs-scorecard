@@ -62,8 +62,42 @@ the declared public surface).
   default — asserting the bug — was corrected in the same change.
   *Requires a Lambda deploy; code correctness alone does not change live
   behaviour.*
+- **A published registry figure that would have gone stale, corrected before it
+  did.** `docs/global-coverage-roadmap.md` said "The current registry contains
+  2,185 feed records" in the present tense and the next paragraph multiplied
+  that exact figure by 100 to reach 218,500. Both were accurate when written and
+  neither was gated, so both would have decayed on the next curation wave — the
+  identical shape of the CLAUDE.md 1,286 error. Both are now floors ("more than
+  2,100", "more than 200,000"), which is all the surrounding order-of-magnitude
+  argument needs, and the first is gated.
+- Date the planning figures that are legitimately fixed in time rather than
+  refreshing them, which would falsify the reasoning they support, or leaving
+  them bare, which invites a reader to take them as current.
+  `docs/global-expansion.md`'s "Current baseline" is now "Baseline as of
+  2026-07-18" and says outright that it is frozen and where the generated counts
+  live; its 2x/5x storage model names 2026-07-18 as the measurement date and
+  labels 2,300 and 5,800 as projections, not counts.
+  `docs/global-coverage-roadmap.md`'s phase-3 outcome now carries its date.
 
 ### Added
+- **`check_doc_stats.py` now also reads the documents backwards**, so a corpus
+  figure nobody registered cannot enter a live-facing doc unnoticed. The rule
+  list only ever checked claims someone remembered to register, which is
+  precisely why CLAUDE.md's 1,286 survived the registry doubling while every
+  registered claim stayed correct. The sweep finds corpus-shaped figures across
+  66 live-facing documents and fails on any that no rule covers and no
+  `POINT_IN_TIME` declaration excuses; each declaration states its reason and
+  must still match, so an exemption cannot outlive the figure it excuses.
+  Deliberately not a completeness claim: it matches "<number> <corpus noun>",
+  so a figure separated from its noun by an unexpected word slips through, and
+  it is a net under the registration discipline rather than a replacement for
+  it. Dated records (`CHANGELOG.md`, the `docs/` subdirectories) are not swept,
+  and `*.local.md` private notes are never read.
+- Gate `AGENTS.md`'s corpus figures. The file is excluded from the repo, so a
+  normal rule naming it would fail every clean CI checkout, which is exactly why
+  it went ungated and carried the same stale 1,286 CLAUDE.md did. `OPTIONAL_RULES`
+  enforces it when the file is present and skips it when it is not, so a local
+  `make verify` catches drift at the moment someone edits it.
 - Deliver the structural export diff (EXP-18) through the alert channels, not
   just the agency page. A run whose export changed shape now produces an
   `export_change` item in the email digest (its own section, deliverable to
