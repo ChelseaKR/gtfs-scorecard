@@ -107,6 +107,12 @@ the declared public surface).
 
 ### Fixed
 
+- Gate the README's European cohort figures ("a 528-record reviewed European
+  cohort across 26 countries") against the registry and the Europe beta gate's
+  own country list. Both numbers were correct when checked, but they are the
+  only public figures quoted exactly rather than as a floor, so they go stale
+  on the next admitted European record. `check_doc_stats.py` gains an `exact`
+  mode for them.
 - Correct a stale registry figure in `CLAUDE.md`. Its status banner claimed
   1,286 curated feed records; the registry holds 2,185, so the published
   number understated the corpus by roughly half. The count is now stated as a

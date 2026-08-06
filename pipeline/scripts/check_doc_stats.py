@@ -13,6 +13,12 @@ notes may still use an approximate exact figure. Each rule names the file, exact
 phrase pattern, denominator, and comparison mode. A missing pattern fails too,
 so rewording a sentence cannot silently drop the figure out of this check.
 
+Three modes: ``floor`` for "more than N" prose, ``approx`` for a rounded figure
+inside a one percent band, and ``exact`` for the rare sentence that must quote
+the real number. ``exact`` is deliberately brittle. The European cohort figure
+uses it because that number is the Europe beta gate's own denominator, and a
+reader checking the gate cannot verify it against a rounded claim.
+
 Run before committing doc edits that quote corpus figures:
 
     python3 pipeline/scripts/check_doc_stats.py
@@ -29,6 +35,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "pipeline" / "src"))
 
 from scorecard_pipeline.agencies import read_agencies  # noqa: E402
+from scorecard_pipeline.global_coverage import EUROPE_BETA_COUNTRY_CODES  # noqa: E402
 
 # Approximate prose uses "about" or a rounded ``~`` figure. One percent allows
 # that rounding while still catching a meaningful change in either independent
@@ -119,11 +126,44 @@ RULES: list[tuple[str, str, str, str]] = [
         "registry",
         "floor",
     ),
+    # The European cohort is the one public figure quoted exactly rather than
+    # as a floor, because it is the denominator behind the Europe beta gate
+    # (ADR 0040) and a reader checking the gate's geography needs the real
+    # number, not a rounded one. Exact figures drift on the next admitted
+    # record, so both halves of the sentence are checked.
+    (
+        r"README.md",
+        r"a ([\d,]+)-record reviewed European cohort",
+        "europe_records",
+        "exact",
+    ),
+    (
+        r"README.md",
+        r"reviewed European cohort across ([\d,]+) countries",
+        "europe_countries",
+        "exact",
+    ),
 ]
 
 
 def registry_count() -> int:
     return len(read_agencies())
+
+
+def europe_counts() -> tuple[int, int]:
+    """Registry records in the Europe beta geography, and how many of those
+    countries actually hold a record.
+
+    The country tally counts countries *with records*, not the size of
+    ``EUROPE_BETA_COUNTRY_CODES``: the gate's geography is a closed product
+    decision listing more countries than the registry has reached, and the
+    README sentence describes the cohort, not the gate's ambition. Reading the
+    codes from the module rather than restating them here means widening the
+    gate cannot leave this check measuring the old geography.
+    """
+    agencies = read_agencies()
+    members = [a for a in agencies if (a.country or "") in EUROPE_BETA_COUNTRY_CODES]
+    return len(members), len({a.country for a in members})
 
 
 def published_counts() -> tuple[int, int]:
@@ -140,7 +180,14 @@ def published_counts() -> tuple[int, int]:
 
 def main() -> int:
     pages, scored = published_counts()
-    counts = {"registry": registry_count(), "pages": pages, "scored": scored}
+    europe_records, europe_countries = europe_counts()
+    counts = {
+        "registry": registry_count(),
+        "pages": pages,
+        "scored": scored,
+        "europe_records": europe_records,
+        "europe_countries": europe_countries,
+    }
     failures: list[str] = []
     for rel_path, pattern, denominator, mode in RULES:
         text = (REPO_ROOT / rel_path).read_text()
@@ -156,6 +203,9 @@ def main() -> int:
         if mode == "floor":
             valid = quoted < count < quoted + FLOOR_BUCKET
             allowed = f"more than {quoted:,} and fewer than {quoted + FLOOR_BUCKET:,}"
+        elif mode == "exact":
+            valid = quoted == count
+            allowed = f"exactly {count:,}"
         else:
             low = count * (1 - TOLERANCE)
             high = count * (1 + TOLERANCE)
@@ -170,13 +220,17 @@ def main() -> int:
         print(
             f"OK  {len(RULES)} corpus claims match their denominator policy "
             f"(registry {counts['registry']:,}; "
-            f"published pages {counts['pages']:,}; scored latest {counts['scored']:,})"
+            f"published pages {counts['pages']:,}; scored latest {counts['scored']:,}; "
+            f"Europe beta {counts['europe_records']:,} records across "
+            f"{counts['europe_countries']:,} countries)"
         )
         return 0
     print(
         "Corpus figures drifted from their named denominators "
         f"(registry {counts['registry']:,}; published pages {counts['pages']:,}; "
-        f"scored latest {counts['scored']:,}) (FIX-15):"
+        f"scored latest {counts['scored']:,}; "
+        f"Europe beta {counts['europe_records']:,} records across "
+        f"{counts['europe_countries']:,} countries) (FIX-15):"
     )
     for failure in failures:
         print(f"  {failure}")
