@@ -81,8 +81,15 @@
         <legend>Alert me about</legend>
         <label><input type="checkbox" name="kinds" value="expiry" checked> A feed
         about to expire</label>
-        <label><input type="checkbox" name="kinds" value="regression"> A grade that
+        <label><input type="checkbox" name="kinds" value="lapse_risk" checked> A feed
+        that looks likely to lapse, based on how it has been renewed before</label>
+        <label><input type="checkbox" name="kinds" value="regression" checked> A grade that
         drops since the last check</label>
+        <label><input type="checkbox" name="kinds" value="export_change" checked> A change in
+        the export's structure, such as a route dropped or stops moved, even when the grade
+        did not move</label>
+        <label><input type="checkbox" name="kinds" value="anomaly" checked> Something odd in
+        the latest export, such as a calendar that moved backward</label>
       </fieldset>
       <p class="field">
         <button type="submit" class="submit-button">Email me alerts</button>

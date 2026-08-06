@@ -81,7 +81,33 @@ def test_validate_subscribe_normalizes_email_and_defaults_kinds() -> None:
     out = alerts.validate_subscribe({"email": "  Agency@Example.ORG ", "all": True})
     assert out["email"] == "agency@example.org"
     assert out["all"] is True
-    assert out["kinds"] == ["expiry", "regression"]
+    # Previously pinned ["expiry", "regression"], which pinned the bug: a subscriber who chose
+    # nothing was stored an explicit closed list that permanently opted them out of the other
+    # three kinds, contradicting the "omit for every kind" contract in subscriptions.yaml.
+    assert out["kinds"] == ["expiry", "lapse_risk", "regression", "export_change", "anomaly"]
+
+
+def test_handler_alert_kinds_match_the_digest_builder() -> None:
+    """The subscribe form must not accept a narrower set than the digest can send.
+
+    These two lists live in separate deployables -- the Lambda cannot import the pipeline package
+    -- so nothing but this test stops them drifting. They did drift, and the failure was silent in
+    the worst direction: the form kept accepting subscriptions while quietly recording consent to
+    only two of five alert kinds, so the subscriber saw a success page and then never received
+    three of the things they had asked about.
+    """
+    from scorecard_pipeline.notify import ALERT_KINDS as DIGEST_KINDS
+
+    assert set(alerts.ALERT_KINDS) == set(DIGEST_KINDS)
+
+
+def test_validate_subscribe_accepts_every_kind_the_digest_can_send() -> None:
+    from scorecard_pipeline.notify import ALERT_KINDS as DIGEST_KINDS
+
+    out = alerts.validate_subscribe(
+        {"email": "a@example.org", "all": True, "kinds": sorted(DIGEST_KINDS)}
+    )
+    assert set(out["kinds"]) == set(DIGEST_KINDS)
 
 
 def test_validate_subscribe_rejects_url_significant_email() -> None:

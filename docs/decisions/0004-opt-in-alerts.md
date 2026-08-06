@@ -27,7 +27,8 @@ the live self-serve plumbing to a separate, operator-gated step.
 
 - Subscriptions stay in the committed `subscriptions.yaml` for now (the existing
   maintainer-managed store). Each subscriber carries `verified` (default
-  `false`) and an optional `kinds` list (`expiry`, `regression`).
+  `false`) and an optional `kinds` list drawn from `expiry`, `lapse_risk`,
+  `regression`, `export_change`, and `anomaly`. Omitting it means every kind.
 - `notify.py` enforces the gate: an unverified subscriber is never emailed, and a
   subscriber only receives the alert kinds they opted into. This is correct and
   safe even before any live email round-trip exists, because the default is "do

@@ -27,6 +27,28 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Fixed
+- **Correction to published behaviour: the subscribe form recorded a narrower
+  consent than it appeared to offer.** `subscriptions.yaml` documents that
+  omitting `kinds` means every kind, and the YAML path honours that. The form
+  path inverted it: the subscribe Lambda held
+  `ALERT_KINDS = ("expiry", "regression")`, and a payload that omitted `kinds`
+  was stored as that explicit closed two-item list rather than as a
+  "wants everything" marker. A form-created subscriber was therefore
+  permanently opted out of `lapse_risk`, `export_change`, and `anomaly`, was
+  never told, and could not have discovered it from the form, which only ever
+  showed two checkboxes. The Lambda now accepts all five kinds and the form
+  offers all five, checked by default, so consent is explicit rather than
+  inferred. No subscriber was affected: the subscriptions table was empty and
+  no address in `subscriptions.yaml` was verified when this was found, so this
+  is a correction made before anyone relied on it, not a remediation.
+  The two lists live in separate deployables and the Lambda cannot import the
+  pipeline package, so nothing but a test stops them drifting again; one now
+  imports both and compares them. A test that had pinned the old two-item
+  default — asserting the bug — was corrected in the same change.
+  *Requires a Lambda deploy; code correctness alone does not change live
+  behaviour.*
+
 ### Added
 - Deliver the structural export diff (EXP-18) through the alert channels, not
   just the agency page. A run whose export changed shape now produces an

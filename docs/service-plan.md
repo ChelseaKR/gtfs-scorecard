@@ -59,7 +59,7 @@ an agency return.
   an address at the agency domain, or a token placed in `feed_info`). Verification
   is a hard gate: nothing is emailed to an unverified address.
 - **Opt-in granularity.** A subscriber chooses which alert kinds they want
-  (expiry only, or expiry and regression) and which agencies they follow.
+  (any subset of expiry, lapse risk, regression, export change, and anomaly) and which agencies they follow.
 - **Built so far:** the alert digest (`alerts.py`); per-subscriber filtering, the
   verification gate, and per-kind opt-in (`notify.py`). **Live infrastructure:**
   SES sending is verified for `gtfsscorecard.org` and the digest send path works;
