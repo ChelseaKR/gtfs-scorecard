@@ -39,13 +39,18 @@ Pilot agencies: [Unitrans](https://unitrans.ucdavis.edu) (ASUCD / City of
 Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
 District). Beyond the pilots, the registry contains more than 2,100 curated
 feed records, mostly in the United States and Canada, plus reviewed canaries
-across Europe, Asia-Pacific, and South America. The repository
-keeps the generated corpus registry-bounded, with more than 1,100 numeric
-scorecards published. Scoring is scheduled daily, and the public status
-page reports the exact current configured and published counts along with when
-the latest run completed. A feed record is not always a distinct transit agency: regional
-feeds, modal variants, and retired aliases are counted separately while the
-identity registry is reconciled.
+across Europe, Asia-Pacific, and South America. Scoring is scheduled daily for
+every registered feed, and the public status page reports the exact current
+configured and published counts along with when the latest run completed. Read
+the published total there rather than from this repository: automation stopped
+committing generated data at the S3 cutover (see
+[docs/follow-ups.md](docs/follow-ups.md)), so what git carries is a fallback
+snapshot that moves only when it is deliberately re-materialized from the live
+corpus (last refreshed 2026-08-07),
+with more than 2,100 numeric scorecards published. CI can only gate the
+snapshot figure, because `make verify` runs offline. A feed record is not
+always a distinct transit agency: regional feeds, modal variants, and retired
+aliases are counted separately while the identity registry is reconciled.
 
 **Live:** [gtfsscorecard.org](https://gtfsscorecard.org/) — with the latest
 completed-run evidence at [gtfsscorecard.org/status](https://gtfsscorecard.org/status/).
@@ -294,7 +299,7 @@ declared here; none is silently skipped.
 | AI Evaluation | N/A — no LLM/model component: no model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to APPLIES on first LLM SDK use. |
 | [Quality & Metrics](docs/standards/QUALITY-AND-METRICS-STANDARD.md) | Applies (data-quality/lineage named for this repo explicitly) |
 | [Documentation](docs/standards/DOCUMENTATION-STANDARD.md) | Applies |
-| [Release & Versioning](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.4.0`), monthly dataset releases, MCP registry entry |
+| [Release & Versioning](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.4.0`), monthly dataset releases; the MCP server manifest is written but not published to the registry (see Versioning) |
 | [Responsible-Tech Framework](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies (audits A-F; AI-governance rows N/A — no AI system) |
 
 Open gaps per standard, as of the most recent conformance audit, are tracked
@@ -329,8 +334,12 @@ Supported-version policy: latest major only — this is a single-deployment
 civic tool, not a library with multiple consumers pinned to old majors.
 
 This repo also **produces releases**: the marketplace GitHub Action (tagged
-`v1`), monthly citable dataset releases (`dataset-release.yml`), and an MCP
-registry entry (`server.json`).
+`v1`) and monthly citable dataset releases (`dataset-release.yml`). It also
+carries an MCP server manifest (`server.json`), which is **not** published to
+the MCP Registry — publishing needs an interactive operator login and the
+manifest still has no `packages[]` entry, so `io.github.chelseakr/gtfs-scorecard`
+does not resolve there. [docs/mcp.md](docs/mcp.md) has the install recipe that
+does work and the reason the packages entry was removed.
 
 ## Run your own instance
 

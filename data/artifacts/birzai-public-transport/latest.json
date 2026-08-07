@@ -1,0 +1,774 @@
+{
+  "agency": {
+    "country": "LT",
+    "id": "birzai-public-transport",
+    "name": "Bir\u017eai public transport",
+    "operating_note": "Official municipality-level export from the national GTFS directory. Counted as one feed record, not as a census of distinct operators.",
+    "subdivision_code": "LT-06",
+    "subdivision_name": "Bir\u017eai"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 0.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 84,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 0.0,
+        "headsign_scored_pct": 0.0,
+        "mixed_case_stop_name_pct": 99.7,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 387,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 84,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 387,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "387 of 387 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 84,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "84 of 84 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 84,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "84 of 84 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 22.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 7,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 59,
+          "WARNING": 21
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 17,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 2,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 1,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 29,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "service_extends_far_in_the_future",
+          "count": 17,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'service_extends_far_in_the_future' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Service extends far in the future (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unknown_column",
+          "count": 13,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        }
+      ],
+      "name": "correctness",
+      "score": 79.8,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 7 kinds of issue across 80 instances (0 error, 21 warning, 59 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 2338,
+        "effective_expiry_date": "2032-12-31",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2032-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 2338 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 2340 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through Lithuania's official open-data portal; credit the Lithuanian Transport Safety Administration and the named municipality.",
+    "reachable": true,
+    "sha256": "d765323fcea52c62bbad917220c175c4c6fe2c6598845bdbf7ada31e881a1857",
+    "size_bytes": 527430,
+    "static_url": "https://www.visimarsrutai.lt/gtfs/BirzuR.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.visimarsrutai.lt/gtfs/BirzuR.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      24.36473,
+      55.72631,
+      25.13862,
+      56.42799
+    ],
+    "lat": 56.19573,
+    "lon": 24.74611,
+    "stop_count": 387
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 30,
+        "trip_count": 84,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 30,
+    "trip_count": 84
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 3.2,
+    "margin_to_next_band": 6.8,
+    "score": 63.2
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 2,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "2 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"\"Bir\u017e\u0173 duonos\" st.\", \"\"Bir\u017e\u0173 duonos\" st.\").",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 387,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 84
+  },
+  "route_map": {
+    "drawn_route_count": 30,
+    "has_shapes": true,
+    "path": "data/artifacts/birzai-public-transport/geometry.geojson",
+    "route_count": 30,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "10001",
+        "label": "P_3",
+        "long": "Bir\u017eai\u2013Germani\u0161kis per Sodeli\u0161kius, Legailius",
+        "short": "P_3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "10057",
+        "label": "P_6",
+        "long": "Bir\u017eai\u2013U\u017eugulbin\u0117\u2013Kirdonys\u2013Lik\u0117nai\u2013Bir\u017eai",
+        "short": "P_6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1086",
+        "label": "9",
+        "long": "Bir\u017eai\u2013Kvetkai per B\u016bginius",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1097",
+        "label": "P_10",
+        "long": "Bir\u017eai\u2013Latveliai",
+        "short": "P_10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1129",
+        "label": "P_25",
+        "long": "Bir\u017eai\u2013Vabalninkas per Svilius",
+        "short": "P_25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1141",
+        "label": "P_11",
+        "long": "Bir\u017eai\u2013Pa\u010deriauk\u0161t\u0117 per \u0160arkin\u0119, Grum\u0161lius, Smilgius",
+        "short": "P_11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1143",
+        "label": "P_21",
+        "long": "Bir\u017eai\u2013Smilgiai, Grum\u0161liai",
+        "short": "P_21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1145",
+        "label": "P_12",
+        "long": "Bir\u017eai\u2013Lik\u0117nai",
+        "short": "P_12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1149",
+        "label": "P_15",
+        "long": "Bir\u017eai\u2013Nemun\u0117lio Radvili\u0161kis per Medeikius",
+        "short": "P_15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1151",
+        "label": "P_16",
+        "long": "Bir\u017eai\u2013Nemun\u0117lio Radvili\u0161kis, per Suost\u0105, Ko\u010d\u0117nus",
+        "short": "P_16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1162",
+        "label": "P_18",
+        "long": "Bir\u017eai-P\u010deriauk\u0161t\u0117 per Smilgius, Grum\u0161lius, \u0160arkin\u0119",
+        "short": "P_18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "14035",
+        "label": "P_2",
+        "long": "Bir\u017eai \u2013 Germani\u0161kis per Suost\u0105",
+        "short": "P_2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "14036",
+        "label": "4",
+        "long": "Bir\u017e\u0173 autobus\u0173 stotis \u2013 Sodai",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2875",
+        "label": "P_5",
+        "long": "Bir\u017eai\u2013Juozeli\u0161kiai, Pu\u010diakaln\u0117",
+        "short": "P_5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3164",
+        "label": "1",
+        "long": "I miesto",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3165",
+        "label": "II",
+        "long": "Miesto_papildomas",
+        "short": "II",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4461",
+        "label": "P_8",
+        "long": "Bir\u017eai\u2013Kupreli\u0161kis",
+        "short": "P_8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4945",
+        "label": "7",
+        "long": "Bir\u017eai\u2013Kra\u0161tai, Kirdonys, Lik\u0117nai",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4981",
+        "label": "P_13",
+        "long": "Bir\u017eai\u2013Naus\u0117d\u017eiai",
+        "short": "P_13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4982",
+        "label": "P_19",
+        "long": "Bir\u017eai\u2013Pu\u010diakaln\u0117, Juozeli\u0161kiai",
+        "short": "P_19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4984",
+        "label": "P_24",
+        "long": "Bir\u017eai\u2013Vabalninkas per Guod\u017eius",
+        "short": "P_24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "5161",
+        "label": "P_30",
+        "long": "Bir\u017eai\u2013Skrebi\u0161kiai\u2013Papilys\u2013Bir\u017eai",
+        "short": "P_30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "5162",
+        "label": "29",
+        "long": "Bir\u017eai\u2013Vabalninkas\u2013Panev\u0117\u017eys",
+        "short": "29",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6310",
+        "label": "1*",
+        "long": "Bir\u017eai-\u010cyp\u0117nai",
+        "short": "1*",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6541",
+        "label": "P_4*",
+        "long": "Bir\u017eai\u2013I\u0161konys, Obelaukiai",
+        "short": "P_4*",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6543",
+        "label": "P_9*",
+        "long": "Bir\u017eai\u2013Kvetkai per B\u016bginius",
+        "short": "P_9*",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "7201",
+        "label": "P_17*",
+        "long": "Bir\u017eai-Obelaukiai, Anglininkai",
+        "short": "P_17*",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "7202",
+        "label": "P_9**",
+        "long": "Bir\u017eai-Kvetkai per B\u016bginius, Medeikius",
+        "short": "P_9**",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "9974",
+        "label": "P_1",
+        "long": "Bir\u017eai\u2013\u010cyp\u0117nai",
+        "short": "P_1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "9981",
+        "label": "P_29",
+        "long": "Bir\u017eai\u2013Panev\u0117\u017eys per Vabalnink\u0105",
+        "short": "P_29",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 387,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 387,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "387 of 387 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 84,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "84 of 84 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_missing_headsigns",
+      "count": 84,
+      "effort": "Usually one value per route pattern in your scheduling source.",
+      "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "84 of 84 trips lack rider-facing destination or direction text.",
+      "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,0 +1,972 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fluo-grand-est-bas-rhin",
+    "name": "R\u00e9seau interurbain Fluo Grand Est - Bas-Rhin",
+    "subdivision_code": "FR-GES",
+    "subdivision_name": "Grand-Est"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 37.1,
+          "stops_marked_accessible_pct": 0.1,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.1,
+          "trips_stated_pct": 98.7
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 14.8
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 1894,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.7,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1470,
+        "translations": {
+          "feed_lang": "fr",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 1894,
+        "wheelchair_accessible_pct": 98.7,
+        "wheelchair_boarding_pct": 0.1,
+        "wheelchair_marked_accessible_pct": 0.1,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1468,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "1468 of 1470 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 25,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 0.2,
+          "severity": "WARNING",
+          "what": "25 of 1894 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 52.3,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 9,
+        "instances_by_severity": {
+          "ERROR": 1,
+          "INFO": 63,
+          "WARNING": 193
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "point_near_origin",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'point_near_origin' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Point near origin (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 83,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 66,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "fast_travel_between_far_stops",
+          "count": 40,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'fast_travel_between_far_stops' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Fast travel between far stops (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unexpected_enum_value",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unexpected_enum_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Unexpected enum value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "trip_coverage_not_active_for_next7_days",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Trim past service periods the next time you export.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Many of the feed's trips don't run at all in the next 7 days.",
+          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 62,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "feed_valid_beyond_total_service_window",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'feed_valid_beyond_total_service_window' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Feed valid beyond total service window (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 52.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 9 kinds of issue across 257 instances (1 error, 193 warning, 63 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 390,
+        "effective_expiry_date": "2027-08-31",
+        "feed_end_date": "2027-08-31",
+        "feed_start_date": "2024-07-01",
+        "feed_version": "20240701",
+        "has_feed_info": true,
+        "last_service_date": "2027-08-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 390 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 391 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 99% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 0% of stops and 99% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0; published by Fluo Grand Est (R\u00e9gion Grand Est) through France's National Access Point. Derived measurements by GTFS Scorecard.",
+    "reachable": true,
+    "sha256": "ae5d3710532a90822dc26d8c20e5b01fd475a2d6de329c44dc4a09532b1e88c7",
+    "size_bytes": 231305,
+    "static_url": "https://transport.data.gouv.fr/resources/80417/download"
+  },
+  "fetch": {
+    "final_url": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=CG67",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -3.40457,
+      27.14096,
+      8.20103,
+      49.00862
+    ],
+    "lat": 48.61732,
+    "lon": 7.58912,
+    "stop_count": 1469
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 45,
+        "trip_count": 1894,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 45,
+    "trip_count": 1894
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 4.3,
+    "margin_to_next_band": 5.7,
+    "score": 64.3
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 18,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "18 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (209, 231, 236, 240, 309, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 25,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "25 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Tram P+R / Henri Rendu\", \"Tram P+R / Henri Rendu\", \"Tram P+R / Henri Rendu\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 975,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 1894
+  },
+  "route_map": {
+    "drawn_route_count": 0,
+    "has_shapes": false,
+    "path": "data/artifacts/fluo-grand-est-bas-rhin/geometry.geojson",
+    "route_count": 45,
+    "routes": [
+      {
+        "color": "008B45",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "201",
+        "label": "201",
+        "long": "BRUMATH - HOENHEIM",
+        "short": "201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFED00",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "203",
+        "label": "203",
+        "long": "SAESSOLSHEIM - STRASBOURG",
+        "short": "203",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E53138",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "205",
+        "label": "205",
+        "long": "WOELLENHEIM - STRASBOURG",
+        "short": "205",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "964227",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "209",
+        "label": "209",
+        "long": "STRASBOURG - DUPPIGHEIM",
+        "short": "209",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009EE0",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "210",
+        "label": "210",
+        "long": "WINGERSHEIM - STRASBOURG",
+        "short": "210",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E5B4D1",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "220",
+        "label": "220",
+        "long": "KIENHEIM - TRUCHTERSHEIM - STRASBOURG",
+        "short": "220",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8378B1",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "230",
+        "label": "230",
+        "long": "WASSELONNE - STRASBOURG",
+        "short": "230",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "964227",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "231",
+        "label": "231",
+        "long": "ZEINHEIM - WASSELONNE",
+        "short": "231",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6AB023",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "232",
+        "label": "232",
+        "long": "WANGENBOURG - WASSELONNE",
+        "short": "232",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E2007A",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "233",
+        "label": "233",
+        "long": "WESTHOFFEN - NORDHEIM",
+        "short": "233",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009EE0",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "234",
+        "label": "234",
+        "long": "MARLENHEIM - BALBRONN",
+        "short": "234",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F5A42E",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "235",
+        "label": "235",
+        "long": "WASSELONNE - MARLENHEIM-MOLSHEIM - DORLISHEIM",
+        "short": "235",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007775",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "236",
+        "label": "236",
+        "long": "COSSWILLER - WASSELONNE",
+        "short": "236",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004C93",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "240",
+        "label": "240",
+        "long": "SCHARRACHBERGHEIM - OSTHOFFEN - STRASBOURG",
+        "short": "240",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F5A42E",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "257",
+        "label": "257",
+        "long": "MONT SAINTE-ODILE - STRASBOURG",
+        "short": "257",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E53138",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "260",
+        "label": "260",
+        "long": "ERSTEIN - STRASBOURG Baggersee",
+        "short": "260",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E5B4D1",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "262",
+        "label": "262",
+        "long": "OTTROTT - OBERNAI - ERSTEIN",
+        "short": "262",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFED00",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "263",
+        "label": "263",
+        "long": "ERSTEIN - BENFELD",
+        "short": "263",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6AB023",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "270",
+        "label": "270",
+        "long": "RHINAU - STRASBOURG Baggersee",
+        "short": "270",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009EE0",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "271",
+        "label": "271",
+        "long": "STRASBOURG - EUROPA PARK",
+        "short": "271",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "59FF00",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "307",
+        "label": "307",
+        "long": "HERRLISHEIM - HAGUENAU",
+        "short": "307",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "870000",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "309",
+        "label": "309",
+        "long": "HATTEN - HAGUENAU",
+        "short": "309",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0033E3",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "310",
+        "label": "310",
+        "long": "LEMBACH - WOERTH - HAGUENAU",
+        "short": "310",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FFFF",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "330",
+        "label": "330",
+        "long": "SELTZ - HAGUENAU",
+        "short": "330",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6AB023",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "404",
+        "label": "404",
+        "long": "SAVERNE - TRUCHTERSHEIM",
+        "short": "404",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009EE0",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "405",
+        "label": "405",
+        "long": "SAVERNE - DUNTZENHEIM",
+        "short": "405",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7070FF",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "410",
+        "label": "410",
+        "long": "SAVERNE - DRULINGEN - SARRE UNION",
+        "short": "410",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF173D",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "411",
+        "label": "411",
+        "long": "HATTMATT - SAVERNE",
+        "short": "411",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF00",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "420",
+        "label": "420",
+        "long": "WASSELONNE - SAVERNE",
+        "short": "420",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "870000",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "500",
+        "label": "500",
+        "long": "SELESTAT - HAUT-KOENIGSBOURG",
+        "short": "500",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF173D",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "510",
+        "label": "510",
+        "long": "VILLE - SELESTAT",
+        "short": "510",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "520",
+        "label": "520",
+        "long": "SELESTAT - MARCKOLSHEIM",
+        "short": "520",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF00",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "530",
+        "label": "530",
+        "long": "SUNDHOUSE - SELESTAT",
+        "short": "530",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FFFF",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "531",
+        "label": "531",
+        "long": "SELESTAT - EUROPA PARK",
+        "short": "531",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004C93",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "903",
+        "label": "903",
+        "long": "DONNENHEIM - ECKWERSHEIM",
+        "short": "903",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004C93",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "904",
+        "label": "904",
+        "long": "ROHR - TRUCHTERSHEIM",
+        "short": "904",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004C93",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "905",
+        "label": "905",
+        "long": "HURTIGHEIM - TRUCHTERSHEIM",
+        "short": "905",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004C93",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "906",
+        "label": "906",
+        "long": "FURDENHEIM - TRUCHTERSHEIM",
+        "short": "906",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004C93",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "907",
+        "label": "907",
+        "long": "FESSENHEIM - TRUCHTERSHEIM",
+        "short": "907",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004C93",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "908",
+        "label": "908",
+        "long": "WESTHOFFEN - WASSELONNE",
+        "short": "908",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004C93",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "909",
+        "label": "909",
+        "long": "DAHLENHEIM - MARLENHEIM",
+        "short": "909",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004C93",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "910",
+        "label": "910",
+        "long": "WESTHOFFEN - MOLSHEIM",
+        "short": "910",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004C93",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "911",
+        "label": "911",
+        "long": "BALBRONN - MOLSHEIM",
+        "short": "911",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004C93",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "912",
+        "label": "912",
+        "long": "SCHARRACHBERGHEIM - MOLSHEIM",
+        "short": "912",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004C93",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "913",
+        "label": "913",
+        "long": "KUTTOLSHEIM - TRUCHTERSHEIM",
+        "short": "913",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1469,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "point_near_origin",
+      "count": 1,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'point_near_origin' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 12.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Point near origin (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1468,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "1468 of 1470 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

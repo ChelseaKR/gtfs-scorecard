@@ -1,0 +1,2218 @@
+{
+  "agency": {
+    "country": "DE",
+    "id": "tgo-ortenau",
+    "name": "Tarifverbund Ortenau (TGO)",
+    "operating_note": "One association feed for the Ortenau district's operators; counted as one feed record, not a distinct-agency count.",
+    "subdivision_code": "DE-BW",
+    "subdivision_name": "Baden-W\u00fcrttemberg"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 38.0,
+          "stops_marked_accessible_pct": 0.8,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.8,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 14.7,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.2,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 11366,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 98.3,
+        "headsign_scored_pct": 98.3,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 3419,
+        "translations": {
+          "feed_lang": "DE",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 11366,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 0.8,
+        "wheelchair_marked_accessible_pct": 0.8,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 3393,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 24.8,
+          "severity": "WARNING",
+          "what": "3393 of 3419 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 193,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.3,
+          "severity": "WARNING",
+          "what": "193 of 11366 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 52.4,
+      "status": "measured",
+      "summary": "1% of stops state wheelchair accessibility (1% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 15,
+        "instances_by_severity": {
+          "ERROR": 1,
+          "INFO": 566,
+          "WARNING": 3393
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "point_near_origin",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'point_near_origin' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Point near origin (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 1353,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 1142,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 453,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "unused_shape",
+          "count": 216,
+          "effort": "One setting.",
+          "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "The feed contains route shapes no trip uses.",
+          "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 162,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 32,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a transit vehicle can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no transit vehicle can meet."
+        },
+        {
+          "code": "fast_travel_between_far_stops",
+          "count": 16,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'fast_travel_between_far_stops' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Fast travel between far stops (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "duplicate_route_name",
+          "count": 7,
+          "effort": "One field per route.",
+          "fix": "Give each route a distinct short or long name.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Two or more routes share the same name.",
+          "why": "Riders can't tell the routes apart in apps."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 6,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 4,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the transit vehicle doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "single_shape_point",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'single_shape_point' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Single shape point (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 352,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "platform_without_parent_station",
+          "count": 214,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'platform_without_parent_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Platform without parent station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 10.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 15 kinds of issue across 3960 instances (1 error, 3393 warning, 566 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 128,
+        "effective_expiry_date": "2026-12-12",
+        "feed_end_date": "2026-12-12",
+        "feed_start_date": "2026-05-03",
+        "feed_version": "20260802",
+        "has_feed_info": true,
+        "last_service_date": "2026-12-12",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 128 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 129 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 1% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 1% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data portal; mark reuse as a dataset of NVBW GmbH with a link back to the portal. Route shapes derive from OpenStreetMap and carry the OpenStreetMap contributors credit.",
+    "reachable": true,
+    "sha256": "161701ea11423c015be8547008f31ca850e9d2655332d23ba3c07366c9d763cd",
+    "size_bytes": 28379012,
+    "static_url": "https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/tgo.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/tgo.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      2.38052,
+      45.48972,
+      20.96378,
+      54.31744
+    ],
+    "lat": 48.45139,
+    "lon": 8.00203,
+    "stop_count": 3418
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 5,
+        "trip_count": 3011,
+        "trip_share_pct": 26.5
+      },
+      {
+        "key": "rail",
+        "label": "Rail",
+        "route_count": 20,
+        "trip_count": 2618,
+        "trip_share_pct": 23.0
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 127,
+        "trip_count": 5737,
+        "trip_share_pct": 50.5
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 152,
+    "trip_count": 11366
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 45.8,
+    "margin_to_next_band": 14.2,
+    "score": 45.8
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 160,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "160 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Linz/Donau Industriezeile\", \"Salzburg Alpensiedlung P+R\", \"Praha Florenc/Busbahnhof\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 3307,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 11366
+  },
+  "route_map": {
+    "drawn_route_count": 127,
+    "has_shapes": true,
+    "path": "data/artifacts/tgo-ortenau/geometry.geojson",
+    "route_count": 152,
+    "routes": [
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "als-33-00D-1",
+        "label": "D",
+        "long": "",
+        "short": "D",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "als-33-0N3-1",
+        "label": "N3",
+        "long": "",
+        "short": "N3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "als-67-271-1",
+        "label": "271",
+        "long": "",
+        "short": "271",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "als-67-531-1",
+        "label": "531",
+        "long": "",
+        "short": "531",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "als-99-00Db-1",
+        "label": "D",
+        "long": "",
+        "short": "D",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "als-99-00Dd-1",
+        "label": "D",
+        "long": "",
+        "short": "D",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "als-99-0N3c-1",
+        "label": "N3",
+        "long": "",
+        "short": "N3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "bus-1-A000-1",
+        "label": "FLX10",
+        "long": "",
+        "short": "FLX10",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bus-2-007A-1",
+        "label": "007",
+        "long": "",
+        "short": "007",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bus-2-008A-1",
+        "label": "008",
+        "long": "",
+        "short": "008",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bus-2-011A-1",
+        "label": "011",
+        "long": "",
+        "short": "011",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bus-2-091A-1",
+        "label": "091",
+        "long": "",
+        "short": "091",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bus-2-107A-1",
+        "label": "107",
+        "long": "",
+        "short": "107",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bus-2-108A-1",
+        "label": "108",
+        "long": "",
+        "short": "108",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bus-2-198-1",
+        "label": "198",
+        "long": "",
+        "short": "198",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bus-2-336A-1",
+        "label": "336",
+        "long": "",
+        "short": "336",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bus-2-A02D-1",
+        "label": "N1326",
+        "long": "",
+        "short": "N1326",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bus-2-N16B-1",
+        "label": "N168",
+        "long": "",
+        "short": "N168",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bus-2-N91A-1",
+        "label": "N91",
+        "long": "",
+        "short": "N91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-IC12-1",
+        "label": "SEV",
+        "long": "",
+        "short": "SEV",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-T01O-1",
+        "label": "SEV",
+        "long": "",
+        "short": "SEV",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-T02O-1",
+        "label": "SEV",
+        "long": "",
+        "short": "SEV",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-T04O-1",
+        "label": "SEV",
+        "long": "",
+        "short": "SEV",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-T12O-1",
+        "label": "SEV",
+        "long": "",
+        "short": "SEV",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-T44-1",
+        "label": "SEV",
+        "long": "",
+        "short": "SEV",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-720-1",
+        "label": "RE72",
+        "long": "",
+        "short": "RE72",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T01O-1",
+        "label": "RS 1",
+        "long": "",
+        "short": "RS 1",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T02-1",
+        "label": "RE 2",
+        "long": "",
+        "short": "RE 2",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T02O-1",
+        "label": "RS 2",
+        "long": "",
+        "short": "RS 2",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T03O-1",
+        "label": "RS 3",
+        "long": "",
+        "short": "RS 3",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T04O-1",
+        "label": "RS 4",
+        "long": "",
+        "short": "RS 4",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T07-1",
+        "label": "RE 7",
+        "long": "",
+        "short": "RE 7",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T11O-1",
+        "label": "RS 11",
+        "long": "",
+        "short": "RS 11",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T12O-1",
+        "label": "RS 12",
+        "long": "",
+        "short": "RS 12",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T26-1",
+        "label": "RB 26",
+        "long": "",
+        "short": "RB 26",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T27-1",
+        "label": "RB 27",
+        "long": "",
+        "short": "RB 27",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T44-1",
+        "label": "RB 44",
+        "long": "",
+        "short": "RB 44",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "fds-1-100-1",
+        "label": "100",
+        "long": "Regiolinie Freudenstadt - Kniebis - Ruhestein",
+        "short": "100",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "fds-1-7266-1",
+        "label": "7266",
+        "long": "FDS - Kniebis - Bad Rippoldsau - Wolfach - Hausach",
+        "short": "7266",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "fds-2-F13-1",
+        "label": "F 13",
+        "long": "FDS - Kniebis - Bad Rippoldsau - Wolfach",
+        "short": "F 13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-15-268C-1",
+        "label": "268",
+        "long": "B\u00fchl - Schwarzach - Lichtenau - Freistett",
+        "short": "268",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-15-268S-1",
+        "label": "268s",
+        "long": "Freistett - Lichtenau - Schwarzach - Oberweier - B\u00fchl erg\u00e4nzende Sch\u00fclerfahrten zur Tabelle der Linie 268",
+        "short": "268s",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "kvv-22-307E-1",
+        "label": "S7",
+        "long": "Achern - Karlsruhe",
+        "short": "S7",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "kvv-22-371E-1",
+        "label": "S71",
+        "long": "Achern - Karlsruhe",
+        "short": "S71",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-27-RB1C-1",
+        "label": "RB1",
+        "long": "Oberkirch - Ringelbach - Tiergarten - Haslach - Stadelhofen - Zusenhofen - Nu\u00dfbach - Bottenau - Oberkirch",
+        "short": "RB1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-27-RB2C-1",
+        "label": "RB2",
+        "long": "Oberkirch - Bottenau - Nu\u00dfbach - Zusenhofen - Stadelhofen - Haslach - Tiergarten - Ringelbach - Oberkich",
+        "short": "RB2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-27-RB3C-1",
+        "label": "RB3",
+        "long": "\u00d6dsbach - Hesselbach - Oberkirch",
+        "short": "RB3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-32-262C-1",
+        "label": "262",
+        "long": "Baden-Baden - Sinzheim - Steinbach - B\u00fchl (- Sasbach)",
+        "short": "262",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-32-264S-1",
+        "label": "264s",
+        "long": "Altschweier - B\u00fchlertal - Neusatz - Ottersweier - Sasbach",
+        "short": "264s",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-32-265C-1",
+        "label": "265",
+        "long": "Lauf - Haft - Ottersweier - B\u00fchl",
+        "short": "265",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-32-945C-1",
+        "label": "X45",
+        "long": "BAUSTELLENFAHRPLAN - g\u00fcltig von 30.07.2026 bis vsl. Sommer 2027 Ruhestein - Mummelsee - Schwarzwaldhochstra\u00dfe - Baden-Baden",
+        "short": "X45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-40-970B-1",
+        "label": "SEV S7/S71",
+        "long": "SCHIENENERSATZVERKEHR g\u00fcltig 10.07. bis 12.07.2026  Karlsruhe - Malsch - Rastatt - Baden-Baden - Achern",
+        "short": "SEV S7/S71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rab-34-852-1",
+        "label": "B",
+        "long": "",
+        "short": "B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rab-34-870-1",
+        "label": "RB26",
+        "long": "",
+        "short": "RB26",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rab-34-871-1",
+        "label": "RB27",
+        "long": "",
+        "short": "RB27",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rab-34-880-1",
+        "label": "RE2",
+        "long": "",
+        "short": "RE2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rab-34-882-1",
+        "label": "RE7",
+        "long": "",
+        "short": "RE7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-122-1",
+        "label": "7122",
+        "long": "",
+        "short": "7122",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-124-1",
+        "label": "7124",
+        "long": "",
+        "short": "7124",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-130-1",
+        "label": "7130",
+        "long": "",
+        "short": "7130",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-131-1",
+        "label": "7131",
+        "long": "",
+        "short": "7131",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-132-1",
+        "label": "7132",
+        "long": "",
+        "short": "7132",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-134-1",
+        "label": "7134",
+        "long": "",
+        "short": "7134",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-135-1",
+        "label": "7135",
+        "long": "",
+        "short": "7135",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-136-1",
+        "label": "7136",
+        "long": "",
+        "short": "7136",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-137-1",
+        "label": "7137",
+        "long": "",
+        "short": "7137",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-141-1",
+        "label": "7141",
+        "long": "",
+        "short": "7141",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-142-1",
+        "label": "7142",
+        "long": "",
+        "short": "7142",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-144-1",
+        "label": "7144",
+        "long": "",
+        "short": "7144",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-146-1",
+        "label": "7146",
+        "long": "",
+        "short": "7146",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-147-1",
+        "label": "K2",
+        "long": "",
+        "short": "K2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-148-1",
+        "label": "K5",
+        "long": "",
+        "short": "K5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-150-1",
+        "label": "7150",
+        "long": "",
+        "short": "7150",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-151-1",
+        "label": "7151",
+        "long": "",
+        "short": "7151",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-156-1",
+        "label": "7156",
+        "long": "",
+        "short": "7156",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-160-1",
+        "label": "7160",
+        "long": "",
+        "short": "7160",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-161-1",
+        "label": "7161",
+        "long": "",
+        "short": "7161",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-400-1",
+        "label": "400",
+        "long": "",
+        "short": "400",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-423-1",
+        "label": "423",
+        "long": "",
+        "short": "423",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-425-1",
+        "label": "425",
+        "long": "",
+        "short": "425",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "sbb-91-02EY-1",
+        "label": "IC",
+        "long": "",
+        "short": "IC",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "sbg-67-6250-1",
+        "label": "250",
+        "long": "",
+        "short": "250",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "sbg-67-6280-1",
+        "label": "280",
+        "long": "",
+        "short": "280",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "sbg-67-6400-1",
+        "label": "7231",
+        "long": "",
+        "short": "7231",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "sbg-67-7398-1",
+        "label": "RUST",
+        "long": "",
+        "short": "RUST",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "sbg-67-7399-1",
+        "label": "Hotel",
+        "long": "",
+        "short": "Hotel",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "sbg-68-6462-1",
+        "label": "7462",
+        "long": "",
+        "short": "7462",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "sbg-68-6484-1",
+        "label": "7484",
+        "long": "",
+        "short": "7484",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "sbg-68-6884-1",
+        "label": "7484",
+        "long": "",
+        "short": "7484",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "sbg-70-7293-1",
+        "label": "292",
+        "long": "",
+        "short": "292",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "sbg-70-7570-1",
+        "label": "570",
+        "long": "",
+        "short": "570",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "sbg-70-7571-1",
+        "label": "572",
+        "long": "",
+        "short": "572",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "sbg-70-7573-1",
+        "label": "572",
+        "long": "",
+        "short": "572",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "sbg-80-8184-1",
+        "label": "9484",
+        "long": "",
+        "short": "9484",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "sbg-80-8218-1",
+        "label": "218",
+        "long": "",
+        "short": "218",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-010E-1",
+        "label": "S10",
+        "long": "Kreisschulzentrum oder Schulzentrum Nord nach Offenburg Bahnhof / ZOB",
+        "short": "S10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-012E-1",
+        "label": "R2",
+        "long": "",
+        "short": "R2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-019E-1",
+        "label": "R9",
+        "long": "Offenburg Bahnhof / ZOB - Industriegebiet West - Langhurst - Schutterwald - H\u00f6fen",
+        "short": "R9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-020E-1",
+        "label": "20",
+        "long": "",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-021E-1",
+        "label": "21",
+        "long": "Lahrer weiterf\u00fchrende Schulen Sulz - Lahr Hallensportzentrum - Kaufm\u00e4nnische Schulen",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-022E-1",
+        "label": "22",
+        "long": "Lahrer weiterf\u00fchrende Schulen Lahr - Langenwinkel - Kippenheimweiler - Nonnenweier",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-023E-1",
+        "label": "23",
+        "long": "Lahrer weiterf\u00fchrende Schulen Lahr Hallensportzentrum - Friesenheim - Oberweier - Schuttern - Hugsweier",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-024E-1",
+        "label": "24",
+        "long": "Heiligenzell - Oberweier - Friesenheim - Oberschopfheim - Niederschopfheim - Schuttern - K\u00fcrzell Schule",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-025E-1",
+        "label": "25",
+        "long": "freie Evangelische Schule Lahr Lahr Flugplatz - Bahnhof - Hallensportzentrum",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-040E-1",
+        "label": "40",
+        "long": "Sch\u00fclerverkehr Schwanauer Schulen Ottenheim - Allmannsweier - Nonnenweier - Wittenweier",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-041E-1",
+        "label": "41",
+        "long": "Sch\u00fclerbef\u00f6rderung Mei\u00dfenheim - K\u00fcrzell",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-042E-1",
+        "label": "42",
+        "long": "",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-045E-1",
+        "label": "45",
+        "long": "Sch\u00fclerbef\u00f6rderung Lahr - Kuhbach -  Seelbach - Geisberg Hallenwasen",
+        "short": "45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-050E-1",
+        "label": "50",
+        "long": "Rust - Ringsheim - Ettenheim - Mahlberg - Kippenheim - Sulz - Lahr",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-051E-1",
+        "label": "51",
+        "long": "Ettenheimm\u00fcnster - M\u00fcnchweier - Wallburg - Ettenheim - Altdorf",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-052E-1",
+        "label": "52",
+        "long": "Kippenheim - Schmieheim",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-053E-1",
+        "label": "53",
+        "long": "Mahlberg Schule - Orschweier Linde",
+        "short": "53",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-054E-1",
+        "label": "54",
+        "long": "Orschweier - Ettenheim - Grafenhausen - Kappel - Rust - Ringsheim - Ettenheimm\u00fcnster und Mahlberg - Wallburg - Schmieheim - Kippenheim",
+        "short": "54",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-0K1E-1",
+        "label": "K1",
+        "long": "Sundheim Rheintalcenter - Kehl Rathaus",
+        "short": "K1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-0K3E-1",
+        "label": "K3",
+        "long": "Albert-Schweitzer-Schule - Schneefl\u00e4ren - Kehl Rathaus",
+        "short": "K3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-0K4E-1",
+        "label": "K4",
+        "long": "Leutesheim - Auenheim - Kehl Rathaus",
+        "short": "K4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-0S1E-1",
+        "label": "S1",
+        "long": "",
+        "short": "S1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-0S2E-1",
+        "label": "S2",
+        "long": "",
+        "short": "S2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-0S3E-1",
+        "label": "S3",
+        "long": "Weier - Waltersweier - Bahnhof / ZOB - Zentrum - Messe - Hildboltsweier",
+        "short": "S3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-0S4E-1",
+        "label": "S4",
+        "long": "",
+        "short": "S4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-0S5E-1",
+        "label": "S5",
+        "long": "",
+        "short": "S5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-0S6E-1",
+        "label": "S6",
+        "long": "",
+        "short": "S6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-0S7E-1",
+        "label": "S7",
+        "long": "Auferstehungskirche - Kulturforum - Zentrum - Bahnhof / ZOB",
+        "short": "S7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-0S8E-1",
+        "label": "S8",
+        "long": "",
+        "short": "S8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-0S9E-1",
+        "label": "S9",
+        "long": "",
+        "short": "S9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-100E-1",
+        "label": "100",
+        "long": "",
+        "short": "100",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-101E-1",
+        "label": "101",
+        "long": "",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-102E-1",
+        "label": "102",
+        "long": "",
+        "short": "102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-103E-1",
+        "label": "103",
+        "long": "",
+        "short": "103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-104E-1",
+        "label": "104",
+        "long": "",
+        "short": "104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-105E-1",
+        "label": "105",
+        "long": "",
+        "short": "105",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-106E-1",
+        "label": "106",
+        "long": "",
+        "short": "106",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-107E-1",
+        "label": "107",
+        "long": "Lahr Klinikum - Rathausplatz - Bergfriedhof - Bahnhof/ZOB - Flugplatzstra\u00dfe",
+        "short": "107",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-108E-1",
+        "label": "108",
+        "long": "",
+        "short": "108",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-109E-1",
+        "label": "109",
+        "long": "",
+        "short": "109",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-110E-1",
+        "label": "SL",
+        "long": "Sch\u00f6nberg-Linie Biberach Bahnhof - Sch\u00f6nberg - Reichenbach - Lahr Bahnhof/ZOB",
+        "short": "SL",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-111E-1",
+        "label": "111",
+        "long": "",
+        "short": "111",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-113E-1",
+        "label": "113",
+        "long": "",
+        "short": "113",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-114E-1",
+        "label": "114",
+        "long": "",
+        "short": "114",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-115E-1",
+        "label": "115",
+        "long": "Ettenheimweiler Schule - Ettenheim Gymnasium - familycenter",
+        "short": "115",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-13OE-1",
+        "label": "13",
+        "long": "",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-14OE-1",
+        "label": "14",
+        "long": "Realschule Ichenheim und Werkrealschule Schutterwald - Altenheim",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-15OE-1",
+        "label": "15",
+        "long": "Offenburg Bahnhof Ost - Offenburg Waldorfschule",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-301E-1",
+        "label": "301",
+        "long": "Offenburg Bahnhof / ZOB - Kittersburg - Kehl Rathaus Kehl Rathaus - Bodersweier - Linx -Rheinbischofsheim - Freistett",
+        "short": "301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-301T-1",
+        "label": "301",
+        "long": "(ALT) Offenburg Bahnhof / ZOB - Kittersburg - Kehl Rathaus Kehl Rathaus - Bodersweier - Linx -Rheinbischofsheim - Freistett",
+        "short": "301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-31LE-1",
+        "label": "31",
+        "long": "Langenwinkel Rathaus - Kipenheimweiler - Kippenheim Bahnhofstra\u00dfe (Werkrealschule Kippenheim/Mahlberg)",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-403E-1",
+        "label": "403",
+        "long": "Kehl Bahnhof - Auenheim - Diersheim - Rheinbischofsheim - Freistett",
+        "short": "403",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-405E-1",
+        "label": "405",
+        "long": "Achern - Memprechtshofen - Freistett",
+        "short": "405",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-K10E-1",
+        "label": "K10",
+        "long": "Auenheim S\u00fcd - Auenheim Gewerbegebiet- Hafen Kehl - Kehl Bahnhof",
+        "short": "K10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tgo-99-K4TE-1",
+        "label": "K4",
+        "long": "Anruf-Linien-Taxi (ALT) Leutesheim - Auenheim - Kehl Rathaus",
+        "short": "K4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vsb-10-530-1",
+        "label": "530",
+        "long": "",
+        "short": "530",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vsb-10-560-1",
+        "label": "560",
+        "long": "",
+        "short": "560",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 3418,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "point_near_origin",
+      "count": 1,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'point_near_origin' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 12.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Point near origin (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 3393,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 24.8,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "3393 of 3419 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

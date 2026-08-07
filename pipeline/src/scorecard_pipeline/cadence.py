@@ -1,7 +1,7 @@
 """Per-feed cadence tiers for the intraday refresh.
 
 The intraday refresh (ADR 0010) checks feeds for change far more cheaply than a
-full score, but checking all ~1,100 feeds on the tightest cadence is neither
+full score, but checking every configured feed on the tightest cadence is neither
 polite to every host nor useful: most feeds are stable and change at most a few
 times a year. This splits feeds into tiers so the ones where a change matters
 soonest are checked every cycle, while the stable long tail is spread out.

@@ -1,0 +1,457 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-cherpa",
+    "name": "R\u00e9seau urbain Cherpa",
+    "subdivision_code": "FR-ARA",
+    "subdivision_name": "Auvergne-Rh\u00f4ne-Alpes"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 0.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 66,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 0.0,
+        "headsign_scored_pct": 0.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 47,
+        "translations": {
+          "feed_lang": "FR",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 66,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 47,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "47 of 47 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 66,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "66 of 66 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 66,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "66 of 66 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 22.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 4,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 10,
+          "WARNING": 1059
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_timepoint_value",
+          "count": 1056,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_timepoint_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Missing timepoint value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 2,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 10,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 83.2,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 1069 instances (0 error, 1059 warning, 10 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 147,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": "2026-12-31",
+        "feed_start_date": "2025-12-15",
+        "feed_version": "20251218-143742",
+        "has_feed_info": true,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 147 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "alerts_content": {
+          "alerts": 3,
+          "ended_over_30_days_ago": 0,
+          "with_cause_and_effect": 0,
+          "with_description": 3,
+          "with_header_text": 3,
+          "with_informed_entity": 3
+        },
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "coverage_pct": 100.0,
+        "covered_trips": 2,
+        "drift": {
+          "median_seconds": 148,
+          "observations": 27,
+          "on_time_share_pct": 100.0,
+          "p90_abs_seconds": 194
+        },
+        "kinds_configured": 3,
+        "kinds_reachable": 3,
+        "reachable_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "rt_freshness": "fresh",
+        "samples": 9,
+        "scheduled_trips_in_window": 2,
+        "worst_lag_seconds": 0
+      },
+      "findings": [],
+      "name": "realtime",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Sampled 9 times: 3 of 3 configured feeds healthy; 100.0% of scheduled trips had live predictions; vehicle position plausibility was not measurable; predictions ran a median of 148s behind schedule.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including commercial reuse is permitted with attribution to CA Agglo Pays d'Issoire and the update date.",
+    "reachable": true,
+    "sha256": "0920877c6e3a83cc73a197bab0bf49a39a4e9658f7033dd066e492e24d210bec",
+    "size_bytes": 15907,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/7d54a219-8fe7-4635-a9fc-cefe5e57462e"
+  },
+  "fetch": {
+    "final_url": "https://static.data.gouv.fr/resources/cherpa-horaires-lignes-regulieres/20251218-155013/gtfs-cherpa-20251215-au-20260831.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      3.21581,
+      45.5416,
+      3.26688,
+      45.55096
+    ],
+    "lat": 45.54589,
+    "lon": 3.2488,
+    "stop_count": 47
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 1,
+        "trip_count": 66,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 1,
+    "trip_count": 66
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 4.7,
+    "margin_to_next_band": 5.3,
+    "score": 74.7
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 30,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 66
+  },
+  "route_map": {
+    "drawn_route_count": 0,
+    "has_shapes": false,
+    "path": "data/artifacts/fr-cherpa/geometry.geojson",
+    "route_count": 1,
+    "routes": [
+      {
+        "color": "00AE00",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "APILA_5",
+        "label": "APILA",
+        "long": "API Ligne A Avril25",
+        "short": "APILA",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 47,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 47,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "47 of 47 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 66,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "66 of 66 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_missing_headsigns",
+      "count": 66,
+      "effort": "Usually one value per route pattern in your scheduling source.",
+      "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "66 of 66 trips lack rider-facing destination or direction text.",
+      "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,0 +1,1853 @@
+{
+  "agency": {
+    "country": "CY",
+    "id": "lpt-larnaka",
+    "name": "Larnaka Public Transport (LPT)",
+    "subdivision_code": "CY-03",
+    "subdivision_name": "Larnaka"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 2901,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1038,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": true,
+          "languages": [
+            "el"
+          ],
+          "translated_tables": [
+            "routes",
+            "stops",
+            "trips"
+          ],
+          "translation_count": 5062
+        },
+        "trips": 2901,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1038,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "1038 of 1038 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 2901,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "2901 of 2901 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        }
+      ],
+      "name": "completeness",
+      "score": 60.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 4,
+        "instances_by_severity": {
+          "ERROR": 19,
+          "INFO": 1,
+          "WARNING": 40
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "foreign_key_violation",
+          "count": 19,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'foreign_key_violation' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 18.0,
+          "severity": "ERROR",
+          "what": "Foreign key violation (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "same_name_and_description_for_stop",
+          "count": 22,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Same name and description for stop (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "duplicate_route_name",
+          "count": 18,
+          "effort": "One field per route.",
+          "fix": "Give each route a distinct short or long name.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Two or more routes share the same name.",
+          "why": "Riders can't tell the routes apart in apps."
+        },
+        {
+          "code": "service_window_outside_feed_period",
+          "count": 1,
+          "effort": "Two fields in feed_info.txt, or one export setting.",
+          "fix": "Widen feed_start_date and feed_end_date to cover all service dates, or fix the dates that fall outside.",
+          "owner": "Likely your export tool",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some service dates fall outside the date window set in feed_info.txt.",
+          "why": "feed_info.txt should span every day your service runs, so apps know when the data applies."
+        }
+      ],
+      "name": "correctness",
+      "score": 69.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 60 instances (19 error, 40 warning, 1 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 88,
+        "effective_expiry_date": "2026-11-03",
+        "feed_end_date": "2026-11-03",
+        "feed_start_date": "2026-08-06",
+        "feed_version": "LPT20260806050841",
+        "has_feed_info": true,
+        "last_service_date": "2026-11-04",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 88 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 89 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "export_diff": {
+    "changes": [
+      "Service now runs through 2026-11-04 (was 2026-11-03)."
+    ],
+    "from_sha256": "4958f38c9f88ec2cf862f870f796662248051aa5aa5cbb734857e8ea62291979",
+    "to_sha256": "7a262d928a86ddc5695b6f047429c67f1fb42d2d781e2fa8e3158b007a148e4b"
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through the Republic of Cyprus open-data portal; credit the Cyprus Public Works Department.",
+    "reachable": true,
+    "sha256": "7a262d928a86ddc5695b6f047429c67f1fb42d2d781e2fa8e3158b007a148e4b",
+    "size_bytes": 1525277,
+    "static_url": "https://www.motionbuscard.org.cy/opendata/downloadfile?file=GTFS%5C10_google_transit.zip&rel=True"
+  },
+  "fetch": {
+    "final_url": "https://www.motionbuscard.org.cy/opendata/downloadfile?file=GTFS%5C10_google_transit.zip&rel=True",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-06T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      33.15078,
+      34.72037,
+      33.74387,
+      35.0645
+    ],
+    "lat": 34.91627,
+    "lon": 33.58274,
+    "stop_count": 1038
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 133,
+        "trip_count": 2901,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 133,
+    "trip_count": 2901
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 4.2,
+    "margin_to_next_band": 5.8,
+    "score": 74.2
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 27,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "27 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (419, 419, 432, 432, 426, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 373,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "373 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Ave. Lemesou - Kimonos\", \"Ave. Lemesou - Larnakos\", \"Ave. Lemesou - Arch. Makariou C\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1038,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 2901
+  },
+  "route_map": {
+    "drawn_route_count": 89,
+    "has_shapes": true,
+    "path": "data/artifacts/lpt-larnaka/geometry.geojson",
+    "route_count": 133,
+    "routes": [
+      {
+        "color": "CCCC00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "20000011",
+        "label": "430",
+        "long": "Larnaca Station - Airport - Dromoloxia - Kiti - Pervoli",
+        "short": "430",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CCCC00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "20000012",
+        "label": "430",
+        "long": "Pervolia - Kiti - Dromoloxia - Airport - Larnaca statio",
+        "short": "430",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CCCC00",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "20000032",
+        "label": "430",
+        "long": "Pervolia - Kiti - Dromoloxia - Airport - Larnaca statio",
+        "short": "430",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1C8600",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20010011",
+        "label": "417",
+        "long": "Larnaca Station - Aradippou",
+        "short": "417",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1C8600",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20010012",
+        "label": "417",
+        "long": "Aradippou - Larnaca Station",
+        "short": "417",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1C8600",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20010021",
+        "label": "417",
+        "long": "Larnaca Station - Industrial Area - Aradippou",
+        "short": "417",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1C8600",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20010022",
+        "label": "417",
+        "long": "Aradippou - Industrial Area - Larnaca Station",
+        "short": "417",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC00E0",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "20030011",
+        "label": "431",
+        "long": "Larnaca Station-Airport -  Meneou - Dromolaxia",
+        "short": "431",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC00E0",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "20030012",
+        "label": "431",
+        "long": "Dromolaxia - Meneou - Airport - Larnaca St.",
+        "short": "431",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33CC33",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20040011",
+        "label": "418",
+        "long": "Larnaca Station - Lividia - Kellia - Troulloi",
+        "short": "418",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33CC33",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20040012",
+        "label": "418",
+        "long": "Troulloi - Kellia - Livadia - Larnaca Station",
+        "short": "418",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF33CC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20050011",
+        "label": "419",
+        "long": "Larnaca Station - Oroklini",
+        "short": "419",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF33CC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20050012",
+        "label": "419",
+        "long": "Oroklini - Larnaca Station",
+        "short": "419",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "20060011",
+        "label": "432",
+        "long": "Larnaca Station - Airport - Dromoloxia - Kiti - Tersefa",
+        "short": "432",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "20060012",
+        "label": "432",
+        "long": "Tersefanou - Kiti - Dromolaxia - Airport - Larnaca Stat",
+        "short": "432",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D6AA80",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20070011",
+        "label": "420",
+        "long": "Larnaca Station - Kamares - Kalo Chorio",
+        "short": "420",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D6AA80",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20070012",
+        "label": "420",
+        "long": "Kalo Chorio - Kamares - Larnaca Station",
+        "short": "420",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D6AA80",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20070021",
+        "label": "420",
+        "long": "Larnaca Station - Kamares - Kalo Chorio",
+        "short": "420",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D6AA80",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20070022",
+        "label": "420",
+        "long": "Kalo Chorio - Kamares - (Lyceem) - Larnaca Station",
+        "short": "420",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D6AA80",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "20070042",
+        "label": "420",
+        "long": "Kalo Chorio - Kamares - (Lyceem) - Larnaca Station",
+        "short": "420",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF80C0",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20080021",
+        "label": "421",
+        "long": "Larnaca Station - Kamares - Free Trade Zone - Larnaca S",
+        "short": "421",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "20090011",
+        "label": "422",
+        "long": "Larnaca St. -New Hospital - Vergina",
+        "short": "422",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "20090012",
+        "label": "422",
+        "long": "Kamares 2 -Zinonas -Vergina -New Hospital - Larnaca St.",
+        "short": "422",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "20090022",
+        "label": "422",
+        "long": "Kamares 2 -Zinonas-Vergina-New Hospital - Larnaca St.",
+        "short": "422",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": false,
+        "id": "20090032",
+        "label": "422",
+        "long": "Kamares 2 -Zinonas-Vergina-New Hospital - Larnaca St.",
+        "short": "422",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "20100021",
+        "label": "418L",
+        "long": "Larnaca Station - Chrysopolitissa - Ag. Anargyroi-Livad",
+        "short": "418L",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF80FF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "20110011",
+        "label": "423",
+        "long": "Larnaca Station- Faneromeni - Drosia Area -Mall",
+        "short": "423",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF80FF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "20110012",
+        "label": "423",
+        "long": "New Hospital - Drosia Area - Faneromeni - Larnaca Stati",
+        "short": "423",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "94462C",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "20120021",
+        "label": "424",
+        "long": "Larnaca Station - Mon. Ypax. Ethn. Frouras Ave. - Epida",
+        "short": "424",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "94462C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "20120022",
+        "label": "424",
+        "long": "Pyla - CTO - Larnaca Station",
+        "short": "424",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "94462C",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "20120032",
+        "label": "424",
+        "long": "Pyla - CTO - Larnaca Station",
+        "short": "424",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "94462C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "20120041",
+        "label": "424",
+        "long": "Larnaca St  - Pyla",
+        "short": "424",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "94462C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "20120042",
+        "label": "424",
+        "long": "Pyla - Larnaca St",
+        "short": "424",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "791D6E",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "20150011",
+        "label": "425",
+        "long": "Dekeleia - C.T.O. - Larnaca Station - Foinikoudes- Make",
+        "short": "425",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "791D6E",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "20150012",
+        "label": "425",
+        "long": "Airport - Makenzy - Old Hospital - C.T.O. - Dekeleia",
+        "short": "425",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "791D6E",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "20150021",
+        "label": "425",
+        "long": "Larnaca Station - Foinikoudes - Makenzy - Airport",
+        "short": "425",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "791D6E",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "20150022",
+        "label": "425",
+        "long": "Airport - Makenzy - Old Hospital - C.T.O. - Larnaca Sta",
+        "short": "425",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "791D6E",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "20150031",
+        "label": "425",
+        "long": "Dekeleia - C.T.O. - Larnaca Station",
+        "short": "425",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "791D6E",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "20150032",
+        "label": "425",
+        "long": "Airport - Makenzy - Old Hospital - C.T.O. - Dekeleia (C",
+        "short": "425",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DF32FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20160011",
+        "label": "426",
+        "long": "Larnaca Station - Kalogera - E.A.C. - New Hospital - Ko",
+        "short": "426",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DF32FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20160012",
+        "label": "426",
+        "long": "Aradippou - Tsiakkilero - Kokkines - New Hospital - E.A",
+        "short": "426",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000A0",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20170011",
+        "label": "427",
+        "long": "Larnaca St. - Harbour - Fire Station - Old Hospital - F",
+        "short": "427",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8080FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "20180011",
+        "label": "428",
+        "long": "Larnaca St. - Tsiakkilero- Aradippou - Pascal Area",
+        "short": "428",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8080FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "20180012",
+        "label": "428",
+        "long": "Pascal School - Aradippou -Tsiakkilero - Larnaca St.",
+        "short": "428",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "400080",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20190011",
+        "label": "429",
+        "long": "Larnaca Station - Airport - Faros",
+        "short": "429",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "400080",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20190012",
+        "label": "429",
+        "long": "Faros - Meneou - Airport - Larnaca Station",
+        "short": "429",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "400080",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20190022",
+        "label": "429",
+        "long": "Faros - Meneou - Tekke -  Airport - Larnaca Station",
+        "short": "429",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FFFF",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "20210011",
+        "label": "442",
+        "long": "Nightly Larnaca Station - Livadia - Kellia - Troulloi",
+        "short": "442",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FFFF",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "20210012",
+        "label": "442",
+        "long": "Nightly Troulloi - Kellia - Livadia - Larnaca station",
+        "short": "442",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "20220011",
+        "label": "443",
+        "long": "Nightly Larnaca St. -Harbour - Fire St. - Old Hospital",
+        "short": "443",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "804040",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "20230011",
+        "label": "444",
+        "long": "Nightly Larnaca St. - Mitropoli - Trifilia - Tsiakkiler",
+        "short": "444",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "804040",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "20230012",
+        "label": "444",
+        "long": "Nightly Aradippou - Vergina - G.S.Z. Stadium - Tsiakkil",
+        "short": "444",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FE5841",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "20240011",
+        "label": "445",
+        "long": "Nightly Oroklini - Pyla - \u039a.\u039f.\u03a4 - Foinikoudes - Makenzy",
+        "short": "445",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FE5841",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "20240012",
+        "label": "445",
+        "long": "Nightly Larnaca Station - Makenzy - Foinikoudes - \u039a.\u039f.\u03a4",
+        "short": "445",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "66CCFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20250011",
+        "label": "446",
+        "long": "Nightly Larnaca Station - Makenzy - Dromoloxia - Tersef",
+        "short": "446",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "66CCFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20250012",
+        "label": "446",
+        "long": "Nightly Pervolia - Kiti - Tersefanou - Dromoloxia - Air",
+        "short": "446",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4ACFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20260011",
+        "label": "401",
+        "long": "Mari - Vasiliko - Zygi - Kalavasos - Tochni - Choirokoi",
+        "short": "401",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4ACFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20260012",
+        "label": "401",
+        "long": "Kofinou Station - Choirokoitia - Tochni - Kalavasos - Z",
+        "short": "401",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E151C5",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20270011",
+        "label": "402",
+        "long": "Maroni - Psematismenos - Choirokoitia - Kofinou - Kofin",
+        "short": "402",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E151C5",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20270012",
+        "label": "402",
+        "long": "Kofinou Station-  Kofinou - Choirokoitia- Psematismenos",
+        "short": "402",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "39BB41",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20280011",
+        "label": "403",
+        "long": "Odou - Melini - Ora - Lagia - Choirokoitia - Kofinou St",
+        "short": "403",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "39BB41",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20280012",
+        "label": "403",
+        "long": "Kofinou Station - Choirokoitia - Lagia - Ora - Melini -",
+        "short": "403",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "632401",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "20290011",
+        "label": "404",
+        "long": "Agioi Vavatsinias - Lagia - Vavla - Kato Drys - Skarino",
+        "short": "404",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "632401",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "20290012",
+        "label": "404",
+        "long": "Kofinou Station - Skarinou - Kato Drys - Vavla - Lagia",
+        "short": "404",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0FF804",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "20300011",
+        "label": "405",
+        "long": "Vavatsinia - Pano Lefkara - Kato Lefkara - Skarinou - K",
+        "short": "405",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0FF804",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "20300012",
+        "label": "405",
+        "long": "Kofinou Station - Skarinou - Kato Lefkara - Pano Lefkar",
+        "short": "405",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0FF804",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20300021",
+        "label": "405",
+        "long": "Vavatsinia - Pano Lefkara - Kato Lefkara - Skarinou - K",
+        "short": "405",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0FF804",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20300022",
+        "label": "405",
+        "long": "Kofinou Station - Kato Lefkara - Pano Lefkara - Vavatsi",
+        "short": "405",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "40110F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "20320011",
+        "label": "406",
+        "long": "Tourist Area Pentaschinos - Agios Theodoros - Kofinou S",
+        "short": "406",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "40110F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "20320012",
+        "label": "406",
+        "long": "Kofinou St. - Agios Theodoros - Tourist Area Pentaschin",
+        "short": "406",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "399001",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20330011",
+        "label": "407",
+        "long": "Larnaca St. - Airport - Meneou - Kiti - Mazotos - Touri",
+        "short": "407",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "399001",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20330012",
+        "label": "407",
+        "long": "Zygi -Tourist Area Pentaschinos - Mazotos - Kiti - Mene",
+        "short": "407",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "49580D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "20340011",
+        "label": "408",
+        "long": "Larnaca Station - Alethriko - Anglisides - Kofinou Stat",
+        "short": "408",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "49580D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "20340012",
+        "label": "408",
+        "long": "Kofinou Station - Anglisides - Alethriko - Larnaca Stat",
+        "short": "408",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B94605",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "20350011",
+        "label": "408B",
+        "long": "Kofinou Station - Anglisides - Vergina- Rizoelia",
+        "short": "408B",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B94605",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "20350012",
+        "label": "408B",
+        "long": "Rizoelia - Vergina- Anglisides -Menogeia-Kofinou Statio",
+        "short": "408B",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5A82A0",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "20360011",
+        "label": "409",
+        "long": "Larnaca St. - Lympia - Dali - Pera Chorio - Alampra St.",
+        "short": "409",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5A82A0",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "20360012",
+        "label": "409",
+        "long": "Alampra Station Pera Chorio - Dali - Lympia - Larnaca S",
+        "short": "409",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5A82A0",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "20360021",
+        "label": "409",
+        "long": "Larnaca Station-Vergina School -Lympia-Dali-Pera Chorio",
+        "short": "409",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5A82A0",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "20360022",
+        "label": "409",
+        "long": "Alampra Station-Pera Chorio-Dali-Lympia-Kosi-Vergina Sc",
+        "short": "409",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5A82A0",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "20360031",
+        "label": "409",
+        "long": "Larnaca St. - Lympia - Dali - Pera Chorio - Alampra St.",
+        "short": "409",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5A82A0",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "20360032",
+        "label": "409",
+        "long": "Alampra Station Pera Chorio - Dali - Lympia - Larnaca S",
+        "short": "409",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75610B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "20370011",
+        "label": "410",
+        "long": "Larnaca Station - Kalo Chorio - Agia Anna - Psevdas - P",
+        "short": "410",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75610B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "20370012",
+        "label": "410",
+        "long": "Delikipos - Kornos - Pyrga - Psevdas - Agia Anna - Kalo",
+        "short": "410",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75610B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "20370021",
+        "label": "410",
+        "long": "Larnaca Station - Vergina Lyceum- Kalo Chorio- Delikipo",
+        "short": "410",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75610B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "20370022",
+        "label": "410",
+        "long": "Delikipos-Kornos-Kalo Chorio-Vergina Lyceum- Larnaca St",
+        "short": "410",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75610B",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "20370032",
+        "label": "410",
+        "long": "Delikipos-Kornos-Kalo Chorio-Vergina Lyceum- Larnaca St",
+        "short": "410",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "001C9B",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "20380011",
+        "label": "412",
+        "long": "Larnaca Station - Alethriko - Anglisides - Anafotia - A",
+        "short": "412",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "001C9B",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "20380012",
+        "label": "412",
+        "long": "Alamin\u03bfs - Anafotia - Anglisides - Alethriko - Larnaca",
+        "short": "412",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "001C9B",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20380021",
+        "label": "412",
+        "long": "Larnaca Station - Kofinou Station",
+        "short": "412",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "001C9B",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20380022",
+        "label": "412",
+        "long": "Kofinou Station - Larnaca Station",
+        "short": "412",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "001C9B",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "20380031",
+        "label": "412",
+        "long": "Larnaca Station - Alethriko - Anglisides - Anafotia - A",
+        "short": "412",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "001C9B",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "20380032",
+        "label": "412",
+        "long": "Alaminos - Anafotia - Anglisides - Alethriko - Larnaca",
+        "short": "412",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "001C9B",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20380041",
+        "label": "412",
+        "long": "Larnaca Station - Kofinou Station",
+        "short": "412",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "001C9B",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20380042",
+        "label": "412",
+        "long": "Kofinou Station - Larnaca Station",
+        "short": "412",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "001C9B",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20380051",
+        "label": "412",
+        "long": "Larnaca Station - Kofinou Station",
+        "short": "412",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "001C9B",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20380052",
+        "label": "412",
+        "long": "Kofinou Station - Larnaca Station",
+        "short": "412",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0553E2",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "20390011",
+        "label": "413",
+        "long": "Kivisili - Alethriko - Klavdia - Larnaca Station",
+        "short": "413",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0553E2",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "20390012",
+        "label": "413",
+        "long": "Larnaca Station - Klavdia - Alethriko - Kivisili",
+        "short": "413",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0553E2",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "20390021",
+        "label": "413",
+        "long": "Kivisili - Alethriko - Klavdia - Vergina SC - Larnaca S",
+        "short": "413",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0553E2",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "20390022",
+        "label": "413",
+        "long": "Larnaca Station - Vergina SC  - Klavdia - Alethriko - K",
+        "short": "413",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0553E2",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20390031",
+        "label": "413",
+        "long": "Kofinou Station - Larnaca Station",
+        "short": "413",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0553E2",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20390032",
+        "label": "413",
+        "long": "Larnaca Station - Kofinou Station",
+        "short": "413",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0553E2",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20390051",
+        "label": "413",
+        "long": "Kofinou Station - Larnaca Station",
+        "short": "413",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0553E2",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20390052",
+        "label": "413",
+        "long": "Larnaca Station - Kofinou Station",
+        "short": "413",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0080",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20400021",
+        "label": "414",
+        "long": "Larnaca Station - Alethriko-Aplanta-Anglisides-Menogeia",
+        "short": "414",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0080",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20400022",
+        "label": "414",
+        "long": "Kofinou Station - Politiko A - Menogia - Anglisides- Ap",
+        "short": "414",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D2B14",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "20410011",
+        "label": "415",
+        "long": "Athienou - Avdellero - Aradippou - Larnaca Station",
+        "short": "415",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D2B14",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "20410012",
+        "label": "415",
+        "long": "Larnaca Station - Aradippou - Avdellero - Athienou",
+        "short": "415",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D2B14",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "20410021",
+        "label": "415",
+        "long": "Athienou-Avdellero-Aradippou-Vergina School-Larnaca Sta",
+        "short": "415",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D2B14",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "20410022",
+        "label": "415",
+        "long": "Larnaca Station-Vergina School-Aradippou-Avdellero-Athi",
+        "short": "415",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D2B14",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "20410031",
+        "label": "415",
+        "long": "Athienou - Avdellero - Aradippou - Larnaca Station",
+        "short": "415",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D2B14",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "20410032",
+        "label": "415",
+        "long": "Larnaca Station - Aradippou - Avdellero - Athienou",
+        "short": "415",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5BD312",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20420011",
+        "label": "448",
+        "long": "Nightly Kofinou Station - Larnaca Station (Connection W",
+        "short": "448",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5BD312",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20420012",
+        "label": "448",
+        "long": "Nightly Larnaca Station - Kofinou Station (Connection W",
+        "short": "448",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DFB27F",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "20430011",
+        "label": "449",
+        "long": "Nightly Vavatsinia - Pano Lefkara - Kato Lefkara - Kato",
+        "short": "449",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DFB27F",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "20430012",
+        "label": "449",
+        "long": "Nightly Kofinou Station - Skarinou - Kato Drys - Kato L",
+        "short": "449",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "990033",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "20440011",
+        "label": "450",
+        "long": "Nightly Kalavasos - Tochni - Psematismenos - Maroni - A",
+        "short": "450",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "990033",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "20440012",
+        "label": "450",
+        "long": "Nightly Kofinou Station - Kofinou - Agios Theodoros - M",
+        "short": "450",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8080",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20450011",
+        "label": "451",
+        "long": "Nightly Odou - Melini - Agioi Vavatsinias - Ora - Lagia",
+        "short": "451",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8080",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20450012",
+        "label": "451",
+        "long": "Nightly Kofinou Station - Choirokoitia - Vavla - Lagia",
+        "short": "451",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "20460011",
+        "label": "452",
+        "long": "Nightly Alaminos - Anafotia - Aplanta - Kivisili - Alet",
+        "short": "452",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "20460012",
+        "label": "452",
+        "long": "Nightly Larnaca Station - Klavdia - Alethriko - Kivisil",
+        "short": "452",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF99FF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "20470011",
+        "label": "454",
+        "long": "Nightly Athienou - Avdellero - Aradippou - Larnaca Stat",
+        "short": "454",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF99FF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "20470012",
+        "label": "454",
+        "long": "Nightly Larnaca Station - Aradippou - Avdellero -Athien",
+        "short": "454",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0080FF",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "20480011",
+        "label": "455",
+        "long": "Nightly Kornos - Pyrga - Mosfiloti - Psevdas - Agia Ann",
+        "short": "455",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0080FF",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "20480012",
+        "label": "455",
+        "long": "Nightly Larnaca Station - Kalo Chorio - Agia Anna - Pse",
+        "short": "455",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C53B66",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "20490011",
+        "label": "456",
+        "long": "Nightly Vasiliko - Mari - Zygi - Tourist Area Pentaschi",
+        "short": "456",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C53B66",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "20490012",
+        "label": "456",
+        "long": "Nightly Larnaka Station - Airport - Meneou - Kiti - Maz",
+        "short": "456",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "20500011",
+        "label": "440",
+        "long": "Larnaca St. - Mackenzie - Mall - Larnaca St.",
+        "short": "440",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "20510011",
+        "label": "A1",
+        "long": "Alampra Station - Airport",
+        "short": "A1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "20510012",
+        "label": "A1",
+        "long": "Larnaca Airport - Alampra Station",
+        "short": "A1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "804040",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "20520081",
+        "label": "X424",
+        "long": "Larnaca Station - Larnaca Station",
+        "short": "X424",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1038,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "foreign_key_violation",
+      "count": 19,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'foreign_key_violation' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 18.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Foreign key violation (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1038,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "1038 of 1038 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 2901,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "2901 of 2901 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

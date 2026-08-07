@@ -7,16 +7,16 @@
       "met": false
     },
     {
-      "detail": "No service end date could be read.",
+      "detail": "Service data covers the next 541 days.",
       "key": "current",
-      "met": false
+      "met": true
     },
     {
-      "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+      "detail": "States wheelchair access on 100% of terminals and 100% of trips.",
       "key": "accessible",
-      "met": false
+      "met": true
     }
   ],
   "status": "not_yet",
-  "summary": "This feed is close to the conformance mark. 3 validator errors to resolve. No service end date could be read. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  "summary": "This feed is close to the conformance mark. 3 validator errors to resolve."
 }

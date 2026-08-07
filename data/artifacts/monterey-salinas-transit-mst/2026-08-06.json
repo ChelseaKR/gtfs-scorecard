@@ -1,0 +1,860 @@
+{
+  "agency": {
+    "id": "monterey-salinas-transit-mst",
+    "name": "Monterey-Salinas Transit (MST)",
+    "subdivision_code": "US-CA",
+    "subdivision_name": "California"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 2572,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 975,
+        "translations": {
+          "feed_lang": "EN",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 2572,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 975,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "975 of 975 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 2572,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "2572 of 2572 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        }
+      ],
+      "name": "completeness",
+      "score": 60.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 1,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 0,
+          "WARNING": 1
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "feed_expiration_date30_days",
+          "count": 1,
+          "effort": "Usually a re-export from your scheduling software.",
+          "fix": "Schedule a feed re-export now so the new calendar is live well before the current one ends.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "This feed's service calendar runs out within the next 30 days.",
+          "why": "If a new feed isn't published before it ends, trip planners will drop your agency and riders will see no service."
+        }
+      ],
+      "name": "correctness",
+      "score": 96.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 1 kind of issue across 1 instance (0 error, 1 warning, 0 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 22,
+        "effective_expiry_date": "2026-08-28",
+        "feed_end_date": "2026-08-28",
+        "feed_start_date": "2026-07-18",
+        "feed_version": "202602v36",
+        "has_feed_info": true,
+        "last_service_date": "2026-08-28",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expiring_soon",
+          "count": 1,
+          "effort": "One export setting.",
+          "fix": "Re-export with a validity window that reaches at least 60 days out.",
+          "owner": "Likely your export tool",
+          "points": 58.0,
+          "severity": "WARNING",
+          "what": "Service data runs out in 22 day(s).",
+          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+        }
+      ],
+      "name": "freshness",
+      "score": 36.7,
+      "status": "measured",
+      "summary": "Service data runs out in 22 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "coverage_pct": null,
+        "kinds_configured": 3,
+        "kinds_reachable": 0,
+        "reachable_kinds": [],
+        "rt_freshness": null,
+        "samples": 9,
+        "scheduled_trips_in_window": 0,
+        "worst_lag_seconds": null
+      },
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_updates_unreachable",
+          "count": 1,
+          "effort": "Usually a vendor support ticket.",
+          "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+          "owner": "",
+          "points": 33.3,
+          "severity": "ERROR",
+          "what": "The trip updates realtime feed failed during sampling.",
+          "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        },
+        {
+          "code": "scorecard_rt_vehicle_positions_unreachable",
+          "count": 1,
+          "effort": "Usually a vendor support ticket.",
+          "fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+          "owner": "",
+          "points": 33.3,
+          "severity": "ERROR",
+          "what": "The vehicle positions realtime feed failed during sampling.",
+          "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        },
+        {
+          "code": "scorecard_rt_service_alerts_unreachable",
+          "count": 1,
+          "effort": "Usually a vendor support ticket.",
+          "fix": "Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+          "owner": "",
+          "points": 33.3,
+          "severity": "ERROR",
+          "what": "The service alerts realtime feed failed during sampling.",
+          "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        }
+      ],
+      "name": "realtime",
+      "score": 0.0,
+      "status": "measured",
+      "summary": "Sampled 9 times outside service hours: 0 of 3 configured feeds healthy; vehicle position plausibility was not measurable.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data runs out in 22 days; renew to qualify.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. Service data runs out in 22 days; renew to qualify. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "License: https://mst.org/about-mst/developer-resources/",
+    "reachable": true,
+    "sha256": "9aa5be852eca9c164ccfdb328ee8bff366611bb76690d0832e206159b5a945e5",
+    "size_bytes": 644902,
+    "static_url": "https://www.mst.org/google/google_transit.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.mst.org/google/google_transit.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-06T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -121.93603,
+      35.62269,
+      -120.68789,
+      37.00435
+    ],
+    "lat": 36.63518,
+    "lon": -121.78053,
+    "stop_count": 975
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 39,
+        "trip_count": 2572,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 39,
+    "trip_count": 2572
+  },
+  "ntd_id_alignment": {
+    "detail": "Your feed's agency_id is Monterey-Salinas Transit; your National Transit Database ID is 90062. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id. The values do not need to equal the five-digit NTD ID, so this difference is allowed and carries no score.",
+    "feed_agency_ids": [
+      "Monterey-Salinas Transit"
+    ],
+    "fix": "Confirm that P-50 crosswalks agency_id Monterey-Salinas Transit to NTD ID 90062, and keep the feed value stable. Do not change it solely to make the two values equal.",
+    "ntd_id": "90062",
+    "status": "mismatch"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data runs out in 22 days; renew before you certify.",
+        "key": "current",
+        "status": "at_risk"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "at_risk",
+    "summary": "This feed is close to NTD-ready. Service data runs out in 22 days; renew before you certify."
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 55.9,
+    "margin_to_next_band": 4.1,
+    "score": 55.9
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 946,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "946 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Del Monte Center / Gate 1\", \"Del Monte Center / Gate 2\", \"Del Monte Center / Gate 3\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "routability": {
+    "boardable_stops": 975,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 2572
+  },
+  "route_map": {
+    "drawn_route_count": 39,
+    "has_shapes": true,
+    "path": "data/artifacts/monterey-salinas-transit-mst/geometry.geojson",
+    "route_count": 39,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "001",
+        "label": "1",
+        "long": "Monterey - PG via Asilomar",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "002",
+        "label": "2",
+        "long": "Monterey - PG via David Avenue",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "005",
+        "label": "5",
+        "long": "Monterey - Carmel Rancho",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "007",
+        "label": "7",
+        "long": "Monterey - Ryan Ranch",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "008",
+        "label": "8",
+        "long": "Monterey - CHOMP",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "017",
+        "label": "17",
+        "long": "Sand City - Marina via Gen Jim Moore",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "018",
+        "label": "18",
+        "long": "Sand City - Marina via Monterey Road",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "020",
+        "label": "20",
+        "long": "Monterey - Salinas",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "023",
+        "label": "23",
+        "long": "Salinas - King City",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "024",
+        "label": "24",
+        "long": "Crossroads Carmel - Carmel Valley",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "025",
+        "label": "25",
+        "long": "Salinas - CSUMB",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "028",
+        "label": "28",
+        "long": "Watsonville via Castroville",
+        "short": "28",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "029",
+        "label": "29",
+        "long": "Watsonville via Prunedale",
+        "short": "29",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "031",
+        "label": "31",
+        "long": "Gonzales",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "032",
+        "label": "32",
+        "long": "Soledad",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "033",
+        "label": "33",
+        "long": "Greenfield",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "034",
+        "label": "34",
+        "long": "King City",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "040",
+        "label": "40",
+        "long": "Salinas - Rancho Cielo",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "041",
+        "label": "41",
+        "long": "Salinas - Alisal - Northridge",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "042",
+        "label": "42",
+        "long": "Salinas - Alisal",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "043",
+        "label": "43",
+        "long": "Salinas - South Main via SV Health",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "044",
+        "label": "44",
+        "long": "Salinas - Northridge via Westridge",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "045",
+        "label": "45",
+        "long": "Salinas - East Market/Creekbridge",
+        "short": "45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "046",
+        "label": "46",
+        "long": "Salinas - Natividad",
+        "short": "46",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "047",
+        "label": "47",
+        "long": "Hartnell East Alisal - West Alisal",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "048",
+        "label": "48",
+        "long": "Salinas - Northridge via North Main",
+        "short": "48",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "049",
+        "label": "49",
+        "long": "Salinas - Santa Rita via North Main",
+        "short": "49",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "059",
+        "label": "59",
+        "long": "Salinas - Gilroy",
+        "short": "59",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "061",
+        "label": "61",
+        "long": "Salinas - VA DOD Clinic",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "084",
+        "label": "84",
+        "long": "King City - Paso Robles",
+        "short": "84",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "091",
+        "label": "91",
+        "long": "Monterey - Pacific Meadows",
+        "short": "91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "094",
+        "label": "94",
+        "long": "Carmel - Sand City",
+        "short": "94",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "095",
+        "label": "95",
+        "long": "Williams Ranch-Northridge",
+        "short": "95",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "096",
+        "label": "96",
+        "long": "Salinas - Airport Business Center",
+        "short": "96",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "901",
+        "label": "A",
+        "long": "JAZZ - A Aquarium/Sand City via Hilby",
+        "short": "A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "902",
+        "label": "B",
+        "long": "JAZZ - B Aquarium/Sand City via Broadway",
+        "short": "B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "920",
+        "label": "DRO",
+        "long": "Del Rey Oaks Shuttle",
+        "short": "DRO",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "923",
+        "label": "23X",
+        "long": "Salinas - King City EXPRESS",
+        "short": "23X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "950",
+        "label": "TRLY",
+        "long": "MST Trolley",
+        "short": "TRLY",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 975,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 2572 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 2572,
+    "trips_with_shape": 2572
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expiring_soon",
+      "count": 1,
+      "effort": "One export setting.",
+      "fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "owner": "Likely your export tool",
+      "points": 58.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "Service data runs out in 22 day(s).",
+      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+    },
+    {
+      "code": "scorecard_rt_trip_updates_unreachable",
+      "count": 1,
+      "effort": "Usually a vendor support ticket.",
+      "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+      "owner": "",
+      "points": 33.3,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "The trip updates realtime feed failed during sampling.",
+      "why": "When this feed is down, riders see scheduled times presented as if they were live."
+    },
+    {
+      "code": "scorecard_rt_vehicle_positions_unreachable",
+      "count": 1,
+      "effort": "Usually a vendor support ticket.",
+      "fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+      "owner": "",
+      "points": 33.3,
+      "rank": 3,
+      "severity": "ERROR",
+      "what": "The vehicle positions realtime feed failed during sampling.",
+      "why": "When this feed is down, riders see scheduled times presented as if they were live."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

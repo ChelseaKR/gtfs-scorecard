@@ -1,0 +1,1394 @@
+{
+  "agency": {
+    "id": "santa-clara-valley-transportation-authority-vta",
+    "name": "Santa Clara Valley Transportation Authority (VTA)",
+    "subdivision_code": "US-CA",
+    "subdivision_name": "California"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 100.0,
+          "stops_marked_accessible_pct": 81.0,
+          "stops_marked_not_accessible_pct": 19.0,
+          "stops_stated_pct": 100.0,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 25.0,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 11544,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": true,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 3351,
+        "translations": {
+          "feed_lang": "EN",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 11544,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 100.0,
+        "wheelchair_marked_accessible_pct": 81.0,
+        "wheelchair_marked_not_accessible_pct": 19.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "100% of stops state wheelchair accessibility (81% marked accessible, 19% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 14,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 126,
+          "WARNING": 9851
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 9620,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 120,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 52,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 32,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 10,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a transit vehicle can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no transit vehicle can meet."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 6,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 5,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 3,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "route_short_name_too_long",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'route_short_name_too_long' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Route short name too long (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "feed_expiration_date30_days",
+          "count": 1,
+          "effort": "Usually a re-export from your scheduling software.",
+          "fix": "Schedule a feed re-export now so the new calendar is live well before the current one ends.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "This feed's service calendar runs out within the next 30 days.",
+          "why": "If a new feed isn't published before it ends, trip planners will drop your agency and riders will see no service."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 119,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the transit vehicle ends up, so a midpoint name can send them the wrong way."
+        },
+        {
+          "code": "unknown_file",
+          "count": 4,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        },
+        {
+          "code": "unknown_column",
+          "count": 2,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 1,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 39.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 14 kinds of issue across 9977 instances (0 error, 9851 warning, 126 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 3,
+        "effective_expiry_date": "2026-08-09",
+        "feed_end_date": "2026-08-09",
+        "feed_start_date": "2026-04-27",
+        "feed_version": "2026-07-14_12:57",
+        "has_feed_info": true,
+        "last_service_date": "2026-08-09",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expiring_soon",
+          "count": 1,
+          "effort": "One export setting.",
+          "fix": "Re-export with a validity window that reaches at least 60 days out.",
+          "owner": "Likely your export tool",
+          "points": 77.0,
+          "severity": "WARNING",
+          "what": "Service data runs out in 3 day(s).",
+          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+        }
+      ],
+      "name": "freshness",
+      "score": 5.0,
+      "status": "measured",
+      "summary": "Service data runs out in 3 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data runs out in 4 days; renew to qualify.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 100% of stops and 100% of trips.",
+        "key": "accessible",
+        "met": true
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. Service data runs out in 4 days; renew to qualify."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "0920434ae18e204a7d5bd66ef7a7b02feec786c2f57ddaa081dcea4b20aa1af9",
+    "size_bytes": 5072907,
+    "static_url": "https://gtfs.vta.org/gtfs_vta.zip"
+  },
+  "fetch": {
+    "final_url": "https://gtfs.vta.org/gtfs_vta.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -122.17364,
+      36.97492,
+      -121.54903,
+      37.59016
+    ],
+    "lat": 37.33653,
+    "lon": -121.91854,
+    "stop_count": 3351
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 13,
+        "trip_count": 3971,
+        "trip_share_pct": 34.4
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 64,
+        "trip_count": 7573,
+        "trip_share_pct": 65.6
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 77,
+    "trip_count": 11544
+  },
+  "ntd_id_alignment": {
+    "detail": "Your feed's agency_id is VTA; your National Transit Database ID is 90013. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id. The values do not need to equal the five-digit NTD ID, so this difference is allowed and carries no score.",
+    "feed_agency_ids": [
+      "VTA"
+    ],
+    "fix": "Confirm that P-50 crosswalks agency_id VTA to NTD ID 90013, and keep the feed value stable. Do not change it solely to make the two values equal.",
+    "ntd_id": "90013",
+    "status": "mismatch"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data runs out in 4 days; renew before you certify.",
+        "key": "current",
+        "status": "at_risk"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "at_risk",
+    "summary": "This feed is close to NTD-ready. Service data runs out in 4 days; renew before you certify."
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 49.8,
+    "margin_to_next_band": 10.2,
+    "score": 49.8
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 6,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "6 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (Transit vehicle Bridge, BART Transit vehicle Bridge, 202, ACE Gray, ACE Green, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 2989,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "2989 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Snell Escalator A (Transit Center - Hwy 85 South)\", \"Snell Escalator C (Park and Ride - Hwy 85 South)\", \"Japantown/Ayer Station\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 3247,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 11544
+  },
+  "route_map": {
+    "drawn_route_count": 77,
+    "has_shapes": true,
+    "path": "data/artifacts/santa-clara-valley-transportation-authority-vta/geometry.geojson",
+    "route_count": 77,
+    "routes": [
+      {
+        "color": "379400",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "101",
+        "label": "Express 101",
+        "long": "Camden & Hwy 85 - Stanford Research Park",
+        "short": "Express 101",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "379400",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102",
+        "label": "Express 102",
+        "long": "South San Jose - Stanford Research Park",
+        "short": "Express 102",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "379400",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "103",
+        "label": "Express 103",
+        "long": "Eastridge - Stanford Research Park",
+        "short": "Express 103",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "379400",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "104",
+        "label": "Express 104",
+        "long": "Milpitas BART - Stanford Research Park",
+        "short": "Express 104",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20",
+        "label": "20",
+        "long": "Milpitas BART - Sunnyvale TC",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "200",
+        "label": "200",
+        "long": "Baypointe - Mountain View",
+        "short": "200",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007ACC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "201",
+        "label": "201",
+        "long": "2nd & Santa Clara - Santa Teresa",
+        "short": "201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "379400",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "202",
+        "label": "202",
+        "long": "2nd & Santa Clara - Winchester",
+        "short": "202",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "203",
+        "label": "203",
+        "long": "Civic Center - Baypointe - Alum Rock",
+        "short": "203",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21",
+        "label": "21",
+        "long": "Stanford Shopping Ctr - Santa Clara TC",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "22",
+        "label": "22",
+        "long": "Palo Alto TC - Eastridge",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "23",
+        "label": "23",
+        "long": "De Anza Coll - Alum Rock via Stevens Crk",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "246",
+        "label": "School 246",
+        "long": "Milpitas HS - Yellowstone & Butano",
+        "short": "School 246",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "247",
+        "label": "School 247",
+        "long": "Milpitas HS - Landess & Park Victoria",
+        "short": "School 247",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "25",
+        "label": "25",
+        "long": "De Anza Coll - Alum Rock via Valley Med",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "255",
+        "label": "School 255",
+        "long": "Fremont HS - Lawrence & Tasman",
+        "short": "School 255",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "256",
+        "label": "School 256",
+        "long": "Willow Glen HS - 1st & Keyes",
+        "short": "School 256",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "26",
+        "label": "26",
+        "long": "West Valley Coll - Eastridge",
+        "short": "26",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "27",
+        "label": "27",
+        "long": "Winchester Stn - Santa Teresa Stn",
+        "short": "27",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "287",
+        "label": "School 287",
+        "long": "Live Oak HS - Monterey & San Martin",
+        "short": "School 287",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "288",
+        "label": "School 288",
+        "long": "Gunn HS - Middlefield & Colorado via Charlston",
+        "short": "School 288",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "288L",
+        "label": "School 288L",
+        "long": "Gunn HS - Louis & Fielding",
+        "short": "School 288L",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "31",
+        "label": "31",
+        "long": "Evergreen Valley Coll - Eastridge",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "37",
+        "label": "37",
+        "long": "West Valley Coll - Capitol Stn",
+        "short": "37",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "39",
+        "label": "39",
+        "long": "Eastridge - The Villages",
+        "short": "39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "40",
+        "label": "40",
+        "long": "Foothill Coll - Mtn View TC via N. Bayshore",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "42",
+        "label": "42",
+        "long": "Evergreen Valley Coll - Santa Teresa Stn",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "47",
+        "label": "47",
+        "long": "Milpitas BART - Alder Stn via McCarthy Ranch",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "500",
+        "label": "Rapid 500",
+        "long": "San Jose Diridon - Berryessa BART",
+        "short": "Rapid 500",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "51",
+        "label": "51",
+        "long": "Moffett Field - West Valley Coll",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "52",
+        "label": "52",
+        "long": "Foothill Coll - Mnt View TC via El Monte",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "522",
+        "label": "Rapid 522",
+        "long": "Palo Alto TC - Eastridge Rapid",
+        "short": "Rapid 522",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "523",
+        "label": "Rapid 523",
+        "long": "San Jose State - Lockheed Martin via De Anza",
+        "short": "Rapid 523",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "53",
+        "label": "53",
+        "long": "Sunnyvale TC - Santa Clara TC",
+        "short": "53",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "55",
+        "label": "55",
+        "long": "Old Ironsides Stn - De Anza Coll",
+        "short": "55",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "56",
+        "label": "56",
+        "long": "Lockheed Martin - Monterey & Old Tully",
+        "short": "56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "568",
+        "label": "Rapid 568",
+        "long": "Gilroy TC - San Jose Diridon",
+        "short": "Rapid 568",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "57",
+        "label": "57",
+        "long": "Old Ironsides Stn - West Valley Coll",
+        "short": "57",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "59",
+        "label": "59",
+        "long": "Valley Med - Baypointe via Alviso",
+        "short": "59",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "60",
+        "label": "60",
+        "long": "Milpitas BART - Winchester Stn via SJC Airport",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "61",
+        "label": "61",
+        "long": "Sierra & Piedmont - Good Samaritan Hospital",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "64A",
+        "label": "64A",
+        "long": "Ohlone-Chynoweth Stn - McKee & White",
+        "short": "64A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "64B",
+        "label": "64B",
+        "long": "Almaden & Camden - Mckee & White",
+        "short": "64B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "66",
+        "label": "66",
+        "long": "North Milpitas - Santa Teresa Stn",
+        "short": "66",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "68",
+        "label": "68",
+        "long": "San Jose Diridon - Gilroy TC",
+        "short": "68",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "70",
+        "label": "70",
+        "long": "Milpitas BART - Capitol Stn via Jackson",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "71",
+        "label": "71",
+        "long": "Milpitas BART - Eastridge via White",
+        "short": "71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "72",
+        "label": "72",
+        "long": "Dtwn SJ - Senter & Monterey via McLaughlin",
+        "short": "72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "73",
+        "label": "73",
+        "long": "Dtwn SJ - Senter & Monterey via Senter",
+        "short": "73",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4002B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "77",
+        "label": "77",
+        "long": "Milpitas BART - Eastridge via King",
+        "short": "77",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "939598",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "822",
+        "label": "ACE Gray",
+        "long": "South Sunnyvale",
+        "short": "ACE Gray",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0E9972",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "823",
+        "label": "ACE Green",
+        "long": "North Santa Clara",
+        "short": "ACE Green",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D96B1C",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "824",
+        "label": "ACE Orange",
+        "long": "Mountain View",
+        "short": "ACE Orange",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "263996",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "825",
+        "label": "ACE Purple",
+        "long": "West Milpitas",
+        "short": "ACE Purple",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D60E51",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "826",
+        "label": "ACE Red",
+        "long": "North Sunnyvale",
+        "short": "ACE Red",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFE601",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "827",
+        "label": "ACE Yellow",
+        "long": "South Santa Clara",
+        "short": "ACE Yellow",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6D4739",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "828",
+        "label": "ACE Brown",
+        "long": "North San Jose",
+        "short": "ACE Brown",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "83",
+        "label": "83",
+        "long": "Ohlone-Chynoweth Stn - Almaden & McKean",
+        "short": "83",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BBB7DA",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "831",
+        "label": "ACE Violet",
+        "long": "South Milpitas",
+        "short": "ACE Violet",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "84",
+        "label": "84",
+        "long": "Gilroy TC - St. Louise Hosp via Gilroy Outlets",
+        "short": "84",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "85",
+        "label": "85",
+        "long": "Gilroy TC - St. Louise Hosp via West Gilroy",
+        "short": "85",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "86",
+        "label": "86",
+        "long": "Gavilan Coll - Gilroy TC",
+        "short": "86",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "87",
+        "label": "87",
+        "long": "Morgan Hill Civic Center - Burnett Ave",
+        "short": "87",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29588C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "89",
+        "label": "89",
+        "long": "California Ave Caltrain - Palo Alto VA Hosp",
+        "short": "89",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007ACC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "911",
+        "label": "Event-Blue",
+        "long": "Event-Blue Line",
+        "short": "Event-Blue",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "C0C0C0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "912",
+        "label": "Event-Special",
+        "long": "Event-Special Line",
+        "short": "Event-Special",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "913",
+        "label": "Event-Orange",
+        "long": "Event-Orange Line",
+        "short": "Event-Orange",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "379400",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "914",
+        "label": "Event-Green",
+        "long": "Event-Green Line",
+        "short": "Event-Green",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "939598",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "BBBRT",
+        "label": "BART Bus Bridge",
+        "long": "BART Bus Bridge - Union City/Fremont/Warm Springs",
+        "short": "BART Bus Bridge",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "BBSC",
+        "label": "Bus Bridge",
+        "long": "Bus Bridge - San Carlos Rail Rehab",
+        "short": "Bus Bridge",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "007ACC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "Blue",
+        "label": "Blue Line",
+        "long": "Baypointe - Santa Teresa",
+        "short": "Blue Line",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "007ACC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "BlueN",
+        "label": "BlueN",
+        "long": "Baypointe - Santa Teresa Modified-N",
+        "short": "BlueN",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "007ACC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "BlueS",
+        "label": "BlueS",
+        "long": "Blue Line WC26",
+        "short": "BlueS",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "379400",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "Green",
+        "label": "Green Line",
+        "long": "Old Ironsides - Winchester",
+        "short": "Green Line",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "379400",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GrenN",
+        "label": "GreenN",
+        "long": "Green Line SBLX",
+        "short": "GreenN",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "379400",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GrenS",
+        "label": "GreenS",
+        "long": "Green Line WC26",
+        "short": "GreenS",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "Ornge",
+        "label": "Orange Line",
+        "long": "Mountain View - Alum Rock",
+        "short": "Orange Line",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      }
+    ],
+    "stop_count": 3351,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 11544 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 11544,
+    "trips_with_shape": 11544
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expiring_soon",
+      "count": 1,
+      "effort": "One export setting.",
+      "fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "owner": "Likely your export tool",
+      "points": 77.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "Service data runs out in 3 day(s).",
+      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+    },
+    {
+      "code": "mixed_case_recommended_field",
+      "count": 9620,
+      "effort": "Often a bulk fix in your scheduling software.",
+      "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+      "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+    },
+    {
+      "code": "trip_distance_exceeds_shape_distance_below_threshold",
+      "count": 120,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "On some trips the stop distances run a little past the end of the route line.",
+      "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

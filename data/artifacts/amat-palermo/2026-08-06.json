@@ -1,0 +1,1184 @@
+{
+  "agency": {
+    "country": "IT",
+    "id": "amat-palermo",
+    "name": "AMAT Palermo",
+    "operating_note": "The portal publishes per-period dataset pages plus a permanent latest-archive URL; this record tracks the permanent URL.",
+    "subdivision_code": "IT-82",
+    "subdivision_name": "Sicilia"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.2,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.2,
+          "stops_stated_pct": 0.2,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 10.4,
+          "stop_names": 0.0,
+          "wheelchair_stops": 0.1,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 10703,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 69.5,
+        "headsign_scored_pct": 69.5,
+        "mixed_case_stop_name_pct": 0.3,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1653,
+        "translations": {
+          "feed_lang": "it",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 10703,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.2,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.2
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1649,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 24.9,
+          "severity": "WARNING",
+          "what": "1649 of 1653 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 10703,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "10703 of 10703 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 1648,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "INFO",
+          "what": "About 1648 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 3265,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 4.6,
+          "severity": "WARNING",
+          "what": "3265 of 10703 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        }
+      ],
+      "name": "completeness",
+      "score": 40.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 3,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 430,
+          "WARNING": 5979
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 5978,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "feed_expiration_date30_days",
+          "count": 1,
+          "effort": "Usually a re-export from your scheduling software.",
+          "fix": "Schedule a feed re-export now so the new calendar is live well before the current one ends.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "This feed's service calendar runs out within the next 30 days.",
+          "why": "If a new feed isn't published before it ends, trip planners will drop your agency and riders will see no service."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 430,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the transit vehicle ends up, so a midpoint name can send them the wrong way."
+        }
+      ],
+      "name": "correctness",
+      "score": 87.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 3 kinds of issue across 6409 instances (0 error, 5979 warning, 430 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 25,
+        "effective_expiry_date": "2026-08-31",
+        "feed_end_date": "2026-08-31",
+        "feed_start_date": "2026-07-27",
+        "feed_version": "20260727-20260831",
+        "has_feed_info": true,
+        "last_service_date": "2026-08-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expiring_soon",
+          "count": 1,
+          "effort": "One export setting.",
+          "fix": "Re-export with a validity window that reaches at least 60 days out.",
+          "owner": "Likely your export tool",
+          "points": 55.0,
+          "severity": "WARNING",
+          "what": "Service data runs out in 25 day(s).",
+          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+        }
+      ],
+      "name": "freshness",
+      "score": 41.7,
+      "status": "measured",
+      "summary": "Service data runs out in 25 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data runs out in 25 days; renew to qualify.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. Service data runs out in 25 days; renew to qualify. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through Palermo's municipal open data portal; credit AMAT Palermo and the Comune di Palermo. Tram data inside the feed carries a CC BY-SA marking with OpenStreetMap-derived georeferencing.",
+    "reachable": true,
+    "sha256": "d5157548a02bd8205c00e4b8765353a7978b35bcb33bf76d234f81561dba93b6",
+    "size_bytes": 2118551,
+    "static_url": "https://opendata.comune.palermo.it/js/server/uploads/dataset/gtfs/amat_gtfs.zip"
+  },
+  "fetch": {
+    "final_url": "https://opendata.comune.palermo.it/js/server/uploads/dataset/gtfs/amat_gtfs.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-06T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      13.25068,
+      38.05078,
+      13.43425,
+      38.21045
+    ],
+    "lat": 38.12315,
+    "lon": 13.33685,
+    "stop_count": 1653
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 4,
+        "trip_count": 896,
+        "trip_share_pct": 8.4
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 67,
+        "trip_count": 9807,
+        "trip_share_pct": 91.6
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 71,
+    "trip_count": 10703
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 1.1,
+    "margin_to_next_band": 8.9,
+    "score": 61.1
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 1,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "1 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (101).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 2,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "2 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"PIAZZA AMERINA/SAN PAOLO\", \"PIAZZA AMERINA/SAN PAOLO\").",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "routability": {
+    "boardable_stops": 1653,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 10703
+  },
+  "route_map": {
+    "drawn_route_count": 71,
+    "has_shapes": true,
+    "path": "data/artifacts/amat-palermo/geometry.geojson",
+    "route_count": 71,
+    "routes": [
+      {
+        "color": "7B263E",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "100",
+        "label": "100",
+        "long": "JOHN LENNON - PARCHEGGIO ORETO",
+        "short": "100",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "02C793",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "101",
+        "label": "101",
+        "long": "STADIO - STAZIONE CENTRALE",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AF1F17",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "102",
+        "label": "102",
+        "long": "STAZIONE NOTARBARTOLO - STAZIONE CENTRALE",
+        "short": "102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "62564B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "103",
+        "label": "103",
+        "long": "JOHN LENNON - PORTA FELICE",
+        "short": "103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "655A07",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "104",
+        "label": "104",
+        "long": "PARCHEGGIO BASILE - VIA DUCA DELLA VERDURA",
+        "short": "104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6507A1",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "106",
+        "label": "106",
+        "long": "PARCHEGGIO EMIRI - STADIO",
+        "short": "106",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6507A1",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "107",
+        "label": "107",
+        "long": "STAZIONE CENTRALE - STADIO",
+        "short": "107",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "873712",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "108",
+        "label": "108",
+        "long": "OSPEDALE CIVICO - POLITEAMA",
+        "short": "108",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A80265",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "109",
+        "label": "109",
+        "long": "PARCHEGGIO BASILE - STAZIONE CENTRALE",
+        "short": "109",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4E5768",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "110",
+        "label": "110",
+        "long": "JOHN LENNON - INDIPENDENZA",
+        "short": "110",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7B4F09",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "118",
+        "label": "118",
+        "long": "PARCHEGGIO BASILE - STAZIONE NOTARBARTOLO",
+        "short": "118",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "215032",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "124",
+        "label": "124",
+        "long": "PARCHEGGIO EMIRI - STAZIONE CENTRALE",
+        "short": "124",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "01645F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "134",
+        "label": "134",
+        "long": "JOHN LENNON - PIAZZA XIII VITTIME",
+        "short": "134",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "605A07",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "209",
+        "label": "209",
+        "long": "PARCHEGGIO ORETO - FALSOMIELE",
+        "short": "209",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "024158",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "210",
+        "label": "210",
+        "long": "PARCHEGGIO ORETO - VIALE DEI PICCIOTTI",
+        "short": "210",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3A4C81",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "212",
+        "label": "212",
+        "long": "Parcheggio Oreto  - Ciaculli Croceverde",
+        "short": "212",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8B4614",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "224",
+        "label": "224",
+        "long": "STAZIONE CENTRALE - POMARA",
+        "short": "224",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A50263",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "226",
+        "label": "226",
+        "long": "VIALE DEI PICCIOTTI - POMARA",
+        "short": "226",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5A2D28",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "230",
+        "label": "230",
+        "long": "STAZIONE CENTRALE - VILLA CIAMBRA",
+        "short": "230",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "49586A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "234",
+        "label": "234",
+        "long": "STAZIONE CENTRALE - CASA CIRCONDARIALE PAGLIARELLI",
+        "short": "234",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7E4146",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "237",
+        "label": "237",
+        "long": "PARCHEGGIO ORETO - STAZIONE CENTRALE",
+        "short": "237",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F3881",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "241",
+        "label": "241",
+        "long": "PARCHEGGIO ORETO - FALSOMIELE",
+        "short": "241",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3E5971",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "243",
+        "label": "243",
+        "long": "STAZIONE CENTRALE - BONAGIA",
+        "short": "243",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "02644D",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "246",
+        "label": "246",
+        "long": "OSPEDALE CIVICO - STAZIONE CENTRALE",
+        "short": "246",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "035CA0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "304",
+        "label": "304",
+        "long": "INDIPENDENZA - VILLA TASCA",
+        "short": "304",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "022655",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "307",
+        "label": "307",
+        "long": "PARCHEGGIO BASILE - BORGO NUOVO",
+        "short": "307",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "025F7E",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "309",
+        "label": "309",
+        "long": "PARCHEGGIO BASILE - ROCCA",
+        "short": "309",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914327",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "327",
+        "label": "327",
+        "long": "BOCCADIFALCO - INDIPENDENZA",
+        "short": "327",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "496041",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "364",
+        "label": "364",
+        "long": "PARCHEGGIO BASILE - AQUINO",
+        "short": "364",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "774F43",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "380",
+        "label": "380",
+        "long": "PARCHEGGIO BASILE - MOLARA",
+        "short": "380",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7F3759",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "389",
+        "label": "389",
+        "long": "PIAZZA INDIPENDENZA - ROCCA - MONREALE",
+        "short": "389",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "126823",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "422",
+        "label": "422",
+        "long": "PARCHEGGIO EMIRI - BORGO NUOVO",
+        "short": "422",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5D5952",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "442",
+        "label": "442",
+        "long": "PARCHEGGIO EMIRI - UDITORE",
+        "short": "442",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "775128",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "462",
+        "label": "462",
+        "long": "PARCHEGGIO EMIRI - BAIDA",
+        "short": "462",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6E5606",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "513",
+        "label": "513",
+        "long": "JOHN LENNON - SAN GIOVANNI APOSTOLO",
+        "short": "513",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4C5861",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "516",
+        "label": "516",
+        "long": "JOHN LENNON - TOMMASO NATALE",
+        "short": "516",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AE025B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "529",
+        "label": "529",
+        "long": "JOHN LENNON - OSPEDALE CERVELLO",
+        "short": "529",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3A4D84",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "534",
+        "label": "534",
+        "long": "JOHN LENNON - BAIDA",
+        "short": "534",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "645809",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "544",
+        "label": "544",
+        "long": "JOHN LENNON - MONDELLO",
+        "short": "544",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "981A59",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "603",
+        "label": "603",
+        "long": "STADIO - MONDELLO",
+        "short": "603",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "775228",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "606",
+        "label": "606",
+        "long": "VIALE DEL FANTE-MONDELLO TETI",
+        "short": "606",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "026450",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "614",
+        "label": "614",
+        "long": "STADIO - MONDELLO",
+        "short": "614",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7A3758",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "616",
+        "label": "616",
+        "long": "STADIO - BARCARELLO",
+        "short": "616",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436056",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "619",
+        "label": "619",
+        "long": "STADIO - SAN FILIPPO NERI",
+        "short": "619",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "983A37",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "625",
+        "label": "625",
+        "long": "STADIO - BORGO NUOVO",
+        "short": "625",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "535A5D",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "628",
+        "label": "628",
+        "long": "SFERRACAVALLO - STADIO",
+        "short": "628",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "983937",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "645",
+        "label": "645",
+        "long": "STADIO - PARTANNA",
+        "short": "645",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "515D3B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "675",
+        "label": "675",
+        "long": "STADIO - OSPEDALE CERVELLO",
+        "short": "675",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8B4617",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "704",
+        "label": "704",
+        "long": "CROCI - MONDELLO VALDESI",
+        "short": "704",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "485E60",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "721",
+        "label": "721",
+        "long": "PIAZZA CRISPI - ACQUASANTA",
+        "short": "721",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "605A23",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "731",
+        "label": "731",
+        "long": "VERGINE MARIA - CROCI",
+        "short": "731",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "775228",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "806",
+        "label": "806",
+        "long": "PIAZZA CRISPI - MONDELLO",
+        "short": "806",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "744A4C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "812",
+        "label": "812",
+        "long": "PIAZZA MORDINI - MONTEPELLEGRINO",
+        "short": "812",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FEF603",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "84",
+        "label": "84",
+        "long": "PARCHEGGIO GALATEA - MONDELLO TORRE",
+        "short": "84",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FEF603",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "86",
+        "label": "86",
+        "long": "NAVETTA ESTIVA - MONDELLO TORRE - ADDAURA",
+        "short": "86",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FEF603",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "87",
+        "label": "87",
+        "long": "NAVETTA ESTIVA - MONDELLO TORRE - PARTANNA",
+        "short": "87",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FEF603",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "88",
+        "label": "88",
+        "long": "PUNTA BARCARELLO - PUNTA MATESE - MARCONI",
+        "short": "88",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FACE2F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ARANC",
+        "label": "ARANC",
+        "long": "PORTA FELICE-INDIPENDENZA",
+        "short": "ARANC",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "C.R.",
+        "label": "C.R.",
+        "long": "CIRCOLARE CIMITERO",
+        "short": "C.R.",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "024158",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "N1",
+        "label": "N1",
+        "long": "INDIPENDENZA - MONDELLO",
+        "short": "N1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "024158",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "N2",
+        "label": "N2",
+        "long": "INDIPENDENZA - SFERRACAVALLO",
+        "short": "N2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "024158",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "N3",
+        "label": "N3",
+        "long": "CASA DEL SOLE - POLITEAMA",
+        "short": "N3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "024158",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "N4",
+        "label": "N4",
+        "long": "STAZIONE CENTRALE - CASA DEL SOLE",
+        "short": "N4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "024158",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "N5",
+        "label": "N5",
+        "long": "STAZIONE CENTRALE - PARCHEGGIO EMIRI",
+        "short": "N5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "024158",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "N6",
+        "label": "N6",
+        "long": "STAZIONE CENTRALE - CIACULLI",
+        "short": "N6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "024158",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "N7",
+        "label": "N7",
+        "long": "STAZIONE CENTRALE - POMARA",
+        "short": "N7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "OSPED",
+        "label": "OSPED",
+        "long": "NAVETTA DELLA SALUTE",
+        "short": "OSPED",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F3881",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "TRAM1",
+        "label": "TRAM1",
+        "long": "ROCCELLA - STAZIONE CENTRALE",
+        "short": "TRAM1",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "FACE2F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "TRAM2",
+        "label": "TRAM2",
+        "long": "BORGO NUOVO - STAZIONE NOTARBARTOLO",
+        "short": "TRAM2",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "126823",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TRAM3",
+        "label": "TRAM3",
+        "long": "CEP - STAZIONE NOTARBARTOLO",
+        "short": "TRAM3",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "035CA0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "TRAM4",
+        "label": "TRAM4",
+        "long": "STAZIONE NOTARBARTOLO - CALATAFIMI",
+        "short": "TRAM4",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      }
+    ],
+    "stop_count": 1653,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expiring_soon",
+      "count": 1,
+      "effort": "One export setting.",
+      "fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "owner": "Likely your export tool",
+      "points": 55.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "Service data runs out in 25 day(s).",
+      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1649,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 24.9,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "1649 of 1653 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 10703,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "10703 of 10703 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

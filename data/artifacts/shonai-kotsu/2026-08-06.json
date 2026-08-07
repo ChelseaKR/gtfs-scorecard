@@ -1,0 +1,1094 @@
+{
+  "agency": {
+    "country": "JP",
+    "id": "shonai-kotsu",
+    "name": "Shonai Kotsu (\u5e84\u5185\u4ea4\u901a)",
+    "operating_note": "Shonai Kotsu operates route buses in the Shonai region of coastal Yamagata.",
+    "subdivision_code": "JP-06",
+    "subdivision_name": "Yamagata"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 15.0,
+          "headsigns": 0.0,
+          "stop_names": 14.9,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 294,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 0.0,
+        "headsign_scored_pct": 0.0,
+        "mixed_case_stop_name_pct": 99.4,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1023,
+        "translations": {
+          "feed_lang": "ja",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 294,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1023,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "1023 of 1023 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 294,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "294 of 294 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 294,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "294 of 294 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.4,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 14,
+        "instances_by_severity": {
+          "ERROR": 3,
+          "INFO": 29,
+          "WARNING": 19701
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_required_column",
+          "count": 3,
+          "effort": "Often an export setting; ask your vendor if it recurs.",
+          "fix": "Add the required column named in the finding to the flagged file.",
+          "owner": "Likely your export tool",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "A file is missing a column that GTFS requires.",
+          "why": "Apps may reject the whole file, so riders could lose the affected routes or stops."
+        },
+        {
+          "code": "non_ascii_or_non_printable_char",
+          "count": 10214,
+          "effort": "A planned ID change, not a quick text cleanup.",
+          "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some internal IDs use characters outside the basic text set.",
+          "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+        },
+        {
+          "code": "missing_timepoint_value",
+          "count": 9135,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_timepoint_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Missing timepoint value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 149,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 99,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 77,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 19,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 5,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "unused_shape",
+          "count": 2,
+          "effort": "One setting.",
+          "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "The feed contains route shapes no trip uses.",
+          "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 21,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "unknown_column",
+          "count": 6,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "service_window_outside_feed_period",
+          "count": 1,
+          "effort": "Two fields in feed_info.txt, or one export setting.",
+          "fix": "Widen feed_start_date and feed_end_date to cover all service dates, or fix the dates that fall outside.",
+          "owner": "Likely your export tool",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some service dates fall outside the date window set in feed_info.txt.",
+          "why": "feed_info.txt should span every day your service runs, so apps know when the data applies."
+        },
+        {
+          "code": "unknown_file",
+          "count": 1,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 27.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 14 kinds of issue across 19733 instances (3 error, 19701 warning, 29 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 237,
+        "effective_expiry_date": "2027-03-31",
+        "feed_end_date": "2027-03-31",
+        "feed_start_date": "2026-03-29",
+        "feed_version": "\u4ee4\u548c\uff18\u5e74\uff14\u6708\uff11\u65e5\u30c0\u30a4\u30e4\u6539\u6b63_service_id\u306e\u4fee\u6b63_20260521",
+        "has_feed_info": true,
+        "last_service_date": "2027-03-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 237 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 238 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0; published as GTFS-JP open data by Shonai Kotsu Co., Ltd. through the GTFS Data Repository (gtfs-data.jp). Credit Shonai Kotsu Co., Ltd.",
+    "reachable": true,
+    "sha256": "a1f7762421d094a43b5aebe97b5958f26ec530b1d92682c43fc111faba9896bc",
+    "size_bytes": 353042,
+    "static_url": "https://api.gtfs-data.jp/v2/organizations/shonaikotsu/feeds/SHONAIKOTSU/files/feed.zip?rid=current"
+  },
+  "fetch": {
+    "final_url": "https://prodgtfsdatareposharedinfrasta-filebucketcdfcd6de-1qqhtsxlwh6la.s3.amazonaws.com/shonaikotsu/SHONAIKOTSU/77ac2a8c-e712-4e8e-90d0-9c9de39761bf/feed.zip?response-content-disposition=attachment%3B%20filename%3Dfeed_shonaikotsu_SHONAIKOTSU_20260329_20260624091436.zip&AWSAccessKeyId=ASIARI5CFYANLLI75AS5&Signature=5dxo8hL8iaF5mNIMkgnOkGwQohc%3D&x-amz-security-token=IQoJb3JpZ2luX2VjEF8aDmFwLW5vcnRoZWFzdC0xIkgwRgIhAM4%2B2oV%2Fti8LdUZy%2FsQlqaF0B9a1PZ1mtSi1QNQxZRM4AiEAzGbSmMIl8gl%2BZjh423j7t%2BU%2FKmR8dE5DYzH1xdpdydYq0AQIKRAFGgwwODc4NTAwNzQxMzgiDKgZ6aeCeDr%2F2UM9JCqtBCcEBy8zANESwfib8ATPN8DqaZ7dEBoBf%2Bfh%2Fyuc2K1s1P6xCa3DNhdWBomzrE%2FqcWd48oMz0d%2BPUvZrYjdOXKoZV11eQxU7cSa5QoNiuOtEYssBOmznTWs8zYD8Lw%2FeAFHbIUqpiH%2F23lIpI7hgxsZfJrmx8J1CQsMu6JUO5C8CbS1Ri%2Bfa4Oygrwu5PTqS%2Bg3Zi7T66WEr5q31lyAdEFfPu%2BFoPbC6qJsuh63iU5otJ%2BmW7Ai%2Fjix0duiIkmLB7N80aTvNXhPWoK3CyhvBMmw3WG3BJYm9eqlA7MQRrxYCqfsr2GQXUHoLsIOuloxbkWVlKxUxnRcMDuA5TCSIGqixuWLnUGjdkVNVfaCZoei3Y7V96pMnGUSgzTjAWHvQ1MYAspoFz2%2BwPBuxkNwu1QR1nZNHB3X2TfdSCYJv8YFu4LKxWjlpWb%2FTIKQow9PXoVdBLXzlz8uA9ter7a1Lg4agjHi7bj6F5Y3iXpHw4bgQloqpbPRM4ncG9hnqppqKOjs9728vZk4TETR32Zwd40c6ZtcNxgsScTVxNw4gPiKnar7W4TMtmKhrEj5VsCwk1HT%2BSPdYXxLl695gowjBf1Ms%2FdB3J%2BrnmGymfbucyCDDgYEA9cxPMJi7tFvV5iYxZCr6A3%2BvoL2gI4Ku5ubHTeru%2FbIEsYsDPMwl9ETamzEBRjvX8Ko%2BNiOgqaP%2F6XJ65N%2FMlVqN4PP3W85u3jvuxkkgE6XTKKOZuGjgYlFSMIWszdMGOqIBI2f1b0dkzXK%2FTnuAIgsviG%2BtvVsdlBMW2MfH%2BZ%2FSvHvxTr0aADO3Ru12b%2FGyqO9DqknxjB7MTaIFwSZ0puOgIlQrFB4o4T9blgcfSgrULo8O%2BGBWEbhpFSPDg7MkWba6s4QQ8gJzy75G9ciavFBN74um7IXXK0qIxmJWc%2FIQaQPp%2FwbyXorOoOsIWuo7qdQiIxnUN%2FM8D7CjjkNKqcF%2BaOTS&Expires=1785945006",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      139.5874,
+      38.51721,
+      140.01689,
+      38.93411
+    ],
+    "lat": 38.71949,
+    "lon": 139.82459,
+    "stop_count": 1023
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 51,
+        "trip_count": 294,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 51,
+    "trip_count": 294
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 48.7,
+    "margin_to_next_band": 11.3,
+    "score": 48.7
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 2,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "2 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"\u30db\u30c6\u30eb\u30ea\u30c3\u30c1&\u30ac\u30fc\u30c7\u30f3\u9152\u7530\u524d\", \"\u30db\u30c6\u30eb\u30ea\u30c3\u30c1&\u30ac\u30fc\u30c7\u30f3\u9152\u7530\u524d\").",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 667,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 99,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "99 of 667 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 99,
+    "single_stop_trips": 0,
+    "trips_total": 294
+  },
+  "route_map": {
+    "drawn_route_count": 39,
+    "has_shapes": true,
+    "path": "data/artifacts/shonai-kotsu/geometry.geojson",
+    "route_count": 51,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "10022",
+        "label": "\u3042\u3064\u307f\u6e29\u6cc9\u21d2\u9db4\u5ca1",
+        "long": "\u3042\u3064\u307f\u6e29\u6cc9\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "10031",
+        "label": "\u30a8\u30b9\u30e2\u30fc\u30eb\u21d2\u6e29\u6d77",
+        "long": "\u30a8\u30b9\u30e2\u30fc\u30eb\u21d2\u6e29\u6d77",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "11",
+        "label": "\u9db4\u5ca1\u21d2\u9152\u7530",
+        "long": "\u9db4\u5ca1\u21d2\u9152\u7530",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "11002",
+        "label": "\u6e6f\u91ce\u6d5c\u6e29\u6cc9\u21d2\u5584\u5b9d\u5bfa\u21d2\u9db4\u5ca1",
+        "long": "\u6e6f\u91ce\u6d5c\u6e29\u6cc9\u21d2\u5584\u5b9d\u5bfa\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11021",
+        "label": "\u30a8\u30b9\u30e2\u30fc\u30eb\u21d2\u7269\u7523\u9928\u30fb\u5584\u5b9d\u5bfa\u21d2\u6e6f\u91ce\u6d5c",
+        "long": "\u30a8\u30b9\u30e2\u30fc\u30eb\u21d2\u7269\u7523\u9928\u30fb\u5584\u5b9d\u5bfa\u21d2\u6e6f\u91ce\u6d5c",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11031",
+        "label": "\u30a8\u30b9\u30e2\u30fc\u30eb\u21d2\u52a0\u8302\u6c34\u65cf\u9928\u21d2\u6e6f\u91ce\u6d5c",
+        "long": "\u30a8\u30b9\u30e2\u30fc\u30eb\u21d2\u52a0\u8302\u6c34\u65cf\u9928\u21d2\u6e6f\u91ce\u6d5c",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "11052",
+        "label": "\u6e6f\u91ce\u6d5c\u6e29\u6cc9\u21d2\u5584\u5b9d\u5bfa\u21d2\u5e84\u5185\u89b3\u5149\u7269\u7523\u9928\u21d2\u9db4\u5ca1",
+        "long": "\u6e6f\u91ce\u6d5c\u6e29\u6cc9\u21d2\u5584\u5b9d\u5bfa\u21d2\u5e84\u5185\u89b3\u5149\u7269\u7523\u9928\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "11072",
+        "label": "\u6e6f\u91ce\u6d5c\u6e29\u6cc9\u21d2\u52a0\u8302\u6c34\u65cf\u9928\u21d2\u9db4\u5ca1",
+        "long": "\u6e6f\u91ce\u6d5c\u6e29\u6cc9\u21d2\u52a0\u8302\u6c34\u65cf\u9928\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "11082",
+        "label": "\u6e6f\u91ce\u6d5c\u6e29\u6cc9\u21d2\u52a0\u8302\u6c34\u65cf\u9928\u21d2\u5e84\u5185\u89b3\u5149\u7269\u7523\u9928\u21d2\u9db4\u5ca1",
+        "long": "\u6e6f\u91ce\u6d5c\u6e29\u6cc9\u21d2\u52a0\u8302\u6c34\u65cf\u9928\u21d2\u5e84\u5185\u89b3\u5149\u7269\u7523\u9928\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11121",
+        "label": "\u30a8\u30b9\u30e2\u30fc\u30eb\u21d2\u7269\u7523\u9928\u30fb\u52a0\u8302\u21d2\u6e6f\u91ce\u6d5c",
+        "long": "\u30a8\u30b9\u30e2\u30fc\u30eb\u21d2\u7269\u7523\u9928\u30fb\u52a0\u8302\u21d2\u6e6f\u91ce\u6d5c",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "12081",
+        "label": "\u9db4\u5ca1\u21d2\u6e6f\u7530\u5ddd",
+        "long": "\u9db4\u5ca1\u21d2\u6e6f\u7530\u5ddd",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "12091",
+        "label": "\u3053\u3053\u308d\u306e\u533b\u7642\u30bb\u30f3\u30bf\u30fc\u21d2\u6e6f\u7530\u5ddd",
+        "long": "\u3053\u3053\u308d\u306e\u533b\u7642\u30bb\u30f3\u30bf\u30fc\u21d2\u6e6f\u7530\u5ddd",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "12161",
+        "label": "\u9db4\u5ca1\u21d2\u8d8a\u6ca2",
+        "long": "\u9db4\u5ca1\u21d2\u8d8a\u6ca2",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "12162",
+        "label": "\u8d8a\u6ca2\u21d2\u9db4\u5ca1",
+        "long": "\u8d8a\u6ca2\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "12172",
+        "label": "\u8d8a\u6ca2\u21d2\u4e2d\u592e\u9ad8\u6821",
+        "long": "\u8d8a\u6ca2\u21d2\u4e2d\u592e\u9ad8\u6821",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "12182",
+        "label": "\u5742\u306e\u4e0b\u21d2\u9db4\u5ca1",
+        "long": "\u5742\u306e\u4e0b\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "12192",
+        "label": "\u6e6f\u7530\u5ddd\u21d2\u9db4\u5ca1",
+        "long": "\u6e6f\u7530\u5ddd\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "12202",
+        "label": "\u6e6f\u7530\u5ddd\u516c\u5712\u524d\u21d2\u3053\u3053\u308d\u306e\u533b\u7642\u30bb\u30f3\u30bf\u30fc",
+        "long": "\u6e6f\u7530\u5ddd\u516c\u5712\u524d\u21d2\u3053\u3053\u308d\u306e\u533b\u7642\u30bb\u30f3\u30bf\u30fc",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "12211",
+        "label": "\u3053\u3053\u308d\u306e\u533b\u7642\u30bb\u30f3\u30bf\u30fc\u21d2\u5742\u306e\u4e0b",
+        "long": "\u3053\u3053\u308d\u306e\u533b\u7642\u30bb\u30f3\u30bf\u30fc\u21d2\u5742\u306e\u4e0b",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "12212",
+        "label": "\u5742\u306e\u4e0b\u21d2\u3053\u3053\u308d\u306e\u533b\u7642\u30bb\u30f3\u30bf\u30fc",
+        "long": "\u5742\u306e\u4e0b\u21d2\u3053\u3053\u308d\u306e\u533b\u7642\u30bb\u30f3\u30bf\u30fc",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "12221",
+        "label": "\u3053\u3053\u308d\u306e\u533b\u7642\u30bb\u30f3\u30bf\u30fc\u21d2\u8d8a\u6ca2",
+        "long": "\u3053\u3053\u308d\u306e\u533b\u7642\u30bb\u30f3\u30bf\u30fc\u21d2\u8d8a\u6ca2",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "13001",
+        "label": "\u7fbd\u9ed2\u5c71\u9802\u21d2\u6708\u5c71\u516b\u5408\u76ee",
+        "long": "\u7fbd\u9ed2\u5c71\u9802\u21d2\u6708\u5c71\u516b\u5408\u76ee",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "13002",
+        "label": "\u6708\u5c71\u516b\u5408\u76ee\u21d2\u7fbd\u9ed2\u5c71\u9802",
+        "long": "\u6708\u5c71\u516b\u5408\u76ee\u21d2\u7fbd\u9ed2\u5c71\u9802",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "13061",
+        "label": "\u3044\u3067\u306f\u6587\u5316\u8a18\u5ff5\u9928\u524d\u21d2\u7fbd\u9ed2\u5c71\u9802",
+        "long": "\u3044\u3067\u306f\u6587\u5316\u8a18\u5ff5\u9928\u524d\u21d2\u7fbd\u9ed2\u5c71\u9802",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "13062",
+        "label": "\u7fbd\u9ed2\u5c71\u9802\u21d2\u3044\u3067\u306f\u6587\u5316\u8a18\u5ff5\u9928\u524d",
+        "long": "\u7fbd\u9ed2\u5c71\u9802\u21d2\u3044\u3067\u306f\u6587\u5316\u8a18\u5ff5\u9928\u524d",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "13071",
+        "label": "\u9db4\u5ca1\u21d2\u7fbd\u9ed2\u5c71\u9802",
+        "long": "\u9db4\u5ca1\u21d2\u7fbd\u9ed2\u5c71\u9802",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "13072",
+        "label": "\u7fbd\u9ed2\u5c71\u9802\u21d2\u9db4\u5ca1",
+        "long": "\u7fbd\u9ed2\u5c71\u9802\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "13081",
+        "label": "\u9db4\u5ca1\u21d2\u3044\u3067\u306f\u6587\u5316\u8a18\u5ff5\u9928\u524d",
+        "long": "\u9db4\u5ca1\u21d2\u3044\u3067\u306f\u6587\u5316\u8a18\u5ff5\u9928\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "13082",
+        "label": "\u3044\u3067\u306f\u6587\u5316\u8a18\u5ff5\u9928\u524d\u21d2\u9db4\u5ca1",
+        "long": "\u3044\u3067\u306f\u6587\u5316\u8a18\u5ff5\u9928\u524d\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "13091",
+        "label": "\u9db4\u5ca1\u21d2\u6708\u5c71\u516b\u5408\u76ee",
+        "long": "\u9db4\u5ca1\u21d2\u6708\u5c71\u516b\u5408\u76ee",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "13092",
+        "label": "\u6708\u5c71\u516b\u5408\u76ee\u21d2\u9db4\u5ca1",
+        "long": "\u6708\u5c71\u516b\u5408\u76ee\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "14",
+        "label": "\u9152\u7530\u21d2\u9db4\u5ca1",
+        "long": "\u9152\u7530\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "14001",
+        "label": "\u9db4\u5ca1\u21d2\u5e84\u5185\u7a7a\u6e2f",
+        "long": "\u9db4\u5ca1\u21d2\u5e84\u5185\u7a7a\u6e2f",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "14002",
+        "label": "\u5e84\u5185\u7a7a\u6e2f\u21d2\u9db4\u5ca1",
+        "long": "\u5e84\u5185\u7a7a\u6e2f\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "16013",
+        "label": "\u9db4\u5ca1\u5e02\u5185\u5faa\u74b0 A\u30b3\u30fc\u30b9\uff08\u53f3\u56de\u308a\uff09",
+        "long": "\u9db4\u5ca1\u5e02\u5185\u5faa\u74b0 A\u30b3\u30fc\u30b9\uff08\u53f3\u56de\u308a\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "16014",
+        "label": "\u9db4\u5ca1\u5e02\u5185\u5faa\u74b0 A\u30b3\u30fc\u30b9\uff08\u5de6\u56de\u308a\uff09",
+        "long": "\u9db4\u5ca1\u5e02\u5185\u5faa\u74b0 A\u30b3\u30fc\u30b9\uff08\u5de6\u56de\u308a\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "16023",
+        "label": "\u9db4\u5ca1\u5e02\u5185\u5faa\u74b0 B\u30b3\u30fc\u30b9\uff08\u53f3\u56de\u308a\uff09",
+        "long": "\u9db4\u5ca1\u5e02\u5185\u5faa\u74b0 B\u30b3\u30fc\u30b9\uff08\u53f3\u56de\u308a\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "16024",
+        "label": "\u9db4\u5ca1\u5e02\u5185\u5faa\u74b0 B\u30b3\u30fc\u30b9\uff08\u5de6\u56de\u308a\uff09",
+        "long": "\u9db4\u5ca1\u5e02\u5185\u5faa\u74b0 B\u30b3\u30fc\u30b9\uff08\u5de6\u56de\u308a\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "16033",
+        "label": "\u9db4\u5ca1\u5e02\u5185\u5faa\u74b0 C\u30b3\u30fc\u30b9\uff08\u53f3\u56de\u308a\uff09",
+        "long": "\u9db4\u5ca1\u5e02\u5185\u5faa\u74b0 C\u30b3\u30fc\u30b9\uff08\u53f3\u56de\u308a\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "16034",
+        "label": "\u9db4\u5ca1\u5e02\u5185\u5faa\u74b0 C\u30b3\u30fc\u30b9\uff08\u5de6\u56de\u308a\uff09",
+        "long": "\u9db4\u5ca1\u5e02\u5185\u5faa\u74b0 C\u30b3\u30fc\u30b9\uff08\u5de6\u56de\u308a\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "23001",
+        "label": "\u9152\u7530\u21d2\u5e84\u5185\u7a7a\u6e2f",
+        "long": "\u9152\u7530\u21d2\u5e84\u5185\u7a7a\u6e2f",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "23002",
+        "label": "\u5e84\u5185\u7a7a\u6e2f\u21d2\u9152\u7530",
+        "long": "\u5e84\u5185\u7a7a\u6e2f\u21d2\u9152\u7530",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "33",
+        "label": "\u9db4\u5ca1\u21d2\u9152\u7530\u5149\u9675\u9ad8\u6821",
+        "long": "\u9db4\u5ca1\u21d2\u9152\u7530\u5149\u9675\u9ad8\u6821",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "40022",
+        "label": "\u671d\u65e5\u5e81\u820e\u21d2\u9db4\u5ca1",
+        "long": "\u671d\u65e5\u5e81\u820e\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "40032",
+        "label": "\u671d\u65e5\u5e81\u820e\u21d2\u4e2d\u592e\u9ad8\u6821",
+        "long": "\u671d\u65e5\u5e81\u820e\u21d2\u4e2d\u592e\u9ad8\u6821",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "40041",
+        "label": "\u9db4\u5ca1\u21d2\u30e4\u30de\u30b6\u30ef\u304f\u3057\u3073\u304d\u5e97\u21d2\u671d\u65e5\u5e81\u820e",
+        "long": "\u9db4\u5ca1\u21d2\u30e4\u30de\u30b6\u30ef\u304f\u3057\u3073\u304d\u5e97\u21d2\u671d\u65e5\u5e81\u820e",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "40042",
+        "label": "\u671d\u65e5\u5e81\u820e\u21d2\u30e4\u30de\u30b6\u30ef\u304f\u3057\u3073\u304d\u5e97\u21d2\u9db4\u5ca1",
+        "long": "\u671d\u65e5\u5e81\u820e\u21d2\u30e4\u30de\u30b6\u30ef\u304f\u3057\u3073\u304d\u5e97\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "41",
+        "label": "\u9db4\u5ca1\u21d2\u4e09\u5ddd",
+        "long": "\u9db4\u5ca1\u21d2\u4e09\u5ddd",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "44",
+        "label": "\u4e09\u5ddd\u21d2\u9db4\u5ca1",
+        "long": "\u4e09\u5ddd\u21d2\u9db4\u5ca1",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "71",
+        "label": "\u4e09\u5ddd\u21d2\u9152\u7530",
+        "long": "\u4e09\u5ddd\u21d2\u9152\u7530",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F0F0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "72",
+        "label": "\u9152\u7530\u21d2\u4e09\u5ddd",
+        "long": "\u9152\u7530\u21d2\u4e09\u5ddd",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1023,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "missing_required_column",
+      "count": 3,
+      "effort": "Often an export setting; ask your vendor if it recurs.",
+      "fix": "Add the required column named in the finding to the flagged file.",
+      "owner": "Likely your export tool",
+      "points": 12.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "A file is missing a column that GTFS requires.",
+      "why": "Apps may reject the whole file, so riders could lose the affected routes or stops."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1023,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "1023 of 1023 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 294,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "294 of 294 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

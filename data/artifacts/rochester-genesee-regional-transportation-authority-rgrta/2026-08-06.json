@@ -1,0 +1,2623 @@
+{
+  "agency": {
+    "id": "rochester-genesee-regional-transportation-authority-rgrta",
+    "name": "Rochester-Genesee Regional Transportation Authority (RGRTA)",
+    "subdivision_code": "US-NY",
+    "subdivision_name": "New York"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 38.4,
+          "stops_marked_accessible_pct": 1.5,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 1.5,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": true,
+          "supported": true
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.4,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 9035,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1860,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 9035,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 1.5,
+        "wheelchair_marked_accessible_pct": 1.5,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1833,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 24.6,
+          "severity": "WARNING",
+          "what": "1833 of 1860 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 67.9,
+      "status": "measured",
+      "summary": "1% of stops state wheelchair accessibility (1% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 11,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 0,
+          "WARNING": 3032
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 2428,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 481,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "duplicate_route_name",
+          "count": 67,
+          "effort": "One field per route.",
+          "fix": "Give each route a distinct short or long name.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Two or more routes share the same name.",
+          "why": "Riders can't tell the routes apart in apps."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 44,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 4,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 3,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 1,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "same_name_and_description_for_stop",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Same name and description for stop (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 1,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 1,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        }
+      ],
+      "name": "correctness",
+      "score": 42.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 11 kinds of issue across 3032 instances (0 error, 3032 warning, 0 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 31,
+        "effective_expiry_date": "2026-09-06",
+        "feed_end_date": "2026-09-06",
+        "feed_start_date": "2026-04-06",
+        "feed_version": "AprJun26_Merged",
+        "has_feed_info": true,
+        "last_service_date": "2026-09-06",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 51.7,
+      "status": "measured",
+      "summary": "Service data covers the next 31 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "configured_kinds": [
+          "vehicle_positions"
+        ],
+        "coverage_pct": null,
+        "kinds_configured": 1,
+        "kinds_reachable": 1,
+        "reachable_kinds": [
+          "vehicle_positions"
+        ],
+        "rt_freshness": "fresh",
+        "samples": 3,
+        "worst_lag_seconds": 0
+      },
+      "findings": [],
+      "name": "realtime",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Sampled 3 times: 1 of 1 configured feed healthy; vehicle position plausibility was not measurable.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 3 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 43 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 2% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 2% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "c28596b06ac6539ff18c0c03d5729e39d25625ee0b44361d689d9ed781260502",
+    "size_bytes": 3411755,
+    "static_url": "https://scheduledata.rgrta.com/google_transit.zip"
+  },
+  "fetch": {
+    "final_url": "https://scheduledata.rgrta.com/google_transit.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-25T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -77.7594,
+      43.04457,
+      -76.99252,
+      43.25907
+    ],
+    "lat": 43.15806,
+    "lon": -77.60905,
+    "stop_count": 1860
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 189,
+        "trip_count": 9035,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 189,
+    "trip_count": 9035
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "RGRTA"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data covers the next 43 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "ready",
+    "summary": "Published at a public URL, valid, current, and identified with agency_id: the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 filings make that official; this is a heads-up, not a determination."
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 2.0,
+    "margin_to_next_band": 8.0,
+    "score": 62.0
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 157,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "157 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (3, 4, 5, 8, 11, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 1784,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "1784 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Airport & Brooks\", \"Airport & Terminal Lower Level\", \"Alexander & Gardiner\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1859,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 1,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "1 of 1859 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 1,
+    "single_stop_trips": 0,
+    "trips_total": 9035
+  },
+  "route_map": {
+    "drawn_route_count": 185,
+    "has_shapes": true,
+    "path": "data/artifacts/rochester-genesee-regional-transportation-authority-rgrta/geometry.geojson",
+    "route_count": 189,
+    "routes": [
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43306",
+        "label": "1",
+        "long": "St Paul",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43307",
+        "label": "2",
+        "long": "North Clinton",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "43308",
+        "label": "3",
+        "long": "Joseph",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "43309",
+        "label": "4",
+        "long": "Hudson",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "43310",
+        "label": "5",
+        "long": "Portland",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43311",
+        "label": "6",
+        "long": "North Goodman",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43312",
+        "label": "7",
+        "long": "Clifford/Empire",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "43313",
+        "label": "8",
+        "long": "East Main",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43314",
+        "label": "9",
+        "long": "University",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43315",
+        "label": "10",
+        "long": "Park",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "43316",
+        "label": "11",
+        "long": "Monroe",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43317",
+        "label": "12",
+        "long": "South Clinton",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43318",
+        "label": "13",
+        "long": "South Ave",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43319",
+        "label": "14",
+        "long": "Marketplace",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43320",
+        "label": "15",
+        "long": "Plymouth",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "43321",
+        "label": "16",
+        "long": "Genesee",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43322",
+        "label": "17",
+        "long": "Jefferson/19th Ward",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43323",
+        "label": "18",
+        "long": "Chili",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43324",
+        "label": "19",
+        "long": "Buffalo Rd",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43325",
+        "label": "20",
+        "long": "Lyell",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "43326",
+        "label": "21",
+        "long": "Dewey",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "43327",
+        "label": "22",
+        "long": "Lake",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43328",
+        "label": "23",
+        "long": "West Ave/Airport",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43329",
+        "label": "24",
+        "long": "Bay St",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "60D0E4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43330",
+        "label": "40",
+        "long": "Ridge Crosstown",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "60D0E4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43331",
+        "label": "41",
+        "long": "Culver/Goodman Crosstown",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "60D0E4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43332",
+        "label": "50",
+        "long": "Fairport/Penfield",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "77BC1F",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "43334",
+        "label": "91",
+        "long": "Newark/Lyons Commuter",
+        "short": "91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "77BC1F",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "43335",
+        "label": "97",
+        "long": "Elmwood Commuter",
+        "short": "97",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43336",
+        "label": "270",
+        "long": "Maplewood-Charlotte/Prince",
+        "short": "270",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43337",
+        "label": "271",
+        "long": "Maplewood-Dewey/Prince",
+        "short": "271",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43338",
+        "label": "272",
+        "long": "Edgerton/Prince",
+        "short": "272",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43339",
+        "label": "273",
+        "long": "Lyell-Otis/Prince",
+        "short": "273",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43340",
+        "label": "274",
+        "long": "Dutchtown/Prince",
+        "short": "274",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43341",
+        "label": "275",
+        "long": "19th Ward NW/Prince",
+        "short": "275",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43342",
+        "label": "276",
+        "long": "19th Ward SE/Prince",
+        "short": "276",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43343",
+        "label": "277",
+        "long": "Genesee/Prince",
+        "short": "277",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43344",
+        "label": "278",
+        "long": "Mayors Heights-Plymouth/Princ",
+        "short": "278",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43345",
+        "label": "280",
+        "long": "Highland-Strong/Prince",
+        "short": "280",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43346",
+        "label": "281",
+        "long": "N Winton Village/Prince",
+        "short": "281",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43347",
+        "label": "283",
+        "long": "N Marketview-Northland/Prince",
+        "short": "283",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43348",
+        "label": "284",
+        "long": "N Goodman-Portland/Prince",
+        "short": "284",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43349",
+        "label": "285",
+        "long": "Joseph/Prince",
+        "short": "285",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43350",
+        "label": "286",
+        "long": "Hudson-Carter/Prince",
+        "short": "286",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43351",
+        "label": "287",
+        "long": "St Paul-N Clinton/Prince",
+        "short": "287",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43352",
+        "label": "289",
+        "long": "Park Ave/Prince",
+        "short": "289",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43353",
+        "label": "350",
+        "long": "Maplewood-Charlotte/Edison",
+        "short": "350",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43354",
+        "label": "351",
+        "long": "Gen-19th Ward SE/Edison",
+        "short": "351",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43355",
+        "label": "352",
+        "long": "Maplewood-Dewey/Edison",
+        "short": "352",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43356",
+        "label": "353",
+        "long": "Edgerton/Edison",
+        "short": "353",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43357",
+        "label": "354",
+        "long": "Dutchtown-Myrs Hgts/Edison",
+        "short": "354",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43358",
+        "label": "355",
+        "long": "19th Ward NW/Edison",
+        "short": "355",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43359",
+        "label": "356",
+        "long": "Beechwood/Colfax",
+        "short": "356",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43360",
+        "label": "357",
+        "long": "Mayors Hgts-Plymth/Colfax",
+        "short": "357",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43361",
+        "label": "358",
+        "long": "NMarketview-Homestead/Colfax",
+        "short": "358",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43362",
+        "label": "359",
+        "long": "St Paul-N Clinton/Edison",
+        "short": "359",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43363",
+        "label": "360",
+        "long": "Genesee/Colfax",
+        "short": "360",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43364",
+        "label": "361",
+        "long": "Joseph-Hudson/Edison",
+        "short": "361",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43365",
+        "label": "362",
+        "long": "NWintonVillage/Edison",
+        "short": "362",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43366",
+        "label": "363",
+        "long": "N Mrkt-Nrthlnd-Lyceum/Edison",
+        "short": "363",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43367",
+        "label": "364",
+        "long": "Portland-Goodman/Edison",
+        "short": "364",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43368",
+        "label": "366",
+        "long": "Hudson-Carter/Colfax",
+        "short": "366",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43369",
+        "label": "367",
+        "long": "NGoodman/Colfax",
+        "short": "367",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43370",
+        "label": "368",
+        "long": "City SE/Edison",
+        "short": "368",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43371",
+        "label": "420",
+        "long": "Genesee/Norton",
+        "short": "420",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43372",
+        "label": "421",
+        "long": "Webster-Culver/Norton",
+        "short": "421",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43373",
+        "label": "422",
+        "long": "Dutchtown/Norton",
+        "short": "422",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43374",
+        "label": "423",
+        "long": "Lyell-Otis/Norton",
+        "short": "423",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43375",
+        "label": "425",
+        "long": "19th Ward SE/Norton",
+        "short": "425",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43376",
+        "label": "426",
+        "long": "Edgerton/Norton",
+        "short": "426",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43377",
+        "label": "427",
+        "long": "Mayors Heights-Plymouth/Norto",
+        "short": "427",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43378",
+        "label": "428",
+        "long": "Northland-Lyceum/Norton",
+        "short": "428",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43379",
+        "label": "429",
+        "long": "N Marketview-Beechwood/Norton",
+        "short": "429",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43380",
+        "label": "430",
+        "long": "N Goodman/Norton",
+        "short": "430",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43381",
+        "label": "433",
+        "long": "19th Ward NW/Norton",
+        "short": "433",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43382",
+        "label": "434",
+        "long": "N Winton Village/Norton",
+        "short": "434",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43383",
+        "label": "435",
+        "long": "St Paul/Norton",
+        "short": "435",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43384",
+        "label": "436",
+        "long": "City SE/Norton",
+        "short": "436",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43385",
+        "label": "437",
+        "long": "N Clinton/Norton",
+        "short": "437",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43386",
+        "label": "438",
+        "long": "Maplewood-Charlotte/Norton",
+        "short": "438",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43387",
+        "label": "439",
+        "long": "Maplewood-Dewey/Norton",
+        "short": "439",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43388",
+        "label": "440",
+        "long": "Maplewood-Charlotte/Genesee",
+        "short": "440",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43389",
+        "label": "441",
+        "long": "Dutchtown-19th Ward NW/Genese",
+        "short": "441",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43390",
+        "label": "442",
+        "long": "St Paul-N Clinton/Genesee",
+        "short": "442",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43391",
+        "label": "443",
+        "long": "Joseph-Hudson/Genesee",
+        "short": "443",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43392",
+        "label": "444",
+        "long": "E Main-Winton/Genesee",
+        "short": "444",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43393",
+        "label": "445",
+        "long": "Winton-N Mrktvw-Bchwd/Genesee",
+        "short": "445",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43394",
+        "label": "446",
+        "long": "Lyell-Otis-Edgerton/Genesee",
+        "short": "446",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43395",
+        "label": "447",
+        "long": "City SE/Genesee",
+        "short": "447",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43396",
+        "label": "448",
+        "long": "Maplewood-Dewey/Genesee",
+        "short": "448",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43397",
+        "label": "450",
+        "long": "N Goodman-Portland/Genesee",
+        "short": "450",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43398",
+        "label": "751",
+        "long": "Maplewood-Charlotte/Monroe",
+        "short": "751",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43399",
+        "label": "752",
+        "long": "Maplwood-Dewey/Monroe",
+        "short": "752",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43400",
+        "label": "753",
+        "long": "19th Ward-Plym-City SE/Monroe",
+        "short": "753",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43401",
+        "label": "757",
+        "long": "Dutchtown/Monroe",
+        "short": "757",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43402",
+        "label": "758",
+        "long": "Genesee-19th Ward SE/Monroe",
+        "short": "758",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43403",
+        "label": "759",
+        "long": "Lyell-Otis-Edgerton/Monroe",
+        "short": "759",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43404",
+        "label": "760",
+        "long": "N Goodman-Portland/Monroe",
+        "short": "760",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43405",
+        "label": "761",
+        "long": "Hudson/Monroe",
+        "short": "761",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43406",
+        "label": "762",
+        "long": "St Paul/Monroe",
+        "short": "762",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43407",
+        "label": "763",
+        "long": "Northland-Lyceum/Monroe",
+        "short": "763",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43408",
+        "label": "764",
+        "long": "N Clinton/Monroe",
+        "short": "764",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43409",
+        "label": "765",
+        "long": "NWint Vlg-Bchwd-Cob Hill/Mnro",
+        "short": "765",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43410",
+        "label": "766",
+        "long": "Portland/Monroe",
+        "short": "766",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43411",
+        "label": "768",
+        "long": "N Wntn Vlg-Beechwood/Monroe",
+        "short": "768",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "43412",
+        "label": "800",
+        "long": "Misc School AM & REG",
+        "short": "800",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43413",
+        "label": "807",
+        "long": "Monroe Ave",
+        "short": "807",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "43414",
+        "label": "810",
+        "long": "Misc School - ED",
+        "short": "810",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43415",
+        "label": "825",
+        "long": "Plymouth/E Main",
+        "short": "825",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43416",
+        "label": "826",
+        "long": "N Clinton-St Paul/East",
+        "short": "826",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43417",
+        "label": "827",
+        "long": "Genesee-19th Ward SE/East",
+        "short": "827",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43418",
+        "label": "828",
+        "long": "Portland-Goodman/East",
+        "short": "828",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43419",
+        "label": "829",
+        "long": "19th Ward NW/East",
+        "short": "829",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43420",
+        "label": "830",
+        "long": "Lyell-Otis-Dutchtown/East",
+        "short": "830",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43421",
+        "label": "831",
+        "long": "Maplewood - Dewey/East",
+        "short": "831",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43422",
+        "label": "832",
+        "long": "Maplewood-Charlotte/East",
+        "short": "832",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43423",
+        "label": "834",
+        "long": "Hudson-Joseph/East",
+        "short": "834",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43424",
+        "label": "835",
+        "long": "Hudson/E Main",
+        "short": "835",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43425",
+        "label": "837",
+        "long": "N Marketview-Northland/East",
+        "short": "837",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43426",
+        "label": "839",
+        "long": "City SE/East",
+        "short": "839",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "43427",
+        "label": "840",
+        "long": "Edgerton/East",
+        "short": "840",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "60D0E4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43550",
+        "label": "70",
+        "long": "Seabreeze Seasonal",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44161",
+        "label": "1",
+        "long": "St Paul",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44162",
+        "label": "2",
+        "long": "North Clinton",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "44163",
+        "label": "3",
+        "long": "Joseph",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "44164",
+        "label": "4",
+        "long": "Hudson",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "44165",
+        "label": "5",
+        "long": "Portland",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44166",
+        "label": "6",
+        "long": "North Goodman",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44167",
+        "label": "7",
+        "long": "Clifford/Empire",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "44168",
+        "label": "8",
+        "long": "East Main",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44169",
+        "label": "9",
+        "long": "University",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44170",
+        "label": "10",
+        "long": "Park",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "44171",
+        "label": "11",
+        "long": "Monroe",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44172",
+        "label": "12",
+        "long": "South Clinton",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44173",
+        "label": "13",
+        "long": "South Ave",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44174",
+        "label": "14",
+        "long": "Marketplace",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44175",
+        "label": "15",
+        "long": "Plymouth",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "44176",
+        "label": "16",
+        "long": "Genesee",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44177",
+        "label": "17",
+        "long": "Jefferson/19th Ward",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44178",
+        "label": "18",
+        "long": "Chili",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44179",
+        "label": "19",
+        "long": "Buffalo Rd",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44180",
+        "label": "20",
+        "long": "Lyell",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "44181",
+        "label": "21",
+        "long": "Dewey",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC6719",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "44182",
+        "label": "22",
+        "long": "Lake",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44183",
+        "label": "23",
+        "long": "West Ave/Airport",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44184",
+        "label": "24",
+        "long": "Bay St",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "60D0E4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44185",
+        "label": "40",
+        "long": "Ridge Crosstown",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "60D0E4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44186",
+        "label": "41",
+        "long": "Culver/Goodman Crosstown",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "60D0E4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44187",
+        "label": "50",
+        "long": "Fairport/Penfield",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "60D0E4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44188",
+        "label": "70",
+        "long": "Seabreeze Seasonal",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "77BC1F",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "44189",
+        "label": "91",
+        "long": "Newark/Lyons Commuter",
+        "short": "91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "77BC1F",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "44190",
+        "label": "97",
+        "long": "Elmwood Commuter",
+        "short": "97",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "44267",
+        "label": "800",
+        "long": "Misc School AM & REG",
+        "short": "800",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "44269",
+        "label": "810",
+        "long": "Misc School - ED",
+        "short": "810",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44405",
+        "label": "350",
+        "long": "Maplewood-Charlotte/Edison",
+        "short": "350",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44406",
+        "label": "351",
+        "long": "Gen-19th Ward SE/Edison",
+        "short": "351",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44407",
+        "label": "352",
+        "long": "Maplewood-Dewey/Edison",
+        "short": "352",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44408",
+        "label": "353",
+        "long": "Edgerton/Edison",
+        "short": "353",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44409",
+        "label": "354",
+        "long": "Dutchtown-Myrs Hgts/Edison",
+        "short": "354",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44410",
+        "label": "355",
+        "long": "19th Ward NW/Edison",
+        "short": "355",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44412",
+        "label": "359",
+        "long": "St Paul-N Clinton/Edison",
+        "short": "359",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44413",
+        "label": "361",
+        "long": "Joseph-Hudson/Edison",
+        "short": "361",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44414",
+        "label": "362",
+        "long": "NWintonVillage/Edison",
+        "short": "362",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44415",
+        "label": "363",
+        "long": "N Mrkt-Nrthlnd-Lyceum/Edison",
+        "short": "363",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44416",
+        "label": "364",
+        "long": "Portland-Goodman/Edison",
+        "short": "364",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44417",
+        "label": "368",
+        "long": "City SE/Edison",
+        "short": "368",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44418",
+        "label": "751",
+        "long": "Maplewood-Charlotte/Monroe",
+        "short": "751",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44419",
+        "label": "752",
+        "long": "Maplwood-Dewey/Monroe",
+        "short": "752",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44420",
+        "label": "753",
+        "long": "19th Ward-Plym-City SE/Monroe",
+        "short": "753",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44422",
+        "label": "757",
+        "long": "Dutchtown/Monroe",
+        "short": "757",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44423",
+        "label": "758",
+        "long": "Genesee-19th Ward SE/Monroe",
+        "short": "758",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44424",
+        "label": "759",
+        "long": "Lyell-Otis-Edgerton/Monroe",
+        "short": "759",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44425",
+        "label": "760",
+        "long": "N Goodman-Portland/Monroe",
+        "short": "760",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44426",
+        "label": "761",
+        "long": "Hudson/Monroe",
+        "short": "761",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44427",
+        "label": "762",
+        "long": "St Paul/Monroe",
+        "short": "762",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44428",
+        "label": "763",
+        "long": "Northland-Lyceum/Monroe",
+        "short": "763",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44430",
+        "label": "765",
+        "long": "NWint Vlg-Bchwd-Cob Hill/Mnro",
+        "short": "765",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44431",
+        "label": "768",
+        "long": "N Wntn Vlg-Beechwood/Monroe",
+        "short": "768",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44433",
+        "label": "826",
+        "long": "N Clinton-St Paul/East",
+        "short": "826",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44434",
+        "label": "827",
+        "long": "Genesee-19th Ward SE/East",
+        "short": "827",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44435",
+        "label": "828",
+        "long": "Portland-Goodman/East",
+        "short": "828",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44436",
+        "label": "829",
+        "long": "19th Ward NW/East",
+        "short": "829",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44437",
+        "label": "830",
+        "long": "Lyell-Otis-Dutchtown/East",
+        "short": "830",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44438",
+        "label": "831",
+        "long": "Maplewood - Dewey/East",
+        "short": "831",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44439",
+        "label": "832",
+        "long": "Maplewood-Charlotte/East",
+        "short": "832",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44440",
+        "label": "834",
+        "long": "Hudson-Joseph/East",
+        "short": "834",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44441",
+        "label": "837",
+        "long": "N Marketview-Northland/East",
+        "short": "837",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44442",
+        "label": "839",
+        "long": "City SE/East",
+        "short": "839",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "748693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "44443",
+        "label": "840",
+        "long": "Edgerton/East",
+        "short": "840",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1860,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 9035 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 9035,
+    "trips_with_shape": 9035
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1833,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 24.6,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "1833 of 1860 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "stop_too_far_from_shape_using_user_distance",
+      "count": 2428,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+      "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+    },
+    {
+      "code": "fast_travel_between_consecutive_stops",
+      "count": 481,
+      "effort": "A few minutes per flagged trip.",
+      "fix": "Check the flagged stop times for transposed minutes.",
+      "owner": "",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some scheduled trips move faster between stops than a bus can.",
+      "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,24 +1,40 @@
 {
   "agency_count": 7,
-  "average_score": null,
-  "common_fixes": [],
+  "average_score": 69.2,
+  "common_fixes": [
+    {
+      "agencies": 3,
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "agencies": 3,
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip."
+    }
+  ],
   "comparison": {
     "absolute_rankings_published": false,
-    "eligible_count": 0,
-    "excluded_count": 7,
+    "eligible_count": 3,
+    "excluded_count": 4,
     "exclusion_counts": {
-      "rubric_version_mismatch": 7,
-      "scoring_profile_missing": 7,
-      "scoring_profile_rubric_missing": 7,
+      "measured_category_set_mismatch": 1,
       "service_data_long_expired": 3
     },
     "individual_percentiles_published": false,
-    "measured_category_cohorts": {},
-    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
-    "required_measured_categories": [],
+    "measured_category_cohorts": {
+      "correctness+freshness+completeness": 3,
+      "correctness+freshness+completeness+realtime": 1
+    },
+    "note": "Score aggregates and named changes use one current producer contract, raw reader archive profile, and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [
+      "correctness",
+      "freshness",
+      "completeness"
+    ],
     "required_reader_archive_profile": "raw-v1",
-    "required_rubric_version": "1.2",
-    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_rubric_version": "1.3",
+    "required_scoring_profile_id": "gtfs-scorecard-1.3",
     "required_validator_version": "8.0.1"
   },
   "expired": {
@@ -26,41 +42,16 @@
     "stale": 3,
     "total": 3
   },
-  "generated_at": "2026-07-14T09:01:50+00:00",
-  "grade_distribution": {},
+  "generated_at": "2026-08-07T02:19:46+00:00",
+  "grade_distribution": {
+    "C": 2,
+    "F": 1
+  },
   "members": [
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 21 day(s)",
-      "days_until_expiry": 21,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "blue-grass-community-action-partnership",
-      "name": "Bluegrass Ultra-Transit Service",
-      "needs_attention": true,
-      "score": 63.1,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 22 day(s)",
-      "days_until_expiry": 22,
-      "expiry_status": "expiring_soon",
-      "grade": "D",
-      "id": "transit-authority-of-river-city-tarc-2662",
-      "name": "Fixed Route",
-      "needs_attention": true,
-      "score": 62.9,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export with a validity window that reaches at least 60 days out."
-    },
-    {
-      "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1798,
+      "days_until_expiry": -1826,
       "expiry_status": "stale",
       "grade": "F",
       "id": "lextran",
@@ -68,27 +59,29 @@
       "needs_attention": true,
       "score": 36.5,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 36 day(s)",
-      "days_until_expiry": 36,
-      "expiry_status": "current",
-      "grade": "D",
+      "attention_reason": "Service data expires in 8 day(s)",
+      "days_until_expiry": 8,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
       "id": "lextran-2067",
       "name": "Lextran",
       "needs_attention": true,
-      "score": 66.8,
+      "score": 57.4,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "top_fix_code": "scorecard_feed_expiring_soon"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -922,
+      "days_until_expiry": -950,
       "expiry_status": "stale",
       "grade": "F",
       "id": "transit-authority-of-northern-kentucky-tank",
@@ -96,13 +89,14 @@
       "needs_attention": true,
       "score": 30.6,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -398,
+      "days_until_expiry": -426,
       "expiry_status": "stale",
       "grade": "F",
       "id": "transit-authority-of-river-city-tarc",
@@ -110,35 +104,67 @@
       "needs_attention": true,
       "score": 16.4,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 119,
+      "days_until_expiry": 146,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "blue-grass-community-action-partnership",
+      "name": "Bluegrass Ultra-Transit Service",
+      "needs_attention": false,
+      "score": 79.3,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "top_fix_code": "scorecard_wheelchair_boarding_unknown"
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 91,
       "expiry_status": "current",
       "grade": "C",
       "id": "transit-authority-of-northern-kentucky-tank-2068",
       "name": "Transit Authority of Northern Kentucky (TANK)",
       "needs_attention": false,
       "score": 70.9,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "top_fix_code": "scorecard_wheelchair_boarding_unknown"
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 155,
+      "expiry_status": "current",
+      "grade": "C",
+      "id": "transit-authority-of-river-city-tarc-2662",
+      "name": "Transit Authority of River City (TARC) Fixed Route",
+      "needs_attention": false,
+      "score": 72.5,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "top_fix_code": "scorecard_wheelchair_boarding_unknown"
     }
   ],
-  "needs_attention": 6,
+  "needs_attention": 4,
   "rollup": {
     "id": "kentucky",
     "name": "Kentucky agencies"
   },
-  "schema_version": "1.11",
+  "schema_version": "1.17",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 3,
+    "not_measured": 0,
     "not_ready": 0,
-    "ready": 4,
+    "ready": 7,
     "total": 7
   },
   "state_percentile": null

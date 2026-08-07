@@ -1,0 +1,801 @@
+{
+  "agency": {
+    "country": "IT",
+    "id": "actv-venezia-navigazione",
+    "name": "ACTV Venezia (vaporetto navigation)",
+    "operating_note": "The waterborne vaporetto network, a distinct published feed from the same organization as the road network record.",
+    "subdivision_code": "IT-34",
+    "subdivision_name": "Veneto"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 14461,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 154,
+        "translations": {
+          "feed_lang": "IT",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 14461,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 154,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every terminal. A field survey can start with the busiest terminals.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "154 of 154 terminals don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 14461,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "14461 of 14461 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible terminals, riders need to know the vessel itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.5,
+      "status": "measured",
+      "summary": "0% of terminals state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a terminal is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 8,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 29,
+          "WARNING": 169732
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_timepoint_value",
+          "count": 155247,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_timepoint_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Missing timepoint value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_bike_allowance",
+          "count": 14461,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_bike_allowance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Missing bike allowance (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 14,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some terminals exist in the feed but no trip serves them.",
+          "why": "Riders may go to a terminal where no vessel is scheduled to arrive."
+        },
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 7,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 1,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 1,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "unknown_column",
+          "count": 29,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        }
+      ],
+      "name": "correctness",
+      "score": 59.2,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 8 kinds of issue across 169761 instances (0 error, 169732 warning, 29 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 24,
+        "effective_expiry_date": "2026-08-31",
+        "feed_end_date": "2026-08-31",
+        "feed_start_date": "2026-07-15",
+        "feed_version": null,
+        "has_feed_info": true,
+        "last_service_date": "2026-08-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expiring_soon",
+          "count": 1,
+          "effort": "One export setting.",
+          "fix": "Re-export with a validity window that reaches at least 60 days out.",
+          "owner": "Likely your export tool",
+          "points": 56.0,
+          "severity": "WARNING",
+          "what": "Service data runs out in 24 day(s).",
+          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+        }
+      ],
+      "name": "freshness",
+      "score": 40.0,
+      "status": "measured",
+      "summary": "Service data runs out in 24 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data runs out in 26 days; renew to qualify.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 0% of terminals and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. Service data runs out in 26 days; renew to qualify. States wheelchair access on 0% of terminals and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Creative Commons Attribution through Venice's municipal open data catalog; credit ACTV and the Comune di Venezia.",
+    "reachable": true,
+    "sha256": "595f9898c553bc72bc72b91b85f7ff1748c506bda13a4c305aa909e9cce60545",
+    "size_bytes": 2144422,
+    "static_url": "http://actv.avmspa.it/sites/default/files/attachments/opendata/navigazione/actv_nav.zip"
+  },
+  "ferry_profile": {
+    "accessibility": {
+      "measures": "published_values_not_physical_usability",
+      "terminals": {
+        "allowed_count": 0,
+        "allowed_pct": 0.0,
+        "not_allowed_count": 0,
+        "not_allowed_pct": 0.0,
+        "stated_count": 0,
+        "stated_pct": 0.0,
+        "total_count": 140
+      },
+      "trips": {
+        "allowed_count": 0,
+        "allowed_pct": 0.0,
+        "not_allowed_count": 0,
+        "not_allowed_pct": 0.0,
+        "stated_count": 0,
+        "stated_pct": 0.0,
+        "total_count": 14461
+      }
+    },
+    "bikes": {
+      "allowed_count": 0,
+      "allowed_pct": 0.0,
+      "not_allowed_count": 0,
+      "not_allowed_pct": 0.0,
+      "stated_count": 0,
+      "stated_pct": 0.0,
+      "total_count": 14461
+    },
+    "cars": {
+      "allowed_count": 0,
+      "allowed_pct": 0.0,
+      "not_allowed_count": 0,
+      "not_allowed_pct": 0.0,
+      "stated_count": 0,
+      "stated_pct": 0.0,
+      "total_count": 14461
+    },
+    "fares": {
+      "applied": false,
+      "fare_free": false,
+      "model": "none",
+      "scope": "whole_feed"
+    },
+    "graded": false,
+    "measured": true,
+    "realtime": {
+      "configured_kinds": [],
+      "kinds_configured": 0,
+      "scope": "whole_feed"
+    },
+    "route_count": 25,
+    "scope": "ferry_routes_and_trips",
+    "stop_access": {
+      "direct_count": 0,
+      "eligible_terminal_count": 0,
+      "stated_count": 0,
+      "stated_pct": null,
+      "through_station_count": 0
+    },
+    "terminal_hierarchy": {
+      "boarding_location_count": 140,
+      "parented_boarding_location_count": 0,
+      "parented_boarding_location_pct": 0.0,
+      "referenced_station_count": 0
+    },
+    "trip_count": 14461
+  },
+  "fetch": {
+    "final_url": "https://actv.avmspa.it/sites/default/files/attachments/opendata/navigazione/actv_nav.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      12.28028,
+      45.22369,
+      12.44712,
+      45.49509
+    ],
+    "lat": 45.4378,
+    "lon": 12.34157,
+    "stop_count": 154
+  },
+  "mode_profile": {
+    "ferry_only": true,
+    "graded": false,
+    "has_ferry": true,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "ferry",
+        "label": "Ferry",
+        "route_count": 25,
+        "trip_count": 14461,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "ferry",
+    "primary_mode_label": "Ferry",
+    "route_count": 25,
+    "trip_count": 14461
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 47.6,
+    "margin_to_next_band": 12.4,
+    "score": 47.6
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 7,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "7 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (15, 17, 7, 9, 22, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 154,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 14,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "14 of 154 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 14,
+    "single_stop_trips": 0,
+    "trips_total": 14461
+  },
+  "route_map": {
+    "drawn_route_count": 25,
+    "has_shapes": true,
+    "path": "data/artifacts/actv-venezia-navigazione/geometry.geojson",
+    "route_count": 25,
+    "routes": [
+      {
+        "color": "4DC8E9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "10_UN",
+        "label": "10",
+        "long": "Lido S.M.E. \"E\" - Zattere \"B\"",
+        "short": "10",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "F7ACBC",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11_UN",
+        "label": "11",
+        "long": "Pellestrina Cimitero - Chioggia",
+        "short": "11",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "DAD635",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "12_UN",
+        "label": "12",
+        "long": "Punta Sabbioni \"A\" - F.te Nove \"A\"",
+        "short": "12",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "57419A",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "13_UN",
+        "label": "13",
+        "long": "F.te Nove \"D\" - Treporti",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "F37736",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "14_UN",
+        "label": "14",
+        "long": "S. Marco-San Zaccaria \"A\" - Punta Sabbioni \"B\"",
+        "short": "14",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "DD7127",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "15_UN",
+        "label": "15",
+        "long": "S. Marco-San Zaccaria \"A\" - Punta Sabbioni \"A\"",
+        "short": "15",
+        "text_color": "D9D535",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "82868C",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "17_UN",
+        "label": "17",
+        "long": "Punta Sabbioni - Lido S. Nicolo' Ferry",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "FFD52B",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "18_UN",
+        "label": "18",
+        "long": "Murano Navagero - Murano Navagero",
+        "short": "18",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "1_UN",
+        "label": "1",
+        "long": "Arsenale \"B\" - Lido S.M.E. \"D\"",
+        "short": "1",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2/_UN",
+        "label": "2/",
+        "long": "P.le Roma \"F\" - Rialto \"D\"",
+        "short": "2/",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "C7AAD1",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "20_UN",
+        "label": "20",
+        "long": "S. Servolo - S. Marco-San Zaccaria \"B\"",
+        "short": "20",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "C4C130",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "22_UN",
+        "label": "22",
+        "long": "Punta Sabbioni \"A\" - F.te Nove \"C\"",
+        "short": "22",
+        "text_color": "00646A",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2_UN",
+        "label": "2",
+        "long": "S. Marco-San Zaccaria \"B\" - Lido S.M.E. \"E\"",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "F9A262",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "3_UN",
+        "label": "3",
+        "long": "P.le Roma \"D\" - P.le Roma \"E\"",
+        "short": "3",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "B43B96",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4.1_UN",
+        "label": "4.1",
+        "long": "Giardini Biennale \"B\" - Murano Museo \"A\"",
+        "short": "4.1",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "B43B96",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4.2_UN",
+        "label": "4.2",
+        "long": "P.le Roma \"D\" - F.te Nove \"B\"",
+        "short": "4.2",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "8FD2BF",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "5.1_UN",
+        "label": "5.1",
+        "long": "Lido S.M.E. \"A\" - F.te Nove \"C\"",
+        "short": "5.1",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "8FD2BF",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "5.2_UN",
+        "label": "5.2",
+        "long": "F.te Nove \"D\" - Lido S.M.E. \"A\"",
+        "short": "5.2",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "006BB7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "6_UN",
+        "label": "6",
+        "long": "P.le Roma \"B\" - Lido S.M.E. \"B\"",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "009366",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "7_UN",
+        "label": "7",
+        "long": "S. Marco-San Zaccaria \"E\" - S. Marco-San Zaccaria \"E\"",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "82683B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "8_UN",
+        "label": "8",
+        "long": "S. Basilio - Lido S. Nicolo'",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "948F03",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "9_UN",
+        "label": "9",
+        "long": "Burano \"A\" - Torcello",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "25408D",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "NLN_UN",
+        "label": "NLN",
+        "long": "F.te Nove \"D\" - Treporti",
+        "short": "NLN",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "25408D",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "NMU_UN",
+        "label": "NMU",
+        "long": "F.te Nove \"B\" - F.te Nove \"B\"",
+        "short": "NMU",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "25408D",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "N_UN",
+        "label": "N",
+        "long": "Punta Sabbioni \"B\" - Lido S.M.E. \"C\"",
+        "short": "N",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      }
+    ],
+    "stop_count": 154,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expiring_soon",
+      "count": 1,
+      "effort": "One export setting.",
+      "fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "owner": "Likely your export tool",
+      "points": 56.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "Service data runs out in 24 day(s).",
+      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 154,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every terminal. A field survey can start with the busiest terminals.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "154 of 154 terminals don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 14461,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "14461 of 14461 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible terminals, riders need to know the vessel itself can take them."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

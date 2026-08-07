@@ -1,0 +1,526 @@
+{
+  "agency": {
+    "id": "auburn-transit-2275",
+    "name": "Auburn Transit",
+    "subdivision_code": "US-CA",
+    "subdivision_name": "California"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 0.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": true,
+          "has_products": true,
+          "has_transfer_rules": true,
+          "model": "v2",
+          "product_count": 13
+        },
+        "flex": {
+          "booking_reachable": true,
+          "booking_rule_count": 1,
+          "has_booking_rules": true,
+          "has_flex": true
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 8,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 0.0,
+        "headsign_scored_pct": 0.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 57,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 8,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 57,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "57 of 57 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 8,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "8 of 8 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 8,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "8 of 8 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_flex_service",
+          "count": 1,
+          "effort": "None.",
+          "fix": "No action needed.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "INFO",
+          "what": "This feed includes flexible (demand-responsive) service, and riders are told how to book it.",
+          "why": "Dial-a-ride and zone service are described for trip planners, not just fixed routes."
+        }
+      ],
+      "name": "completeness",
+      "score": 45.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 8,
+        "instances_by_severity": {
+          "ERROR": 4,
+          "INFO": 80,
+          "WARNING": 25
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_required_field",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_required_field' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Missing required field (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "invalid_url",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'invalid_url' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Invalid url (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_required_column",
+          "count": 1,
+          "effort": "Often an export setting; ask your vendor if it recurs.",
+          "fix": "Add the required column named in the finding to the flagged file.",
+          "owner": "Likely your export tool",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "A file is missing a column that GTFS requires.",
+          "why": "Apps may reject the whole file, so riders could lose the affected routes or stops."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 25,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
+        },
+        {
+          "code": "unknown_column",
+          "count": 69,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "unknown_file",
+          "count": 9,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        },
+        {
+          "code": "service_extends_far_in_the_future",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'service_extends_far_in_the_future' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Service extends far in the future (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "service_window_outside_feed_period",
+          "count": 1,
+          "effort": "Two fields in feed_info.txt, or one export setting.",
+          "fix": "Widen feed_start_date and feed_end_date to cover all service dates, or fix the dates that fall outside.",
+          "owner": "Likely your export tool",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some service dates fall outside the date window set in feed_info.txt.",
+          "why": "feed_info.txt should span every day your service runs, so apps know when the data applies."
+        }
+      ],
+      "name": "correctness",
+      "score": 55.2,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 8 kinds of issue across 109 instances (4 error, 25 warning, 80 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 1608,
+        "effective_expiry_date": "2030-12-31",
+        "feed_end_date": "2030-12-31",
+        "feed_start_date": "2021-11-03",
+        "feed_version": "UTC: 03-Nov-2021 15:04",
+        "has_feed_info": true,
+        "last_service_date": "2099-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 1608 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "3 validator errors to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 1620 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 3 validator errors to resolve. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "fcc70bb86c6c154028a2336076b8e7a8bc1e9d48c3910de6997adc9f5a13d02a",
+    "size_bytes": 28082,
+    "static_url": "https://www.auburn.ca.gov/DocumentCenter/View/3431"
+  },
+  "fetch": {
+    "final_url": "https://www.auburn.ca.gov/DocumentCenter/View/3431/03262024-auburn-transit?bidId=",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-25T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -121.08294,
+      38.87836,
+      -121.03578,
+      38.93194
+    ],
+    "lat": 38.90825,
+    "lon": -121.0722,
+    "stop_count": 57
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 3,
+        "trip_count": 8,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 3,
+    "trip_count": 8
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "1593"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "3 validator errors to resolve.",
+        "key": "valid",
+        "status": "at_risk"
+      },
+      {
+        "detail": "Service data covers the next 1620 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "at_risk",
+    "summary": "This feed is close to NTD-ready. 3 validator errors to resolve."
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 3.2,
+    "margin_to_next_band": 6.8,
+    "score": 63.2
+  },
+  "recommendations": [
+    {
+      "category": "fares",
+      "code": "scorecard_fares_v2_no_fare_media",
+      "count": 0,
+      "effort": "A short file; one row per payment method you accept.",
+      "fix": "Add fare_media.txt listing your accepted payment methods, including contactless EMV if riders can tap to pay.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "The feed publishes fare products but no fare_media.txt declaring how riders can pay.",
+      "why": "Riders can't tell from the feed which payment methods you accept, such as a transit card, a mobile app, or tap-to-pay with a contactless bank card."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 17,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "17 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Luther / Teal\", \"High St @ Tap & Vine\", \"Dairy / Incline\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 57,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 25,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "25 of 57 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 25,
+    "single_stop_trips": 0,
+    "trips_total": 8
+  },
+  "route_map": {
+    "drawn_route_count": 1,
+    "has_shapes": true,
+    "path": "data/artifacts/auburn-transit-2275/geometry.geojson",
+    "route_count": 3,
+    "routes": [
+      {
+        "color": "BF3C39",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "15651",
+        "label": "Weekend/Off Hours",
+        "long": "Weekend/Off Hours",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00BEFD",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "19510",
+        "label": "Confluence Route",
+        "long": "Confluence Route",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BF3C39",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "32372",
+        "label": "Auburn Loop",
+        "long": "Auburn Loop",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 57,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 8 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 8,
+    "trips_with_shape": 8
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "missing_required_field",
+      "count": 2,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'missing_required_field' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 12.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Missing required field (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "invalid_url",
+      "count": 1,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'invalid_url' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 12.0,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "Invalid url (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "missing_required_column",
+      "count": 1,
+      "effort": "Often an export setting; ask your vendor if it recurs.",
+      "fix": "Add the required column named in the finding to the flagged file.",
+      "owner": "Likely your export tool",
+      "points": 12.0,
+      "rank": 3,
+      "severity": "ERROR",
+      "what": "A file is missing a column that GTFS requires.",
+      "why": "Apps may reject the whole file, so riders could lose the affected routes or stops."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

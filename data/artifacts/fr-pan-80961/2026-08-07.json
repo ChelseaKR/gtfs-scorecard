@@ -1,0 +1,1764 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-pan-80961",
+    "name": "R\u00e9seau interurbain - Ard\u00e8che (07)",
+    "subdivision_code": "FR-ARA",
+    "subdivision_name": "Auvergne-Rh\u00f4ne-Alpes"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 1.0,
+          "stops_marked_accessible_pct": 1.6,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 1.6,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.4,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 1800,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 4573,
+        "translations": {
+          "feed_lang": "fr",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 1800,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 1.6,
+        "wheelchair_marked_accessible_pct": 1.6,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 4499,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 24.6,
+          "severity": "WARNING",
+          "what": "4499 of 4573 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 1800,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "1800 of 1800 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.9,
+      "status": "measured",
+      "summary": "2% of stops state wheelchair accessibility (2% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 10,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 258,
+          "WARNING": 979
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 667,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "unexpected_enum_value",
+          "count": 116,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unexpected_enum_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Unexpected enum value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 97,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 81,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 11,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "route_short_name_too_long",
+          "count": 4,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'route_short_name_too_long' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Route short name too long (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 1,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "trip_coverage_not_active_for_next7_days",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Trim past service periods the next time you export.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Many of the feed's trips don't run at all in the next 7 days.",
+          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 258,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 45.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 10 kinds of issue across 1237 instances (0 error, 979 warning, 258 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 389,
+        "effective_expiry_date": "2027-08-31",
+        "feed_end_date": "2027-08-31",
+        "feed_start_date": "2026-07-30",
+        "feed_version": "20260730",
+        "has_feed_info": true,
+        "last_service_date": "2027-08-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 389 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 391 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 2% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 2% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Open Database License (ODbL), recorded by France's National Access Point; credit R\u00e9gion Auvergne-Rh\u00f4ne-Alpes, identify the ODbL, and preserve share-alike terms where they apply.",
+    "reachable": true,
+    "sha256": "457e3a4f6806e8180c1975497f2ee6e3f0e30d02a16283e13a5f2c0d943155e8",
+    "size_bytes": 24708688,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/4e69fff6-6ae5-4ac0-9fa4-9c24ac92f291"
+  },
+  "fetch": {
+    "final_url": "https://api.oura3.cityway.fr/dataflow/offre-tc/download?provider=ARDECHE&dataFormat=GTFS&dataProfil=OPENDATA",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      3.85439,
+      43.9228,
+      4.89466,
+      45.37193
+    ],
+    "lat": 44.69612,
+    "lon": 4.41013,
+    "stop_count": 4573
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 116,
+        "trip_count": 1800,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 116,
+    "trip_count": 1800
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 56.5,
+    "margin_to_next_band": 3.5,
+    "score": 56.5
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 83,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "83 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (E05, 07-AN5, 07-AN20, 07-AN22, 07-AN23, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 50,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "50 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"La Roche RD86\", \"La Roche RD86\", \"La Roche RD86\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 3219,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 1800
+  },
+  "route_map": {
+    "drawn_route_count": 116,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-pan-80961/geometry.geojson",
+    "route_count": 116,
+    "routes": [
+      {
+        "color": "3656D3",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000574:LOC",
+        "label": "E03",
+        "long": "Annonay - Valence",
+        "short": "E03",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3B6B2E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000576:LOC",
+        "label": "E05",
+        "long": "Tournon - Le Chambon/Lignon",
+        "short": "E05",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "09075A",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000577:LOC",
+        "label": "E07",
+        "long": "Lamastre - St F\u00e9licien -  Annonay",
+        "short": "E07",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6CC17A",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000578:LOC",
+        "label": "E08",
+        "long": "Annonay - Satillieu - Lalouvesc",
+        "short": "E08",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F50505",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000579:LOC",
+        "label": "E09",
+        "long": "Antraigues Aubenas",
+        "short": "E09",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5487C9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000580:LOC",
+        "label": "E10",
+        "long": "La Souche - Aubenas",
+        "short": "E10",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E594E2",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000581:LOC",
+        "label": "E12",
+        "long": "Le Cheylard St Sauveur  Valence",
+        "short": "E12",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4E162",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000582:LOC",
+        "label": "E13",
+        "long": "Ales Les Vans Aubenas",
+        "short": "E13",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE58DA",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000583:LOC",
+        "label": "E15",
+        "long": "Aubenas - Vallon - Avignon",
+        "short": "E15",
+        "text_color": "0A0A0A",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F5903D",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000584:LOC",
+        "label": "E16",
+        "long": "Burzet Montpezat Aubenas",
+        "short": "E16",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "46C32C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000585:LOC",
+        "label": "E17",
+        "long": "Langogne Mayres Aubenas",
+        "short": "E17",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "65D9E2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000586:LOC",
+        "label": "E18",
+        "long": "Privas - Mont\u00e9limar",
+        "short": "E18",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "349F2D",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000587:LOC",
+        "label": "E19",
+        "long": "St Thom\u00e9 - Viviers-Le Teil-Mont\u00e9limar",
+        "short": "E19",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F8FB13",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000588:LOC",
+        "label": "E20",
+        "long": "Pont St Esprit - St Thom\u00e9 - Mont\u00e9limar",
+        "short": "E20",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E96DD9",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000589:LOC",
+        "label": "E29",
+        "long": "Bourg St And\u00e9ol - Pierrelatte",
+        "short": "E29",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36ADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000592:LOC",
+        "label": "E86",
+        "long": "Mont\u00e9limar- Bourg St And\u00e9ol- Pierrelatte",
+        "short": "E86",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36ADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000593:LOC",
+        "label": "E87",
+        "long": "St Thom\u00e9 - Mont\u00e9limar",
+        "short": "E87",
+        "text_color": "0D0D0D",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36ADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000594:LOC",
+        "label": "E88",
+        "long": "Desserte Cruas Privas",
+        "short": "E88",
+        "text_color": "050505",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36ADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000595:LOC",
+        "label": "E89",
+        "long": "Desserte Le Teil Mont\u00e9limar",
+        "short": "E89",
+        "text_color": "080808",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36ADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000596:LOC",
+        "label": "E90",
+        "long": "Aubenas - Ruoms - Banne",
+        "short": "E90",
+        "text_color": "080808",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36ADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000597:LOC",
+        "label": "E91",
+        "long": "Aubenas - Les Vans - Beaulieu",
+        "short": "E91",
+        "text_color": "050505",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2DADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000598:LOC",
+        "label": "E92",
+        "long": "Valence - St Sauv - Le Cheylard",
+        "short": "E92",
+        "text_color": "080808",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36ADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000600:LOC",
+        "label": "E94",
+        "long": "St F\u00e9licien - Annonay",
+        "short": "E94",
+        "text_color": "080808",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36ADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000601:LOC",
+        "label": "E95",
+        "long": "Annonay - St Rambert - Le P\u00e9age",
+        "short": "E95",
+        "text_color": "080808",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36ADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000602:LOC",
+        "label": "E96",
+        "long": "Tournon sur Rh\u00f4ne - Annonay",
+        "short": "E96",
+        "text_color": "080808",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36ADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000603:LOC",
+        "label": "E97",
+        "long": "Valence - Tournon sur Rh\u00f4ne",
+        "short": "E97",
+        "text_color": "030303",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36ADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000604:LOC",
+        "label": "E98A",
+        "long": "Aubenas - Lavilledieu - Mont\u00e9limar",
+        "short": "E98A",
+        "text_color": "0A0A0A",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36ADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000605:LOC",
+        "label": "E99",
+        "long": "Aubenas - Privas - Valence",
+        "short": "E99",
+        "text_color": "050505",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000608:LOC",
+        "label": "07-AN5",
+        "long": "Peyraud - Annonay",
+        "short": "07-AN5",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000609:LOC",
+        "label": "07-AN20",
+        "long": "St-Symphorien de Mahun - Satillieu",
+        "short": "07-AN20",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000610:LOC",
+        "label": "07-AN22",
+        "long": "Ardoix - St Romain d'Ay - Satillieu / Annonay - Satilieu",
+        "short": "07-AN22",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000611:LOC",
+        "label": "07-AN23",
+        "long": "Hameaux de Preaux",
+        "short": "07-AN23",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000612:LOC",
+        "label": "07-AU5",
+        "long": "Lentilleres - Ailhon - Aubenas/Mercuer",
+        "short": "07-AU5",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000615:LOC",
+        "label": "07-AU3",
+        "long": "Aizac - Aubenas/Aizac - Vals les Bains/RPI Labastide sur B - Aizac",
+        "short": "07-AU3",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000616:LOC",
+        "label": "07-BG1",
+        "long": "Secteur de Bourg St And\u00e9ol",
+        "short": "07-BG1",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000617:LOC",
+        "label": "07-CH2",
+        "long": "Dornas - Mariac - Le Cheylard / Accons-Le Cheylard / le Chambon-Dornas",
+        "short": "07-CH2",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000618:LOC",
+        "label": "07-CH1",
+        "long": "Boffres - Vernoux - Le Cheylard / Lamastre-Le Cheylard",
+        "short": "07-CH1",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000619:LOC",
+        "label": "07-LA1",
+        "long": "Largentiere - Ecole de Sainte-Foy/Valgorge - Largentiere",
+        "short": "07-LA1",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000620:LOC",
+        "label": "07-LA2",
+        "long": "Valgorge - Largentiere",
+        "short": "07-LA2",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000622:LOC",
+        "label": "07-LA4",
+        "long": "ST ANDRE LACHAMP  - LABLACHERE - JOYEUSE",
+        "short": "07-LA4",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000623:LOC",
+        "label": "07-LM3nav",
+        "long": "Alboussiere - Lamastre",
+        "short": "07-LM3nav",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000624:LOC",
+        "label": "07-LM1",
+        "long": "Hameaux d'Empurany / Arlebosc-Lamastre",
+        "short": "07-LM1",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000625:LOC",
+        "label": "07-LM2",
+        "long": "Saint-F\u00e9licien - Pailhares - Nozieres - Lamastre",
+        "short": "07-LM2",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000626:LOC",
+        "label": "07-MA1",
+        "long": "St Etienne de Lugdares - Cellier du Luc - Langogne/Cellier du Luc - St Etienne de Lugdares",
+        "short": "07-MA1",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000627:LOC",
+        "label": "07-MA2",
+        "long": "Lachapelle G. - Coucouron - St Cirgues en Mgne",
+        "short": "07-MA2",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000628:LOC",
+        "label": "07-MA3",
+        "long": "Le B\u00e9age - St Cirgues en Montagne",
+        "short": "07-MA3",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000629:LOC",
+        "label": "07-MZ1",
+        "long": "Burzet - Montpezat",
+        "short": "07-MZ1",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000630:LOC",
+        "label": "07-MZ2",
+        "long": "Mayres - Montpezat Hameaux de Meyras",
+        "short": "07-MZ2",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000632:LOC",
+        "label": "07-SA2",
+        "long": "ST-JEURE D'ANDAURE - ST AGREVE / ST-ANDRE-EN-V. - DEVESSET - AGREVE",
+        "short": "07-SA2",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000633:LOC",
+        "label": "07-SA1",
+        "long": "St Jean de Roure - Saint-Agreve",
+        "short": "07-SA1",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000635:LOC",
+        "label": "07-SV7",
+        "long": "St Pierreville - St Sauveur de Montagut / RPI ALBON - MARCOLS LES EAUX",
+        "short": "07-SV7",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000636:LOC",
+        "label": "07-TE4",
+        "long": "Baix - Cruas / Hameaux de Baix",
+        "short": "07-TE4",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000642:LOC",
+        "label": "07-VN1",
+        "long": "Lagorce - Vallon Pt D'Arc / Primaires de Lagorce/Bessas-Vallon Pt d'Arc/Ruoms-Lagorce",
+        "short": "07-VN1",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000643:LOC",
+        "label": "07-VN2",
+        "long": "Grospierres - Ruoms / Chandolas-St Alban Auriolles",
+        "short": "07-VN2",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000644:LOC",
+        "label": "07-VS1",
+        "long": "Gravieres - Les Vans / Chassagnes - Les Vans",
+        "short": "07-VS1",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000645:LOC",
+        "label": "07-VS2",
+        "long": "Montselgues - Les Vans / Les Salelles - Les Vans",
+        "short": "07-VS2",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000648:LOC",
+        "label": "07-199",
+        "long": "navettes (Sp\u00e9c) Aubenas",
+        "short": "07-199",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000653:LOC",
+        "label": "07-206",
+        "long": "Nav (sp\u00e9c)  Annonay Rh\u00f4ne Agglo",
+        "short": "07-206",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000890:LOC",
+        "label": "07-AN24",
+        "long": "Eclassan - St-Jeure-d'Ay - Preaux - Satillieu",
+        "short": "07-AN24",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000891:LOC",
+        "label": "07-AN25",
+        "long": "Lalouvesc - Satillieu",
+        "short": "07-AN25",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000892:LOC",
+        "label": "07-AN1",
+        "long": "Hameaux de Satillieu",
+        "short": "07-AN1",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000897:LOC",
+        "label": "07-AU1",
+        "long": "M\u00e9zilhac - Antraigues",
+        "short": "07-AU1",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000903:LOC",
+        "label": "07-AU2",
+        "long": "Sceautres - Berzeme",
+        "short": "07-AU2",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000906:LOC",
+        "label": "07-BG3",
+        "long": "Bidon - Saint-Marcel-d'Ardeche",
+        "short": "07-BG3",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000912:LOC",
+        "label": "07-BG2",
+        "long": "Hameaux de Gras - Bidon - Marcel d'Ardeche - Mas de Gras - Bourg Saint And\u00e9ol",
+        "short": "07-BG2",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000930:LOC",
+        "label": "07-CH3",
+        "long": "St-Christol - St-Barth\u00e9l\u00e9my - Le Cheylard / St Barth le Meil-Le Cheylard",
+        "short": "07-CH3",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1000931:LOC",
+        "label": "07-CH4",
+        "long": "St Jean Roure - Le Cheylard",
+        "short": "07-CH4",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1002530:LOC",
+        "label": "07-LA5",
+        "long": "Hx de Rosieres/Rosieres-Joyeuse/Sablieres-Joyeuse/Hx de Joyeuse",
+        "short": "07-LA5",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1002575:LOC",
+        "label": "07-CH20",
+        "long": "Lachapelle /s Chan\u00e9ac - Paillares - St-Martin de Valamas",
+        "short": "07-CH20",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1002590:LOC",
+        "label": "07-LA6",
+        "long": "Largentiere - Laurac",
+        "short": "07-LA6",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1002591:LOC",
+        "label": "07-LA8",
+        "long": "Sablieres - Dompnac",
+        "short": "07-LA8",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1002593:LOC",
+        "label": "07-LA13",
+        "long": "Tauriers - Largentiere/Laurac-Montr\u00e9al",
+        "short": "07-LA13",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1002594:LOC",
+        "label": "07-LA14",
+        "long": "Hameaux de Beaumont/Beaumont-Sanilhac",
+        "short": "07-LA14",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1002595:LOC",
+        "label": "07-LA15",
+        "long": "Prunet - Chassiers",
+        "short": "07-LA15",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1002597:LOC",
+        "label": "07-LA20",
+        "long": "Beaulieu - Joyeuse / Uzer -Balazuc (RP)",
+        "short": "07-LA20",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1002599:LOC",
+        "label": "07-LM5",
+        "long": "St F\u00e9licien - Empurany - Lamastre",
+        "short": "07-LM5",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1002600:LOC",
+        "label": "07-LM7nav",
+        "long": "Gilhoc sur Ormeze - St Sylvestre - Lamastre",
+        "short": "07-LM7nav",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1002601:LOC",
+        "label": "07-LM8",
+        "long": "St Martin de Valamas - Le Cheylard - Lamastre",
+        "short": "07-LM8",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1002602:LOC",
+        "label": "07-LM11",
+        "long": "Chalencon - Vernoux-en-Vivarais - Lamastre / Arlebosc-Bozas",
+        "short": "07-LM11",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1002603:LOC",
+        "label": "07-LM14nav",
+        "long": "SAINT VICTOR - LAMASTRE",
+        "short": "07-LM14nav",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1002638:LOC",
+        "label": "07-LM118",
+        "long": "Labatie d'Andaure - Lamastre",
+        "short": "07-LM118",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003120:LOC",
+        "label": "07-MA5",
+        "long": "St Laurent les b-Labastide Puylaurent",
+        "short": "07-MA5",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003121:LOC",
+        "label": "07-MA6",
+        "long": "Le B\u00e9age - St Cirgues en Montagne",
+        "short": "07-MA6",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003122:LOC",
+        "label": "07-MA7",
+        "long": "Issanlas - Saint-Cirgues-en-Montagne",
+        "short": "07-MA7",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003123:LOC",
+        "label": "07-MA8",
+        "long": "Le Lac d'Issarles - Le Puy/Ste Eulalie - Le Puy",
+        "short": "07-MA8",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003124:LOC",
+        "label": "07-MA10",
+        "long": "Le Lac d'Issarles - St Cirgues en Montagne",
+        "short": "07-MA10",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003125:LOC",
+        "label": "07-MA4",
+        "long": "Hameaux de Lachapelle Graillouse - Courcouron/ Issarles - Lac d'Issarles",
+        "short": "07-MA4",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003131:LOC",
+        "label": "07-MA9",
+        "long": "Ste Eulalie - St Cirgues - Aubenas/Aubenas - St Cirgues en Montagne",
+        "short": "07-MA9",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003133:LOC",
+        "label": "07-MZ3",
+        "long": "La Souche - Montpezat",
+        "short": "07-MZ3",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003134:LOC",
+        "label": "07-MZ4",
+        "long": "Mayres - Thueyts / ST PIERRE DE C - Ecole de MEYRAS / Chirols - Montpezat/Chirols - Pont de Labeaume",
+        "short": "07-MZ4",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003136:LOC",
+        "label": "07-SA3",
+        "long": "Saint-Agreve / Le puy en Velay",
+        "short": "07-SA3",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003137:LOC",
+        "label": "07-SA6",
+        "long": "Intres - Mars - St Agreve / St Agreve-Le Chambon sur lignon",
+        "short": "07-SA6",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003139:LOC",
+        "label": "07-VN3",
+        "long": "Labeaume - Vallon Pont d'Arc",
+        "short": "07-VN3",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003142:LOC",
+        "label": "07-VS3",
+        "long": "Ste Marguerite Lafigere-Pied de Borne / ST PIERRE ST JEAN- LES VANS",
+        "short": "07-VS3",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003143:LOC",
+        "label": "07-VS5",
+        "long": "Chambonas - Les Vans / Banne - Les Vans /Malbosc - Les Vans",
+        "short": "07-VS5",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003150:LOC",
+        "label": "07-REGIECOUCOURON",
+        "long": "REGIE DE COUCOURON",
+        "short": "07-REGIECOUCOURON",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003151:LOC",
+        "label": "07-REGIEGROSPIERRE",
+        "long": "REGIE DE GROSPIERRES",
+        "short": "07-REGIEGROSPIERRE",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003153:LOC",
+        "label": "07-REGIEAILHON",
+        "long": "REGIE DE AILHON - LENTILLERES",
+        "short": "07-REGIEAILHON",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003154:LOC",
+        "label": "07-REGIEROCLES",
+        "long": "REGIE DE ROCLES - JOANNAS",
+        "short": "07-REGIEROCLES",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003368:LOC",
+        "label": "07-LR01",
+        "long": "LIGNE 01 ST SAUVEUR DE MONTAGUT-PRIVAS - CAPCA",
+        "short": "07-LR01",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003371:LOC",
+        "label": "07-LR04",
+        "long": "LIGNE 04 PRIVAS-LA VOULTE College - CAPCA",
+        "short": "07-LR04",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36ADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003378:LOC",
+        "label": "E98B",
+        "long": "St Paul Trois Chateaux - Viviers - Alba - Villeneuve de Berg - Aubenas",
+        "short": "E98B",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003382:LOC",
+        "label": "07-SV03",
+        "long": "ST JULIEN DU GUA-ST ETIENNE DE SERRE-ST SAUVEUR DE MONTAGUT - CAPCA",
+        "short": "07-SV03",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003383:LOC",
+        "label": "07-SV04",
+        "long": "MARCOLS-ST SAUVEUR DE MONTAGUT - CAPCA",
+        "short": "07-SV04",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003386:LOC",
+        "label": "07-SV10",
+        "long": "LE CHEYLARD-ST VINCENT DURFORT-LES OLLIERES - CAPCA",
+        "short": "07-SV10",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1003387:LOC",
+        "label": "07-SV11",
+        "long": "GOURDON-AJOUX-ST JULIEN DU GUA Ecole - CAPCA",
+        "short": "07-SV11",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1004200:LOC",
+        "label": "07-PR03",
+        "long": "ST JULIEN DU GUA-PRIVAS-LYAS PRIVAS Lycee - CAPCA",
+        "short": "07-PR03",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1007605:LOC",
+        "label": "07-VA1",
+        "long": "LE TEIL - La Voulte SEGPA",
+        "short": "07-VA1",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1007606:LOC",
+        "label": "07-VS4",
+        "long": "Les Vans/Les Assions - les Vans/ RPI Banne-St Paul le Jeune",
+        "short": "07-VS4",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1007607:LOC",
+        "label": "07-TN1",
+        "long": "CHAMPIS - TOURNON",
+        "short": "07-TN1",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1007608:LOC",
+        "label": "07-TN2",
+        "long": "Eclassan - Sarras - Ozon - St Vallier/ Sarras-Eclassan",
+        "short": "07-TN2",
+        "text_color": "36ADF7",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1007745:LOC",
+        "label": "07-ETE",
+        "long": "Service estival entre Mont\u00e9limar et Saint-Martin-d'Ardeche",
+        "short": "07-ETE",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1008586:LOC",
+        "label": "E82",
+        "long": "La Souche - Aubenas",
+        "short": "E82",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1008587:LOC",
+        "label": "E81",
+        "long": "M\u00e9zilhac - Aubenas",
+        "short": "E81",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1009210:LOC",
+        "label": "07-AU4",
+        "long": "St Joseph des Bancs-Aubenas/St Michel de Boulogne-Aubenas/St And\u00e9ol de Vals-Aubenas/Genestelle_",
+        "short": "07-AU4",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36ADF7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ARDECHE:Line:1009211:LOC",
+        "label": "E80",
+        "long": "Annonay-Satilleu-Lalouvesc/Le Cheylard-Annonay",
+        "short": "E80",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 4573,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 4499,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 24.6,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "4499 of 4573 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 1800,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "1800 of 1800 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

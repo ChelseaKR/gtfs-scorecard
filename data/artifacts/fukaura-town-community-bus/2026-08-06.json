@@ -1,0 +1,451 @@
+{
+  "agency": {
+    "country": "JP",
+    "id": "fukaura-town-community-bus",
+    "name": "Fukaura Town Community Bus (\u6df1\u6d66\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u30d0\u30b9)",
+    "operating_note": "Fukaura Town's community bus along the western Aomori coast.",
+    "subdivision_code": "JP-02",
+    "subdivision_name": "Aomori"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 14.8,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 68,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 98.5,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 131,
+        "translations": {
+          "feed_lang": "ja",
+          "has_translations": true,
+          "languages": [
+            "en",
+            "ja-hrkt"
+          ],
+          "translated_tables": [
+            "agency",
+            "routes",
+            "stop_times",
+            "stops"
+          ],
+          "translation_count": 276
+        },
+        "trips": 68,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 131,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "131 of 131 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 68,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "68 of 68 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 52.3,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 5,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 2,
+          "WARNING": 1955
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "non_ascii_or_non_printable_char",
+          "count": 1948,
+          "effort": "A planned ID change, not a quick text cleanup.",
+          "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some internal IDs use characters outside the basic text set.",
+          "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 5,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 1,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "unknown_column",
+          "count": 2,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        }
+      ],
+      "name": "correctness",
+      "score": 79.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 1957 instances (0 error, 1955 warning, 2 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 237,
+        "effective_expiry_date": "2027-03-31",
+        "feed_end_date": "2027-03-31",
+        "feed_start_date": "2026-04-01",
+        "feed_version": "2026/04/01\u6539\u6b63-\u898b\u3048\u308b\u5316ver2.6h",
+        "has_feed_info": true,
+        "last_service_date": "2027-03-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 237 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 238 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0; published as GTFS-JP open data by Fukaura Town through the GTFS Data Repository (gtfs-data.jp). Credit Fukaura Town.",
+    "reachable": true,
+    "sha256": "77d749bf1fb9c10824fb4d4e3a6e3d29cf22fd8f4a39a42a21d9fdf4db184a91",
+    "size_bytes": 182574,
+    "static_url": "https://api.gtfs-data.jp/v2/organizations/fukauratown/feeds/fukaura-town-communitybus/files/feed.zip?rid=current"
+  },
+  "fetch": {
+    "final_url": "https://prodgtfsdatareposharedinfrasta-filebucketcdfcd6de-1qqhtsxlwh6la.s3.amazonaws.com/fukauratown/fukaura-town-communitybus/1ca121d1-aaaa-438e-85a7-31ecce6236a9/feed.zip?response-content-disposition=attachment%3B%20filename%3Dfeed_fukauratown_fukaura-town-communitybus_20260401_20260420160004.zip&AWSAccessKeyId=ASIARI5CFYANEX7SBSKR&Signature=k%2FM%2BbM26YNSwK%2Ff0qri7PBYP1Xo%3D&x-amz-security-token=IQoJb3JpZ2luX2VjEF8aDmFwLW5vcnRoZWFzdC0xIkgwRgIhAKPGaho1yNfdhaSFCj0GSTNEOTv2vqhu5AQpqvteDSh6AiEA0DlNDBljudVcwnohbWLwUAphWVRrCVz0mds7frqgHvMq0AQIKRAFGgwwODc4NTAwNzQxMzgiDOMmg8cLfQGPGsG6BiqtBIJBz3ERzMbPkQj8ewHi14GWKuAor0E2vow0OzFRaD6Bouj%2F%2F7nTBzWrYmYOu%2BAzG34hylaLSJpyplilLQfWITNi%2FkyCzhQRoHpQ80QaTOrBEIiEXUyaJxuT6LGKrPTURGUX%2BPoz9bpIRzlz8GmOvCiKFALq0Sdu3v3lyDa3vZFTV%2FvR%2B4zVyBHe09QfAuslUsOybInVM2QZCGa9TiD0sl89BUpFd7hjQFncGo8XJcZCYnp0hRCHH3d%2FWZwQTB%2BmVR9n4lsfQSD5D0Bslw88qnEEpkVC5uzMbj0%2FejoUpk2YXZ9RPt%2FoDh6oj8sMQ2ZsFsWd1ptppPpMVvXNFxnm0XAb%2Bq%2F9JufzQ1i4UeKfGsht7jP7l2w2VAONRdb9G8fMnLO%2BDC9uuphy9mAvN7qrMts%2BXGjvxvC%2FOpzTvEoJyyIRRW%2FlmKw%2FvUvx5cd28GiSZzOf%2Fwcs0p%2FfMKek4LD7LmMS46Y2XoQM%2FSIDMMYltKR2rJwfdMfLSfajjLPXqw%2BROdiHas3ZUADFhzKIXiDnICTIrGe9GGNAgLGlpzAGK92%2BuE%2BSoHZsGw852TIld9jXRI4g9joVDFhu%2FTHwE7jYs6Jbwa1H6InegjZH%2FdpSKBcC%2BOD819qdGnDexGbUc8KUESiobpDAjbxvyoGRyT7krE7Ukyxtj1GsLHU5saJlDuaMp%2FlvoEsFqepJZNMjs8a6DcrGX3AwYhASg9JEvwNOT2%2FbZIZSm0vC55HDUjL%2BMJurzdMGOqIB%2BP5RUeQAnykXuj8qthtTUaXLUsDGN5oJv2ha9lAL%2B%2B2bqZP2Dsk4gbQ5v%2FBLUDQEPzTTc1HPqgUwnBV2A%2BHJKulqb6z4pdSIJ2SrkXpfX%2F93hWi0WmBO49XJALZYUOyJgCMIM9Ab1NztRhAMAmI5MEyjVteVb4hVPf6ij%2BTPInICRzHRhVQkY6I6IGzCtJKvQvVNJmJMOCq5zG7SySV7bKCa&Expires=1785944503",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      139.86282,
+      40.48621,
+      140.12373,
+      40.74521
+    ],
+    "lat": 40.63181,
+    "lon": 139.93294,
+    "stop_count": 131
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 5,
+        "trip_count": 68,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 5,
+    "trip_count": 68
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 6.1,
+    "margin_to_next_band": 3.9,
+    "score": 76.1
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 1,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "1 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (\u6df1\u6d66\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u30d0\u30b9 \u5ca9\u5742\u7dda).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 131,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 68
+  },
+  "route_map": {
+    "drawn_route_count": 5,
+    "has_shapes": true,
+    "path": "data/artifacts/fukaura-town-community-bus/geometry.geojson",
+    "route_count": 5,
+    "routes": [
+      {
+        "color": "F39700",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "10",
+        "label": "\u6df1\u6d66\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u30d0\u30b9 \u5ca9\u5d0e\u7dda",
+        "long": "\u6df1\u6d66\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u30d0\u30b9 \u5ca9\u5d0e\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DF7289",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20",
+        "label": "\u6df1\u6d66\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u30d0\u30b9 \u753a\u5185\u7dda",
+        "long": "\u6df1\u6d66\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u30d0\u30b9 \u753a\u5185\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "118EBF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "30",
+        "label": "\u6df1\u6d66\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u30d0\u30b9 \u5ca9\u5742\u7dda",
+        "long": "\u6df1\u6d66\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u30d0\u30b9 \u5ca9\u5742\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E60012",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "40",
+        "label": "\u6df1\u6d66\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u30d0\u30b9 \u677e\u539f\u5869\u898b\u5d0e\u7dda",
+        "long": "\u6df1\u6d66\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u30d0\u30b9 \u677e\u539f\u5869\u898b\u5d0e\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5D310C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "50",
+        "label": "\u6df1\u6d66\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u30d0\u30b9 \u9577\u6176\u5e73\u7dda",
+        "long": "\u6df1\u6d66\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3\u30d0\u30b9 \u9577\u6176\u5e73\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 131,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 131,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "131 of 131 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 68,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "68 of 68 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "non_ascii_or_non_printable_char",
+      "count": 1948,
+      "effort": "A planned ID change, not a quick text cleanup.",
+      "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+      "owner": "",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some internal IDs use characters outside the basic text set.",
+      "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

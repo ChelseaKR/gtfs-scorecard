@@ -1,0 +1,2280 @@
+{
+  "agency": {
+    "id": "southeastern-pennsylvania-transportation-authority-septa",
+    "name": "Southeastern Pennsylvania Transportation Authority (SEPTA) Bus",
+    "subdivision_code": "US-PA",
+    "subdivision_name": "Pennsylvania"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 100.0,
+          "stops_marked_accessible_pct": 96.6,
+          "stops_marked_not_accessible_pct": 3.4,
+          "stops_stated_pct": 100.0,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 25.0,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": true,
+          "has_products": true,
+          "has_transfer_rules": true,
+          "model": "v2",
+          "product_count": 4
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 34693,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": true,
+          "has_levels": true,
+          "has_pathways": true,
+          "has_stations": true,
+          "has_step_free": true,
+          "pathway_count": 846
+        },
+        "stops": 14295,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 34693,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 100.0,
+        "wheelchair_marked_accessible_pct": 96.6,
+        "wheelchair_marked_not_accessible_pct": 3.4
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "2 of 14295 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_pathways",
+          "count": 846,
+          "effort": "None.",
+          "fix": "No action needed.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "INFO",
+          "what": "This feed describes station pathways, including step-free (elevator) routes.",
+          "why": "Riders can be routed through the station, and wheelchair users can see whether a step-free route exists."
+        }
+      ],
+      "name": "completeness",
+      "score": 92.5,
+      "status": "measured",
+      "summary": "100% of stops state wheelchair accessibility (97% marked accessible, 3% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 18,
+        "instances_by_severity": {
+          "ERROR": 212,
+          "INFO": 5,
+          "WARNING": 472
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "foreign_key_violation",
+          "count": 206,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'foreign_key_violation' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Foreign key violation (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "pathway_unreachable_location",
+          "count": 6,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'pathway_unreachable_location' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 18.0,
+          "severity": "ERROR",
+          "what": "Pathway unreachable location (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 221,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a transit vehicle can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no transit vehicle can meet."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 216,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 9,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "unused_shape",
+          "count": 7,
+          "effort": "One setting.",
+          "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "The feed contains route shapes no trip uses.",
+          "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 6,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "pathway_dangling_generic_node",
+          "count": 4,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'pathway_dangling_generic_node' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Pathway dangling generic node (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 3,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 2,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no transit vehicle is scheduled to arrive."
+        },
+        {
+          "code": "feed_expiration_date30_days",
+          "count": 1,
+          "effort": "Usually a re-export from your scheduling software.",
+          "fix": "Schedule a feed re-export now so the new calendar is live well before the current one ends.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "This feed's service calendar runs out within the next 30 days.",
+          "why": "If a new feed isn't published before it ends, trip planners will drop your agency and riders will see no service."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 1,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "trip_coverage_not_active_for_next7_days",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Trim past service periods the next time you export.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Many of the feed's trips don't run at all in the next 7 days.",
+          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
+        },
+        {
+          "code": "unknown_file",
+          "count": 2,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        },
+        {
+          "code": "future_calendar",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'future_calendar' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Future calendar (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "future_feed",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'future_feed' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Future feed (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unused_station",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unused_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Unused station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 0.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 18 kinds of issue across 689 instances (212 error, 472 warning, 5 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 16,
+        "effective_expiry_date": "2026-08-22",
+        "feed_end_date": "2026-08-22",
+        "feed_start_date": "2026-08-09",
+        "feed_version": "v202608090",
+        "has_feed_info": true,
+        "last_service_date": "2026-08-22",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expiring_soon",
+          "count": 1,
+          "effort": "One export setting.",
+          "fix": "Re-export with a validity window that reaches at least 60 days out.",
+          "owner": "Likely your export tool",
+          "points": 64.0,
+          "severity": "WARNING",
+          "what": "Service data runs out in 16 day(s).",
+          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+        }
+      ],
+      "name": "freshness",
+      "score": 26.7,
+      "status": "measured",
+      "summary": "Service data runs out in 16 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "alerts_content": {
+          "alerts": 287,
+          "ended_over_30_days_ago": 0,
+          "with_cause_and_effect": 287,
+          "with_description": 287,
+          "with_header_text": 287,
+          "with_informed_entity": 287
+        },
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "coverage_pct": null,
+        "drift": {
+          "median_seconds": 4,
+          "observations": 18726,
+          "on_time_share_pct": 58.0,
+          "p90_abs_seconds": 365
+        },
+        "kinds_configured": 3,
+        "kinds_reachable": 3,
+        "reachable_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "rt_freshness": "fresh",
+        "samples": 9,
+        "scheduled_trips_in_window": 0,
+        "vehicles_checked": 1448,
+        "vehicles_on_route_pct": 98.7,
+        "worst_lag_seconds": 17
+      },
+      "findings": [],
+      "name": "realtime",
+      "score": 99.7,
+      "status": "measured",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 configured feeds healthy; 98.7% of vehicles on their route; predictions ran a median of 4s behind schedule.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "2 validator errors to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data runs out in 17 days; renew to qualify.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 100% of stops and 100% of trips.",
+        "key": "accessible",
+        "met": true
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 2 validator errors to resolve. Service data runs out in 17 days; renew to qualify."
+  },
+  "feed": {
+    "license_note": "License: https://www3.septa.org/developer/",
+    "reachable": true,
+    "sha256": "432bf8ff1d362c6b57ac077ea25b9ff8c099c8eca59751f3fca519d6630ed5b0",
+    "size_bytes": 20124560,
+    "static_url": "https://www3.septa.org/developer/google_bus.zip"
+  },
+  "fetch": {
+    "final_url": "https://www3.septa.org/developer/google_bus.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -75.83469,
+      39.80381,
+      -74.7542,
+      40.33401
+    ],
+    "lat": 40.00843,
+    "lon": -75.17567,
+    "stop_count": 13817
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 8,
+        "trip_count": 3570,
+        "trip_share_pct": 10.3
+      },
+      {
+        "key": "subway",
+        "label": "Subway / metro",
+        "route_count": 5,
+        "trip_count": 2463,
+        "trip_share_pct": 7.1
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 131,
+        "trip_count": 27524,
+        "trip_share_pct": 79.3
+      },
+      {
+        "key": "trolleybus",
+        "label": "Trolleybus",
+        "route_count": 3,
+        "trip_count": 1136,
+        "trip_share_pct": 3.3
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 147,
+    "trip_count": 34693
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "1"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "2 validator errors to resolve.",
+        "key": "valid",
+        "status": "at_risk"
+      },
+      {
+        "detail": "Service data runs out in 17 days; renew before you certify.",
+        "key": "current",
+        "status": "at_risk"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "at_risk",
+    "summary": "This feed is close to NTD-ready. 2 validator errors to resolve. Service data runs out in 17 days; renew before you certify."
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 48.4,
+    "margin_to_next_band": 11.6,
+    "score": 48.4
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 13,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "13 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (L1, B1, B2, B3, T1, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 13494,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "13494 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Roosevelt Blvd & Broad St - FS\", \"Roosevelt Blvd & 5th St\", \"Roosevelt Blvd & Pratt St\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 13668,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 2,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "2 of 13668 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 2,
+    "single_stop_trips": 0,
+    "trips_total": 34693
+  },
+  "route_map": {
+    "drawn_route_count": 145,
+    "has_shapes": true,
+    "path": "data/artifacts/southeastern-pennsylvania-transportation-authority-septa/geometry.geojson",
+    "route_count": 147,
+    "routes": [
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "Parx Casino to 54th-City",
+        "short": "1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "103",
+        "label": "103",
+        "long": "Ardmore to 69th St Transit Center",
+        "short": "103",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "104",
+        "label": "104",
+        "long": "West Chester U to 69th St TC",
+        "short": "104",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "105",
+        "label": "105",
+        "long": "Rosemont to 69th St Transit Center",
+        "short": "105",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "106",
+        "label": "106",
+        "long": "Paoli to 69th St Transit Center",
+        "short": "106",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "107",
+        "label": "107",
+        "long": "Lawrence Park to 69th St TC",
+        "short": "107",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "108",
+        "label": "108",
+        "long": "UPS/Airport to 69th St Transit Ctr",
+        "short": "108",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "109",
+        "label": "109",
+        "long": "Chester Transit Ctr to 69th St TC",
+        "short": "109",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "110",
+        "label": "110",
+        "long": "Penn State U to 69th St Transit Ctr",
+        "short": "110",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "111",
+        "label": "111",
+        "long": "Chadds Ford to 69th St Transit Ctr",
+        "short": "111",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "112",
+        "label": "112",
+        "long": "DCCC to 69th St Transit Center",
+        "short": "112",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "113",
+        "label": "113",
+        "long": "Claymont TC to 69th St Transit Ctr",
+        "short": "113",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "114",
+        "label": "114",
+        "long": "Wawa Station to Darby Transit Ctr",
+        "short": "114",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "115",
+        "label": "115",
+        "long": "DCCC/Darby Transit Ctr to Airport",
+        "short": "115",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "117",
+        "label": "117",
+        "long": "Penn State U to I-95 Industrial Pk",
+        "short": "117",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "118",
+        "label": "118",
+        "long": "Newtown Square to Chester TC",
+        "short": "118",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "119",
+        "label": "119",
+        "long": "Cheyney U to Chester Transit Center",
+        "short": "119",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "12",
+        "label": "12",
+        "long": "Columbus-Dock to 50th-Woodland",
+        "short": "12",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "120",
+        "label": "120",
+        "long": "Cheyney U to 69th St Transit Center",
+        "short": "120",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "123",
+        "label": "123",
+        "long": "King of Prussia to 69th St TC",
+        "short": "123",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "124",
+        "label": "124",
+        "long": "Chesterbrook to 13th-Market",
+        "short": "124",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "125",
+        "label": "125",
+        "long": "Valley Forge to 13th-Market",
+        "short": "125",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "126",
+        "label": "126",
+        "long": "Lawrence Park via Manoa to 69th TC",
+        "short": "126",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "127",
+        "label": "127",
+        "long": "Trenton Transit Ctr to OxfordValley",
+        "short": "127",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "128",
+        "label": "128",
+        "long": "Neshaminy to Oxford Valley Mall",
+        "short": "128",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "129",
+        "label": "129",
+        "long": "Frankford-Knights to Oxford Valley",
+        "short": "129",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "130",
+        "label": "130",
+        "long": "BCCC to Frankford-Knights",
+        "short": "130",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "131",
+        "label": "131",
+        "long": "Audubon to Norristown Transit Ctr",
+        "short": "131",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "132",
+        "label": "132",
+        "long": "Telford to Montgomery Mall",
+        "short": "132",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "133",
+        "label": "133",
+        "long": "Frankford-Knights to Bensalem",
+        "short": "133",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "135",
+        "label": "135",
+        "long": "West Chester TC to Coatesville",
+        "short": "135",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "139",
+        "label": "139",
+        "long": "Limerick to King of Prussia",
+        "short": "139",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "14",
+        "label": "14",
+        "long": "FTC to Neshaminy/Oxford Valley",
+        "short": "14",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "150",
+        "label": "150",
+        "long": "Parx Casino to Plymouth Meeting",
+        "short": "150",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "16",
+        "label": "16",
+        "long": "City Hall to Cheltenham-Ogontz",
+        "short": "16",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "17",
+        "label": "17",
+        "long": "Front-Mkt to 20-Johnston/Broad-Pat",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "18",
+        "label": "18",
+        "long": "Fox Chase to Cedarbrook Plaza",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "19",
+        "label": "19",
+        "long": "Torresdale Station to Frankford TC",
+        "short": "19",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "20-Johnston to Pulaski-Hunting Park",
+        "short": "2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "20",
+        "label": "20",
+        "long": "Philadelphia Mills to Frankford TC",
+        "short": "20",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "201",
+        "label": "201",
+        "long": "Ft Wash Office Ctr to Fort Wash Sta",
+        "short": "201",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "204",
+        "label": "204",
+        "long": "Eagleview to Paoli Train Station",
+        "short": "204",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "206",
+        "label": "206",
+        "long": "Commons at Great Vly to Paoli Sta",
+        "short": "206",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "21",
+        "label": "21",
+        "long": "Columbus-Dock to 69th St TC",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "22",
+        "label": "22",
+        "long": "Warminster/Willow Grove to Olney TC",
+        "short": "22",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "23",
+        "label": "23",
+        "long": "11th Market to Chestnut Hill",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "24",
+        "label": "24",
+        "long": "Southamptn/Rockldge to Frankford TC",
+        "short": "24",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "25",
+        "label": "25",
+        "long": "Frankford TC to Columbus Commons",
+        "short": "25",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "26",
+        "label": "26",
+        "long": "Frankford TC to Chelten Av Station",
+        "short": "26",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "27",
+        "label": "27",
+        "long": "Broad-Carpenter to Plymouth Meeting",
+        "short": "27",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "28",
+        "label": "28",
+        "long": "Fern Rock TC to Torresdale-Cottman",
+        "short": "28",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "29",
+        "label": "29",
+        "long": "Pier 70 to 33rd-Dickinson",
+        "short": "29",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "33rd-Cecil B. Moore to Frankford TC",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "30",
+        "label": "30",
+        "long": "Gray 30th St Station to 69th St TC",
+        "short": "30",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "31",
+        "label": "31",
+        "long": "City Hall to 76th-City",
+        "short": "31",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "310",
+        "label": "310",
+        "long": "Horsham Loop",
+        "short": "310",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "32",
+        "label": "32",
+        "long": "Broad-Carpenter to Ridge-Lyceum",
+        "short": "32",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "33",
+        "label": "33",
+        "long": "5th-Market to 23rd-Venango",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "35",
+        "label": "35",
+        "long": "Manayunk Roxborough Loop",
+        "short": "35",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "37",
+        "label": "37",
+        "long": "Chester Transit Ctr to Broad-Snyder",
+        "short": "37",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "38",
+        "label": "38",
+        "long": "5th-Market to Wissahickon TC",
+        "short": "38",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "39",
+        "label": "39",
+        "long": "Richmond-Cumberland to 33rd-Dauphin",
+        "short": "39",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "4",
+        "label": "4",
+        "long": "Broad-Pattison to Fern Rock TC",
+        "short": "4",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "40",
+        "label": "40",
+        "long": "2nd-Lombard to Conshohocken-Monumnt",
+        "short": "40",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "41",
+        "label": "41",
+        "long": "Chelten-Wissahckn to Richmnd-Orthdx",
+        "short": "41",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "42",
+        "label": "42",
+        "long": "2nd-Spruce to 61st-Pine/Wycombe",
+        "short": "42",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "43",
+        "label": "43",
+        "long": "Richmond-Cumberland to 50th-Parksde",
+        "short": "43",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "44",
+        "label": "44",
+        "long": "Front-Market to Ardmore",
+        "short": "44",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "45",
+        "label": "45",
+        "long": "Broad-Oregon to 12th-Vine",
+        "short": "45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "46",
+        "label": "46",
+        "long": "58th-Baltimore to 63rd-Malvern",
+        "short": "46",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "47",
+        "label": "47",
+        "long": "Whitman Plaza to 5th-Godfrey",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "47M",
+        "label": "47M",
+        "long": "Whitmn Plz to 7th-Spg Grd via 9thSt",
+        "short": "47M",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "48",
+        "label": "48",
+        "long": "Front-Market to 27th-Allegheny",
+        "short": "48",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "49",
+        "label": "49",
+        "long": "33rd-Dauphin to 29th-Snyder",
+        "short": "49",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "5",
+        "label": "5",
+        "long": "2nd-Market to Frankford Transit Ctr",
+        "short": "5",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "50",
+        "label": "50",
+        "long": "Parx to Frankford Transit Center",
+        "short": "50",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "51",
+        "label": "51",
+        "long": "Plymth Mtg/Chestnt Hill to Olney TC",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "52",
+        "label": "52",
+        "long": "49th-Woodlnd to Wiss TC/Parksd Lp",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "53",
+        "label": "53",
+        "long": "Wayne-Carpenter to Broad-Hunting Pk",
+        "short": "53",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "54",
+        "label": "54",
+        "long": "Richmond-Cambria to 33rd-Dauphin",
+        "short": "54",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "55",
+        "label": "55",
+        "long": "Doylestown/Willow Grove to Olney TC",
+        "short": "55",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "56",
+        "label": "56",
+        "long": "23rd-Venango to Torresdale-Cottman",
+        "short": "56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "57",
+        "label": "57",
+        "long": "WhitmnPlz to RisngSun-Olney/FernRck",
+        "short": "57",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "58",
+        "label": "58",
+        "long": "Neshaminy/Somerton to Frankford TC",
+        "short": "58",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "59",
+        "label": "59",
+        "long": "Castor-Bustleton to Arrott TC",
+        "short": "59",
+        "text_color": "000000",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "6",
+        "label": "6",
+        "long": "Cheltenham-Ogontz to Olney TC",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "60",
+        "label": "60",
+        "long": "35th-Allegheny to Rich-Westmoreland",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "61",
+        "label": "61",
+        "long": "9th-Market to Manayunk",
+        "short": "61",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "62",
+        "label": "62",
+        "long": "9th-Market to Andorra",
+        "short": "62",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "63",
+        "label": "63",
+        "long": "Lanknau/Overbrk to ColCom/FdCtr",
+        "short": "63",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "64",
+        "label": "64",
+        "long": "50th-Parkside to Pier 70",
+        "short": "64",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "65",
+        "label": "65",
+        "long": "Germantown-Chelten to 69th St TC",
+        "short": "65",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "66",
+        "label": "66",
+        "long": "Frankford TC to Frankford-Knights",
+        "short": "66",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "67",
+        "label": "67",
+        "long": "Phila Mills/Bustletn to Frankfrd TC",
+        "short": "67",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "68",
+        "label": "68",
+        "long": "Broad-Oregon to UPS/69th St TC",
+        "short": "68",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "Pier 70 to 33rd-Dauphin",
+        "short": "7",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "70",
+        "label": "70",
+        "long": "Frank-Grg/Torsdl-Cottmn to FernRock",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "71",
+        "label": "71",
+        "long": "Broad-Erie to Cheltenham-Ogontz",
+        "short": "71",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "73",
+        "label": "73",
+        "long": "Frankford TC to Richmnd-Westmorelnd",
+        "short": "73",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "75",
+        "label": "75",
+        "long": "Wayne Junct to Arrott Transit Ctr",
+        "short": "75",
+        "text_color": "000000",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "77",
+        "label": "77",
+        "long": "Roosevelt-Cottman to Chestnut Hill",
+        "short": "77",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "78",
+        "label": "78",
+        "long": "Express Cornwells Hghts to Ctr City",
+        "short": "78",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "79",
+        "label": "79",
+        "long": "Columbus Commons to 29th-Snyder",
+        "short": "79",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "8",
+        "label": "8",
+        "long": "Olney TC to Frankford TC",
+        "short": "8",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "80",
+        "label": "80",
+        "long": "Express Horsham to Olney TC",
+        "short": "80",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "81",
+        "label": "81",
+        "long": "Broad-Erie to Cheltenham-Ogntz",
+        "short": "81",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "82",
+        "label": "82",
+        "long": "Wisshkn TC/Henry-Midvl to FrankfdTC",
+        "short": "82",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "84",
+        "label": "84",
+        "long": "Bustletn-CountyLn/PhilaMills to FTC",
+        "short": "84",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "88",
+        "label": "88",
+        "long": "Bethayres/Frankford-Gregg to FTC",
+        "short": "88",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "89",
+        "label": "89",
+        "long": "Front-Dauphin to Arrott Transit Ctr",
+        "short": "89",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "9",
+        "label": "9",
+        "long": "4th-Walnut to Andorra",
+        "short": "9",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "90",
+        "label": "90",
+        "long": "Plymouth Mtng. to Norristown TC",
+        "short": "90",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "92",
+        "label": "92",
+        "long": "West Chester to King of Prussia",
+        "short": "92",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "93",
+        "label": "93",
+        "long": "Pottstown to Norristown Transit Ctr",
+        "short": "93",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "94",
+        "label": "94",
+        "long": "Montgomery Mall to Chestnut Hill",
+        "short": "94",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "95",
+        "label": "95",
+        "long": "Gulph Mills to Willow Grove Mall",
+        "short": "95",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "96",
+        "label": "96",
+        "long": "Lansdale to Norristown Transit Ctr",
+        "short": "96",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "97",
+        "label": "97",
+        "long": "Chestnut Hill to Norristown TC",
+        "short": "97",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "98",
+        "label": "98",
+        "long": "Plymouth Mtng to Norristown TC",
+        "short": "98",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "99",
+        "label": "99",
+        "long": "Phoenixville to Norristown TC",
+        "short": "99",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F26100",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "B1",
+        "label": "B1",
+        "long": "Broad Street Line Local",
+        "short": "B1",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "F26100",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "B1_OWL",
+        "label": "B1 OWL",
+        "long": "Midnight-5am Service (Bus) for B1",
+        "short": "B1 OWL",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F26100",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "B2",
+        "label": "B2",
+        "long": "Broad Street Line Express",
+        "short": "B2",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "F26100",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "B3",
+        "label": "B3",
+        "long": "Broad-Ridge Spur",
+        "short": "B3",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "BLVDDIR",
+        "label": "BLVDDIR",
+        "long": "Blvd Direct Neshaminy Mall to FTC",
+        "short": "BLVDDIR",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC2E6B",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "D1",
+        "label": "D1",
+        "long": "Route 101",
+        "short": "D1",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DC2E6B",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "D1_BUS",
+        "label": "D1 Bus",
+        "long": "Route 101 Bus",
+        "short": "D1 Bus",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC2E6B",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "D2",
+        "label": "D2",
+        "long": "Route 102",
+        "short": "D2",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DC2E6B",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "D2_BUS",
+        "label": "D2 Bus",
+        "long": "Route 102 Bus",
+        "short": "D2 Bus",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "45637A",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "FXCB",
+        "label": "FOX Bus",
+        "long": "Fox Chase Shuttle Bus",
+        "short": "FOX Bus",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFD700",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "G1",
+        "label": "G1",
+        "long": "63rd-Girard to Richmond-Westmorelnd",
+        "short": "G1",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "K",
+        "label": "K",
+        "long": "Ridge-Midvale to Arrott Transit Ctr",
+        "short": "K",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0097D6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "L1",
+        "label": "L1",
+        "long": "Market-Frankford Line All Stops",
+        "short": "L1",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "0097D6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "L1_OWL",
+        "label": "L1 OWL",
+        "long": "Midnight-5am Service (Bus) for L1",
+        "short": "L1 OWL",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ECAF3B",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "LUCYGO",
+        "label": "LUCYGO",
+        "long": "Gold Loop through University City",
+        "short": "LUCYGO",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A239",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LUCYGR",
+        "label": "LUCYGR",
+        "long": "Green Loop through University City",
+        "short": "LUCYGR",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5F249F",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "M1",
+        "label": "M1",
+        "long": "Norristown High Speed Line Local",
+        "short": "M1",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "DC2E6B",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "M1_BUS",
+        "label": "M1 Bus",
+        "long": "NHSL Shuttle Bus",
+        "short": "M1 Bus",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "MANNLP",
+        "label": "MANN",
+        "long": "Mann Loop",
+        "short": "MANN",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "45637A",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "NOR_BUS",
+        "label": "NOR Bus",
+        "long": "Manayunk/Norristown Shuttle Bus",
+        "short": "NOR Bus",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5A960A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "T1",
+        "label": "T1",
+        "long": "13th St to 63rd-Malvern/Overbrook",
+        "short": "T1",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "5A960A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "T2",
+        "label": "T2",
+        "long": "Route 34",
+        "short": "T2",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "5A960A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "T3",
+        "label": "T3",
+        "long": "Route 13",
+        "short": "T3",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "5A960A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "T4",
+        "label": "T4",
+        "long": "Route 11",
+        "short": "T4",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "5A960A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "T5",
+        "label": "T5",
+        "long": "Route 36",
+        "short": "T5",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "5A960A",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "T_BUS",
+        "label": "T Bus",
+        "long": "City Hall to 40th-Market",
+        "short": "T Bus",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "45637A",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "WTR_BUS",
+        "label": "WTR Bus",
+        "long": "West Trenton Shuttle Bus",
+        "short": "WTR Bus",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 13817,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 34693 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 34693,
+    "trips_with_shape": 34693
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expiring_soon",
+      "count": 1,
+      "effort": "One export setting.",
+      "fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "owner": "Likely your export tool",
+      "points": 64.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "Service data runs out in 16 day(s).",
+      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+    },
+    {
+      "code": "foreign_key_violation",
+      "count": 206,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'foreign_key_violation' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 24.0,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "Foreign key violation (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "pathway_unreachable_location",
+      "count": 6,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'pathway_unreachable_location' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 18.0,
+      "rank": 3,
+      "severity": "ERROR",
+      "what": "Pathway unreachable location (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

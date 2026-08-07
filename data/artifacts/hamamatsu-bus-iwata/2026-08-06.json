@@ -1,0 +1,384 @@
+{
+  "agency": {
+    "country": "JP",
+    "id": "hamamatsu-bus-iwata",
+    "name": "Hamamatsu Bus, Iwata routes (\u6d5c\u677e\u30d0\u30b9\uff0f\u78d0\u7530\u5e02\u751f\u6d3b\u30d0\u30b9\u8def\u7dda)",
+    "operating_note": "Hamamatsu Bus's Iwata City life-line routes in Shizuoka; counted as one feed record.",
+    "subdivision_code": "JP-22",
+    "subdivision_name": "Shizuoka"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 14.7,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 40,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 98.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 101,
+        "translations": {
+          "feed_lang": "ja",
+          "has_translations": true,
+          "languages": [
+            "en",
+            "ja-hrkt"
+          ],
+          "translated_tables": [
+            "routes",
+            "stops",
+            "trips"
+          ],
+          "translation_count": 118
+        },
+        "trips": 40,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 101,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "101 of 101 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 40,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "40 of 40 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        }
+      ],
+      "name": "completeness",
+      "score": 59.7,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 2,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 2,
+          "WARNING": 1196
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "non_ascii_or_non_printable_char",
+          "count": 1196,
+          "effort": "A planned ID change, not a quick text cleanup.",
+          "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some internal IDs use characters outside the basic text set.",
+          "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+        },
+        {
+          "code": "unknown_file",
+          "count": 2,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 91.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 2 kinds of issue across 1198 instances (0 error, 1196 warning, 2 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 147,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": "2026-12-31",
+        "feed_start_date": "2025-04-01",
+        "feed_version": "2021v1-2023\u5e7411\u670824\u65e5 12\u664229\u520620\u79d2-\u897f\u6ca2\u30c4\u30fc\u30ebver8.20",
+        "has_feed_info": true,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 147 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0; published as GTFS-JP open data by Hamamatsu Bus Co., Ltd. through the GTFS Data Repository (gtfs-data.jp). Credit Hamamatsu Bus Co., Ltd.",
+    "reachable": true,
+    "sha256": "0212c5b11af07ec1bbe44205a9fa77917af115acada047f309450c3764f6c238",
+    "size_bytes": 40726,
+    "static_url": "https://api.gtfs-data.jp/v2/organizations/hamabus/feeds/iwata_seikatsubus/files/feed.zip?rid=current"
+  },
+  "fetch": {
+    "final_url": "https://prodgtfsdatareposharedinfrasta-filebucketcdfcd6de-1qqhtsxlwh6la.s3.amazonaws.com/hamabus/iwata_seikatsubus/3f56c010-25bb-4247-a2de-f6688208bf68/feed.zip?response-content-disposition=attachment%3B%20filename%3Dfeed_hamabus_iwata_seikatsubus_20250401_20250615094646.zip&AWSAccessKeyId=ASIARI5CFYANEX7SBSKR&Signature=YTBdPXffpuRAr3NwTA5q1EvAF9Y%3D&x-amz-security-token=IQoJb3JpZ2luX2VjEF8aDmFwLW5vcnRoZWFzdC0xIkgwRgIhAKPGaho1yNfdhaSFCj0GSTNEOTv2vqhu5AQpqvteDSh6AiEA0DlNDBljudVcwnohbWLwUAphWVRrCVz0mds7frqgHvMq0AQIKRAFGgwwODc4NTAwNzQxMzgiDOMmg8cLfQGPGsG6BiqtBIJBz3ERzMbPkQj8ewHi14GWKuAor0E2vow0OzFRaD6Bouj%2F%2F7nTBzWrYmYOu%2BAzG34hylaLSJpyplilLQfWITNi%2FkyCzhQRoHpQ80QaTOrBEIiEXUyaJxuT6LGKrPTURGUX%2BPoz9bpIRzlz8GmOvCiKFALq0Sdu3v3lyDa3vZFTV%2FvR%2B4zVyBHe09QfAuslUsOybInVM2QZCGa9TiD0sl89BUpFd7hjQFncGo8XJcZCYnp0hRCHH3d%2FWZwQTB%2BmVR9n4lsfQSD5D0Bslw88qnEEpkVC5uzMbj0%2FejoUpk2YXZ9RPt%2FoDh6oj8sMQ2ZsFsWd1ptppPpMVvXNFxnm0XAb%2Bq%2F9JufzQ1i4UeKfGsht7jP7l2w2VAONRdb9G8fMnLO%2BDC9uuphy9mAvN7qrMts%2BXGjvxvC%2FOpzTvEoJyyIRRW%2FlmKw%2FvUvx5cd28GiSZzOf%2Fwcs0p%2FfMKek4LD7LmMS46Y2XoQM%2FSIDMMYltKR2rJwfdMfLSfajjLPXqw%2BROdiHas3ZUADFhzKIXiDnICTIrGe9GGNAgLGlpzAGK92%2BuE%2BSoHZsGw852TIld9jXRI4g9joVDFhu%2FTHwE7jYs6Jbwa1H6InegjZH%2FdpSKBcC%2BOD819qdGnDexGbUc8KUESiobpDAjbxvyoGRyT7krE7Ukyxtj1GsLHU5saJlDuaMp%2FlvoEsFqepJZNMjs8a6DcrGX3AwYhASg9JEvwNOT2%2FbZIZSm0vC55HDUjL%2BMJurzdMGOqIB%2BP5RUeQAnykXuj8qthtTUaXLUsDGN5oJv2ha9lAL%2B%2B2bqZP2Dsk4gbQ5v%2FBLUDQEPzTTc1HPqgUwnBV2A%2BHJKulqb6z4pdSIJ2SrkXpfX%2F93hWi0WmBO49XJALZYUOyJgCMIM9Ab1NztRhAMAmI5MEyjVteVb4hVPf6ij%2BTPInICRzHRhVQkY6I6IGzCtJKvQvVNJmJMOCq5zG7SySV7bKCa&Expires=1785944529",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      137.79644,
+      34.66699,
+      137.85515,
+      34.73102
+    ],
+    "lat": 34.69854,
+    "lon": 137.82791,
+    "stop_count": 101
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 3,
+        "trip_count": 40,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 3,
+    "trip_count": 40
+  },
+  "overall": {
+    "grade": "B",
+    "margin_to_lower_band": 3.7,
+    "margin_to_next_band": 6.3,
+    "score": 83.7
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 1,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "1 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (\u5343\u624b\u5802\u7cfb\u7d71).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 101,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 40
+  },
+  "route_map": {
+    "drawn_route_count": 3,
+    "has_shapes": true,
+    "path": "data/artifacts/hamamatsu-bus-iwata/geometry.geojson",
+    "route_count": 3,
+    "routes": [
+      {
+        "color": "7030A0",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "kitako_id",
+        "label": "\u5317\u9ad8\u7cfb\u7d71",
+        "long": "\u5317\u9ad8\u7cfb\u7d71",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B0F0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "senzu_id",
+        "label": "\u5343\u624b\u5802\u7cfb\u7d71",
+        "long": "\u5343\u624b\u5802\u7cfb\u7d71",
+        "short": "",
+        "text_color": "FFFF00",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFC000",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "totsuka_id",
+        "label": "\u3068\u3064\u304b\u7cfb\u7d71",
+        "long": "\u3068\u3064\u304b\u7cfb\u7d71",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 101,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 101,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "101 of 101 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 40,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "40 of 40 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "non_ascii_or_non_printable_char",
+      "count": 1196,
+      "effort": "A planned ID change, not a quick text cleanup.",
+      "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+      "owner": "",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some internal IDs use characters outside the basic text set.",
+      "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

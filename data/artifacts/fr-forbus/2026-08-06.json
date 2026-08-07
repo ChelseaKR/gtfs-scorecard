@@ -1,0 +1,868 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-forbus",
+    "name": "R\u00e9seau urbain Forbus",
+    "subdivision_code": "FR-GES",
+    "subdivision_name": "Grand-Est"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 29.9,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 79.8
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 14.9,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 12.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 595,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.7,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 885,
+        "translations": {
+          "feed_lang": "fr",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 595,
+        "wheelchair_accessible_pct": 79.8,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 885,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "885 of 885 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 120,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 3.0,
+          "severity": "WARNING",
+          "what": "120 of 595 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 49.4,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 8,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 33,
+          "WARNING": 35
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 24,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "route_short_name_too_long",
+          "count": 4,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'route_short_name_too_long' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Route short name too long (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "leading_or_trailing_whitespaces",
+          "count": 3,
+          "effort": "Usually one export setting.",
+          "fix": "Trim leading and trailing spaces on export. The scorecard's auto-fixed copy already does this.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some values have extra spaces at the start or end.",
+          "why": "A stray space can break a match, so a stop or route may fail to link across files."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 2,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 1,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 28,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the bus ends up, so a midpoint name can send them the wrong way."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 5,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 72.8,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 8 kinds of issue across 68 instances (0 error, 35 warning, 33 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 147,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": "2026-12-31",
+        "feed_start_date": "2026-08-04",
+        "feed_version": "20260804",
+        "has_feed_info": true,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 147 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "coverage_pct": 66.7,
+        "covered_trips": 10,
+        "drift": {
+          "median_seconds": 81,
+          "observations": 393,
+          "on_time_share_pct": 86.0,
+          "p90_abs_seconds": 234
+        },
+        "kinds_configured": 2,
+        "kinds_reachable": 2,
+        "reachable_kinds": [
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "rt_freshness": "stale",
+        "samples": 6,
+        "scheduled_trips_in_window": 15,
+        "worst_lag_seconds": 116
+      },
+      "findings": [
+        {
+          "code": "scorecard_rt_stale",
+          "count": 1,
+          "effort": "A vendor configuration question.",
+          "fix": "Ask your AVL vendor to publish updates at least every 20 seconds (the Caltrans guideline).",
+          "owner": "",
+          "points": 3.1,
+          "severity": "WARNING",
+          "what": "Realtime data was up to 116 seconds old when sampled.",
+          "why": "Stale positions and predictions are worse than none: riders watch a bus that already left."
+        },
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 5,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 13.7,
+          "severity": "WARNING",
+          "what": "5 of 15 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        }
+      ],
+      "name": "realtime",
+      "score": 83.2,
+      "status": "measured",
+      "summary": "Sampled 6 times: 2 of 2 configured feeds healthy; 66.7% of scheduled trips had live predictions; vehicle position plausibility was not measurable; predictions ran a median of 81s behind schedule.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 6 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 80% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 80% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including commercial reuse is permitted with attribution to CA de Forbach Porte de France and the update date.",
+    "reachable": true,
+    "sha256": "0848d077d89f6f4d5e8ec3023d511104f81cc4f733ca633832a51a3c0730e4b0",
+    "size_bytes": 194659,
+    "static_url": "https://transport.data.gouv.fr/resources/80467/download"
+  },
+  "fetch": {
+    "final_url": "https://api.grandest2.cityway.fr/exs/GTFS?Key=OPENDATA&OperatorCode=FORBUS",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      6.70768,
+      49.0325,
+      7.07889,
+      49.24074
+    ],
+    "lat": 49.17817,
+    "lon": 6.89596,
+    "stop_count": 885
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 32,
+        "trip_count": 595,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 32,
+    "trip_count": 595
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 4.5,
+    "margin_to_next_band": 5.5,
+    "score": 74.5
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 7,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "7 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (Ligne A, Ligne G, Renfort A - Breme d'Or, Renfort A - Marienau, Renfort A - Rosselle - Forbach, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 63,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "63 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"BEHREN-LES-FORBACH - Eglise St Blaise\", \"BEHREN-LES-FORBACH - Eglise St Blaise\", \"Rue D'alsace/lorraine\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 581,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 595
+  },
+  "route_map": {
+    "drawn_route_count": 0,
+    "has_shapes": false,
+    "path": "data/artifacts/fr-forbus/geometry.geojson",
+    "route_count": 32,
+    "routes": [
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "CSCAF-01",
+        "label": "CSCAF 01",
+        "long": "CSCAF 01 - Gaubiving - College H\u00e9rapel",
+        "short": "CSCAF 01",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "CSCAF-02",
+        "label": "CSCAF 02",
+        "long": "CSCAF 02 - Morsbach \u00e9glise - College H\u00e9rapel",
+        "short": "CSCAF 02",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "CSCAF-03",
+        "label": "CSCAF 03",
+        "long": "CSCAF 03 - Cocheren pont d'autoroute - College H\u00e9rapel",
+        "short": "CSCAF 03",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "CSCAF-04",
+        "label": "CSCAF 04",
+        "long": "CSCAF 04 - Morsbach Verlaine - College H\u00e9rapel",
+        "short": "CSCAF 04",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "CSCAF-05",
+        "label": "CSCAF 05",
+        "long": "CSCAF 05 - Cocheren chaufferie - College H\u00e9rapel",
+        "short": "CSCAF 05",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "CSCAF-06",
+        "label": "CSCAF 06",
+        "long": "CSCAF 06 - Morsbach pasteur - College H\u00e9rapel",
+        "short": "CSCAF 06",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "CSCAF-07",
+        "label": "CSCAF 07",
+        "long": "CSCAF 07 - Cocheren rue de b\u00e9ning - Lyc\u00e9e Jean Moulin",
+        "short": "CSCAF 07",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "CSCAF-08",
+        "label": "CSCAF 08",
+        "long": "CSCAF 08 - Bousbach Mairie - Lyc\u00e9e Condorcet",
+        "short": "CSCAF 08",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "CSCAF-09",
+        "label": "CSCAF 09",
+        "long": "CSCAF 09 - Bousbach Mairie - Lyc\u00e9e Hurlevent",
+        "short": "CSCAF 09",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "CSCAF-10",
+        "label": "CSCAF 10",
+        "long": "CSCAF 10 - Bousbach Mairie - Lyc\u00e9e Condorcet",
+        "short": "CSCAF 10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "LIGNE-124",
+        "label": "Ligne 124",
+        "long": "Ligne 124 - Forbach - Leyviller",
+        "short": "Ligne 124",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "LIGNE-129",
+        "label": "Ligne 129",
+        "long": "Ligne 129 - Forbach - Sarreguemines",
+        "short": "Ligne 129",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "LIGNE-138",
+        "label": "Ligne 138",
+        "long": "Ligne 138 - Forbach - Saint Avold",
+        "short": "Ligne 138",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7E2D5F",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "LIGNE-30",
+        "label": "Ligne 30",
+        "long": "Ligne 30 - Forbach - Sarrebruck",
+        "short": "Ligne 30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B0BE1",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "LIGNE-8",
+        "label": "Ligne 8",
+        "long": "Ligne 8 - Forbach - Alsting",
+        "short": "Ligne 8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EF5A0F",
+        "color_name": "orange",
+        "has_shape": false,
+        "id": "LIGNE-A",
+        "label": "Ligne A",
+        "long": "Ligne A - Breme d'Or - Petite Rosselle",
+        "short": "Ligne A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "LIGNE-AS-124",
+        "label": "Ligne SA 124",
+        "long": "Ligne SA 124",
+        "short": "Ligne SA 124",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1800AD",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "LIGNE-B",
+        "label": "Ligne B",
+        "long": "Ligne B - Piscine Olympique - Habsterdick",
+        "short": "Ligne B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC0000",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "LIGNE-C",
+        "label": "Ligne C",
+        "long": "Ligne C - Gare Routiere Forbach - H\u00f4pital Marie Madeleine",
+        "short": "Ligne C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7A2F00",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "LIGNE-D",
+        "label": "Ligne D",
+        "long": "Ligne D - Stiring Wendel - Bruch",
+        "short": "Ligne D",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007A3F",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "LIGNE-E",
+        "label": "Ligne E",
+        "long": "Ligne E - Bellevue - Morsbach",
+        "short": "Ligne E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC007E",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "LIGNE-F",
+        "label": "Ligne F",
+        "long": "Ligne F - Zone Europa - Behren",
+        "short": "Ligne F",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFD21F",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "LIGNE-G",
+        "label": "Ligne G",
+        "long": "Ligne G - Marienau - Oeting",
+        "short": "Ligne G",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8F1EAE",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "LIGNE-H",
+        "label": "Ligne H",
+        "long": "Ligne H - Gare Routiere Forbach - Schoeneck",
+        "short": "Ligne H",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EF5A0F",
+        "color_name": "orange",
+        "has_shape": false,
+        "id": "RENFORT-LIGNE-A-BREME-D-OR",
+        "label": "Renfort A - Breme d'Or",
+        "long": "Renfort Ligne A - Breme d'Or - \u00e9coles",
+        "short": "Renfort A - Breme d'Or",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EF5A0F",
+        "color_name": "orange",
+        "has_shape": false,
+        "id": "RENFORT-LIGNE-A-MARIENAU",
+        "label": "Renfort A - Marienau",
+        "long": "Renfort Ligne A - Marienau - Petite Rosselle - Condorcet",
+        "short": "Renfort A - Marienau",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EF5A0F",
+        "color_name": "orange",
+        "has_shape": false,
+        "id": "RENFORT-LIGNE-A-PETITE-ROSSELLE-FORBACH",
+        "label": "Renfort A - Rosselle - Forbach",
+        "long": "Renfort Ligne A - Petite Rosselle - Forbach",
+        "short": "Renfort A - Rosselle - Forbach",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EF5A0F",
+        "color_name": "orange",
+        "has_shape": false,
+        "id": "RENFORT-LIGNE-A-PETITE-ROSSELLE-LOUIS-ARMAND",
+        "label": "Renfort  A - Rosselle - Louis Armand",
+        "long": "Renfort Ligne A - Petite Rosselle - College Louis Armand",
+        "short": "Renfort  A - Rosselle - Louis Armand",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1800AD",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "RENFORT-LIGNE-B",
+        "label": "Renfort B",
+        "long": "Renfort Ligne B - Stiring - Forbach",
+        "short": "Renfort B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC007E",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "RENFORT-LIGNE-F-BEHREN",
+        "label": "Renfort F",
+        "long": "Renfort Ligne F - Behren",
+        "short": "Renfort F",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFD21F",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "RENFORT-LIGNE-G",
+        "label": "Renfort G",
+        "long": "Renfort Ligne G - Oeting",
+        "short": "Renfort G",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8F1EAE",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "RENFORT-LIGNE-H",
+        "label": "Renfort H",
+        "long": "Renfort Ligne H - Forbach - Schoeneck",
+        "short": "Renfort H",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 885,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 885,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "885 of 885 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "scorecard_rt_trip_coverage",
+      "count": 5,
+      "effort": "A vendor data-mapping question.",
+      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+      "owner": "",
+      "points": 13.7,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "5 of 15 trips scheduled during the sampling window had no live predictions.",
+      "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,0 +1,745 @@
+{
+  "agency": {
+    "id": "transit-authority-of-northern-kentucky-tank-2068",
+    "name": "Transit Authority of Northern Kentucky (TANK)",
+    "subdivision_code": "US-KY",
+    "subdivision_name": "Kentucky"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 2024,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 809,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 2024,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 809,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "809 of 809 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 2024,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "2024 of 2024 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 52.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 7,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 4,
+          "WARNING": 152
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 106,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 30,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "same_name_and_description_for_route",
+          "count": 10,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_route' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Same name and description for route (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 4,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 1,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 4,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the bus ends up, so a midpoint name can send them the wrong way."
+        }
+      ],
+      "name": "correctness",
+      "score": 67.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 7 kinds of issue across 156 instances (0 error, 152 warning, 4 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 92,
+        "effective_expiry_date": "2026-11-06",
+        "feed_end_date": "2026-11-06",
+        "feed_start_date": "2026-07-14",
+        "feed_version": "20260713",
+        "has_feed_info": true,
+        "last_service_date": "2026-11-06",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 92 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 93 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "cc3c07582d8fc72e8d75c403c4b52d20261e06ecb026ac3f0ddb3b9251e647fb",
+    "size_bytes": 1700433,
+    "static_url": "https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx"
+  },
+  "fetch": {
+    "final_url": "https://tank.rideralerts.com/InfoPoint/GTFS-Zip.ashx",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -84.72816,
+      38.97097,
+      -84.40079,
+      39.11648
+    ],
+    "lat": 39.0608,
+    "lon": -84.51116,
+    "stop_count": 809
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 26,
+        "trip_count": 2024,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 26,
+    "trip_count": 2024
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "40019"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data covers the next 93 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "ready",
+    "summary": "Published at a public URL, valid, current, and identified with agency_id: the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 filings make that official; this is a heads-up, not a determination."
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 0.9,
+    "margin_to_next_band": 9.1,
+    "score": 70.9
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 3,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "3 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (64, 2X, 3701).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 53,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "53 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Winston at 43rd\", \"St Elizabeth Florence\", \"St Elizabeth Florence\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 809,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 2024
+  },
+  "route_map": {
+    "drawn_route_count": 26,
+    "has_shapes": true,
+    "path": "data/artifacts/transit-authority-of-northern-kentucky-tank-2068/geometry.geojson",
+    "route_count": 26,
+    "routes": [
+      {
+        "color": "0066A1",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "Dixie Hwy/Florence",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3BB7E4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "12",
+        "label": "12",
+        "long": "Bellevue/Dayton",
+        "short": "12",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "693A77",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "16",
+        "label": "16",
+        "long": "West Newport/Fort Thomas",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009B76",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "201",
+        "label": "2X",
+        "long": "Airporter",
+        "short": "2X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C9DD03",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "25",
+        "label": "25",
+        "long": "NKU/Alexandria",
+        "short": "25",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0A000",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "2501",
+        "label": "25X",
+        "long": "Alexandria Express",
+        "short": "25X",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "693A77",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "Ludlow/Bromley",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7AB800",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "3001",
+        "label": "30X",
+        "long": "Fort Wright/Lake Park Dr Express",
+        "short": "30X",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0D0D0D",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "352",
+        "label": "352",
+        "long": "Holmes HS #3 PM",
+        "short": "352",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3701",
+        "label": "3701",
+        "long": "Southbank Shuttle",
+        "short": "3701",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "693A77",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "3901",
+        "label": "39X",
+        "long": "Petersburg Rd/South Hebron Express",
+        "short": "39X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F5EC5A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "4001",
+        "label": "40X",
+        "long": "Worldwide Blvd/North Hebron Express",
+        "short": "40X",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C9DD03",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "4201",
+        "label": "42X",
+        "long": "Florence Hub/Industrial Rd Express",
+        "short": "42X",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0D0D0D",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "450",
+        "label": "450",
+        "long": "Holmes HS #2 PM",
+        "short": "450",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0D0D0D",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "451",
+        "label": "451",
+        "long": "Holmes HS #2 AM",
+        "short": "451",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0D0D0D",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "485",
+        "label": "485",
+        "long": "Holmes HS #5 PM",
+        "short": "485",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "693A77",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "5",
+        "label": "5",
+        "long": "Holman Ave/Fort Wright",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0D0D0D",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "552",
+        "label": "552",
+        "long": "Holmes HS #1 AM",
+        "short": "552",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0D0D0D",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "553",
+        "label": "553",
+        "long": "Holmes HS #6 PM",
+        "short": "553",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "12B561",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "64",
+        "label": "64",
+        "long": "64",
+        "short": "64",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0D0D0D",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "652",
+        "label": "652",
+        "long": "Holmes HS #8 AM",
+        "short": "652",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "Madison Ave/Latonia",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0D0D0D",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "751",
+        "label": "751",
+        "long": "Holmes HS #7 PM",
+        "short": "751",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0D0D0D",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "752",
+        "label": "752",
+        "long": "Holmes HS #9 PM",
+        "short": "752",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7AB800",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "8",
+        "label": "8",
+        "long": "Eastern Ave/Crestview Hills",
+        "short": "8",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0D0D0D",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "851",
+        "label": "851",
+        "long": "Holmes HS #4 PM",
+        "short": "851",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 809,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 2024 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 2024,
+    "trips_with_shape": 2024
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 809,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "809 of 809 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 2024,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "2024 of 2024 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "fast_travel_between_consecutive_stops",
+      "count": 106,
+      "effort": "A few minutes per flagged trip.",
+      "fix": "Check the flagged stop times for transposed minutes.",
+      "owner": "",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some scheduled trips move faster between stops than a bus can.",
+      "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

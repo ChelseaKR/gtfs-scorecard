@@ -1,0 +1,936 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "cap-cotentin",
+    "name": "R\u00e9seau urbain Cap Cotentin",
+    "subdivision_code": "FR-NOR",
+    "subdivision_name": "Normandie"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 62.5,
+          "stops_marked_accessible_pct": 100.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 100.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 5.8,
+          "wheelchair_stops": 25.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 3834,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 38.8,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 621,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 3834,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 100.0,
+        "wheelchair_marked_accessible_pct": 100.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 3834,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "3834 of 3834 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 380,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 9.2,
+          "severity": "INFO",
+          "what": "About 380 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 53.3,
+      "status": "measured",
+      "summary": "100% of stops state wheelchair accessibility (100% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 10,
+        "instances_by_severity": {
+          "ERROR": 267,
+          "INFO": 16,
+          "WARNING": 6453
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "trip_distance_exceeds_shape_distance",
+          "count": 263,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates",
+          "count": 4,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 3293,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 1630,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 1390,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
+          "count": 129,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Equal shape distance diff coordinates distance below threshold (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 8,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 2,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "trip_with_shape_dist_traveled_but_no_shape_distances",
+          "count": 16,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'trip_with_shape_dist_traveled_but_no_shape_distances' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Trip with shape dist traveled but no shape distances (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 17.2,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 10 kinds of issue across 6736 instances (267 error, 6453 warning, 16 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 23,
+        "effective_expiry_date": "2026-08-30",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-08-30",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expiring_soon",
+          "count": 1,
+          "effort": "One export setting.",
+          "fix": "Re-export with a validity window that reaches at least 60 days out.",
+          "owner": "Likely your export tool",
+          "points": 57.0,
+          "severity": "WARNING",
+          "what": "Service data runs out in 23 day(s).",
+          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+        },
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 23.3,
+      "status": "measured",
+      "summary": "Service data runs out in 23 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "alerts_content": {
+          "alerts": 0,
+          "ended_over_30_days_ago": 0,
+          "with_cause_and_effect": 0,
+          "with_description": 0,
+          "with_header_text": 0,
+          "with_informed_entity": 0
+        },
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "coverage_pct": 85.0,
+        "covered_trips": 34,
+        "drift": {
+          "median_seconds": 60,
+          "observations": 1143,
+          "on_time_share_pct": 86.5,
+          "p90_abs_seconds": 280
+        },
+        "kinds_configured": 3,
+        "kinds_reachable": 3,
+        "reachable_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "rt_freshness": "fresh",
+        "samples": 9,
+        "scheduled_trips_in_window": 40,
+        "vehicles_checked": 106,
+        "vehicles_on_route_pct": 99.1,
+        "worst_lag_seconds": 10
+      },
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 6,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 5.3,
+          "severity": "WARNING",
+          "what": "6 of 40 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        }
+      ],
+      "name": "realtime",
+      "score": 94.6,
+      "status": "measured",
+      "summary": "Sampled 9 times: 3 of 3 configured feeds healthy; 85.0% of scheduled trips had live predictions; 99.1% of vehicles on their route; predictions ran a median of 60s behind schedule.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "2 validator errors to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data runs out in 25 days; renew to qualify.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 100% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 2 validator errors to resolve. Service data runs out in 25 days; renew to qualify. States wheelchair access on 100% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0; published by the Communaut\u00e9 d'Agglom\u00e9ration du Cotentin through France's National Access Point. Derived measurements by GTFS Scorecard.",
+    "reachable": true,
+    "sha256": "832b004a0b2adf2d2de7783396b55b513cf454d67877be6a664143a395bac938",
+    "size_bytes": 2012032,
+    "static_url": "https://www.data.gouv.fr/fr/datasets/r/2e97c9b3-a59f-42dd-9b9e-a232fa771f21"
+  },
+  "fetch": {
+    "final_url": "https://static.data.gouv.fr/resources/horaires-theoriques-et-en-temps-reel-des-bus-et-autocars-circulant-sur-le-reseau-cap-cotentin/20260701-123050/gtfs-capcotentin-010726-au-30082026.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -1.94442,
+      48.104,
+      -1.25929,
+      49.7157
+    ],
+    "lat": 49.6338,
+    "lon": -1.62848,
+    "stop_count": 621
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 34,
+        "trip_count": 3834,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 34,
+    "trip_count": 3834
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 42.9,
+    "margin_to_next_band": 17.1,
+    "score": 42.9
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 11,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "11 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (1A, 1B, 2, 4, 5, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 8,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "8 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"CHAPELLE ST MICHEL\", \"CHAPELLE ST MICHEL\", \"BARNEVILLE-CARTERET Place Dr Auvret\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 617,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 3834
+  },
+  "route_map": {
+    "drawn_route_count": 34,
+    "has_shapes": true,
+    "path": "data/artifacts/cap-cotentin/geometry.geojson",
+    "route_count": 34,
+    "routes": [
+      {
+        "color": "F8DA41",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "02",
+        "label": "2",
+        "long": "AMFREVILLE - EGLANTINE CHATEAU",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9E5049",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "03",
+        "label": "3",
+        "long": "QUERQUEVILLE MAIRIE - FLAMANDS",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F39200",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "04",
+        "label": "4",
+        "long": "CITE DE LA MER - MARETTES",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C9786F",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "05",
+        "label": "5",
+        "long": "PARKING DE L'AGORA - DIGARD",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F5A681",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "06",
+        "label": "6",
+        "long": "POLYCLINIQUE - SAUXMARAIS",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F195BF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "07",
+        "label": "7",
+        "long": "COLLEGE ZOLA - SCHUMAN",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E50063",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "08",
+        "label": "8",
+        "long": "ZA LES FOURCHES - COLLIGNON",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EB5D4D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1A",
+        "label": "1A",
+        "long": "GARE - ANJOU  - PORTE DU MIDI - GARE",
+        "short": "1A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EB5D4D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1B",
+        "label": "1B",
+        "long": "GARE - PORTE DU MIDI - ANJOU - GARE",
+        "short": "1B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "58529E",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "A",
+        "label": "A",
+        "long": "CHERBOURG EN COTENTIN - LA HAGUE",
+        "short": "A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "58529E",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "A1",
+        "label": "A1",
+        "long": "ROUTE DES CAPS NORD",
+        "short": "A1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "58529E",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "A2",
+        "label": "A2",
+        "long": "ROUTE DES CAPS SUD",
+        "short": "A2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1EB8D1",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "B",
+        "label": "B",
+        "long": "CHERBOURG EN COTENTIN - SIOUVILLE/FLAMANVILLE",
+        "short": "B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "86B5E2",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "C",
+        "label": "C",
+        "long": "CHERBOURG EN COTENTIN - VALOGNES",
+        "short": "C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "C-R",
+        "label": "C-R",
+        "long": "CHERBOURG EN COTENTIN - RENNES",
+        "short": "C-R",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "107974",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "D",
+        "label": "D",
+        "long": "CHERBOURG EN COTENTIN - MONTEBOURG",
+        "short": "D",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "47B7A2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "E",
+        "label": "E",
+        "long": "CHERBOURG EN COTENTIN - BRICQUEBEC EN COTENTIN",
+        "short": "E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9774B1",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "F",
+        "label": "F",
+        "long": "LES PIEUX - VALOGNES",
+        "short": "F",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "FER",
+        "label": "FERRY",
+        "long": "NAVETTE FERRY",
+        "short": "FERRY",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C2DDB3",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "G",
+        "label": "G",
+        "long": "VALOGNES - PORTBAIL SUR MER",
+        "short": "G",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "S1",
+        "label": "S1",
+        "long": "VALOGNES - BARNEVILLE CARTERET",
+        "short": "S1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "S10",
+        "label": "S10",
+        "long": "CHERBOURG EN COTENTIN - GROSVILLE",
+        "short": "S10",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "S11",
+        "label": "S11",
+        "long": "LA HAGUE - BIVILLE",
+        "short": "S11",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "S12",
+        "label": "S12",
+        "long": "BRICQUEBEC EN COTENTIN - HELLEVILLE",
+        "short": "S12",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "S13",
+        "label": "S13",
+        "long": "CHERBOURG EN COTENTIN - PORTBAIL SUR MER",
+        "short": "S13",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "S14",
+        "label": "S14",
+        "long": "CHERBOURG EN COTENTIN - MONTEBOURG",
+        "short": "S14",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "S2",
+        "label": "S2",
+        "long": "BRICQUEBEC EN COTENTIN - ST SAUVEUR LE VICOMTE",
+        "short": "S2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "S3",
+        "label": "S3",
+        "long": "VALOGNES - EMONDEVILLE",
+        "short": "S3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "S4",
+        "label": "S4",
+        "long": "CHERBOURG EN COTENTIN - CRASVILLE",
+        "short": "S4",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "S5",
+        "label": "S5",
+        "long": "CHERBOURG EN COTENTIN - REVILLE",
+        "short": "S5",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "S6",
+        "label": "S6",
+        "long": "CHERBOURG EN COTENTIN - GATTEVILLE LE PHARE",
+        "short": "S6",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "S7",
+        "label": "S7",
+        "long": "ST PIERRE EGLISE - CLITOURPS",
+        "short": "S7",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "S8",
+        "label": "S8",
+        "long": "ST PIERRE EGLISE - LE THEIL",
+        "short": "S8",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "S9",
+        "label": "S9",
+        "long": "BRICQUEBEC EN COTENTIN - FIERVILLE LES MINES",
+        "short": "S9",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 621,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expiring_soon",
+      "count": 1,
+      "effort": "One export setting.",
+      "fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "owner": "Likely your export tool",
+      "points": 57.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "Service data runs out in 23 day(s).",
+      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+    },
+    {
+      "code": "trip_distance_exceeds_shape_distance",
+      "count": 263,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 24.0,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "equal_shape_distance_diff_coordinates",
+      "count": 4,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 12.0,
+      "rank": 3,
+      "severity": "ERROR",
+      "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

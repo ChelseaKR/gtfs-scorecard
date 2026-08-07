@@ -1,4 +1,4 @@
 agency_id,agency_name,grade,score,checked,expiry_status,days_until_expiry,needs_attention,attention_reason,top_fix,shapes_txt_status
-rhode-island-public-transit-authority,Rhode Island Public Transit Authority,F,50.0,2026-07-10,lapsed,-21,yes,Service data has expired,"Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
-block-island-ferry,Block Island Ferry,C,77.0,2026-07-10,current,94,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
-vineyard-fast-ferry,Vineyard Fast Ferry,C,76.5,2026-07-10,current,94,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
+rhode-island-public-transit-authority,Rhode Island Public Transit Authority,D,64.5,2026-08-07,expiring_soon,21,yes,Service data expires in 21 day(s),Re-export with a validity window that reaches at least 60 days out.,ready
+block-island-ferry,Block Island Ferry,C,77.0,2026-08-07,current,66,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every terminal. A field survey can start with the busiest terminals.,ready
+vineyard-fast-ferry,Vineyard Fast Ferry,C,76.5,2026-08-07,current,66,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,ready

@@ -1,0 +1,699 @@
+{
+  "agency": {
+    "country": "ES",
+    "id": "fgc-catalunya",
+    "name": "Ferrocarrils de la Generalitat de Catalunya (FGC)",
+    "subdivision_code": "ES-CT",
+    "subdivision_name": "Catalunya [Catalu\u00f1a]"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 3.7,
+          "stops_marked_accessible_pct": 5.9,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 5.9,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 1.5,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 28515,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 305,
+        "translations": {
+          "feed_lang": "es",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 28515,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 5.9,
+        "wheelchair_marked_accessible_pct": 5.9,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 287,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 23.5,
+          "severity": "WARNING",
+          "what": "287 of 305 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 28515,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "28515 of 28515 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 46.5,
+      "status": "measured",
+      "summary": "6% of stops state wheelchair accessibility (6% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 5,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 1,
+          "WARNING": 33
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_recommended_field",
+          "count": 23,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 5,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no transit vehicle is scheduled to arrive."
+        },
+        {
+          "code": "unused_shape",
+          "count": 4,
+          "effort": "One setting.",
+          "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "The feed contains route shapes no trip uses.",
+          "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 1,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "feed_valid_beyond_total_service_window",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'feed_valid_beyond_total_service_window' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Feed valid beyond total service window (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 81.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 34 instances (0 error, 33 warning, 1 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 146,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": "2026-12-31",
+        "feed_start_date": "2024-01-01",
+        "feed_version": "2026-08-06T09:00:10+02:00_not tagged",
+        "has_feed_info": true,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 146 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 146 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 6% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 6% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "export_diff": {
+    "changes": [
+      "3 stops left the export."
+    ],
+    "from_sha256": "aacae842dd76e0c924c7868939de5fca94c8575aa80fa973a7e6b690b950ac2f",
+    "to_sha256": "d891264193e5b286b61b734301a4ac5dca44fa7b6e23e6fae7a942ec31ad4191"
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through FGC's own open data portal; credit Ferrocarrils de la Generalitat de Catalunya.",
+    "reachable": true,
+    "sha256": "d891264193e5b286b61b734301a4ac5dca44fa7b6e23e6fae7a942ec31ad4191",
+    "size_bytes": 2082721,
+    "static_url": "https://www.fgc.cat/google/google_transit.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.fgc.cat/google/google_transit.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-07T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      0.63367,
+      41.34856,
+      2.17212,
+      42.39733
+    ],
+    "lat": 41.48629,
+    "lon": 2.03528,
+    "stop_count": 305
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "subway",
+        "label": "Subway / metro",
+        "route_count": 4,
+        "trip_count": 14553,
+        "trip_share_pct": 51.0
+      },
+      {
+        "key": "rail",
+        "label": "Rail",
+        "route_count": 14,
+        "trip_count": 8509,
+        "trip_share_pct": 29.8
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 1,
+        "trip_count": 1202,
+        "trip_share_pct": 4.2
+      },
+      {
+        "key": "funicular",
+        "label": "Funicular",
+        "route_count": 3,
+        "trip_count": 4251,
+        "trip_share_pct": 14.9
+      }
+    ],
+    "primary_mode": "subway",
+    "primary_mode_label": "Subway / metro",
+    "route_count": 22,
+    "trip_count": 28515
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 5.2,
+    "margin_to_next_band": 4.8,
+    "score": 75.2
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 15,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "15 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (L6, L8, R5, R6, S1, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 9,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "9 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Av. Tibidabo\", \"Av. Tibidabo\", \"L'Hospitalet Av. Carrilet\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "routability": {
+    "boardable_stops": 201,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 5,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "5 of 201 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 5,
+    "single_stop_trips": 0,
+    "trips_total": 28515
+  },
+  "route_map": {
+    "drawn_route_count": 21,
+    "has_shapes": true,
+    "path": "data/artifacts/fgc-catalunya/geometry.geojson",
+    "route_count": 22,
+    "routes": [
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "BusBV",
+        "label": "BusBV",
+        "long": "Servei substitutori bus BV",
+        "short": "BusBV",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0A57A3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "FV",
+        "label": "FV",
+        "long": "Funicular de Vallvidrera",
+        "short": "FV",
+        "text_color": "FFFFFF",
+        "type_label": "Funicular"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "L1",
+        "label": "L1",
+        "long": "Cremallera de Nuria",
+        "short": "L1",
+        "text_color": "FFFFFF",
+        "type_label": "Funicular"
+      },
+      {
+        "color": "B2AED3",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "L12",
+        "label": "L12",
+        "long": "Sarri\u00e0 - Reina Elisenda",
+        "short": "L12",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "797FBC",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "L6",
+        "label": "L6",
+        "long": "Barcelona Pl. Catalunya - Sarri\u00e0",
+        "short": "L6",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "B2600B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "L7",
+        "label": "L7",
+        "long": "Barcelona Pl. Catalunya - Av Tibidabo",
+        "short": "L7",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "E274AA",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "L8",
+        "label": "L8",
+        "long": "Barcelona Pl. Espanya - Mol\u00ed Nou",
+        "short": "L8",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "MM",
+        "label": "MM",
+        "long": "Cremallera Montserrat",
+        "short": "MM",
+        "text_color": "FFFFFF",
+        "type_label": "Funicular"
+      },
+      {
+        "color": "3DBFC3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "R5",
+        "label": "R5",
+        "long": "Barcelona Pl. Espanya - Manresa",
+        "short": "R5",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "00738A",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "R50",
+        "label": "R50",
+        "long": "Barcelona Pl. Espanya- Manresa",
+        "short": "R50",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "3DBFC3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "R53",
+        "label": "R53",
+        "long": "Barcelona Pl. Espanya - Manresa",
+        "short": "R53",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "B3B3B3",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "R6",
+        "label": "R6",
+        "long": "Barcelona Pl. Espanya - Igualada",
+        "short": "R6",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "5B5B5B",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "R60",
+        "label": "R60",
+        "long": "Barcelona Pl. Espanya - Igualada",
+        "short": "R60",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "B3B3B3",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "R63",
+        "label": "R63",
+        "long": "Barcelona Pl. Espanya - Igualada",
+        "short": "R63",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "RL1",
+        "label": "RL1",
+        "long": "Lleida - La Pobla",
+        "short": "RL1",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "RL2",
+        "label": "RL2",
+        "long": "Lleida - La Pobla",
+        "short": "RL2",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "EF7900",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "S1",
+        "label": "S1",
+        "long": "Barcelona Pl. Catalunya - Terrassa Nacions Unides",
+        "short": "S1",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "88BB0B",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "S2",
+        "label": "S2",
+        "long": "Barcelona Pl. Catalunya - Sabadell Parc del Nord",
+        "short": "S2",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "4F868E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "S3",
+        "label": "S3",
+        "long": "Barcelona Pl. Espanya - Can Ros",
+        "short": "S3",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "A78600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "S4",
+        "label": "S4",
+        "long": "Barcelona Pl. Espanya - Olesa de Montserrat",
+        "short": "S4",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "49C0DE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "S8",
+        "label": "S8",
+        "long": "Barcelona Pl. Espanya - Martorell Enlla\u00e7",
+        "short": "S8",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "DF4661",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "S9",
+        "label": "S9",
+        "long": "Barcelona Pl. Espanya - Quatre Camins",
+        "short": "S9",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      }
+    ],
+    "stop_count": 305,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 287,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 23.5,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "287 of 305 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 28515,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "28515 of 28515 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

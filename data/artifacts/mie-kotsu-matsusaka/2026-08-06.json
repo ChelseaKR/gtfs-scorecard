@@ -1,0 +1,541 @@
+{
+  "agency": {
+    "country": "JP",
+    "id": "mie-kotsu-matsusaka",
+    "name": "Mie Kotsu Matsusaka (\u4e09\u91cd\u4ea4\u901a \u677e\u962a\u55b6\u696d\u6240)",
+    "operating_note": "Mie Kotsu's scheduled bus service from its Matsusaka office. The official catalog also publishes keyless TripUpdates, VehiclePositions, and Service Alerts.",
+    "subdivision_code": "JP-24",
+    "subdivision_name": "Mie"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 14.9,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 355,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.5,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 369,
+        "translations": {
+          "feed_lang": "ja",
+          "has_translations": true,
+          "languages": [
+            "en",
+            "ja",
+            "ja-hrkt"
+          ],
+          "translated_tables": [
+            "routes",
+            "stops",
+            "trips"
+          ],
+          "translation_count": 9665
+        },
+        "trips": 355,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 369,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "369 of 369 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 355,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "355 of 355 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 52.4,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 5,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 7,
+          "WARNING": 1048
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_recommended_field",
+          "count": 663,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 384,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "unknown_column",
+          "count": 4,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "unknown_file",
+          "count": 3,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 79.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 1055 instances (0 error, 1048 warning, 7 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 92,
+        "effective_expiry_date": "2026-11-06",
+        "feed_end_date": "2026-11-06",
+        "feed_start_date": "2026-06-01",
+        "feed_version": "20260601_20260805",
+        "has_feed_info": true,
+        "last_service_date": "2026-11-06",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 92 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "alerts_content": {
+          "alerts": 0,
+          "ended_over_30_days_ago": 0,
+          "with_cause_and_effect": 0,
+          "with_description": 0,
+          "with_header_text": 0,
+          "with_informed_entity": 0
+        },
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "coverage_pct": null,
+        "kinds_configured": 3,
+        "kinds_reachable": 3,
+        "reachable_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "rt_freshness": "fresh",
+        "samples": 9,
+        "scheduled_trips_in_window": 0,
+        "worst_lag_seconds": 56
+      },
+      "findings": [],
+      "name": "realtime",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Sampled 9 times outside service hours: 3 of 3 configured feeds healthy; vehicle position plausibility was not measurable.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 93 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "export_diff": {
+    "changes": [
+      "Service now runs through 2026-11-06 (was 2026-11-05)."
+    ],
+    "from_sha256": "3cdc45adbcf7fe069a6b4fef20d72885f140a2f0486b29f84328c173724e3941",
+    "to_sha256": "576a4bb8c067f4e2d8d49ec8ff7761e803807408d77e1ce956af90311defe0c2"
+  },
+  "feed": {
+    "license_note": "CC BY 4.0; published as GTFS-JP open data by Mie Kotsu through the GTFS Data Repository (gtfs-data.jp). Credit Mie Kotsu.",
+    "reachable": true,
+    "sha256": "576a4bb8c067f4e2d8d49ec8ff7761e803807408d77e1ce956af90311defe0c2",
+    "size_bytes": 252548,
+    "static_url": "https://api.gtfs-data.jp/v2/organizations/mie-kotsu/feeds/sancomatsusaka/files/feed.zip?rid=current"
+  },
+  "fetch": {
+    "final_url": "https://prodgtfsdatareposharedinfrasta-filebucketcdfcd6de-1qqhtsxlwh6la.s3.amazonaws.com/mie-kotsu/sancomatsusaka/fb719c9c-9e7d-4cf2-93fe-c13f7cf87a56/feed.zip?response-content-disposition=attachment%3B%20filename%3Dfeed_mie-kotsu_sancomatsusaka_20260601_20260806040540.zip&AWSAccessKeyId=ASIARI5CFYANAJSVSQXD&Signature=G1kPYyn4P0TeHo1J7CID0yW7abw%3D&x-amz-security-token=IQoJb3JpZ2luX2VjEGQaDmFwLW5vcnRoZWFzdC0xIkcwRQIhAIoMjCC5I34SokIJJW8Jfs6CGbWHfqh6SdwONhfU%2BCBzAiAeZzfrhNyQgQKew4gOkVljE6Gpjv9mwE%2FitINgPI6DTCrQBAgtEAUaDDA4Nzg1MDA3NDEzOCIMjg9O9ag31T%2BPrADPKq0EkMVwkoZbDbHqsMeQCOBNwN5h0GsfvY4mTpNJwiU8Vjs5NR8FdM3hV1z9WrPeU6GwsjzDuRY14hKWze4uveJZ6NruB8aZg1VuMQtu3hTH0Wnep90vko%2FomVUQC1hd3jq%2F0Ke0SM5uUPyHnCl%2BgRvG6Py9sMV9RGr6P8D4uSNxN5rfO5jIFnH5gcXUa%2FU4TAJrMzFpPCvbXC%2BHhAFmrn0TcST2bEmCDqIvmBTris1X%2Bowyl9h6M%2FsMu2s81bu6r0twD5DNs8jv32WqtXUzLaBbEPXz0kI%2BKXRFXsgvwtCrHM4VzdTmq3JF0FTTToXGUpJUQgmtm9zBKqlRoDbD8SfBZzNHoZROI%2FA5h7DM3ipEppeIY0Y8tRecq0PkxWzBfmpIZ3R24k8B%2FmGlokoDppALZ2IAS4fhhh5cZeLEnLZ5CX1sVAyaQU2dUifkGvoiF90uJShZNq2v8tAMSfZaZ5h2t3gY5Mx22FJ9mI0hd1jVn%2Fto5SLRpwnCiGPCMi9Ddw8ppjjKhoyjS68aU1LgJVeO3OWr7yo0vNfoNnYn%2BekcaSm5uKUi36mios1nGEwhbl5TwoyipIxkzhXvlkXGzkwuErN2OUDtW2XYBQs%2BvAxaLWj%2F4%2B1zz6l9PfWIAdHYylVPCe6%2FTTp57Q6o%2BMkGe6xfnQiES0I7UKYO54FGnfkox%2FneeqyW9I1NOrH8BKOKTsMA6GBpuQl1XHPhSiEoxqmVoTs9kf9aqaTbU1MW6Hcw2LHO0wY6owE8aKikkjiPoREtj6t%2BeK0TDibDlg%2BlNN93Wxv0Vynke1RLcM8luHtPH64VvYeALOji3qsA4Yw8Z%2Bs4E8AaAY%2BojlMfWXS%2FRuH5lTyxoPRuti0CTmFH%2BlnFLQjCxJkdxoy%2By1kelcik9%2Facob0UGFWOEpVZUk1XXT2VnN3wrJbeXlSLuZ4qALjkzKoBNkCAyLppL7P4TnwLDqg5INNulOHGBJfj&Expires=1785963245",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      136.2162,
+      34.37875,
+      136.552,
+      34.62572
+    ],
+    "lat": 34.50744,
+    "lon": 136.4896,
+    "stop_count": 369
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 11,
+        "trip_count": 355,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 11,
+    "trip_count": 355
+  },
+  "overall": {
+    "grade": "B",
+    "margin_to_lower_band": 0.8,
+    "margin_to_next_band": 9.2,
+    "score": 80.8
+  },
+  "recommendations": [],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 369,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 355
+  },
+  "route_map": {
+    "drawn_route_count": 0,
+    "has_shapes": false,
+    "path": "data/artifacts/mie-kotsu-matsusaka/geometry.geojson",
+    "route_count": 11,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "5_603_20260601",
+        "label": "\u677e\u962a\u5e02\u5185\uff08\u4e2d\u592e\u75c5\u9662\uff09\u7dda",
+        "long": "\u677e\u962a\u5e02\u5185\uff08\u4e2d\u592e\u75c5\u9662\uff09\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "5_605_20260601",
+        "label": "\u677e\u962a\u5e02\u5185\uff08\u5e81\u820e\u524d\uff09\u7dda",
+        "long": "\u677e\u962a\u5e02\u5185\uff08\u5e81\u820e\u524d\uff09\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "5_607_20260601",
+        "label": "\u98ef\u5357\u6ce2\u702c\u7dda",
+        "long": "\u98ef\u5357\u6ce2\u702c\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "5_608_20260601",
+        "label": "\u5b87\u6c17\u90f7\u7dda",
+        "long": "\u5b87\u6c17\u90f7\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "5_611_20260601",
+        "label": "\u5927\u6749\u30fb\u30b7\u30e3\u30fc\u30d7\u30fb\u718a\u91ce\u7dda",
+        "long": "\u5927\u6749\u30fb\u30b7\u30e3\u30fc\u30d7\u30fb\u718a\u91ce\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "5_613_20260601",
+        "label": "\u677e\u962a\u5927\u77f3\u7dda",
+        "long": "\u677e\u962a\u5927\u77f3\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "5_620_20260601",
+        "label": "\u98ef\u5357\u677e\u962a\u9ad8\u6821\uff08\u5c04\u548c\uff09\u7dda",
+        "long": "\u98ef\u5357\u677e\u962a\u9ad8\u6821\uff08\u5c04\u548c\uff09\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "5_621_20260601",
+        "label": "\u98ef\u5357\u677e\u962a\u9ad8\u6821\uff08\u7530\u6751\uff09\u7dda",
+        "long": "\u98ef\u5357\u677e\u962a\u9ad8\u6821\uff08\u7530\u6751\uff09\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "5_623_20260601",
+        "label": "\u677e\u962a\u5e02\u5185\uff08\u65b0\u56db\u30c4\u53c8\uff09\u7dda",
+        "long": "\u677e\u962a\u5e02\u5185\uff08\u65b0\u56db\u30c4\u53c8\uff09\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "5_645_20260601",
+        "label": "\u963f\u5742\u5c0f\u91ce\u7dda",
+        "long": "\u963f\u5742\u5c0f\u91ce\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "5_650_20260601",
+        "label": "\u30b7\u30e3\u30fc\u30d7\u7dda",
+        "long": "\u30b7\u30e3\u30fc\u30d7\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 369,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 369,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "369 of 369 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 355,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "355 of 355 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "missing_recommended_field",
+      "count": 663,
+      "effort": "A field at a time; not urgent.",
+      "fix": "Review the flagged fields and fill in the ones your riders would use.",
+      "owner": "",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some files leave out fields that GTFS asks for but does not require.",
+      "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

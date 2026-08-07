@@ -1,0 +1,656 @@
+{
+  "agency": {
+    "id": "santa-barbara-metropolitan-transit-district-mtd",
+    "name": "Santa Barbara Metropolitan Transit District (MTD)"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 100.0,
+          "stops_marked_accessible_pct": 70.1,
+          "stops_marked_not_accessible_pct": 29.9,
+          "stops_stated_pct": 100.0,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 25.0,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": true,
+          "has_products": true,
+          "has_transfer_rules": true,
+          "model": "v2",
+          "product_count": 9
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 7715,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 556,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 7715,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 100.0,
+        "wheelchair_marked_accessible_pct": 70.1,
+        "wheelchair_marked_not_accessible_pct": 29.9
+      },
+      "findings": [],
+      "name": "completeness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "100% of stops state wheelchair accessibility (70% marked accessible, 30% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 2,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 0,
+          "WARNING": 62
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 57,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 5,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        }
+      ],
+      "name": "correctness",
+      "score": 88.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 2 kinds of issue across 62 instances (0 error, 62 warning, 0 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 10,
+        "effective_expiry_date": "2026-08-16",
+        "feed_end_date": "2026-08-16",
+        "feed_start_date": "2026-06-15",
+        "feed_version": "S1000258",
+        "has_feed_info": true,
+        "last_service_date": "2026-08-16",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expiring_soon",
+          "count": 1,
+          "effort": "One export setting.",
+          "fix": "Re-export with a validity window that reaches at least 60 days out.",
+          "owner": "Likely your export tool",
+          "points": 70.0,
+          "severity": "WARNING",
+          "what": "Service data runs out in 10 day(s).",
+          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+        }
+      ],
+      "name": "freshness",
+      "score": 16.7,
+      "status": "measured",
+      "summary": "Service data runs out in 10 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "mirror",
+    "level": "provisional",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data runs out in 12 days; renew to qualify.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 100% of stops and 100% of trips.",
+        "key": "accessible",
+        "met": true
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. Service data runs out in 12 days; renew to qualify."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "9277b0f76f6b80d96180fe28207726099726e8a98b092aa3aa994eefb8e3d51c",
+    "size_bytes": 2120705,
+    "static_url": "http://sbmtd.gov/google_transit/feed.zip"
+  },
+  "fetch": {
+    "final_url": "https://files.mobilitydatabase.org/mdb-1246/latest.zip",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "reader_archive_profile": "raw-v1",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-04T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -119.90581,
+      34.38322,
+      -119.48056,
+      34.4549
+    ],
+    "lat": 34.42562,
+    "lon": -119.72169,
+    "stop_count": 556
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 25,
+        "trip_count": 7715,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 25,
+    "trip_count": 7715
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "1"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data runs out in 12 days; renew before you certify.",
+        "key": "current",
+        "status": "at_risk"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "at_risk",
+    "summary": "This feed is close to NTD-ready. Service data runs out in 12 days; renew before you certify."
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 3.9,
+    "margin_to_next_band": 6.1,
+    "score": 73.9
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 10,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "10 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (12X, 15X, 19X, 20, 24X, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 533,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "533 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Modoc & Portesuello\", \"Milpas & Montecito\", \"Via Real & Santa Ynez\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 556,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 7715
+  },
+  "route_map": {
+    "drawn_route_count": 25,
+    "has_shapes": true,
+    "path": "data/artifacts/santa-barbara-metropolitan-transit-district-mtd/geometry.geojson",
+    "route_count": 25,
+    "routes": [
+      {
+        "color": "BE005D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "West Santa Barbara",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DF0029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "11",
+        "label": "11",
+        "long": "UCSB",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B67A46",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "12X",
+        "label": "12X",
+        "long": "Goleta Express",
+        "short": "12X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "794B2F",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "14",
+        "label": "14",
+        "long": "Montecito",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008C44",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "15X",
+        "label": "15X",
+        "long": "SBCC/UCSB Express",
+        "short": "15X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F7E400",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "17",
+        "label": "17",
+        "long": "Lower West/SBCC",
+        "short": "17",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AC98DB",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "19X",
+        "label": "19X",
+        "long": "Carp SBCC Express",
+        "short": "19X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BE005D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "East Santa Barbara",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F37053",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "20",
+        "label": "20",
+        "long": "Carpinteria",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6D8F6",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "23",
+        "label": "23",
+        "long": "El Encanto Heights",
+        "short": "23",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B67A46",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "24X",
+        "label": "24X",
+        "long": "UCSB Express",
+        "short": "24X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "25",
+        "label": "25",
+        "long": "Ellwood",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "2510",
+        "label": "2510",
+        "long": "San Marcos High School",
+        "short": "2510",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "86006B",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "27",
+        "label": "27",
+        "long": "Isla Vista Shuttle",
+        "short": "27",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "2750",
+        "label": "2750",
+        "long": "Dos Pueblos High School",
+        "short": "2750",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0095DA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "28",
+        "label": "28",
+        "long": "UCSB Shuttle",
+        "short": "28",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5BBD2B",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "Oak Park",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A3B4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "33",
+        "label": "33",
+        "long": "Downtown Waterfront",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6D8F6",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "4",
+        "label": "4",
+        "long": "Mesa/SBCC",
+        "short": "4",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F189AF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "5",
+        "label": "5",
+        "long": "Mesa/La Cumbre",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DF0029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "6",
+        "label": "6",
+        "long": "Goleta",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0095DA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "County Health/Fairview",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006FA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "90",
+        "label": "90",
+        "long": "FLM West Goleta",
+        "short": "90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006FA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "91",
+        "label": "91",
+        "long": "FLM East Goleta",
+        "short": "91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006FA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "92",
+        "label": "92",
+        "long": "FLM Santa Barbara",
+        "short": "92",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 556,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 7715 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 7715,
+    "trips_with_shape": 7715
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expiring_soon",
+      "count": 1,
+      "effort": "One export setting.",
+      "fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "owner": "Likely your export tool",
+      "points": 70.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "Service data runs out in 10 day(s).",
+      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+    },
+    {
+      "code": "fast_travel_between_consecutive_stops",
+      "count": 57,
+      "effort": "A few minutes per flagged trip.",
+      "fix": "Check the flagged stop times for transposed minutes.",
+      "owner": "",
+      "points": 8.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "Some scheduled trips move faster between stops than a bus can.",
+      "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+    },
+    {
+      "code": "expired_calendar",
+      "count": 5,
+      "effort": "One setting in most export tools.",
+      "fix": "Remove past service periods the next time you export the feed.",
+      "owner": "Likely your export tool",
+      "points": 4.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some service calendars in the feed have already ended.",
+      "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

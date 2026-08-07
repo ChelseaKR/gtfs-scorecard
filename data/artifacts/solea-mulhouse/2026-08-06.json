@@ -1,0 +1,1398 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "solea-mulhouse",
+    "name": "Sol\u00e9a (Mulhouse Alsace Agglom\u00e9ration)",
+    "subdivision_code": "FR-GES",
+    "subdivision_name": "Grand-Est"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 96.0,
+          "stops_marked_accessible_pct": 54.9,
+          "stops_marked_not_accessible_pct": 38.7,
+          "stops_stated_pct": 93.6,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 0.3,
+          "wheelchair_stops": 23.4,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 21713,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 2.2,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1062,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 21713,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 93.6,
+        "wheelchair_marked_accessible_pct": 54.9,
+        "wheelchair_marked_not_accessible_pct": 38.7
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 68,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 1.6,
+          "severity": "WARNING",
+          "what": "68 of 1062 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 1039,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 14.7,
+          "severity": "INFO",
+          "what": "About 1039 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 61.2,
+      "status": "measured",
+      "summary": "94% of stops state wheelchair accessibility (55% marked accessible, 39% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 15,
+        "instances_by_severity": {
+          "ERROR": 404,
+          "INFO": 62,
+          "WARNING": 28542
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "trip_distance_exceeds_shape_distance",
+          "count": 404,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 12035,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 10596,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 4687,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 613,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
+          "count": 468,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Equal shape distance diff coordinates distance below threshold (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 76,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 35,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "duplicate_route_name",
+          "count": 27,
+          "effort": "One field per route.",
+          "fix": "Give each route a distinct short or long name.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Two or more routes share the same name.",
+          "why": "Riders can't tell the routes apart in apps."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 3,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "leading_or_trailing_whitespaces",
+          "count": 1,
+          "effort": "Usually one export setting.",
+          "fix": "Trim leading and trailing spaces on export. The scorecard's auto-fixed copy already does this.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some values have extra spaces at the start or end.",
+          "why": "A stray space can break a match, so a stop or route may fail to link across files."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 47,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 14,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the transit vehicle ends up, so a midpoint name can send them the wrong way."
+        },
+        {
+          "code": "unknown_file",
+          "count": 1,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 2.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 15 kinds of issue across 29008 instances (404 error, 28542 warning, 62 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 323,
+        "effective_expiry_date": "2027-06-25",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2027-06-25",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 323 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 324 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 94% of stops and 100% of trips.",
+        "key": "accessible",
+        "met": true
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0 (Etalab) as recorded on the French national access point transport.data.gouv.fr; reuse including commercial reuse is permitted with attribution to Mulhouse Alsace Agglom\u00e9ration (r\u00e9seau Sol\u00e9a) and the update date.",
+    "reachable": true,
+    "sha256": "c4648b0519e7b1567aaeb935baa82be4b9015e064d95b465b5347e02cc8efc82",
+    "size_bytes": 5105444,
+    "static_url": "https://transport.data.gouv.fr/resources/80492/download"
+  },
+  "fetch": {
+    "final_url": "https://eu.ftp.opendatasoft.com/mulhouse/TRANSPORT_GTFS/SOLEA.GTFS_current.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      7.09345,
+      47.67473,
+      7.5489,
+      47.87227
+    ],
+    "lat": 47.75643,
+    "lon": 7.33071,
+    "stop_count": 1062
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 4,
+        "trip_count": 6940,
+        "trip_share_pct": 32.0
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 72,
+        "trip_count": 14773,
+        "trip_share_pct": 68.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 76,
+    "trip_count": 21713
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 41.2,
+    "margin_to_next_band": 18.8,
+    "score": 41.2
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 24,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "24 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (10, 10, 13, 13, 15, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 1,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "1 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"THANN ST. JACQUES\").",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 994,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 21713
+  },
+  "route_map": {
+    "drawn_route_count": 73,
+    "has_shapes": true,
+    "path": "data/artifacts/solea-mulhouse/geometry.geojson",
+    "route_count": 76,
+    "routes": [
+      {
+        "color": "896EAA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "10-1018",
+        "label": "10",
+        "long": "Vignerons - Ste-Ursule",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "896EAA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "10-1055",
+        "label": "10",
+        "long": "Vignerons - Ste-Ursule",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "624528",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "11-1049",
+        "label": "11",
+        "long": "Gare Centrale - Centre Nautique",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "624528",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "11-987",
+        "label": "11",
+        "long": "Gare Centrale - Centre Nautique",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F19FC1",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "12-1020",
+        "label": "12",
+        "long": "Hohmatten - Lefebvre",
+        "short": "12",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F19FC1",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "12-1056",
+        "label": "12",
+        "long": "Hohmatten - Lefebvre",
+        "short": "12",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AAB300",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "13-1009",
+        "label": "13",
+        "long": "H\u00f4pital E.Muller - Campanule",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AAB300",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "13-1058",
+        "label": "13",
+        "long": "H\u00f4pital E.Muller - Campanule",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8040",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "14-1022",
+        "label": "14",
+        "long": "Lutterbach - CCI Campus",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8040",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "14-1059",
+        "label": "14",
+        "long": "Lutterbach - CCI Campus",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A3E2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "15-1023",
+        "label": "15",
+        "long": "Lefebvre - Sausheim Mairie/Ste Barbe",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A3E2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "15-996",
+        "label": "15",
+        "long": "Lefebvre - Sausheim Mairie/Ste Barbe",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2E4191",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "16-1024",
+        "label": "16",
+        "long": "Mer Rouge - Osenbach",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2E4191",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "16-1060",
+        "label": "16",
+        "long": "Mer Rouge - Osenbach",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2E4191",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "16-1081",
+        "label": "16",
+        "long": "Mer Rouge - Osenbach",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2E4191",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "16-1085",
+        "label": "16",
+        "long": "Mer Rouge - Osenbach",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B50AFF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "17-1031",
+        "label": "Zone9",
+        "long": "Lutterbach Gare - All\u00e9e du Ch\u00eane",
+        "short": "Zone9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B50AFF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "17-935",
+        "label": "17",
+        "long": "Lutterbach Gare - All\u00e9e du Ch\u00eane",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4AFF8A",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "18-1014",
+        "label": "18",
+        "long": "Bel Air - Super U",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4AFF8A",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "18-1032",
+        "label": "18",
+        "long": "Bel Air - Super U",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005F27",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "200-988",
+        "label": "200",
+        "long": "Sol\u00e9a Scolaire - Coll\u00e8ge du Nonnenbruch",
+        "short": "200",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0D3880",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "201-997",
+        "label": "201",
+        "long": "Sol\u00e9a Scolaire - Coll\u00e8ges A. Franck et St-Exup\u00e9ry",
+        "short": "201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8A6DAE",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "202-989",
+        "label": "202",
+        "long": "Sol\u00e9a Scolaire - Lyc\u00e9e Am\u00e9lie Zurcher",
+        "short": "202",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CD8354",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "203-1000",
+        "label": "203",
+        "long": "Sol\u00e9a Scolaire - Coll\u00e8ge Ste-Ursule",
+        "short": "203",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFDD00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "204-991",
+        "label": "204",
+        "long": "Sol\u00e9a Scolaire - Ecole Lyautey",
+        "short": "204",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E6007E",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "205-992",
+        "label": "205",
+        "long": "Sol\u00e9a Scolaire - Coll\u00e8ges Pagnol et Don Bosco",
+        "short": "205",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2BB6AA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "206-999",
+        "label": "206",
+        "long": "Sol\u00e9a Scolaire - Coll\u00e8ge Pflimlin",
+        "short": "206",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B80D7F",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "207-994",
+        "label": "207",
+        "long": "Sol\u00e9a Scolaire - Coll\u00e8ge Ulrich",
+        "short": "207",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AAB503",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "208-1002",
+        "label": "208",
+        "long": "Sol\u00e9a Scolaire - Coll\u00e8ge et Lyc\u00e9e Jeanne d'Arc",
+        "short": "208",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F9B000",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "209-998",
+        "label": "209",
+        "long": "Sol\u00e9a Scolaire - Coll\u00e8ge Gambetta",
+        "short": "209",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "21BBEF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "211-1005",
+        "label": "211",
+        "long": "Sol\u00e9a Scolaire - Lyc\u00e9es Lambert et Lavoisier",
+        "short": "211",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F39200",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "212-993",
+        "label": "212",
+        "long": "Sol\u00e9a Scolaire - Episcopal",
+        "short": "212",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009640",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "214-1003",
+        "label": "214",
+        "long": "Sol\u00e9a Scolaire - Coll\u00e8ge Zola",
+        "short": "214",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E30613",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "215-1004",
+        "label": "215",
+        "long": "Sol\u00e9a Scolaire - Coll\u00e8ge Monod",
+        "short": "215",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F29FC5",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "216-1001",
+        "label": "216",
+        "long": "Sol\u00e9a Scolaire - Coll\u00e8ge P\u00e9guy",
+        "short": "216",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "79AC2B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "217-995",
+        "label": "217",
+        "long": "Sol\u00e9a Scolaire - Coll\u00e8ge Mermoz",
+        "short": "217",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "93D5F6",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "33-580",
+        "label": "33",
+        "long": "ChronoPro - Parc des Collines - Bel Air",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "50-1033",
+        "label": "50",
+        "long": "REININGUE Ch\u00e2teau d'Eau - MULHOUSE Rattachement",
+        "short": "50",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "50-957",
+        "label": "50",
+        "long": "REININGUE Ch\u00e2teau d'Eau - MULHOUSE Rattachement",
+        "short": "50",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "51-1034",
+        "label": "51",
+        "long": "ZILLISHEIM Clair Horizon - MULHOUSE Gare Centrale",
+        "short": "51",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "51-938",
+        "label": "51",
+        "long": "ZILLISHEIM Clair Horizon - MULHOUSE Gare Centrale",
+        "short": "51",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "52-1013",
+        "label": "52",
+        "long": "GALFINGUE Triv.-F. / MORSCH. Campan. - MULH. Univ.",
+        "short": "52",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "52-1043",
+        "label": "52",
+        "long": "GALFINGUE Triv.-F. / MORSCH. Campan. - MULH. Univ.",
+        "short": "52",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "53-1036",
+        "label": "53",
+        "long": "WITTELSH. Graffenwald - BOLLWILLER Bollwiller Gare",
+        "short": "53",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "53-932",
+        "label": "53",
+        "long": "WITTELSH. Graffenwald - BOLLWILLER Bollwiller Gare",
+        "short": "53",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "54-1037",
+        "label": "54",
+        "long": "BOLLWILLER Elsass - MULHOUSE Rattachement",
+        "short": "54",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "54-962",
+        "label": "54",
+        "long": "BOLLWILLER Elsass - MULHOUSE Rattachement",
+        "short": "54",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "55-1038",
+        "label": "55",
+        "long": "RIXH.-HABSH. C. Nautique - MULHOUSE Gare Centrale",
+        "short": "55",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "55-906",
+        "label": "55",
+        "long": "RIXH.-HABSH. C. Nautique - MULHOUSE Gare Centrale",
+        "short": "55",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "56-1039",
+        "label": "56",
+        "long": "DIETWILLER St-Wendelin - MULHOUSE Gare Centrale",
+        "short": "56",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "56-960",
+        "label": "56",
+        "long": "DIETWILLER St-Wendelin - MULHOUSE Gare Centrale",
+        "short": "56",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "57-1040",
+        "label": "57",
+        "long": "STEINB.-LE-BAS Stiermatt - MULHOUSE Gare Centrale",
+        "short": "57",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "57-982",
+        "label": "57",
+        "long": "STEINB.-LE-BAS Stiermatt - MULHOUSE Gare Centrale",
+        "short": "57",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "58-1041",
+        "label": "58",
+        "long": "BANTZ. Bantzenheim Nord - MULHOUSE Gare Centrale",
+        "short": "58",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "58-963",
+        "label": "58",
+        "long": "BANTZ. Bantzenheim Nord - MULHOUSE Gare Centrale",
+        "short": "58",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "59-1042",
+        "label": "59",
+        "long": "KEMBS Kembs Pr\u00e9s - MUHOUSE Gare Centrale",
+        "short": "59",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "59-964",
+        "label": "59",
+        "long": "KEMBS Kembs Pr\u00e9s - MUHOUSE Gare Centrale",
+        "short": "59",
+        "text_color": "007F7F",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFED00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "8-1016",
+        "label": "8",
+        "long": "Chevreuils - Place de Thiers",
+        "short": "8",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFED00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "8-1053",
+        "label": "8",
+        "long": "Chevreuils - Place de Thiers",
+        "short": "8",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFED00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "8-1084",
+        "label": "8",
+        "long": "Chevreuils - Place de Thiers",
+        "short": "8",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008836",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "9-1017",
+        "label": "9",
+        "long": "Kingersheim Usines - Rotonde/St-Jean",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008836",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "9-1054",
+        "label": "9",
+        "long": "Kingersheim Usines - Rotonde/St-Jean",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BE0013",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "91-775",
+        "label": "1",
+        "long": "Gare Centrale - Ch\u00e2taignier",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "FFD910",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "92-775",
+        "label": "2",
+        "long": "Coteaux - Nouveau Bassin",
+        "short": "2",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "B2C602",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "93-775",
+        "label": "TT",
+        "long": "Thann St-Jacques - Gare Centrale",
+        "short": "TT",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "009234",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "94-775",
+        "label": "3",
+        "long": "Lutterbach Gare - Gare Centrale",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "BD112F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "C4-1011",
+        "label": "C4",
+        "long": "Ch\u00e2taignier - Ste-Barbe",
+        "short": "C4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BD112F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "C4-1025",
+        "label": "C4",
+        "long": "Ch\u00e2taignier - Ste-Barbe",
+        "short": "C4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BD112F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "C4-1083",
+        "label": "C4",
+        "long": "Ch\u00e2taignier - Ste-Barbe",
+        "short": "C4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F29400",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "C5-1012",
+        "label": "C5",
+        "long": "Jonq. - Lefebvre - C. Adm - Dornach - Gare - Jonq.",
+        "short": "C5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F29400",
+        "color_name": "orange",
+        "has_shape": false,
+        "id": "C5a-1030",
+        "label": "C5a",
+        "long": "Jonq. > Lef. > Cit\u00e9 adm. > Dornach > Gare > Jonq.",
+        "short": "C5a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F29400",
+        "color_name": "orange",
+        "has_shape": false,
+        "id": "C5b-1030",
+        "label": "C5b",
+        "long": "Jonq. > Gare > Dornach > Cit\u00e9 adm. > Lef > Jonq.",
+        "short": "C5b",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E2007A",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "C6-1008",
+        "label": "C6",
+        "long": "Collines IKEA - Carrefour \u00cele Napol\u00e9on / Espale",
+        "short": "C6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E2007A",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "C6-1069",
+        "label": "C6",
+        "long": "Collines IKEA - Carrefour \u00cele Napol\u00e9on / Espale",
+        "short": "C6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33AFE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "C7-1007",
+        "label": "C7",
+        "long": "Lesage - H\u00f4pital E. Muller",
+        "short": "C7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33AFE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "C7-1062",
+        "label": "C7",
+        "long": "Lesage - H\u00f4pital E. Muller",
+        "short": "C7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1062,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "trip_distance_exceeds_shape_distance",
+      "count": 404,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 24.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

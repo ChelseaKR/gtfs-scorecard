@@ -1,0 +1,2020 @@
+{
+  "agency": {
+    "country": "DE",
+    "id": "vgc-calw",
+    "name": "Verkehrsgesellschaft B\u00e4derkreis Calw (VGC)",
+    "operating_note": "One association feed for the Landkreis Calw's operators, of which VOLZ is one; counted as one feed record, not a distinct-agency count.",
+    "subdivision_code": "DE-BW",
+    "subdivision_name": "Baden-W\u00fcrttemberg"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 38.9,
+          "stops_marked_accessible_pct": 2.3,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 2.3,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.6,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 9558,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 99.9,
+        "headsign_scored_pct": 99.9,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 2434,
+        "translations": {
+          "feed_lang": "DE",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 9558,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 2.3,
+        "wheelchair_marked_accessible_pct": 2.3,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2379,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 24.4,
+          "severity": "WARNING",
+          "what": "2379 of 2434 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 14,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "14 of 9558 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 53.0,
+      "status": "measured",
+      "summary": "2% of stops state wheelchair accessibility (2% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 15,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 1201,
+          "WARNING": 3259
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 1291,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 694,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 580,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "unused_shape",
+          "count": 291,
+          "effort": "One setting.",
+          "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "The feed contains route shapes no trip uses.",
+          "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 243,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 106,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a transit vehicle can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no transit vehicle can meet."
+        },
+        {
+          "code": "fast_travel_between_far_stops",
+          "count": 43,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'fast_travel_between_far_stops' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Fast travel between far stops (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 7,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 1,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "single_shape_point",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'single_shape_point' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Single shape point (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 1,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the transit vehicle doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "platform_without_parent_station",
+          "count": 602,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'platform_without_parent_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Platform without parent station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 595,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 4,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the transit vehicle ends up, so a midpoint name can send them the wrong way."
+        }
+      ],
+      "name": "correctness",
+      "score": 21.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 15 kinds of issue across 4460 instances (0 error, 3259 warning, 1201 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 127,
+        "effective_expiry_date": "2026-12-12",
+        "feed_end_date": "2026-12-12",
+        "feed_start_date": "2026-05-03",
+        "feed_version": "20260802",
+        "has_feed_info": true,
+        "last_service_date": "2026-12-12",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 127 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 129 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 2% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 2% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data portal; mark reuse as a dataset of NVBW GmbH with a link back to the portal. Route shapes derive from OpenStreetMap and carry the OpenStreetMap contributors credit.",
+    "reachable": true,
+    "sha256": "5de5f8ea5b13b91921a6636dae7a3a5996d52dc9d64dad775c4059c0c25fd00b",
+    "size_bytes": 28471852,
+    "static_url": "https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/vgc.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/vgc.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      8.13039,
+      47.6587,
+      9.7181,
+      49.47908
+    ],
+    "lat": 48.71114,
+    "lon": 8.68312,
+    "stop_count": 2434
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 5,
+        "trip_count": 2001,
+        "trip_share_pct": 20.9
+      },
+      {
+        "key": "rail",
+        "label": "Rail",
+        "route_count": 9,
+        "trip_count": 1564,
+        "trip_share_pct": 16.4
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 120,
+        "trip_count": 5993,
+        "trip_share_pct": 62.7
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 134,
+    "trip_count": 9558
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 51.0,
+    "margin_to_next_band": 9.0,
+    "score": 51.0
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 95,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "95 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"M\u00f6tzingen Goethe-/H\u00f6lderlinstr.\", \"M\u00f6tzingen Goethe-/H\u00f6lderlinstr.\", \"Baden-Baden Tiergarten / cts-Klinik\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 2378,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 9558
+  },
+  "route_map": {
+    "drawn_route_count": 132,
+    "has_shapes": true,
+    "path": "data/artifacts/vgc-calw/geometry.geojson",
+    "route_count": 134,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bbw-24-Ost-1",
+        "label": "Calw Ost",
+        "long": "Ringlinie Calw Wert",
+        "short": "Calw Ost",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bbw-24-Wes-1",
+        "label": "Calw West",
+        "long": "Ringlinie Calw West",
+        "short": "Calw West",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-1-200-1",
+        "label": "200",
+        "long": "Innerortsverkehr Sch\u00f6mberg BfA-Kurklinik/Berufsf\u00f6rderungswerk und Sch\u00f6mberg",
+        "short": "200",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-1-661-1",
+        "label": "661",
+        "long": "Althengstett - Neuhengstett - Ottenbronn",
+        "short": "661",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-1-662-1",
+        "label": "662",
+        "long": "Stammheim/Gymn.+See\u00e4ckerschule-Simmozh.-Neuhengst.-Ottenbronn- M\u00f6ttl.-Unterhaugst.-Monakam-Bad Liebenzell-Hirsau/Weil der Stadt",
+        "short": "662",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-1-663-1",
+        "label": "663",
+        "long": "Gechingen - Althengstett",
+        "short": "663",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-1-664-1",
+        "label": "664",
+        "long": "Gechingen - Stammheim - Heumaden - Althengstett SZ",
+        "short": "664",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-1-668-1",
+        "label": "668",
+        "long": "Holzbronn -  Calw - ZfP",
+        "short": "668",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-1-670-1",
+        "label": "670",
+        "long": "Weil der Stadt - Althengstett - Calw - Hirsau - Zentrum f\u00fcr Psychiatrie",
+        "short": "670",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-1-690-1",
+        "label": "690",
+        "long": "Berufsverkehr Mercedes-Benz Werk Sindelfingen Ostelsheim-Althengstett-Calw-Hirsau",
+        "short": "690",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-1-801-1",
+        "label": "801",
+        "long": "Bad Liebenzell - Unterhaugstett - Neuhausen - Steinegg - Hamberg - Schellbronn",
+        "short": "801",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-1-880-1",
+        "label": "880",
+        "long": "Bad Liebenzell - Weil der Stadt",
+        "short": "880",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-1-CW3-1",
+        "label": "CW3",
+        "long": "Pkw-Bedarfsverkehr Calw - Holzbronn",
+        "short": "CW3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-31-715-1",
+        "label": "715",
+        "long": "Bad Liebenzell - Beinberg - Unterlengenhardt - Bad Liebenz.",
+        "short": "715",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-31-724-1",
+        "label": "724",
+        "long": "Bad Wildbad - H\u00f6fen - Sch\u00f6mberg - Wimberg",
+        "short": "724",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-31-820-1",
+        "label": "820",
+        "long": "(Bad Wildbad) - H\u00f6fen - Sch\u00f6mberg - Bad Liebenzell (-Calw)",
+        "short": "820",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-31-824-1",
+        "label": "824",
+        "long": "(Calw)-Bad Liebenz.-Unterreichenb.-Kapfenh -Bieselsb./Sch\u00f6mb. Kapfenhardt - Unterreichenbach - Bad Liebenzell (-Calw)",
+        "short": "824",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-31-BL1-1",
+        "label": "BL1_",
+        "long": "Bad Liebenzell - Hirsau - Oberreichenbach - Sch\u00f6mberg Pkw-Bedarfsverkehr (Anrufverkehr)",
+        "short": "BL1_",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-31-BL2-1",
+        "label": "BL2_",
+        "long": "Bad Liebenz - Unterreichenb. - Kapfenh. - Bieselsb. - Unterreichenb. - Bad Liebenz. Pkw-Bedarfsverkehr (Anrufverkehr)",
+        "short": "BL2_",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-31-BW3-1",
+        "label": "BW3_",
+        "long": "Pkw-Bedarfsverkehr Schwarzmi\u00dfh\u00fctte - Sprollenhaus - Bad Wildbad",
+        "short": "BW3_",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-31-BW4-1",
+        "label": "BW4_",
+        "long": "Pkw-Bedarfsverkehr Enzkl\u00f6sterle - Schwarzmi\u00dfh\u00fctte",
+        "short": "BW4_",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-32-662-1",
+        "label": "662",
+        "long": "Hirsau-Bad Liebenzell-Monakam-Unterhaugst.-M\u00f6ttl.- Ottenbronn-Neuhengst.-Simmozh.-Stammheim/Gymn.+See\u00e4ckerschule",
+        "short": "662",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-32-670-1",
+        "label": "670",
+        "long": "Weil der Stadt - Heumaden - Calw (- Zentrum f\u00fcr Psychiatrie)",
+        "short": "670",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-32-671-1",
+        "label": "671",
+        "long": "(Holzbronn -) Calw - Ottenbronn - Weil der Stadt",
+        "short": "671",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-32-672-1",
+        "label": "672",
+        "long": "Stammheim - Gechingen - Althengstett Baustelle",
+        "short": "672",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-32-880-1",
+        "label": "880",
+        "long": "Bad Liebenzell - Weil der Stadt",
+        "short": "880",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-300-1",
+        "label": "300",
+        "long": "Stammheim-Holzbronn-Neubulach/Talorte-Neubulach",
+        "short": "300",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-320-1",
+        "label": "320",
+        "long": "Bad Wildbad - Oberreichenbach - Neuweiler",
+        "short": "320",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-630-1",
+        "label": "630",
+        "long": "630 Stadtverkehr Calw ((Altburg - Wimberg - ZOB - Heumaden)",
+        "short": "630",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-632-1",
+        "label": "632",
+        "long": "Sch\u00fclerfahrten Calw - Wimberg - Altburg - (Bad Wildbad) - Oberreichenbach",
+        "short": "632",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-633-1",
+        "label": "633",
+        "long": "Wart - Neuweiler - Wimberg - Calw",
+        "short": "633",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-634-1",
+        "label": "634",
+        "long": "Neuweiler - Neubulach - Bhf Bad Teinach/Neubulach - Calw",
+        "short": "634",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-635-1",
+        "label": "635",
+        "long": "Calw - Bad Teinach - R\u00f6tenbach - Zavelstein - Calw",
+        "short": "635",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-636-1",
+        "label": "636",
+        "long": "Schulfahrt Neubulach Schulzentrum - Bad Teinach - R\u00f6tenbach - Wimberg - Calw",
+        "short": "636",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-640-1",
+        "label": "640",
+        "long": "Calw - Neubulach - Oberhaugstett - Altensteig",
+        "short": "640",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-641-1",
+        "label": "641",
+        "long": "Calw -  Bhf. Bad Teinach / Neubulach - R\u00f6tenbach - Calw",
+        "short": "641",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-680-1",
+        "label": "680",
+        "long": "Zainen - Igelsloch - Oberreichenbach - Oberkollbach - Klinikum - Calw",
+        "short": "680",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-710-1",
+        "label": "710",
+        "long": "Nagold - Wildberg - Calw",
+        "short": "710",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-BW1-1",
+        "label": "BW1",
+        "long": "Bad Wildbad -  Neuweiler PKW-Bedarfsverkehr (Anrufverkehr)",
+        "short": "BW1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-BW2-1",
+        "label": "BW2",
+        "long": "Bad Wildbad 2 PKW-Bedarfsverkehr (Anrufverkehr)",
+        "short": "BW2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-CW1-1",
+        "label": "CW1",
+        "long": "Bad Teinach Bf - Neubulach PKW-Bedarfsverkehr (Anrufverkehr)",
+        "short": "CW1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-CW2-1",
+        "label": "CW2",
+        "long": "Bad Teinach Bhf - Schmieh - Emberg - Oberreichenbach und zur\u00fcck PKW-Bedarfsverkehr (Anrufverkehr)",
+        "short": "CW2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-X63-1",
+        "label": "X63",
+        "long": "Calw - Bad Wildbad - Bad Herrenalb",
+        "short": "X63",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-435-1",
+        "label": "435",
+        "long": "Altensteig - Berneck - Wart - Gaugenwald - Neuweiler",
+        "short": "435",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-442-1",
+        "label": "442",
+        "long": "Ebhausen - Rotfelden - Rohrdorf",
+        "short": "442",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-444-1",
+        "label": "444",
+        "long": "Altensteig - Egenhausen - Walddorf und zur\u00fcck",
+        "short": "444",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-501-1",
+        "label": "501",
+        "long": "Nagold ZOB - Emmingen - Nagold ZOB",
+        "short": "501",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-502-1",
+        "label": "502",
+        "long": "Nagold ZOB - Sommerhalde - Iselshausen - Nagold ZOB",
+        "short": "502",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-503-1",
+        "label": "503",
+        "long": "Nagold ZOB - Lemberg - Nagold ZOB",
+        "short": "503",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-504-1",
+        "label": "504",
+        "long": "Nagold ZOB - Mittlerer Oberer Steinberg - Mittlerer Steinberg - Nagold ZOB",
+        "short": "504",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-506-1",
+        "label": "506",
+        "long": "Nagold ZOB - Ing. Park",
+        "short": "506",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-540-1",
+        "label": "540",
+        "long": "Nagold - Wildberg - Wart - Martinsmoos",
+        "short": "540",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-552-1",
+        "label": "552",
+        "long": "Nagold - Oberjettingen - Sulz am Eck - G\u00fcltlingen",
+        "short": "552",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-555-1",
+        "label": "555",
+        "long": "Sch\u00fclerverkehr zur Ganztagsbetreuung nach Sulz am Eck",
+        "short": "555",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-759-1",
+        "label": "759",
+        "long": "G\u00e4rtringen - Wildberg - Liebelsberg",
+        "short": "759",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-760-1",
+        "label": "760",
+        "long": "Wildberg - Neuweiler",
+        "short": "760",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-771-1",
+        "label": "771",
+        "long": "Nagold -  Wart - Altensteig",
+        "short": "771",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-772-1",
+        "label": "772",
+        "long": "Nagold - Rohrdorf - Walddorf - Egenhausen - Altensteig",
+        "short": "772",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-775-1",
+        "label": "775",
+        "long": "Herrenberg - Kuppingen - Sulz am Eck - Wildberg",
+        "short": "775",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-AL1-1",
+        "label": "AL1",
+        "long": "PKW-Bedarfsverkehr Altensteig Turmberg - Altensteigdorf (Anrufverkehr)",
+        "short": "AL1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-AL2-1",
+        "label": "AL2",
+        "long": "Altensteig - Wildberg - Oberhaugstett Rufbus verkehrt als PKW-Verkehr",
+        "short": "AL2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-AL3-1",
+        "label": "AL3",
+        "long": "Ebhausen - Wart - Ebershardt PKW-Bedarfsverkehr ( Anrufverkehr)",
+        "short": "AL3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-NG1-1",
+        "label": "NG1",
+        "long": "Nagold S\u00fcd PKW-Bedarfsverkehr (Anrufverkehr)",
+        "short": "NG1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-NG2-1",
+        "label": "NG2",
+        "long": "Nagold Nord PKW-Bedarfsverkehr (Anrufverkehr)",
+        "short": "NG2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-36-NG3-1",
+        "label": "NG3",
+        "long": "Nagold-Pfrondorf-Effringen-Wildberg PKW-Bedarfsverkehr (Anrufverkehr)",
+        "short": "NG3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-37-774-1",
+        "label": "774",
+        "long": "Herrenberg - Haslach - Jettingen - Nagold",
+        "short": "774",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-37-774A-1",
+        "label": "7794",
+        "long": "Herrenberg - Haslach - Jettingen - Nagold",
+        "short": "7794",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-37-777-1",
+        "label": "777",
+        "long": "Nagold - M\u00f6tzingen - \u00d6schelbronn -  G\u00e4ufelden - Altingen",
+        "short": "777",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-37-778-1",
+        "label": "778",
+        "long": "Nagold - Wolfsberg - M\u00f6tzingen - Bondorf",
+        "short": "778",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-37-X77-1",
+        "label": "X77",
+        "long": "Herrenberg - Nagold - (Altensteig) (Regiobus)",
+        "short": "X77",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-38-450-1",
+        "label": "450",
+        "long": "Haiterbach - Egenhausen - Altensteig",
+        "short": "450",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-38-520-1",
+        "label": "520",
+        "long": "Nagold-Oberschwandorf-Beihingen-Haiterbach und zur\u00fcck",
+        "short": "520",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-38-NG4-1",
+        "label": "NG4",
+        "long": "Haiterbach - Industriegebiet Haiterbach und zur\u00fcck PKW-Bedarfsverkehr (Anrufverkehr)",
+        "short": "NG4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-39-420-1",
+        "label": "420",
+        "long": "Altensteig - Simmersfeld - Bad Wildbad",
+        "short": "420",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-39-430-1",
+        "label": "430",
+        "long": "Altensteig-Spielberg-Pfalzgrafenweiler-Gr\u00f6mbach-Altensteig",
+        "short": "430",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-39-AS2-1",
+        "label": "AS2",
+        "long": "Altensteig PKW-Bedarfsverkehr (Anrufverkehr)",
+        "short": "AS2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-39-BWI-1",
+        "label": "BWI1",
+        "long": "Bad Wildbad PKW-Bedarfsverkehr (Anrufverkehr)",
+        "short": "BWI1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-39-F20-1",
+        "label": "F20",
+        "long": "Kaltenbronn - Enzkl\u00f6sterle - Altensteig",
+        "short": "F20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-39-X78-1",
+        "label": "X78",
+        "long": "Freudenstadt - Besenfeld - Enzkl\u00f6sterle - Bad Wildbad",
+        "short": "X78",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-7101-1",
+        "label": "Hauptbahnhof - Bad Herrenalb",
+        "long": "Hauptbahnhof - Bad Herrenalb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T14B-1",
+        "label": "RB14b",
+        "long": "",
+        "short": "RB14b",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T17A-1",
+        "label": "MEX17a",
+        "long": "",
+        "short": "MEX17a",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T40-1",
+        "label": "RE 40",
+        "long": "",
+        "short": "RE 40",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T41-1",
+        "label": "RB 41",
+        "long": "",
+        "short": "RB 41",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T74-1",
+        "label": "RB 74",
+        "long": "",
+        "short": "RB 74",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T76-1",
+        "label": "RB 76",
+        "long": "",
+        "short": "RB 76",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "fds-2-0F9-1",
+        "label": "F 9",
+        "long": "FDS- Hallwangen - Pfalzgrafenweiler - Altensteig",
+        "short": "F 9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-17-113C-1",
+        "label": "113",
+        "long": "Bad Herrenalb - Bernbach - Moosbronn Fahrten des Anruflinientaxi",
+        "short": "113",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-17-116C-1",
+        "label": "116",
+        "long": "Bad Herrenalb - Oberes Gaistal Fahrten des Anruflinientaxi",
+        "short": "116",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-17-719C-1",
+        "label": "719",
+        "long": "Bad Herrenalb - Neusatz Fahrten des Anruflinientaxi",
+        "short": "719",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-2-244C-1",
+        "label": "244",
+        "long": "BAUSTELLENFAHRPLAN - g\u00fcltig ab 30.07.2026 bis vsl. Sommer 2027 Baden-Baden - Gernsbach (- Loffenau - Bad Herrenalb)",
+        "short": "244",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-2-944C-1",
+        "label": "X44",
+        "long": "B\u00fchl - Baden-Baden - Gernsbach - Bad Herrenalb",
+        "short": "X44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "kvv-22-301E-1",
+        "label": "S1",
+        "long": "Hochstetten - Bad Herrenalb",
+        "short": "S1",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "kvv-22-306E-1",
+        "label": "S6",
+        "long": "Bad Wildbad - Pforzheim",
+        "short": "S6",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "kvv-22-308E-1",
+        "label": "S8",
+        "long": "Freudenstadt - Karlsruhe",
+        "short": "S8",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "kvv-22-381E-1",
+        "label": "S81",
+        "long": "Bondorf - Karlsruhe",
+        "short": "S81",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "kvv-22-FEXE-1",
+        "label": "FEX",
+        "long": "ALBT\u00c4LER-FREIZEITEXPRESS",
+        "short": "FEX",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-40-916E-1",
+        "label": "SEV S6",
+        "long": "SCHIENENERSATZVERKEHR g\u00fcltig 29.06. bis 10.07.2026 (03:00 Uhr)  Bad Wildbad - H\u00f6fen - Neuenb\u00fcrg - Pforzheim ZOB/Hbf",
+        "short": "SEV S6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-5-113C-1",
+        "label": "113",
+        "long": "Moosbronn - Bernbach - Bad Herrenalb",
+        "short": "113",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-5-116C-1",
+        "label": "116",
+        "long": "Bad Herrenalb - Oberes Gaistal",
+        "short": "116",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-5-117C-1",
+        "label": "117",
+        "long": "Schulverkehr Bad Herrenalb",
+        "short": "117",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-5-719C-1",
+        "label": "719",
+        "long": "Bad Wildbad - H\u00f6fen (Enz) - Dobel - Bad Herrenalb SONDERFAHRPLAN - letzter Schultag vor den Sommerferien am 29.07.2026",
+        "short": "719",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rab-34-850-1",
+        "label": "RB76",
+        "long": "",
+        "short": "RB76",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rab-34-878-1",
+        "label": "RB74",
+        "long": "",
+        "short": "RB74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rbs-3-768A-1",
+        "label": "768A",
+        "long": "",
+        "short": "768A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-4001-1",
+        "label": "7400",
+        "long": "",
+        "short": "7400",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-405-1",
+        "label": "7405",
+        "long": "",
+        "short": "7405",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-418-1",
+        "label": "7418",
+        "long": "",
+        "short": "7418",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-670-1",
+        "label": "670",
+        "long": "",
+        "short": "670",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-938-1",
+        "label": "7938",
+        "long": "",
+        "short": "7938",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tub-15-628-1",
+        "label": "7628",
+        "long": "Rottenburg - Ergenzingen - Eutingen",
+        "short": "7628",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "tub-15-633-1",
+        "label": "7633",
+        "long": "Rottenburg - Neustetten - Ergenzingen - (Eutingen / Vollmaringen)",
+        "short": "7633",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-716-1",
+        "label": "716",
+        "long": "Bad Herrenalb - Dobel - Schwann - Pforzheim",
+        "short": "716",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-725-1",
+        "label": "725",
+        "long": "Sch\u00f6mberg - Neuenb\u00fcrg - Ellmendingen",
+        "short": "725",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-743-1",
+        "label": "743",
+        "long": "Bieselsberg - Sch\u00f6mberg - Langenbrand - Salmbach - Pforzheim",
+        "short": "743",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-744-1",
+        "label": "744",
+        "long": "Kapfenhardt - Salmbach - Engelsbrand - Grunbach - Pforzheim",
+        "short": "744",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-916-1",
+        "label": "916",
+        "long": "Schulbusse Bad Herrenalb - Dobel - Conweiler - Neuenb\u00fcrg",
+        "short": "916",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-943-1",
+        "label": "943",
+        "long": "Schulbusse Unterlengenhardt - Sch\u00f6mberg - Engelsbrand - Pforzheim",
+        "short": "943",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "vvs-11-040-1",
+        "label": "RE40",
+        "long": "Freudenstadt - Herrenberg",
+        "short": "RE40",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "vvs-11-041-1",
+        "label": "RB41",
+        "long": "Freudenstadt - Herrenberg",
+        "short": "RB41",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-743-1",
+        "label": "743",
+        "long": "Gechingen - Deufringen - Aidlingen - B\u00f6blingen",
+        "short": "743",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-744-1",
+        "label": "744",
+        "long": "(Sindelfingen -) B\u00f6blingen - Aidlingen - Dachtel (- Gechingen)",
+        "short": "744",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-748-1",
+        "label": "748",
+        "long": "Universit\u00e4t - Sindelfingen - Maichingen - Grafenau - Ostelsheim",
+        "short": "748",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-748a-1",
+        "label": "748A",
+        "long": "Sch\u00fclerverkehr Sindelfingen - Maichingen - Grafenau - Schafhausen - Ostelsheim",
+        "short": "748A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-763-1",
+        "label": "763",
+        "long": "Calw - Stammheim (CW) - Gechingen - Dachtel - Deufringen - Aidlingen - B\u00f6blingen (- Sindelfingen)",
+        "short": "763",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-763-2",
+        "label": "763",
+        "long": "Calw - Stammheim (CW) - Gechingen - Deufringen - Aidlingen - B\u00f6blingen (- Sindelfingen)",
+        "short": "763",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-763a-1",
+        "label": "763A",
+        "long": "Sch\u00fclerverkehr Sindelfingen - B\u00f6blingen - Dagersheim - Aidlingen - Deufringen - Dachtel - Gechingen - Stammheim (CW)",
+        "short": "763A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-763a-2",
+        "label": "763A",
+        "long": "Sch\u00fclerverkehr: Sindelfingen - B\u00f6blingen - Dagersheim - Aidlingen - Deufringen - Dachtel - Gechingen - Stammheim (CW)",
+        "short": "763A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-764-1",
+        "label": "764",
+        "long": "(Sindelfingen -) B\u00f6blingen - Aidlingen - Dachtel (- Gechingen)",
+        "short": "764",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-768a-1",
+        "label": "768A",
+        "long": "Sch\u00fclerverkehr: G\u00e4rtringen - Aidlingen - Lehenweiler - D\u00f6ffingen",
+        "short": "768A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-770-1",
+        "label": "770",
+        "long": "RegioBus: Calw - Deckenpfronn - Herrenberg",
+        "short": "770",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-34-070-1",
+        "label": "N70",
+        "long": "Herrenberg - Bondorf - M\u00f6tzingen - Nagold",
+        "short": "N70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-36-076e-1",
+        "label": "RB76E",
+        "long": "Calw - Weil der Stadt (Ersatzverkehr)",
+        "short": "RB76E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-50-775-1",
+        "label": "RT775",
+        "long": "Herrenberg - Kuppingen - Wildberg",
+        "short": "RT775",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2434,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 2379,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 24.4,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "2379 of 2434 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "service_has_no_active_day_of_the_week",
+      "count": 1291,
+      "effort": "A few minutes in your scheduling software.",
+      "fix": "Delete the empty calendars or set their service days.",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some service calendars have no days of the week switched on.",
+      "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

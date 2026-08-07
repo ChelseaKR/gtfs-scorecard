@@ -1,0 +1,471 @@
+{
+  "agency": {
+    "country": "GR",
+    "id": "oasa-athens-rail",
+    "name": "OASA Athens rail transport (metro, electric railway, tram)",
+    "operating_note": "Metro, ISAP electric railway and tram schedule for the OASA group, operated by STASY S.A.",
+    "subdivision_code": "GR-I",
+    "subdivision_name": "Attik\u00ed"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 49.0,
+          "stops_marked_accessible_pct": 48.8,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 48.8,
+          "trips_stated_pct": 49.4
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 3.6,
+          "stop_names": 6.4,
+          "wheelchair_stops": 12.2,
+          "wheelchair_trips": 7.4
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 75730,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 23.9,
+        "headsign_scored_pct": 23.9,
+        "mixed_case_stop_name_pct": 42.9,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 252,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 75730,
+        "wheelchair_accessible_pct": 49.4,
+        "wheelchair_boarding_pct": 48.8,
+        "wheelchair_marked_accessible_pct": 48.8,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 129,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 12.8,
+          "severity": "WARNING",
+          "what": "129 of 252 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 38329,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 7.6,
+          "severity": "WARNING",
+          "what": "38329 of 75730 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 144,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 8.6,
+          "severity": "INFO",
+          "what": "About 144 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 57598,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 11.4,
+          "severity": "WARNING",
+          "what": "57598 of 75730 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.1,
+      "status": "measured",
+      "summary": "49% of stops state wheelchair accessibility (49% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 3,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 18132,
+          "WARNING": 90
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 89,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 18132,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the transit vehicle ends up, so a midpoint name can send them the wrong way."
+        }
+      ],
+      "name": "correctness",
+      "score": 87.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 3 kinds of issue across 18222 instances (0 error, 90 warning, 18132 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 25,
+        "effective_expiry_date": "2026-08-31",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-08-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expiring_soon",
+          "count": 1,
+          "effort": "One export setting.",
+          "fix": "Re-export with a validity window that reaches at least 60 days out.",
+          "owner": "Likely your export tool",
+          "points": 55.0,
+          "severity": "WARNING",
+          "what": "Service data runs out in 25 day(s).",
+          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+        },
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 26.7,
+      "status": "measured",
+      "summary": "Service data runs out in 25 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data runs out in 26 days; renew to qualify.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 49% of stops and 49% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. Service data runs out in 26 days; renew to qualify. States wheelchair access on 49% of stops and 49% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Published as public open data on data.gov.gr, whose terms of use grant reuse for any lawful purpose including commercial exploitation; data is provided as-is. Credit OASA via data.gov.gr.",
+    "reachable": true,
+    "sha256": "3322c30b30d87aa984b32d5b5278d5087634445e9b419872441819c541d63690",
+    "size_bytes": 8346279,
+    "static_url": "https://data.gov.gr/dataset/4e897a75-975a-4ce7-af65-f32ea01f93b9/resource/5e3858ee-d9ba-48c2-9015-744ea160976d/download/stasy_gtfs.zip"
+  },
+  "fetch": {
+    "final_url": "https://min01rg96sablob01.blob.core.windows.net/new-opendata/resources/5e3858ee-d9ba-48c2-9015-744ea160976d/stasy_gtfs.zip?se=2026-08-05T16%3A47%3A05Z&sp=r&sv=2024-08-04&sr=b&sig=xylq1D18%2BRAf5KjIaWan9GZc5XoaniRtRCMwdEPyMmU%3D",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      23.63979,
+      37.84932,
+      23.94482,
+      38.07368
+    ],
+    "lat": 37.95763,
+    "lon": 23.72388,
+    "stop_count": 252
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 2,
+        "trip_count": 21527,
+        "trip_share_pct": 28.4
+      },
+      {
+        "key": "subway",
+        "label": "Subway / metro",
+        "route_count": 3,
+        "trip_count": 54203,
+        "trip_share_pct": 71.6
+      }
+    ],
+    "primary_mode": "subway",
+    "primary_mode_label": "Subway / metro",
+    "route_count": 5,
+    "trip_count": 75730
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 56.3,
+    "margin_to_next_band": 3.7,
+    "score": 56.3
+  },
+  "recommendations": [],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 252,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 75730
+  },
+  "route_map": {
+    "drawn_route_count": 0,
+    "has_shapes": false,
+    "path": "data/artifacts/oasa-athens-rail/geometry.geojson",
+    "route_count": 5,
+    "routes": [
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "1",
+        "label": "T7",
+        "long": "\u0393\u03a1\u0391\u039c\u039c\u0397 7 \u03a4\u03a1\u0391\u039c",
+        "short": "T7",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "2",
+        "label": "T6",
+        "long": "\u0393\u03a1\u0391\u039c\u039c\u0397 6 \u03a4\u03a1\u0391\u039c",
+        "short": "T6",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "3344CC",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "3",
+        "label": "M3",
+        "long": "\u0393\u03a1\u0391\u039c\u039c\u0397 3",
+        "short": "M3",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "3344CC",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "4",
+        "label": "M1",
+        "long": "\u0393\u03a1\u0391\u039c\u039c\u0397 1",
+        "short": "M1",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "3344CC",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "5",
+        "label": "M2",
+        "long": "\u0393\u03a1\u0391\u039c\u039c\u0397 2",
+        "short": "M2",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      }
+    ],
+    "stop_count": 252,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expiring_soon",
+      "count": 1,
+      "effort": "One export setting.",
+      "fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "owner": "Likely your export tool",
+      "points": 55.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "Service data runs out in 25 day(s).",
+      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -28,6 +28,50 @@ the declared public surface).
 ## [Unreleased]
 
 ### Fixed
+- **The published rollup schema never learned the country identity fields the
+  pipeline has emitted since the country program pages shipped (#121).**
+  `rollups.py`'s `_rollup_identity` adds `country_code` and `country_name` to
+  every country rollup, but `web/schemas/rollup.schema.json` still closed the
+  `rollup` block over `id` and `name` alone — so every published
+  `rollups/country-*.json` violated its own advertised contract.
+  `test_every_published_rollup_conforms` could not catch it because the
+  committed artifact snapshot predated country rollups entirely; the first
+  re-materialized snapshot (below) put one in front of the test and it failed
+  immediately. The schema now declares both fields as optional, per its own
+  "additive within a major schema_version" rule; the top level and the
+  `rollup` block stay closed.
+- **The gate that exists to stop corpus figures going stale was itself reading
+  a frozen number.** `check_doc_stats.py` measures its `pages` and `scored`
+  denominators from `data/artifacts/index.json`, and automation stopped writing
+  that file at the S3 cutover (`docs/follow-ups.md`, "Stop committing generated
+  data and pages"). What git carries is the fallback snapshot taken that day —
+  1,128 pages, newest scoring date 2026-07-10 — while the deployed service kept
+  growing. Every claim gated on those two denominators was therefore a claim
+  about the snapshot, read by everyone as a claim about gtfsscorecard.org. On
+  2026-08-06 the live `/api/v1/stats.json` reported 2,182 scored feed records
+  against the snapshot's 1,128, so the README understated the service by
+  roughly half, and `floor` mode's `quoted + FLOOR_BUCKET` ceiling would have
+  *rejected* the true figure had anyone tried to write it. The mechanism is
+  unchanged and still correct for what it can see: an offline `make verify`
+  cannot read the live corpus. What changed is that it now says so. Both output
+  branches print one shared line naming the snapshot and its date, the module
+  docstring states the blind spot next to the CLAUDE.md failure that motivated
+  the sweep, and the README no longer presents the snapshot count as the
+  service's scale — it points at `/status/` for the live number, which is where
+  the exact count has always actually lived. `registry`, `europe_records`, and
+  `europe_countries` read the registry YAML and were never affected.
+- **The README claimed an MCP registry entry the registry does not have.** The
+  Versioning section listed "an MCP registry entry (`server.json`)" among the
+  releases this repo produces, and the standards table repeated it. `server.json`
+  is written and version-checked, but publishing it needs an interactive
+  operator login that has not been run, and it still carries no `packages[]`
+  entry (removed 2026-07-05 rather than leave a false `registryType: pypi`
+  standing). A search of `registry.modelcontextprotocol.io` on 2026-08-06
+  returns nothing for `gtfs-scorecard` or `io.github.chelseakr`, while
+  `scorecard` returns 17 other servers — so the name does not resolve there.
+  `docs/mcp.md` was already accurate about this; the README was not, and now
+  says the manifest is written but unpublished and links to the install recipe
+  that does work.
 - **Three notice codes had a published fix guide and no plain-language entry**,
   so every scorecard showed the generic "flagged by the MobilityData validator"
   fallback for them while the wording sat finished in `docs/fixes/`:
@@ -125,6 +169,23 @@ the declared public surface).
 
 ### Changed
 
+- **Re-materialize the committed artifact fallback snapshot from the live S3
+  corpus (2026-08-07), moving the doc-stats denominator instead of weakening the
+  gate.** The previous entry made `check_doc_stats.py` name its frozen snapshot
+  honestly; this one refreshes the snapshot itself, using the same bounded flow
+  the Pages build runs (`aws s3 sync` of the documented public set, then
+  `scripts/materialize_current_artifacts.py` to validate index/latest parity).
+  `data/artifacts/index.json` now carries the corpus the service actually
+  publishes — 2,182 pages with 2,182 numeric latest scores, newest scoring date
+  2026-08-07, schema 1.17 — against the cutover snapshot's 1,128 pages frozen at
+  2026-07-10. With the denominator refreshed, the unchanged `floor` gate itself
+  forced every "more than 1,100" claim up to "more than 2,100" (README,
+  CLAUDE.md, `docs/roadmap.md`, `docs/product-roadmap.md`,
+  `docs/feature-roadmap.md`) and the landing page's static "1,100+" published
+  count up to "2,100+". The snapshot still only moves when it is deliberately
+  re-materialized — automation stopped committing generated data at the S3
+  cutover and still does not — so the gate's output keeps printing the
+  snapshot's own date beside the counts.
 - Cap oversized per-agency route tables at 500 rows while preserving the total
   route count and linking the complete current JSON record. Normal agency pages
   remain unchanged; national aggregates no longer produce multi-megabyte HTML.

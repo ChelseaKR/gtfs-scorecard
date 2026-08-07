@@ -1,0 +1,1226 @@
+{
+  "agency": {
+    "id": "los-angeles-department-of-transportation-ladot-dash-commuter-express",
+    "name": "LADOT (DASH and Commuter Express)"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 6646,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 2789,
+        "translations": {
+          "feed_lang": "en-US",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 6646,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2789,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "2789 of 2789 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 6646,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "6646 of 6646 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        }
+      ],
+      "name": "completeness",
+      "score": 45.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 10,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 3,
+          "WARNING": 1439
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 492,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 372,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "leading_or_trailing_whitespaces",
+          "count": 265,
+          "effort": "Usually one export setting.",
+          "fix": "Trim leading and trailing spaces on export. The scorecard's auto-fixed copy already does this.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some values have extra spaces at the start or end.",
+          "why": "A stray space can break a match, so a stop or route may fail to link across files."
+        },
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 222,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "route_short_name_too_long",
+          "count": 38,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'route_short_name_too_long' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Route short name too long (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "same_name_and_description_for_route",
+          "count": 34,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_route' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Same name and description for route (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 9,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 5,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 2,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "unknown_file",
+          "count": 3,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 41.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 10 kinds of issue across 1442 instances (0 error, 1439 warning, 3 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 512,
+        "effective_expiry_date": "2027-12-31",
+        "feed_end_date": "2027-12-31",
+        "feed_start_date": "2026-05-19",
+        "feed_version": "30-5-20-2026 El Sereno Tripper,47-7/9/2026 Changes,45-CE 439 and Metrolink v2,183-Downtown DASH eff 7-11-2026",
+        "has_feed_info": true,
+        "last_service_date": "2027-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 512 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 512 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "License: https://www.ladottransit.com/dla.html",
+    "reachable": true,
+    "sha256": "8e28cda94a771e77be32ec07f5b6c703a43ef436046d1bb258daddaf8f8b6fd6",
+    "size_bytes": 3627941,
+    "static_url": "https://ladotbus.com/gtfs"
+  },
+  "fetch": {
+    "final_url": "https://ladotbus.com/gtfs",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-06T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -118.88283,
+      33.7216,
+      -118.13175,
+      34.32308
+    ],
+    "lat": 34.05239,
+    "lon": -118.29523,
+    "stop_count": 2789
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 66,
+        "trip_count": 6646,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 66,
+    "trip_count": 6646
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "183",
+      "30",
+      "45",
+      "47"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data covers the next 512 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "ready",
+    "summary": "Published at a public URL, valid, current, and identified with agency_id: the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 filings make that official; this is a heads-up, not a determination."
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 57.2,
+    "margin_to_next_band": 2.8,
+    "score": 57.2
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 40,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "40 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (438B, Pueblo Del Rio, Southeast Clockwise, Southeast Counterclockwise, 438, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 2762,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "2762 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Glenoaks & Van Nuys\", \"Glenoaks & Pierce\", \"Glenpaks & Gain\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "routability": {
+    "boardable_stops": 2789,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 9,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "9 of 2789 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 9,
+    "single_stop_trips": 0,
+    "trips_total": 6646
+  },
+  "route_map": {
+    "drawn_route_count": 66,
+    "has_shapes": true,
+    "path": "data/artifacts/los-angeles-department-of-transportation-ladot-dash-commuter-express/geometry.geojson",
+    "route_count": 66,
+    "routes": [
+      {
+        "color": "FF051E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1458",
+        "label": "438B",
+        "long": "CE438B",
+        "short": "438B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B6B0B",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1524",
+        "label": "431B",
+        "long": "CE431B",
+        "short": "431B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E58427",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "1756",
+        "label": "Pueblo Del Rio",
+        "long": "DASH Pueblo Del Rio",
+        "short": "Pueblo Del Rio",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E47E1C",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "1757",
+        "label": "Southeast Clockwise",
+        "long": "DASH Southeast Clockwise",
+        "short": "Southeast Clockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0C184",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "1758",
+        "label": "Southeast Counterclockwise",
+        "long": "DASH Southeast Counterclockwise",
+        "short": "Southeast Counterclockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B6B0B",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26",
+        "label": "431",
+        "long": "CE431",
+        "short": "431",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF4112",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "27",
+        "label": "438",
+        "long": "CE438",
+        "short": "438",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0C61C2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "28",
+        "label": "448",
+        "long": "CE448",
+        "short": "448",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0DFFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "29",
+        "label": "409",
+        "long": "CE409",
+        "short": "409",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "122AFF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "30",
+        "label": "422",
+        "long": "CE422",
+        "short": "422",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF250D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "31",
+        "label": "423",
+        "long": "CE423",
+        "short": "423",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "960DFF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4278",
+        "label": "438B",
+        "long": "CE438B",
+        "short": "438B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF1CF0",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4290",
+        "label": "437B",
+        "long": "CE437B",
+        "short": "437B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D43D9",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4291",
+        "label": "439",
+        "long": "CE439",
+        "short": "439",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "703E7E",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4443",
+        "label": "B",
+        "long": "DASH B",
+        "short": "B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E20A16",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "4444",
+        "label": "E",
+        "long": "DASH E",
+        "short": "E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DE1F82",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4445",
+        "label": "F",
+        "long": "DASH F",
+        "short": "F",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F38D1F",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4446",
+        "label": "D",
+        "long": "DASH D",
+        "short": "D",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5F93BF",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "4447",
+        "label": "A",
+        "long": "DASH A",
+        "short": "A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00447B",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4577",
+        "label": "Observatory/Los Feliz",
+        "long": "DASH Observatory/Los Feliz",
+        "short": "Observatory/Los Feliz",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "843C10",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "4867",
+        "label": "Boyle Heights",
+        "long": "DASH Boyle Heights",
+        "short": "Boyle Heights",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A30059",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "4868",
+        "label": "El Sereno/City Terrace",
+        "long": "DASH El Sereno/City Terrace",
+        "short": "El Sereno/City Terrace",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "43C4B7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4869",
+        "label": "Pico Union/Echo Park",
+        "long": "DASH Pico Union/Echo Park",
+        "short": "Pico Union/Echo Park",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F5BFF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "5285",
+        "label": "Sylmar",
+        "long": "DASH Sylmar",
+        "short": "Sylmar",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33460C",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "562",
+        "label": "Beachwood Canyon",
+        "long": "DASH Beachwood Canyon",
+        "short": "Beachwood Canyon",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8A2528",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "563",
+        "label": "Fairfax",
+        "long": "DASH Fairfax",
+        "short": "Fairfax",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00ADC5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "564",
+        "label": "Hollywood Clockwise",
+        "long": "DASH Hollywood Clockwise",
+        "short": "Hollywood Clockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6A727A",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "565",
+        "label": "Hollywood/Wilshire",
+        "long": "DASH Hollywood/Wilshire",
+        "short": "Hollywood/Wilshire",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DD9AA5",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "566",
+        "label": "Highland Park/Eagle Rock",
+        "long": "DASH Highland Park/Eagle Rock",
+        "short": "Highland Park/Eagle Rock",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9B7D0C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "567",
+        "label": "Lincoln Heights/Chinatown Clockwise",
+        "long": "DASH Lincoln Heights/Chinatown Clockwise",
+        "short": "Lincoln Heights/Chinatown Clockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CCB67A",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "568",
+        "label": "Lincoln Heights/Chinatown Counterclockwise",
+        "long": "DASH Lincoln Heights/Chinatown Counterclockwise",
+        "short": "Lincoln Heights/Chinatown Counterclockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0649B",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "571",
+        "label": "Wilshire Center/Koreatown Clockwise",
+        "long": "DASH Wilshire Center/Koreatown Clockwise",
+        "short": "Wilshire Center/Koreatown Clockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F7B1C7",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "572",
+        "label": "Wilshire Center/Koreatown Counterclockwise",
+        "long": "DASH Wilshire Center/Koreatown Counterclockwise",
+        "short": "Wilshire Center/Koreatown Counterclockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007DC3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "573",
+        "label": "Crenshaw Clockwise",
+        "long": "DASH Crenshaw Clockwise",
+        "short": "Crenshaw Clockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4B63AD",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "574",
+        "label": "King East Clockwise",
+        "long": "DASH King East Clockwise",
+        "short": "King East Clockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00703B",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "575",
+        "label": "Leimert/Slauson Clockwise",
+        "long": "DASH Leimert/Slauson Clockwise",
+        "short": "Leimert/Slauson Clockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BFAD00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "576",
+        "label": "Midtown",
+        "long": "DASH Midtown",
+        "short": "Midtown",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A76820",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "5819",
+        "label": "North Hollywood Clockwise",
+        "long": "DASH North Hollywood Clockwise",
+        "short": "North Hollywood Clockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CF8026",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "5820",
+        "label": "North Hollywood Counterclockwise",
+        "long": "DASH North Hollywood Counterclockwise",
+        "short": "North Hollywood Counterclockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8BB0DD",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "589",
+        "label": "Crenshaw Counterclockwise",
+        "long": "DASH Crenshaw Counterclockwise",
+        "short": "Crenshaw Counterclockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7DD0DE",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "603",
+        "label": "Hollywood Counterclockwise",
+        "long": "DASH Hollywood Counterclockwise",
+        "short": "Hollywood Counterclockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "99A0D1",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "604",
+        "label": "King East Counterclockwise",
+        "long": "DASH King East Counterclockwise",
+        "short": "King East Counterclockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "68A687",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "605",
+        "label": "Leimert/Slauson Counterclockwise",
+        "long": "DASH Leimert/Slauson Counterclockwise",
+        "short": "Leimert/Slauson Counterclockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EB6559",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "6768",
+        "label": "Pacoima Clockwise",
+        "long": "DASH Pacoima - Clockwise",
+        "short": "Pacoima Clockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F7AB9C",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "6770",
+        "label": "Pacoima Counter-Clockwise",
+        "long": "DASH Pacoima - Counter-Clockwise",
+        "short": "Pacoima Counter-Clockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAAB5E",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "708",
+        "label": "Wilmington Clockwise",
+        "long": "DASH Wilmington Clockwise",
+        "short": "Wilmington Clockwise",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDCB9A",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "710",
+        "label": "Wilmington Counterclockwise",
+        "long": "DASH Wilmington Counterclockwise",
+        "short": "Wilmington Counterclockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "50D899",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "711",
+        "label": "San Pedro",
+        "long": "DASH San Pedro",
+        "short": "San Pedro",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D39100",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "712",
+        "label": "Chesterfield Square",
+        "long": "DASH Chesterfield Square",
+        "short": "Chesterfield Square",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D9DC5",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "713",
+        "label": "Watts Clockwise",
+        "long": "DASH Watts Clockwise",
+        "short": "Watts Clockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A392B7",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "714",
+        "label": "Watts Counterclockwise",
+        "long": "DASH Watts Counterclockwise",
+        "short": "Watts Counterclockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2EB456",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "715",
+        "label": "Vermont/Main Clockwise",
+        "long": "DASH Vermont/Main Clockwise",
+        "short": "Vermont/Main Clockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "12AD2A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "716",
+        "label": "Vermont/Main Counterclockwise",
+        "long": "DASH Vermont/Main Counterclockwise",
+        "short": "Vermont/Main Counterclockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8D54FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "798",
+        "label": "Northridge",
+        "long": "DASH Northridge",
+        "short": "Northridge",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C24D23",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "799",
+        "label": "Van Nuys/Studio City Clockwise",
+        "long": "DASH Van Nuys/Studio City Clockwise",
+        "short": "Van Nuys/Studio City Clockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "361AA3",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "800",
+        "label": "Van Nuys/Studio City Counterclockwise",
+        "long": "DASH Van Nuys/Studio City Counterclockwise",
+        "short": "Van Nuys/Studio City Counterclockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF643D",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "801",
+        "label": "Panorama City/Van Nuys Clockwise",
+        "long": "DASH Panorama City/Van Nuys Clockwise",
+        "short": "Panorama City/Van Nuys Clockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2D960E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "804",
+        "label": "Panorama City/Van Nuys Counterclockwise",
+        "long": "DASH Panorama City/Van Nuys Counterclockwise",
+        "short": "Panorama City/Van Nuys Counterclockwise",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "55FF42",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "856",
+        "label": "549",
+        "long": "CE549",
+        "short": "549",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF1CF0",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "858",
+        "label": "437A",
+        "long": "CE437A",
+        "short": "437A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0AE7",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "867",
+        "label": "419",
+        "long": "CE419",
+        "short": "419",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "488A4C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "868",
+        "label": "573",
+        "long": "CE573",
+        "short": "573",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7A0573",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "869",
+        "label": "574",
+        "long": "CE574",
+        "short": "574",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1B0AFF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "870",
+        "label": "142",
+        "long": "CE142",
+        "short": "142",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9E3F46",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "871",
+        "label": "534",
+        "long": "CE534",
+        "short": "534",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9085D6",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "900",
+        "label": "Union Station/Bunker Hill Shuttle",
+        "long": "CE Union Station/Bunker Hill Shuttle",
+        "short": "Union Station/Bunker Hill Shuttle",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2789,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 6646 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 6646,
+    "trips_with_shape": 6646
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 2789,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "2789 of 2789 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 6646,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "6646 of 6646 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

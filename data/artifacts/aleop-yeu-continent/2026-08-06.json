@@ -1,0 +1,424 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "aleop-yeu-continent",
+    "name": "Al\u00e9op Yeu-Continent (\u00cele d'Yeu ferry)",
+    "operating_note": "The regional ferry crossing between Fromentine and the \u00cele d'Yeu under the Al\u00e9op brand; one maritime feed counted as one feed record.",
+    "subdivision_code": "FR-PDL",
+    "subdivision_name": "Pays-de-la-Loire"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 62.5,
+          "stops_marked_accessible_pct": 100.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 100.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 25.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 5170,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 2,
+        "translations": {
+          "feed_lang": "fr",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 5170,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 100.0,
+        "wheelchair_marked_accessible_pct": 100.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 5170,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "5170 of 5170 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible terminals, riders need to know the vessel itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        }
+      ],
+      "name": "completeness",
+      "score": 70.0,
+      "status": "measured",
+      "summary": "100% of terminals state wheelchair accessibility (100% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a terminal is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 3,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 7,
+          "WARNING": 5733
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_bike_allowance",
+          "count": 5170,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_bike_allowance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Missing bike allowance (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 563,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "unknown_column",
+          "count": 7,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        }
+      ],
+      "name": "correctness",
+      "score": 83.2,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 3 kinds of issue across 5740 instances (0 error, 5733 warning, 7 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 147,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": "2026-12-31",
+        "feed_start_date": "2025-01-01",
+        "feed_version": "07/11/2025-14:34",
+        "has_feed_info": true,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 147 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "mirror",
+    "level": "provisional",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 100% of terminals and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 100% of terminals and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0; published by the R\u00e9gion des Pays de la Loire through France's National Access Point. The download URL carries the publisher's public open-data key as published there.",
+    "reachable": true,
+    "sha256": "70d2f5dfb64e4473548445be5a6c49214b1193d79284e0e3cc226f0108ab451d",
+    "size_bytes": 89097,
+    "static_url": "https://app.mecatran.com/utw/ws/gtfsfeed/static/pdlYeuContinent?apiKey=2c715462180f36483d5f24340c706b627f2f2364"
+  },
+  "ferry_profile": {
+    "accessibility": {
+      "measures": "published_values_not_physical_usability",
+      "terminals": {
+        "allowed_count": 2,
+        "allowed_pct": 100.0,
+        "not_allowed_count": 0,
+        "not_allowed_pct": 0.0,
+        "stated_count": 2,
+        "stated_pct": 100.0,
+        "total_count": 2
+      },
+      "trips": {
+        "allowed_count": 0,
+        "allowed_pct": 0.0,
+        "not_allowed_count": 0,
+        "not_allowed_pct": 0.0,
+        "stated_count": 0,
+        "stated_pct": 0.0,
+        "total_count": 5170
+      }
+    },
+    "bikes": {
+      "allowed_count": 0,
+      "allowed_pct": 0.0,
+      "not_allowed_count": 0,
+      "not_allowed_pct": 0.0,
+      "stated_count": 0,
+      "stated_pct": 0.0,
+      "total_count": 5170
+    },
+    "cars": {
+      "allowed_count": 0,
+      "allowed_pct": 0.0,
+      "not_allowed_count": 0,
+      "not_allowed_pct": 0.0,
+      "stated_count": 0,
+      "stated_pct": 0.0,
+      "total_count": 5170
+    },
+    "fares": {
+      "applied": false,
+      "fare_free": false,
+      "model": "none",
+      "scope": "whole_feed"
+    },
+    "graded": false,
+    "measured": true,
+    "realtime": {
+      "configured_kinds": [],
+      "kinds_configured": 0,
+      "scope": "whole_feed"
+    },
+    "route_count": 1,
+    "scope": "ferry_routes_and_trips",
+    "stop_access": {
+      "direct_count": 0,
+      "eligible_terminal_count": 0,
+      "stated_count": 0,
+      "stated_pct": null,
+      "through_station_count": 0
+    },
+    "terminal_hierarchy": {
+      "boarding_location_count": 2,
+      "parented_boarding_location_count": 0,
+      "parented_boarding_location_pct": 0.0,
+      "referenced_station_count": 0
+    },
+    "trip_count": 5170
+  },
+  "fetch": {
+    "final_url": "https://files.mobilitydatabase.org/mdb-1257/latest.zip",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "reader_archive_profile": "raw-v1",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -2.34727,
+      46.72563,
+      -2.13918,
+      46.89347
+    ],
+    "lat": 46.80955,
+    "lon": -2.24322,
+    "stop_count": 2
+  },
+  "mode_profile": {
+    "ferry_only": true,
+    "graded": false,
+    "has_ferry": true,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "ferry",
+        "label": "Ferry",
+        "route_count": 1,
+        "trip_count": 5170,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "ferry",
+    "primary_mode_label": "Ferry",
+    "route_count": 1,
+    "trip_count": 5170
+  },
+  "overall": {
+    "grade": "B",
+    "margin_to_lower_band": 3.3,
+    "margin_to_next_band": 6.7,
+    "score": 83.3
+  },
+  "recommendations": [],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 2,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 5170
+  },
+  "route_map": {
+    "drawn_route_count": 1,
+    "has_shapes": true,
+    "path": "data/artifacts/aleop-yeu-continent/geometry.geojson",
+    "route_count": 1,
+    "routes": [
+      {
+        "color": "1F527B",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "YEU",
+        "label": "YEU",
+        "long": "Fromentine - \u00cele d'Yeu",
+        "short": "YEU",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      }
+    ],
+    "stop_count": 2,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 5170,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "5170 of 5170 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible terminals, riders need to know the vessel itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "missing_bike_allowance",
+      "count": 5170,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'missing_bike_allowance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Missing bike allowance (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

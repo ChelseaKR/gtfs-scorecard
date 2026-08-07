@@ -1,0 +1,2017 @@
+{
+  "agency": {
+    "country": "IT",
+    "id": "asara-sardegna",
+    "name": "ASARA contributed lines (Sardegna)",
+    "subdivision_code": "IT-88",
+    "subdivision_name": "Sardegna"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 1533,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1857,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 1533,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1857,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "1857 of 1857 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 1533,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "1533 of 1533 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 15,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 35,
+          "WARNING": 25565
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_timepoint_value",
+          "count": 22483,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_timepoint_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Missing timepoint value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 1681,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "same_name_and_description_for_stop",
+          "count": 867,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Same name and description for stop (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 342,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 55,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 43,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "fast_travel_between_far_stops",
+          "count": 39,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'fast_travel_between_far_stops' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Fast travel between far stops (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 31,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 10,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 9,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "unusable_trip",
+          "count": 3,
+          "effort": "Worth a vendor question if it appears often.",
+          "fix": "Check the flagged trips in your scheduling software; remove them or restore their missing stops.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some trips serve fewer than two stops.",
+          "why": "A trip with one stop can't be ridden; planners ignore it and it may signal an export problem."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "single_shape_point",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'single_shape_point' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Single shape point (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 34,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "unsorted_stop_times",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unsorted_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Unsorted stop times (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 16.8,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 15 kinds of issue across 25600 instances (0 error, 25565 warning, 35 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 327,
+        "effective_expiry_date": "2027-06-30",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2027-06-30",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 327 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 329 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through the regional mobility portal; credit Regione Autonoma della Sardegna and ASARA Giuseppe Eredi Autoservizi.",
+    "reachable": true,
+    "sha256": "26d224f483d9cef15173aa690831477b580d6db7776ae705cf58b87cc0e39e23",
+    "size_bytes": 7679513,
+    "static_url": "http://www.sardegnamobilita.it/opendata/R_SARDEGTRASP_00007_1_dati_privati.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.sardegnamobilita.it/opendata/R_SARDEGTRASP_00007_1_dati_privati.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      8.29522,
+      38.91837,
+      9.79175,
+      41.25735
+    ],
+    "lat": 39.73573,
+    "lon": 9.10063,
+    "stop_count": 1857
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 135,
+        "trip_count": 1533,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 135,
+    "trip_count": 1533
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 40.3,
+    "margin_to_next_band": 19.7,
+    "score": 40.3
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 64,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "64 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Fermata di Cagliari (V.le Poetto/V. Tramontana)\", \"Fermata di Foxi (V. Is Pardinas/SP 17 Villas.) (QUARTU SANT'ELENA)\", \"Fermata di Via S.Isidoro/V. Altee (QUARTU SANT'ELENA)\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1857,
+    "findings": [
+      {
+        "code": "scorecard_single_stop_trips",
+        "count": 3,
+        "effort": "Usually an export setting or a stop_times mapping in your software.",
+        "fix": "Check your scheduling export: every trip should list each stop it calls at, in order, with times.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "WARNING",
+        "what": "3 of 1533 trips list fewer than two stops.",
+        "why": "A trip with one stop has no leg a rider can ride; trip planners can't route anyone on it, so the service effectively does not exist."
+      }
+    ],
+    "orphan_stops": 0,
+    "single_stop_trips": 3,
+    "trips_total": 1533
+  },
+  "route_map": {
+    "drawn_route_count": 133,
+    "has_shapes": true,
+    "path": "data/artifacts/asara-sardegna/geometry.geojson",
+    "route_count": 135,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ASARA-301",
+        "label": "301",
+        "long": "Berchidda-Ozieri",
+        "short": "301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ASARA-302",
+        "label": "302",
+        "long": "Berchidda-Sassari",
+        "short": "302",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ASARA-304",
+        "label": "304",
+        "long": "Budduso-Oschiri",
+        "short": "304",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ATZENI-401",
+        "label": "401",
+        "long": "Siris-Spiagia Sassu",
+        "short": "401",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ATZENI-402",
+        "label": "402",
+        "long": "Siris-San Gavino",
+        "short": "402",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "AUTOLINEE_BAIRE-601",
+        "label": "601",
+        "long": "Capoterra-Cagliari",
+        "short": "601",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "AUTOLINEE_BAIRE-607",
+        "label": "607",
+        "long": "Vill. Moratti-Sarroch ZI",
+        "short": "607",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "AUTOLINEE_BAIRE-633",
+        "label": "633",
+        "long": "Monastir-Sarroch ZI",
+        "short": "633",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "AUTOSERVIZI_VACCA-114-01",
+        "label": "114-01",
+        "long": "Villacidro-Serramanna",
+        "short": "114-01",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "AUTOSERVIZI_VACCA-8801",
+        "label": "8801",
+        "long": "Domusnovas-Villacidro ZI",
+        "short": "8801",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "AUTOSERVIZI_VACCA-8802",
+        "label": "8802",
+        "long": "Vallermosa-Sarroch ZI",
+        "short": "8802",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BAIRE_MARIO-6181",
+        "label": "6181",
+        "long": "Capoterra-Piscinas-T.d.Ulivi",
+        "short": "6181",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BAIRE_MARIO-6182",
+        "label": "6182",
+        "long": "Capoterra-P.d.Pini-T.d.Ulivi",
+        "short": "6182",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BALESTRUCCI-10101",
+        "label": "10101",
+        "long": "Mara-Macomer",
+        "short": "10101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BALESTRUCCI-10102",
+        "label": "10102",
+        "long": "Neoneli-Macomer",
+        "short": "10102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "CARAMELLI-2606",
+        "label": "2606",
+        "long": "Olbia IB-B. Sardinia",
+        "short": "2606",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "CARAMELLI-901",
+        "label": "901",
+        "long": "Tempio-Ozieri",
+        "short": "901",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "CARAMELLI-902",
+        "label": "902",
+        "long": "Santa Teresa-Porto Cervo",
+        "short": "902",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "CARAMELLI-903",
+        "label": "903",
+        "long": "Tempio-Viddalba",
+        "short": "903",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "CARAMELLI-905",
+        "label": "905",
+        "long": "Palau-Capo d'Orso",
+        "short": "905",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "CARAMELLI-906",
+        "label": "906",
+        "long": "Palau-Isola dei Gabbiani",
+        "short": "906",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "CARAMELLI-907",
+        "label": "907",
+        "long": "Tempio-Perfugas",
+        "short": "907",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "CAREDDU-1001",
+        "label": "1001",
+        "long": "Tempio-Lo Sfossato",
+        "short": "1001",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "CAREDDU-1002",
+        "label": "1002",
+        "long": "Tempio-Capriccioli",
+        "short": "1002",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "CAREDDU-1003",
+        "label": "1003",
+        "long": "Tempio-S.A.Gallura",
+        "short": "1003",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "CAREDDU-1004",
+        "label": "1004",
+        "long": "Tempio-Arzachena",
+        "short": "1004",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "CAREDDU-1005",
+        "label": "1005",
+        "long": "Tempio-Cagliari",
+        "short": "1005",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "COBUS-8601",
+        "label": "8601",
+        "long": "Tiria Alta-Oristano",
+        "short": "8601",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "DEDONI-1602",
+        "label": "1602",
+        "long": "Dolianova-Macchiareddu ZI",
+        "short": "1602",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "DEDONI-1606",
+        "label": "1606",
+        "long": "Iglesias-Macchiareddu ZI",
+        "short": "1606",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "DEDONI-1610",
+        "label": "1610",
+        "long": "Cagliari-Macchiareddu Z.I.-Uta Carcere",
+        "short": "1610",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "DEDONI-1616",
+        "label": "1616",
+        "long": "Donori-Elmas Agrario",
+        "short": "1616",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "DEPLANO_F.LLI-2401",
+        "label": "2401",
+        "long": "Nuoro-Olbia apt.",
+        "short": "2401",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "DEPLANO_F.LLI-2402",
+        "label": "2402",
+        "long": "Nuoro-Orune",
+        "short": "2402",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "DEPLANO_F.LLI-2403",
+        "label": "2403",
+        "long": "C.Gonone-Dorgali-Siniscola",
+        "short": "2403",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "DEPLANU-1701",
+        "label": "1701",
+        "long": "Esterzili-Seui",
+        "short": "1701",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "DEPLANU-1703",
+        "label": "1703",
+        "long": "Bolotana-Fertilia apt",
+        "short": "1703",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "DIGITUR-2003",
+        "label": "2003",
+        "long": "Porto Torres-Cuglieri",
+        "short": "2003",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "DIGITUR-2004",
+        "label": "2004",
+        "long": "Fertilia apt.-S.Teresa",
+        "short": "2004",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "EUROSAR-8201",
+        "label": "8201",
+        "long": "Ludurru-Olbia",
+        "short": "8201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FAB-1401",
+        "label": "1401",
+        "long": "Ozieri-Lido La Playa",
+        "short": "1401",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FAB-1481",
+        "label": "1481",
+        "long": "Circolare Ozieri n. 1",
+        "short": "1481",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FARA-2202",
+        "label": "2202",
+        "long": "Erula-Sassari",
+        "short": "2202",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FARA-2203",
+        "label": "2203",
+        "long": "Santulussurgiu-Su Pallosu",
+        "short": "2203",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FARA-2204",
+        "label": "2204",
+        "long": "Ploaghe-Castelsardo",
+        "short": "2204",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FARA-2205",
+        "label": "2205",
+        "long": "Ploaghe-Alghero",
+        "short": "2205",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FATA-201",
+        "label": "201",
+        "long": "Uras-Marrubiu FS",
+        "short": "201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FATA-202",
+        "label": "202",
+        "long": "Terralba-Oristano",
+        "short": "202",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FATA-203",
+        "label": "203",
+        "long": "Terralba-Marceddi",
+        "short": "203",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FOLLESA-7681",
+        "label": "7681",
+        "long": "Pula-S. Margherita",
+        "short": "7681",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FOLLESA-7682",
+        "label": "7682",
+        "long": "Nora-Pula-Parco Tecnologico",
+        "short": "7682",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FRAU-2301",
+        "label": "2301",
+        "long": "Luri-Oristano",
+        "short": "2301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FRAU-2302",
+        "label": "2302",
+        "long": "San Gavino-Spiaggia 26",
+        "short": "2302",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FRAU-2501",
+        "label": "2501",
+        "long": "Olzai-Oristano",
+        "short": "2501",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FRAU-2502",
+        "label": "2502",
+        "long": "Sedilo-Su Pallosu",
+        "short": "2502",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "FRAU-2503",
+        "label": "2503",
+        "long": "Oristano-Elmas Apt.",
+        "short": "2503",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GARAU-2701",
+        "label": "2701",
+        "long": "Barumini-Putzu Idu",
+        "short": "2701",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GIAGHEDDU-2801",
+        "label": "2801",
+        "long": "Monti-Su Canale",
+        "short": "2801",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GIAGHEDDU-2802",
+        "label": "2802",
+        "long": "Monti-Porto Istana",
+        "short": "2802",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GIAGHEDDU-2803",
+        "label": "2803",
+        "long": "Monti-Olbia",
+        "short": "2803",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GIAGHEDDU-2804",
+        "label": "2804",
+        "long": "Tempio-Su Canale",
+        "short": "2804",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GOLFO-520",
+        "label": "520",
+        "long": "Santadi-Cagliari",
+        "short": "520",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GOLFO-531",
+        "label": "531",
+        "long": "Maracalagonis-Sarroch ZI",
+        "short": "531",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GOLFO-532",
+        "label": "532",
+        "long": "Maracalagonis-Sarroch ZI",
+        "short": "532",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GOLFO-536",
+        "label": "536",
+        "long": "Monserrato-Cagliari",
+        "short": "536",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GOLFO-554",
+        "label": "554",
+        "long": "Monserrato-Pirri-Sarroch ZI",
+        "short": "554",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GOLFO-555",
+        "label": "555",
+        "long": "Maracalagonis-Selargius",
+        "short": "555",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GOLFO-556",
+        "label": "556",
+        "long": "Quartu-Elmas I.Agrario",
+        "short": "556",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GOLFO-582",
+        "label": "582",
+        "long": "Santadi-Terresoli",
+        "short": "582",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GOLFO-583",
+        "label": "583",
+        "long": "Santadi-Is Cosas",
+        "short": "583",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LOGUDORO-1802",
+        "label": "1802",
+        "long": "Sassari-Tula",
+        "short": "1802",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LOGUDORO-5701",
+        "label": "5701",
+        "long": "P.Torres-Orune",
+        "short": "5701",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LOGUDORO-5703",
+        "label": "5703",
+        "long": "Cagliari-Sassari",
+        "short": "5703",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MASALA-3501",
+        "label": "3501",
+        "long": "Nule-Bono",
+        "short": "3501",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MASALA-3502",
+        "label": "3502",
+        "long": "Nule-Nuoro",
+        "short": "3502",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MELIS-3801",
+        "label": "3801",
+        "long": "Mogoro-Oristano",
+        "short": "3801",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MEREU-4101",
+        "label": "4101",
+        "long": "Pabillonis-Guspini",
+        "short": "4101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MEREU-4102",
+        "label": "4102",
+        "long": "Sardara-S. Gavino FS",
+        "short": "4102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MEREU-4103",
+        "label": "4103",
+        "long": "S. Gavino-Portovesme",
+        "short": "4103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MEREU-4104",
+        "label": "4104",
+        "long": "Guspini-Flumentorgiu",
+        "short": "4104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MEREU-4105",
+        "label": "4105",
+        "long": "S. Gavino-Pistis Spiaggia",
+        "short": "4105",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MURGIA-4404",
+        "label": "4404",
+        "long": "Capoterra-Nora",
+        "short": "4404",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MURGIA-4430",
+        "label": "4430",
+        "long": "Senorb\u00ec-Sarroch ZI",
+        "short": "4430",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MURGIA-4434",
+        "label": "4434",
+        "long": "Quartu-Selargius-Sarroch ZI",
+        "short": "4434",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MURGIA-4435",
+        "label": "4435",
+        "long": "Quartu-Poetto-CA-Sarroch ZI",
+        "short": "4435",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MURGIA-4455",
+        "label": "4455",
+        "long": "Quartu-Sarroch ZI",
+        "short": "4455",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MURGIA-4457",
+        "label": "4457",
+        "long": "Quartu-Poetto-Sarroch ZI",
+        "short": "4457",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MURGIA-4458",
+        "label": "4458",
+        "long": "Quartu-Selargius-Sarroch ZI",
+        "short": "4458",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MURGIA-4459",
+        "label": "4459",
+        "long": "Pirri-CA-Sarroch ZI",
+        "short": "4459",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "NORDORIENTALE-8301",
+        "label": "8301",
+        "long": "Olbia-Mamusi",
+        "short": "8301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "NORDORIENTALE-8302",
+        "label": "8302",
+        "long": "Padru-Olbia",
+        "short": "8302",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "NORDORIENTALE-8303",
+        "label": "8303",
+        "long": "Padru-Budduso-Ozieri",
+        "short": "8303",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "NUOVA_SUN_TRAVEL-8903",
+        "label": "8903",
+        "long": "Osidda-Nuoro",
+        "short": "8903",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "NUOVA_SUN_TRAVEL-8904",
+        "label": "8904",
+        "long": "Osidda-Santa Lucia",
+        "short": "8904",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "NUOVA_SUN_TRAVEL-8905",
+        "label": "8905",
+        "long": "Osidda-Sologo",
+        "short": "8905",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "PANI-4701",
+        "label": "4701",
+        "long": "Villasor-Sanluri",
+        "short": "4701",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "PANI-4702",
+        "label": "4702",
+        "long": "Samassi-Poetto",
+        "short": "4702",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "PISANU-6901",
+        "label": "6901",
+        "long": "Sedilo-Macomer",
+        "short": "6901",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "PISANU-6902",
+        "label": "6902",
+        "long": "Sedilo-Sassari",
+        "short": "6902",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "PUSCEDDU-6701-1",
+        "label": "6701-1",
+        "long": "Circolare urbana Tortol\u00ec-Arbatax-Tortol\u00ec",
+        "short": "6701-1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "PUSCEDDU-6701-2",
+        "label": "6701-2",
+        "long": "Circolare Urbana Arbatax-Tortol\u00ec-Arbatax",
+        "short": "6701-2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "PUSCEDDU-6701-P",
+        "label": "6701-P",
+        "long": "Porto-Tortol\u00ec",
+        "short": "6701-P",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "PUSCEDDU-6701-sco",
+        "label": "6701-sco",
+        "long": "Linea Scolastica",
+        "short": "6701-sco",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "PUSCEDDU-6702",
+        "label": "6702",
+        "long": "V. Telis-Tortol\u00ec-Lido di Orr\u00ec",
+        "short": "6702",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SANNA-6501",
+        "label": "6501",
+        "long": "Mara-Sassari",
+        "short": "6501",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SAUT-7481",
+        "label": "7481",
+        "long": "Linea 1 Circolare Tempio",
+        "short": "7481",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SAUT-7482",
+        "label": "7482",
+        "long": "Linea 2 Trasversale Tempio",
+        "short": "7482",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SENIS-5001",
+        "label": "5001",
+        "long": "S.Antioco-Ciclopi",
+        "short": "5001",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SENIS-5002",
+        "label": "5002",
+        "long": "Circolare S.Antioco",
+        "short": "5002",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SERRA-6601",
+        "label": "6601",
+        "long": "Perfugas-Tempio",
+        "short": "6601",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SEUNIS-4801",
+        "label": "4801",
+        "long": "Banari-S- Lucia",
+        "short": "4801",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SEUNIS-4802",
+        "label": "4802",
+        "long": "Thiesi-S. Lucia",
+        "short": "4802",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SEUNIS-4803",
+        "label": "4803",
+        "long": "Thiesi-Ozieri",
+        "short": "4803",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SINA-5101",
+        "label": "5101",
+        "long": "Castiadas frazioni - mare",
+        "short": "5101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SINA-5104",
+        "label": "5104",
+        "long": "Muravera-Porto Corallo",
+        "short": "5104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SUN_LINES-5301",
+        "label": "5301",
+        "long": "Olbia IB-S.A.Gallura",
+        "short": "5301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SUN_LINES-5302",
+        "label": "5302",
+        "long": "Olbia IB-Porto Torres",
+        "short": "5302",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SUN_LINES-5303",
+        "label": "5303",
+        "long": "Olbia-Isuledda",
+        "short": "5303",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TREXENTA-7901",
+        "label": "7901",
+        "long": "Senorb\u00ec-San Gavino",
+        "short": "7901",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TREXENTA-7902",
+        "label": "7902",
+        "long": "Suelli-Cagliari",
+        "short": "7902",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TURMO_LINES-116-01",
+        "label": "116-01",
+        "long": "Bonorva-Alghero Lido",
+        "short": "116-01",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TURMO_LINES-116-02",
+        "label": "116-02",
+        "long": "Bonorva-Pozzomaggiore",
+        "short": "116-02",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TURMO_TRAVEL-4201",
+        "label": "4201",
+        "long": "Olbia IB-Bono",
+        "short": "4201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TURMO_TRAVEL-4202",
+        "label": "4202",
+        "long": "Buddus\u00f2-Olbia",
+        "short": "4202",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TURMO_TRAVEL-5501",
+        "label": "5501",
+        "long": "Galtelli-Cala Ginepro",
+        "short": "5501",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TURMO_TRAVEL-5502",
+        "label": "5502",
+        "long": "Olbia-Cagliari",
+        "short": "5502",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TURMO_TRAVEL-5504",
+        "label": "5504",
+        "long": "Cagliari-S.Teresa",
+        "short": "5504",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TURMO_TRAVEL-5508",
+        "label": "5508",
+        "long": "C.Garibaldi-C.Ornano",
+        "short": "5508",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TURMO_TRAVEL-5509",
+        "label": "5509",
+        "long": "N.d'Aquila-Stagnali-Due Mari",
+        "short": "5509",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TURMO_TRAVEL-5510",
+        "label": "5510",
+        "long": "Navetta Punta Rossa",
+        "short": "5510",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TURMO_TRAVEL-5511",
+        "label": "5511",
+        "long": "Navetta Museo Memoriale",
+        "short": "5511",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "TUVONI-6381",
+        "label": "6381",
+        "long": "Circolare Budoni e Hinterland",
+        "short": "6381",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "VACCA_VIAGGI-115-01",
+        "label": "115-01",
+        "long": "Villasor-Poetto",
+        "short": "115-01",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "VACCA_VIAGGI-115-02",
+        "label": "115-02",
+        "long": "P. Serra-Geremeas",
+        "short": "115-02",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ZENTILE-5901",
+        "label": "5901",
+        "long": "Sedini-Nulvi-Sassari",
+        "short": "5901",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1857,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1857,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "1857 of 1857 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 1533,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "1533 of 1533 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

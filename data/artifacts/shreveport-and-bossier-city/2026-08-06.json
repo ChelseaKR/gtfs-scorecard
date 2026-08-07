@@ -1,0 +1,921 @@
+{
+  "agency": {
+    "id": "shreveport-and-bossier-city",
+    "name": "Shreveport and Bossier City",
+    "subdivision_code": "US-LA",
+    "subdivision_name": "Louisiana"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 12.2,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 1565,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 81.0,
+        "headsign_scored_pct": 81.0,
+        "mixed_case_stop_name_pct": 99.8,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 906,
+        "translations": {
+          "feed_lang": "en-US",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 1565,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 906,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "906 of 906 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 1565,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "1565 of 1565 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 297,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 2.8,
+          "severity": "WARNING",
+          "what": "297 of 1565 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        }
+      ],
+      "name": "completeness",
+      "score": 42.1,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 15,
+        "instances_by_severity": {
+          "ERROR": 1,
+          "INFO": 8,
+          "WARNING": 690
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "decreasing_or_equal_stop_time_distance",
+          "count": 1,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+          "owner": "Likely your export tool",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Some trips have stop times whose distances along the route go backwards.",
+          "why": "Apps can show buses jumping backwards or mis-order stops."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 445,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 67,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 56,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
+        },
+        {
+          "code": "leading_or_trailing_whitespaces",
+          "count": 43,
+          "effort": "Usually one export setting.",
+          "fix": "Trim leading and trailing spaces on export. The scorecard's auto-fixed copy already does this.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some values have extra spaces at the start or end.",
+          "why": "A stray space can break a match, so a stop or route may fail to link across files."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 41,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "same_name_and_description_for_route",
+          "count": 21,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_route' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Same name and description for route (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 8,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 6,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "missing_feed_info_date",
+          "count": 1,
+          "effort": "Two fields, likely set once in your export settings.",
+          "fix": "Fill in feed_start_date and feed_end_date in feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt does not state when this feed starts and ends.",
+          "why": "Without stated dates, apps can't warn anyone before your data goes stale; it just disappears one day."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 1,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 1,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "service_extends_far_in_the_future",
+          "count": 3,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'service_extends_far_in_the_future' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Service extends far in the future (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unknown_file",
+          "count": 3,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 2,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 20.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 15 kinds of issue across 699 instances (1 error, 690 warning, 8 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 26810,
+        "effective_expiry_date": "2099-12-31",
+        "feed_end_date": null,
+        "feed_start_date": "2024-10-12",
+        "feed_version": "Service 10/13/2024",
+        "has_feed_info": true,
+        "last_service_date": "2099-12-31",
+        "seasonal_boundary": true,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "unusually_distant",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service is published through 2099-12-31, an unusually distant end date. It may be intentional, but confirm it before treating the feed as maintained.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "coverage_pct": null,
+        "kinds_configured": 3,
+        "kinds_reachable": 0,
+        "reachable_kinds": [],
+        "rt_freshness": null,
+        "samples": 9,
+        "scheduled_trips_in_window": 0,
+        "worst_lag_seconds": null
+      },
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_updates_unreachable",
+          "count": 1,
+          "effort": "Usually a vendor support ticket.",
+          "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+          "owner": "",
+          "points": 33.3,
+          "severity": "ERROR",
+          "what": "The trip updates realtime feed failed during sampling.",
+          "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        },
+        {
+          "code": "scorecard_rt_vehicle_positions_unreachable",
+          "count": 1,
+          "effort": "Usually a vendor support ticket.",
+          "fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+          "owner": "",
+          "points": 33.3,
+          "severity": "ERROR",
+          "what": "The vehicle positions realtime feed failed during sampling.",
+          "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        },
+        {
+          "code": "scorecard_rt_service_alerts_unreachable",
+          "count": 1,
+          "effort": "Usually a vendor support ticket.",
+          "fix": "Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+          "owner": "",
+          "points": 33.3,
+          "severity": "ERROR",
+          "what": "The service alerts realtime feed failed during sampling.",
+          "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        }
+      ],
+      "name": "realtime",
+      "score": 0.0,
+      "status": "measured",
+      "summary": "Sampled 9 times outside service hours: 0 of 3 configured feeds healthy; vehicle position plausibility was not measurable.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "mirror",
+    "level": "medium",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "The published window is current, but its service end date is unusually distant; confirm that date is intentional.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "508d50d65f48cde80d76ec840be3831e28d77530d396ddc007df43050bb2111e",
+    "size_bytes": 487028,
+    "static_url": "http://sportranbus.com/gtfs"
+  },
+  "fetch": {
+    "final_url": "https://files.mobilitydatabase.org/mdb-1060/latest.zip",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "reader_archive_profile": "raw-v1",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -93.90023,
+      32.38198,
+      -93.62864,
+      32.562
+    ],
+    "lat": 32.48176,
+    "lon": -93.7664,
+    "stop_count": 906
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 26,
+        "trip_count": 1565,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 26,
+    "trip_count": 1565
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "58"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "status": "at_risk"
+      },
+      {
+        "detail": "The published window is current, but its service end date is unusually distant; confirm that date is intentional.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "at_risk",
+    "summary": "This feed is close to NTD-ready. 1 validator error to resolve."
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 34.7,
+    "margin_to_next_band": 25.3,
+    "score": 34.7
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 18,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "18 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (Route 10, Route 21, Route 15, Route 01, Route 07, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 853,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "853 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"E. 85th & St. Vincent Ave (Outbound)\", \"W. 70th and Janey St (Inbound)\", \"Centenary Blvd & Jordan St\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 906,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 56,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "56 of 906 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 56,
+    "single_stop_trips": 0,
+    "trips_total": 1565
+  },
+  "route_map": {
+    "drawn_route_count": 26,
+    "has_shapes": true,
+    "path": "data/artifacts/shreveport-and-bossier-city/geometry.geojson",
+    "route_count": 26,
+    "routes": [
+      {
+        "color": "051EFF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "2175",
+        "label": "Route 24",
+        "long": "24 - Walker Road",
+        "short": "Route 24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "81FF03",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "2216",
+        "label": "Route 10",
+        "long": "10 - Jewella Avenue",
+        "short": "Route 10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7E8522",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "2218",
+        "label": "Route 21",
+        "long": "21 - Shreveport Hub Connector",
+        "short": "Route 21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A68500",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "2219",
+        "label": "Route 15",
+        "long": "15 - Linwood Avenue",
+        "short": "Route 15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF9D0A",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "2220",
+        "label": "Route 01",
+        "long": "01 - Hearne Avenue",
+        "short": "Route 01",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C71818",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2221",
+        "label": "Route 14",
+        "long": "14 - Line Avenue",
+        "short": "Route 14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA9BFA",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "2222",
+        "label": "Route 07",
+        "long": "07 - Fairgrounds",
+        "short": "Route 07",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFAD66",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "2223",
+        "label": "Route 13",
+        "long": "13 - Lakeshore Drive",
+        "short": "Route 13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3AC2C2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2224",
+        "label": "Route 26",
+        "long": "26 - Youree Drive",
+        "short": "Route 26",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0505",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2225",
+        "label": "Route 22",
+        "long": "22 - Southern Hills",
+        "short": "Route 22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5E0000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "2226",
+        "label": "Route 25",
+        "long": "25 - West Shreveport",
+        "short": "Route 25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8F5B5B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "2227",
+        "label": "Route 12",
+        "long": "12 - Kingston Loop",
+        "short": "Route 12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E3FF2E",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "2228",
+        "label": "Route 11",
+        "long": "11 - Kings Highway",
+        "short": "Route 11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "39A802",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2230",
+        "label": "Route 16",
+        "long": "16 - North Bossier",
+        "short": "Route 16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8F9405",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "2231",
+        "label": "Route 03",
+        "long": "03 - Dr. Martin Luther King Jr.",
+        "short": "Route 03",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4D5769",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2233",
+        "label": "Route 20",
+        "long": "20 - Shreveport-Bossier Downtown Circulator",
+        "short": "Route 20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7857FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "2234",
+        "label": "Route 05",
+        "long": "05 - East Bossier",
+        "short": "Route 05",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0FA5AB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2236",
+        "label": "Route 04",
+        "long": "04 - East 70th",
+        "short": "Route 04",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF1008",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2237",
+        "label": "Route 02",
+        "long": "02 - Russell Road",
+        "short": "Route 02",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFA8AB",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "2259",
+        "label": "Route 09",
+        "long": "09 - Highland Loop",
+        "short": "Route 09",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D2EFF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4292",
+        "label": "Alt 101",
+        "long": "Alt 101 - Line/Linwood",
+        "short": "Alt 101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF660D",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4293",
+        "label": "Alt 102",
+        "long": "Alt 102 - Hearne/Jewella",
+        "short": "Alt 102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E1B5FF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "4294",
+        "label": "Alt 103",
+        "long": "Alt 103 - S. Linwood/W. Bert Kouns",
+        "short": "Alt 103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B6E6ED",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "4295",
+        "label": "Alt 104",
+        "long": "Alt 104 - Youree/S'port Barksdale",
+        "short": "Alt 104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29FFCD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4299",
+        "label": "Alt 106",
+        "long": "Alt 106 - N. Market/MLK",
+        "short": "Alt 106",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2432FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "4301",
+        "label": "Alt 108",
+        "long": "Alt 108 - Greenwood/Pines",
+        "short": "Alt 108",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 906,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 1565 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 1565,
+    "trips_with_shape": 1565
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_rt_trip_updates_unreachable",
+      "count": 1,
+      "effort": "Usually a vendor support ticket.",
+      "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+      "owner": "",
+      "points": 33.3,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "The trip updates realtime feed failed during sampling.",
+      "why": "When this feed is down, riders see scheduled times presented as if they were live."
+    },
+    {
+      "code": "scorecard_rt_vehicle_positions_unreachable",
+      "count": 1,
+      "effort": "Usually a vendor support ticket.",
+      "fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+      "owner": "",
+      "points": 33.3,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "The vehicle positions realtime feed failed during sampling.",
+      "why": "When this feed is down, riders see scheduled times presented as if they were live."
+    },
+    {
+      "code": "scorecard_rt_service_alerts_unreachable",
+      "count": 1,
+      "effort": "Usually a vendor support ticket.",
+      "fix": "Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+      "owner": "",
+      "points": 33.3,
+      "rank": 3,
+      "severity": "ERROR",
+      "what": "The service alerts realtime feed failed during sampling.",
+      "why": "When this feed is down, riders see scheduled times presented as if they were live."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

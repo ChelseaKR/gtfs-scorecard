@@ -120,9 +120,9 @@ def test_accessible_utility_font_is_used_sitewide() -> None:
 def test_landing_names_both_counts_and_the_shipped_service_scope() -> None:
     html = (_REPO / "web" / "index.html").read_text()
 
-    assert "2,100+" in html
+    assert 'id="coverage-registry-count">2,100+' in html
     assert "curated feed records" in html
-    assert "1,100+" in html
+    assert 'id="coverage-published-count">2,100+' in html
     assert "published scorecards" in html.lower()
     assert "40+" in html
     assert "Countries in registry" in html

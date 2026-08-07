@@ -1,0 +1,599 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-pan-82367",
+    "name": "R\u00e9seau urbain R'Bus",
+    "subdivision_code": "FR-NAQ",
+    "subdivision_name": "Nouvelle-Aquitaine"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 96.5,
+          "stops_marked_accessible_pct": 40.2,
+          "stops_marked_not_accessible_pct": 54.2,
+          "stops_stated_pct": 94.4,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 14.9,
+          "wheelchair_stops": 23.6,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 1481,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.4,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 522,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 1481,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 94.4,
+        "wheelchair_marked_accessible_pct": 40.2,
+        "wheelchair_marked_not_accessible_pct": 54.2
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 29,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 1.4,
+          "severity": "WARNING",
+          "what": "29 of 522 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 76.0,
+      "status": "measured",
+      "summary": "94% of stops state wheelchair accessibility (40% marked accessible, 54% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 6,
+        "instances_by_severity": {
+          "ERROR": 145,
+          "INFO": 1498,
+          "WARNING": 1351
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "decreasing_or_equal_stop_time_distance",
+          "count": 145,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+          "owner": "Likely your export tool",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Some trips have stop times whose distances along the route go backwards.",
+          "why": "Apps can show buses jumping backwards or mis-order stops."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 1349,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 1,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "trip_with_shape_dist_traveled_but_no_shape_distances",
+          "count": 1481,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'trip_with_shape_dist_traveled_but_no_shape_distances' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Trip with shape dist traveled but no shape distances (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 17,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 58.2,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 2994 instances (145 error, 1351 warning, 1498 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 147,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 147 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 94% of stops and 100% of trips.",
+        "key": "accessible",
+        "met": true
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve."
+  },
+  "feed": {
+    "license_note": "Open Database License (ODbL), recorded by France's National Access Point; credit Nouvelle-Aquitaine Mobilit\u00e9s, identify the ODbL, and preserve share-alike terms where they apply.",
+    "reachable": true,
+    "sha256": "c4b0451985b204605ee7bc083c22f0dac6790c1d29fc56e2ae391b8b7a94867a",
+    "size_bytes": 615335,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/0346e2ae-a004-40be-8ded-ffff9046d29d"
+  },
+  "fetch": {
+    "final_url": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/ca_rochefort_ocean-aggregated-gtfs.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -1.1191,
+      45.7975,
+      -0.7704,
+      46.0378
+    ],
+    "lat": 45.94657,
+    "lon": -0.96625,
+    "stop_count": 522
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 14,
+        "trip_count": 1481,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 14,
+    "trip_count": 1481
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 0.5,
+    "margin_to_next_band": 9.5,
+    "score": 70.5
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 8,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "8 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (RPI 1, RPI 4, J, E, B, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 8,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "8 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Saint Exup\u00e9ry / Merleau Ponty\", \"RFT Merleau / Grimaux\", \"Les Deux Moulins St Laurent\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 338,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 1481
+  },
+  "route_map": {
+    "drawn_route_count": 14,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-pan-82367/geometry.geojson",
+    "route_count": 14,
+    "routes": [
+      {
+        "color": "EFEA32",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "CA_ROCHEFORT_OCEAN:Line:A",
+        "label": "A",
+        "long": "Saint-Agnant Les Cordries / Echillais / Rochefort Roy Bry / Tonnay-Charente Les Fontenelles",
+        "short": "A",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED1E25",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "CA_ROCHEFORT_OCEAN:Line:B",
+        "label": "B",
+        "long": "Rochefort Parc de Fourriers / Rochefort H\u00f4pital / Breuil-Magn\u00e9 La Croix",
+        "short": "B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BBD75E",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "CA_ROCHEFORT_OCEAN:Line:C",
+        "label": "C",
+        "long": "Rochefort Roy-Bry / Rochefort Petit Marseille / Rochefort Piscine / Rochefort Roy-Bry",
+        "short": "C",
+        "text_color": "EB1C37",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0C6FB8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "CA_ROCHEFORT_OCEAN:Line:D",
+        "label": "D",
+        "long": "Rochefort Gare SNCF / Palais des Congr\u00e8s / Petit Marseille / Rochefort Gare SNCF",
+        "short": "D",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F399C1",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "CA_ROCHEFORT_OCEAN:Line:E",
+        "label": "E",
+        "long": "Rochefort / Rochefort Vergeroux / Saint-Laurent de La Pr\u00e9e / Fouras La Fum\u00e9e",
+        "short": "E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8D61A9",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "CA_ROCHEFORT_OCEAN:Line:F",
+        "label": "F",
+        "long": "Rochefort / Echillais / Soubise / Saint-Nazaire / Port des Barques Font Renaud",
+        "short": "F",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "28B8E9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "CA_ROCHEFORT_OCEAN:Line:J",
+        "label": "J",
+        "long": "Fouras la Fum\u00e9e / Saint-Laurent de la Pr\u00e9e / Rochefort / Tonnay-Charente Joliot-Curie",
+        "short": "J",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7B9713",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "CA_ROCHEFORT_OCEAN:Line:RPI1",
+        "label": "RPI 1",
+        "long": "Breuil-Magn\u00e9 > Loire-les-Marais > Breuil-Magn\u00e9",
+        "short": "RPI 1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7B9713",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "CA_ROCHEFORT_OCEAN:Line:RPI2",
+        "label": "RPI 2",
+        "long": "Saint-Coutant-le-Grand > Lussant > Moragne > Lussant",
+        "short": "RPI 2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7B9713",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "CA_ROCHEFORT_OCEAN:Line:RPI3",
+        "label": "RPI 3",
+        "long": "Saint-Froult > Moeze > Beaugeay > Saint-Froult",
+        "short": "RPI 3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7B9713",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "CA_ROCHEFORT_OCEAN:Line:RPI4",
+        "label": "RPI 4",
+        "long": "Champagne > Saint-Jean-d'Angle > La Gripperie-Saint-Symphorien > Saint-Jean-d'Angle",
+        "short": "RPI 4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFE699",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "CA_ROCHEFORT_OCEAN:Line:S1",
+        "label": "S1",
+        "long": "Muron / Breuil-Magn\u00e9 / Rochefort",
+        "short": "S1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B084",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "CA_ROCHEFORT_OCEAN:Line:S2",
+        "label": "S2",
+        "long": "Saint-Hyppolyte / Lussant / Tonnay-Charente",
+        "short": "S2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F5C6FA",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "CA_ROCHEFORT_OCEAN:Line:S3",
+        "label": "S3",
+        "long": "La Gripperie-Saint-Symphorien / Saint-Froult / Saint-Agnant",
+        "short": "S3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 522,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "decreasing_or_equal_stop_time_distance",
+      "count": 145,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+      "owner": "Likely your export tool",
+      "points": 24.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Some trips have stop times whose distances along the route go backwards.",
+      "why": "Apps can show buses jumping backwards or mis-order stops."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

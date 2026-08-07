@@ -1,0 +1,363 @@
+{
+  "agency": {
+    "id": "massachusetts-area-express-max-431",
+    "name": "Massachusetts Area Express (MAX)"
+  },
+  "autofix": {
+    "available": false
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "components": {
+          "contact": 0.0,
+          "fares": 0.0,
+          "headsigns": 0.0,
+          "stop_names": 0.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_pct": 0.0,
+        "mixed_case_stop_name_pct": 0.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 0,
+        "trips": 0,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 0,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "0 of 0 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 0,
+          "effort": "Often one default setting in your export.",
+          "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "0 of 0 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 0,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case (e.g. 'Main St & 2nd Ave').",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "INFO",
+          "what": "About 0 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 0,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Populate trip_headsign to match what the bus displays.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "0 of 0 trips have no headsign.",
+          "why": "Riders at the stop can't tell which direction a bus is going."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "App makers and state data programs have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_bad_agency_url",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Set agency_url to your agency's website, starting with https://.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "WARNING",
+          "what": "agency.txt has no working website URL.",
+          "why": "Trip planners link riders to this URL for schedules and fares."
+        }
+      ],
+      "name": "completeness",
+      "score": 0.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 4,
+        "instances_by_severity": {
+          "ERROR": 6,
+          "INFO": 1,
+          "WARNING": 1
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_required_file",
+          "count": 5,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_required_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Missing required file (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_calendar_and_calendar_date_files",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_calendar_and_calendar_date_files' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Missing calendar and calendar date files (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A recommended GTFS file (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "unknown_file",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unknown_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Unknown file (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 71.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 8 instances (6 error, 1 warning, 1 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": null,
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": null,
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_no_expiry_date",
+          "count": 1,
+          "effort": "Likely a one-time export setting.",
+          "fix": "Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export.",
+          "owner": "Likely your export tool",
+          "points": 100.0,
+          "severity": "ERROR",
+          "what": "Neither feed_info.txt nor the calendars state when service ends.",
+          "why": "Nobody can tell when this feed will go stale."
+        }
+      ],
+      "name": "freshness",
+      "score": 0.0,
+      "status": "measured",
+      "summary": "No service end date could be found in this feed, so there is no way to know when riders will lose trip planning.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "2 validator errors to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "No service end date could be read.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 2 validator errors to resolve. No service end date could be read. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "28e972b743f824d0f4d560891f7ae7fd0531f6349f6da38cd5295a7e799ae317",
+    "size_bytes": 192,
+    "static_url": "http://data.trilliumtransit.com/gtfs/truenorthtransit-ma-us/truenorthtransit-ma-us.zip"
+  },
+  "generated_at": "2026-06-30T00:00:00+00:00",
+  "ntd_id_alignment": {
+    "detail": "If you report to the National Transit Database, your GTFS agency_id should be your five-digit NTD ID by report year 2026 (2025 for full reporters). We don't have your NTD ID on file, so this one is not checked yet.",
+    "feed_agency_ids": [],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "2 validator errors to resolve.",
+        "key": "valid",
+        "status": "at_risk"
+      },
+      {
+        "detail": "No service end date could be read, so currency is unknown.",
+        "key": "current",
+        "status": "not_ready"
+      }
+    ],
+    "status": "not_ready",
+    "summary": "Resolve this before you certify on the D-10. 2 validator errors to resolve. No service end date could be read, so currency is unknown."
+  },
+  "overall": {
+    "grade": "F",
+    "score": 31.3
+  },
+  "recommendations": [],
+  "routability": {
+    "boardable_stops": 0,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 0
+  },
+  "route_map": {
+    "drawn_route_count": 0,
+    "has_shapes": false,
+    "route_count": 0,
+    "routes": [],
+    "stop_count": 0,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.1",
+  "schema_version": "1.4",
+  "snapshot_date": "2026-06-30",
+  "top_fixes": [
+    {
+      "code": "scorecard_no_expiry_date",
+      "count": 1,
+      "effort": "Likely a one-time export setting.",
+      "fix": "Add feed_start_date and feed_end_date to feed_info.txt and include calendar end dates in your export.",
+      "owner": "Likely your export tool",
+      "points": 100.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Neither feed_info.txt nor the calendars state when service ends.",
+      "why": "Nobody can tell when this feed will go stale."
+    },
+    {
+      "code": "missing_required_file",
+      "count": 5,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'missing_required_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 12.0,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "Missing required file (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "missing_calendar_and_calendar_date_files",
+      "count": 1,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'missing_calendar_and_calendar_date_files' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 12.0,
+      "rank": 3,
+      "severity": "ERROR",
+      "what": "Missing calendar and calendar date files (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

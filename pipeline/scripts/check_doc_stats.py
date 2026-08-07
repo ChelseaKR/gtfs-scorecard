@@ -7,7 +7,7 @@ between those populations hides drift instead of explaining it. Each prose
 rule therefore names whether it means configured feed records or published
 scorecards with numeric latest scores.
 
-Narrative pages use a stable hundred-record floor such as "more than 1,100" and
+Narrative pages use a stable hundred-record floor such as "more than 2,100" and
 link to generated status output for the exact current count. Historical planning
 notes may still use an approximate exact figure. Each rule names the file, exact
 phrase pattern, denominator, and comparison mode. A missing pattern fails too,
@@ -26,6 +26,25 @@ and no ``POINT_IN_TIME`` declaration excuses. The second half exists because the
 first cannot catch its own blind spot: CLAUDE.md's registry count sat at 1,286
 while the registry grew past 2,100, and every *registered* claim stayed correct
 throughout. A number nobody registered is the one that rots.
+
+**The ``pages`` and ``scored`` denominators describe the committed snapshot,
+not the live service.** They are read from ``data/artifacts/index.json``, which
+stopped being written by automation when generated data moved to S3
+(docs/follow-ups.md, "Stop committing generated data and pages"). What git
+carries is a fallback snapshot kept for outages and forks, and it stands still
+between deliberate refreshes while the deployed corpus keeps growing — the
+cutover copy sat at 1,128 pages while the service passed 2,100. When the
+snapshot lags, ``floor`` mode's ``quoted + FLOOR_BUCKET`` ceiling actively
+rejects the larger, true live figure; the fix is never to loosen the gate but
+to re-materialize the snapshot from the live corpus (the bounded ``aws s3
+sync`` in ``.github/workflows/pages.yml``, then
+``scripts/materialize_current_artifacts.py``), after which this same gate
+forces every floored claim up to the refreshed denominator. Prose gated on
+``pages`` or ``scored`` is a claim about the snapshot as of its last refresh;
+the live counts live on ``/status/`` and ``/api/v1/stats.json``, which this
+check cannot read because ``make verify`` is offline. ``registry``,
+``europe_records`` and ``europe_countries`` are read from the registry YAML and
+are not affected — those still track the real thing.
 
 Run before committing doc edits that quote corpus figures:
 
@@ -360,7 +379,15 @@ def europe_counts() -> tuple[int, int]:
     return len(members), len({a.country for a in members})
 
 
-def published_counts() -> tuple[int, int]:
+def published_counts() -> tuple[int, int, str]:
+    """Pages and numerically-scored pages in the committed fallback snapshot.
+
+    The third member is the newest scoring date anywhere in that snapshot, which
+    dates the snapshot itself. It is printed with the counts because these two
+    denominators are frozen (see the module docstring): a reader who sees only
+    "published pages 1,128" will read it as the live corpus, and a reader who
+    sees the date beside it cannot.
+    """
     data = json.loads((REPO_ROOT / "data" / "artifacts" / "index.json").read_text())
     entries = data.get("agencies", {})
     scored = sum(
@@ -369,11 +396,34 @@ def published_counts() -> tuple[int, int]:
         and not isinstance(entry["history"][-1].get("score"), bool)
         for entry in entries.values()
     )
-    return len(entries), scored
+    dates = {
+        str(point["date"])
+        for entry in entries.values()
+        for point in entry.get("history") or []
+        if point.get("date")
+    }
+    return len(entries), scored, max(dates, default="unknown date")
+
+
+def denominator_line(counts: dict[str, int], snapshot_date: str) -> str:
+    """The one line both outcomes print, so both carry the same caveat.
+
+    ``pages`` and ``scored`` are frozen (see the module docstring). Naming the
+    snapshot and its date here, rather than in two separate f-strings, is what
+    keeps a later edit to one branch from quietly dropping the caveat from it.
+    """
+    return (
+        f"registry {counts['registry']:,}; "
+        f"published pages {counts['pages']:,} and scored latest {counts['scored']:,} "
+        f"in the committed fallback snapshot frozen at {snapshot_date}, "
+        "not the live corpus; "
+        f"Europe beta {counts['europe_records']:,} records across "
+        f"{counts['europe_countries']:,} countries"
+    )
 
 
 def main() -> int:
-    pages, scored = published_counts()
+    pages, scored, snapshot_date = published_counts()
     europe_records, europe_countries = europe_counts()
     counts = {
         "registry": registry_count(),
@@ -432,24 +482,15 @@ def main() -> int:
                 "nothing; the figure moved or went away, so drop the declaration"
             )
 
+    line = denominator_line(counts, snapshot_date)
     if not failures:
         print(
             f"OK  {checked} corpus claims match their denominator policy; "
             f"{len(swept)} swept documents carry no ungated corpus figure "
-            f"({len(POINT_IN_TIME)} declared point-in-time) "
-            f"(registry {counts['registry']:,}; "
-            f"published pages {counts['pages']:,}; scored latest {counts['scored']:,}; "
-            f"Europe beta {counts['europe_records']:,} records across "
-            f"{counts['europe_countries']:,} countries)"
+            f"({len(POINT_IN_TIME)} declared point-in-time) ({line})"
         )
         return 0
-    print(
-        "Corpus figures drifted from their named denominators "
-        f"(registry {counts['registry']:,}; published pages {counts['pages']:,}; "
-        f"scored latest {counts['scored']:,}; "
-        f"Europe beta {counts['europe_records']:,} records across "
-        f"{counts['europe_countries']:,} countries) (FIX-15):"
-    )
+    print(f"Corpus figures drifted from their named denominators ({line}) (FIX-15):")
     for failure in failures:
         print(f"  {failure}")
     return 1

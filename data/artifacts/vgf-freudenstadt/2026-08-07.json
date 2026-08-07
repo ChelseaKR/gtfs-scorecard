@@ -1,0 +1,1613 @@
+{
+  "agency": {
+    "country": "DE",
+    "id": "vgf-freudenstadt",
+    "name": "Verkehrs-Gemeinschaft Landkreis Freudenstadt (VGF)",
+    "operating_note": "One association feed for the Freudenstadt district's operators; counted as one feed record, not a distinct-agency count.",
+    "subdivision_code": "DE-BW",
+    "subdivision_name": "Baden-W\u00fcrttemberg"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 38.7,
+          "stops_marked_accessible_pct": 2.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 2.0,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.5,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 5866,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 2087,
+        "translations": {
+          "feed_lang": "DE",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 5866,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 2.0,
+        "wheelchair_marked_accessible_pct": 2.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2046,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 24.5,
+          "severity": "WARNING",
+          "what": "2046 of 2087 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 2,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "2 of 5866 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 53.0,
+      "status": "measured",
+      "summary": "2% of stops state wheelchair accessibility (2% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 9,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 1344,
+          "WARNING": 1765
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 1148,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 512,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 64,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a transit vehicle can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no transit vehicle can meet."
+        },
+        {
+          "code": "fast_travel_between_far_stops",
+          "count": 33,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'fast_travel_between_far_stops' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Fast travel between far stops (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 4,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "duplicate_route_name",
+          "count": 3,
+          "effort": "One field per route.",
+          "fix": "Give each route a distinct short or long name.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Two or more routes share the same name.",
+          "why": "Riders can't tell the routes apart in apps."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "platform_without_parent_station",
+          "count": 880,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'platform_without_parent_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Platform without parent station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 464,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 56.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 9 kinds of issue across 3109 instances (0 error, 1765 warning, 1344 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 127,
+        "effective_expiry_date": "2026-12-12",
+        "feed_end_date": "2026-12-12",
+        "feed_start_date": "2026-05-03",
+        "feed_version": "20260801",
+        "has_feed_info": true,
+        "last_service_date": "2026-12-12",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 127 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 129 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 2% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 2% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data portal; mark reuse as a dataset of NVBW GmbH with a link back to the portal. This export ships without route shapes.",
+    "reachable": true,
+    "sha256": "b9db6fa51821ecefa49ad288e810f9bc0c901c8b8264e5a6b2f301059e023f41",
+    "size_bytes": 879184,
+    "static_url": "https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_ohne_liniennetz/vgf.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_ohne_liniennetz/vgf.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      2.38052,
+      47.65859,
+      11.54924,
+      49.47908
+    ],
+    "lat": 48.46789,
+    "lon": 8.49008,
+    "stop_count": 2087
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 2,
+        "trip_count": 719,
+        "trip_share_pct": 12.3
+      },
+      {
+        "key": "rail",
+        "label": "Rail",
+        "route_count": 19,
+        "trip_count": 1855,
+        "trip_share_pct": 31.6
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 82,
+        "trip_count": 3292,
+        "trip_share_pct": 56.1
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 103,
+    "trip_count": 5866
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 6.1,
+    "margin_to_next_band": 3.9,
+    "score": 66.1
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 89,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "89 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Flughafen/Messe Bstg 1\", \"BAD Hindenburgplatz/Stadtbib.\", \"BAD Hindenburgplatz/Stadtbib.\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 2037,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 5866
+  },
+  "route_map": {
+    "drawn_route_count": 0,
+    "has_shapes": false,
+    "path": "data/artifacts/vgf-freudenstadt/geometry.geojson",
+    "route_count": 103,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bus-2-336A-1",
+        "label": "336",
+        "long": "",
+        "short": "336",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "cw-38-450-1",
+        "label": "450",
+        "long": "Haiterbach - Egenhausen - Altensteig",
+        "short": "450",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "cw-39-430-1",
+        "label": "430",
+        "long": "Altensteig-Spielberg-Pfalzgrafenweiler-Gr\u00f6mbach-Altensteig",
+        "short": "430",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "cw-39-AS2-1",
+        "label": "AS2",
+        "long": "Altensteig PKW-Bedarfsverkehr (Anrufverkehr)",
+        "short": "AS2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "cw-39-X78-1",
+        "label": "X78",
+        "long": "Freudenstadt - Besenfeld - Enzkl\u00f6sterle - Bad Wildbad",
+        "short": "X78",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-T01O-1",
+        "label": "SEV",
+        "long": "",
+        "short": "SEV",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-T04-1",
+        "label": "SEV",
+        "long": "",
+        "short": "SEV",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-T40X-1",
+        "label": "SEV RE40X",
+        "long": "",
+        "short": "SEV RE40X",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-90-026Y-1",
+        "label": "Horb - Villingen (Schwarzwald)",
+        "long": "Horb - Villingen (Schwarzwald)",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-90-029Y-1",
+        "label": "Villingen (Schwarzwald) - Horb",
+        "long": "Villingen (Schwarzwald) - Horb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-90-T01O-1",
+        "label": "RS 1",
+        "long": "",
+        "short": "RS 1",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-90-T04-1",
+        "label": "RE 4",
+        "long": "",
+        "short": "RE 4",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-90-T06-1",
+        "label": "RB 6",
+        "long": "",
+        "short": "RB 6",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-90-T14A-1",
+        "label": "RE14a",
+        "long": "",
+        "short": "RE14a",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-90-T14B-1",
+        "label": "RB14b",
+        "long": "",
+        "short": "RB14b",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-90-T40-1",
+        "label": "RE 40",
+        "long": "",
+        "short": "RE 40",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-90-T41-1",
+        "label": "RB 41",
+        "long": "",
+        "short": "RB 41",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-90-T67-1",
+        "label": "RB 67",
+        "long": "",
+        "short": "RB 67",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-90-T74-1",
+        "label": "RB 74",
+        "long": "",
+        "short": "RB 74",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-90-T74P-1",
+        "label": "RB 74",
+        "long": "",
+        "short": "RB 74",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-90-X87-1",
+        "label": "RE 87",
+        "long": "",
+        "short": "RE 87",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-00A-1",
+        "label": "A",
+        "long": "Stadtverkehr FDS   ZOB - Kurhaus - Golfplatz - Hbf. - ZOB",
+        "short": "A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-00B-1",
+        "label": "B",
+        "long": "Stadtverkehr Freudenstadt ZOB - Manbachsiedlung - Kaufland- Finanzamt - ZOB",
+        "short": "B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-00C-1",
+        "label": "C",
+        "long": "Stadtverkehr Freudenstadt Stadthaus - ZOB - Krankenhaus - Sulzhau - J\u00e4gerhof - ZOB",
+        "short": "C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-00D-1",
+        "label": "D",
+        "long": "Stadtverkehr Freudenstadt Stadth.- ZOB - Krankenhaus - Sulzhau - Panoramabad - ZOB",
+        "short": "D",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-011-1",
+        "label": "11",
+        "long": "Freudenstadt - Wittlensweiler - Aach - Glatten - (Neuneck)",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-015-1",
+        "label": "15",
+        "long": "Stadtverkehr Freudenstadt Hbf - ZOB - Krankenhaus - Panoramabad - Friedhof - ZOB",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-019-1",
+        "label": "19",
+        "long": "Freudenstadt - Sch\u00f6mberg - Reinerzau",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-021-1",
+        "label": "21",
+        "long": "Freudenstadt - Baiersbronn - Mitteltal - Obertal - Buhlbach",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-022-1",
+        "label": "22",
+        "long": "(Freudenstadt) - Baiersbronn - Tonbach",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-023-1",
+        "label": "23",
+        "long": "Besenfeld - Sch\u00f6nm\u00fcnzach - Hinterlangenbach",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-031-1",
+        "label": "31",
+        "long": "FDS - Lo\u00dfburg - Dornhan - Hochm\u00f6ssingen - Oberndorf",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-032-1",
+        "label": "32",
+        "long": "(FDS)-Lo\u00dfburg-Lombach-Wittendorf-Lo\u00dfburg-(FDS)",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-033-1",
+        "label": "33",
+        "long": "(FDS) - Lo\u00dfburg - Sterneck - Oberbr\u00e4ndi - Lo\u00dfburg - (FDS)",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-034-1",
+        "label": "34",
+        "long": "Sch\u00f6mberg - Vordersteinwald - Lo\u00dfburg",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-035-1",
+        "label": "35",
+        "long": "24-H\u00f6fe - W\u00e4lde - Betzweiler",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-041-1",
+        "label": "41",
+        "long": "Freudenstadt - Dornstetten - Waldachtal - Horb a.N.",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-042-1",
+        "label": "42",
+        "long": "Tumlingen - Waldachtal - Pfalzgrafenweiler",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-043-1",
+        "label": "43",
+        "long": "Schopfloch - Glatten",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-045-1",
+        "label": "45",
+        "long": "Waldachtal/L\u00fctzenhardt - Schopfloch",
+        "short": "45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-050-1",
+        "label": "50",
+        "long": "R\u00f6mlinsdorf - 24-H\u00f6fe - Lo\u00dfburg - FDS",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-060-1",
+        "label": "60",
+        "long": "Alpirsbach - Reinerzau",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-061-1",
+        "label": "61",
+        "long": "Schiltach - (Alpirsbach) - Wittichen/Kaltbrunn",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-070-1",
+        "label": "70",
+        "long": "Ahldorf - M\u00fchlen",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-100-1",
+        "label": "100",
+        "long": "Regiolinie Freudenstadt - Kniebis - Ruhestein",
+        "short": "100",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-200-1",
+        "label": "200",
+        "long": "Baiersbronn - Mitteltal - Obertal - Ruhestein",
+        "short": "200",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-721-1",
+        "label": "SEV 721",
+        "long": "FDS- Lo\u00dfburg  (Anschluss v. 721 aus Offenburg)",
+        "short": "SEV 721",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-1-7266-1",
+        "label": "7266",
+        "long": "FDS - Kniebis - Bad Rippoldsau - Wolfach - Hausach",
+        "short": "7266",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-2-0F1-1",
+        "label": "F 1",
+        "long": "FDS - Dornstetten - Waldachtal - Horb",
+        "short": "F 1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-2-0F3-1",
+        "label": "F 3",
+        "long": "FDS - Krankenhaus - Musbach",
+        "short": "F 3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-2-0F9-1",
+        "label": "F 9",
+        "long": "FDS- Hallwangen - Pfalzgrafenweiler - Altensteig",
+        "short": "F 9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-2-F10-1",
+        "label": "F 10",
+        "long": "FDS - Schopfloch - Pfalzgrafenweiler",
+        "short": "F 10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-2-F11-1",
+        "label": "F 11",
+        "long": "FDS - Baiersbronn - Mitteltal - Buhlbach",
+        "short": "F 11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-2-F13-1",
+        "label": "F 13",
+        "long": "FDS - Kniebis - Bad Rippoldsau - Wolfach",
+        "short": "F 13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-2-F14-1",
+        "label": "F 14",
+        "long": "Freudenstadt - Lo\u00dfburg - (Reinerzau) - Alpirsbach",
+        "short": "F 14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-2-F16-1",
+        "label": "F 16",
+        "long": "(FDS) - Baiersbronn - Tonbach - Baiersbronn - (FDS)",
+        "short": "F 16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-2-F19-1",
+        "label": "F 19",
+        "long": "Dornhan - Lo\u00dfburg - Freudenstadt",
+        "short": "F 19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "fds-2-F20-1",
+        "label": "F 20",
+        "long": "Rexingen/Nordstetten - Horb/Bhf.- Hohenberg",
+        "short": "F 20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "kvv-22-308E-1",
+        "label": "S8",
+        "long": "Freudenstadt - Karlsruhe",
+        "short": "S8",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "kvv-22-381E-1",
+        "label": "S81",
+        "long": "Bondorf - Karlsruhe",
+        "short": "S81",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "kvv-32-945C-1",
+        "label": "X45",
+        "long": "BAUSTELLENFAHRPLAN - g\u00fcltig von 30.07.2026 bis vsl. Sommer 2027 Ruhestein - Mummelsee - Schwarzwaldhochstra\u00dfe - Baden-Baden",
+        "short": "X45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "kvv-40-980E-1",
+        "label": "SEV S8/S81",
+        "long": "SCHIENENERSATZVERKEHR g\u00fcltig 07.06. bis 11.06.2026   Gaggenau - Rastatt; (Freudenstadt Hbf - Freudenstadt Stadt)",
+        "short": "SEV S8/S81",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "kvv-40-980E-2",
+        "label": "SEV S8/S81",
+        "long": "SCHIENENERSATZVERKEHR g\u00fcltig 20.06. bis 21.06.2026   Freudenstadt - Forbach - Raststatt",
+        "short": "SEV S8/S81",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "kvv-40-980E-3",
+        "label": "SEV S8/S81",
+        "long": "SCHIENENERSATZVERKEHR g\u00fcltig 07.08. bis 10.08.2026   Freudenstadt Hbf - Freudenstadt Stadt - Klosterreichenbach",
+        "short": "SEV S8/S81",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rab-24-311-1",
+        "label": "311",
+        "long": "",
+        "short": "311",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rab-24-312-1",
+        "label": "312",
+        "long": "",
+        "short": "312",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rab-24-319-1",
+        "label": "319",
+        "long": "",
+        "short": "319",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rab-34-878-1",
+        "label": "RB74",
+        "long": "",
+        "short": "RB74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rab-34-883-1",
+        "label": "RE14a",
+        "long": "",
+        "short": "RE14a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rab-34-913-1",
+        "label": "RE4",
+        "long": "",
+        "short": "RE4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-161-1",
+        "label": "7161",
+        "long": "",
+        "short": "7161",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-400-1",
+        "label": "400",
+        "long": "",
+        "short": "400",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-4001-1",
+        "label": "7400",
+        "long": "",
+        "short": "7400",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-401-1",
+        "label": "7401",
+        "long": "",
+        "short": "7401",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-402-1",
+        "label": "7402",
+        "long": "",
+        "short": "7402",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-403-1",
+        "label": "7403",
+        "long": "",
+        "short": "7403",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-405-1",
+        "label": "7405",
+        "long": "",
+        "short": "7405",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-406-1",
+        "label": "7406",
+        "long": "",
+        "short": "7406",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-408-1",
+        "label": "7408",
+        "long": "",
+        "short": "7408",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-409-1",
+        "label": "7409",
+        "long": "",
+        "short": "7409",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-410-1",
+        "label": "7410",
+        "long": "",
+        "short": "7410",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-411-1",
+        "label": "7411",
+        "long": "",
+        "short": "7411",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-414-1",
+        "label": "7414",
+        "long": "",
+        "short": "7414",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-417-1",
+        "label": "7417",
+        "long": "",
+        "short": "7417",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-418-1",
+        "label": "7418",
+        "long": "",
+        "short": "7418",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-425-1",
+        "label": "425",
+        "long": "",
+        "short": "425",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-782-1",
+        "label": "7782",
+        "long": "",
+        "short": "7782",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-784-1",
+        "label": "7784",
+        "long": "",
+        "short": "7784",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-787-1",
+        "label": "7787",
+        "long": "",
+        "short": "7787",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-788-1",
+        "label": "7788",
+        "long": "",
+        "short": "7788",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "rvs-1-938-1",
+        "label": "7938",
+        "long": "",
+        "short": "7938",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "sbg-68-6481-1",
+        "label": "7481",
+        "long": "",
+        "short": "7481",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "sbg-68-6881-1",
+        "label": "7481",
+        "long": "",
+        "short": "7481",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "tub-15-626-1",
+        "label": "7626",
+        "long": "Rottenburg - Schwalldorf - Wachendorf - Felldorf - Eyach",
+        "short": "7626",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "tub-15-626A-1",
+        "label": "7626A",
+        "long": "Eyach - Ahldorf - Horb",
+        "short": "7626A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "tub-15-628-1",
+        "label": "7628",
+        "long": "Rottenburg - Ergenzingen - Eutingen",
+        "short": "7628",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "tub-15-629-1",
+        "label": "7629",
+        "long": "Rottenburg - Schwalldorf - Wachendorf - Felldorf - Eyach",
+        "short": "7629",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "tub-15-629a-1",
+        "label": "7629",
+        "long": "Sulzau - Eyach",
+        "short": "7629",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "tub-15-633-1",
+        "label": "7633",
+        "long": "Rottenburg - Neustetten - Ergenzingen - (Eutingen / Vollmaringen)",
+        "short": "7633",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "vvs-11-040-1",
+        "label": "RE40",
+        "long": "Freudenstadt - Herrenberg",
+        "short": "RE40",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "vvs-11-041-1",
+        "label": "RB41",
+        "long": "Freudenstadt - Herrenberg",
+        "short": "RB41",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "vvs-11-SVG-1",
+        "label": "SVG",
+        "long": "Konstanz - Horb - Stuttgart",
+        "short": "SVG",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "vvs-36-014e-1",
+        "label": "RE14E",
+        "long": "Herrenberg - Rottweil (Schienenersatzverkehr)",
+        "short": "RE14E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2087,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 2046,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 24.5,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "2046 of 2087 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "service_has_no_active_day_of_the_week",
+      "count": 1148,
+      "effort": "A few minutes in your scheduling software.",
+      "fix": "Delete the empty calendars or set their service days.",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some service calendars have no days of the week switched on.",
+      "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

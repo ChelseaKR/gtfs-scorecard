@@ -1,0 +1,860 @@
+{
+  "agency": {
+    "id": "c-tran",
+    "name": "Clark County Public Transportation Benefit Area",
+    "subdivision_code": "US-WA",
+    "subdivision_name": "Washington"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 37.8,
+          "stops_marked_accessible_pct": 0.4,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.4,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.1,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": true,
+          "has_products": true,
+          "has_transfer_rules": true,
+          "model": "v2",
+          "product_count": 104
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 10066,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 914,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 10066,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 0.4,
+        "wheelchair_marked_accessible_pct": 0.4,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 910,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 24.9,
+          "severity": "WARNING",
+          "what": "910 of 914 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 75.1,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 5,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 4,
+          "WARNING": 24
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 9,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 8,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 5,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 2,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 4,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 79.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 28 instances (0 error, 24 warning, 4 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 37,
+        "effective_expiry_date": "2026-09-12",
+        "feed_end_date": "2026-09-12",
+        "feed_start_date": "2026-05-10",
+        "feed_version": "20260510-20260912",
+        "has_feed_info": true,
+        "last_service_date": "2026-09-12",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 61.7,
+      "status": "measured",
+      "summary": "Service data covers the next 37 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "coverage_pct": 96.0,
+        "covered_trips": 48,
+        "drift": {
+          "median_seconds": 0,
+          "observations": 2830,
+          "on_time_share_pct": 99.5,
+          "p90_abs_seconds": 0
+        },
+        "kinds_configured": 2,
+        "kinds_reachable": 1,
+        "reachable_kinds": [
+          "trip_updates"
+        ],
+        "rt_freshness": "fresh",
+        "samples": 6,
+        "scheduled_trips_in_window": 50,
+        "worst_lag_seconds": 2
+      },
+      "findings": [
+        {
+          "code": "scorecard_rt_vehicle_positions_unreachable",
+          "count": 1,
+          "effort": "Usually a vendor support ticket.",
+          "fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+          "owner": "",
+          "points": 14.7,
+          "severity": "ERROR",
+          "what": "The vehicle positions realtime feed failed during sampling.",
+          "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        },
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 2,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 1.6,
+          "severity": "WARNING",
+          "what": "2 of 50 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        }
+      ],
+      "name": "realtime",
+      "score": 83.6,
+      "status": "measured",
+      "summary": "Sampled 6 times: 1 of 2 configured feeds healthy; 96.0% of scheduled trips had live predictions; vehicle position plausibility was not measurable; predictions ran a median of 0s behind schedule.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 6 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 38 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "License: https://c-tran.com/about-c-tran/business/c-tran-gtfs-data",
+    "reachable": true,
+    "sha256": "e5f5ae01fb6a551dfc74c59eae9264ba5fb21811992dd9348e726437f19904e5",
+    "size_bytes": 3556766,
+    "static_url": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.c-tran.com/images/Google/GoogleTransitUpload.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -122.70826,
+      45.49652,
+      -122.32156,
+      45.86686
+    ],
+    "lat": 45.64333,
+    "lon": -122.62115,
+    "stop_count": 914
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 35,
+        "trip_count": 10066,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 35,
+    "trip_count": 10066
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "C-TRAN"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data covers the next 38 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "ready",
+    "summary": "Published at a public URL, valid, current, and identified with agency_id: the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 filings make that official; this is a heads-up, not a determination."
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 5.7,
+    "margin_to_next_band": 4.3,
+    "score": 75.7
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 775,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "775 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"3505 SW US Veterans Rd\", \"3515 SW US Veterans Rd\", \"700 SW Campus Dr at Doernbecher\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 910,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 10066
+  },
+  "route_map": {
+    "drawn_route_count": 35,
+    "has_shapes": true,
+    "path": "data/artifacts/c-tran/geometry.geojson",
+    "route_count": 35,
+    "routes": [
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "002",
+        "label": "2",
+        "long": "Lincoln",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "006",
+        "label": "6",
+        "long": "Fruit Valley/Grand",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "007",
+        "label": "7",
+        "long": "Battle Ground",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "009",
+        "label": "9",
+        "long": "Felida",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "012",
+        "label": "12",
+        "long": "112th Avenue",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "019",
+        "label": "19",
+        "long": "Salmon Creek",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "025",
+        "label": "25",
+        "long": "Saint Johns",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "030",
+        "label": "30",
+        "long": "Burton",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "031",
+        "label": "31",
+        "long": "Hazel Dell",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "032",
+        "label": "32",
+        "long": "Evergreen/Andresen",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "034",
+        "label": "34",
+        "long": "192nd Ave/34th St",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "041",
+        "label": "41",
+        "long": "SR 14",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "047",
+        "label": "47",
+        "long": "Battle Ground/Yacolt",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "048",
+        "label": "48",
+        "long": "Ridgefield",
+        "short": "48",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2D9A47",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "050",
+        "label": "Vine-Green",
+        "long": "The Vine Green Line",
+        "short": "Vine-Green",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D2232A",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "051",
+        "label": "Vine-Red",
+        "long": "The Vine Red Line",
+        "short": "Vine-Red",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "060",
+        "label": "60",
+        "long": "Delta Park Regional",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "065",
+        "label": "65",
+        "long": "Parkrose Regional",
+        "short": "65",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "067",
+        "label": "67",
+        "long": "Airport Regional",
+        "short": "67",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "071",
+        "label": "71",
+        "long": "Highway 99",
+        "short": "71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "072",
+        "label": "72",
+        "long": "Orchards",
+        "short": "72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "074",
+        "label": "74",
+        "long": "East Fourth Plain/162nd Ave",
+        "short": "74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "078",
+        "label": "78",
+        "long": "78th Street",
+        "short": "78",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "080",
+        "label": "80",
+        "long": "Van Mall/Fishers",
+        "short": "80",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "092",
+        "label": "92",
+        "long": "Camas/Washougal",
+        "short": "92",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "105",
+        "label": "105",
+        "long": "I-5 Express",
+        "short": "105",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "106",
+        "label": "105X",
+        "long": "I-5X Express",
+        "short": "105X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "164",
+        "label": "164",
+        "long": "Fishers Landing Express",
+        "short": "164",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "190",
+        "label": "190",
+        "long": "Marquam Hill Express",
+        "short": "190",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3777BC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "899",
+        "label": "899",
+        "long": "Shuttle",
+        "short": "899",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0C0C0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "983",
+        "label": "Fair",
+        "long": "Fair Bus 99th Street",
+        "short": "Fair",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0C0C0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "985",
+        "label": "Fair",
+        "long": "Fair Bus Van Mall",
+        "short": "Fair",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0C0C0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "987",
+        "label": "Fair",
+        "long": "Fair Bus Fisher's/Mill Plain",
+        "short": "Fair",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0C0C0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "988",
+        "label": "Fair",
+        "long": "Fair Bus Battle Ground/Yacolt",
+        "short": "Fair",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0C0C0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "989",
+        "label": "Fair",
+        "long": "Fair Bus La Center/Ridgefield",
+        "short": "Fair",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 914,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 10066 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 10066,
+    "trips_with_shape": 10066
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_rt_vehicle_positions_unreachable",
+      "count": 1,
+      "effort": "Usually a vendor support ticket.",
+      "fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+      "owner": "",
+      "points": 14.7,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "The vehicle positions realtime feed failed during sampling.",
+      "why": "When this feed is down, riders see scheduled times presented as if they were live."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 910,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 24.9,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "910 of 914 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "service_has_no_active_day_of_the_week",
+      "count": 9,
+      "effort": "A few minutes in your scheduling software.",
+      "fix": "Delete the empty calendars or set their service days.",
+      "owner": "Likely your export tool",
+      "points": 6.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some service calendars have no days of the week switched on.",
+      "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,0 +1,1018 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-pan-83789",
+    "name": "R\u00e9seau urbain et interurbain Trans'Agglo",
+    "subdivision_code": "FR-PAC",
+    "subdivision_name": "Provence-Alpes-C\u00f4te-d\u2019Azur"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 1.3,
+          "stops_marked_accessible_pct": 0.8,
+          "stops_marked_not_accessible_pct": 1.1,
+          "stops_stated_pct": 1.9,
+          "trips_stated_pct": 0.3
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 14.6,
+          "stop_names": 1.0,
+          "wheelchair_stops": 0.5,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 635,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 97.6,
+        "headsign_scored_pct": 97.6,
+        "mixed_case_stop_name_pct": 6.8,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 263,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 635,
+        "wheelchair_accessible_pct": 0.3,
+        "wheelchair_boarding_pct": 1.9,
+        "wheelchair_marked_accessible_pct": 0.8,
+        "wheelchair_marked_not_accessible_pct": 1.1
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 258,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 24.5,
+          "severity": "WARNING",
+          "what": "258 of 263 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 633,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "633 of 635 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 245,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 14.0,
+          "severity": "INFO",
+          "what": "About 245 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 15,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.4,
+          "severity": "WARNING",
+          "what": "15 of 635 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 23.7,
+      "status": "measured",
+      "summary": "2% of stops state wheelchair accessibility (1% marked accessible, 1% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 13,
+        "instances_by_severity": {
+          "ERROR": 23,
+          "INFO": 285,
+          "WARNING": 890
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "start_and_end_range_out_of_order",
+          "count": 21,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'start_and_end_range_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 18.0,
+          "severity": "ERROR",
+          "what": "Start and end range out of order (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_time_with_arrival_before_previous_departure_time",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Stop time with arrival before previous departure time (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 855,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "leading_or_trailing_whitespaces",
+          "count": 15,
+          "effort": "Usually one export setting.",
+          "fix": "Trim leading and trailing spaces on export. The scorecard's auto-fixed copy already does this.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some values have extra spaces at the start or end.",
+          "why": "A stray space can break a match, so a stop or route may fail to link across files."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 7,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 4,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 3,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 2,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 2,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 1,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 166,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "unsorted_stop_times",
+          "count": 119,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unsorted_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Unsorted stop times (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 24.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 13 kinds of issue across 1198 instances (23 error, 890 warning, 285 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 146,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 146 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "2 validator errors to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 2% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 2 validator errors to resolve. States wheelchair access on 2% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including commercial reuse is permitted with attribution to Durance Luberon Verdon Agglom\u00e9ration and the update date.",
+    "reachable": true,
+    "sha256": "e76964b154fc6809e3fa02052b33e11e2f80023f1f2c2168ffca3977c9a3d47b",
+    "size_bytes": 112190,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/117daa0d-0708-43aa-a562-7d5b3d6570b0"
+  },
+  "fetch": {
+    "final_url": "https://static.data.gouv.fr/resources/reseau-de-transport-en-commun-trans-agglo-de-dlva/20260107-075252/gtfs-695e0e00e75be-0701.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      5.69457,
+      43.69991,
+      6.12868,
+      43.97271
+    ],
+    "lat": 43.82778,
+    "lon": 5.79929,
+    "stop_count": 263
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 41,
+        "trip_count": 635,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 41,
+    "trip_count": 635
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 39.2,
+    "margin_to_next_band": 20.8,
+    "score": 39.2
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 7,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "7 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (112 DLVA, 120 DLVA, 123 DLVA, 131 DLVA, 133 DLVA, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 25,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "25 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Dr R. MATHOULIN\", \"ST CHARLES\", \"DR P. JOUBERT\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 255,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 7,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "7 of 255 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 7,
+    "single_stop_trips": 0,
+    "trips_total": 635
+  },
+  "route_map": {
+    "drawn_route_count": 35,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-pan-83789/geometry.geojson",
+    "route_count": 41,
+    "routes": [
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "111 DLVA|20190502",
+        "label": "111 DLVA",
+        "long": "MANOSQUE PRES COMBAUX-CENTRE VILLE",
+        "short": "111 DLVA",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "165CA3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "112 DLVA|20190502",
+        "label": "112 DLVA",
+        "long": "MANOSQUE THOMASSINE - QUINTRANDS",
+        "short": "112 DLVA",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7CB453",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "113 DLVA|20190502",
+        "label": "113 DLVA",
+        "long": "MANOSQUE REPASSE - VANNADES",
+        "short": "113 DLVA",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F19202",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "114 DLVA|20190502",
+        "label": "114 DLVA",
+        "long": "MANOSQUE ROCHETTE - TECHNOPARC",
+        "short": "114 DLVA",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "83398E",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "120 DLVA|20220527",
+        "label": "120 DLVA",
+        "long": "ORAISON-LA BRILLANNE-VILLENEUVE-VOLX-MQE",
+        "short": "120 DLVA",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CF3087",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "123 DLVA|20190502",
+        "label": "123 DLVA",
+        "long": "CORBIERES - SAINTE TULLE - MANOSQUE",
+        "short": "123 DLVA",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1C9D9B",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "124 DLVA|20190502",
+        "label": "124 DLVA",
+        "long": "PIERREVERT - MANOSQUE",
+        "short": "124 DLVA",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1C9D9B",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "124 TAD|20191023",
+        "label": "124 TAD",
+        "long": "TAD PIERREVERT - MANOSQUE",
+        "short": "124 TAD",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A1C617",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "125|20160308",
+        "label": "125 TAD",
+        "long": "BRUNET-ENTREVENNES-PUIMICHEL-LE CASTELLET-ORAISON",
+        "short": "125 TAD",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F07D00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "127|20210104",
+        "label": "127 TAD",
+        "long": "MONTFURON-MANOSQUE",
+        "short": "127 TAD",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "047E3B",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "131 DLVA|20190502",
+        "label": "131 DLVA",
+        "long": "GREOUX - VINON - MANOSQUE",
+        "short": "131 DLVA",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "132 DLVA|20190502",
+        "label": "132 DLVA",
+        "long": "RIEZ - GREOUX - MANOSQUE",
+        "short": "132 DLVA",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0033CC",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "133 DLVA|20190502",
+        "label": "133 DLVA",
+        "long": "VALENSOLE - MANOSQUE",
+        "short": "133 DLVA",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B2E7D",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "134|20160308",
+        "label": "134 TAD",
+        "long": "ESPARRON-QUINSON-ST LAURENT-MONTAGNAC-RIEZ",
+        "short": "134 TAD",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "851D28",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "135|20160309",
+        "label": "135",
+        "long": "PUIMOISSON - ROUMOULES - RIEZ",
+        "short": "135",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB3832",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "136 DLVA|20190502",
+        "label": "136 DLVA",
+        "long": "136",
+        "short": "136 DLVA",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B75393",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "137|20170313",
+        "label": "137 TAD",
+        "long": "ALBIOSC - ESPARRON",
+        "short": "137 TAD",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "141S|20160314",
+        "label": "141S",
+        "long": "VALENSOLE - BRUNET - PUIMOISSON - RIEZ",
+        "short": "141S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "142S|20160314",
+        "label": "142S",
+        "long": "ESPARRON - RIEZ",
+        "short": "142S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "143S|20160314",
+        "label": "143S",
+        "long": "MONTPEZAT - MONTAGNAC - RIEZ",
+        "short": "143S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "144S|20160314",
+        "label": "144S",
+        "long": "QUINSON - ST LAURENT - QUINSON - RIEZ",
+        "short": "144S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "145S|20160314",
+        "label": "145S",
+        "long": "ST MARTIN - ALLEMAGNE - RIEZ",
+        "short": "145S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "146S|20160314",
+        "label": "146S",
+        "long": "VINON - VINON",
+        "short": "146S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "147S|20160314",
+        "label": "147S",
+        "long": "LES CHABRANDS - MANOSQUE",
+        "short": "147S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "161S|20220831",
+        "label": "161S",
+        "long": "VILLENEUVE-VOLX-MANOSQUE",
+        "short": "161S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "162S|20220831",
+        "label": "162S",
+        "long": "ORAISON-LA BRILLANNE-MANOSQUE",
+        "short": "162S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "163S|20160610",
+        "label": "163S",
+        "long": "VILLENEUVE - VOLX",
+        "short": "163S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "164S|20160610",
+        "label": "164S",
+        "long": "PIERREVERT - STE TULLE",
+        "short": "164S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "165S|20160610",
+        "label": "165S",
+        "long": "MONTFURON-MANOSQUE",
+        "short": "165S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "166S|20160314",
+        "label": "166S",
+        "long": "ENTREVENNES - ORAISON",
+        "short": "166S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "167S|20170606",
+        "label": "167S",
+        "long": "LA BRILLANNE - ORAISON",
+        "short": "167S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "168S|20170606",
+        "label": "168S",
+        "long": "VALLEE DE L'ASSE - ORAISON",
+        "short": "168S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "169S|20170606",
+        "label": "169S",
+        "long": "CORBIERES - STE TULLE",
+        "short": "169S",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "181RPI|20160315",
+        "label": "181 RPI",
+        "long": "ALLEMAGNE - MONTAGNAC - ALLEMAGNE",
+        "short": "181 RPI",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "182|20160315",
+        "label": "182 RPI",
+        "long": "ESPARRON - ST MARTIN DE BR\u00d4MES",
+        "short": "182 RPI",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "183|20160315",
+        "label": "183",
+        "long": "ST LAURENT - QUINSON",
+        "short": "183",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "184|20160315",
+        "label": "184",
+        "long": "PUIMICHEL - LE CASTELLET",
+        "short": "184",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "185|20160315",
+        "label": "185 RPI",
+        "long": "ENTREVENNES - LE CASTELLET",
+        "short": "185 RPI",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "PMR2",
+        "label": "PMR2",
+        "long": "",
+        "short": "PMR2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "PMR|20190707",
+        "label": "PMR",
+        "long": "PMR",
+        "short": "PMR",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "ZA EXPRESS TAD",
+        "label": "ZAE TAD",
+        "long": "ZA EXPRESS TAD",
+        "short": "ZAE TAD",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 263,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "start_and_end_range_out_of_order",
+      "count": 21,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'start_and_end_range_out_of_order' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 18.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Start and end range out of order (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "stop_time_with_arrival_before_previous_departure_time",
+      "count": 2,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 12.0,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "Stop time with arrival before previous departure time (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 258,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 24.5,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "258 of 263 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

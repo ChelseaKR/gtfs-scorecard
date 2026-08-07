@@ -1,0 +1,677 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-uba",
+    "name": "Navettes maritimes - UBA",
+    "subdivision_code": "FR-NAQ",
+    "subdivision_name": "Nouvelle-Aquitaine"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 0.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 9572,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 0.0,
+        "headsign_scored_pct": 0.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 5,
+        "translations": {
+          "feed_lang": "fr",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 9572,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 5,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every terminal. A field survey can start with the busiest terminals.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "5 of 5 terminals don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 9572,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "9572 of 9572 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible terminals, riders need to know the vessel itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 9572,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "9572 of 9572 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 22.5,
+      "status": "measured",
+      "summary": "0% of terminals state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a terminal is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 5,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 921,
+          "WARNING": 73
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_bike_allowance",
+          "count": 46,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_bike_allowance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Missing bike allowance (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 18,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "duplicate_route_name",
+          "count": 8,
+          "effort": "One field per route.",
+          "fix": "Give each route a distinct short or long name.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Two or more routes share the same name.",
+          "why": "Riders can't tell the routes apart in apps."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "service_window_outside_feed_period",
+          "count": 921,
+          "effort": "Two fields in feed_info.txt, or one export setting.",
+          "fix": "Widen feed_start_date and feed_end_date to cover all service dates, or fix the dates that fall outside.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some service dates fall outside the date window set in feed_info.txt.",
+          "why": "feed_info.txt should span every day your service runs, so apps know when the data applies."
+        }
+      ],
+      "name": "correctness",
+      "score": 77.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 994 instances (0 error, 73 warning, 921 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 146,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": "2026-12-31",
+        "feed_start_date": "2026-04-04",
+        "feed_version": "UTC: 13-Mar-2026 07:07",
+        "has_feed_info": true,
+        "last_service_date": "2027-04-02",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 146 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of terminals and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of terminals and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including commercial reuse is permitted with attribution to UNION DES BATELIERS ARCACHONNAIS and the update date.",
+    "reachable": true,
+    "sha256": "19d8a416aac54466d4f1a81c5f5f1bd31a2a9215a05470156a73af691d84ee0e",
+    "size_bytes": 181561,
+    "static_url": "https://transport.data.gouv.fr/resources/84043/download"
+  },
+  "ferry_profile": {
+    "accessibility": {
+      "measures": "published_values_not_physical_usability",
+      "terminals": {
+        "allowed_count": 0,
+        "allowed_pct": 0.0,
+        "not_allowed_count": 0,
+        "not_allowed_pct": 0.0,
+        "stated_count": 0,
+        "stated_pct": 0.0,
+        "total_count": 5
+      },
+      "trips": {
+        "allowed_count": 0,
+        "allowed_pct": 0.0,
+        "not_allowed_count": 0,
+        "not_allowed_pct": 0.0,
+        "stated_count": 0,
+        "stated_pct": 0.0,
+        "total_count": 9572
+      }
+    },
+    "bikes": {
+      "allowed_count": 9526,
+      "allowed_pct": 99.5,
+      "not_allowed_count": 0,
+      "not_allowed_pct": 0.0,
+      "stated_count": 9526,
+      "stated_pct": 99.5,
+      "total_count": 9572
+    },
+    "cars": {
+      "allowed_count": 0,
+      "allowed_pct": 0.0,
+      "not_allowed_count": 0,
+      "not_allowed_pct": 0.0,
+      "stated_count": 0,
+      "stated_pct": 0.0,
+      "total_count": 9572
+    },
+    "fares": {
+      "applied": false,
+      "fare_free": false,
+      "model": "none",
+      "scope": "whole_feed"
+    },
+    "graded": false,
+    "measured": true,
+    "realtime": {
+      "configured_kinds": [],
+      "kinds_configured": 0,
+      "scope": "whole_feed"
+    },
+    "route_count": 18,
+    "scope": "ferry_routes_and_trips",
+    "stop_access": {
+      "direct_count": 0,
+      "eligible_terminal_count": 0,
+      "stated_count": 0,
+      "stated_pct": null,
+      "through_station_count": 0
+    },
+    "terminal_hierarchy": {
+      "boarding_location_count": 5,
+      "parented_boarding_location_count": 0,
+      "parented_boarding_location_pct": 0.0,
+      "referenced_station_count": 0
+    },
+    "trip_count": 9572
+  },
+  "fetch": {
+    "final_url": "https://static.data.gouv.fr/resources/uba-horaires-navettes-maritimes/20260522-125551/uniondes-arcachon-fr-3-.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -1.23686,
+      44.64172,
+      -1.10156,
+      44.73866
+    ],
+    "lat": 44.66472,
+    "lon": -1.20439,
+    "stop_count": 5
+  },
+  "mode_profile": {
+    "ferry_only": true,
+    "graded": false,
+    "has_ferry": true,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "ferry",
+        "label": "Ferry",
+        "route_count": 18,
+        "trip_count": 9572,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "ferry",
+    "primary_mode_label": "Ferry",
+    "route_count": 18,
+    "trip_count": 9572
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 5.7,
+    "margin_to_next_band": 4.3,
+    "score": 65.7
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 10,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "10 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (ARCACHON vers LE CANON, LE CANON vers ARCACHON, ARCACHON vers LE CANON, LE CANON vers ARCACHON, ANDERNOS vers ARCACHON, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 5,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 9572
+  },
+  "route_map": {
+    "drawn_route_count": 0,
+    "has_shapes": false,
+    "path": "data/artifacts/fr-uba/geometry.geojson",
+    "route_count": 18,
+    "routes": [
+      {
+        "color": "268B9D",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "TB-AND-ARC-AS",
+        "label": "ANDERNOS vers ARCACHON",
+        "long": "ANDERNOS vers ARCACHON",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "EE8D5F",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "TB-AND-ARC-CAP-AS",
+        "label": "ANDERNOS vers CAP FERRET",
+        "long": "ANDERNOS vers CAP FERRET",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "EE8D5F",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "TB-AND-CAP-AS",
+        "label": "ANDERNOS vers CAP FERRET",
+        "long": "ANDERNOS vers CAP FERRET",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "268B9D",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "TB-ARC-AND-AS",
+        "label": "ARCACHON vers ANDERNOS",
+        "long": "ARCACHON vers ANDERNOS",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "A1C85A",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "TB-ARC-CAN-AS",
+        "label": "ARCACHON vers LE CANON",
+        "long": "ARCACHON vers LE CANON",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "006EB6",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "TB-ARC-CAP-AS",
+        "label": "ARCACHON vers CAP FERRET",
+        "long": "ARCACHON vers CAP FERRET",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "A1C85A",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "TB-CAN-ARC-AS",
+        "label": "LE CANON vers ARCACHON",
+        "long": "LE CANON vers ARCACHON",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "EE8D5F",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "TB-CAP-AND-AS",
+        "label": "CAP FERRET vers ANDERNOS",
+        "long": "CAP FERRET vers ANDERNOS",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "EE8D5F",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "TB-CAP-ARC-AND-AS",
+        "label": "CAP FERRET vers ANDERNOS",
+        "long": "CAP FERRET vers ANDERNOS",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "006EB6",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "TB-CAP-ARC-AS",
+        "label": "CAP FERRET vers ARCACHON",
+        "long": "CAP FERRET vers ARCACHON",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "AD1AAC",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "TB-CAP-MOU-AS",
+        "label": "CAP FERRET vers LE MOULLEAU",
+        "long": "CAP FERRET vers LE MOULLEAU",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "AD1AAC",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "TB-MOU-CAP-AS",
+        "label": "LE MOULLEAU vers CAP FERRET",
+        "long": "LE MOULLEAU vers CAP FERRET",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "A1C85A",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "TBN-ARC-CAN-AS",
+        "label": "ARCACHON vers LE CANON",
+        "long": "ARCACHON vers LE CANON",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "006EB6",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "TBN-ARC-CAP-AS",
+        "label": "ARCACHON vers CAP FERRET",
+        "long": "ARCACHON vers CAP FERRET",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "A1C85A",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "TBN-CAN-ARC-AS",
+        "label": "LE CANON vers ARCACHON",
+        "long": "LE CANON vers ARCACHON",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "006EB6",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "TBN-CAP-ARC-AS",
+        "label": "CAP FERRET vers ARCACHON",
+        "long": "CAP FERRET vers ARCACHON",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "AD1AAC",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "TBN-CAP-MOU-AS",
+        "label": "CAP FERRET vers LE MOULLEAU",
+        "long": "CAP FERRET vers LE MOULLEAU",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "AD1AAC",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "TBN-MOU-CAP-AS",
+        "label": "LE MOULLEAU vers CAP FERRET",
+        "long": "LE MOULLEAU vers CAP FERRET",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      }
+    ],
+    "stop_count": 5,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 5,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every terminal. A field survey can start with the busiest terminals.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "5 of 5 terminals don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 9572,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "9572 of 9572 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible terminals, riders need to know the vessel itself can take them."
+    },
+    {
+      "code": "scorecard_missing_headsigns",
+      "count": 9572,
+      "effort": "Usually one value per route pattern in your scheduling source.",
+      "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "9572 of 9572 trips lack rider-facing destination or direction text.",
+      "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

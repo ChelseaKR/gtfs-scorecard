@@ -1,0 +1,2304 @@
+{
+  "agency": {
+    "country": "IT",
+    "id": "atm-milano",
+    "name": "ATM Milano (Comune di Milano)",
+    "operating_note": "The Mobility Database notes the download may be limited to European users; the reviewed fetch succeeded from a United States address, and reachability stays visible on the public status page.",
+    "subdivision_code": "IT-25",
+    "subdivision_name": "Lombardia"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 36.4,
+          "stops_marked_accessible_pct": 24.5,
+          "stops_marked_not_accessible_pct": 33.7,
+          "stops_stated_pct": 58.2,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 14.6,
+          "wheelchair_stops": 14.6,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_pct": 100.0,
+        "mixed_case_stop_name_pct": 97.4,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 4899,
+        "translations": {
+          "feed_lang": "it",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 101327,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 58.2,
+        "wheelchair_marked_accessible_pct": 24.5,
+        "wheelchair_marked_not_accessible_pct": 33.7
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2047,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 10.4,
+          "severity": "WARNING",
+          "what": "2047 of 4899 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 101327,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "101327 of 101327 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 51.7,
+      "status": "measured",
+      "summary": "58% of stops state wheelchair accessibility (24% marked accessible, 34% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 8,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 31341,
+          "WARNING": 75581
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 75571,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "leading_or_trailing_whitespaces",
+          "count": 7,
+          "effort": "Usually one export setting.",
+          "fix": "Trim leading and trailing spaces on export. The scorecard's auto-fixed copy already does this.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some values have extra spaces at the start or end.",
+          "why": "A stray space can break a match, so a stop or route may fail to link across files."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "missing_feed_info_date",
+          "count": 1,
+          "effort": "Two fields, likely set once in your export settings.",
+          "fix": "Fill in feed_start_date and feed_end_date in feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt does not state when this feed starts and ends.",
+          "why": "Without stated dates, apps can't warn anyone before your data goes stale; it just disappears one day."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 1,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 29945,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the transit vehicle ends up, so a midpoint name can send them the wrong way."
+        },
+        {
+          "code": "unsorted_stop_times",
+          "count": 1390,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unsorted_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Unsorted stop times (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unknown_column",
+          "count": 6,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        }
+      ],
+      "name": "correctness",
+      "score": 71.2,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 8 kinds of issue across 106922 instances (0 error, 75581 warning, 31341 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 5,
+        "effective_expiry_date": "2026-08-12",
+        "feed_end_date": null,
+        "feed_start_date": "2026-07-06",
+        "feed_version": "418",
+        "has_feed_info": true,
+        "last_service_date": "2026-08-12",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expiring_soon",
+          "count": 1,
+          "effort": "One export setting.",
+          "fix": "Re-export with a validity window that reaches at least 60 days out.",
+          "owner": "Likely your export tool",
+          "points": 75.0,
+          "severity": "WARNING",
+          "what": "Service data runs out in 5 day(s).",
+          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+        },
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 0.0,
+      "status": "measured",
+      "summary": "Service data runs out in 5 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data runs out in 24 days; renew to qualify.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 58% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. Service data runs out in 24 days; renew to qualify. States wheelchair access on 58% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through Milan's municipal open data portal; credit the Comune di Milano. The dataset is produced by AMAT from ATM scheduling data.",
+    "reachable": true,
+    "sha256": "9bcb0f6f61af70e7e3d4ee8986cabcc21669660714c5d8e30ea57edf3ae404f7",
+    "size_bytes": 21141879,
+    "static_url": "https://dati.comune.milano.it/gtfs.zip"
+  },
+  "fetch": {
+    "final_url": "https://dati.comune.milano.it/gtfs.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-19T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      8.99602,
+      45.33936,
+      9.43663,
+      45.63115
+    ],
+    "lat": 45.47573,
+    "lon": 9.18573,
+    "stop_count": 4899
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 17,
+        "trip_count": 10290,
+        "trip_share_pct": 10.2
+      },
+      {
+        "key": "subway",
+        "label": "Subway / metro",
+        "route_count": 5,
+        "trip_count": 7392,
+        "trip_share_pct": 7.3
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 144,
+        "trip_count": 83645,
+        "trip_share_pct": 82.5
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 166,
+    "trip_count": 101327
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 47.3,
+    "margin_to_next_band": 12.7,
+    "score": 47.3
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 1,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "1 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (4).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 172,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "172 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"via baroni, 13/a\", \"via baroni, 13/a\", \"via s. giacomo, 1/a\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 4899,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 101327
+  },
+  "route_map": {
+    "drawn_route_count": 166,
+    "has_shapes": true,
+    "path": "data/artifacts/atm-milano/geometry.geojson",
+    "route_count": 166,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B121",
+        "label": "121",
+        "long": "s.giuliano m. (stz f.s.) - stz s.donato m3",
+        "short": "121",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B130",
+        "label": "130",
+        "long": "s.donato m3 - s.giuliano m.se",
+        "short": "130",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B132",
+        "label": "132",
+        "long": "s. donato m3 (marignano) - s. donato ( di vittorio)",
+        "short": "132",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B140",
+        "label": "140",
+        "long": "cefalonia - rogoredo",
+        "short": "140",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B154",
+        "label": "NM4",
+        "long": "linate aeroporto m4 - lorenteggio",
+        "short": "NM4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B161",
+        "label": "161",
+        "long": "parco nord - ca' granda ( coll. sost. linea 4)",
+        "short": "161",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B165",
+        "label": "165",
+        "long": "comasina m3 - limbiate",
+        "short": "165",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B166",
+        "label": "166",
+        "long": "parco nord - desio",
+        "short": "166",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B167",
+        "label": "167",
+        "long": "rozzano (g. rossa) - gratosoglio (coll 15)",
+        "short": "167",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B171",
+        "label": "171",
+        "long": "interno cim. maggiore (campo 1 campo 92)",
+        "short": "171",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B172",
+        "label": "172",
+        "long": "martiri della deportazione - bicocca",
+        "short": "172",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B174",
+        "label": "174",
+        "long": "turro - cim. greco - loreto",
+        "short": "174",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B175",
+        "label": "175",
+        "long": "p.te lambro - cim. lambrate",
+        "short": "175",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B176",
+        "label": "176",
+        "long": "campo 12 - ingresso",
+        "short": "176",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B183",
+        "label": "183",
+        "long": "idroscalo - aeroporto",
+        "short": "183",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B201",
+        "label": "201",
+        "long": "rozzano (alberelle) - rozzano (milano)",
+        "short": "201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B220",
+        "label": "220",
+        "long": "rozzano - pieve",
+        "short": "220",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B222",
+        "label": "222",
+        "long": "pieve e. (staz fs) - milano (ripamonti)",
+        "short": "222",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B230",
+        "label": "230",
+        "long": "abbiategrasso m2 - basiglio",
+        "short": "230",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B321",
+        "label": "321",
+        "long": "bisceglie m1 - assago forum m2",
+        "short": "321",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B322",
+        "label": "322",
+        "long": "milano (bisceglie) - c.boscone (gramsci)",
+        "short": "322",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B323",
+        "label": "323",
+        "long": "cesano boscone fs - milano (bisceglie m1)",
+        "short": "323",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B324",
+        "label": "324",
+        "long": "romolo m2 - corsico (p.za europa)",
+        "short": "324",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B325",
+        "label": "325",
+        "long": "buccinasco (via lario) - romolo m2",
+        "short": "325",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B326",
+        "label": "326",
+        "long": "stz san cristoforo fs m4 - cesano boscone",
+        "short": "326",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B327",
+        "label": "327",
+        "long": "milano (bisceglie m1) - trezzano s.n. (morona)",
+        "short": "327",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B328",
+        "label": "328",
+        "long": "assago m2 - rozzano",
+        "short": "328",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B34",
+        "label": "34",
+        "long": "q.re fatima - toffetti",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B35",
+        "label": "35",
+        "long": "molino dorino m1 - comasina m3",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B351",
+        "label": "351",
+        "long": "p.le negrelli - buccinasco (via emilia)",
+        "short": "351",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B352",
+        "label": "352",
+        "long": "buccinasco - assago forum m2",
+        "short": "352",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B353",
+        "label": "353",
+        "long": "assago (via bazzana) - assago (via del sole)",
+        "short": "353",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B38",
+        "label": "38",
+        "long": "corelli - susa",
+        "short": "38",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B39",
+        "label": "39",
+        "long": "loreto - pitteri",
+        "short": "39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B40",
+        "label": "40",
+        "long": "parco nord - bonola m1",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B41",
+        "label": "41",
+        "long": "niguarda - q.re bovisasca",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B42",
+        "label": "42",
+        "long": "q.re bicocca - stz centrale m2 m3",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B423",
+        "label": "423",
+        "long": "settimo m.(della libert\u00c3\u00a0) - milano (san siro m5)",
+        "short": "423",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B424",
+        "label": "424",
+        "long": "bareggio (gallina) - molino dorino m1",
+        "short": "424",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B43",
+        "label": "43",
+        "long": "firenze - greco",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B431",
+        "label": "431",
+        "long": "bareggio - rho fs",
+        "short": "431",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B433",
+        "label": "433",
+        "long": "bisceglie m1 - cornaredo (artigianato)",
+        "short": "433",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B44",
+        "label": "44",
+        "long": "turro - c.na gobba",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B45",
+        "label": "45",
+        "long": "san donato m3 - stz lambrate",
+        "short": "45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B46",
+        "label": "46",
+        "long": "q.re cantalupa - famagosta m2",
+        "short": "46",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B47",
+        "label": "47",
+        "long": "bisceglie m1 - romolo m2",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B48",
+        "label": "48",
+        "long": "m.te rosa - palazzolo",
+        "short": "48",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B49",
+        "label": "49",
+        "long": "lotto m1 m5 - tirana",
+        "short": "49",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B50",
+        "label": "50",
+        "long": "lorenteggio - cairoli m1",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B51",
+        "label": "51",
+        "long": "zara m3 m5 - cimiano m2",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B52",
+        "label": "52",
+        "long": "bruzzano f.n. - bicocca (universita')",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B528",
+        "label": "528",
+        "long": "cim. maggiore - molino dorino m1",
+        "short": "528",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B53",
+        "label": "53",
+        "long": "lambrate fs m2 - q.re adriano - sesto marelli m1",
+        "short": "53",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B54",
+        "label": "54",
+        "long": "dateo m4 - stz lambrate m2",
+        "short": "54",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B542",
+        "label": "542",
+        "long": "casa di reclusione - rho fiera",
+        "short": "542",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B55",
+        "label": "55",
+        "long": "cim. lambrate - loreto",
+        "short": "55",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B56",
+        "label": "56",
+        "long": "loreto - q.re adriano",
+        "short": "56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B560",
+        "label": "560",
+        "long": "arese (alfa romeo porta est)- milano (m1 qt8)",
+        "short": "560",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B561",
+        "label": "561",
+        "long": "rho fiera m1 - arese",
+        "short": "561",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B566",
+        "label": "566",
+        "long": "milano - paderno dugnano",
+        "short": "566",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B57",
+        "label": "57",
+        "long": "q.to oggiaro - cairoli",
+        "short": "57",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B58",
+        "label": "58",
+        "long": "58/ bisceglie m1 - noale",
+        "short": "58",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B59",
+        "label": "59",
+        "long": "famagosta m2 - lodovica",
+        "short": "59",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B60",
+        "label": "60",
+        "long": "duomo m1 m3 - zara m3 m5",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B61",
+        "label": "61",
+        "long": "duomo - murani",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B62",
+        "label": "62",
+        "long": "sire raul - lodi",
+        "short": "62",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B63",
+        "label": "63",
+        "long": "de angeli m1 - muggiano",
+        "short": "63",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B64",
+        "label": "64",
+        "long": "bonola m1 - lorenteggio",
+        "short": "64",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B65",
+        "label": "65",
+        "long": "p.ta romana - abbiategrasso m2",
+        "short": "65",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B66",
+        "label": "66",
+        "long": "cadore - peschiera b",
+        "short": "66",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B67",
+        "label": "67",
+        "long": "scanini - baracca",
+        "short": "67",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B68",
+        "label": "68",
+        "long": "bonola m1 - bergognone (lav. stuparich)",
+        "short": "68",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B69",
+        "label": "69",
+        "long": "firenze - molino dorino (ramo s.leonardo)",
+        "short": "69",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B70",
+        "label": "70",
+        "long": "ceresio - cim . bruzzano",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B700",
+        "label": "700",
+        "long": "sesto 1 maggio - sesto cimitero",
+        "short": "700",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B701",
+        "label": "701",
+        "long": "cologno sud m2 - sesto s. g. (4 novembre)",
+        "short": "701",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B702",
+        "label": "702",
+        "long": "cologno nord m2 - cinisello sant' eusebio",
+        "short": "702",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B705",
+        "label": "705",
+        "long": "comasina m3 - cormano",
+        "short": "705",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B707",
+        "label": "707",
+        "long": "cologno ( via giordano) - cologno nord m2",
+        "short": "707",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B708",
+        "label": "708",
+        "long": "sesto rond m1 - niguarda ( parco nord )",
+        "short": "708",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B709",
+        "label": "709",
+        "long": "cologno ( don minzoni ) - cologno sud m2",
+        "short": "709",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B71",
+        "label": "71",
+        "long": "famagosta m2 - romolo m2",
+        "short": "71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B712",
+        "label": "712",
+        "long": "sesto f.s. - cinisello ( musu )",
+        "short": "712",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B713",
+        "label": "713",
+        "long": "milano bignami m5 - sesto rimembranze",
+        "short": "713",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B727",
+        "label": "727",
+        "long": "sesto s.g.(1 maggio) - stz cormano fn",
+        "short": "727",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B728",
+        "label": "728",
+        "long": "cusano m. (unione) - bignami m5",
+        "short": "728",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B729",
+        "label": "729",
+        "long": "comasina m3 - sesto s.g. (lav. marconi)",
+        "short": "729",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B74",
+        "label": "74",
+        "long": "famagosta m2 - cantore",
+        "short": "74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B76",
+        "label": "76",
+        "long": "bisceglie m1 - madonna della provvidenza",
+        "short": "76",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B77",
+        "label": "77",
+        "long": "s. donato m3 - poasco",
+        "short": "77",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B78",
+        "label": "78",
+        "long": "bisceglie m1 - govone",
+        "short": "78",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B783",
+        "label": "783",
+        "long": "bresso don minzoni - milano bicocca m5",
+        "short": "783",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B79",
+        "label": "79",
+        "long": "gratosoglio - lodovica (transita in c.na basmetto)",
+        "short": "79",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B80",
+        "label": "80",
+        "long": "de angeli m1 - molino dorino m1",
+        "short": "80",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B81",
+        "label": "81",
+        "long": "sesto marelli - stz. lambrate",
+        "short": "81",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B82",
+        "label": "82",
+        "long": "q.re bovisasca - zara m3 m5",
+        "short": "82",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B83",
+        "label": "83",
+        "long": "comasina m3 - c granda",
+        "short": "83",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B84",
+        "label": "84",
+        "long": "martini - p.ta volta",
+        "short": "84",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B85",
+        "label": "85",
+        "long": "bolivar m4 - cadorna fn m1 m2",
+        "short": "85",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B86",
+        "label": "86",
+        "long": "f. testi - crescenzago m2 (lavori)",
+        "short": "86",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B87",
+        "label": "87",
+        "long": "stz centrale - villa san giovanni m1",
+        "short": "87",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B88",
+        "label": "88",
+        "long": "aviazione - rogoredo fs m3",
+        "short": "88",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B89",
+        "label": "89",
+        "long": "novate milanese - ciccotti",
+        "short": "89",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B90",
+        "label": "90",
+        "long": "lodi m3 - lotto (circolare destra)",
+        "short": "90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B901",
+        "label": "901",
+        "long": "aeroporto di linate (trans. peschiera b.) - san donato m3",
+        "short": "901",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B902",
+        "label": "902",
+        "long": "s. donato m3 (marignano) - peschiera b.",
+        "short": "902",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B903",
+        "label": "903",
+        "long": "linate - san donato  (festivo)",
+        "short": "903",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B91",
+        "label": "91",
+        "long": "lotto - lodi m3 (circolare sinistra)",
+        "short": "91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B92",
+        "label": "92",
+        "long": "vare' - lodi m3 (limita causa mercato la domenica)",
+        "short": "92",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B923",
+        "label": "923",
+        "long": "h.s.raffaele - aeroporto linate (trans. cimitero)",
+        "short": "923",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B924",
+        "label": "924",
+        "long": "milano (bottini) - segrate (s.ambrogio)",
+        "short": "924",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B925",
+        "label": "925",
+        "long": "milano (udine) - milano (cascina gobba m2)",
+        "short": "925",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B926",
+        "label": "926",
+        "long": "peschiera (san felicino) - segrate fs",
+        "short": "926",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B93",
+        "label": "93",
+        "long": "omero - bottini",
+        "short": "93",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B95",
+        "label": "95",
+        "long": "rogoredo fs m3 - s. cristoforo m4",
+        "short": "95",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B96",
+        "label": "96",
+        "long": "sforza - cadorna fn m1 m2",
+        "short": "96",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B965",
+        "label": "965",
+        "long": "milano - pioltello (lavori)",
+        "short": "965",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B97",
+        "label": "97",
+        "long": "cadorna fn m1 m2 - sforza",
+        "short": "97",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B973",
+        "label": "973",
+        "long": "p.za cinque giornate - peschiera b.",
+        "short": "973",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B98",
+        "label": "98",
+        "long": "famagosta m2 - lotto m1 m5",
+        "short": "98",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "B99",
+        "label": "99",
+        "long": "vigentino - noverasco",
+        "short": "99",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BN15",
+        "label": "N15",
+        "long": "gratosoglio - p.za diaz (chiusura p.za velasca)",
+        "short": "N15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BN24",
+        "label": "N24",
+        "long": "duomo - vigentino (chiusura p.za velasca)",
+        "short": "N24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BN25",
+        "label": "N25",
+        "long": "centrale fs m2 m3 - cadorna fn m1 m2",
+        "short": "N25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BN26",
+        "label": "N26",
+        "long": "cadorna fn m1 m2 - centrale fs m2 m3",
+        "short": "N26",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BN27",
+        "label": "N27",
+        "long": "duomo m1 m3 - ungheria",
+        "short": "N27",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BNM1",
+        "label": "NM1",
+        "long": "sesto fs - molino dorino m1 (chiusura p:za velasca)",
+        "short": "NM1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BNM2",
+        "label": "NM2",
+        "long": "cascina gobba - abbiategrasso",
+        "short": "NM2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BNM3",
+        "label": "NM3",
+        "long": "comasina m3 - san donato m3 (chiusura p.za velasca)",
+        "short": "NM3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ34",
+        "label": "BdQ34",
+        "long": "brenta m3 - noverasco",
+        "short": "BdQ34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ35",
+        "label": "BdQ35",
+        "long": "affori fn m3 - bruzzano fn",
+        "short": "BdQ35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ39",
+        "label": "BdQ39",
+        "long": "rubattino - stz lambrate m2",
+        "short": "BdQ39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ44",
+        "label": "BdQ44",
+        "long": "c.na gobba m2 - gorla m1",
+        "short": "BdQ44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ45",
+        "label": "BdQ45",
+        "long": "l.go rodari - san donato m3",
+        "short": "BdQ45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ46",
+        "label": "BdQ46",
+        "long": "cantalupa  - famagosta m2",
+        "short": "BdQ46",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ52",
+        "label": "BdQ52",
+        "long": "bicocca m5 - niguarda (parco nord)",
+        "short": "BdQ52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ55",
+        "label": "BdQ55",
+        "long": "loreto - stz lambrate m2",
+        "short": "BdQ55",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ68",
+        "label": "BdQ68",
+        "long": "uruguay -molino dorino m1 (appennini)",
+        "short": "BdQ68",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ75",
+        "label": "BdQ75",
+        "long": "rizzoli - lambrate m2",
+        "short": "BdQ75",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ76",
+        "label": "BdQ76",
+        "long": "bisceglie m1 - madonna della provvidenza",
+        "short": "BdQ76",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ78",
+        "label": "BdQ78",
+        "long": "s. siro stadio m5 - govone",
+        "short": "BdQ78",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ79",
+        "label": "BdQ79",
+        "long": "gratosoglio - abbiategrasso m2",
+        "short": "BdQ79",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ86",
+        "label": "BdQ86",
+        "long": "testi s. monica-c.na gobba",
+        "short": "BdQ86",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BQ88",
+        "label": "BdQ88",
+        "long": "ungheria - rogoredo m3",
+        "short": "BdQ88",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "M1",
+        "label": "1",
+        "long": "m1 - linea rossa",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "73FF01",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "M2",
+        "label": "2",
+        "long": "m2 - linea verde",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "FCFF01",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "M3",
+        "label": "3",
+        "long": "m3 - linea gialla",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "0000EE",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "M4",
+        "label": "4",
+        "long": "m4 - linea blu",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "C876B1",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "M5",
+        "label": "5",
+        "long": "m5 - linea lilla",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T1",
+        "label": "1",
+        "long": "greco - roserio",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T10",
+        "label": "10",
+        "long": "lunigiana -24 maggio",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T12",
+        "label": "12",
+        "long": "p.za ovidio - roserio (lav. cappelli e bramante)",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T14",
+        "label": "14",
+        "long": "cusani - cim. maggiore (lav. bramante e torino)",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T15",
+        "label": "15",
+        "long": "dogana m1 m3 - rozzano via g. rossa",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T16",
+        "label": "16",
+        "long": "m.te velino - s.siro",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T19",
+        "label": "19",
+        "long": "lambrate - castelli",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T2",
+        "label": "2",
+        "long": "negrelli - maciachini (lav. bausan e torino)",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T24",
+        "label": "24",
+        "long": "vigentino - fontana",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T27",
+        "label": "27",
+        "long": "fontana - ungheria",
+        "short": "27",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T3",
+        "label": "3",
+        "long": "lorenteggio - gratosoglio (lav. torino)",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T31",
+        "label": "31",
+        "long": "bicocca m5- cinisello b.",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T33",
+        "label": "33",
+        "long": "lagosta - rimembranze di lambrate",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T4",
+        "label": "4",
+        "long": "parco nord - p.za castello",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T5",
+        "label": "5",
+        "long": "ospedale maggiore - ortica",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T7",
+        "label": "7",
+        "long": "testi/ s. marcellina - precotto  (lavori prol per c.na gobba )",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T9",
+        "label": "9",
+        "long": "stz genova - stz centrale",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      }
+    ],
+    "stop_count": 4899,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.2",
+  "schema_version": "1.15",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.2",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.2"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expiring_soon",
+      "count": 1,
+      "effort": "One export setting.",
+      "fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "owner": "Likely your export tool",
+      "points": 75.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "Service data runs out in 5 day(s).",
+      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 101327,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "101327 of 101327 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

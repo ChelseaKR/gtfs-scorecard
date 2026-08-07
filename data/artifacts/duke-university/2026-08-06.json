@@ -1,0 +1,638 @@
+{
+  "agency": {
+    "id": "duke-university",
+    "name": "Duke University",
+    "subdivision_code": "US-NC",
+    "subdivision_name": "North Carolina"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 1.0,
+          "stops_marked_accessible_pct": 1.6,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 1.6,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 12.1,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.4,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": true
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 807,
+        "headsign_loop_exempt_trips": 1400,
+        "headsign_pct": 17.3,
+        "headsign_scored_pct": 80.7,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 127,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 2207,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 1.6,
+        "wheelchair_marked_accessible_pct": 1.6,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 125,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 24.6,
+          "severity": "WARNING",
+          "what": "125 of 127 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 2207,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "2207 of 2207 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 425,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 2.9,
+          "severity": "WARNING",
+          "what": "425 of 2207 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_flex_no_booking_rules",
+          "count": 1,
+          "effort": "A small file; one rule often covers the whole service.",
+          "fix": "Add booking_rules.txt saying how far ahead and how to book (phone, app, or web).",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed describes flexible (demand-responsive) service but has no booking_rules.txt.",
+          "why": "Riders can see the service area but not how or when to reserve a trip, so they can't actually use the service."
+        }
+      ],
+      "name": "completeness",
+      "score": 57.5,
+      "status": "measured",
+      "summary": "2% of stops state wheelchair accessibility (2% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 8,
+        "instances_by_severity": {
+          "ERROR": 152,
+          "INFO": 45,
+          "WARNING": 34
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "stop_time_timepoint_without_times",
+          "count": 152,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'stop_time_timepoint_without_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Stop time timepoint without times (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 26,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 6,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "feed_expiration_date7_days",
+          "count": 1,
+          "effort": "Usually a re-export from your scheduling software.",
+          "fix": "Export and publish an updated GTFS feed that covers at least the next 30 days of service.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "This feed's service calendar runs out within the next 7 days.",
+          "why": "When the calendar ends, Google Maps and other trip planners drop your agency entirely. Riders see no service at all."
+        },
+        {
+          "code": "trip_coverage_not_active_for_next7_days",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Trim past service periods the next time you export.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Many of the feed's trips don't run at all in the next 7 days.",
+          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
+        },
+        {
+          "code": "unknown_column",
+          "count": 34,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "unknown_file",
+          "count": 8,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        },
+        {
+          "code": "service_window_outside_feed_period",
+          "count": 3,
+          "effort": "Two fields in feed_info.txt, or one export setting.",
+          "fix": "Widen feed_start_date and feed_end_date to cover all service dates, or fix the dates that fall outside.",
+          "owner": "Likely your export tool",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some service dates fall outside the date window set in feed_info.txt.",
+          "why": "feed_info.txt should span every day your service runs, so apps know when the data applies."
+        }
+      ],
+      "name": "correctness",
+      "score": 54.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 8 kinds of issue across 231 instances (152 error, 34 warning, 45 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": -361,
+        "effective_expiry_date": "2025-08-10",
+        "feed_end_date": "2025-08-10",
+        "feed_start_date": "2025-05-05",
+        "feed_version": "UTC: 05-May-2025 09:20",
+        "has_feed_info": true,
+        "last_service_date": "2025-08-10",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expired",
+          "count": 1,
+          "effort": "Usually one export setting; export on a schedule so it never lapses again.",
+          "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+          "owner": "Likely your export tool",
+          "points": 100.0,
+          "severity": "ERROR",
+          "what": "Service data ended 361 day(s) ago.",
+          "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
+        }
+      ],
+      "name": "freshness",
+      "score": 0.0,
+      "status": "measured",
+      "summary": "Service data ended 361 day(s) ago. Trip planners have likely already dropped this feed.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data expired 354 days ago.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 2% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. Service data expired 354 days ago. States wheelchair access on 2% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "6d0d75181fa18f7faa3ed63161f558e36a1278f49b9190bc965dcbb9674fa570",
+    "size_bytes": 304782,
+    "static_url": "https://data.trilliumtransit.com/gtfs/duke-nc-us/duke-nc-us.zip"
+  },
+  "fetch": {
+    "final_url": "https://data.trilliumtransit.com/gtfs/duke-nc-us/duke-nc-us.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-30T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -78.95785,
+      35.97885,
+      -78.90374,
+      36.02102
+    ],
+    "lat": 36.00452,
+    "lon": -78.93632,
+    "stop_count": 127
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 11,
+        "trip_count": 2207,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 11,
+    "trip_count": 2207
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "240"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "status": "at_risk"
+      },
+      {
+        "detail": "Service data expired 354 days ago, so FTA would find the link out of date.",
+        "key": "current",
+        "status": "not_ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "not_ready",
+    "summary": "Resolve this before you certify on the D-10. 1 validator error to resolve. Service data expired 354 days ago, so FTA would find the link out of date."
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 41.6,
+    "margin_to_next_band": 18.4,
+    "score": 41.6
+  },
+  "recommendations": [
+    {
+      "category": "flex",
+      "code": "scorecard_flex_completeness_no_booking_rules",
+      "count": 1,
+      "effort": "A small file; one rule often covers the whole service.",
+      "fix": "Add booking_rules.txt with how far ahead and how to reserve (phone, app, or web).",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "Flex zones are published but no booking_rules.txt is present.",
+      "why": "Riders can see the service area but not how to book, so they can't complete a trip."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 6,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "6 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (H1, H2, LL, H5, SWS, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 112,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "112 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Swift Ave at Duke University Rd\", \"Duke University Rd at Swift Ave (EB)\", \"Imperial Building (215 Morris St)\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 127,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 26,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "26 of 127 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 26,
+    "single_stop_trips": 0,
+    "trips_total": 2207
+  },
+  "route_map": {
+    "drawn_route_count": 11,
+    "has_shapes": true,
+    "path": "data/artifacts/duke-university/geometry.geojson",
+    "route_count": 11,
+    "routes": [
+      {
+        "color": "A257EA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "13048",
+        "label": "SWS",
+        "long": "Swift Avenue Shuttle",
+        "short": "SWS",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF9E00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "16712",
+        "label": "CSW",
+        "long": "Smith Warehouse",
+        "short": "CSW",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002888",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "16713",
+        "label": "CSF",
+        "long": "C1-Swift Weekend",
+        "short": "CSF",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6666FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "1680",
+        "label": "LL",
+        "long": "LaSalle Loop",
+        "short": "LL",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8D1400",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1681",
+        "label": "PR1",
+        "long": "Bassett-Research",
+        "short": "PR1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AA82E2",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1683",
+        "label": "H2",
+        "long": "Hospital Loop",
+        "short": "H2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E0149C",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "1690",
+        "label": "H5",
+        "long": "Broad-Erwin",
+        "short": "H5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B11B2E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1693",
+        "label": "C1",
+        "long": "East-West",
+        "short": "C1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "10FCC3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "19628",
+        "label": "H1",
+        "long": "Hospital",
+        "short": "H1",
+        "text_color": "EB1E1E",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF1F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "35258",
+        "label": "C",
+        "long": "Swift",
+        "short": "C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EBEE13",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "76447",
+        "label": "LNC",
+        "long": "Lancaster Commons",
+        "short": "LNC",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 127,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 2207 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 2207,
+    "trips_with_shape": 2207
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expired",
+      "count": 1,
+      "effort": "Usually one export setting; export on a schedule so it never lapses again.",
+      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "owner": "Likely your export tool",
+      "points": 100.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Service data ended 361 day(s) ago.",
+      "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
+    },
+    {
+      "code": "stop_time_timepoint_without_times",
+      "count": 152,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'stop_time_timepoint_without_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 24.0,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "Stop time timepoint without times (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 125,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 24.6,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "125 of 127 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

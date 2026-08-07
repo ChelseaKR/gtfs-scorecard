@@ -1,150 +1,182 @@
 {
   "agency_count": 14,
-  "average_score": null,
-  "common_fixes": [],
+  "average_score": 68.3,
+  "common_fixes": [
+    {
+      "agencies": 7,
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "agencies": 3,
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip."
+    },
+    {
+      "agencies": 3,
+      "code": "scorecard_feed_expired",
+      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+    },
+    {
+      "agencies": 2,
+      "code": "expired_calendar",
+      "fix": "Remove past service periods the next time you export the feed."
+    },
+    {
+      "agencies": 2,
+      "code": "equal_shape_distance_same_coordinates",
+      "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt."
+    },
+    {
+      "agencies": 2,
+      "code": "scorecard_feed_expiring_soon",
+      "fix": "Re-export with a validity window that reaches at least 60 days out."
+    }
+  ],
   "comparison": {
     "absolute_rankings_published": false,
-    "eligible_count": 0,
-    "excluded_count": 14,
+    "eligible_count": 8,
+    "excluded_count": 6,
     "exclusion_counts": {
-      "rubric_version_mismatch": 14,
-      "scoring_profile_missing": 14,
-      "scoring_profile_rubric_missing": 14,
       "service_data_long_expired": 6
     },
     "individual_percentiles_published": false,
-    "measured_category_cohorts": {},
-    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
-    "required_measured_categories": [],
+    "measured_category_cohorts": {
+      "correctness+freshness+completeness": 8
+    },
+    "note": "Score aggregates and named changes use one current producer contract, raw reader archive profile, and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [
+      "correctness",
+      "freshness",
+      "completeness"
+    ],
     "required_reader_archive_profile": "raw-v1",
-    "required_rubric_version": "1.2",
-    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_rubric_version": "1.3",
+    "required_scoring_profile_id": "gtfs-scorecard-1.3",
     "required_validator_version": "8.0.1"
   },
   "expired": {
-    "lapsed": 4,
+    "lapsed": 3,
     "stale": 6,
-    "total": 10
+    "total": 9
   },
-  "generated_at": "2026-07-14T09:01:50+00:00",
-  "grade_distribution": {},
+  "generated_at": "2026-08-07T02:19:46+00:00",
+  "grade_distribution": {
+    "A": 1,
+    "B": 2,
+    "D": 2,
+    "F": 3
+  },
   "members": [
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 56 day(s)",
-      "days_until_expiry": 56,
-      "expiry_status": "current",
-      "grade": "D",
+      "attention_reason": "Service data expires in 28 day(s)",
+      "days_until_expiry": 28,
+      "expiry_status": "expiring_soon",
+      "grade": "F",
       "id": "abq-ride",
       "name": "ABQ RIDE",
       "needs_attention": true,
-      "score": 61.5,
+      "score": 48.1,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "top_fix_code": "scorecard_feed_expiring_soon"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -3844,
+      "days_until_expiry": -3872,
       "expiry_status": "stale",
       "grade": "F",
       "id": "carlsbad-municipal-transit-system",
       "name": "Carlsbad Municipal Transit System",
       "needs_attention": true,
       "score": 42.9,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "shapes_status": "not_ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -191,
+      "days_until_expiry": -219,
       "expiry_status": "lapsed",
-      "grade": "F",
+      "grade": "D",
       "id": "carlsbad-municipal-transit-system-2284",
       "name": "Carlsbad Municipal Transit System",
       "needs_attention": true,
-      "score": 55.4,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "score": 60.1,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -70,
+      "days_until_expiry": -98,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "gallup-express",
       "name": "Gallup Express",
       "needs_attention": true,
       "score": 59.1,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1986,
+      "days_until_expiry": -2014,
       "expiry_status": "stale",
       "grade": "F",
       "id": "navajo-transit-system",
       "name": "Navajo Transit System",
       "needs_attention": true,
-      "score": 56.5,
+      "score": 56.6,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1805,
+      "days_until_expiry": -1833,
       "expiry_status": "stale",
       "grade": "F",
       "id": "north-central-regional-transit-district-ncrtd",
       "name": "North Central Regional Transit District (NCRTD)",
       "needs_attention": true,
       "score": 41.3,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -41,
-      "expiry_status": "lapsed",
-      "grade": "F",
-      "id": "red-apple-transit",
-      "name": "Red Apple Transit",
-      "needs_attention": true,
-      "score": 56.7,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -801,
+      "days_until_expiry": -829,
       "expiry_status": "stale",
       "grade": "D",
       "id": "rio-metro-regional-transit-district",
       "name": "Rio Metro Regional Transit District",
       "needs_attention": true,
       "score": 63.0,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1072,
+      "days_until_expiry": -1100,
       "expiry_status": "stale",
       "grade": "D",
       "id": "roadrunner-transit",
@@ -152,27 +184,29 @@
       "needs_attention": true,
       "score": 61.8,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 30 day(s)",
-      "days_until_expiry": 30,
+      "attention_reason": "Service data expires in 29 day(s)",
+      "days_until_expiry": 29,
       "expiry_status": "expiring_soon",
       "grade": "F",
       "id": "roadrunner-transit-2075",
       "name": "RoadRUNNER Transit",
       "needs_attention": true,
-      "score": 55.7,
+      "score": 53.6,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "top_fix_code": "scorecard_feed_expiring_soon"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1287,
+      "days_until_expiry": -1315,
       "expiry_status": "stale",
       "grade": "F",
       "id": "sandia-shuttle",
@@ -180,63 +214,82 @@
       "needs_attention": true,
       "score": 49.4,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -102,
+      "days_until_expiry": -130,
       "expiry_status": "lapsed",
       "grade": "D",
       "id": "santa-fe-trails",
       "name": "Santa Fe Trails",
       "needs_attention": true,
       "score": 64.8,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 174,
+      "days_until_expiry": 146,
       "expiry_status": "current",
       "grade": "B",
       "id": "atomic-city-transit",
       "name": "Atomic City Transit",
       "needs_attention": false,
-      "score": 84.4,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "score": 82.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "top_fix_code": "scorecard_wheelchair_boarding_unknown"
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 206,
+      "days_until_expiry": 178,
       "expiry_status": "current",
       "grade": "A",
       "id": "navajo-transit-system-2346",
       "name": "Navajo Transit System",
       "needs_attention": false,
       "score": 90.3,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "top_fix_code": "scorecard_wheelchair_boarding_unknown"
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 115,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "red-apple-transit",
+      "name": "Red Apple Transit",
+      "needs_attention": false,
+      "score": 87.5,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "top_fix_code": "scorecard_wheelchair_boarding_unknown"
     }
   ],
-  "needs_attention": 12,
+  "needs_attention": 11,
   "rollup": {
     "id": "new-mexico",
     "name": "New Mexico agencies"
   },
-  "schema_version": "1.11",
+  "schema_version": "1.17",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 9,
-    "not_ready": 0,
-    "ready": 5,
+    "not_measured": 0,
+    "not_ready": 1,
+    "ready": 13,
     "total": 14
   },
   "state_percentile": null

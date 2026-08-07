@@ -1,0 +1,1534 @@
+{
+  "agency": {
+    "country": "PL",
+    "id": "zditm-szczecin",
+    "name": "Zarz\u0105d Dr\u00f3g i Transportu Miejskiego w Szczecinie",
+    "subdivision_code": "PL-32",
+    "subdivision_name": "Zachodniopomorskie"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 42.5,
+          "stops_marked_accessible_pct": 12.3,
+          "stops_marked_not_accessible_pct": 0.2,
+          "stops_stated_pct": 12.5,
+          "trips_stated_pct": 92.5
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 3.1,
+          "wheelchair_trips": 13.9
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 17679,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1622,
+        "translations": {
+          "feed_lang": "pl",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 17679,
+        "wheelchair_accessible_pct": 92.5,
+        "wheelchair_boarding_pct": 12.5,
+        "wheelchair_marked_accessible_pct": 12.3,
+        "wheelchair_marked_not_accessible_pct": 0.2
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1420,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 21.9,
+          "severity": "WARNING",
+          "what": "1420 of 1622 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 1323,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 1.1,
+          "severity": "WARNING",
+          "what": "1323 of 17679 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        }
+      ],
+      "name": "completeness",
+      "score": 62.0,
+      "status": "measured",
+      "summary": "12% of stops state wheelchair accessibility (12% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 6,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 1627,
+          "WARNING": 186
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_recommended_field",
+          "count": 101,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 81,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no transit vehicle is scheduled to arrive."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 4,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "platform_without_parent_station",
+          "count": 1622,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'platform_without_parent_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Platform without parent station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unknown_column",
+          "count": 4,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "unknown_file",
+          "count": 1,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 78.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 1813 instances (0 error, 186 warning, 1627 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 86,
+        "effective_expiry_date": "2026-10-31",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": true,
+        "last_service_date": "2026-10-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 86 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "alerts_content": {
+          "alerts": 4,
+          "ended_over_30_days_ago": 0,
+          "with_cause_and_effect": 4,
+          "with_description": 4,
+          "with_header_text": 4,
+          "with_informed_entity": 4
+        },
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "coverage_pct": 83.5,
+        "covered_trips": 157,
+        "drift": {
+          "median_seconds": 4,
+          "observations": 2283,
+          "on_time_share_pct": 95.4,
+          "p90_abs_seconds": 154
+        },
+        "kinds_configured": 3,
+        "kinds_reachable": 3,
+        "reachable_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "rt_freshness": "fresh",
+        "samples": 9,
+        "scheduled_trips_in_window": 188,
+        "vehicles_checked": 560,
+        "vehicles_on_route_pct": 99.5,
+        "worst_lag_seconds": 9
+      },
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 31,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 5.8,
+          "severity": "WARNING",
+          "what": "31 of 188 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        }
+      ],
+      "name": "realtime",
+      "score": 94.1,
+      "status": "measured",
+      "summary": "Sampled 9 times: 3 of 3 configured feeds healthy; 83.5% of scheduled trips had live predictions; 99.5% of vehicles on their route; predictions ran a median of 4s behind schedule.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 87 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 12% of stops and 92% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 12% of stops and 92% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC0 1.0 per ZDiTM's developer GTFS page, for use in any purpose without prior notice; attribution is not legally required, but GTFS Scorecard credits ZDiTM Szczecin as the source.",
+    "reachable": true,
+    "sha256": "eff96927d791b1cffb9b1e6c921311990f118a153175221780caf768cf3e53e4",
+    "size_bytes": 3713611,
+    "static_url": "https://www.zditm.szczecin.pl/storage/gtfs/gtfs.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.zditm.szczecin.pl/storage/gtfs/gtfs.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      14.30976,
+      53.28248,
+      14.77914,
+      53.59459
+    ],
+    "lat": 53.43127,
+    "lon": 14.55002,
+    "stop_count": 1622
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 13,
+        "trip_count": 4841,
+        "trip_share_pct": 27.4
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 84,
+        "trip_count": 12838,
+        "trip_share_pct": 72.6
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 97,
+    "trip_count": 17679
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 8.6,
+    "margin_to_next_band": 1.4,
+    "score": 78.6
+  },
+  "recommendations": [],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1622,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 81,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "81 of 1622 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 81,
+    "single_stop_trips": 0,
+    "trips_total": 17679
+  },
+  "route_map": {
+    "drawn_route_count": 97,
+    "has_shapes": true,
+    "path": "data/artifacts/zditm-szczecin/geometry.geojson",
+    "route_count": 97,
+    "routes": [
+      {
+        "color": "6B4200",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "0",
+        "label": "0",
+        "long": "Potulicka - Stocznia Szcz. - Potulicka",
+        "short": "0",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "005E85",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "Osiedle Zawadzkiego - Potulicka",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "005E85",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "Gumie\u0144ce - Plac Rod\u0142a (- Las Arko\u0144ski - G\u0142\u0119bokie)",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "101",
+        "label": "101",
+        "long": "Plac Rod\u0142a - Police Jasienica P\u0119tla",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "102",
+        "label": "102",
+        "long": "Goc\u0142aw - Police Stara Fabryka/Zajezdnia",
+        "short": "102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "103",
+        "label": "103",
+        "long": "G\u0142\u0119bokie - Police Rynek/Zak\u0142ady Chemiczne",
+        "short": "103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "106",
+        "label": "106",
+        "long": "G\u0142\u0119bokie - Police Rynek",
+        "short": "106",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "107",
+        "label": "107",
+        "long": "Plac Rod\u0142a - Police Wyszy\u0144skiego Polana",
+        "short": "107",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "109",
+        "label": "109",
+        "long": "(Jasienica -) Police Rynek - Police Stara Fabryka",
+        "short": "109",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005E85",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "11",
+        "label": "11",
+        "long": "Dworzec Niebuszewo - Ludowa",
+        "short": "11",
+        "text_color": "FED256",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "005E85",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "12",
+        "label": "12",
+        "long": "Dworzec Niebuszewo - Pomorzany",
+        "short": "12",
+        "text_color": "FED256",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "198",
+        "label": "198",
+        "long": "Plac Ko\u015bciuszki - \u0141asztownia",
+        "short": "198",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "199",
+        "label": "199",
+        "long": "Plac Rod\u0142a - \u0141asztownia",
+        "short": "199",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005E85",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "Dworzec Niebuszewo - Turkusowa",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "221",
+        "label": "221",
+        "long": "G\u0142\u0119bokie - S\u0142awoszewo",
+        "short": "221",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "222",
+        "label": "222",
+        "long": "Mierzyn Szko\u0142a - \u0141ukasi\u0144skiego Ogrody - Ko\u015bcino",
+        "short": "222",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "223",
+        "label": "223",
+        "long": "Gumie\u0144ce - Dobra Rondo - Stolec",
+        "short": "223",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "224",
+        "label": "224",
+        "long": "Gumie\u0144ce - Mierzyn Pod Lipami",
+        "short": "224",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "225",
+        "label": "225",
+        "long": "Klonowica Zajezdnia - Dobra Osiedle",
+        "short": "225",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "226",
+        "label": "226",
+        "long": "Gumie\u0144ce - Lubieszyn Rondo - Lubieszyn Granica",
+        "short": "226",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "227",
+        "label": "227",
+        "long": "Mierzyn Szko\u0142a - \u0141ukasi\u0144skiego Ogrody - G\u0142\u0119bokie",
+        "short": "227",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "241",
+        "label": "241",
+        "long": "Plac Ko\u015bciuszki - Przec\u0142aw - Kamieniec",
+        "short": "241",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "242",
+        "label": "242",
+        "long": "Plac Ko\u015bciuszki - Pargowo",
+        "short": "242",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "243",
+        "label": "243",
+        "long": "Plac Ko\u015bciuszki - Smol\u0119cin (- Ko\u0142baskowo)",
+        "short": "243",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "244",
+        "label": "244",
+        "long": "(Maczka -) Gumie\u0144ce - Warnik",
+        "short": "244",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005E85",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "Osiedle Zawadzkiego - Pomorzany",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "005E85",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4",
+        "label": "4",
+        "long": "Plac \u017bo\u0142nierza Polskiego - Szpitalna",
+        "short": "4",
+        "text_color": "FED256",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "005E85",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "5",
+        "label": "5",
+        "long": "Osiedle Zawadzkiego - Stocznia Szczeci\u0144ska",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "51",
+        "label": "51",
+        "long": "Ko\u0142\u0142\u0105taja - G\u0142\u0119bokie",
+        "short": "51",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "52",
+        "label": "52",
+        "long": "Tkacka - Wyspa Pucka",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "521",
+        "label": "521",
+        "long": "Osiedle Zawadzkiego - SKM Dworzec G\u0142. (Kolumba)",
+        "short": "521",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "522",
+        "label": "522",
+        "long": "Warszewo - Osiedle Kasztanowe",
+        "short": "522",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "523",
+        "label": "523",
+        "long": "Zajezdnia Gol\u0119cin - Przec\u0142aw",
+        "short": "523",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "524",
+        "label": "524",
+        "long": "Police Zajezdnia - Pomorzany Dobrzy\u0144ska",
+        "short": "524",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "525",
+        "label": "525",
+        "long": "Wernyhory - Zajezdnia Gol\u0119cin",
+        "short": "525",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "526",
+        "label": "526",
+        "long": "Police Zajezdnia - SKM Dworzec G\u0142. (Kolumba)",
+        "short": "526",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "527",
+        "label": "527",
+        "long": "SKM Dworzec G\u0142. (Kolumba) - Klonowica Zaj./Bezrzecze",
+        "short": "527",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "528",
+        "label": "528",
+        "long": "Maczka - Pomorzany Dobrzy\u0144ska",
+        "short": "528",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "529",
+        "label": "529",
+        "long": "(Jaworowa -) Zawadzkiego - Plac Rod\u0142a",
+        "short": "529",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "53",
+        "label": "53",
+        "long": "Stocznia Szczeci\u0144ska - Pomorzany Dobrzy\u0144ska",
+        "short": "53",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "530",
+        "label": "530",
+        "long": "Plac Rod\u0142a - Podb\u00f3rz",
+        "short": "530",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "531",
+        "label": "531",
+        "long": "Osiedle Bukowe - Wernyhory",
+        "short": "531",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "532",
+        "label": "532",
+        "long": "Osiedle Bukowe - Os\u00f3w",
+        "short": "532",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "533",
+        "label": "533",
+        "long": "SKM D\u0105bie (Stacyjna) - Klucz",
+        "short": "533",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "534",
+        "label": "534",
+        "long": "Osiedle Bukowe - Wielgowo Borsucza",
+        "short": "534",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "535",
+        "label": "535",
+        "long": "Klonowica Zajezdnia - Stolec",
+        "short": "535",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "536",
+        "label": "536",
+        "long": "Maczka - Grzepnica",
+        "short": "536",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "54",
+        "label": "54",
+        "long": "Turkusowa - Kijewo/Zak\u0142ady Mi\u0119sne",
+        "short": "54",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "56",
+        "label": "56",
+        "long": "Basen G\u00f3rniczy - D\u0105bie Osiedle (- SKM Dunikowo)",
+        "short": "56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "57",
+        "label": "57",
+        "long": "Ko\u0142\u0142\u0105taja - Warszewo",
+        "short": "57",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "58",
+        "label": "58",
+        "long": "Plac Rod\u0142a - Goc\u0142aw",
+        "short": "58",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "59",
+        "label": "59",
+        "long": "Plac Rod\u0142a - Zajezdnia Gol\u0119cin - Szosa Polska",
+        "short": "59",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005E85",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "6",
+        "label": "6",
+        "long": "Goc\u0142aw - Pomorzany",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "60",
+        "label": "60",
+        "long": "Stocznia Szczeci\u0144ska - Cukrowa",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "61",
+        "label": "61",
+        "long": "SKM Dworzec G\u0142. (Owocowa) - SKM Podjuchy",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "62",
+        "label": "62",
+        "long": "Plac Zwyci\u0119stwa - Ustowo Auchan",
+        "short": "62",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "63",
+        "label": "63",
+        "long": "Ko\u0142\u0142\u0105taja - Skolwin",
+        "short": "63",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "64",
+        "label": "64",
+        "long": "D\u0105bie Osiedle - Klucz Autostrada",
+        "short": "64",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "65",
+        "label": "65",
+        "long": "Turkusowa - Rondo U\u0142an\u00f3w Podolskich",
+        "short": "65",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "66",
+        "label": "66",
+        "long": "Osiedle Bukowe - SKM Podjuchy (- Klucz)",
+        "short": "66",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "67",
+        "label": "67",
+        "long": "Stocznia Szczeci\u0144ska - Karola Miarki",
+        "short": "67",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "68",
+        "label": "68",
+        "long": "Plac Rod\u0142a - Rostocka/\u015awiergotki",
+        "short": "68",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "69",
+        "label": "69",
+        "long": "Ko\u0142\u0142\u0105taja - Rugia\u0144ska",
+        "short": "69",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005E85",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "(G\u0142\u0119bokie -) Osiedle Zawadzkiego - Turkusowa",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "70",
+        "label": "70",
+        "long": "SKM Dworzec G\u0142. (Owocowa) - SKM Dworzec G\u0142. (Owocowa)",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "72",
+        "label": "72",
+        "long": "Basen G\u00f3rniczy - \u015amierdnica (- Jezierzyce)",
+        "short": "72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "73",
+        "label": "73",
+        "long": "Basen G\u00f3rniczy - Zdroje - D\u0105bie - Basen G\u00f3rniczy",
+        "short": "73",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "74",
+        "label": "74",
+        "long": "Osiedle Zawadzkiego - Plac Rod\u0142a",
+        "short": "74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "75",
+        "label": "75",
+        "long": "Osiedle Zawadzkiego - SKM Dworzec G\u0142. (Kolumba)",
+        "short": "75",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "76",
+        "label": "76",
+        "long": "Brama Portowa - Logistyczna",
+        "short": "76",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "77",
+        "label": "77",
+        "long": "Osiedle Bukowe - Osiedle Kasztanowe",
+        "short": "77",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "78",
+        "label": "78",
+        "long": "Ko\u0142\u0142\u0105taja - Osiedle Arko\u0144skie",
+        "short": "78",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "79",
+        "label": "79",
+        "long": "Osiedle S\u0142oneczne/Turkusowa - Jezierzyce",
+        "short": "79",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005E85",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "8",
+        "label": "8",
+        "long": "Gumie\u0144ce - Turkusowa",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "80",
+        "label": "80",
+        "long": "Zak\u0142ady Piekarnicze - Ludowa",
+        "short": "80",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "811",
+        "label": "811",
+        "long": "Plac Ko\u015bciuszki - Pomorzany Dobrzy\u0144ska",
+        "short": "811",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "82",
+        "label": "82",
+        "long": "Ko\u0142\u0142\u0105taja - Krucza Dom Kombatanta",
+        "short": "82",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "84",
+        "label": "84",
+        "long": "Turkusowa - Kijewo/Zak\u0142ady Mi\u0119sne",
+        "short": "84",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "85",
+        "label": "85",
+        "long": "SKM Podjuchy - Smocza-Falskiego",
+        "short": "85",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "86",
+        "label": "86",
+        "long": "Zak\u0142ady Piekarnicze - Plac Rod\u0142a",
+        "short": "86",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "87",
+        "label": "87",
+        "long": "SKM Dworzec G\u0142. (Owocowa) - Ko\u0142\u0142\u0105taja - Podb\u00f3rz",
+        "short": "87",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "88",
+        "label": "88",
+        "long": "Maczka - Okulickiego",
+        "short": "88",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "89",
+        "label": "89",
+        "long": "Ko\u0142\u0142\u0105taja - \u015awiergotki",
+        "short": "89",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005E85",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "9",
+        "label": "9",
+        "long": "G\u0142\u0119bokie - Potulicka",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "90",
+        "label": "90",
+        "long": "SKM Dworzec G\u0142. (Owocowa) - SKM Dworzec G\u0142. (Owocowa)",
+        "short": "90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "904",
+        "label": "904",
+        "long": "SKM Podjuchy - SKM Podjuchy (transport na \u017c\u0105danie)",
+        "short": "904",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "91",
+        "label": "91",
+        "long": "Turkusowa - Zak\u0142ady Mi\u0119sne",
+        "short": "91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "92",
+        "label": "92",
+        "long": "Ko\u0142\u0142\u0105taja - Podb\u00f3rz",
+        "short": "92",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "93",
+        "label": "93",
+        "long": "Basen G\u00f3rniczy - D\u0105bie - Zdroje - Basen G\u00f3rniczy",
+        "short": "93",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "94",
+        "label": "94",
+        "long": "Turkusowa - Zak\u0142ady Mi\u0119sne",
+        "short": "94",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "95",
+        "label": "95",
+        "long": "Osiedle Zawadzkiego - Unii Lubelskiej Szpital",
+        "short": "95",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "96",
+        "label": "96",
+        "long": "Basen G\u00f3rniczy - Osiedle Kasztanowe",
+        "short": "96",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "97",
+        "label": "97",
+        "long": "Osiedle Bukowe - D\u0105bie Osiedle (- Zak\u0142ady Drobiarskie)",
+        "short": "97",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "436000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "99",
+        "label": "99",
+        "long": "Ko\u0142\u0142\u0105taja - Zajezdnia Gol\u0119cin",
+        "short": "99",
+        "text_color": "FED256",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B3040F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "A",
+        "label": "A",
+        "long": "Osiedle Bukowe - Ludowa",
+        "short": "A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B3040F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "B",
+        "label": "B",
+        "long": "Osiedle S\u0142oneczne - Osiedle Arko\u0144skie",
+        "short": "B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B3040F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "C",
+        "label": "C",
+        "long": "Plac Rod\u0142a - Osiedle Kasztanowe",
+        "short": "C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1622,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1420,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 21.9,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "1420 of 1622 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "feed_info.txt is missing its start/end dates",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

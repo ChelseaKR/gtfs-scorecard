@@ -1,0 +1,2168 @@
+{
+  "agency": {
+    "country": "UA",
+    "id": "kyivpastrans",
+    "name": "Kyivpastrans",
+    "subdivision_code": "UA-30",
+    "subdivision_name": "Kyiv"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 0.0,
+          "stop_names": 14.5,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 23639,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 0.0,
+        "headsign_scored_pct": 0.0,
+        "mixed_case_stop_name_pct": 96.8,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1445,
+        "translations": {
+          "feed_lang": "uk",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 23639,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1445,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "1445 of 1445 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 23639,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "23639 of 23639 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 23639,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "23639 of 23639 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 22.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 7,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 1207,
+          "WARNING": 35
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "unexpected_enum_value",
+          "count": 20,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unexpected_enum_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Unexpected enum value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 10,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 2,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "missing_feed_info_date",
+          "count": 1,
+          "effort": "Two fields, likely set once in your export settings.",
+          "fix": "Fill in feed_start_date and feed_end_date in feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt does not state when this feed starts and ends.",
+          "why": "Without stated dates, apps can't warn anyone before your data goes stale; it just disappears one day."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 1,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "service_extends_far_in_the_future",
+          "count": 1207,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'service_extends_far_in_the_future' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Service extends far in the future (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 71.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 7 kinds of issue across 1242 instances (0 error, 35 warning, 1207 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 26809,
+        "effective_expiry_date": "2099-12-31",
+        "feed_end_date": null,
+        "feed_start_date": "2026-08-07",
+        "feed_version": "20260807",
+        "has_feed_info": true,
+        "last_service_date": "2099-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "unusually_distant",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service is published through 2099-12-31, an unusually distant end date. It may be intentional, but confirm it before treating the feed as maintained.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "The published window is current, but its service end date is unusually distant; confirm that date is intentional.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Kyiv's official data portal identifies the GTFS resource as free for personal or commercial reuse under its Open Data Licence.",
+    "reachable": true,
+    "sha256": "9016db02697bfc63f372e261f043f90ae18c294ac87ec9d0025060a219e3ad65",
+    "size_bytes": 1179564,
+    "static_url": "http://193.23.225.211:8002/export-gtfs-static"
+  },
+  "fetch": {
+    "final_url": "http://193.23.225.211:8002/export-gtfs-static",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-07T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      30.28148,
+      50.22586,
+      30.77191,
+      50.56688
+    ],
+    "lat": 50.45152,
+    "lon": 30.51091,
+    "stop_count": 1445
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 17,
+        "trip_count": 4398,
+        "trip_share_pct": 18.6
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 96,
+        "trip_count": 11022,
+        "trip_share_pct": 46.6
+      },
+      {
+        "key": "trolleybus",
+        "label": "Trolleybus",
+        "route_count": 43,
+        "trip_count": 8219,
+        "trip_share_pct": 34.8
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 156,
+    "trip_count": 23639
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 59.2,
+    "margin_to_next_band": 0.8,
+    "score": 59.2
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 24,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "24 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"\u041f\u043e\u0432\u0456\u0442\u0440\u043e\u0444\u043b  \u0448/\u043f\u0440\", \"\u041f\u043e\u0432\u0456\u0442\u0440\u043e\u0444\u043b  \u0448/\u043f\u0440\", \"\u043f\u043e\u0432\u043e\u0440\u043e\u0442 \u043d\u0430 \u0441/\u043a \u0427\u0430\u0439\u043a\u0443\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "routability": {
+    "boardable_stops": 1445,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 23639
+  },
+  "route_map": {
+    "drawn_route_count": 155,
+    "has_shapes": true,
+    "path": "data/artifacts/kyivpastrans/geometry.geojson",
+    "route_count": 156,
+    "routes": [
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_1",
+        "label": "1",
+        "long": "\u041c\u0438\u0445\u0430\u0439\u043b\u0456\u0432\u0441\u044c\u043a\u0430 \u0411\u043e\u0440\u0449\u0430\u0433\u0456\u0432\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u00ab\u0421\u0442\u0430\u0440\u043e\u0432\u043e\u043a\u0437\u0430\u043b\u044c\u043d\u0430\u00bb",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_36",
+        "label": "11",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0419\u043e\u0440\u0434\u0430\u043d\u0441\u044c\u043a\u0430 - \u041a\u043e\u043d\u0442\u0440\u0430\u043a\u0442\u043e\u0432\u0430 \u043f\u043b\u043e\u0449\u0430",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_37",
+        "label": "12",
+        "long": "\u041f\u0443\u0449\u0430-\u0412\u043e\u0434\u0438\u0446\u044f, 14 \u043b\u0456\u043d\u0456\u044f - \u041a\u043e\u043d\u0442\u0440\u0430\u043a\u0442\u043e\u0432\u0430 \u043f\u043b\u043e\u0449\u0430",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_38",
+        "label": "14",
+        "long": "\u041f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u0412\u0456\u0434\u0440\u0430\u0434\u043d\u0438\u0439 - \u041a\u043e\u043d\u0442\u0440\u0430\u043a\u0442\u043e\u0432\u0430 \u043f\u043b\u043e\u0449\u0430",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_389",
+        "label": "17",
+        "long": "\u041f\u0443\u0449\u0430-\u0412\u043e\u0434\u0438\u0446\u044f, 14 \u043b\u0456\u043d. - \u0412\u0443\u043b\u0438\u0446\u044f \u0419\u043e\u0440\u0434\u0430\u043d\u0441\u044c\u043a\u0430",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_39",
+        "label": "15",
+        "long": "\u041f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u0412\u0456\u0434\u0440\u0430\u0434\u043d\u0438\u0439 - \u0412\u0443\u043b\u0438\u0446\u044f \u0421\u0442\u0430\u0440\u043e\u0432\u043e\u043a\u0437\u0430\u043b\u044c\u043d\u0430",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_4",
+        "label": "2",
+        "long": "\u043f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u041a\u043e\u0440\u043e\u043b\u044c\u043e\u0432\u0430 - \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u00ab\u0416\u0443\u043b\u044f \u0412\u0435\u0440\u043d\u0430\u00bb",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_40",
+        "label": "16",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0413\u0435\u0440\u043e\u0457\u0432 \u0414\u043d\u0456\u043f\u0440\u0430\u00bb - \u041a\u043e\u043d\u0442\u0440\u0430\u043a\u0442\u043e\u0432\u0430 \u043f\u043b\u043e\u0449\u0430",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_41",
+        "label": "18",
+        "long": "\u041a\u043e\u043d\u0442\u0440\u0430\u043a\u0442\u043e\u0432\u0430 \u043f\u043b\u043e\u0449\u0430 - \u0412\u0443\u043b\u0438\u0446\u044f \u0421\u0442\u0430\u0440\u043e\u0432\u043e\u043a\u0437\u0430\u043b\u044c\u043d\u0430",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_42",
+        "label": "19",
+        "long": "\u041a\u043e\u043d\u0442\u0440\u0430\u043a\u0442\u043e\u0432\u0430 \u043f\u043b\u043e\u0449\u0430 - \u041f\u043b\u043e\u0449\u0430 \u0428\u0435\u0432\u0447\u0435\u043d\u043a\u0430",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_46",
+        "label": "8",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e  \u00ab\u041f\u043e\u0437\u043d\u044f\u043a\u0438\u00bb - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0456\u0441\u043e\u0432\u0430\u00bb",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_466",
+        "label": "33\u043a",
+        "long": "\u0432\u0443\u043b. \u0410\u043b\u0456\u0448\u0435\u0440\u0430 \u041d\u0430\u0432\u043e\u0457 - \u0414\u0412\u0420\u0417",
+        "short": "33\u043a",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_49",
+        "label": "25",
+        "long": "\u0417\u0417\u0411\u041a - \u0441\u0442. \u043c. \"\u041f\u043e\u0437\u043d\u044f\u043a\u0438\"",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_5",
+        "label": "3",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u00ab\u0416\u0443\u043b\u044f \u0412\u0435\u0440\u043d\u0430\u00bb - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u00ab\u0421\u0442\u0430\u0440\u043e\u0432\u043e\u043a\u0437\u0430\u043b\u044c\u043d\u0430\u00bb",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_51",
+        "label": "29",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0411\u043e\u0440\u0438\u0441\u043f\u0456\u043b\u044c\u0441\u044c\u043a\u0430\u00bb - \u043f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u0410. \u041d\u0430\u0432\u043e\u0457",
+        "short": "29",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_552",
+        "label": "22\u043a",
+        "long": "\u0417\u0417\u0411\u041a  - \u043c. \u041b\u0456\u0441\u043e\u0432\u0430",
+        "short": "22\u043a",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "1_667",
+        "label": "23\u043a",
+        "long": "\u0414\u0412\u0420\u0417 - \u043c.\u041b\u0456\u0441\u043e\u0432\u0430",
+        "short": "23\u043a",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_1",
+        "label": "1",
+        "long": "\u0411\u0430\u0433\u0440\u0438\u043d\u043e\u0432\u0430 \u0433\u043e\u0440\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0438\u0431\u0456\u0434\u0441\u044c\u043a\u0430\u00bb",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_1144",
+        "label": "23\u0414",
+        "long": "",
+        "short": "23\u0414",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_1145",
+        "label": "28\u0414",
+        "long": "",
+        "short": "28\u0414",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_12",
+        "label": "16",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0440\u0456\u0457 - \u041c\u0430\u0439\u0434\u0430\u043d \u041d\u0435\u0437\u0430\u043b\u0435\u0436\u043d\u043e\u0441\u0442\u0456",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_14",
+        "label": "17",
+        "long": "\u041f\u043b\u043e\u0449\u0430 \u041a\u043e\u0441\u043c\u043e\u043d\u0430\u0432\u0442\u0456\u0432 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u043b\u043e\u0449\u0430 \u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0438\u0445 \u0413\u0435\u0440\u043e\u0457\u0432\u00bb",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_15",
+        "label": "18",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0421\u043e\u0448\u0435\u043d\u043a\u0430 - \u041c\u0430\u0439\u0434\u0430\u043d \u041d\u0435\u0437\u0430\u043b\u0435\u0436\u043d\u043e\u0441\u0442\u0456",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_16",
+        "label": "19",
+        "long": "\u041f\u043b\u043e\u0449\u0430 \u041a\u043e\u0441\u043c\u043e\u043d\u0430\u0432\u0442\u0456\u0432 - \u0412\u0443\u043b\u0438\u0446\u044f \u041e\u043b\u044c\u0436\u0438\u0447\u0430",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_23",
+        "label": "24",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041f\u0456\u0432\u043d\u0456\u0447\u043d\u0430 - \u041f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u0421\u0432\u043e\u0431\u043e\u0434\u0438",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_25",
+        "label": "25",
+        "long": "\u041f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u0421\u0432\u043e\u0431\u043e\u0434\u0438 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u043e\u0447\u0430\u0439\u043d\u0430\u00bb",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_26",
+        "label": "26",
+        "long": "\u041f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u0421\u0432\u043e\u0431\u043e\u0434\u0438 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041d\u0438\u0432\u043a\u0438\u00bb",
+        "short": "26",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_27",
+        "label": "27",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u043e\u0447\u0430\u0439\u043d\u0430\u00bb - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u041a\u0438\u0457\u0432-\u0412\u043e\u043b\u0438\u043d\u0441\u044c\u043a\u0438\u0439",
+        "short": "27",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_29",
+        "label": "29",
+        "long": "\u0414\u0430\u0440\u043d\u0438\u0446\u044c\u043a\u0430 \u043f\u043b\u043e\u0449\u0430 -\u0417\u0430\u043b\u0456\u0437\u043d\u0438\u0447\u043d\u0430 \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u00ab\u041a\u0443\u0440\u0435\u043d\u0456\u0432\u043a\u0430\u00bb",
+        "short": "29",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_3",
+        "label": "11",
+        "long": "\u041d\u0430\u0446\u0456\u043e\u043d\u0430\u043b\u044c\u043d\u0438\u0439 \u043c\u0443\u0437\u0435\u0439 \u043d\u0430\u0440\u043e\u0434\u043d\u043e\u0457 \u0430\u0440\u0445\u0456\u0442\u0435\u043a\u0442\u0443\u0440\u0438 \u0442\u0430 \u043f\u043e\u0431\u0443\u0442\u0443 \u0423\u043a\u0440\u0430\u0457\u043d\u0438 - \u0411\u0430\u0433\u0440\u0438\u043d\u043e\u0432\u0430 \u0433\u043e\u0440\u0430",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_30",
+        "label": "3",
+        "long": "\u0417\u0430\u043b\u0456\u0437\u043d\u0438\u0447\u043d\u0438\u0439 \u043c\u0430\u0441\u0438\u0432 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u0430\u043b\u0430\u0446 \u0441\u043f\u043e\u0440\u0442\u0443\u00bb",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_31",
+        "label": "30",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041a\u0430\u0434\u0435\u0442\u0441\u044c\u043a\u0438\u0439 \u0413\u0430\u0439 - \u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_34",
+        "label": "32",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041f\u0456\u0432\u043d\u0456\u0447\u043d\u0430 - \u0412\u0443\u043b\u0438\u0446\u044f \u0421\u043e\u0448\u0435\u043d\u043a\u0430",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_35",
+        "label": "34",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041f\u0456\u0432\u043d\u0456\u0447\u043d\u0430 - \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u041f\u043e\u0447\u0430\u0439\u043d\u0432",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_36",
+        "label": "35",
+        "long": "\u041a\u0430\u0434\u0435\u0442\u0441\u044c\u043a\u0438\u0439 \u0433\u0430\u0439 - \u043f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u0421\u0432\u043e\u0431\u043e\u0434\u0438",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_38",
+        "label": "37",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0456\u0441\u043e\u0432\u0430\u00bb",
+        "short": "37",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_40",
+        "label": "38",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0412\u0438\u0434\u0443\u0431\u0438\u0447\u0456\u00bb - \u041d\u0430\u0446\u0456\u043e\u043d\u0430\u043b\u044c\u043d\u0438\u0439 \u043c\u0443\u0437\u0435\u0439 \u0456\u0441\u0442\u043e\u0440\u0456\u0457 \u0423\u043a\u0440\u0430\u0457\u043d\u0438 \u0443 \u0434\u0440\u0443\u0433\u0456\u0439 \u0441\u0432\u0456\u0442\u043e\u0432\u0456\u0439 \u0432\u0456\u0439\u043d\u0456",
+        "short": "38",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_41",
+        "label": "39",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0427\u043e\u0440\u043d\u043e\u0431\u0438\u043b\u044c\u0441\u044c\u043a\u0430 - \u041f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u041b\u0435\u0441\u044f \u041a\u0443\u0440\u0431\u0430\u0441\u0430",
+        "short": "39",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_43",
+        "label": "4",
+        "long": "\u043f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u0421\u0432\u043e\u0431\u043e\u0434\u0438 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u043b\u043e\u0449\u0430 \u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0438\u0445 \u0413\u0435\u0440\u043e\u0457\u0432\u00bb",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_44",
+        "label": "40",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041a\u0430\u0434\u0435\u0442\u0441\u044c\u043a\u0438\u0439 \u0413\u0430\u0439 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u0430\u043b\u0430\u0446 \u0421\u043f\u043e\u0440\u0442\u0443\u00bb",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_45",
+        "label": "41",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0422\u0443\u043b\u0443\u0437\u0438 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0421\u0432\u044f\u0442\u043e\u0448\u0438\u043d\u00bb",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_46",
+        "label": "42",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041e\u043b\u044c\u0436\u0438\u0447\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0438\u0431\u0456\u0434\u0441\u044c\u043a\u0430\u00bb",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_47",
+        "label": "43",
+        "long": "\u041a\u0456\u0431\u0435\u0440\u043d\u0435\u0442\u0438\u0447\u043d\u0438\u0439  \u0446\u0435\u043d\u0442\u0440 - \u041f\u043b\u043e\u0449\u0430 \u0414\u0430\u0440\u043d\u0438\u0446\u044c\u043a\u0430",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_50",
+        "label": "44",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041f\u0456\u0432\u043d\u0456\u0447\u043d\u0430 - \u043f\u0440\u043e\u0441\u043f. \u0421\u0442\u0435\u043f\u0430\u043d\u0430 \u0411\u0430\u043d\u0434\u0435\u043d\u0440\u0438",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_51",
+        "label": "45",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e  \u00ab\u0412\u0430\u0441\u0438\u043b\u044c\u043a\u0456\u0432\u0441\u044c\u043a\u0430\u00bb - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0412\u0438\u0441\u0442\u0430\u0432\u043a\u043e\u0432\u0438\u0439 \u0446\u0435\u043d\u0442\u0440\u00bb",
+        "short": "45",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_54",
+        "label": "5",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0411\u0456\u043b\u0438\u0446\u044c\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u043b\u043e\u0449\u0430  \u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0438\u0445 \u0413\u0435\u0440\u043e\u0457\u0432\u00bb",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_55",
+        "label": "6",
+        "long": "\u041c\u0456\u043d\u0441\u044c\u043a\u0438\u0439 \u043c\u0430\u0441\u0438\u0432 - \u041c\u0430\u0439\u0434\u0430\u043d \u041d\u0435\u0437\u0430\u043b\u0435\u0436\u043d\u043e\u0441\u0442\u0456",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_56",
+        "label": "7",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0427\u043e\u0440\u043d\u043e\u0431\u0438\u043b\u044c\u0441\u044c\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u043b\u043e\u0449\u0430 \u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0438\u0445 \u0413\u0435\u0440\u043e\u0457\u0432\u00bb",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_58",
+        "label": "8",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0421\u043c\u0456\u043b\u044f\u043d\u0441\u044c\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u043b\u043e\u0449\u0430 \u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0438\u0445 \u0413\u0435\u0440\u043e\u0457\u0432\u00bb",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_6",
+        "label": "12",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e  \u00ab\u0412\u0430\u0441\u0438\u043b\u044c\u043a\u0456\u0432\u0441\u044c\u043a\u0430\u00bb - \u0417\u0430\u043b\u0456\u0437\u043d\u0438\u0447\u043d\u0438\u0439 \u0432\u043e\u043a\u0437\u0430\u043b \u0426\u0435\u043d\u0442\u0440\u0430\u043b\u044c\u043d\u0438\u0439",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_675",
+        "label": "15",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0412\u0438\u0434\u0443\u0431\u0438\u0447\u0456\u00bb - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u0430\u043b\u0430\u0446 \u0421\u043f\u043e\u0440\u0442\u0443\u00bb",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_676",
+        "label": "33",
+        "long": "\u041c\u0456\u043d\u0441\u044c\u043a\u0438\u0439 \u043c\u0430\u0441\u0438\u0432 - \u0417\u0430\u043b\u0456\u0437\u043d\u0438\u0447\u043d\u0438\u0439 \u0432\u043e\u043a\u0437\u0430\u043b \u041f\u0456\u0432\u0434\u0435\u043d\u043d\u0438\u0439",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_695",
+        "label": "50",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0438\u0431\u0456\u0434\u0441\u044c\u043a\u0430\u00bb",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_696",
+        "label": "50\u043a",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430 - \u0414\u0430\u0440\u043d\u0438\u0446\u044c\u043a\u0430 \u043f\u043b.",
+        "short": "50\u043a",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_738",
+        "label": "40\u043a",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041a\u0430\u0434\u0435\u0442\u0441\u044c\u043a\u0438\u0439 \u0413\u0430\u0439 - \u0412\u0443\u043b\u0438\u0446\u044f \u0416\u0438\u043b\u044f\u043d\u0441\u044c\u043a\u0430",
+        "short": "40\u043a",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_756",
+        "label": "47",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041c\u0456\u043d\u0441\u044c\u043a\u0430\u00bb",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_8",
+        "label": "14",
+        "long": "\u0411\u043e\u0442\u0430\u043d\u0456\u0447\u043d\u0438\u0439 \u0441\u0430\u0434 - \u0417\u0430\u043b\u0456\u0437\u043d\u0438\u0447\u043d\u0438\u0439 \u0432\u043e\u043a\u0437\u0430\u043b \u0426\u0435\u043d\u0442\u0440\u0430\u043b\u044c\u043d\u0438\u0439",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_827",
+        "label": "22\u043a",
+        "long": "\u041a\u0430\u0434\u0435\u0442\u0441\u044c\u043a\u0438\u0439 \u0413\u0430\u0439 - \u0412\u0443\u043b\u0438\u0446\u044f \u041e\u043b\u044c\u0436\u0438\u0447\u0430",
+        "short": "22\u043a",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "2_842",
+        "label": "9\u043a",
+        "long": "\u041a\u0430\u0434\u0435\u0442\u0441\u044c\u043a\u0438\u0439 \u0413\u0430\u0439 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u0430\u043b\u0430\u0446 \u0441\u043f\u043e\u0440\u0442\u0443\u00bb",
+        "short": "9\u043a",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2_951",
+        "label": "31\u0414",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430 - \u0432\u0443\u043b\u0438\u0446\u044f \u0414\u043e\u0432\u0436\u0435\u043d\u043a\u0430",
+        "short": "31\u0414",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_1",
+        "label": "11\u0434",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0456\u0441\u043e\u0432\u0430\u00bb - \u0414\u0430\u0447\u043d\u0435 \u043c\u0456\u0441\u0442\u0435\u0447\u043a\u043e \u00ab\u0421\u043e\u0441\u043d\u043e\u0432\u0438\u0439 \u0411\u043e\u0440\u00bb",
+        "short": "11\u0434",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_100",
+        "label": "49",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0456\u0432\u043e\u0431\u0435\u0440\u0435\u0436\u043d\u0430\u00bb  - \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u0411\u0435\u0440\u0435\u0437\u043d\u044f\u043a\u0438",
+        "short": "49",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_101",
+        "label": "5",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0406\u0437\u044e\u043c\u0441\u044c\u043a\u0430 - \u0417\u0430\u043b\u0456\u0437\u043d\u0438\u0447\u043d\u0438\u0439  \u0432\u043e\u043a\u0437\u0430\u043b \u0426\u0435\u043d\u0442\u0440\u0430\u043b\u044c\u043d\u0438\u0439",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_105",
+        "label": "51",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0438\u0431\u0456\u0434\u0441\u044c\u043a\u0430\u00bb - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0427\u0435\u0440\u0432\u043e\u043d\u0438\u0439 \u0445\u0443\u0442\u0456\u0440\u00bb",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_107",
+        "label": "52",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u0447\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0438\u0431i\u0434\u0441\u044c\u043a\u0430\u00bb - \u0412\u0443\u043b\u0438\u0446\u044f \u0417\u0430\u043a\u0430\u0440\u043f\u0430\u0442\u0441\u044c\u043a\u0430",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_108",
+        "label": "53",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041a\u043e\u043d\u0442\u0440\u0430\u043a\u0442\u043e\u0432\u0430 \u043f\u043b\u043e\u0449\u0430\u00bb - \u0420\u0438\u0431\u0430\u043b\u044c\u0441\u044c\u043a\u0438\u0439 \u043f\u0456\u0432\u043e\u0441\u0442\u0440\u0456\u0432",
+        "short": "53",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_109",
+        "label": "54",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0412\u0438\u0434\u0443\u0431\u0438\u0447\u0456\u00bb - \u041f\u043b\u043e\u0449\u0430 \u041c\u0438\u0445\u0430\u0439\u043b\u0430 \u0421\u043f\u0456\u0432\u0430\u043a\u0430 (\u0432\u0443\u043b. \u041f\u043e\u043a\u0456\u043b\u044c\u0441\u044c\u043a\u0430)",
+        "short": "54",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_111",
+        "label": "55",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u0414\u0430\u0440\u043d\u0438\u0446\u044f - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u0430\u043b\u0430\u0446 \u0441\u043f\u043e\u0440\u0442\u0443\u00bb",
+        "short": "55",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_113",
+        "label": "56",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0412\u0438\u0441\u0442\u0430\u0432\u043a\u043e\u0432\u0438\u0439 \u0446\u0435\u043d\u0442\u0440\u00bb - \u041f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u041f\u0430\u043b\u043b\u0430\u0434\u0456\u043d\u0430",
+        "short": "56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_115",
+        "label": "57",
+        "long": "\u0430\u0432\u0442\u043e\u0440\u0438\u043d\u043e\u043a \"\u0427\u0430\u043f\u0430\u0454\u0432\u043a\u0430\" - \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \"\u0410\u043a\u0430\u0434\u0435\u043c\u043c\u0456\u0441\u0442\u0435\u0447\u043a\u043e\"",
+        "short": "57",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_116",
+        "label": "58",
+        "long": "\u0441\u0442.\u043c. \u0412\u0438\u0441\u0442\u0430\u0432\u043a\u043e\u0432\u0438\u0439 \u0446\u0435\u043d\u0442\u0440 -  \u041c\u0443\u0437\u0435\u0439 \u043d\u0430\u0440\u043e\u0434\u043d\u043e\u0457 \u0430\u0440\u0445\u0456\u0442\u0435\u043a\u0442\u0443\u0440\u0438",
+        "short": "58",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_12",
+        "label": "108",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u0442\u0440\u043e\u043f\u043e\u043b\u0438\u0442\u0430 \u0410. \u0428\u0435\u043f\u0442\u0438\u0446\u044c\u043a\u043e\u0433\u043e - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0425\u0430\u0440\u043a\u0456\u0432\u0441\u044c\u043a\u0430\u00bb",
+        "short": "108",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_120",
+        "label": "6",
+        "long": "\u041f\u043b\u043e\u0449\u0430 \u0414\u0430\u0440\u043d\u0438\u0446\u044c\u043a\u0430 - \u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_124",
+        "label": "63",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0427\u0435\u0440\u0432\u043e\u043d\u0438\u0439 \u0445\u0443\u0442\u0456\u0440\u00bb - \u043c\u0430\u0441\u0438\u0432 \u041b\u0456\u0441\u043e\u0432\u0438\u0439",
+        "short": "63",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_127",
+        "label": "69",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041b\u0438\u0442\u0432\u0438\u043d\u0435\u043d\u043a\u043e-\u0412\u043e\u043b\u044c\u0433\u0435\u043c\u0443\u0442 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u0430\u043b\u0430\u0446 \u0441\u043f\u043e\u0440\u0442\u0443\u00bb",
+        "short": "69",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_129",
+        "label": "7",
+        "long": "\u0417\u0430\u043b\u0456\u0437\u043d\u0438\u0447\u043d\u0438\u0439 \u0432\u043e\u043a\u0437\u0430\u043b \u0426\u0435\u043d\u0442\u0440\u0430\u043b\u044c\u043d\u0438\u0439 - \u041b\u044c\u0432\u0456\u0432\u0441\u044c\u043a\u0430 \u043f\u043b\u043e\u0449\u0430",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_13",
+        "label": "11",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0456\u0441\u043e\u0432\u0430\u00bb  -  \u0420\u0430\u0434\u0456\u043e\u0446\u0435\u043d\u0442\u0440 (\u0441\u0435\u043b\u0438\u0449\u0435 \u0411\u0438\u043a\u0456\u0432\u043d\u044f)",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_133",
+        "label": "72",
+        "long": "\u0441\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u041a\u043e\u043d\u0442\u0440\u0430\u043a\u0442\u043e\u0432\u0430 \u043f\u043b\u043e\u0449\u0430 - \u043c\u0430\u0441\u0438\u0432 \u0421\u0438\u043d\u044c\u043e\u043e\u0437\u0435\u0440\u043d\u0438\u0439",
+        "short": "72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_135",
+        "label": "73",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0413\u0435\u0440\u043e\u0457\u0432 \u0414\u043d\u0456\u043f\u0440\u0430\u00bb - \u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430",
+        "short": "73",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_14",
+        "label": "111",
+        "long": "\u043f\u043b\u043e\u0449\u0430 \u0414\u0430\u0440\u043d\u0438\u0446\u044c\u043a\u0430 - \u043f\u043b\u043e\u0449\u0430 \u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0438\u0445 \u0413\u0435\u0440\u043e\u0457\u0432",
+        "short": "111",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_140",
+        "label": "75",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0412\u0438\u0441\u0442\u0430\u0432\u043a\u043e\u0432\u0438\u0439 \u0446\u0435\u043d\u0442\u0440\u00bb - \u0412\u0443\u043b\u0438\u0446\u044f \u0413\u0443\u043b\u044f\u043d\u0438\u0446\u044c\u043a\u043e\u0433\u043e",
+        "short": "75",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_142",
+        "label": "77",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041e\u0441\u0442\u0430\u0444\u0456\u044f \u0414\u0430\u0448\u043a\u0435\u0432\u0438\u0447\u0430 - \u041b\u0456\u0441\u043e\u0432\u0435 \u043a\u043b\u0430\u0434\u043e\u0432\u0438\u0449\u0435",
+        "short": "77",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_15",
+        "label": "17",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0425\u0430\u0440\u043a\u0456\u0432\u0441\u044c\u043a\u0430\u00bb - \u0412\u0443\u043b\u0438\u0446\u044f \u0414\u0440\u0430\u0433\u043e\u043c\u0430\u043d\u043e\u0432\u0430",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_150",
+        "label": "78",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0412\u0430\u0441\u0438\u043b\u044c\u043a\u0456\u0432\u0441\u044c\u043a\u0430\u00bb - \u0421\u0435\u0432\u0430\u0441\u0442\u043e\u043f\u043e\u043b\u044c\u0441\u044c\u043a\u0430 \u043f\u043b\u043e\u0449\u0430",
+        "short": "78",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_151",
+        "label": "79",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0456\u0441\u043e\u0432\u0430\u00bb - \u0412\u0443\u043b\u0438\u0446\u044f \u041a\u0430\u0448\u0442\u0430\u043d\u043e\u0432\u0430",
+        "short": "79",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_161",
+        "label": "81",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0456\u0441\u043e\u0432\u0430\u00bb - \u041b\u0456\u0441\u043e\u0432\u0438\u0439 \u043c\u0430\u0441\u0438\u0432",
+        "short": "81",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_166",
+        "label": "87",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041e\u0441\u043e\u043a\u043e\u0440\u043a\u0438\u00bb - \u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u0442\u0440\u043e\u043f\u043e\u043b\u0438\u0442\u0430 \u0410. \u0428\u0435\u043f\u0442\u0438\u0446\u044c\u043a\u043e\u0433\u043e",
+        "short": "87",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_170",
+        "label": "9",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0412.\u041a\u0456\u043a\u0430\u0431\u0456\u0434\u0437\u0435 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0443\u043a\u2019\u044f\u043d\u0456\u0432\u0441\u044c\u043a\u0430\u00bb",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_171",
+        "label": "90",
+        "long": "\u041f\u043b\u043e\u0449\u0430 \u0412. \u041c\u0430\u0440\u0447\u0435\u043d\u043a\u0430 - \u0412\u0443\u043b\u0438\u0446\u044f \u0413\u0440\u0438\u0433\u043e\u0440\u043e\u0432\u0438\u0447\u0430-\u0411\u0430\u0440\u0441\u044c\u043a\u043e\u0433\u043e",
+        "short": "90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_172",
+        "label": "91",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0413\u043e\u043b\u043e\u0441\u0456\u0457\u0432\u0441\u044c\u043a\u0430\u00bb - \u0412\u0443\u043b\u0438\u0446\u044f \u0410. \u0410\u0445\u043c\u0430\u0442\u043e\u0432\u043e\u0457",
+        "short": "91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_177",
+        "label": "95",
+        "long": "\u0420\u0443\u0441\u0430\u043d\u0456\u0432\u0441\u044c\u043a\u0456 \u0441\u0430\u0434\u0438 - \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u00ab\u0411\u0435\u0440\u0435\u0437\u043d\u044f\u043a\u0438\u00bb",
+        "short": "95",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_178",
+        "label": "97",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0421\u0432\u044f\u0442\u043e\u0448\u0438\u043d\u00bb - \u0416\u0438\u0442\u043b\u043e\u0432\u0438\u0439 \u043c\u0430\u0441\u0438\u0432 \u041d\u043e\u0432\u043e\u0431\u0456\u043b\u0438\u0447\u0456",
+        "short": "97",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_179",
+        "label": "97\u043a",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0427\u043e\u0440\u043d\u043e\u0431\u0438\u043b\u044c\u0441\u044c\u043a\u0430 - \u0416\u0438\u0442\u043b\u043e\u0432\u0438\u0439 \u043c\u0430\u0441\u0438\u0432 \u041d\u043e\u0432\u043e\u0431\u0456\u043b\u0438\u0447\u0456",
+        "short": "97\u043a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_18",
+        "label": "119",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0412. \u041a\u0430\u0441\u0456\u044f\u043d\u0430 - \u041a\u043e\u043d\u0442\u0440\u0430\u043a\u0442\u043e\u0432\u0430 \u043f\u043b\u043e\u0449\u0430",
+        "short": "119",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_180",
+        "label": "98",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430 (\u0412\u0443\u043b\u0438\u0446\u044f \u0420\u0430\u0434\u0443\u043d\u0441\u044c\u043a\u0430)  - \u0422\u0415\u0426-6 (\u0412\u0443\u043b\u0438\u0446\u044f \u041f\u0443\u0445\u0456\u0432\u0441\u044c\u043a\u0430)",
+        "short": "98",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_189",
+        "label": "99",
+        "long": "\u041b\u0438\u0442\u043e\u0432\u0441\u044c\u043a\u0438\u0439 \u043f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041c\u0456\u043d\u0441\u044c\u043a\u0430\u00bb",
+        "short": "99",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_20",
+        "label": "12",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0406\u0437\u044e\u043c\u0441\u044c\u043a\u0430 - \u0417\u0430\u043b\u0456\u0437\u043d\u0438\u0447\u043d\u0438\u0439 \u0432\u043e\u043a\u0437\u0430\u043b \u041f\u0456\u0432\u0434\u0435\u043d\u043d\u0438\u0439",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_21",
+        "label": "24",
+        "long": "\u041c\u0443\u0437\u0435\u0439 \u0456\u0441\u0442\u043e\u0440\u0456\u0457 \u0423\u043a\u0440\u0430\u0457\u043d\u0438 \u0443 \u0414\u0440\u0443\u0433\u0456\u0439 \u0441\u0432\u0456\u0442\u043e\u0432\u0456\u0439 \u0432\u0456\u0439\u043d\u0456 - \u0417\u0430\u043b\u0456\u0437\u043d\u0438\u0447\u043d\u0438\u0439 \u0432\u043e\u043a\u0437\u0430\u043b \u0426\u0435\u043d\u0442\u0440\u0430\u043b\u044c\u043d\u0438\u0439",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_25",
+        "label": "14",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041d\u0438\u0432\u043a\u0438\u00bb - \u041b\u0456\u0441\u043e\u0440\u043e\u0437\u0441\u0430\u0434\u043d\u0438\u043a",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_281",
+        "label": "25",
+        "long": "\u041c\u043a\u0443\u0437\u0435\u0439 \u0456\u0441\u0442\u043e\u0440\u0456\u0457 \u0423\u043a\u0440\u0430\u0457\u043d\u0438 \u0443 \u0414\u0440\u0443\u0433\u0456\u0439 \u0441\u0432\u0456\u0442\u043e\u0432\u0456\u0439 \u0432\u0456\u0439\u043d\u0456 - \u0441\u0442. \u041a\u0438\u0457\u0432-\u0412\u043e\u043b\u0438\u043d\u0441\u044c\u043a\u0438\u0439",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_3",
+        "label": "10",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0440\u043e \"\u041b\u0456\u0441\u043e\u0432\u0430\" - \u0441\u0435\u043b\u0438\u0449\u0435 \u0420\u0438\u0431\u043d\u0435",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_304",
+        "label": "62",
+        "long": "\u0411\u043e\u0442\u0430\u043d\u0456\u0447\u043d\u0438\u0439 \u0441\u0430\u0434 - \u041a\u043e\u043d\u0442\u0440\u0430\u043a\u0442\u043e\u0432\u0430 \u043f\u043b.",
+        "short": "62",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_309",
+        "label": "115",
+        "long": "\u0417\u0430\u043b\u0456\u0437\u043d\u0438\u0447\u043d\u0438\u0439 \u0432\u043e\u043a\u0437\u0430\u043b \u0414\u0430\u0440\u043d\u0438\u0446\u044f  - \u041a\u043e\u043d\u0442\u0440\u0430\u043a\u0442\u043e\u0432\u0430 \u043f\u043b\u043e\u0449\u0430",
+        "short": "115",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_310",
+        "label": "110",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430 - \u043f\u043b\u043e\u0449\u0430 \u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0438\u0445 \u0413\u0435\u0440\u043e\u0457\u0432",
+        "short": "110",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_34",
+        "label": "18",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0425\u0430\u0440\u043a\u0456\u0432\u0441\u044c\u043a\u0430\u00bb - \u0425\u0430\u0440\u043a\u0456\u0432\u0441\u044c\u043a\u0435 \u0448\u043e\u0441\u0435",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_36",
+        "label": "19",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0406\u0437\u044e\u043c\u0441\u044c\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0412\u0430\u0441\u0438\u043b\u044c\u043a\u0456\u0432\u0441\u044c\u043a\u0430\u00bb",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_377",
+        "label": "105",
+        "long": "\u0432\u0443\u043b. \u0422\u0440\u043e\u0441\u0442\u044f\u043d\u0435\u0446\u044c\u043a\u0430 - \u0411\u043e\u0440\u0438\u0441\u043f\u0456\u043b\u044c\u0441\u044c\u043a\u0435 \u0448\u043e\u0441\u0435",
+        "short": "105",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_385",
+        "label": "114",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0420\u0430\u0434\u0443\u043d\u0441\u044c\u043a\u0430 - \u0417\u0430\u043b\u0456\u0437\u043d\u0438\u0447\u043d\u0438\u0439 \u0432\u043e\u043a\u0437\u0430\u043b \u0426\u0435\u043d\u0442\u0440\u0430\u043b\u044c\u043d\u0438\u0439",
+        "short": "114",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_39",
+        "label": "2",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0412.\u041a\u0456\u043a\u0430\u0431\u0456\u0434\u0437\u0435 - \u0412\u0443\u043b\u0438\u0446\u044f \u0428\u043e\u043b\u0443\u0434\u0435\u043d\u043a\u0430",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_40",
+        "label": "20",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u043f\u043b.\u0423\u043a\u0440\u0430\u0457\u043d\u0441\u044c\u043a\u0438\u0445 \u0413\u0435\u0440\u043e\u0457\u0432\u00bb - \u0416\u0438\u0442\u043b\u043e\u0432\u0438\u0439 \u043c\u0430\u0441\u0438\u0432 \u041a\u043e\u0440\u0447\u0443\u0432\u0430\u0442\u0435",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_408",
+        "label": "90\u043a",
+        "long": "\u041f\u043b\u043e\u0449\u0430 \u0412. \u041c\u0430\u0440\u0447\u0435\u043d\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0421\u0432\u044f\u0442\u043e\u0448\u0438\u043d\u00bb",
+        "short": "90\u043a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_459",
+        "label": "35\u043a",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041f\u0456\u0434\u043b\u0438\u043f\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0421\u043b\u0430\u0432\u0443\u0442\u0438\u0447\u00bb",
+        "short": "35\u043a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_460",
+        "label": "33\u0442",
+        "long": "\u0414\u0412\u0420\u0417 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0427\u0435\u0440\u043d\u0456\u0433\u0456\u0432\u0441\u044c\u043a\u0430\u00bb",
+        "short": "33\u0442",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_49",
+        "label": "21",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u043e\u0447\u0430\u0439\u043d\u0430\u00bb - \u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_51",
+        "label": "22",
+        "long": "\u0432\u0443\u043b\u0438\u043b\u0438\u0446\u044f \u0422\u0440\u043e\u0441\u0442\u044f\u043d\u0435\u0446\u044c\u043a\u0430 - \u0432\u0443\u043b\u0438\u0446\u044f \u041c\u0435\u0434\u043e\u0432\u0430",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_52",
+        "label": "23",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0421\u0438\u043c\u0438\u0440\u0435\u043d\u043a\u043e - \u0412\u0443\u043b\u0438\u0446\u044f \u0421\u0430\u043b\u044e\u0442\u043d\u0430",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_533",
+        "label": "102\u0410",
+        "long": "\u0436/\u043a \u0412\u0430\u0440\u0448\u0430\u0432\u0441\u044c\u043a\u0438\u0439 \u043c\u0456\u043a\u0440\u043e\u0440\u0430\u0439\u043e\u043d - \u043a\u0456\u043d\u043e\u0442\u0435\u0430\u0442\u0440 \u0411\u0440\u0430\u0442\u0438\u0441\u043b\u0430\u0432\u0430",
+        "short": "102\u0410",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_534",
+        "label": "28\u0442",
+        "long": "\u0441\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \"\u041b\u0456\u0441\u043e\u0432\u0430\" - \u0432\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430",
+        "short": "28\u0442",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_538",
+        "label": "4\u0442",
+        "long": "\u0432\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430 - \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u0420\u0430\u0439\u0434\u0443\u0436\u043d\u0438\u0439",
+        "short": "4\u0442",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_543",
+        "label": "50",
+        "long": "\u0432\u0443\u043b. \u041f\u0456\u0432\u043d\u0456\u0447\u043d\u0430 - \u0417\u0430\u043b\u0456\u0437\u043d\u0438\u0447\u043d\u0438\u0439 \u0432\u043e\u043a\u0437\u0430\u043b",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_572",
+        "label": "44",
+        "long": "\u0432\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430 - \u0436/\u043c \u0411\u0435\u0440\u0435\u0437\u043d\u044f\u043a\u0438",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_59",
+        "label": "27",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0438\u0431i\u0434\u0441\u044c\u043a\u0430\u00bb - \u0441\u0435\u043b\u0438\u0449\u0435 \u041f\u0438\u0440\u043e\u0433\u0456\u0432",
+        "short": "27",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_6",
+        "label": "101",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u043e\u0447\u0430\u0439\u043d\u0430\u00bb - \u0412\u0443\u043b\u0438\u0446\u044f  \u0420\u0430\u0434\u0443\u043d\u0441\u044c\u043a\u0430 (\u0432\u0443\u043b. \u041c\u0438\u043b\u043e\u0441\u043b\u0430\u0432\u0441\u044c\u043a\u0430)",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_60",
+        "label": "28",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041f'\u044f\u0442\u0438\u0433\u043e\u0440\u0441\u044c\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0414\u0435\u043c\u0456\u0457\u0432\u0441\u044c\u043a\u0430\u00bb",
+        "short": "28",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_608",
+        "label": "36\u0442\u0440",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041f\u0456\u0432\u043d\u0456\u0447\u043d\u0430 - \u0432\u0443\u043b\u0438\u0446\u044f \u0427\u043e\u0440\u043d\u043e\u0431\u0438\u043b\u044c\u0441\u044c\u043a\u0430",
+        "short": "36\u0442\u0440",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_621",
+        "label": "5\u0442",
+        "long": "\u0432\u0443\u043b\u0438\u0446\u044f \u0421\u0435\u0440\u0436\u0430 \u041b\u0438\u0444\u0430\u0440\u044f - \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u0420\u0430\u0439\u0434\u0443\u0436\u043d\u0438\u0439",
+        "short": "5\u0442",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_624",
+        "label": "35\u0442",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0421\u0435\u0440\u0436\u0430 \u041b\u0438\u0444\u0430\u0440\u044f - \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \"\u041b\u0456\u0441\u043e\u0432\u0430\"",
+        "short": "35\u0442",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_642",
+        "label": "74",
+        "long": "",
+        "short": "74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_643",
+        "label": "109",
+        "long": "\u0441\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0425\u0430\u0440\u043a\u0456\u0432\u0441\u044c\u043a\u0430\u00bb - \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0422\u0435\u0430\u0442\u0440\u0430\u043b\u044c\u043d\u0430\u00bb",
+        "short": "109",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_65",
+        "label": "30",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0410\u043a\u0430\u0434\u0435\u043c\u0456\u043a\u0430 \u0404\u0444\u0440\u0435\u043c\u043e\u0432\u0430 -\u0426\u0435\u043d\u0442\u0440 \u0440\u0435\u0430\u0431\u0456\u043b\u0456\u0442\u0430\u0446\u0456\u0457 \u0432\u0435\u0442\u0435\u0440\u0430\u043d\u0456\u0432 \u00ab\u041b\u0456\u0441\u043e\u0432\u0430 \u043f\u043e\u043b\u044f\u043d\u0430\u00bb",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_655",
+        "label": "40",
+        "long": "\u0441\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \"\u0413\u0435\u0440\u043e\u0457\u0432 \u0414\u043d\u0456\u043f\u0440\u0430\" - \u0441\u0435\u043b\u0438\u0449\u0435 \u0414\u0412\u0421",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_656",
+        "label": "120",
+        "long": "",
+        "short": "120",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_663",
+        "label": "112",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043a\u0438\u0442\u0435\u043d\u043a\u0430 - \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \"\u041b\u0443\u043a\u044f\u043d\u0456\u0432\u0441\u044c\u043a\u0430 \u043f\u043b\u043e\u0449\u0430\"",
+        "short": "112",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_67",
+        "label": "31",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u0422\u0430\u0442\u0430\u0440\u0441\u044c\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041f\u043e\u043b\u0456\u0442\u0435\u0445\u043d\u0456\u0447\u043d\u0438\u0439 \u0456\u043d\u0441\u0442\u0438\u0442\u0443\u0442\u00bb",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_68",
+        "label": "32",
+        "long": "\u041b\u0438\u0442\u043e\u0432\u0441\u044c\u043a\u0438\u0439 \u043f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041d\u0438\u0432\u043a\u0438\u00bb",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_69",
+        "label": "33",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0456\u0441\u043e\u0432\u0430\u00bb  -  \u041b\u0456\u0441\u043e\u0432\u0438\u0439 \u043c\u0430\u0441\u0438\u0432",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_71",
+        "label": "35",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041f\u0456\u0434\u043b\u0438\u043f\u043a\u0430 - \u0412\u0443\u043b\u0438\u0446\u044f \u0413\u043b\u0456\u0431\u0430 \u0411\u0430\u0431\u0438\u0447\u0430",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_719",
+        "label": "37\u0414",
+        "long": "\u041f\u043e\u043b\u0456\u043a\u043b\u0456\u043d\u0456\u043a\u0430 (\u0432\u0443\u043b. \u0417\u0430\u043a\u0440\u0435\u0432\u0441\u044c\u043a\u043e\u0433\u043e)- \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \"\u041b\u0456\u0441\u043e\u0432\u0430\"",
+        "short": "37\u0414",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_72",
+        "label": "36",
+        "long": "\u0432\u0443\u043b. \u0421\u0438\u0440\u0435\u0446\u044c\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \"\u0414\u043e\u0440\u043e\u0433\u043e\u0436\u0438\u0447\u0456\"",
+        "short": "36",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_73",
+        "label": "37",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0421\u0432\u044f\u0442\u043e\u0448\u0438\u043d\u00bb - \u0416\u0438\u0442\u043b\u043e\u0432\u0438\u0439  \u043c\u0430\u0441\u0438\u0432 \u00ab\u0417\u0430\u0445\u0456\u0434\u043d\u0438\u0439\u00bb",
+        "short": "37",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_742",
+        "label": "22\u0442\u043a",
+        "long": "\u043f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u0412\u043e\u0441\u043a\u0440\u0435\u0441\u0435\u043d\u0441\u044c\u043a\u0438\u0439 - \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \"\u041b\u0456\u0441\u043e\u0432\u0430\"",
+        "short": "22\u0442\u043a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_743",
+        "label": "118\u0434",
+        "long": "\u0441\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \"\u041f\u043e\u043b\u0456\u0442\u0435\u0445\u043d\u0456\u0447\u043d\u0438\u0439 \u0456\u043d\u0441\u0442\u0438\u0442\u0443\u0442\" - \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \"\u041b\u0456\u0441\u043e\u0432\u0430\"",
+        "short": "118\u0434",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_744",
+        "label": "70\u0414",
+        "long": "\u0441\u0442.\u043c. \u041b\u0456\u0432\u043e\u0431\u0435\u0440\u0435\u0436\u043d\u0430 - \u0441\u0442. \u0420\u0430\u0439\u0434\u0443\u0436\u043d\u0438\u0439",
+        "short": "70\u0414",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_75",
+        "label": "37\u0430",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0421\u0432\u044f\u0442\u043e\u0448\u0438\u043d\u00bb - \u0421\u043f\u043e\u0440\u0442\u0438\u0432\u043d\u0438\u0439 \u043a\u043e\u043c\u043f\u043b\u0435\u043a\u0441 \u00ab\u0427\u0430\u0439\u043a\u0430\u00bb",
+        "short": "37\u0430",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_77",
+        "label": "38",
+        "long": "\u0432\u0443\u043b\u0438\u0446\u044f \u041c\u0435\u0442\u0440\u043e\u043b\u043e\u0433\u0456\u0447\u043d\u0430 - \u0441\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \"\u0414\u0435\u043c\u0456\u0457\u0432\u0441\u044c\u043a\u0430\"",
+        "short": "38",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_8",
+        "label": "103",
+        "long": "\u043f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u0421\u0432\u043e\u0431\u043e\u0434\u0438 - \u0432\u0443\u043b\u0438\u0446\u044f \u0427\u043e\u0440\u043d\u043e\u0431\u0438\u043b\u044c\u0441\u044c\u043a\u0430",
+        "short": "103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_81",
+        "label": "39",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0413\u043e\u043b\u043e\u0441\u0456\u0457\u0432\u0441\u044c\u043a\u0430\u00bb - \u043f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u041b\u0438\u0441\u043e\u0433\u0456\u0440\u0441\u044c\u043a\u0438\u0439",
+        "short": "39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_86",
+        "label": "41",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0413\u0435\u0440\u043e\u0457\u0432 \u0414\u043d\u0456\u043f\u0440\u0430\u00bb  - \u0441\u0435\u043b\u0438\u0449\u0435 \u0414\u0412\u0421",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_87",
+        "label": "42",
+        "long": "\u041c\u0438\u043a\u0456\u043b\u044c\u0441\u044c\u043a\u0430 \u0421\u043b\u043e\u0431\u0456\u0434\u043a\u0430 - \u0412\u0443\u043b\u0438\u0446\u044f \u0404\u043b\u0438\u0437\u0430\u0432\u0435\u0442\u0438 \u0427\u0430\u0432\u0434\u0430\u0440",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_89",
+        "label": "43",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0412\u0438\u0434\u0443\u0431\u0438\u0447i\u00bb - \u0441\u0435\u043b\u0438\u0449\u0435  \u041a\u043e\u0437\u0438\u043d",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_9",
+        "label": "104",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0425\u0430\u0440\u043a\u0456\u0432\u0441\u044c\u043a\u0430\u00bb - \u041c\u0456\u043a\u0440\u043e\u0440\u0430\u0439\u043e\u043d  \u00ab\u0411\u043e\u0440\u0442\u043d\u0438\u0447\u0456\u00bb",
+        "short": "104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_90",
+        "label": "43\u043a",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0412\u0438\u0434\u0443\u0431\u0438\u0447i\u00bb - \u0441\u0430\u043d\u0430\u0442\u043e\u0440\u0456\u0439 \u00ab\u041a\u043e\u043d\u0447\u0430-\u0417\u0430\u0441\u043f\u0430\u00bb",
+        "short": "43\u043a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_93",
+        "label": "45",
+        "long": "\u041f\u0440\u043e\u0441\u043f\u0435\u043a\u0442 \u0413\u0440\u0438\u0433\u043e\u0440\u0435\u043d\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0414\u0430\u0440\u043d\u0438\u0446\u044f\u00bb",
+        "short": "45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_96",
+        "label": "46",
+        "long": "\u0412\u0443\u043b\u0438\u0446\u044f \u041c\u0438\u043a\u0438\u0442\u0435\u043d\u043a\u0430 - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0456\u0432\u043e\u0431\u0435\u0440\u0435\u0436\u043d\u0430\u00bb",
+        "short": "46",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_98",
+        "label": "47",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041d\u0438\u0432\u043a\u0438\u00bb - \u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u0414\u043e\u0440\u043e\u0433\u043e\u0436\u0438\u0447\u0456\u00bb",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3_99",
+        "label": "48",
+        "long": "\u0421\u0442\u0430\u043d\u0446\u0456\u044f \u043c\u0435\u0442\u0440\u043e \u00ab\u041b\u0456\u0432\u043e\u0431\u0435\u0440\u0435\u0436\u043d\u0430\u00bb  -  \u0433\u043e\u0442\u0435\u043b\u044c \u00ab\u0421\u043b\u0430\u0432\u0443\u0442\u0438\u0447\u00bb",
+        "short": "48",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1445,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1445,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "1445 of 1445 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 23639,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "23639 of 23639 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+    },
+    {
+      "code": "scorecard_missing_headsigns",
+      "count": 23639,
+      "effort": "Usually one value per route pattern in your scheduling source.",
+      "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "23639 of 23639 trips lack rider-facing destination or direction text.",
+      "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

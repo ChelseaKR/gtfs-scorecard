@@ -117,7 +117,7 @@ def test_landing_keeps_conservative_coverage_fallbacks_when_request_fails(
     page.goto(f"{base_url}/")
 
     expect(page.locator("#coverage-registry-count")).to_have_text("2,100+")
-    expect(page.locator("#coverage-published-count")).to_have_text("1,100+")
+    expect(page.locator("#coverage-published-count")).to_have_text("2,100+")
     expect(page.locator("#coverage-country-count")).to_have_text("40+")
     expect(page.locator(".coverage-ledger")).to_contain_text("Countries in registry")
 

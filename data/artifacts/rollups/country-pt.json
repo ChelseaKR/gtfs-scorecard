@@ -1,0 +1,190 @@
+{
+  "agency_count": 8,
+  "average_score": 71.0,
+  "common_fixes": [
+    {
+      "agencies": 4,
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    },
+    {
+      "agencies": 3,
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip."
+    },
+    {
+      "agencies": 2,
+      "code": "unknown_column",
+      "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras."
+    }
+  ],
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 8,
+    "excluded_count": 0,
+    "exclusion_counts": {},
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {
+      "correctness+freshness+completeness": 8
+    },
+    "note": "Score aggregates and named changes use one current producer contract, raw reader archive profile, and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [
+      "correctness",
+      "freshness",
+      "completeness"
+    ],
+    "required_reader_archive_profile": "raw-v1",
+    "required_rubric_version": "1.3",
+    "required_scoring_profile_id": "gtfs-scorecard-1.3",
+    "required_validator_version": "8.0.1"
+  },
+  "expired": {
+    "lapsed": 1,
+    "stale": 0,
+    "total": 1
+  },
+  "generated_at": "2026-08-07T02:19:46+00:00",
+  "grade_distribution": {
+    "A": 2,
+    "B": 3,
+    "F": 3
+  },
+  "members": [
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data has expired",
+      "days_until_expiry": -8,
+      "expiry_status": "lapsed",
+      "grade": "F",
+      "id": "stcp-porto",
+      "name": "STCP (Sociedade de Transportes Colectivos do Porto)",
+      "needs_attention": true,
+      "score": 34.4,
+      "shapes_status": null,
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 327,
+      "expiry_status": "current",
+      "grade": "F",
+      "id": "carris-metropolitana",
+      "name": "Carris Metropolitana",
+      "needs_attention": false,
+      "score": 37.8,
+      "shapes_status": null,
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "top_fix_code": "trip_distance_exceeds_shape_distance"
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 146,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "cascais-proxima",
+      "name": "Cascais Pr\u00f3xima (MobiCascais)",
+      "needs_attention": false,
+      "score": 81.0,
+      "shapes_status": null,
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "top_fix_code": "scorecard_wheelchair_boarding_unknown"
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 153,
+      "expiry_status": "current",
+      "grade": "A",
+      "id": "fertagus",
+      "name": "Fertagus",
+      "needs_attention": false,
+      "score": 95.1,
+      "shapes_status": null,
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+      "top_fix_code": "stop_too_far_from_shape_using_user_distance"
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 146,
+      "expiry_status": "current",
+      "grade": "F",
+      "id": "guimabus",
+      "name": "Guimabus (Guimar\u00e3es)",
+      "needs_attention": false,
+      "score": 46.5,
+      "shapes_status": null,
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Review the rule documentation for 'duplicate_key' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "top_fix_code": "duplicate_key"
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 1243,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "metro-sul-do-tejo",
+      "name": "Metro Sul do Tejo",
+      "needs_attention": false,
+      "score": 88.8,
+      "shapes_status": null,
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "top_fix_code": "scorecard_no_fare_data"
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 146,
+      "expiry_status": "current",
+      "grade": "B",
+      "id": "metro-lisboa",
+      "name": "Metropolitano de Lisboa",
+      "needs_attention": false,
+      "score": 85.8,
+      "shapes_status": null,
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "top_fix_code": "scorecard_wheelchair_boarding_unknown"
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 359,
+      "expiry_status": "current",
+      "grade": "A",
+      "id": "transtejo-soflusa",
+      "name": "Transtejo Soflusa (TTSL)",
+      "needs_attention": false,
+      "score": 98.8,
+      "shapes_status": null,
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Review the rule documentation for 'service_extends_far_in_the_future' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "top_fix_code": "service_extends_far_in_the_future"
+    }
+  ],
+  "needs_attention": 1,
+  "rollup": {
+    "country_code": "PT",
+    "country_name": "Portugal",
+    "id": "country-pt",
+    "name": "Portugal"
+  },
+  "schema_version": "1.17",
+  "shapes_readiness": {
+    "at_risk": 0,
+    "not_measured": 8,
+    "not_ready": 0,
+    "ready": 0,
+    "total": 8
+  },
+  "state_percentile": null
+}

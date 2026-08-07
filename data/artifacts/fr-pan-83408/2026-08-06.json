@@ -1,0 +1,1213 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-pan-83408",
+    "name": "R\u00e9seau urbain Qub",
+    "subdivision_code": "FR-BRE",
+    "subdivision_name": "Bretagne"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 94.0,
+          "stops_marked_accessible_pct": 38.6,
+          "stops_marked_not_accessible_pct": 51.8,
+          "stops_stated_pct": 90.4,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 14.9,
+          "wheelchair_stops": 22.6,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 3457,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.6,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1123,
+        "translations": {
+          "feed_lang": "FR",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 3457,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 90.4,
+        "wheelchair_marked_accessible_pct": 38.6,
+        "wheelchair_marked_not_accessible_pct": 51.8
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 108,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 2.4,
+          "severity": "WARNING",
+          "what": "108 of 1123 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 82.5,
+      "status": "measured",
+      "summary": "90% of stops state wheelchair accessibility (39% marked accessible, 52% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 10,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 459,
+          "WARNING": 8510
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 5094,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 2385,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
+          "count": 844,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Equal shape distance diff coordinates distance below threshold (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 179,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 6,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "leading_or_trailing_whitespaces",
+          "count": 1,
+          "effort": "Usually one export setting.",
+          "fix": "Trim leading and trailing spaces on export. The scorecard's auto-fixed copy already does this.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some values have extra spaces at the start or end.",
+          "why": "A stray space can break a match, so a stop or route may fail to link across files."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 361,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the bus ends up, so a midpoint name can send them the wrong way."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 97,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "unknown_column",
+          "count": 1,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        }
+      ],
+      "name": "correctness",
+      "score": 51.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 10 kinds of issue across 8969 instances (0 error, 8510 warning, 459 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 147,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": "2026-12-31",
+        "feed_start_date": "2026-07-06",
+        "feed_version": "2026-07-06 07:40:04.343414 UTC",
+        "has_feed_info": true,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 147 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": true,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 90% of stops and 100% of trips.",
+        "key": "accessible",
+        "met": true
+      }
+    ],
+    "status": "awarded",
+    "summary": "This feed earns the conformance mark: valid, current, and stating wheelchair access on nearly every stop and trip."
+  },
+  "feed": {
+    "license_note": "Open Database License (ODbL), recorded by France's National Access Point; credit Quimper Bretagne Occidentale, identify the ODbL, and preserve share-alike terms where they apply.",
+    "reachable": true,
+    "sha256": "98a10b6a4294290ae78011b767928d27a6fbe8065760d6a94c3b729a53575809",
+    "size_bytes": 2695904,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/95530333-7002-401d-9d64-2829496d1c36"
+  },
+  "fetch": {
+    "final_url": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/qbo/exports/medias.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -4.22971,
+      47.91076,
+      -3.86973,
+      48.15191
+    ],
+    "lat": 48.00458,
+    "lon": -4.0952,
+    "stop_count": 1123
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 69,
+        "trip_count": 3457,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 69,
+    "trip_count": 3457
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 3.3,
+    "margin_to_next_band": 6.7,
+    "score": 73.3
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 25,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "25 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (QUB CITY, 1, 3, 4, 14, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1036,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 3457
+  },
+  "route_map": {
+    "drawn_route_count": 69,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-pan-83408/geometry.geojson",
+    "route_count": 69,
+    "routes": [
+      {
+        "color": "B18168",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "Prat ar Rouz - Gourvily",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F5B5D3",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "Quimper Rue du Parc - Locronan par Plogonnec",
+        "short": "10",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C21B57",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "11",
+        "label": "11",
+        "long": "Quimper R\u00e9sistance - Guengat par Plon\u00e9is",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "407C94",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "12",
+        "label": "12",
+        "long": "Briec Lumunoc'h - Quimper",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F7941D",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "13",
+        "label": "13",
+        "long": "Quimper Place de la T.A - Plogonnec Keryouen",
+        "short": "13",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0090D6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "14",
+        "label": "14",
+        "long": "ZA Cuzon - Quimper Centre-ville",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "04B49D",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "15",
+        "label": "15",
+        "long": "Quimper Place de la T.A - Qu\u00e9m\u00e9n\u00e9ven Saint-Albin",
+        "short": "15",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DA58A0",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "16",
+        "label": "16",
+        "long": "Edern - Briec - Landr\u00e9varzec - Quimper",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EBE956",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "17",
+        "label": "17",
+        "long": "Edern - Landudal - Langolen - Ergu\u00e9-Gab\u00e9ric - Quimper",
+        "short": "17",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F27FB2",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "Mercoeur - Kerlagatu",
+        "short": "2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00AEB3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "Ergu\u00e9-Gab\u00e9ric Bourg - Quimper Centre-ville",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009640",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4",
+        "label": "4",
+        "long": "Kerlic - Ty Bos",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5DCCEF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "5",
+        "label": "5",
+        "long": "Moulin Vert - Petit Gu\u00e9len/ZA Petit Gu\u00e9len",
+        "short": "5",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "374E59",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6",
+        "label": "6",
+        "long": "Pluguffan Andrieux - Ergu\u00e9-Gab\u00e9ric Lestonan",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CD8D6B",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "Plomelin Kerveo - Quimper Centre-ville",
+        "short": "7",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D9D9C",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "943",
+        "label": "943",
+        "long": "BreizhGo Quimper Centre-ville - Kervao",
+        "short": "943",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D9D9C",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "951",
+        "label": "951",
+        "long": "BreizhGo Quimper Centre-ville - Plon\u00e9is Centre",
+        "short": "951",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D9D9C",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "953",
+        "label": "953",
+        "long": "BreizhGo Quimper Centre-ville - Pluguffan",
+        "short": "953",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FECC00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "A",
+        "label": "A",
+        "long": "Kerjestin-Ergu\u00e9-Armel Bourg/Petit Guelen",
+        "short": "A",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E30613",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "B",
+        "label": "B",
+        "long": "Universit\u00e9 / Moulin des Landes - Gourvily",
+        "short": "B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "951B81",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "C",
+        "label": "C",
+        "long": "Saint Jean-Baptiste - Kervalguen",
+        "short": "C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E60F75",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "D1",
+        "label": "D1",
+        "long": "Rue du Parc - Petit Guelen",
+        "short": "D1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C7D64F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "D2",
+        "label": "D2",
+        "long": "R\u00e9sistance - Universit\u00e9",
+        "short": "D2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFC901",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "D21",
+        "label": "D21",
+        "long": "R\u00e9sistance - Universit\u00e9",
+        "short": "D21",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "73289E",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "D22",
+        "label": "D22",
+        "long": "Kerlagatu - R\u00e9sistance",
+        "short": "D22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F39200",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "D3",
+        "label": "D3",
+        "long": "Rue du Parc - Gourvily",
+        "short": "D3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0069B4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "D4",
+        "label": "D4",
+        "long": "Gare - Ergu\u00e9 Armel Bourg",
+        "short": "D4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009640",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "F1",
+        "label": "F1",
+        "long": "Feu d'artifice F1 - Rue du Parc - Cr\u00e9ac'h Gwen",
+        "short": "F1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E6007C",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "F10",
+        "label": "F10",
+        "long": "Feu d'artifice F10 - St Jean Bapt. - Cr\u00e9ac'h Gwen",
+        "short": "F10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F39200",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "F11",
+        "label": "F11",
+        "long": "Feu d'artifice F11 - Kerjestin - Cr\u00e9ac'h Gwen",
+        "short": "F11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "84D0F5",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "F2",
+        "label": "F2",
+        "long": "Feu d'artifice F2 - Gourvily - Cr\u00e9ac'h Gwen",
+        "short": "F2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C8D401",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "F3",
+        "label": "F3",
+        "long": "Feu d'artifice F3 - Ergu\u00e9 Ar. Bourg - Cr\u00e9ac'h Gwen",
+        "short": "F3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "67C0B5",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "F4",
+        "label": "F4",
+        "long": "Feu d'artifice F4 - Kermoysan - Cr\u00e9ac'h Gwen",
+        "short": "F4",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C19F12",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "F5",
+        "label": "F5",
+        "long": "Feu d'artifice F5 - Kervouyec - Cr\u00e9ac'h Gwen",
+        "short": "F5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFE200",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "F6",
+        "label": "F6",
+        "long": "Feu d'artifice F6 - Kervalguen - Cr\u00e9ac'h Gwen",
+        "short": "F6",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F7BFD9",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "F7",
+        "label": "F7",
+        "long": "Feu d'artifice F7 - Kerlagatu - Cr\u00e9ac'h Gwen",
+        "short": "F7",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED6A4C",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "F8",
+        "label": "F8",
+        "long": "Feu d'artifice F8 - Mercoeur - Cr\u00e9ac'h Gwen",
+        "short": "F8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B1EB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "F9",
+        "label": "F9",
+        "long": "Feu d'artifice F1 - Petit Gu\u00e9len - Cr\u00e9ac'h Gwen",
+        "short": "F9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B18168",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "P10",
+        "label": "P10",
+        "long": "Quimper Lyc\u00e9e Chaptal - Quimper R\u00e9sistance",
+        "short": "P10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F5B5D3",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "P100",
+        "label": "P100",
+        "long": "Qu\u00e9m\u00e9n\u00e9ven - Locronan - Plogonnec - Rdpt de Kermoysan",
+        "short": "P100",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFDD00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "P110",
+        "label": "P110",
+        "long": "Plon\u00e9is Croix Rouge - Quimper Centre-ville",
+        "short": "P110",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005CAA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "P111",
+        "label": "P111",
+        "long": "Guengat Kerustans - Quimper Centre-ville",
+        "short": "P111",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "96C11F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "P120",
+        "label": "P120",
+        "long": "Quimper Tourbie - Briec Coll\u00e8ges",
+        "short": "P120",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "59C6F2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "P122",
+        "label": "P122",
+        "long": "Ty Marie - Briec Coll\u00e8ges",
+        "short": "P122",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "688816",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "P123",
+        "label": "P123",
+        "long": "Ty Sanquer - Briec Coll\u00e8ges",
+        "short": "P123",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7C6FB0",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "P124",
+        "label": "P124",
+        "long": "Quimper Piscine Kerlan Vian - Edern Bourg",
+        "short": "P124",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0086CD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "P140",
+        "label": "P140",
+        "long": "Quimper Centre-ville - CFA Cuzon",
+        "short": "P140",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "688816",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "P141",
+        "label": "P141",
+        "long": "Quimper Stangala -  Quimper Rue du Parc",
+        "short": "P141",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9C1254",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "P160",
+        "label": "P160",
+        "long": "Quimper Piscine Kerlan Vian",
+        "short": "P160",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FBB900",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "P161",
+        "label": "P161",
+        "long": "Landr\u00e9varzec Moulin du Lay - Briec - Quimper Lyc\u00e9e Th\u00e9pot",
+        "short": "P161",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFDD00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "P162",
+        "label": "P162",
+        "long": "Edern La Petite Boissi\u00e8re - Briec Coll\u00e8ges",
+        "short": "P162",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E30613",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "P164",
+        "label": "P164",
+        "long": "Briec Kerforn - Briec Coll\u00e8ges",
+        "short": "P164",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1D1D1B",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "P165",
+        "label": "P165",
+        "long": "Landr\u00e9varzec Pen ar Prat - Briec Coll\u00e8ges",
+        "short": "P165",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CB6C00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "P171",
+        "label": "P171",
+        "long": "Landudal Kervouzien - Briec Coll\u00e8ges",
+        "short": "P171",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F39200",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "P172",
+        "label": "P172",
+        "long": "Briec Coll\u00e8ges - Langolen Bourg",
+        "short": "P172",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C6452D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "P173",
+        "label": "P173",
+        "long": "Briec Coll\u00e8ges - Ergu\u00e9-Gab\u00e9ric Pen Carn",
+        "short": "P173",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5F6100",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "P174",
+        "label": "P174",
+        "long": "Briec Coll\u00e8ges - Ergu\u00e9-Gab\u00e9ric Lezebel",
+        "short": "P174",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EC619F",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "P20",
+        "label": "P20",
+        "long": "Quimper IUT - Quimper Kerlagatu",
+        "short": "P20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "59C6F2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "P30",
+        "label": "P30",
+        "long": "Ergu\u00e9-Gab\u00e9ric Place an Dans - Quimper Tourbie",
+        "short": "P30",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005478",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "P32",
+        "label": "P32",
+        "long": "Quimper Tourbie - Ergu\u00e9-Gab\u00e9ric Garsalec",
+        "short": "P32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F39200",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "P33",
+        "label": "P33",
+        "long": "Hent Coz - Zone d'Echanges",
+        "short": "P33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F4E54",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "P60",
+        "label": "P60",
+        "long": "Pluguffan ZI Sud - Quimper IUT",
+        "short": "P60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "951B81",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "P61",
+        "label": "P61",
+        "long": "Pluguffan Ti Lipig - Quimper Centre-ville",
+        "short": "P61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B1016C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "P62",
+        "label": "P62",
+        "long": "Quimper Tourbie - Ergu\u00e9-Gab\u00e9ric Lestonan",
+        "short": "P62",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C8D401",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "P63",
+        "label": "P63",
+        "long": "Quimper Tourelle - Ergu\u00e9-Gab\u00e9ric Lestonan",
+        "short": "P63",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C6452D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "P70",
+        "label": "P70",
+        "long": "Plomelin Saint Roch - Quimper Place de la Tour d'Auvergne",
+        "short": "P70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "96C11F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "P71",
+        "label": "P71",
+        "long": "Plomelin Ber ar Rip/Kerbenez - Quimper Centre-ville",
+        "short": "P71",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BD7764",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "PCFA",
+        "label": "PCFA",
+        "long": "Quimper Moulin des Landes - Quimper Gare Routi\u00e8re",
+        "short": "PCFA",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A5CF4E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "QCIT",
+        "label": "QUB CITY",
+        "long": "Salle de l'Eau Blanche - Multiplexe",
+        "short": "QUB CITY",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1123,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "equal_shape_distance_same_coordinates",
+      "count": 5094,
+      "effort": "Usually one export setting.",
+      "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "Some route lines list the same point twice in a row.",
+      "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+    },
+    {
+      "code": "trip_distance_exceeds_shape_distance_below_threshold",
+      "count": 2385,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "On some trips the stop distances run a little past the end of the route line.",
+      "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,0 +1,1934 @@
+{
+  "agency": {
+    "id": "pace-bus",
+    "name": "Pace Bus",
+    "subdivision_code": "US-IL",
+    "subdivision_name": "Illinois"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 37.5,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 0.5,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 12144,
+        "headsign_loop_exempt_trips": 405,
+        "headsign_pct": 0.0,
+        "headsign_scored_pct": 3.2,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 13828,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 12549,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 13828,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "13828 of 13828 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 12144,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 14.5,
+          "severity": "WARNING",
+          "what": "12144 of 12549 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        }
+      ],
+      "name": "completeness",
+      "score": 45.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 7,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 4,
+          "WARNING": 71
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "expired_calendar",
+          "count": 49,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 19,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "feed_expiration_date7_days",
+          "count": 1,
+          "effort": "Usually a re-export from your scheduling software.",
+          "fix": "Export and publish an updated GTFS feed that covers at least the next 30 days of service.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "This feed's service calendar runs out within the next 7 days.",
+          "why": "When the calendar ends, Google Maps and other trip planners drop your agency entirely. Riders see no service at all."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 1,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "trip_coverage_not_active_for_next7_days",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Trim past service periods the next time you export.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Many of the feed's trips don't run at all in the next 7 days.",
+          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
+        },
+        {
+          "code": "unknown_column",
+          "count": 3,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "unknown_file",
+          "count": 1,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 75.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 7 kinds of issue across 75 instances (0 error, 71 warning, 4 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": -859,
+        "effective_expiry_date": "2024-03-30",
+        "feed_end_date": "2024-03-30",
+        "feed_start_date": "2023-12-03",
+        "feed_version": "20231203",
+        "has_feed_info": true,
+        "last_service_date": "2024-03-30",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expired",
+          "count": 1,
+          "effort": "Usually one export setting; export on a schedule so it never lapses again.",
+          "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+          "owner": "Likely your export tool",
+          "points": 100.0,
+          "severity": "ERROR",
+          "what": "Service data ended 859 day(s) ago.",
+          "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
+        }
+      ],
+      "name": "freshness",
+      "score": 0.0,
+      "status": "measured",
+      "summary": "Service data ended 859 day(s) ago. Trip planners have likely already dropped this feed.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "mirror",
+    "level": "provisional",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data expired 858 days ago.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. Service data expired 858 days ago. States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "License: http://www.pacebus.com/sub/about/data_services.asp",
+    "reachable": true,
+    "sha256": "c211ff7a25064c7947de489fe9fcd6d5f96b33d904d77eaf5f81760572e6dfbd",
+    "size_bytes": 9566135,
+    "static_url": "https://public.pacebus.com/gtfs/gtfs.zip"
+  },
+  "fetch": {
+    "final_url": "https://files.mobilitydatabase.org/mdb-390/latest.zip",
+    "max_attempts": 1,
+    "origin_error": "ConnectTimeout",
+    "reader_archive_profile": "raw-v1",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -88.62101,
+      41.40398,
+      -87.52261,
+      42.4574
+    ],
+    "lat": 41.90744,
+    "lon": -87.85627,
+    "stop_count": 13828
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 134,
+        "trip_count": 12549,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 134,
+    "trip_count": 12549
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "PACE"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data expired 858 days ago, so FTA would find the link out of date.",
+        "key": "current",
+        "status": "not_ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "not_ready",
+    "summary": "Resolve this before you certify on the D-10. Service data expired 858 days ago, so FTA would find the link out of date."
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 47.0,
+    "margin_to_next_band": 13.0,
+    "score": 47.0
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 13323,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "13323 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Oak Ave & Davis St\", \"Oak Ave & Church St\", \"8361 Golf Rd\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 13828,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 12549
+  },
+  "route_map": {
+    "drawn_route_count": 134,
+    "has_shapes": true,
+    "path": "data/artifacts/pace-bus/geometry.geojson",
+    "route_count": 134,
+    "routes": [
+      {
+        "color": "814C9E",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "100-365",
+        "label": "Pulse Milwaukee Line",
+        "long": "Pulse Milwaukee Line",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "814C9E",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "101-365",
+        "label": "Pulse Dempster Line",
+        "long": "Pulse Dempster Line",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "208-365",
+        "label": "208",
+        "long": "Golf Road",
+        "short": "208",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "209-365",
+        "label": "209",
+        "long": "Busse Highway",
+        "short": "209",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "210-365",
+        "label": "210",
+        "long": "Lincoln Avenue",
+        "short": "210",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "213-365",
+        "label": "213",
+        "long": "Green Bay Road",
+        "short": "213",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "215-365",
+        "label": "215",
+        "long": "Crawford-Howard",
+        "short": "215",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "221-365",
+        "label": "221",
+        "long": "Wolf Road",
+        "short": "221",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "223-365",
+        "label": "223",
+        "long": "Elk Grove - Rosemont CTA Station",
+        "short": "223",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "225-365",
+        "label": "225",
+        "long": "Central - Howard",
+        "short": "225",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "226-365",
+        "label": "226",
+        "long": "Oakton Street",
+        "short": "226",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "230-365",
+        "label": "230",
+        "long": "South Des Plaines",
+        "short": "230",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "234-365",
+        "label": "234",
+        "long": "Wheeling - Des Plaines",
+        "short": "234",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "240-365",
+        "label": "240",
+        "long": "Dee Road",
+        "short": "240",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "241-365",
+        "label": "241",
+        "long": "Greenwood - Talcott",
+        "short": "241",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "250-365",
+        "label": "250",
+        "long": "Dempster Street",
+        "short": "250",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "270-365",
+        "label": "270",
+        "long": "Milwaukee Avenue",
+        "short": "270",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "272-365",
+        "label": "272",
+        "long": "Milwaukee Avenue North",
+        "short": "272",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "290-365",
+        "label": "290",
+        "long": "Touhy Avenue",
+        "short": "290",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "301-365",
+        "label": "301",
+        "long": "Roosevelt Road",
+        "short": "301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "302-365",
+        "label": "302",
+        "long": "Ogden - Stanley",
+        "short": "302",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "303-365",
+        "label": "303",
+        "long": "Forest Park - Rosemont",
+        "short": "303",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "305-365",
+        "label": "305",
+        "long": "East Roosevelt",
+        "short": "305",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "307-365",
+        "label": "307",
+        "long": "Harlem",
+        "short": "307",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "308-365",
+        "label": "308",
+        "long": "Medical Center",
+        "short": "308",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "309-365",
+        "label": "309",
+        "long": "Lake Street",
+        "short": "309",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "310-365",
+        "label": "310",
+        "long": "West Madison - Hillside",
+        "short": "310",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "311-365",
+        "label": "311",
+        "long": "Oak Park Avenue",
+        "short": "311",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "313-365",
+        "label": "313",
+        "long": "St. Charles Rd.",
+        "short": "313",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "314-365",
+        "label": "314",
+        "long": "Ridgeland Avenue",
+        "short": "314",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "315-365",
+        "label": "315",
+        "long": "Austin Boulevard",
+        "short": "315",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "316-365",
+        "label": "316",
+        "long": "Laramie Avenue",
+        "short": "316",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "317-365",
+        "label": "317",
+        "long": "Westchester",
+        "short": "317",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "318-365",
+        "label": "318",
+        "long": "West North Avenue",
+        "short": "318",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "319-365",
+        "label": "319",
+        "long": "Grand Avenue",
+        "short": "319",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "322-365",
+        "label": "322",
+        "long": "Cermak Road - 22nd St.",
+        "short": "322",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "330-365",
+        "label": "330",
+        "long": "Mannheim - LaGrange Roads",
+        "short": "330",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "331-365",
+        "label": "331",
+        "long": "Cumberland - 5th Avenue",
+        "short": "331",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "332-365",
+        "label": "332",
+        "long": "River Road - York Road",
+        "short": "332",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "348-365",
+        "label": "348",
+        "long": "Harvey - Riverdale - Blue Island",
+        "short": "348",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "349-365",
+        "label": "349",
+        "long": "South Western",
+        "short": "349",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "350-365",
+        "label": "350",
+        "long": "Sibley",
+        "short": "350",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "352-365",
+        "label": "352",
+        "long": "Halsted",
+        "short": "352",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "353-365",
+        "label": "353",
+        "long": "95th/Dan Ryan CTA-Calumet City-Homewood Limited",
+        "short": "353",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "354-365",
+        "label": "354",
+        "long": "Harvey - Oak Forest Loop",
+        "short": "354",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "356-365",
+        "label": "356",
+        "long": "Harvey - Homewood - Tinley Park",
+        "short": "356",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "357-365",
+        "label": "357",
+        "long": "Lincoln Highway",
+        "short": "357",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "358-365",
+        "label": "358",
+        "long": "Torrence",
+        "short": "358",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "359-365",
+        "label": "359",
+        "long": "Robbins - South Kedzie Avenue",
+        "short": "359",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "360-365",
+        "label": "360",
+        "long": "Harvey-Amazon Monee",
+        "short": "360",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "361-365",
+        "label": "361",
+        "long": "Harvey - Laraway Crossings Express",
+        "short": "361",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "364-365",
+        "label": "364",
+        "long": "159th Street",
+        "short": "364",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "366-365",
+        "label": "366",
+        "long": "Park Forest - Chicago Heights",
+        "short": "366",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "367-365",
+        "label": "367",
+        "long": "University Park - Park Forest",
+        "short": "367",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "379-365",
+        "label": "379",
+        "long": "Midway - Orland Park",
+        "short": "379",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "381-365",
+        "label": "381",
+        "long": "95th Street",
+        "short": "381",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "383-365",
+        "label": "383",
+        "long": "South Cicero",
+        "short": "383",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "384-365",
+        "label": "384",
+        "long": "Narragansett - Ridgeland",
+        "short": "384",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "385-365",
+        "label": "385",
+        "long": "87th / 111th / 127th",
+        "short": "385",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "386-365",
+        "label": "386",
+        "long": "South Harlem",
+        "short": "386",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "390-365",
+        "label": "390",
+        "long": "Midway CTA - UPS Hodgkins Limited",
+        "short": "390",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "392-365",
+        "label": "392",
+        "long": "Green Line Cicero CTA - UPS Hodgkins Limited",
+        "short": "392",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "395-365",
+        "label": "395",
+        "long": "95th/Dan Ryan CTA - UPS Hodgkins Limited",
+        "short": "395",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "410-364",
+        "label": "410",
+        "long": "East Niles Local",
+        "short": "410",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "411-364",
+        "label": "411",
+        "long": "West Niles Local",
+        "short": "411",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "412-364",
+        "label": "412",
+        "long": "Niles North Circulator",
+        "short": "412",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "421-365",
+        "label": "421",
+        "long": "Wilmette Avenue",
+        "short": "421",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "422-365",
+        "label": "422",
+        "long": "Linden CTA/Glenview/Northbrook Court",
+        "short": "422",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "423-365",
+        "label": "423",
+        "long": "Linden CTA - The Glen - Harlem L CTA",
+        "short": "423",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "471-340",
+        "label": "471",
+        "long": "Highland Park-Northbrook Court",
+        "short": "471",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "472-340",
+        "label": "472",
+        "long": "Highland Park - Highwood",
+        "short": "472",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "501-365",
+        "label": "501",
+        "long": "West Jefferson",
+        "short": "501",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "504-365",
+        "label": "504",
+        "long": "South Joliet",
+        "short": "504",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "505-365",
+        "label": "505",
+        "long": "West Joliet Loop",
+        "short": "505",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "507-365",
+        "label": "507",
+        "long": "Plainfield",
+        "short": "507",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "508-365",
+        "label": "508",
+        "long": "East Joliet",
+        "short": "508",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "509-365",
+        "label": "509",
+        "long": "Joliet-Fairmont",
+        "short": "509",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "511-365",
+        "label": "511",
+        "long": "Joliet- Elwood -Centerpoint",
+        "short": "511",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "512-365",
+        "label": "512",
+        "long": "Joliet - Centerpoint",
+        "short": "512",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "524-365",
+        "label": "524",
+        "long": "West Aurora",
+        "short": "524",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "530-365",
+        "label": "530",
+        "long": "West Galena - Naperville",
+        "short": "530",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "533-365",
+        "label": "533",
+        "long": "Northeast Aurora",
+        "short": "533",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "540-365",
+        "label": "540",
+        "long": "Farnsworth Avenue",
+        "short": "540",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "541-365",
+        "label": "541",
+        "long": "Northeast Elgin",
+        "short": "541",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "542-365",
+        "label": "542",
+        "long": "Bluff City",
+        "short": "542",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "543-365",
+        "label": "543",
+        "long": "Dundee-Carpentersville",
+        "short": "543",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "546-365",
+        "label": "546",
+        "long": "Orange-Walnut",
+        "short": "546",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "547-365",
+        "label": "547",
+        "long": "Wing Park",
+        "short": "547",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "548-365",
+        "label": "548",
+        "long": "Highland",
+        "short": "548",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "549-365",
+        "label": "549",
+        "long": "South Randall",
+        "short": "549",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "550-365",
+        "label": "550",
+        "long": "Elgin Transportation Center - Crystal Lake",
+        "short": "550",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "552-365",
+        "label": "552",
+        "long": "North State - Spring Hill Mall",
+        "short": "552",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "554-365",
+        "label": "554",
+        "long": "Elgin - Woodfield",
+        "short": "554",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "559-365",
+        "label": "559",
+        "long": "Illinois Route 59",
+        "short": "559",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "561-365",
+        "label": "561",
+        "long": "Castlecrest via McAree",
+        "short": "561",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "562-365",
+        "label": "562",
+        "long": "Gurnee via Sunset",
+        "short": "562",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "563-365",
+        "label": "563",
+        "long": "Great Lakes Naval Station",
+        "short": "563",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "564-365",
+        "label": "564",
+        "long": "Jackson / 14th",
+        "short": "564",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "565-365",
+        "label": "565",
+        "long": "Grand Avenue",
+        "short": "565",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "566-365",
+        "label": "566",
+        "long": "McAree - Keller",
+        "short": "566",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "568-365",
+        "label": "568",
+        "long": "Belvidere",
+        "short": "568",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "569-365",
+        "label": "569",
+        "long": "Lewis",
+        "short": "569",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "570-365",
+        "label": "570",
+        "long": "Fox Lake - CLC",
+        "short": "570",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "571-365",
+        "label": "571",
+        "long": "Zion",
+        "short": "571",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "572-365",
+        "label": "572",
+        "long": "Washington",
+        "short": "572",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "573-365",
+        "label": "573",
+        "long": "Green Bay Road",
+        "short": "573",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "574-365",
+        "label": "574",
+        "long": "CLC - Hawthorn Mall",
+        "short": "574",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "591-263",
+        "label": "Wheaton - Winfield On Demand",
+        "long": "Wheaton - Winfield On Demand",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "600-365",
+        "label": "600",
+        "long": "Rosemont - Schaumburg Express",
+        "short": "600",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "603-365",
+        "label": "603",
+        "long": "Elgin Terminal - Rosemont Express",
+        "short": "603",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "604-365",
+        "label": "604",
+        "long": "Wheeling - Schaumburg",
+        "short": "604",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "605-365",
+        "label": "605",
+        "long": "I-90/Randall Rd. Station - Rosemont Express",
+        "short": "605",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "606-365",
+        "label": "606",
+        "long": "Rosemont - Schaumburg Limited",
+        "short": "606",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "607-365",
+        "label": "607",
+        "long": "I-90/Randall Rd. Station - Schaumburg Express",
+        "short": "607",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "626-365",
+        "label": "626",
+        "long": "Skokie \u2013 Buffalo Grove Limited",
+        "short": "626",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "697-365",
+        "label": "697",
+        "long": "Northwest Transportation Center - Harper College",
+        "short": "697",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "711-365",
+        "label": "711",
+        "long": "Wheaton-Addison",
+        "short": "711",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "714-365",
+        "label": "714",
+        "long": "College of DuPage-Naperville-Wheaton Connector",
+        "short": "714",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "715-365",
+        "label": "715",
+        "long": "Central DuPage",
+        "short": "715",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "722-365",
+        "label": "722",
+        "long": "Ogden Avenue",
+        "short": "722",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "755-365",
+        "label": "755",
+        "long": "Plainfield \u2013 IMD \u2013 West Loop Express",
+        "short": "755",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "801-365",
+        "label": "801",
+        "long": "Elgin-Geneva",
+        "short": "801",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "802-365",
+        "label": "802",
+        "long": "Aurora - Geneva via Lake Street",
+        "short": "802",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "803-365",
+        "label": "803",
+        "long": "Carpentersville Local",
+        "short": "803",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "806-360",
+        "label": "806",
+        "long": "Crystal Lake-Fox Lake",
+        "short": "806",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "807-360",
+        "label": "807",
+        "long": "Woodstock-McHenry",
+        "short": "807",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "808-360",
+        "label": "808",
+        "long": "Crystal Lake-Harvard",
+        "short": "808",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "811-360",
+        "label": "811",
+        "long": "Rosemont Entertainment Circulator",
+        "short": "811",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "832-365",
+        "label": "832",
+        "long": "Joliet - Orland Park",
+        "short": "832",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "834-365",
+        "label": "834",
+        "long": "Joliet - Downers Grove",
+        "short": "834",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "850-365",
+        "label": "850",
+        "long": "North Bolingbrook \u2013 East Loop Express",
+        "short": "850",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "855-365",
+        "label": "855",
+        "long": "Plainfield-East Loop Express",
+        "short": "855",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "890-365",
+        "label": "890",
+        "long": "Chicago Heights - UPS Hodgkins Limited",
+        "short": "890",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00539F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "905-360",
+        "label": "Schaumburg Trolley",
+        "long": "Schaumburg Trolley",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 13828,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 12549 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 12549,
+    "trips_with_shape": 12549
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expired",
+      "count": 1,
+      "effort": "Usually one export setting; export on a schedule so it never lapses again.",
+      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "owner": "Likely your export tool",
+      "points": 100.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Service data ended 859 day(s) ago.",
+      "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 13828,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "13828 of 13828 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

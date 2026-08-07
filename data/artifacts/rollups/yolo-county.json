@@ -1,23 +1,29 @@
 {
   "agency_count": 2,
-  "average_score": null,
+  "average_score": 74.4,
   "common_fixes": [],
   "comparison": {
     "absolute_rankings_published": false,
-    "eligible_count": 0,
-    "excluded_count": 2,
+    "eligible_count": 1,
+    "excluded_count": 1,
     "exclusion_counts": {
-      "rubric_version_mismatch": 2,
-      "scoring_profile_missing": 2,
-      "scoring_profile_rubric_missing": 2
+      "measured_category_set_mismatch": 1
     },
     "individual_percentiles_published": false,
-    "measured_category_cohorts": {},
-    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
-    "required_measured_categories": [],
+    "measured_category_cohorts": {
+      "correctness+freshness+completeness": 1,
+      "correctness+freshness+completeness+realtime": 1
+    },
+    "note": "Score aggregates and named changes use one current producer contract, raw reader archive profile, and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [
+      "correctness",
+      "freshness",
+      "completeness",
+      "realtime"
+    ],
     "required_reader_archive_profile": "raw-v1",
-    "required_rubric_version": "1.2",
-    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_rubric_version": "1.3",
+    "required_scoring_profile_id": "gtfs-scorecard-1.3",
     "required_validator_version": "8.0.1"
   },
   "expired": {
@@ -25,49 +31,53 @@
     "stale": 0,
     "total": 0
   },
-  "generated_at": "2026-07-14T09:01:50+00:00",
-  "grade_distribution": {},
+  "generated_at": "2026-08-07T02:19:46+00:00",
+  "grade_distribution": {
+    "C": 1
+  },
   "members": [
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 59 day(s)",
-      "days_until_expiry": 59,
+      "attention_reason": "Score fell 3.0 points since 2026-08-06",
+      "days_until_expiry": 46,
       "expiry_status": "current",
-      "grade": "B",
-      "id": "yolobus",
-      "name": "Yolobus (Yolo County Transportation District)",
+      "grade": "C",
+      "id": "unitrans",
+      "name": "Unitrans (ASUCD / City of Davis)",
       "needs_attention": true,
-      "score": 82.2,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default)."
+      "score": 72.6,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "top_fix_code": "scorecard_wheelchair_boarding_unknown"
     },
     {
       "annual_trips": null,
-      "attention_reason": null,
-      "days_until_expiry": 74,
+      "attention_reason": "Service data expires in 31 day(s)",
+      "days_until_expiry": 31,
       "expiry_status": "current",
-      "grade": "B",
-      "id": "unitrans",
-      "name": "Unitrans (ASUCD / City of Davis)",
-      "needs_attention": false,
-      "score": 80.8,
+      "grade": "C",
+      "id": "yolobus",
+      "name": "Yolobus (Yolo County Transportation District)",
+      "needs_attention": true,
+      "score": 74.4,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "top_fix_code": "scorecard_wheelchair_accessible_unknown"
     }
   ],
-  "needs_attention": 1,
+  "needs_attention": 2,
   "rollup": {
     "id": "yolo-county",
     "name": "Yolo County"
   },
-  "schema_version": "1.11",
+  "schema_version": "1.17",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 1,
+    "not_measured": 0,
     "not_ready": 0,
-    "ready": 1,
+    "ready": 2,
     "total": 2
   },
   "state_percentile": null

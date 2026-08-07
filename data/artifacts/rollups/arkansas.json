@@ -1,24 +1,27 @@
 {
   "agency_count": 3,
-  "average_score": null,
+  "average_score": 36.9,
   "common_fixes": [],
   "comparison": {
     "absolute_rankings_published": false,
-    "eligible_count": 0,
-    "excluded_count": 3,
+    "eligible_count": 1,
+    "excluded_count": 2,
     "exclusion_counts": {
-      "rubric_version_mismatch": 3,
-      "scoring_profile_missing": 3,
-      "scoring_profile_rubric_missing": 3,
       "service_data_long_expired": 2
     },
     "individual_percentiles_published": false,
-    "measured_category_cohorts": {},
-    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
-    "required_measured_categories": [],
+    "measured_category_cohorts": {
+      "correctness+freshness+completeness": 1
+    },
+    "note": "Score aggregates and named changes use one current producer contract, raw reader archive profile, and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [
+      "correctness",
+      "freshness",
+      "completeness"
+    ],
     "required_reader_archive_profile": "raw-v1",
-    "required_rubric_version": "1.2",
-    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_rubric_version": "1.3",
+    "required_scoring_profile_id": "gtfs-scorecard-1.3",
     "required_validator_version": "8.0.1"
   },
   "expired": {
@@ -26,27 +29,30 @@
     "stale": 2,
     "total": 3
   },
-  "generated_at": "2026-07-14T09:01:50+00:00",
-  "grade_distribution": {},
+  "generated_at": "2026-08-07T02:19:46+00:00",
+  "grade_distribution": {
+    "F": 1
+  },
   "members": [
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -3113,
+      "days_until_expiry": -3141,
       "expiry_status": "stale",
       "grade": "F",
       "id": "jonesboro-economical-transportation-jet",
       "name": "Jonesboro Economical Transportation (JET)",
       "needs_attention": true,
       "score": 44.1,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -3844,
+      "days_until_expiry": -3872,
       "expiry_status": "stale",
       "grade": "F",
       "id": "rock-region-metro",
@@ -54,22 +60,24 @@
       "needs_attention": true,
       "score": 39.7,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -264,
+      "days_until_expiry": -292,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "rock-region-metro-2264",
       "name": "Rock Region Metro",
       "needs_attention": true,
       "score": 36.9,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     }
   ],
   "needs_attention": 3,
@@ -77,12 +85,12 @@
     "id": "arkansas",
     "name": "Arkansas agencies"
   },
-  "schema_version": "1.11",
+  "schema_version": "1.17",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 2,
+    "not_measured": 0,
     "not_ready": 0,
-    "ready": 1,
+    "ready": 3,
     "total": 3
   },
   "state_percentile": null

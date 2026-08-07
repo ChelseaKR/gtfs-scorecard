@@ -1,0 +1,942 @@
+{
+  "agency": {
+    "id": "foothill-transit",
+    "name": "Foothill Transit",
+    "subdivision_code": "US-CA",
+    "subdivision_name": "California"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 13302,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1995,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 13302,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1995,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "1995 of 1995 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 13302,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "13302 of 13302 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 7,
+        "instances_by_severity": {
+          "ERROR": 2,
+          "INFO": 2,
+          "WARNING": 574
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "invalid_phone_number",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'invalid_phone_number' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Invalid phone number (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 534,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "same_name_and_description_for_route",
+          "count": 34,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_route' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Same name and description for route (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 4,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 1,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "unused_station",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unused_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Unused station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 61.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 7 kinds of issue across 578 instances (2 error, 574 warning, 2 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 86,
+        "effective_expiry_date": "2026-10-31",
+        "feed_end_date": "2026-10-31",
+        "feed_start_date": "2026-07-17",
+        "feed_version": "20260717",
+        "has_feed_info": true,
+        "last_service_date": "2026-10-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 86 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "coverage_pct": null,
+        "kinds_configured": 3,
+        "kinds_reachable": 0,
+        "reachable_kinds": [],
+        "rt_freshness": null,
+        "samples": 9,
+        "scheduled_trips_in_window": 151,
+        "worst_lag_seconds": null
+      },
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_updates_unreachable",
+          "count": 1,
+          "effort": "Usually a vendor support ticket.",
+          "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+          "owner": "",
+          "points": 33.3,
+          "severity": "ERROR",
+          "what": "The trip updates realtime feed failed during sampling.",
+          "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        },
+        {
+          "code": "scorecard_rt_vehicle_positions_unreachable",
+          "count": 1,
+          "effort": "Usually a vendor support ticket.",
+          "fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+          "owner": "",
+          "points": 33.3,
+          "severity": "ERROR",
+          "what": "The vehicle positions realtime feed failed during sampling.",
+          "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        },
+        {
+          "code": "scorecard_rt_service_alerts_unreachable",
+          "count": 1,
+          "effort": "Usually a vendor support ticket.",
+          "fix": "Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+          "owner": "",
+          "points": 33.3,
+          "severity": "ERROR",
+          "what": "The service alerts realtime feed failed during sampling.",
+          "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        }
+      ],
+      "name": "realtime",
+      "score": 0.0,
+      "status": "measured",
+      "summary": "Sampled 9 times: 0 of 3 configured feeds healthy; vehicle position plausibility was not measurable.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 87 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "4f899ea424808dc99787f908dbf2b2f0a1c4d6d19c8e57c7ace55859c3bd43cb",
+    "size_bytes": 5458406,
+    "static_url": "https://foothilltransit.rideralerts.com/myStop/GTFS-Zip.ashx"
+  },
+  "fetch": {
+    "final_url": "https://foothilltransit.rideralerts.com/myStop/GTFS-Zip.ashx",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -118.2672,
+      33.91615,
+      -117.69037,
+      34.15129
+    ],
+    "lat": 34.06497,
+    "lon": -117.91728,
+    "stop_count": 1995
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 36,
+        "trip_count": 13302,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 36,
+    "trip_count": 13302
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "1",
+      "2"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "status": "at_risk"
+      },
+      {
+        "detail": "Service data covers the next 87 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "at_risk",
+    "summary": "This feed is close to NTD-ready. 1 validator error to resolve."
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 50.9,
+    "margin_to_next_band": 9.1,
+    "score": 50.9
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 25,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "25 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (195, 282, 289, 291, 292, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 1936,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "1936 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Temple Ave and Diamond Bar Blvd E\", \"Orange Grove Ave and Glen Ave N\", \"Golden Springs Rd and Calbourne Dr E\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1987,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 13302
+  },
+  "route_map": {
+    "drawn_route_count": 36,
+    "has_shapes": true,
+    "path": "data/artifacts/foothill-transit/geometry.geojson",
+    "route_count": 36,
+    "routes": [
+      {
+        "color": "00928A",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "10195",
+        "label": "195",
+        "long": "Pomona Transit Center via Reservoir St",
+        "short": "195",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "92008A",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "10197",
+        "label": "197",
+        "long": "Pomona - Claremont - Montclair",
+        "short": "197",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "10282",
+        "label": "282",
+        "long": "Puente Hills-Hacienda Hts-El Monte Sta",
+        "short": "282",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "10285",
+        "label": "285",
+        "long": "Puente Hills-Whittier Hospital-La Habra",
+        "short": "285",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CEA000",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "10286",
+        "label": "286",
+        "long": "Pomona - Diamond Bar - Brea Mall",
+        "short": "286",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "68CE00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "10289",
+        "label": "289",
+        "long": "Pomona - Walnut - Puente Hills Mall",
+        "short": "289",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A5CE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "10291",
+        "label": "291",
+        "long": "La Verne - Pomona via Garey Ave",
+        "short": "291",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF6863",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "10292",
+        "label": "292",
+        "long": "Claremont Transit Ctr-Pomona Transit Ctr",
+        "short": "292",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5A4177",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "10482",
+        "label": "482",
+        "long": "Pomona-Rowland Heights-Puente Hills Mall",
+        "short": "482",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0074A0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "10486",
+        "label": "486",
+        "long": "Pomona-La Puente-El Monte Via Amar Rd",
+        "short": "486",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "71D0F3",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "10488",
+        "label": "488",
+        "long": "Glendora-West Covina-El Monte Station",
+        "short": "488",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D071F3",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "10490",
+        "label": "490",
+        "long": "Express-Grand Av Park N Ride-Covina-DTLA",
+        "short": "490",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E46E4A",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "10492",
+        "label": "492",
+        "long": "El Monte-Arcadia-Montclair Transit Ctr",
+        "short": "492",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "48B4F5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "10495",
+        "label": "495",
+        "long": "Express - Industry Park N Ride - DTLA",
+        "short": "495",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B648CD",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "10499",
+        "label": "499",
+        "long": "Express - Via Verde Park N Ride - DTLA",
+        "short": "499",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CD4848",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "10699",
+        "label": "699",
+        "long": "Express - Montclair - Fairplex - DTLA",
+        "short": "699",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B0E345",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "10853",
+        "label": "853",
+        "long": "Diamond Bar",
+        "short": "853",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E0CB00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "20178",
+        "label": "178",
+        "long": "Puente Hills Mall - El Monte Station",
+        "short": "178",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9BB2B4",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "20185",
+        "label": "185",
+        "long": "Azusa - West Covina - Puente Hills Mall",
+        "short": "185",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0DB129",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20187",
+        "label": "187",
+        "long": "Azusa - Arcadia - Pasadena",
+        "short": "187",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "630DB1",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "20188",
+        "label": "188",
+        "long": "Azusa-Claremont-Montclair Transit Ctr",
+        "short": "188",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B10D0D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "20190",
+        "label": "190",
+        "long": "Pomona - West Covina - El Monte Station",
+        "short": "190",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "017815",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20194",
+        "label": "194",
+        "long": "Pomona - Industry - La Puente - El Monte",
+        "short": "194",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F54DBD",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20269",
+        "label": "269",
+        "long": "El Monte Station - Shops at Montebello",
+        "short": "269",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4DF5E8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20270",
+        "label": "270",
+        "long": "Arcadia Sta. - Monrovia - El Monte Sta.",
+        "short": "270",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DF4DF5",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20272",
+        "label": "272",
+        "long": "Duarte - Baldwin Park - West Covina",
+        "short": "272",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "42DAE2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20274",
+        "label": "274",
+        "long": "West Covina - Industry - Whittier",
+        "short": "274",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C567C4",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20280",
+        "label": "280",
+        "long": "Azusa - Puente Hills Mall via Azusa Ave",
+        "short": "280",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFA0FE",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "20281",
+        "label": "281",
+        "long": "Glendora-Azusa-West Covina-Puente Hills",
+        "short": "281",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3EAC74",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20284",
+        "label": "284",
+        "long": "Glendora-San Dimas-Covina-West Covina",
+        "short": "284",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1264AF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20295",
+        "label": "295",
+        "long": "San Dimas Station-Cal Poly Pomona-Mt SAC",
+        "short": "295",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "444040",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20480",
+        "label": "480",
+        "long": "West Covina-Pomona-Montclair Transit Ctr",
+        "short": "480",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1C9199",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20493",
+        "label": "493",
+        "long": "Express-Rowland Hts-Puente Hills-DTLA",
+        "short": "493",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4099C4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20498",
+        "label": "498",
+        "long": "Express Service - West Covina - DTLA",
+        "short": "498",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ACACAC",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "20707",
+        "label": "707",
+        "long": "Montclair - Pomona - El Monte - L.A.",
+        "short": "707",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DE4D26",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "20861",
+        "label": "861",
+        "long": "Duarte Mtn Vista-Huntington-Royal Oaks",
+        "short": "861",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1995,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 13302 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 13302,
+    "trips_with_shape": 13302
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_rt_trip_updates_unreachable",
+      "count": 1,
+      "effort": "Usually a vendor support ticket.",
+      "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+      "owner": "",
+      "points": 33.3,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "The trip updates realtime feed failed during sampling.",
+      "why": "When this feed is down, riders see scheduled times presented as if they were live."
+    },
+    {
+      "code": "scorecard_rt_vehicle_positions_unreachable",
+      "count": 1,
+      "effort": "Usually a vendor support ticket.",
+      "fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+      "owner": "",
+      "points": 33.3,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "The vehicle positions realtime feed failed during sampling.",
+      "why": "When this feed is down, riders see scheduled times presented as if they were live."
+    },
+    {
+      "code": "scorecard_rt_service_alerts_unreachable",
+      "count": 1,
+      "effort": "Usually a vendor support ticket.",
+      "fix": "Check the service alerts endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+      "owner": "",
+      "points": 33.3,
+      "rank": 3,
+      "severity": "ERROR",
+      "what": "The service alerts realtime feed failed during sampling.",
+      "why": "When this feed is down, riders see scheduled times presented as if they were live."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

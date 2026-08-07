@@ -1,0 +1,1450 @@
+{
+  "agency": {
+    "id": "kitsap-transit",
+    "name": "Kitsap Transit",
+    "subdivision_code": "US-WA",
+    "subdivision_name": "Washington"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 3924,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1323,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 3924,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1323,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "1323 of 1323 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 3924,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "3924 of 3924 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        }
+      ],
+      "name": "completeness",
+      "score": 60.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 4,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 6,
+          "WARNING": 7
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 4,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a transit vehicle can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no transit vehicle can meet."
+        },
+        {
+          "code": "unusable_trip",
+          "count": 2,
+          "effort": "Worth a vendor question if it appears often.",
+          "fix": "Check the flagged trips in your scheduling software; remove them or restore their missing stops.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some trips serve fewer than two stops.",
+          "why": "A trip with one stop can't be ridden; planners ignore it and it may signal an export problem."
+        },
+        {
+          "code": "trip_coverage_not_active_for_next7_days",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Trim past service periods the next time you export.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Many of the feed's trips don't run at all in the next 7 days.",
+          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 6,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the transit vehicle ends up, so a midpoint name can send them the wrong way."
+        }
+      ],
+      "name": "correctness",
+      "score": 87.2,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 13 instances (0 error, 7 warning, 6 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 37,
+        "effective_expiry_date": "2026-09-12",
+        "feed_end_date": "2026-09-12",
+        "feed_start_date": "2026-08-01",
+        "feed_version": "S1000067",
+        "has_feed_info": true,
+        "last_service_date": "2026-09-12",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 61.7,
+      "status": "measured",
+      "summary": "Service data covers the next 37 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "alerts_content": {
+          "alerts": 12,
+          "ended_over_30_days_ago": 0,
+          "with_cause_and_effect": 12,
+          "with_description": 12,
+          "with_header_text": 12,
+          "with_informed_entity": 12
+        },
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "coverage_pct": null,
+        "kinds_configured": 3,
+        "kinds_reachable": 1,
+        "reachable_kinds": [
+          "service_alerts"
+        ],
+        "rt_freshness": null,
+        "samples": 9,
+        "scheduled_trips_in_window": 27,
+        "worst_lag_seconds": null
+      },
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_updates_unreachable",
+          "count": 1,
+          "effort": "Usually a vendor support ticket.",
+          "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+          "owner": "",
+          "points": 33.3,
+          "severity": "ERROR",
+          "what": "The trip updates realtime feed failed during sampling.",
+          "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        },
+        {
+          "code": "scorecard_rt_vehicle_positions_unreachable",
+          "count": 1,
+          "effort": "Usually a vendor support ticket.",
+          "fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+          "owner": "",
+          "points": 33.3,
+          "severity": "ERROR",
+          "what": "The vehicle positions realtime feed failed during sampling.",
+          "why": "When this feed is down, riders see scheduled times presented as if they were live."
+        }
+      ],
+      "name": "realtime",
+      "score": 33.3,
+      "status": "measured",
+      "summary": "Sampled 9 times: 1 of 3 configured feeds healthy; vehicle position plausibility was not measurable.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 38 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "License: http://www.kitsaptransit.com/privacy-policy#developer",
+    "reachable": true,
+    "sha256": "fa575e587b96ee4a6cae140871e1ac0f5aa52d54c5c6176dd1355ea0548d1187",
+    "size_bytes": 4065538,
+    "static_url": "http://pride.kitsaptransit.com/gtfs/google_transit.zip"
+  },
+  "ferry_profile": {
+    "accessibility": {
+      "measures": "published_values_not_physical_usability",
+      "terminals": {
+        "allowed_count": 0,
+        "allowed_pct": 0.0,
+        "not_allowed_count": 0,
+        "not_allowed_pct": 0.0,
+        "stated_count": 0,
+        "stated_pct": 0.0,
+        "total_count": 7
+      },
+      "trips": {
+        "allowed_count": 0,
+        "allowed_pct": 0.0,
+        "not_allowed_count": 0,
+        "not_allowed_pct": 0.0,
+        "stated_count": 0,
+        "stated_pct": 0.0,
+        "total_count": 602
+      }
+    },
+    "bikes": {
+      "allowed_count": 602,
+      "allowed_pct": 100.0,
+      "not_allowed_count": 0,
+      "not_allowed_pct": 0.0,
+      "stated_count": 602,
+      "stated_pct": 100.0,
+      "total_count": 602
+    },
+    "cars": {
+      "allowed_count": 0,
+      "allowed_pct": 0.0,
+      "not_allowed_count": 0,
+      "not_allowed_pct": 0.0,
+      "stated_count": 0,
+      "stated_pct": 0.0,
+      "total_count": 602
+    },
+    "fares": {
+      "applied": true,
+      "fare_free": false,
+      "model": "legacy",
+      "scope": "whole_feed"
+    },
+    "graded": false,
+    "measured": true,
+    "realtime": {
+      "configured_kinds": [
+        "trip_updates",
+        "vehicle_positions",
+        "service_alerts"
+      ],
+      "kinds_configured": 3,
+      "scope": "whole_feed"
+    },
+    "route_count": 8,
+    "scope": "ferry_routes_and_trips",
+    "stop_access": {
+      "direct_count": 0,
+      "eligible_terminal_count": 0,
+      "stated_count": 0,
+      "stated_pct": null,
+      "through_station_count": 0
+    },
+    "terminal_hierarchy": {
+      "boarding_location_count": 7,
+      "parented_boarding_location_count": 0,
+      "parented_boarding_location_pct": 0.0,
+      "referenced_station_count": 0
+    },
+    "trip_count": 602
+  },
+  "fetch": {
+    "final_url": "https://pride.kitsaptransit.com/gtfs/google_transit.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -122.85144,
+      47.41174,
+      -122.33892,
+      47.85481
+    ],
+    "lat": 47.58974,
+    "lon": -122.62968,
+    "stop_count": 1323
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": true,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 73,
+        "trip_count": 3322,
+        "trip_share_pct": 84.7
+      },
+      {
+        "key": "ferry",
+        "label": "Ferry",
+        "route_count": 8,
+        "trip_count": 602,
+        "trip_share_pct": 15.3
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 81,
+    "trip_count": 3924
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "20"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data covers the next 38 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "ready",
+    "summary": "Published at a public URL, valid, current, and identified with agency_id: the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 filings make that official; this is a heads-up, not a determination."
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 4.5,
+    "margin_to_next_band": 5.5,
+    "score": 64.5
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 15,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "15 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (500, 501, 119, 186, 219, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 726,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "726 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Southworth & Banner\", \"Harper Church P&R\", \"Colchester & Main St\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1323,
+    "findings": [
+      {
+        "code": "scorecard_single_stop_trips",
+        "count": 2,
+        "effort": "Usually an export setting or a stop_times mapping in your software.",
+        "fix": "Check your scheduling export: every trip should list each stop it calls at, in order, with times.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "WARNING",
+        "what": "2 of 3924 trips list fewer than two stops.",
+        "why": "A trip with one stop has no leg a rider can ride; trip planners can't route anyone on it, so the service effectively does not exist."
+      }
+    ],
+    "orphan_stops": 0,
+    "single_stop_trips": 2,
+    "trips_total": 3924
+  },
+  "route_map": {
+    "drawn_route_count": 77,
+    "has_shapes": true,
+    "path": "data/artifacts/kitsap-transit/geometry.geojson",
+    "route_count": 81,
+    "routes": [
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "104",
+        "label": "104",
+        "long": "Tremont",
+        "short": "104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1D1B11",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "105",
+        "label": "105",
+        "long": "Sidney",
+        "short": "105",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0004FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "108",
+        "label": "108",
+        "long": "Bethel",
+        "short": "108",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "803A66",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "109",
+        "label": "109",
+        "long": "East Port Orchard",
+        "short": "109",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B2752D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "119",
+        "label": "119",
+        "long": "Madrona",
+        "short": "119",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F497D",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "181",
+        "label": "181",
+        "long": "Annapolis",
+        "short": "181",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1D1B11",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "184",
+        "label": "184",
+        "long": "Harper Shuttle",
+        "short": "184",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "215867",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "185",
+        "label": "185",
+        "long": "Mullenix",
+        "short": "185",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "186",
+        "label": "186",
+        "long": "Southworth",
+        "short": "186",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C00000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "212",
+        "label": "212",
+        "long": "Bremerton-Silverdale West",
+        "short": "212",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFC000",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "215",
+        "label": "215",
+        "long": "McWilliams",
+        "short": "215",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002060",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "217",
+        "label": "217",
+        "long": "Bremerton-Silverdale East",
+        "short": "217",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B2752D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "219",
+        "label": "219",
+        "long": "Crossroads",
+        "short": "219",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4E6128",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "220",
+        "label": "220",
+        "long": "Sunn Fjord",
+        "short": "220",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7030A0",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "221",
+        "label": "221",
+        "long": "Perry Avenue",
+        "short": "221",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C90000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "222",
+        "label": "222",
+        "long": "Gateway Express",
+        "short": "222",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "31859B",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "223",
+        "label": "223",
+        "long": "Kariotis",
+        "short": "223",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "224",
+        "label": "224",
+        "long": "Olympic College",
+        "short": "224",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E46C0A",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "225",
+        "label": "225",
+        "long": "Sheridan Park",
+        "short": "225",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "604A7B",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "226",
+        "label": "226",
+        "long": "Bay Vista",
+        "short": "226",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "31859B",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "228",
+        "label": "228",
+        "long": "Marion",
+        "short": "228",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "229",
+        "label": "229",
+        "long": "Trenton",
+        "short": "229",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7030A0",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "238",
+        "label": "238",
+        "long": "West Bremerton Express",
+        "short": "238",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E46C0A",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "265",
+        "label": "265",
+        "long": "Silverdale Central",
+        "short": "265",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4E6128",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "266",
+        "label": "266",
+        "long": "Silverdale Ridgetop",
+        "short": "266",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "943734",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "301",
+        "label": "301",
+        "long": "North Kitsap Fast Ferry Express",
+        "short": "301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "31859B",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "302",
+        "label": "302",
+        "long": "Kingston/Suquamish Fast Ferry",
+        "short": "302",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B050",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "307",
+        "label": "307",
+        "long": "Kingston/North Viking Fast Ferry",
+        "short": "307",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4E6128",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "331",
+        "label": "331",
+        "long": "Poulsbo/Myhre",
+        "short": "331",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7030A0",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "332",
+        "label": "332",
+        "long": "Poulsbo/Silverdale",
+        "short": "332",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "333",
+        "label": "333",
+        "long": "Silverdale/Bainbridge",
+        "short": "333",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "344",
+        "label": "344",
+        "long": "Poulsbo Central",
+        "short": "344",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFC000",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "385",
+        "label": "385",
+        "long": "BI Downtown",
+        "short": "385",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "403152",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "389",
+        "label": "389",
+        "long": "Fletcher Bay",
+        "short": "389",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "984807",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "390",
+        "label": "390",
+        "long": "Poulsbo/Bainbridge",
+        "short": "390",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E46C0A",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "391",
+        "label": "391",
+        "long": "Kingston/Bainbridge",
+        "short": "391",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "393",
+        "label": "393",
+        "long": "Manzanita",
+        "short": "393",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "448038",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "394",
+        "label": "394",
+        "long": "Agate Point",
+        "short": "394",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6D2F80",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "395",
+        "label": "395",
+        "long": "Battle Point",
+        "short": "395",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "943734",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "396",
+        "label": "396",
+        "long": "Sunrise",
+        "short": "396",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002060",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "397",
+        "label": "397",
+        "long": "Crystal Springs",
+        "short": "397",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "398",
+        "label": "398",
+        "long": "Fort Ward",
+        "short": "398",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1D1B11",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "399",
+        "label": "399",
+        "long": "Bill Point",
+        "short": "399",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "400",
+        "label": "400",
+        "long": "Bremerton to Seattle Fast Ferry",
+        "short": "400",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "401",
+        "label": "401",
+        "long": "Kingston to Seattle Fast Ferry",
+        "short": "401",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "402",
+        "label": "402",
+        "long": "Southworth to Seattle Fast Ferry",
+        "short": "402",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "403",
+        "label": "403",
+        "long": "Seattle to Bremerton Fast Ferry",
+        "short": "403",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "404",
+        "label": "404",
+        "long": "Seattle to Kingston Fast Ferry",
+        "short": "404",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "405",
+        "label": "405",
+        "long": "Seattle to Southworth Fast Ferry",
+        "short": "405",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "E46C0A",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "500",
+        "label": "500",
+        "long": "Port Orchard Foot Ferry",
+        "short": "500",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "E46C0A",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "501",
+        "label": "501",
+        "long": "Annapolis Foot Ferry",
+        "short": "501",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "600",
+        "label": "600",
+        "long": "Burley Worker/Driver",
+        "short": "600",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "602",
+        "label": "602",
+        "long": "Tracyton Worker/Driver",
+        "short": "602",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "604",
+        "label": "604",
+        "long": "Horseshoe Lake Worker/Driver",
+        "short": "604",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "605",
+        "label": "605",
+        "long": "Illahee Worker/Driver",
+        "short": "605",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "607",
+        "label": "607",
+        "long": "Long Lake Days Worker/Driver",
+        "short": "607",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "608",
+        "label": "608",
+        "long": "Manchester Worker/Driver",
+        "short": "608",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "612",
+        "label": "612",
+        "long": "Phillips/Bielmeier Worker/Driver",
+        "short": "612",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "614",
+        "label": "614",
+        "long": "Port Gamble Worker/Driver",
+        "short": "614",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "616",
+        "label": "616",
+        "long": "Salmonberry Worker/Driver",
+        "short": "616",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "618",
+        "label": "618",
+        "long": "Southworth Worker/Driver",
+        "short": "618",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "619",
+        "label": "619",
+        "long": "Suquamish Worker/Driver",
+        "short": "619",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "620",
+        "label": "620",
+        "long": "Winslow Worker/Driver",
+        "short": "620",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "621",
+        "label": "621",
+        "long": "Woodmere Worker/Driver",
+        "short": "621",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "623",
+        "label": "623",
+        "long": "Central Valley Loop Worker/Driver",
+        "short": "623",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "624",
+        "label": "624",
+        "long": "Fairgrounds Worker/Driver",
+        "short": "624",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "625",
+        "label": "625",
+        "long": "Sidney Woods Worker/Driver",
+        "short": "625",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "626",
+        "label": "626",
+        "long": "Early North Worker/Driver",
+        "short": "626",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "627",
+        "label": "627",
+        "long": "SK/Bangor Worker/Driver",
+        "short": "627",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "630",
+        "label": "630",
+        "long": "Olalla Worker/Driver",
+        "short": "630",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "631",
+        "label": "631",
+        "long": "Chico Worker/Driver",
+        "short": "631",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "633",
+        "label": "633",
+        "long": "Viking Express Worker/Driver",
+        "short": "633",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "635",
+        "label": "635",
+        "long": "Early South Worker/Driver",
+        "short": "635",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "636",
+        "label": "636",
+        "long": "Parkwood-Ponderosa Worker/Driver",
+        "short": "636",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "637",
+        "label": "637",
+        "long": "Sunnyslope Worker/Driver",
+        "short": "637",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0504D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "638",
+        "label": "638",
+        "long": "Seabeck/Camp Union Worker/Driver",
+        "short": "638",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2FC72A",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "800",
+        "label": "800",
+        "long": "BI Ride",
+        "short": "800",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2FC72A",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "801",
+        "label": "801",
+        "long": "SK Ride",
+        "short": "801",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2FC72A",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "803",
+        "label": "803",
+        "long": "Kingston Ride",
+        "short": "803",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2FC72A",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "807",
+        "label": "807",
+        "long": "Sunday On-Demand",
+        "short": "807",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "TA034",
+        "label": "TA034",
+        "long": "Task",
+        "short": "TA034",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1323,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 3924 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 3924,
+    "trips_with_shape": 3924
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_rt_trip_updates_unreachable",
+      "count": 1,
+      "effort": "Usually a vendor support ticket.",
+      "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+      "owner": "",
+      "points": 33.3,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "The trip updates realtime feed failed during sampling.",
+      "why": "When this feed is down, riders see scheduled times presented as if they were live."
+    },
+    {
+      "code": "scorecard_rt_vehicle_positions_unreachable",
+      "count": 1,
+      "effort": "Usually a vendor support ticket.",
+      "fix": "Check the vehicle positions endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.",
+      "owner": "",
+      "points": 33.3,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "The vehicle positions realtime feed failed during sampling.",
+      "why": "When this feed is down, riders see scheduled times presented as if they were live."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1323,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "1323 of 1323 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

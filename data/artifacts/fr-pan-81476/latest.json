@@ -1,0 +1,972 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-pan-81476",
+    "name": "R\u00e9seau urbain Coralie",
+    "subdivision_code": "FR-BRE",
+    "subdivision_name": "Bretagne"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 26.6,
+          "stops_marked_accessible_pct": 14.1,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 14.1,
+          "trips_stated_pct": 47.6
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 3.5,
+          "wheelchair_trips": 7.1
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 1685,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 548,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 1685,
+        "wheelchair_accessible_pct": 47.6,
+        "wheelchair_boarding_pct": 14.1,
+        "wheelchair_marked_accessible_pct": 14.1,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 471,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 21.5,
+          "severity": "WARNING",
+          "what": "471 of 548 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 883,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 7.9,
+          "severity": "WARNING",
+          "what": "883 of 1685 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 48.2,
+      "status": "measured",
+      "summary": "14% of stops state wheelchair accessibility (14% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 13,
+        "instances_by_severity": {
+          "ERROR": 1451,
+          "INFO": 41,
+          "WARNING": 1283
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "trip_distance_exceeds_shape_distance",
+          "count": 1451,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 1000,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 176,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 80,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 12,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 6,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 2,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 2,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 2,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "route_short_name_too_long",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'route_short_name_too_long' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Route short name too long (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "service_extends_far_in_the_future",
+          "count": 27,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'service_extends_far_in_the_future' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Service extends far in the future (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 14,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the bus ends up, so a midpoint name can send them the wrong way."
+        }
+      ],
+      "name": "correctness",
+      "score": 18.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 13 kinds of issue across 2775 instances (1451 error, 1283 warning, 41 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 2723,
+        "effective_expiry_date": "2034-01-20",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2034-01-20",
+        "seasonal_boundary": true,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 2723 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 2725 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 14% of stops and 48% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 14% of stops and 48% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Open Database License (ODbL), recorded by France's National Access Point; credit R\u00e9gion Bretagne, identify the ODbL, and preserve share-alike terms where they apply.",
+    "reachable": true,
+    "sha256": "36138fb198567a30b1c3897448319418954b2a13935bf1422c9e02f96c8242d1",
+    "size_bytes": 3028395,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/becd68ea-3e7a-4336-b14a-dc3bdcf493c2"
+  },
+  "fetch": {
+    "final_url": "https://www.korrigo.bzh/ftp/OPENDATA/CORALIE.gtfs.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -3.97389,
+      47.7886,
+      -3.69471,
+      48.03783
+    ],
+    "lat": 47.89057,
+    "lon": -3.85489,
+    "stop_count": 548
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 42,
+        "trip_count": 1685,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 42,
+    "trip_count": 1685
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 44.4,
+    "margin_to_next_band": 15.6,
+    "score": 44.4
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 10,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "10 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (4, 14, 12, 13, 16, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 3,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "3 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Coll\u00e8ge St Michel\", \"Rd Pt Rue de Pont-aven\", \"St Mathieu\").",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 548,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 1685
+  },
+  "route_map": {
+    "drawn_route_count": 42,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-pan-81476/geometry.geojson",
+    "route_count": 42,
+    "routes": [
+      {
+        "color": "7E51A0",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "111",
+        "label": "PLA",
+        "long": "Coralie Plages",
+        "short": "PLA",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "112",
+        "label": "17S",
+        "long": "Kern\u00e9vel - Rosporden",
+        "short": "17S",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0F6FB8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "113",
+        "label": "11",
+        "long": "Elliant - Rosporden",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8AB619",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "114",
+        "label": "13",
+        "long": "Pouldohan - Tr\u00e9gunc - Tr\u00e9vignon - N\u00e9vez",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB82D5",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "116",
+        "label": "16",
+        "long": "Tr\u00e9gunc - Rosporden",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DEDD00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "118",
+        "label": "18",
+        "long": "Pont Aven - N\u00e9vez - Port Manech",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7D4C20",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "120",
+        "label": "LIAISON KERNEVEL",
+        "long": "Kernevel - Rosporden",
+        "short": "LIAISON KERNEVEL",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00702C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "121",
+        "label": "LIAISON ST YVI",
+        "long": "Saint-Yvi - Rosporden",
+        "short": "LIAISON ST YVI",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "COR13",
+        "label": "13A",
+        "long": "N\u00e9vez - Tr\u00e9gunc - Concarneau",
+        "short": "13A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "COR17",
+        "label": "15C",
+        "long": "Cadol - Melgven - Croissant-bouillet - Concarneau",
+        "short": "15C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "29B8DD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "COR40",
+        "label": "B",
+        "long": "La Haie - Coll\u00e8ge Des Sables Blancs",
+        "short": "B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F78B00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "COR7",
+        "label": "4",
+        "long": "Concarneau - Rosporden",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav56",
+        "label": "11B",
+        "long": "Elliant - Rosporden",
+        "short": "11B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF99CC",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "CORNav66",
+        "label": "5",
+        "long": "Pointe Du Cabellou - Le Porzou",
+        "short": "5",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00702C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "CORNav68",
+        "label": "10",
+        "long": "Saint Yvi - Rosporden",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav69",
+        "label": "11A",
+        "long": "Elliant - Tourc'h - Rosporden",
+        "short": "11A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav70",
+        "label": "12A",
+        "long": "Tourc'h Kerroz - Rosporden Coll\u00e8ge Pensivy",
+        "short": "12A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BBE3FA",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "CORNav71",
+        "label": "14",
+        "long": "Tr\u00e9gunc Centre - N\u00e9vez Mairie - N\u00e9vez Port Manech",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav73",
+        "label": "16C",
+        "long": "Melgven - Concarneau",
+        "short": "16C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav74",
+        "label": "17A",
+        "long": "Rosporden",
+        "short": "17A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav75",
+        "label": "18B",
+        "long": "N\u00e9vez - Pont Aven",
+        "short": "18B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav76",
+        "label": "4C",
+        "long": "Kernevel - Concarneau",
+        "short": "4C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav77",
+        "label": "10A",
+        "long": "St-yvi - Rosporden",
+        "short": "10A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav78",
+        "label": "10B",
+        "long": "St Yvi - Cadol - Rosporden",
+        "short": "10B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav79",
+        "label": "10C",
+        "long": "Elliant - St Yvi - Rosporden",
+        "short": "10C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav80",
+        "label": "10D",
+        "long": "Rosporden - Cadol - Rosporden",
+        "short": "10D",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009D57",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "CORNav84",
+        "label": "12",
+        "long": "Tourc'h - Rosporden",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav86",
+        "label": "13B",
+        "long": "N\u00e9vez - Tr\u00e9gunc - Concarneau",
+        "short": "13B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav89",
+        "label": "16R",
+        "long": "Melgven - Rosporden",
+        "short": "16R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav90",
+        "label": "16T",
+        "long": "Rosporden - Tr\u00e9gunc",
+        "short": "16T",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav91",
+        "label": "18A",
+        "long": "N\u00e9vez - Pont Aven",
+        "short": "18A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav93",
+        "label": "18C",
+        "long": "Nizon - Pont Aven",
+        "short": "18C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav94",
+        "label": "17B",
+        "long": "Kernevel - Rosporden",
+        "short": "17B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "CORNav96",
+        "label": "17C",
+        "long": "Kernevel Sud - Rosporden",
+        "short": "17C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "RT011549",
+        "label": "10S",
+        "long": "Rosporden - St Yvi Bois de Pleuven",
+        "short": "10S",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E94C13",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "RT014485",
+        "label": "19",
+        "long": "Rosporden - Pont Aven - Port Manec'h - Kerdalidec",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E5007D",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "SV011020",
+        "label": "1",
+        "long": "Keramporiel - Centre - Le Porzou",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A7E0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "SV011022",
+        "label": "2",
+        "long": "Maison Blanche - Centre - Le Porzou - Tr\u00e9gunc",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "339C2E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SV011023",
+        "label": "3",
+        "long": "St Yvi - Beuzec Conq - Centre",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993300",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "SV011024",
+        "label": "6",
+        "long": "Camping des Pr\u00e9s Verts - Centre Ville",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E5007D",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "SV011025",
+        "label": "15",
+        "long": "Cadol - Melgven - Concarneau Centre",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2F3691",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "SV011026",
+        "label": "7",
+        "long": "Beuzec - Sables Blancs - Centre Ville - Cabellou",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 548,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "trip_distance_exceeds_shape_distance",
+      "count": 1451,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 24.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 471,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 21.5,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "471 of 548 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

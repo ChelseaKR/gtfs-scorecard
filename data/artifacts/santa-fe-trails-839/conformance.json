@@ -1,0 +1,22 @@
+{
+  "awarded": false,
+  "criteria": [
+    {
+      "detail": "Passes validation with no errors.",
+      "key": "valid",
+      "met": true
+    },
+    {
+      "detail": "Service data expired 92 days ago.",
+      "key": "current",
+      "met": false
+    },
+    {
+      "detail": "States wheelchair access on 100% of stops and 100% of trips.",
+      "key": "accessible",
+      "met": true
+    }
+  ],
+  "status": "not_yet",
+  "summary": "This feed is close to the conformance mark. Service data expired 92 days ago."
+}

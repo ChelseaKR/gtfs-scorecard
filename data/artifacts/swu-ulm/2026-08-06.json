@@ -1,0 +1,617 @@
+{
+  "agency": {
+    "country": "DE",
+    "id": "swu-ulm",
+    "name": "SWU Verkehr (Ulm/Neu-Ulm)",
+    "operating_note": "The municipal operator's own GTFS Schedule feed for Ulm and Neu-Ulm tram and bus. SWU operates within the DING tariff association, but this is a distinct operator-level feed under a different licence.",
+    "subdivision_code": "DE-BW",
+    "subdivision_name": "Baden-W\u00fcrttemberg"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 37.5,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 5507,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 739,
+        "translations": {
+          "feed_lang": "de",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 5507,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 739,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "739 of 739 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 60.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 2,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 6230,
+          "WARNING": 0
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "unsorted_stop_times",
+          "count": 5507,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unsorted_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Unsorted stop times (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 723,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the transit vehicle ends up, so a midpoint name can send them the wrong way."
+        }
+      ],
+      "name": "correctness",
+      "score": 98.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 2 kinds of issue across 6230 instances (0 error, 0 warning, 6230 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 147,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": "2026-12-31",
+        "feed_start_date": "2026-04-11",
+        "feed_version": "20260312",
+        "has_feed_info": true,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 147 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC0 1.0 (public domain dedication) as stated on MobiData BW, the Baden-W\u00fcrttemberg state mobility open data portal run by NVBW; free reuse without conditions.",
+    "reachable": true,
+    "sha256": "2d294ba5fb3ebbe8c915291559e11b0711c16a4bf2fab4e0ad5db23546170c6b",
+    "size_bytes": 1171327,
+    "static_url": "https://gtfs.swu.de/daten/SWU.zip"
+  },
+  "fetch": {
+    "final_url": "https://gtfs.swu.de/daten/SWU.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      9.87883,
+      48.29987,
+      10.03075,
+      48.45508
+    ],
+    "lat": 48.39509,
+    "lon": 9.96849,
+    "stop_count": 739
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 2,
+        "trip_count": 1596,
+        "trip_share_pct": 29.0
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 19,
+        "trip_count": 3911,
+        "trip_share_pct": 71.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 21,
+    "trip_count": 5507
+  },
+  "overall": {
+    "grade": "B",
+    "margin_to_lower_band": 6.6,
+    "margin_to_next_band": 3.4,
+    "score": 86.6
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 14,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "14 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (6, 9, 15, 13, 1, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 8,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "8 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"St.-Elisabeth-Kirche\", \"St.-Gallener-Stra\u00dfe\", \"St.-Jakob-Stra\u00dfe\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 503,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 5507
+  },
+  "route_map": {
+    "drawn_route_count": 21,
+    "has_shapes": true,
+    "path": "data/artifacts/swu-ulm/geometry.geojson",
+    "route_count": 21,
+    "routes": [
+      {
+        "color": "ED1B24",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "L01",
+        "label": "1",
+        "long": "S\u00f6flingen \u2013 B\u00f6fingen",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "37B355",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "L02",
+        "label": "2",
+        "long": "Kuhberg - Science Park II",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "01806D",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "L04",
+        "label": "4",
+        "long": "Wiblingen - B\u00f6fingen S\u00fcd",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1AA8BE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "L05",
+        "label": "5",
+        "long": "Ludwigsfeld / Wiley - Wissenschaftsstadt",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D66F08",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "L06",
+        "label": "6",
+        "long": "Donaustadion - Eselsberg Hasenkopf",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B1006A",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "L07",
+        "label": "7",
+        "long": "Willy-Brandt-Platz \u2013 Jungingen",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "76408C",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "L08",
+        "label": "8",
+        "long": "Grimmelfingen - Universit\u00e4t S\u00fcd",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6293",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "L09",
+        "label": "9",
+        "long": "Glei\u00dfelstetten - Roter Berg",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "94914F",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "L10",
+        "label": "10",
+        "long": "Donautal \u2013 Blautal-Center",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005DA3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "L11",
+        "label": "11",
+        "long": "ZOB - Eggingen - ZOB",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B22C2B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "L12",
+        "label": "12",
+        "long": "ZOB - Unterweiler / Dellmensingen",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4AA76A",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "L13",
+        "label": "13",
+        "long": "Jungingen - M\u00e4hringen",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00ADEF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "L14",
+        "label": "14",
+        "long": "Kuhberg \u2013 Wiblingen",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A972B1",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "L15",
+        "label": "15",
+        "long": "Willy-Brandt-Platz \u2013 Science Park III",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "L19",
+        "label": "E",
+        "long": "Einsatzbus",
+        "short": "E",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED1B24",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "L901",
+        "label": "N1",
+        "long": "ZOB - Einsingen",
+        "short": "N1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "76408C",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "L902",
+        "label": "N2",
+        "long": "ZOB - Wissenschaftsstadt",
+        "short": "N2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "699F32",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "L903",
+        "label": "N3",
+        "long": "ZOB - Jungingen",
+        "short": "N3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "05B6EC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "L904",
+        "label": "N4",
+        "long": "ZOB - B\u00f6fingen",
+        "short": "N4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E2499B",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "L907",
+        "label": "N7",
+        "long": "ZOB - Unterweiler",
+        "short": "N7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D66F08",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "L908",
+        "label": "N8",
+        "long": "ZOB - Donaustetten",
+        "short": "N8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 739,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 739,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "739 of 739 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "unsorted_stop_times",
+      "count": 5507,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'unsorted_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 1.0,
+      "rank": 3,
+      "severity": "INFO",
+      "what": "Unsorted stop times (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,0 +1,1785 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-pan-82317",
+    "name": "R\u00e9seau interurbain Nomad Car",
+    "subdivision_code": "FR-NOR",
+    "subdivision_name": "Normandie"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 1.2,
+          "stops_marked_accessible_pct": 1.9,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 1.9,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.5,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 3868,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.7,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 3823,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 3868,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 1.9,
+        "wheelchair_marked_accessible_pct": 1.9,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 3749,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 24.5,
+          "severity": "WARNING",
+          "what": "3749 of 3823 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 3868,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "3868 of 3868 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.9,
+      "status": "measured",
+      "summary": "2% of stops state wheelchair accessibility (2% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 12,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 372,
+          "WARNING": 94207
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_timepoint_value",
+          "count": 73418,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_timepoint_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Missing timepoint value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 20628,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "unexpected_enum_value",
+          "count": 118,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unexpected_enum_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Unexpected enum value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 21,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 8,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 4,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 3,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 3,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Equal shape distance diff coordinates distance below threshold (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "trip_coverage_not_active_for_next7_days",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Trim past service periods the next time you export.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Many of the feed's trips don't run at all in the next 7 days.",
+          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 372,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 39.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 12 kinds of issue across 94579 instances (0 error, 94207 warning, 372 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 391,
+        "effective_expiry_date": "2027-09-01",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2027-09-01",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 391 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 392 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 2% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 2% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including commercial reuse is permitted with attribution to Syndicat mixte Atoumod and the update date.",
+    "reachable": true,
+    "sha256": "dc28ec7fac182866bdc67fe4c6a3a25c99b68d727948da73acea0ff8b98c5e39",
+    "size_bytes": 44077600,
+    "static_url": "https://transport.data.gouv.fr/resources/82317/download"
+  },
+  "fetch": {
+    "final_url": "https://static.data.gouv.fr/resources/nomad-car-region-normandie/20260717-130755/pt-th-offer-nomad-gtfs-20260713-675-opendata.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -1.62273,
+      48.22637,
+      1.78471,
+      50.06625
+    ],
+    "lat": 49.33011,
+    "lon": 0.58451,
+    "stop_count": 3823
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 118,
+        "trip_count": 3868,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 118,
+    "trip_count": 3868
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 50.2,
+    "margin_to_next_band": 9.8,
+    "score": 50.2
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 238,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "238 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Office de Tourisme - Av du Golf\", \"Mairie / \u00c9cole\", \"Mairie / \u00c9glise\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 3823,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 3868
+  },
+  "route_map": {
+    "drawn_route_count": 118,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-pan-82317/geometry.geojson",
+    "route_count": 118,
+    "routes": [
+      {
+        "color": "7AB929",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1002019:LOC",
+        "label": "301",
+        "long": "Saint-L\u00f4 <> Cherbourg-En-Cotentin",
+        "short": "301",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F39200",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1002025:LOC",
+        "label": "305",
+        "long": "Granville <> Lison",
+        "short": "305",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A0519A",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1002026:LOC",
+        "label": "306",
+        "long": "Avranches <> Saint-L\u00f4",
+        "short": "306",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "907D24",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1002027:LOC",
+        "label": "308",
+        "long": "Avranches <> Granville via C\u00f4te",
+        "short": "308",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8CC4D1",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1002031:LOC",
+        "label": "310",
+        "long": "Coutances <> Les Plages",
+        "short": "310",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EF9EC1",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1002032:LOC",
+        "label": "311",
+        "long": "Coutances <> Granvillais",
+        "short": "311",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E52725",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1002035:LOC",
+        "label": "307",
+        "long": "Avranches <> Granville",
+        "short": "307",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C44E23",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1002036:LOC",
+        "label": "309",
+        "long": "Vire-Normandie <> Avranches",
+        "short": "309",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0009",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1002037:LOC",
+        "label": "303",
+        "long": "Valognes <> Coutances",
+        "short": "303",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "78BBE1",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003043:LOC",
+        "label": "528",
+        "long": "Fauville <> Nointot <> Bolbec <> Br\u00e9aut\u00e9",
+        "short": "528",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "42539E",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003047:LOC",
+        "label": "501",
+        "long": "La Gaillarde <> Dieppe",
+        "short": "501",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CAB100",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003048:LOC",
+        "label": "503",
+        "long": "Caudebec-En-Caux <> Yvetot",
+        "short": "503",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DCADCD",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003049:LOC",
+        "label": "504",
+        "long": "Paris <> Br\u00e9aut\u00e9 <> \u00c9tretat",
+        "short": "504",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F58966",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003050:LOC",
+        "label": "505",
+        "long": "Boissay <> Catenay <> Rouen",
+        "short": "505",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5665AB",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003051:LOC",
+        "label": "506",
+        "long": "Caudebec-En-Caux <> Le Havre",
+        "short": "506",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9AB36C",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003053:LOC",
+        "label": "507",
+        "long": "Bolbec <> F\u00e9camp",
+        "short": "507",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EC413D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003054:LOC",
+        "label": "508",
+        "long": "F\u00e9camp <> Goderville <> Le Havre",
+        "short": "508",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BF922A",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003055:LOC",
+        "label": "509",
+        "long": "F\u00e9camp <> \u00c9tretat <> Le Havre",
+        "short": "509",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "864595",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003056:LOC",
+        "label": "510",
+        "long": "F\u00e9camp <> Toussaint <> Yvetot",
+        "short": "510",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CC3A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003057:LOC",
+        "label": "526",
+        "long": "Yerville <> Yvetot <> Pavilly <> Rouen",
+        "short": "526",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F843F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003058:LOC",
+        "label": "531",
+        "long": "Centre Commercial Barentin",
+        "short": "531",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4A94E",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003059:LOC",
+        "label": "529",
+        "long": "Bosc-Le-Hard <> Cleres <> Montville <> Rouen",
+        "short": "529",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E4CA12",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003060:LOC",
+        "label": "502",
+        "long": "Le Tr\u00e9port <> Mers-Les-Bains <> Eu",
+        "short": "502",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E30613",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003061:LOC",
+        "label": "530",
+        "long": "Caudebec-En-Caux <> Rouen",
+        "short": "530",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BA4D95",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003063:LOC",
+        "label": "511",
+        "long": "Roumare <> Rouen",
+        "short": "511",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5665AB",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003065:LOC",
+        "label": "512",
+        "long": "Perriers-Sur-Andelle <> Le Mesnil-Esnard",
+        "short": "512",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9AC63F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003066:LOC",
+        "label": "513",
+        "long": "Saint-Val\u00e9ry-En-Caux <> F\u00e9camp",
+        "short": "513",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA5284",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003067:LOC",
+        "label": "514",
+        "long": "Saint-Val\u00e9ry-En-Caux <> Dieppe",
+        "short": "514",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EC7223",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003068:LOC",
+        "label": "515",
+        "long": "Saint-Sa\u00ebns <> Bellencombre <> Dieppe",
+        "short": "515",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "73BB45",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003069:LOC",
+        "label": "516",
+        "long": "Londinieres <> Dieppe",
+        "short": "516",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E9D461",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003070:LOC",
+        "label": "517",
+        "long": "Berneval-Le-Grand <> Dieppe",
+        "short": "517",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E7ACCC",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003071:LOC",
+        "label": "518",
+        "long": "Envermeu <> Saint-Nicolas-D'Aliermont <> Dieppe",
+        "short": "518",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AF599E",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003072:LOC",
+        "label": "519",
+        "long": "Dieppe <> Le Tr\u00e9port <> Eu",
+        "short": "519",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5187C2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003073:LOC",
+        "label": "520",
+        "long": "Neufch\u00e2tel-En-Bray <> Rouen",
+        "short": "520",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C895BF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003075:LOC",
+        "label": "521",
+        "long": "Gamaches <> Neufch\u00e2tel-En-Bray",
+        "short": "521",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E52227",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003076:LOC",
+        "label": "522",
+        "long": "Gournay-En-Bray <> Vascoeuil <> Rouen",
+        "short": "522",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9AC63D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003078:LOC",
+        "label": "523",
+        "long": "T\u00f4tes <> Dieppe",
+        "short": "523",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FBC134",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003079:LOC",
+        "label": "524",
+        "long": "Belmesnil <> Dieppe",
+        "short": "524",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9AC36F",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003085:LOC",
+        "label": "541",
+        "long": "March\u00e9 De F\u00e9camp",
+        "short": "541",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DF1614",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003275:LOC",
+        "label": "201",
+        "long": "Le Landin <> Elbeuf",
+        "short": "201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "32B5B0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003276:LOC",
+        "label": "202",
+        "long": "Louviers <> Vernon",
+        "short": "202",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "31A8DF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003277:LOC",
+        "label": "203",
+        "long": "Elbeuf <> Louviers",
+        "short": "203",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E6CE08",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003278:LOC",
+        "label": "204",
+        "long": "Boissey-Le-Chatel <> Elbeuf",
+        "short": "204",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A31968",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003279:LOC",
+        "label": "205",
+        "long": "Beaumont-Le-Roger <> Val-De-Reuil",
+        "short": "205",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "835F34",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003280:LOC",
+        "label": "206",
+        "long": "Gisors <> Les Andelys <> Gaillon <> \u00c9vreux",
+        "short": "206",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E9A255",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003281:LOC",
+        "label": "207",
+        "long": "Tourny <> Les Andelys <> Gaillon <> Vernon",
+        "short": "207",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AFCA17",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003282:LOC",
+        "label": "208",
+        "long": "\u00c9tr\u00e9pagny <> Gasny <> Vernon",
+        "short": "208",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "122E68",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003283:LOC",
+        "label": "209",
+        "long": "Les Andelys <> Le Val D'Hazet",
+        "short": "209",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EB3A4C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003284:LOC",
+        "label": "210",
+        "long": "\u00c9vreux <> Vernon <> Gisors",
+        "short": "210",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "722F82",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003289:LOC",
+        "label": "211",
+        "long": "\u00c9vreux <> Dreux",
+        "short": "211",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "83D4ED",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003291:LOC",
+        "label": "212",
+        "long": "\u00c9vreux <> Verneuil-Sur-Avre",
+        "short": "212",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EF8464",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003292:LOC",
+        "label": "213",
+        "long": "\u00c9vreux <> Conches-En-Ouche <> L'Aigle",
+        "short": "213",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E7ADCF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003293:LOC",
+        "label": "214",
+        "long": "\u00c9vreux <> Honfleur",
+        "short": "214",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "719152",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003294:LOC",
+        "label": "215",
+        "long": "\u00c9vreux <> Rouen",
+        "short": "215",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B72A41",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003295:LOC",
+        "label": "217",
+        "long": "Pont-Audemer <> Bernay",
+        "short": "217",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B26BC1",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003296:LOC",
+        "label": "218",
+        "long": "Rouen <> Perriers-Sur-Andelle",
+        "short": "218",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7A79B6",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003297:LOC",
+        "label": "219",
+        "long": "Rouen <> Gisors",
+        "short": "219",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDCB36",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003298:LOC",
+        "label": "220",
+        "long": "Les Andelys <> Rouen",
+        "short": "220",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED1D8A",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003299:LOC",
+        "label": "221",
+        "long": "Alizay <> Rouen",
+        "short": "221",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33A739",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003300:LOC",
+        "label": "222",
+        "long": "Bosroumois <> Rouen",
+        "short": "222",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5688C6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003301:LOC",
+        "label": "223",
+        "long": "Pont-Audemer <> Saint-Ouen-De-Thouberville",
+        "short": "223",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A9B76A",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003302:LOC",
+        "label": "224",
+        "long": "Lisieux <> Pont-Audemer",
+        "short": "224",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "512B0F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003303:LOC",
+        "label": "225",
+        "long": "Marcilly-Sur-Eure <> Bueil <> Br\u00e9val",
+        "short": "225",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B75858",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003304:LOC",
+        "label": "226",
+        "long": "Verneuil-Sur-Avre <> L'Aigle",
+        "short": "226",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B3549A",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1003305:LOC",
+        "label": "227",
+        "long": "Pont-Audemer <> Le Havre",
+        "short": "227",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "20B14A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004440:LOC",
+        "label": "101",
+        "long": "Asnelles <> Caen",
+        "short": "101",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F7941D",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004441:LOC",
+        "label": "102",
+        "long": "B\u00e9ny-Sur-Mer <> Cresserons <> Caen",
+        "short": "102",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8F3E97",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004442:LOC",
+        "label": "103",
+        "long": "Sainte-Croix-Sur-Mer <> Creully Sur Seulles <> Caen",
+        "short": "103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E41E27",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004444:LOC",
+        "label": "104",
+        "long": "Bougy <> Caen",
+        "short": "104",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8F3E97",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004445:LOC",
+        "label": "105",
+        "long": "Aunay-Sur-Odon <> Caen",
+        "short": "105",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F7941D",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004446:LOC",
+        "label": "106",
+        "long": "Hamars <> Caen",
+        "short": "106",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007DC5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004447:LOC",
+        "label": "107",
+        "long": "Mutr\u00e9cy <> Caen",
+        "short": "107",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8F3E97",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004448:LOC",
+        "label": "108",
+        "long": "Moulines <> Caen",
+        "short": "108",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8F3E97",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004450:LOC",
+        "label": "109",
+        "long": "M\u00e9ry-Corbon <> Caen",
+        "short": "109",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E41E27",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004451:LOC",
+        "label": "111",
+        "long": "Le Havre <> Caen",
+        "short": "111",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0080C5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004452:LOC",
+        "label": "112",
+        "long": "Touques <> Deauville via Tourgeville",
+        "short": "112",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "20B14A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004453:LOC",
+        "label": "113",
+        "long": "Touques <> Deauville via Trouville-Sur-Mer",
+        "short": "113",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E41E27",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004454:LOC",
+        "label": "114",
+        "long": "Bayeux <> Caen _Supprimmee Sept 2026",
+        "short": "114",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007DC5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004455:LOC",
+        "label": "116",
+        "long": "Vire <> Caen",
+        "short": "116",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E41E27",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004456:LOC",
+        "label": "117",
+        "long": "Flers <> Caen",
+        "short": "117",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "20B14A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004457:LOC",
+        "label": "118",
+        "long": "Falaise <> Caen",
+        "short": "118",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "20B14A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004458:LOC",
+        "label": "119",
+        "long": "Pont-L'\u00c9veque <> Caen",
+        "short": "119",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007DC5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004459:LOC",
+        "label": "122",
+        "long": "Le Havre <> Caen via Honfleur",
+        "short": "122",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F7941D",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004460:LOC",
+        "label": "123",
+        "long": "Le Havre <> Lisieux",
+        "short": "123",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "20B14A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004464:LOC",
+        "label": "120",
+        "long": "Grandcamp-Maisy <> Bayeux",
+        "short": "120",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8F3E97",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004465:LOC",
+        "label": "121",
+        "long": "Courseulles-Sur-Mer <> Bayeux",
+        "short": "121",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E41E27",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004473:LOC",
+        "label": "110",
+        "long": "M\u00e9zidon-Canon <> M\u00e9ry-Corbon <> Conteville <> Caen",
+        "short": "110",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8F3E97",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1004477:LOC",
+        "label": "115",
+        "long": "Caumont-L'\u00c9vent\u00e9 <> Hottot-Les-Bagues <> Caen",
+        "short": "115",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "292F6A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1006899:LOC",
+        "label": "525",
+        "long": "Saint-Val\u00e9ry-En-Caux <> Yvetot",
+        "short": "525",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BB70AC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1006919:LOC",
+        "label": "527",
+        "long": "Dieppe <> Serqueux <> Gisors",
+        "short": "527",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BA941C",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1006959:LOC",
+        "label": "228",
+        "long": "Rouen <> Pont-Audemer",
+        "short": "228",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4A2999",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1006979:LOC",
+        "label": "216",
+        "long": "Rouen <> \u00c9vreux <> Verneuil-Sur-Avre",
+        "short": "216",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B82B41",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008183:LOC",
+        "label": "420",
+        "long": "Ig\u00e9 <> Belleme",
+        "short": "420",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33A8E0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008185:LOC",
+        "label": "416",
+        "long": "Saint-Maurice-Les-Charencey <> L'Aigle",
+        "short": "416",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "35B6B2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008187:LOC",
+        "label": "421",
+        "long": "Belleme <> Mamers",
+        "short": "421",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F18665",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008217:LOC",
+        "label": "401",
+        "long": "Putanges-Le-Lac <> Briouze <> Flers",
+        "short": "401",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D1B706",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008219:LOC",
+        "label": "402",
+        "long": "Tinchebray-Bocage <> Landisacq <> Flers",
+        "short": "402",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E8AFD0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008221:LOC",
+        "label": "403",
+        "long": "Alen\u00e7on <> Bagnoles-De-L'Orne <> La Fert\u00e9-Mac\u00e9 <> Flers",
+        "short": "403",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "845F34",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008223:LOC",
+        "label": "404",
+        "long": "La Fert\u00e9-Mac\u00e9 <> Carrouges <> Alen\u00e7on",
+        "short": "404",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ABB96B",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008225:LOC",
+        "label": "405",
+        "long": "Domfront <> Champsecret <> La Fert\u00e9-Mac\u00e9",
+        "short": "405",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7A7AB8",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008227:LOC",
+        "label": "406",
+        "long": "Lonlay-L'Abbaye <> Domfront <> Flers",
+        "short": "406",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C69615",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008229:LOC",
+        "label": "407",
+        "long": "Bagnoles-De-L'Orne <> La Fert\u00e9-Mac\u00e9 <> Argentan",
+        "short": "407",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F87479",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008231:LOC",
+        "label": "408",
+        "long": "Falaise <> Argentan",
+        "short": "408",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B0CB1D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008233:LOC",
+        "label": "409",
+        "long": "Vimoutiers <> Gac\u00e9 <> S\u00e9es <> Alen\u00e7on",
+        "short": "409",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EBA457",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008235:LOC",
+        "label": "410",
+        "long": "Vimoutiers <> Trun <> Argentan",
+        "short": "410",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FECD38",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008237:LOC",
+        "label": "411",
+        "long": "Gac\u00e9 <> Gouffern-En-Auge <> Argentan",
+        "short": "411",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B4569B",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008239:LOC",
+        "label": "412",
+        "long": "Gac\u00e9 <> Sainte-Gauburge-Sainte-Colombe <> L'Aigle",
+        "short": "412",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA5984",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008241:LOC",
+        "label": "413",
+        "long": "Vimoutiers <> La Fert\u00e9-En-Ouche <> L'Aigle",
+        "short": "413",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E96C0F",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008243:LOC",
+        "label": "414",
+        "long": "Mortagne-Au-Perche <> Tourouvre Au Perche <> L'Aigle",
+        "short": "414",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "588AC7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008245:LOC",
+        "label": "415",
+        "long": "L'Aigle <> Moulins-La-Marche <> Alen\u00e7on",
+        "short": "415",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7BB92D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008247:LOC",
+        "label": "417",
+        "long": "Nogent-Le-Rotrou <> Mortagne-Au-Perche <> Alen\u00e7on",
+        "short": "417",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E5D461",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008249:LOC",
+        "label": "418",
+        "long": "Nogent-Le-Rotrou <> Mamers <> Alen\u00e7on",
+        "short": "418",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "147684",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008251:LOC",
+        "label": "419",
+        "long": "Ceton <> Val-Au-Perche <> Mortagne-Au-Perche",
+        "short": "419",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "164194",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1008253:LOC",
+        "label": "422",
+        "long": "Mortagne-Au-Perche <> Longny <> La Loupe",
+        "short": "422",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "518987",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1009747:LOC",
+        "label": "423",
+        "long": "Briouze <> La Fert\u00e9-Mac\u00e9 <> Bagnoles-De-L'Orne",
+        "short": "423",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F9C41E",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1009928:LOC",
+        "label": "424",
+        "long": "Flers <> Argentan",
+        "short": "424",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F87479",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1009929:LOC",
+        "label": "425",
+        "long": "Alen\u00e7on <> Surdon <> L'Aigle <> Dreux",
+        "short": "425",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E99A46",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ATOUMOD040:Line:1010148:LOC",
+        "label": "125",
+        "long": "Grandcamp-Maisy <> Courseulles-Sur-Mer",
+        "short": "125",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 3823,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 3749,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 24.5,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "3749 of 3823 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 3868,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "3868 of 3868 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,0 +1,2131 @@
+{
+  "agency": {
+    "country": "JP",
+    "id": "kumamoto-dentetsu-bus",
+    "name": "Kumamoto Dentetsu Bus (\u718a\u672c\u96fb\u9244\u30d0\u30b9)",
+    "operating_note": "Kumamoto Electric Railway's scheduled bus network. The official catalog also publishes keyless TripUpdates, VehiclePositions, and Service Alerts.",
+    "subdivision_code": "JP-43",
+    "subdivision_name": "Kumamoto"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 14.9,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 1634,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 618,
+        "translations": {
+          "feed_lang": "ja",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 1634,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 618,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "618 of 618 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 1634,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "1634 of 1634 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 52.4,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 9,
+        "instances_by_severity": {
+          "ERROR": 3,
+          "INFO": 23,
+          "WARNING": 4871
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_required_column",
+          "count": 3,
+          "effort": "Often an export setting; ask your vendor if it recurs.",
+          "fix": "Add the required column named in the finding to the flagged file.",
+          "owner": "Likely your export tool",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "A file is missing a column that GTFS requires.",
+          "why": "Apps may reject the whole file, so riders could lose the affected routes or stops."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 4152,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 666,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 50,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
+        },
+        {
+          "code": "duplicate_route_name",
+          "count": 2,
+          "effort": "One field per route.",
+          "fix": "Give each route a distinct short or long name.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Two or more routes share the same name.",
+          "why": "Riders can't tell the routes apart in apps."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "platform_without_parent_station",
+          "count": 14,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'platform_without_parent_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Platform without parent station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unknown_column",
+          "count": 6,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "unknown_file",
+          "count": 3,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 56.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 9 kinds of issue across 4897 instances (3 error, 4871 warning, 23 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 93,
+        "effective_expiry_date": "2026-11-07",
+        "feed_end_date": "2026-11-07",
+        "feed_start_date": "2026-06-01",
+        "feed_version": "20260601_20260806",
+        "has_feed_info": true,
+        "last_service_date": "2026-11-07",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 93 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "alerts_content": {
+          "alerts": 2,
+          "ended_over_30_days_ago": 0,
+          "with_cause_and_effect": 1,
+          "with_description": 2,
+          "with_header_text": 2,
+          "with_informed_entity": 2
+        },
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "coverage_pct": 0.0,
+        "covered_trips": 0,
+        "kinds_configured": 3,
+        "kinds_reachable": 3,
+        "reachable_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "rt_freshness": "fresh",
+        "samples": 9,
+        "scheduled_trips_in_window": 1,
+        "worst_lag_seconds": 12
+      },
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 1,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 41.2,
+          "severity": "WARNING",
+          "what": "1 of 1 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        }
+      ],
+      "name": "realtime",
+      "score": 58.8,
+      "status": "measured",
+      "summary": "Sampled 9 times: 3 of 3 configured feeds healthy; 0.0% of scheduled trips had live predictions; vehicle position plausibility was not measurable.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 94 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "export_diff": {
+    "changes": [
+      "Service now runs through 2026-11-07 (was 2026-11-06)."
+    ],
+    "from_sha256": "217ee03364c0fd2caefa733d8d06983d73f06bd77769e9f44302c39b043f8176",
+    "to_sha256": "cd273a08d34ce3a7cc2b94bea150d036670a0778941e54bf3609e2d62b1353ba"
+  },
+  "feed": {
+    "license_note": "CC BY 4.0; published as GTFS-JP open data by Kumamoto Electric Railway through the GTFS Data Repository (gtfs-data.jp). Credit Kumamoto Electric Railway.",
+    "reachable": true,
+    "sha256": "cd273a08d34ce3a7cc2b94bea150d036670a0778941e54bf3609e2d62b1353ba",
+    "size_bytes": 986835,
+    "static_url": "https://api.gtfs-data.jp/v2/organizations/kumamotodentetsu/feeds/kumamotodentetsu-bus/files/feed.zip?rid=current"
+  },
+  "fetch": {
+    "final_url": "https://prodgtfsdatareposharedinfrasta-filebucketcdfcd6de-1qqhtsxlwh6la.s3.amazonaws.com/kumamotodentetsu/kumamotodentetsu-bus/ee9f31c1-ee92-45b5-b022-1cfda47c440f/feed.zip?response-content-disposition=attachment%3B%20filename%3Dfeed_kumamotodentetsu_kumamotodentetsu-bus_20260601_20260806040541.zip&AWSAccessKeyId=ASIARI5CFYANCETNQ26T&Signature=%2BeiqMdaxp6ffF9%2FU4Z7ZmDHPypY%3D&x-amz-security-token=IQoJb3JpZ2luX2VjEGQaDmFwLW5vcnRoZWFzdC0xIkgwRgIhAPldu0S%2F80N3z71oCjIVGWOjrxC%2FGcnOyeJ%2FszKA4of%2BAiEAmdpxdhH3NQaIVpJOPC0AAEtpjBb5cFdqjjP3v0G4nbkq0AQILRAFGgwwODc4NTAwNzQxMzgiDE%2FgVIJC71kt7MQnjyqtBBic7cB7V6ct6XiOuL7LuKigXB%2BHxQcIMLgtUzOAi7dqMvzbQHJo3inCniVaXkAhaFgkFj%2BKLOgqXjYDpSQNpELxGywrewEp4gA8NlSwrr2pLbAve9bFfbF6U9wGQWEFWtebIFn%2FZehDfnySLNtxXp2pOmiab7WRo3ou4xnR%2FRPRRUxIGn6yQZZzwy3saShHFNunAUSoAcJt094WH0Su67cshbSHwXNBlavINRc8Abhwe84W0wBylrnvxJ3fptLKbe2uxP6zmIVkKxXGxlD%2FVAu0voFrp2Xrax4HpKnX1ORKXQISv6RP2FiZsZHBfswcvODa1bL1ms3ir2zYp0UFJARdtAMi3yJFxdld6%2BjZIrGby9OUhzoUtUALjvBycso2HoJ56VTzycrV9k3Z7iy02khYiAfkrKzXdmAbKi9K00lapkdzC2YCoioSzpKV%2BekY1vJ65KJJik2%2F2G2OFqqF%2FkrlMGCalenjhE1uShGsXTcVmxTaj0n3SHD9kpnVGcE43OWKkuEvmeKWx624OZ7Wv4w8N0kDCjm1Fy82Y%2FedGUSvo05rwi90Qd%2BfH8vZdRShCMWyZpX4rgGsVAFcRzdZGPjU5LbO9Ox2LQvqiKv%2FJRN1iqNqr1j90kgZH6Z1PnLUUrUT2kBF3YZH%2BCgES0jVyTZ6cf2XbkIgX2JGR7uT3xoHpIgNSDaM%2BnmArMn1nGxFRIpd4d598RjiyWWSMtO4LpTLv%2BqkZCGckVEnY8qKMNixztMGOqIBDEuvjWE%2BnlYoFWLTnwO%2BJREIxoCz4YnRBl4ZeDiw73AZLFt1jkZjBK%2FpqATPiTHu%2B8%2BKLHDU7DEIEFSpzc029qDm5DupX7ozjNnJutswREEfQWsbJ5o5XRaW3RXEwS0AOZZOkqvAC35o%2B16N4J1oIDmA2XmMfjWmK78U8QHl%2B9betwPvhWleSqoPukKnuNBTBxwQdp3TjxaqqtwB25UuKHK0&Expires=1785962732",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      130.68828,
+      32.7778,
+      130.86928,
+      32.98543
+    ],
+    "lat": 32.85829,
+    "lon": 130.74444,
+    "stop_count": 618
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 150,
+        "trip_count": 1634,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 150,
+    "trip_count": 1634
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 4.5,
+    "margin_to_next_band": 5.5,
+    "score": 64.5
+  },
+  "recommendations": [],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 618,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 50,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "50 of 618 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 50,
+    "single_stop_trips": 0,
+    "trips_total": 1634
+  },
+  "route_map": {
+    "drawn_route_count": 0,
+    "has_shapes": false,
+    "path": "data/artifacts/kumamoto-dentetsu-bus/geometry.geojson",
+    "route_count": 150,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10003_5212_2_20260601",
+        "label": "\u770c\u4f1a\u8b70\u4e8b\u5802\u524d\u2192\u56fd\u5e9c\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "\u770c\u4f1a\u8b70\u4e8b\u5802\u524d\u2192\u56fd\u5e9c\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10018_8021_1_20260601",
+        "label": "\u8fbb\u4e45\u4fdd\u2192\u5bcc\u306e\u539f\u2192\u83ca\u6c60\u30d7\u30e9\u30b6",
+        "long": "\u8fbb\u4e45\u4fdd\u2192\u5bcc\u306e\u539f\u2192\u83ca\u6c60\u30d7\u30e9\u30b6",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10018_8022_2_20260601",
+        "label": "\u83ca\u6c60\u30d7\u30e9\u30b6\u2192\u5bcc\u306e\u539f\u2192\u8fbb\u4e45\u4fdd",
+        "long": "\u83ca\u6c60\u30d7\u30e9\u30b6\u2192\u5bcc\u306e\u539f\u2192\u8fbb\u4e45\u4fdd",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_1361_1_20260601",
+        "label": "C9-4\uff1a\u84ee\u53f0\u5bfa\u5165\u53e3\u2192\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u6749\u4e26\u53f0\u56e3\u5730",
+        "long": "C9-4\uff1a\u84ee\u53f0\u5bfa\u5165\u53e3\u2192\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u6749\u4e26\u53f0\u56e3\u5730",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_1362_2_20260601",
+        "label": "C9-4\uff1a\u6749\u4e26\u53f0\u56e3\u5730\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d\u2192\u84ee\u53f0\u5bfa\u5165\u53e3",
+        "long": "C9-4\uff1a\u6749\u4e26\u53f0\u56e3\u5730\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d\u2192\u84ee\u53f0\u5bfa\u5165\u53e3",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_1521_1_20260601",
+        "label": "C9-3\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "long": "C9-3\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_1522_2_20260601",
+        "label": "C9-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "long": "C9-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_1541_1_20260601",
+        "label": "C7-3\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6960\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "long": "C7-3\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6960\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_1542_2_20260601",
+        "label": "C7-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6960\u56e3\u5730\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "long": "C7-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6960\u56e3\u5730\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_1591_1_20260601",
+        "label": "C9-2\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u5149\u306e\u68ee\u99c5",
+        "long": "C9-2\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u5149\u306e\u68ee\u99c5",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_1592_2_20260601",
+        "label": "C9-2\uff1a\u5149\u306e\u68ee\u99c5\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "long": "C9-2\uff1a\u5149\u306e\u68ee\u99c5\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_2331_1_20260601",
+        "label": "C9-4\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u6749\u4e26\u53f0\u56e3\u5730",
+        "long": "C9-4\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u6749\u4e26\u53f0\u56e3\u5730",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_2332_2_20260601",
+        "label": "C9-4\uff1a\u6749\u4e26\u53f0\u56e3\u5730\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C9-4\uff1a\u6749\u4e26\u53f0\u56e3\u5730\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_2341_1_20260601",
+        "label": "C7-4\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6960\u56e3\u5730\u2192\u65b0\u5c71\u2192\u6749\u4e26\u53f0\u56e3\u5730",
+        "long": "C7-4\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6960\u56e3\u5730\u2192\u65b0\u5c71\u2192\u6749\u4e26\u53f0\u56e3\u5730",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_2342_2_20260601",
+        "label": "C7-4\uff1a\u6749\u4e26\u53f0\u56e3\u5730\u2192\u65b0\u5c71\u2192\u6960\u56e3\u5730\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C7-4\uff1a\u6749\u4e26\u53f0\u56e3\u5730\u2192\u65b0\u5c71\u2192\u6960\u56e3\u5730\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_2361_1_20260601",
+        "label": "C9-4\uff1a\u6df1\u591c\u30d0\u30b9\u3000\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u6749\u4e26\u53f0\u56e3\u5730",
+        "long": "C9-4\uff1a\u6df1\u591c\u30d0\u30b9\u3000\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u6749\u4e26\u53f0\u56e3\u5730",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_2531_1_20260601",
+        "label": "C9-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "long": "C9-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_2532_2_20260601",
+        "label": "C9-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C9-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_2541_1_20260601",
+        "label": "C7-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6960\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "long": "C7-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6960\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_2542_2_20260601",
+        "label": "C7-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6960\u56e3\u5730\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C7-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6960\u56e3\u5730\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_2591_1_20260601",
+        "label": "C9-2\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u5149\u306e\u68ee\u99c5",
+        "long": "C9-2\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u5149\u306e\u68ee\u99c5",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_2592_2_20260601",
+        "label": "C9-2\uff1a\u5149\u306e\u68ee\u99c5\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C9-2\uff1a\u5149\u306e\u68ee\u99c5\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_2601_1_20260601",
+        "label": "C9-7\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u5ca9\u5009\u53f0\u2192\u6960\u56e3\u5730\u2192\u5149\u306e\u68ee\u99c5",
+        "long": "C9-7\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u5ca9\u5009\u53f0\u2192\u6960\u56e3\u5730\u2192\u5149\u306e\u68ee\u99c5",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_2602_2_20260601",
+        "label": "C9-7\uff1a\u5149\u306e\u68ee\u99c5\u2192\u6960\u56e3\u5730\u2192\u5ca9\u5009\u53f0\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C9-7\uff1a\u5149\u306e\u68ee\u99c5\u2192\u6960\u56e3\u5730\u2192\u5ca9\u5009\u53f0\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_3421_1_20260601",
+        "label": "C9-5\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "long": "C9-5\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_3422_2_20260601",
+        "label": "C9-5\uff1a\u4e0b\u7fa4\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "long": "C9-5\uff1a\u4e0b\u7fa4\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_3441_1_20260601",
+        "label": "C7-5\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u9ebb\u751f\u7530\u5c0f\u524d\u2192\u6960\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "long": "C7-5\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u9ebb\u751f\u7530\u5c0f\u524d\u2192\u6960\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_3442_2_20260601",
+        "label": "C7-5\uff1a\u4e0b\u7fa4\u2192\u6960\u56e3\u5730\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "long": "C7-5\uff1a\u4e0b\u7fa4\u2192\u6960\u56e3\u5730\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_3531_1_20260601",
+        "label": "C9-5\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "long": "C9-5\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_3532_2_20260601",
+        "label": "C9-5\uff1a\u4e0b\u7fa4\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C9-5\uff1a\u4e0b\u7fa4\u2192\u6960\u56e3\u5730\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_3561_1_20260601",
+        "label": "C7-5\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6960\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "long": "C7-5\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6960\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_3562_2_20260601",
+        "label": "C7-5\uff1a\u4e0b\u7fa4\u2192\u6960\u56e3\u5730\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C7-5\uff1a\u4e0b\u7fa4\u2192\u6960\u56e3\u5730\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_3812_2_20260601",
+        "label": "C7-1/C7-7\uff1a\u6960\u56e3\u5730\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C7-1/C7-7\uff1a\u6960\u56e3\u5730\u2192\u9ebb\u751f\u7530\u5c0f\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_3841_1_20260601",
+        "label": "\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u5ca9\u5009\u53f0\u2192\u6960\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "long": "\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u5ca9\u5009\u53f0\u2192\u6960\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_3842_2_20260601",
+        "label": "C7-7\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6960\u56e3\u5730\u2192\u5ca9\u5009\u53f0\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C7-7\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6960\u56e3\u5730\u2192\u5ca9\u5009\u53f0\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_3881_1_20260601",
+        "label": "C9-1\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730",
+        "long": "C9-1\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_5321_1_20260601",
+        "label": "C9-4\uff1a\u770c\u4f1a\u8b70\u4e8b\u5802\u524d\u2192\u770c\u5e81\u524d\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u6749\u4e26\u53f0\u56e3\u5730",
+        "long": "C9-4\uff1a\u770c\u4f1a\u8b70\u4e8b\u5802\u524d\u2192\u770c\u5e81\u524d\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u6749\u4e26\u53f0\u56e3\u5730",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10020_5421_1_20260601",
+        "label": "\u770c\u4f1a\u8b70\u4e8b\u5802\u524d\u2192\u770c\u5e81\u524d\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "long": "\u770c\u4f1a\u8b70\u4e8b\u5802\u524d\u2192\u770c\u5e81\u524d\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u6e05\u6c34\u30f6\u4e18\u2192\u6960\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_1351_1_20260601",
+        "label": "C5-4\uff1a\u84ee\u53f0\u5bfa\u5165\u53e3\u2192\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u6749\u4e26\u53f0\u56e3\u5730",
+        "long": "C5-4\uff1a\u84ee\u53f0\u5bfa\u5165\u53e3\u2192\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u6749\u4e26\u53f0\u56e3\u5730",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_1352_2_20260601",
+        "label": "C5-4\uff1a\u6749\u4e26\u53f0\u56e3\u5730\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d\u2192\u84ee\u53f0\u5bfa\u5165\u53e3",
+        "long": "C5-4\uff1a\u6749\u4e26\u53f0\u56e3\u5730\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d\u2192\u84ee\u53f0\u5bfa\u5165\u53e3",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_1511_1_20260601",
+        "label": "C5-3\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "long": "C5-3\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_1512_2_20260601",
+        "label": "C5-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "long": "C5-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_1771_1_20260601",
+        "label": "C5-6\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u5408\u5fd7\u5e02\u5f79\u6240",
+        "long": "C5-6\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u5408\u5fd7\u5e02\u5f79\u6240",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_1772_2_20260601",
+        "label": "C5-6\uff1a\u5408\u5fd7\u5e02\u5f79\u6240\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "long": "C5-6\uff1a\u5408\u5fd7\u5e02\u5f79\u6240\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_2311_1_20260601",
+        "label": "C5-4\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u6749\u4e26\u53f0\u56e3\u5730",
+        "long": "C5-4\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u6749\u4e26\u53f0\u56e3\u5730",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_2312_2_20260601",
+        "label": "C5-4\uff1a\u6749\u4e26\u53f0\u56e3\u5730\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C5-4\uff1a\u6749\u4e26\u53f0\u56e3\u5730\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_2511_1_20260601",
+        "label": "C5-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "long": "C5-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_2512_2_20260601",
+        "label": "C5-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C5-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_2691_1_20260601",
+        "label": "C5-2\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u5149\u306e\u68ee\u99c5",
+        "long": "C5-2\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u5149\u306e\u68ee\u99c5",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_2692_2_20260601",
+        "label": "C5-2\uff1a\u5149\u306e\u68ee\u99c5\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C5-2\uff1a\u5149\u306e\u68ee\u99c5\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_3411_1_20260601",
+        "label": "C5-5\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "long": "C5-5\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_3412_2_20260601",
+        "label": "C5-5\uff1a\u4e0b\u7fa4\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "long": "C5-5\uff1a\u4e0b\u7fa4\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_3511_1_20260601",
+        "label": "C5-5\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "long": "C5-5\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_3512_2_20260601",
+        "label": "C5-5\uff1a\u4e0b\u7fa4\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C5-5\uff1a\u4e0b\u7fa4\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_3611_1_20260601",
+        "label": "C5-5\uff1a\u6df1\u591c\u30d0\u30b9\u3000\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "long": "C5-5\uff1a\u6df1\u591c\u30d0\u30b9\u3000\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_3771_1_20260601",
+        "label": "C5-6\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u5408\u5fd7\u5e02\u5f79\u6240",
+        "long": "C5-6\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u5408\u5fd7\u5e02\u5f79\u6240",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_3772_2_20260601",
+        "label": "C5-6\uff1a\u5408\u5fd7\u5e02\u5f79\u6240\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C5-6\uff1a\u5408\u5fd7\u5e02\u5f79\u6240\u2192\u65b0\u5730\u56e3\u5730\u2192\u5800\u5ddd\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10021_5411_1_20260601",
+        "label": "C5-5\uff1a\u770c\u4f1a\u8b70\u4e8b\u5802\u524d\u2192\u770c\u5e81\u524d\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "long": "C5-5\uff1a\u770c\u4f1a\u8b70\u4e8b\u5802\u524d\u2192\u770c\u5e81\u524d\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u65b0\u5730\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10023_3001_1_20260601",
+        "label": "E2-1\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u5b50\u98fc\u6a4b\u2192\u7adc\u7530\u53e3\u99c5\u2192\u4e8c\u91cc\u6728\u2192\u6960\u56e3\u5730",
+        "long": "E2-1\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u5b50\u98fc\u6a4b\u2192\u7adc\u7530\u53e3\u99c5\u2192\u4e8c\u91cc\u6728\u2192\u6960\u56e3\u5730",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10023_3002_2_20260601",
+        "label": "E2-1\uff1a\u6960\u56e3\u5730\u2192\u4e8c\u91cc\u6728\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u5b50\u98fc\u6a4b\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "long": "E2-1\uff1a\u6960\u56e3\u5730\u2192\u4e8c\u91cc\u6728\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u5b50\u98fc\u6a4b\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10023_3031_1_20260601",
+        "label": "\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u5b50\u98fc\u6a4b\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u4e8c\u91cc\u6728\u2192\u6960\u56e3\u5730",
+        "long": "\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u5b50\u98fc\u6a4b\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u4e8c\u91cc\u6728\u2192\u6960\u56e3\u5730",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10023_3032_2_20260601",
+        "label": "E2-1\uff1a\u6960\u56e3\u5730\u2192\u4e8c\u91cc\u6728\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u5b50\u98fc\u6a4b\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "E2-1\uff1a\u6960\u56e3\u5730\u2192\u4e8c\u91cc\u6728\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u5b50\u98fc\u6a4b\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10023_3061_1_20260601",
+        "label": "E2-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u5b50\u98fc\u6a4b\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u4e8c\u91cc\u6728\u2192\u6960\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "long": "E2-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u5b50\u98fc\u6a4b\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u4e8c\u91cc\u6728\u2192\u6960\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10023_3062_2_20260601",
+        "label": "E2-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6960\u56e3\u5730\u2192\u4e8c\u91cc\u6728\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u5b50\u98fc\u6a4b\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "E2-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6960\u56e3\u5730\u2192\u4e8c\u91cc\u6728\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u5b50\u98fc\u6a4b\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10023_3081_1_20260601",
+        "label": "E2-2\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u5b50\u98fc\u6a4b\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u4e8c\u91cc\u6728\u2192\u6960\u56e3\u5730\u2192\u5149\u306e\u68ee\u99c5",
+        "long": "E2-2\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u5b50\u98fc\u6a4b\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u4e8c\u91cc\u6728\u2192\u6960\u56e3\u5730\u2192\u5149\u306e\u68ee\u99c5",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10023_3082_2_20260601",
+        "label": "E2-2\uff1a\u5149\u306e\u68ee\u99c5\u2192\u6960\u56e3\u5730\u2192\u4e8c\u91cc\u6728\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u5b50\u98fc\u6a4b\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "E2-2\uff1a\u5149\u306e\u68ee\u99c5\u2192\u6960\u56e3\u5730\u2192\u4e8c\u91cc\u6728\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u5b50\u98fc\u6a4b\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10023_3091_1_20260601",
+        "label": "E2-2\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u5b50\u98fc\u6a4b\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u4e8c\u91cc\u6728\u2192\u6960\u56e3\u5730\u2192\u5149\u306e\u68ee\u99c5",
+        "long": "E2-2\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u5b50\u98fc\u6a4b\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u4e8c\u91cc\u6728\u2192\u6960\u56e3\u5730\u2192\u5149\u306e\u68ee\u99c5",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10023_3092_2_20260601",
+        "label": "E2-2\uff1a\u5149\u306e\u68ee\u99c5\u524d\u2192\u6960\u56e3\u5730\u2192\u4e8c\u91cc\u6728\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u5b50\u98fc\u6a4b\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "long": "E2-2\uff1a\u5149\u306e\u68ee\u99c5\u524d\u2192\u6960\u56e3\u5730\u2192\u4e8c\u91cc\u6728\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u5b50\u98fc\u6a4b\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10_2901_1_20260601",
+        "label": "B1-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u58fa\u4e95\u6a4b\u2192\u6d25\u306e\u6d66\u2192\u9ad8\u5e73\u5357\u516c\u5712",
+        "long": "B1-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u58fa\u4e95\u6a4b\u2192\u6d25\u306e\u6d66\u2192\u9ad8\u5e73\u5357\u516c\u5712",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10_2902_2_20260601",
+        "label": "B1-3\uff1a\u9ad8\u5e73\u5357\u516c\u5712\u2192\u6d25\u306e\u6d66\u2192\u58fa\u4e95\u6a4b\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "B1-3\uff1a\u9ad8\u5e73\u5357\u516c\u5712\u2192\u6d25\u306e\u6d66\u2192\u58fa\u4e95\u6a4b\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "10_2922_2_20260601",
+        "label": "B1-4\uff1a\u9ad8\u5e73\u5357\u516c\u5712\u2192\u6d25\u306e\u6d66\u2192\u85ac\u5712\u753a",
+        "long": "B1-4\uff1a\u9ad8\u5e73\u5357\u516c\u5712\u2192\u6d25\u306e\u6d66\u2192\u85ac\u5712\u753a",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "12_3852_2_20260601",
+        "label": "C1-1\uff1a\u85e4\u5d0e\u5bae\u524d\u99c5\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "long": "C1-1\uff1a\u85e4\u5d0e\u5bae\u524d\u99c5\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "12_5712_2_20260601",
+        "label": "K6-0\uff1a\u85e4\u5d0e\u5bae\u524d\u99c5\u2192\u6c34\u9053\u753a\u2192\u770c\u5e81\u524d\u2192\u770c\u4f1a\u8b70\u4e8b\u5802\u524d",
+        "long": "K6-0\uff1a\u85e4\u5d0e\u5bae\u524d\u99c5\u2192\u6c34\u9053\u753a\u2192\u770c\u5e81\u524d\u2192\u770c\u4f1a\u8b70\u4e8b\u5802\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "14_3801_1_20260601",
+        "label": "C6-5\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u6960\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "long": "C6-5\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5800\u5ddd\u2192\u6960\u56e3\u5730\u2192\u4e0b\u7fa4",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_1071_1_20260601",
+        "label": "C3-2\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5c71\u5ba4\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u30d7\u30e9\u30b6",
+        "long": "C3-2\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5c71\u5ba4\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u30d7\u30e9\u30b6",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_1072_2_20260601",
+        "label": "C3-2\uff1a\u83ca\u6c60\u30d7\u30e9\u30b6\u2192\u5fa1\u4ee3\u5fd7\u2192\u5c71\u5ba4\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "long": "C3-2\uff1a\u83ca\u6c60\u30d7\u30e9\u30b6\u2192\u5fa1\u4ee3\u5fd7\u2192\u5c71\u5ba4\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_1081_1_20260601",
+        "label": "C3-3\uff1a\u84ee\u53f0\u5bfa\u5165\u53e3\u2192\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5c71\u5ba4\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "long": "C3-3\uff1a\u84ee\u53f0\u5bfa\u5165\u53e3\u2192\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5c71\u5ba4\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_1082_2_20260601",
+        "label": "C3-3\uff1a\u83ca\u6c60\u6e29\u6cc9\u2192\u5fa1\u4ee3\u5fd7\u2192\u5c71\u5ba4\u2192\u576a\u4e95\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d\u2192\u84ee\u53f0\u5bfa\u5165\u53e3",
+        "long": "C3-3\uff1a\u83ca\u6c60\u6e29\u6cc9\u2192\u5fa1\u4ee3\u5fd7\u2192\u5c71\u5ba4\u2192\u576a\u4e95\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d\u2192\u84ee\u53f0\u5bfa\u5165\u53e3",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_1091_1_20260601",
+        "label": "C1-3\uff1a\u84ee\u53f0\u5bfa\u5165\u53e3\u2192\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "long": "C1-3\uff1a\u84ee\u53f0\u5bfa\u5165\u53e3\u2192\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_1092_2_20260601",
+        "label": "C1-3\uff1a\u83ca\u6c60\u6e29\u6cc9\u2192\u5fa1\u4ee3\u5fd7\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d\u2192\u84ee\u53f0\u5bfa\u5165\u53e3",
+        "long": "C1-3\uff1a\u83ca\u6c60\u6e29\u6cc9\u2192\u5fa1\u4ee3\u5fd7\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d\u2192\u84ee\u53f0\u5bfa\u5165\u53e3",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_1111_1_20260601",
+        "label": "C1-2\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u30d7\u30e9\u30b6",
+        "long": "C1-2\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u30d7\u30e9\u30b6",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_1112_2_20260601",
+        "label": "C1-2\uff1a\u83ca\u6c60\u30d7\u30e9\u30b6\u2192\u5fa1\u4ee3\u5fd7\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "long": "C1-2\uff1a\u83ca\u6c60\u30d7\u30e9\u30b6\u2192\u5fa1\u4ee3\u5fd7\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_1211_1_20260601",
+        "label": "C1-1\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u5fa1\u4ee3\u5fd7\u2192\u8fbb\u4e45\u4fdd",
+        "long": "C1-1\uff1a\u718a\u672c\u99c5\u524d\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u5fa1\u4ee3\u5fd7\u2192\u8fbb\u4e45\u4fdd",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_1212_2_20260601",
+        "label": "C1-1\uff1a\u8fbb\u4e45\u4fdd\u2192\u5fa1\u4ee3\u5fd7\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "long": "C1-1\uff1a\u8fbb\u4e45\u4fdd\u2192\u5fa1\u4ee3\u5fd7\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u718a\u672c\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_2011_1_20260601",
+        "label": "C1-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "long": "C1-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_2012_2_20260601",
+        "label": "C1-3\uff1a\u83ca\u6c60\u6e29\u6cc9\u2192\u5fa1\u4ee3\u5fd7\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C1-3\uff1a\u83ca\u6c60\u6e29\u6cc9\u2192\u5fa1\u4ee3\u5fd7\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_2111_1_20260601",
+        "label": "C1-2\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u30d7\u30e9\u30b6",
+        "long": "C1-2\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u30d7\u30e9\u30b6",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_2112_2_20260601",
+        "label": "C1-2\uff1a\u83ca\u6c60\u30d7\u30e9\u30b6\u2192\u5fa1\u4ee3\u5fd7\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C1-2\uff1a\u83ca\u6c60\u30d7\u30e9\u30b6\u2192\u5fa1\u4ee3\u5fd7\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_2151_1_20260601",
+        "label": "C1-4\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u9808\u5c4b\u99c5\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u30d7\u30e9\u30b6",
+        "long": "C1-4\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u9808\u5c4b\u99c5\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u30d7\u30e9\u30b6",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_2152_2_20260601",
+        "label": "\u83ca\u6c60\u30d7\u30e9\u30b6\u2192\u5fa1\u4ee3\u5fd7\u2192\u9808\u5c4b\u99c5\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "\u83ca\u6c60\u30d7\u30e9\u30b6\u2192\u5fa1\u4ee3\u5fd7\u2192\u9808\u5c4b\u99c5\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_2161_1_20260601",
+        "label": "C1-2\uff1a\u6df1\u591c\u30d0\u30b9\u3000\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u30d7\u30e9\u30b6",
+        "long": "C1-2\uff1a\u6df1\u591c\u30d0\u30b9\u3000\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u5fa1\u4ee3\u5fd7\u2192\u83ca\u6c60\u30d7\u30e9\u30b6",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_2211_1_20260601",
+        "label": "\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u5fa1\u4ee3\u5fd7\u2192\u8fbb\u4e45\u4fdd",
+        "long": "\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u5fa1\u4ee3\u5fd7\u2192\u8fbb\u4e45\u4fdd",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_2212_2_20260601",
+        "label": "C1-1\uff1a\u8fbb\u4e45\u4fdd\u2192\u5fa1\u4ee3\u5fd7\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C1-1\uff1a\u8fbb\u4e45\u4fdd\u2192\u5fa1\u4ee3\u5fd7\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_2231_1_20260601",
+        "label": "\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u9808\u5c4b\u99c5\u2192\u5fa1\u4ee3\u5fd7\u2192\u8fbb\u4e45\u4fdd",
+        "long": "\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u576a\u4e95\u2192\u5800\u5ddd\u2192\u9808\u5c4b\u99c5\u2192\u5fa1\u4ee3\u5fd7\u2192\u8fbb\u4e45\u4fdd",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_2232_2_20260601",
+        "label": "C1-4\uff1a\u8fbb\u4e45\u4fdd\u2192\u5fa1\u4ee3\u5fd7\u2192\u9808\u5c4b\u99c5\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C1-4\uff1a\u8fbb\u4e45\u4fdd\u2192\u5fa1\u4ee3\u5fd7\u2192\u9808\u5c4b\u99c5\u2192\u5800\u5ddd\u2192\u576a\u4e95\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_4031_1_20260601",
+        "label": "\u8fbb\u4e45\u4fdd\u2192\u6cd7\u6c34\u30d0\u30a4\u30d1\u30b9\u2192\u5bcc\u306e\u539f\u2192\u83ca\u6c60\u30d7\u30e9\u30b6",
+        "long": "\u8fbb\u4e45\u4fdd\u2192\u6cd7\u6c34\u30d0\u30a4\u30d1\u30b9\u2192\u5bcc\u306e\u539f\u2192\u83ca\u6c60\u30d7\u30e9\u30b6",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_4032_2_20260601",
+        "label": "\u83ca\u6c60\u30d7\u30e9\u30b6\u2192\u5bcc\u306e\u539f\u2192\u6cd7\u6c34\u30d0\u30a4\u30d1\u30b9\u2192\u8fbb\u4e45\u4fdd",
+        "long": "\u83ca\u6c60\u30d7\u30e9\u30b6\u2192\u5bcc\u306e\u539f\u2192\u6cd7\u6c34\u30d0\u30a4\u30d1\u30b9\u2192\u8fbb\u4e45\u4fdd",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_8031_1_20260601",
+        "label": "C1-3\uff1a\u9808\u5c4b\u99c5\u524d\u2192\u5fa1\u4ee3\u5fd7\u2192\u5bcc\u306e\u539f\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "long": "C1-3\uff1a\u9808\u5c4b\u99c5\u524d\u2192\u5fa1\u4ee3\u5fd7\u2192\u5bcc\u306e\u539f\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_8041_1_20260601",
+        "label": "C1-3\uff1a\u9808\u5c4b\u897f\u2192\u5fa1\u4ee3\u5fd7\u2192\u5bcc\u306e\u539f\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "long": "C1-3\uff1a\u9808\u5c4b\u897f\u2192\u5fa1\u4ee3\u5fd7\u2192\u5bcc\u306e\u539f\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1_8061_1_20260601",
+        "label": "C1-3\uff1a\u9ed2\u77f3\u2192\u5fa1\u4ee3\u5fd7\u2192\u5bcc\u306e\u539f\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "long": "C1-3\uff1a\u9ed2\u77f3\u2192\u5fa1\u4ee3\u5fd7\u2192\u5bcc\u306e\u539f\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "23_9121_1_20260601",
+        "label": "SC\uff1a\u539f\u6c34\u99c5\u5317\u53e3\u2192\u30bd\u30cb\u30fc\u30bb\u30df\u30b3\u30f3\u2192\u6771\u4eac\u30a8\u30ec\u30af\u30c8\u30ed\u30f3\u2192\u539f\u6c34\u99c5\u5317\u53e3",
+        "long": "SC\uff1a\u539f\u6c34\u99c5\u5317\u53e3\u2192\u30bd\u30cb\u30fc\u30bb\u30df\u30b3\u30f3\u2192\u6771\u4eac\u30a8\u30ec\u30af\u30c8\u30ed\u30f3\u2192\u539f\u6c34\u99c5\u5317\u53e3",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "23_9141_1_20260601",
+        "label": "SC\uff1a\u539f\u6c34\u99c5\u5317\u53e3\u2192\u770c\u7acb\u6280\u8853\u77ed\u5927\u2192JASM\u2192\u539f\u6c34\u99c5\u5317\u53e3",
+        "long": "SC\uff1a\u539f\u6c34\u99c5\u5317\u53e3\u2192\u770c\u7acb\u6280\u8853\u77ed\u5927\u2192JASM\u2192\u539f\u6c34\u99c5\u5317\u53e3",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "23_9151_1_20260601",
+        "label": "SC\uff1a\u539f\u6c34\u99c5\u5317\u53e3\u2192JASM\u2192\u30bd\u30cb\u30fc\u2192\u6771\u4eac\u30a8\u30ec\u30af\u30c8\u30ed\u30f3\u2192\u539f\u6c34\u99c5\u5317\u53e3",
+        "long": "SC\uff1a\u539f\u6c34\u99c5\u5317\u53e3\u2192JASM\u2192\u30bd\u30cb\u30fc\u2192\u6771\u4eac\u30a8\u30ec\u30af\u30c8\u30ed\u30f3\u2192\u539f\u6c34\u99c5\u5317\u53e3",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "23_9161_1_20260601",
+        "label": "SC\uff1a\u5fa1\u4ee3\u5fd7\u2192KMB\u2192\u6804\u5de5\u696d\u56e3\u5730\u2192\u5408\u5fd7\u4e2d\u2192TEL\u2192\u770c\u6280\u77ed\u2192\u30bd\u30cb\u30fc\u2192JASM",
+        "long": "SC\uff1a\u5fa1\u4ee3\u5fd7\u2192KMB\u2192\u6804\u5de5\u696d\u56e3\u5730\u2192\u5408\u5fd7\u4e2d\u2192TEL\u2192\u770c\u6280\u77ed\u2192\u30bd\u30cb\u30fc\u2192JASM",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "23_9172_2_20260601",
+        "label": "SC\uff1aTEL\u2192\u770c\u6280\u77ed\u2192JASM\u2192\u30bd\u30cb\u30fc\u2192\u5408\u5fd7\u5e02\u5f79\u6240\u2192\u6804\u5de5\u696d\u56e3\u5730\u2192KMB\u2192\u5fa1\u4ee3\u5fd7",
+        "long": "SC\uff1aTEL\u2192\u770c\u6280\u77ed\u2192JASM\u2192\u30bd\u30cb\u30fc\u2192\u5408\u5fd7\u5e02\u5f79\u6240\u2192\u6804\u5de5\u696d\u56e3\u5730\u2192KMB\u2192\u5fa1\u4ee3\u5fd7",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "23_9181_1_20260601",
+        "label": "SC\uff1a\u539f\u6c34\u99c5\u5317\u53e3\u2192\u770c\u6280\u77ed\u2192JASM\u2192\u30bd\u30cb\u30fc\u2192\u6771\u4eac\u30a8\u30ec\u30af\u30c8\u30ed\u30f3\u2192\u539f\u6c34\u99c5\u5317\u53e3",
+        "long": "SC\uff1a\u539f\u6c34\u99c5\u5317\u53e3\u2192\u770c\u6280\u77ed\u2192JASM\u2192\u30bd\u30cb\u30fc\u2192\u6771\u4eac\u30a8\u30ec\u30af\u30c8\u30ed\u30f3\u2192\u539f\u6c34\u99c5\u5317\u53e3",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "23_9221_1_20260601",
+        "label": "SC\uff1a\u539f\u6c34\u99c5\u5317\u53e3\u2192\u30bd\u30cb\u30fc\u30bb\u30df\u30b3\u30f3\u2192\u6771\u4eac\u30a8\u30ec\u30af\u30c8\u30ed\u30f3\u2192\u539f\u6c34\u99c5\u5317\u53e3",
+        "long": "SC\uff1a\u539f\u6c34\u99c5\u5317\u53e3\u2192\u30bd\u30cb\u30fc\u30bb\u30df\u30b3\u30f3\u2192\u6771\u4eac\u30a8\u30ec\u30af\u30c8\u30ed\u30f3\u2192\u539f\u6c34\u99c5\u5317\u53e3",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "23_9241_1_20260601",
+        "label": "SC\uff1a\u539f\u6c34\u99c5\u5317\u53e3\u2192\u770c\u7acb\u6280\u8853\u77ed\u5927\u2192JASM\u2192\u539f\u6c34\u99c5\u6728\uff54\u53e3",
+        "long": "SC\uff1a\u539f\u6c34\u99c5\u5317\u53e3\u2192\u770c\u7acb\u6280\u8853\u77ed\u5927\u2192JASM\u2192\u539f\u6c34\u99c5\u6728\uff54\u53e3",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "23_9251_1_20260601",
+        "label": "SC\uff1a\u539f\u6c34\u99c5\u5317\u53e3\u2192JASM\u2192\u30bd\u30cb\u30fc\u2192\u6771\u4eac\u30a8\u30ec\u30af\u30c8\u30ed\u30f3\u2192\u539f\u6c34\u99c5\u5317\u53e3",
+        "long": "SC\uff1a\u539f\u6c34\u99c5\u5317\u53e3\u2192JASM\u2192\u30bd\u30cb\u30fc\u2192\u6771\u4eac\u30a8\u30ec\u30af\u30c8\u30ed\u30f3\u2192\u539f\u6c34\u99c5\u5317\u53e3",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "23_9311_1_20260601",
+        "label": "\u5927\u6d25\u652f\u63f4\u5b66\u6821\u2192\u80a5\u5f8c\u5927\u6d25\u99c5\u2192JASM\u2192\u770c\u6280\u77ed",
+        "long": "\u5927\u6d25\u652f\u63f4\u5b66\u6821\u2192\u80a5\u5f8c\u5927\u6d25\u99c5\u2192JASM\u2192\u770c\u6280\u77ed",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "23_9321_1_20260601",
+        "label": "\u770c\u6280\u77ed\u2192JASM\u2192\u5927\u6d25\u652f\u63f4\u5b66\u6821\u2192\u80a5\u5f8c\u5927\u6d25\u99c5\u2192JASM\u2192\u770c\u6280\u77ed",
+        "long": "\u770c\u6280\u77ed\u2192JASM\u2192\u5927\u6d25\u652f\u63f4\u5b66\u6821\u2192\u80a5\u5f8c\u5927\u6d25\u99c5\u2192JASM\u2192\u770c\u6280\u77ed",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "2_8081_1_20260601",
+        "label": "\u5fa1\u4ee3\u5fd7\u2192\u91ce\u3005\u5cf6\u2192\u7530\u5cf6\u2192\u4e03\u57ce\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "long": "\u5fa1\u4ee3\u5fd7\u2192\u91ce\u3005\u5cf6\u2192\u7530\u5cf6\u2192\u4e03\u57ce\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "2_8082_2_20260601",
+        "label": "\u83ca\u6c60\u6e29\u6cc9\u2192\u4e03\u57ce\u2192\u7530\u5cf6\u2192\u91ce\u3005\u5cf6\u2192\u5fa1\u4ee3\u5fd7",
+        "long": "\u83ca\u6c60\u6e29\u6cc9\u2192\u4e03\u57ce\u2192\u7530\u5cf6\u2192\u91ce\u3005\u5cf6\u2192\u5fa1\u4ee3\u5fd7",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "2_8101_1_20260601",
+        "label": "\u518d\u6625\u8358\u75c5\u9662\u2192\u91ce\u3005\u5cf6\u2192\u7530\u5cf6\u2192\u4e03\u57ce\u7dcf\u5408\u652f\u6240\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "long": "\u518d\u6625\u8358\u75c5\u9662\u2192\u91ce\u3005\u5cf6\u2192\u7530\u5cf6\u2192\u4e03\u57ce\u7dcf\u5408\u652f\u6240\u2192\u83ca\u6c60\u6e29\u6cc9",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "2_8102_2_20260601",
+        "label": "\u83ca\u6c60\u6e29\u6cc9\u2192\u4e03\u57ce\u7dcf\u5408\u652f\u6240\u2192\u7530\u5cf6\u2192\u91ce\u3005\u5cf6\u2192\u518d\u6625\u8358\u75c5\u9662",
+        "long": "\u83ca\u6c60\u6e29\u6cc9\u2192\u4e03\u57ce\u7dcf\u5408\u652f\u6240\u2192\u7530\u5cf6\u2192\u91ce\u3005\u5cf6\u2192\u518d\u6625\u8358\u75c5\u9662",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9501_1_20260601",
+        "label": "\u5357\u30eb\u30fc\u30c8\u3000\u5fa1\u4ee3\u5fd7\u2192\u6cc9\u30f6\u4e18\u2192\u5149\u306e\u68ee\u99c5\u2192\u30a2\u30f3\u30d3\u30fc\u718a\u672c",
+        "long": "\u5357\u30eb\u30fc\u30c8\u3000\u5fa1\u4ee3\u5fd7\u2192\u6cc9\u30f6\u4e18\u2192\u5149\u306e\u68ee\u99c5\u2192\u30a2\u30f3\u30d3\u30fc\u718a\u672c",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9512_2_20260601",
+        "label": "\u5357\u30eb\u30fc\u30c8\u3000\u30a2\u30f3\u30d3\u30fc\u718a\u672c\u2192\u5149\u306e\u68ee\u99c5\u2192\u6cc9\u30f6\u4e18\u2192\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929\u2192\u5fa1\u4ee3\u5fd7",
+        "long": "\u5357\u30eb\u30fc\u30c8\u3000\u30a2\u30f3\u30d3\u30fc\u718a\u672c\u2192\u5149\u306e\u68ee\u99c5\u2192\u6cc9\u30f6\u4e18\u2192\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929\u2192\u5fa1\u4ee3\u5fd7",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9521_1_20260601",
+        "label": "\u5357\u30eb\u30fc\u30c8\u3000\u5fa1\u4ee3\u5fd7\u2192\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929\u2192\u9ed2\u77f3\u56e3\u5730\u2192\u3059\u305a\u304b\u3051\u53f0\u2192\u5149\u306e\u68ee\u99c5\u2192\u30a2\u30f3\u30d3\u30fc\u718a\u672c",
+        "long": "\u5357\u30eb\u30fc\u30c8\u3000\u5fa1\u4ee3\u5fd7\u2192\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929\u2192\u9ed2\u77f3\u56e3\u5730\u2192\u3059\u305a\u304b\u3051\u53f0\u2192\u5149\u306e\u68ee\u99c5\u2192\u30a2\u30f3\u30d3\u30fc\u718a\u672c",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9522_2_20260601",
+        "label": "\u5357\u30eb\u30fc\u30c8\u3000\u30a2\u30f3\u30d3\u30fc\u718a\u672c\u2192\u5149\u306e\u68ee\u99c5\u2192\u3059\u305a\u304b\u3051\u53f0\u2192\u9ed2\u77f3\u56e3\u5730\u2192\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929\u2192\u5fa1\u4ee3\u5fd7",
+        "long": "\u5357\u30eb\u30fc\u30c8\u3000\u30a2\u30f3\u30d3\u30fc\u718a\u672c\u2192\u5149\u306e\u68ee\u99c5\u2192\u3059\u305a\u304b\u3051\u53f0\u2192\u9ed2\u77f3\u56e3\u5730\u2192\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929\u2192\u5fa1\u4ee3\u5fd7",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9531_1_20260601",
+        "label": "\u5317\u30eb\u30fc\u30c8\u3000\u8fbb\u4e45\u4fdd\u2192\u30a2\u30f3\u30d3\u30fc\u718a\u672c\u2192\u5149\u306e\u68ee\u99c5",
+        "long": "\u5317\u30eb\u30fc\u30c8\u3000\u8fbb\u4e45\u4fdd\u2192\u30a2\u30f3\u30d3\u30fc\u718a\u672c\u2192\u5149\u306e\u68ee\u99c5",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9532_2_20260601",
+        "label": "\u5317\u30eb\u30fc\u30c8\u3000\u5149\u306e\u68ee\u99c5\u2192\u30a2\u30f3\u30d3\u30fc\u718a\u672c\u2192\u8fbb\u4e45\u4fdd",
+        "long": "\u5317\u30eb\u30fc\u30c8\u3000\u5149\u306e\u68ee\u99c5\u2192\u30a2\u30f3\u30d3\u30fc\u718a\u672c\u2192\u8fbb\u4e45\u4fdd",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9541_1_20260601",
+        "label": "\u5317\u30eb\u30fc\u30c8\u3000\u8fbb\u4e45\u4fdd\u2192\u30a2\u30f3\u30d3\u30fc\u718a\u672c",
+        "long": "\u5317\u30eb\u30fc\u30c8\u3000\u8fbb\u4e45\u4fdd\u2192\u30a2\u30f3\u30d3\u30fc\u718a\u672c",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9542_2_20260601",
+        "label": "\u5317\u30eb\u30fc\u30c8\u3000\u30a2\u30f3\u30d3\u30fc\u718a\u672c\u2192\u8fbb\u4e45\u4fdd",
+        "long": "\u5317\u30eb\u30fc\u30c8\u3000\u30a2\u30f3\u30d3\u30fc\u718a\u672c\u2192\u8fbb\u4e45\u4fdd",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9551_1_20260601",
+        "label": "\u4e2d\u592e\u30eb\u30fc\u30c8\u3000\u8fbb\u4e45\u4fdd\u2192\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929\u2192\u5fa1\u4ee3\u5fd7\u2192\u6cc9\u30f6\u4e18\u2192\u30a2\u30f3\u30d3\u30fc\u718a\u672c",
+        "long": "\u4e2d\u592e\u30eb\u30fc\u30c8\u3000\u8fbb\u4e45\u4fdd\u2192\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929\u2192\u5fa1\u4ee3\u5fd7\u2192\u6cc9\u30f6\u4e18\u2192\u30a2\u30f3\u30d3\u30fc\u718a\u672c",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9552_2_20260601",
+        "label": "\u4e2d\u592e\u30eb\u30fc\u30c8\u3000\u30a2\u30f3\u30d3\u30fc\u718a\u672c\u2192\u6cc9\u30f6\u4e18\u2192\u5fa1\u4ee3\u5fd7\u2192\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929\u2192\u8fbb\u4e45\u4fdd",
+        "long": "\u4e2d\u592e\u30eb\u30fc\u30c8\u3000\u30a2\u30f3\u30d3\u30fc\u718a\u672c\u2192\u6cc9\u30f6\u4e18\u2192\u5fa1\u4ee3\u5fd7\u2192\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929\u2192\u8fbb\u4e45\u4fdd",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9561_1_20260601",
+        "label": "\u5357\u30eb\u30fc\u30c8\u3000\u8001\u4eba\u61a9\u306e\u5bb6\u2192\u9ed2\u77f3\u56e3\u5730\u2192\u3059\u305a\u304b\u3051\u53f0\u2192\u6b66\u8535\u585a\u99c5\u2192\u6b66\u8535\u30f6\u4e18\u9ad8\u901f\u30d0\u30b9\u505c",
+        "long": "\u5357\u30eb\u30fc\u30c8\u3000\u8001\u4eba\u61a9\u306e\u5bb6\u2192\u9ed2\u77f3\u56e3\u5730\u2192\u3059\u305a\u304b\u3051\u53f0\u2192\u6b66\u8535\u585a\u99c5\u2192\u6b66\u8535\u30f6\u4e18\u9ad8\u901f\u30d0\u30b9\u505c",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9562_2_20260601",
+        "label": "\u5357\u30eb\u30fc\u30c8\u3000\u6b66\u8535\u30f6\u4e18\u9ad8\u901f\u30d0\u30b9\u505c\u2192\u6b66\u8535\u585a\u99c5\u2192\u3059\u305a\u304b\u3051\u53f0\u2192\u9ed2\u77f3\u56e3\u5730\u2192\u8001\u4eba\u61a9\u306e\u5bb6",
+        "long": "\u5357\u30eb\u30fc\u30c8\u3000\u6b66\u8535\u30f6\u4e18\u9ad8\u901f\u30d0\u30b9\u505c\u2192\u6b66\u8535\u585a\u99c5\u2192\u3059\u305a\u304b\u3051\u53f0\u2192\u9ed2\u77f3\u56e3\u5730\u2192\u8001\u4eba\u61a9\u306e\u5bb6",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9571_1_20260601",
+        "label": "\u5357\u30eb\u30fc\u30c8\u3000\u8001\u4eba\u61a9\u306e\u5bb6\u2192\u9ed2\u77f3\u56e3\u5730\u2192\u3059\u305a\u304b\u3051\u53f0\u2192\u6c38\u6c5f\u56e3\u5730\u2192\u5149\u306e\u68ee\u99c5",
+        "long": "\u5357\u30eb\u30fc\u30c8\u3000\u8001\u4eba\u61a9\u306e\u5bb6\u2192\u9ed2\u77f3\u56e3\u5730\u2192\u3059\u305a\u304b\u3051\u53f0\u2192\u6c38\u6c5f\u56e3\u5730\u2192\u5149\u306e\u68ee\u99c5",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9572_2_20260601",
+        "label": "\u5357\u30eb\u30fc\u30c8\u3000\u5149\u306e\u68ee\u99c5\u2192\u6c38\u6c5f\u56e3\u5730\u2192\u3059\u305a\u304b\u3051\u53f0\u2192\u9ed2\u77f3\u56e3\u5730\u2192\u8001\u4eba\u61a9\u306e\u5bb6",
+        "long": "\u5357\u30eb\u30fc\u30c8\u3000\u5149\u306e\u68ee\u99c5\u2192\u6c38\u6c5f\u56e3\u5730\u2192\u3059\u305a\u304b\u3051\u53f0\u2192\u9ed2\u77f3\u56e3\u5730\u2192\u8001\u4eba\u61a9\u306e\u5bb6",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9581_1_20260601",
+        "label": "\u4e2d\u592e\u30eb\u30fc\u30c8\u3000\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929\u2192\u5fa1\u4ee3\u5fd7\u2192\u718a\u672c\u9ad8\u5c02\u2192\u6cc9\u30f6\u4e18\u2192\u30a2\u30f3\u30d3\u30fc\u718a\u672c",
+        "long": "\u4e2d\u592e\u30eb\u30fc\u30c8\u3000\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929\u2192\u5fa1\u4ee3\u5fd7\u2192\u718a\u672c\u9ad8\u5c02\u2192\u6cc9\u30f6\u4e18\u2192\u30a2\u30f3\u30d3\u30fc\u718a\u672c",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9582_2_20260601",
+        "label": "\u4e2d\u592e\u30eb\u30fc\u30c8\u3000\u30a2\u30f3\u30d3\u30fc\u718a\u672c\u2192\u6cc9\u30f6\u4e18\u2192\u718a\u672c\u9ad8\u5c02\u2192\u5fa1\u4ee3\u5fd7\u2192\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929",
+        "long": "\u4e2d\u592e\u30eb\u30fc\u30c8\u3000\u30a2\u30f3\u30d3\u30fc\u718a\u672c\u2192\u6cc9\u30f6\u4e18\u2192\u718a\u672c\u9ad8\u5c02\u2192\u5fa1\u4ee3\u5fd7\u2192\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9591_1_20260601",
+        "label": "\u4e2d\u592e\u30eb\u30fc\u30c8\u3000\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929\u2192\u5fa1\u4ee3\u5fd7\u2192\u718a\u672c\u9ad8\u5c02\u2192\u6cc9\u30f6\u4e18\u2192\u5149\u306e\u68ee\u99c5",
+        "long": "\u4e2d\u592e\u30eb\u30fc\u30c8\u3000\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929\u2192\u5fa1\u4ee3\u5fd7\u2192\u718a\u672c\u9ad8\u5c02\u2192\u6cc9\u30f6\u4e18\u2192\u5149\u306e\u68ee\u99c5",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "60_9592_2_20260601",
+        "label": "\u4e2d\u592e\u30eb\u30fc\u30c8\u3000\u5149\u306e\u68ee\u99c5\u2192\u6cc9\u30f6\u4e18\u2192\u718a\u672c\u9ad8\u5c02\u2192\u5fa1\u4ee3\u5fd7\u2192\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929",
+        "long": "\u4e2d\u592e\u30eb\u30fc\u30c8\u3000\u5149\u306e\u68ee\u99c5\u2192\u6cc9\u30f6\u4e18\u2192\u718a\u672c\u9ad8\u5c02\u2192\u5fa1\u4ee3\u5fd7\u2192\u30e6\u30fc\u30d1\u30ec\u30b9\u5f01\u5929",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "70_151_1_20260601",
+        "label": "\u897f\u90e8\u7dda\u3000\u5411\u967d\u53f0\u2192\u30ad\u30e3\u30ed\u30c3\u30d4\u30a2\u2192\u5149\u306e\u68ee\u99c5\u2192\u83ca\u967d\u753a\u56f3\u66f8\u9928\u2192\u83ca\u967d\u753a\u5f79\u5834",
+        "long": "\u897f\u90e8\u7dda\u3000\u5411\u967d\u53f0\u2192\u30ad\u30e3\u30ed\u30c3\u30d4\u30a2\u2192\u5149\u306e\u68ee\u99c5\u2192\u83ca\u967d\u753a\u56f3\u66f8\u9928\u2192\u83ca\u967d\u753a\u5f79\u5834",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "70_161_1_20260601",
+        "label": "\u897f\u90e8\u7dda\u3000\u83ca\u967d\u753a\u5f79\u5834\u2192\u83ca\u967d\u753a\u56f3\u66f8\u9928\u2192\u5149\u306e\u68ee\u99c5\u2192\u30ad\u30e3\u30ed\u30c3\u30d4\u30a2\u2192\u5411\u967d\u53f0",
+        "long": "\u897f\u90e8\u7dda\u3000\u83ca\u967d\u753a\u5f79\u5834\u2192\u83ca\u967d\u753a\u56f3\u66f8\u9928\u2192\u5149\u306e\u68ee\u99c5\u2192\u30ad\u30e3\u30ed\u30c3\u30d4\u30a2\u2192\u5411\u967d\u53f0",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "7_2561_1_20260601",
+        "label": "E1-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u5b50\u98fc\u6a4b\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u305f\u3064\u3060\u30cb\u30e5\u30fc\u30bf\u30a6\u30f3\u524d\u2192\u6960\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "long": "E1-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u5b50\u98fc\u6a4b\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u305f\u3064\u3060\u30cb\u30e5\u30fc\u30bf\u30a6\u30f3\u524d\u2192\u6960\u56e3\u5730\u2192\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "7_2562_2_20260601",
+        "label": "E1-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6960\u56e3\u5730\u2192\u305f\u3064\u3060\u30cb\u30e5\u30fc\u30bf\u30a6\u30f3\u524d\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u5b50\u98fc\u6a4b\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "E1-3\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6960\u56e3\u5730\u2192\u305f\u3064\u3060\u30cb\u30e5\u30fc\u30bf\u30a6\u30f3\u524d\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u5b50\u98fc\u6a4b\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "7_2582_2_20260601",
+        "label": "E1-4\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6b66\u8535\u585a\u99c5\u524d\u2192\u305f\u3064\u3060\u30cb\u30e5\u30fc\u30bf\u30a6\u30f3\u524d\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u5b50\u98fc\u6a4b\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "E1-4\uff1a\u6b66\u8535\u30f6\u4e18\u8eca\u5eab\u524d\u2192\u6b66\u8535\u585a\u99c5\u524d\u2192\u305f\u3064\u3060\u30cb\u30e5\u30fc\u30bf\u30a6\u30f3\u524d\u2192\u7adc\u7530\u53e3\u99c5\u524d\u2192\u5b50\u98fc\u6a4b\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "7_9211_1_20260601",
+        "label": "\u7adc\u7530\u53e3\u99c5\u524d\u2192\u305f\u3064\u3060\u30cb\u30e5\u30fc\u30bf\u30a6\u30f3\u524d\u2192\u6960\u56e3\u5730",
+        "long": "\u7adc\u7530\u53e3\u99c5\u524d\u2192\u305f\u3064\u3060\u30cb\u30e5\u30fc\u30bf\u30a6\u30f3\u524d\u2192\u6960\u56e3\u5730",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "7_9212_2_20260601",
+        "label": "\u6960\u56e3\u5730\u2192\u305f\u3064\u3060\u30cb\u30e5\u30fc\u30bf\u30a6\u30f3\u524d\u2192\u7adc\u7530\u53e3\u99c5\u524d",
+        "long": "\u6960\u56e3\u5730\u2192\u305f\u3064\u3060\u30cb\u30e5\u30fc\u30bf\u30a6\u30f3\u524d\u2192\u7adc\u7530\u53e3\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "8_2721_1_20260601",
+        "label": "C4-4\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5c71\u5ba4\u2192\u68b6\u5c3e\u2192\u690d\u6728\u99d0\u8eca\u5834",
+        "long": "C4-4\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5c71\u5ba4\u2192\u68b6\u5c3e\u2192\u690d\u6728\u99d0\u8eca\u5834",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "8_2722_2_20260601",
+        "label": "C4-4\uff1a\u690d\u6728\u99d0\u8eca\u5834\u2192\u68b6\u5c3e\u2192\u5c71\u5ba4\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C4-4\uff1a\u690d\u6728\u99d0\u8eca\u5834\u2192\u68b6\u5c3e\u2192\u5c71\u5ba4\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "8_2731_1_20260601",
+        "label": "C4-2\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5c71\u5ba4\u2192\u68b6\u5c3e\u2192\u7acb\u77f3",
+        "long": "C4-2\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5c71\u5ba4\u2192\u68b6\u5c3e\u2192\u7acb\u77f3",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "8_2732_2_20260601",
+        "label": "C4-2\uff1a\u7acb\u77f3\u2192\u68b6\u5c3e\u2192\u5c71\u5ba4\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C4-2\uff1a\u7acb\u77f3\u2192\u68b6\u5c3e\u2192\u5c71\u5ba4\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "8_2741_1_20260601",
+        "label": "C4-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5c71\u5ba4\u2192\u30e6\u30a6\u30d9\u30eb\uff28\u2192\u68b6\u5c3e\u2192\u7acb\u77f3",
+        "long": "C4-3\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5c71\u5ba4\u2192\u30e6\u30a6\u30d9\u30eb\uff28\u2192\u68b6\u5c3e\u2192\u7acb\u77f3",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "8_2742_2_20260601",
+        "label": "C4-3\uff1a\u7acb\u77f3\u2192\u68b6\u5c3e\u2192\u30e6\u30a6\u30d9\u30eb\uff28\u2192\u5c71\u5ba4\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C4-3\uff1a\u7acb\u77f3\u2192\u68b6\u5c3e\u2192\u30e6\u30a6\u30d9\u30eb\uff28\u2192\u5c71\u5ba4\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "8_2751_1_20260601",
+        "label": "C4-1\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5c71\u5ba4\u2192\u5357\u539f",
+        "long": "C4-1\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5c71\u5ba4\u2192\u5357\u539f",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "8_2752_2_20260601",
+        "label": "C4-1\uff1a\u5357\u539f\u2192\u5c71\u5ba4\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C4-1\uff1a\u5357\u539f\u2192\u5c71\u5ba4\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "8_2771_1_20260601",
+        "label": "C4-5\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5c71\u5ba4\u2192\u30e6\u30a6\u30d9\u30eb\uff28\u2192\u68b6\u5c3e\u2192\u690d\u6728\u99d0\u8eca\u5834",
+        "long": "C4-5\uff1a\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u6c34\u9053\u753a\u2192\u4e09\u8ed2\u753a\u2192\u5c71\u5ba4\u2192\u30e6\u30a6\u30d9\u30eb\uff28\u2192\u68b6\u5c3e\u2192\u690d\u6728\u99d0\u8eca\u5834",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "8_2772_2_20260601",
+        "label": "C4-5\uff1a\u690d\u6728\u99d0\u8eca\u5834\u2192\u68b6\u5c3e\u2192\u30e6\u30a6\u30d9\u30eb\uff28\u2192\u5c71\u5ba4\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "C4-5\uff1a\u690d\u6728\u99d0\u8eca\u5834\u2192\u68b6\u5c3e\u2192\u30e6\u30a6\u30d9\u30eb\uff28\u2192\u5c71\u5ba4\u2192\u4e09\u8ed2\u753a\u2192\u6c34\u9053\u753a\u2192\u685c\u753a\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 618,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "missing_required_column",
+      "count": 3,
+      "effort": "Often an export setting; ask your vendor if it recurs.",
+      "fix": "Add the required column named in the finding to the flagged file.",
+      "owner": "Likely your export tool",
+      "points": 12.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "A file is missing a column that GTFS requires.",
+      "why": "Apps may reject the whole file, so riders could lose the affected routes or stops."
+    },
+    {
+      "code": "scorecard_rt_trip_coverage",
+      "count": 1,
+      "effort": "A vendor data-mapping question.",
+      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+      "owner": "",
+      "points": 41.2,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "1 of 1 trips scheduled during the sampling window had no live predictions.",
+      "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 618,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "618 of 618 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

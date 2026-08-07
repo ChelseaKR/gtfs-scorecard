@@ -1,0 +1,966 @@
+{
+  "agency": {
+    "country": "CA",
+    "id": "exo-laurentides",
+    "name": "exo Laurentides",
+    "subdivision_code": "CA-QC",
+    "subdivision_name": "Quebec"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 5976,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 2182,
+        "translations": {
+          "feed_lang": "fr",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 5976,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2181,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "2181 of 2182 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 5976,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "5976 of 5976 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 52.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 8,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 3,
+          "WARNING": 99868
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "non_ascii_or_non_printable_char",
+          "count": 93119,
+          "effort": "A planned ID change, not a quick text cleanup.",
+          "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some internal IDs use characters outside the basic text set.",
+          "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+        },
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 6735,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "unexpected_enum_value",
+          "count": 7,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unexpected_enum_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Unexpected enum value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 4,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 2,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 2,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "unknown_column",
+          "count": 1,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        }
+      ],
+      "name": "correctness",
+      "score": 65.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 8 kinds of issue across 99871 instances (0 error, 99868 warning, 3 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 149,
+        "effective_expiry_date": "2027-01-03",
+        "feed_end_date": "2027-01-03",
+        "feed_start_date": "2026-07-13",
+        "feed_version": null,
+        "has_feed_info": true,
+        "last_service_date": "2027-01-03",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 149 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 151 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Creative Commons Attribution 4.0 (CC BY 4.0); exo open data published through Donn\u00e9es Qu\u00e9bec. Derived measurements by GTFS Scorecard.",
+    "reachable": true,
+    "sha256": "33d6e6c22f89430e989ddac990883a800fc9d7505fca82ab952c879091b552fe",
+    "size_bytes": 2823961,
+    "static_url": "https://exo.quebec/xdata/citla/google_transit.zip"
+  },
+  "fetch": {
+    "final_url": "https://exo.quebec/xdata/citla/google_transit.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -74.20674,
+      45.46048,
+      -73.65337,
+      45.84213
+    ],
+    "lat": 45.65115,
+    "lon": -73.89334,
+    "stop_count": 2182
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 42,
+        "trip_count": 4583,
+        "trip_share_pct": 76.7
+      },
+      {
+        "key": "other",
+        "label": "Other / unclassified",
+        "route_count": 7,
+        "trip_count": 1393,
+        "trip_share_pct": 23.3
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 49,
+    "trip_count": 5976
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 9.8,
+    "margin_to_next_band": 0.2,
+    "score": 69.8
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 2133,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "2133 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Dagenais Est / de Tol\u00e8de\", \"Rene-Leannec / Saint-Elz\u00e9ar\", \"Ren\u00e9-Leannec / Saint-Elz\u00e9ar\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 2182,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 5976
+  },
+  "route_map": {
+    "drawn_route_count": 49,
+    "has_shapes": true,
+    "path": "data/artifacts/exo-laurentides/geometry.geojson",
+    "route_count": 49,
+    "routes": [
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "220",
+        "label": "220",
+        "long": "Deux-Montagnes - Pointe-Calumet (59e Avenue)",
+        "short": "220",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "221",
+        "label": "221",
+        "long": "Deux-Montagnes - Pointe Calumet (Avenue Joseph)",
+        "short": "221",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "222",
+        "label": "222",
+        "long": "Deux-Montagnes - Sainte-Marthe-sur-le-Lac",
+        "short": "222",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "225",
+        "label": "225",
+        "long": "Deux-Montagnes - Saint-Eustache (A-Sauv\u00e9)",
+        "short": "225",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "226",
+        "label": "226",
+        "long": "Deux-Montagnes - Saint-Eustache (A-Sauv\u00e9)",
+        "short": "226",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "227",
+        "label": "227",
+        "long": "Deux-Montagnes - Saint-Eustache (Centre)",
+        "short": "227",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "228",
+        "label": "228",
+        "long": "Deux-Montagnes - Saint-Eustache (Centre)",
+        "short": "228",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "230",
+        "label": "230",
+        "long": "Saint-J\u00e9r\u00f4me (Centre-ville)",
+        "short": "230",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "231",
+        "label": "231",
+        "long": "Saint-J\u00e9r\u00f4me (Centre)",
+        "short": "231",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "232",
+        "label": "232",
+        "long": "Saint-J\u00e9r\u00f4me (Centre)",
+        "short": "232",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "233",
+        "label": "233",
+        "long": "Saint-J\u00e9r\u00f4me (Bellefeuille)",
+        "short": "233",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "234",
+        "label": "234",
+        "long": "Saint-J\u00e9r\u00f4me (Bellefeuille)",
+        "short": "234",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "235",
+        "label": "235",
+        "long": "Saint-J\u00e9r\u00f4me (Lafontaine)",
+        "short": "235",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "236",
+        "label": "236",
+        "long": "Saint-J\u00e9r\u00f4me (Saint-Antoine)",
+        "short": "236",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "237",
+        "label": "237",
+        "long": "Saint-J\u00e9r\u00f4me (Saint-Antoine)",
+        "short": "237",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "238",
+        "label": "238",
+        "long": "Saint-J\u00e9r\u00f4me - Mirabel (Saint-Canut)",
+        "short": "238",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "239",
+        "label": "239",
+        "long": "Saint-J\u00e9r\u00f4me - Mirabel (Mirabel-en-Haut)",
+        "short": "239",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "240",
+        "label": "240",
+        "long": "Boisbriand Nord - Boisbriand Sud",
+        "short": "240",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "241",
+        "label": "241",
+        "long": "Boisbriand Sud - Boisbriand Nord",
+        "short": "241",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "242",
+        "label": "242",
+        "long": "Sainte-Th\u00e9r\u00e8se - Rosem\u00e8re - Laval (Sainte-Rose)",
+        "short": "242",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "243",
+        "label": "243",
+        "long": "Mirabel (Saint-Augustin) - Sainte-Th\u00e9r\u00e8se",
+        "short": "243",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "246",
+        "label": "246",
+        "long": "Sainte-Th\u00e9r\u00e8se - Blainville (Renaissance)",
+        "short": "246",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "247",
+        "label": "247",
+        "long": "Sainte-Th\u00e9r\u00e8se - Blainville",
+        "short": "247",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "248",
+        "label": "248",
+        "long": "Rosem\u00e8re - Gare Rosem\u00e8re",
+        "short": "248",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "249",
+        "label": "249",
+        "long": "Sainte-Th\u00e9r\u00e8se - Lorraine - Terrebonne",
+        "short": "249",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "250",
+        "label": "250",
+        "long": "Sainte-Anne-des-Plaines - Sainte-Th\u00e9r\u00e8se",
+        "short": "250",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "251",
+        "label": "251",
+        "long": "Sainte-Th\u00e9r\u00e8se - Polyvalente Sainte-Th\u00e9r\u00e8se",
+        "short": "251",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "252",
+        "label": "252",
+        "long": "Sainte-Th\u00e9r\u00e8se (des Mille-\u00celes)",
+        "short": "252",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "253",
+        "label": "253",
+        "long": "Terrebonne - Lorraine - Gare Rosem\u00e8re",
+        "short": "253",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "254",
+        "label": "254",
+        "long": "Gare Blainville - Blainville (Est)",
+        "short": "254",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "255",
+        "label": "255",
+        "long": "Gare Blainville - Blainville (Ouest)",
+        "short": "255",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "303",
+        "label": "303",
+        "long": "Saint-J\u00e9r\u00f4me (Saint-Camille) (sur r\u00e9servation)",
+        "short": "303",
+        "text_color": "FFFFFF",
+        "type_label": "Transit line"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "306",
+        "label": "306",
+        "long": "Saint-J\u00e9r\u00f4me (Chutes Wilson) (sur r\u00e9servation)",
+        "short": "306",
+        "text_color": "FFFFFF",
+        "type_label": "Transit line"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "309",
+        "label": "309",
+        "long": "Saint-J\u00e9r\u00f4me (Porte du Nord) (sur r\u00e9servation)",
+        "short": "309",
+        "text_color": "FFFFFF",
+        "type_label": "Transit line"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "310",
+        "label": "310",
+        "long": "Saint-J\u00e9r\u00f4me (des Eaux-Vives) (sur r\u00e9servation)",
+        "short": "310",
+        "text_color": "FFFFFF",
+        "type_label": "Transit line"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "311",
+        "label": "311",
+        "long": "Saint-J\u00e9r\u00f4me (Lafontaine) (sur r\u00e9servation)",
+        "short": "311",
+        "text_color": "FFFFFF",
+        "type_label": "Transit line"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "312",
+        "label": "312",
+        "long": "Saint-J\u00e9r\u00f4me (Lamontagne) (sur r\u00e9servation)",
+        "short": "312",
+        "text_color": "FFFFFF",
+        "type_label": "Transit line"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "317",
+        "label": "317",
+        "long": "Ste-Anne-des-Plaines -Terrebonne (sur r\u00e9servation)",
+        "short": "317",
+        "text_color": "FFFFFF",
+        "type_label": "Transit line"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "405",
+        "label": "405",
+        "long": "Deux-Montagnes - Sainte-Th\u00e9r\u00e8se Express",
+        "short": "405",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "509",
+        "label": "509",
+        "long": "Saint-J\u00e9r\u00f4me - Laval Express",
+        "short": "509",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "514",
+        "label": "514",
+        "long": "Sainte-Anne-des-Plaines - Laval",
+        "short": "514",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "600",
+        "label": "600",
+        "long": "Deux-Montagnes - St-Eustache (Sud) - Ste-Th\u00e9r\u00e8se",
+        "short": "600",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "604",
+        "label": "604",
+        "long": "Saint-Placide - Oka - Deux-Montagnes",
+        "short": "604",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "605",
+        "label": "605",
+        "long": "Deux-Montagnes - St-Eustache (Nord) - Ste-Th\u00e9r\u00e8se",
+        "short": "605",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "610",
+        "label": "610",
+        "long": "Sainte-Th\u00e9r\u00e8se - Terrebonne",
+        "short": "610",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "707",
+        "label": "707",
+        "long": "Boisbriand - Laval",
+        "short": "707",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "708",
+        "label": "708",
+        "long": "Deux-Montagnes - Laval",
+        "short": "708",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "709",
+        "label": "709",
+        "long": "Saint-J\u00e9r\u00f4me - Laval",
+        "short": "709",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F1F1F",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "YMX",
+        "label": "YMX",
+        "long": "A\u00e9rocit\u00e9 YMX Express",
+        "short": "YMX",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2182,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 2181,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "2181 of 2182 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 5976,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "5976 of 5976 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+    },
+    {
+      "code": "non_ascii_or_non_printable_char",
+      "count": 93119,
+      "effort": "A planned ID change, not a quick text cleanup.",
+      "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+      "owner": "",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some internal IDs use characters outside the basic text set.",
+      "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

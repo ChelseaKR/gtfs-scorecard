@@ -1,0 +1,908 @@
+{
+  "agency": {
+    "country": "NZ",
+    "id": "baybus-bay-of-plenty",
+    "name": "Baybus (Bay of Plenty)",
+    "operating_note": "The Bay of Plenty regional bus network (Tauranga, Rotorua, and district services); counted as one feed record.",
+    "subdivision_code": "NZ-BOP",
+    "subdivision_name": "Bay of Plenty"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": true
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 9726,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1198,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 9726,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1198,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "1198 of 1198 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 9726,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "9726 of 9726 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_flex_no_booking_rules",
+          "count": 1,
+          "effort": "A small file; one rule often covers the whole service.",
+          "fix": "Add booking_rules.txt saying how far ahead and how to book (phone, app, or web).",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed describes flexible (demand-responsive) service but has no booking_rules.txt.",
+          "why": "Riders can see the service area but not how or when to reserve a trip, so they can't actually use the service."
+        }
+      ],
+      "name": "completeness",
+      "score": 45.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 10,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 388,
+          "WARNING": 106
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "stop_without_stop_time",
+          "count": 96,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 4,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 3,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "same_name_and_description_for_stop",
+          "count": 3,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Same name and description for stop (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 327,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the bus ends up, so a midpoint name can send them the wrong way."
+        },
+        {
+          "code": "unknown_column",
+          "count": 36,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "platform_without_parent_station",
+          "count": 12,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'platform_without_parent_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Platform without parent station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unknown_file",
+          "count": 7,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 5,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "feed_valid_beyond_total_service_window",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'feed_valid_beyond_total_service_window' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Feed valid beyond total service window (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 75.8,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 10 kinds of issue across 494 instances (0 error, 106 warning, 388 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 174,
+        "effective_expiry_date": "2027-01-27",
+        "feed_end_date": "2027-01-27",
+        "feed_start_date": "2026-03-12",
+        "feed_version": "UTC: 11-Mar-2026 16:59",
+        "has_feed_info": true,
+        "last_service_date": "2027-01-27",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 174 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 175 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0; credit Bay of Plenty Regional Council Toi Moana. The download is the council's sanctioned data-platform host; the council publishes the same feed under CC BY 4.0.",
+    "reachable": true,
+    "sha256": "642eb5a0bd806cc5b473435391fbb7984e50b6069f55fb8fc3ac0fed493f45c1",
+    "size_bytes": 3152334,
+    "static_url": "http://gtfs.dynamis.live/boprc/prod/boprc-nz.zip"
+  },
+  "fetch": {
+    "final_url": "http://gtfs.dynamis.live/boprc/prod/boprc-nz.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      175.83914,
+      -38.63932,
+      178.14269,
+      -37.38982
+    ],
+    "lat": -37.72183,
+    "lon": 176.20405,
+    "stop_count": 1198
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 38,
+        "trip_count": 9726,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 38,
+    "trip_count": 9726
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 2.2,
+    "margin_to_next_band": 7.8,
+    "score": 72.2
+  },
+  "recommendations": [
+    {
+      "category": "flex",
+      "code": "scorecard_flex_completeness_no_booking_rules",
+      "count": 1,
+      "effort": "A small file; one rule often covers the whole service.",
+      "fix": "Add booking_rules.txt with how far ahead and how to reserve (phone, app, or web).",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "Flex zones are published but no booking_rules.txt is present.",
+      "why": "Riders can see the service area but not how to book, so they can't complete a trip."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 12,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "12 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (21, 22, 55, CT, 8, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 56,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "56 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Clarke Street - St Johns\", \"Domain Rd - Opposite Supermarket\", \"Carmichael Road - St Michaels Avenue\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1198,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 96,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "96 of 1198 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 96,
+    "single_stop_trips": 0,
+    "trips_total": 9726
+  },
+  "route_map": {
+    "drawn_route_count": 38,
+    "has_shapes": true,
+    "path": "data/artifacts/baybus-bay-of-plenty/geometry.geojson",
+    "route_count": 38,
+    "routes": [
+      {
+        "color": "00A04A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2401",
+        "label": "1",
+        "long": "Pyes Pa - Greerton - Tauranga City",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE3124",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2402",
+        "label": "2",
+        "long": "Papamoa - Bayfair - Tauranga City",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073B8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2405",
+        "label": "5",
+        "long": "Bayfair - Mt Maunganui - Tauranga City",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "296989",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2407",
+        "label": "7",
+        "long": "Matua - Tauranga City",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007E3D",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2420",
+        "label": "20",
+        "long": "Te Puke - Bayfair",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008F89",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2421",
+        "label": "21",
+        "long": "Mt Maunganui - Bayfair - Papamoa Plaza",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B971A4",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "2422",
+        "label": "22",
+        "long": "Papamoa - Maungatapu - Tauranga City",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "714D31",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "2440",
+        "label": "40",
+        "long": "Welcome Bay - Tauranga City",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F9A01B",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "2445",
+        "label": "CT",
+        "long": "Bayfair - Maungatapu - Toi Ohomai - Greerton - Tauranga Crossing",
+        "short": "CT",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004C1D",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "2452",
+        "label": "52x",
+        "long": "Tauranga Crossing -  The Lakes - Tauranga City",
+        "short": "52x",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "488EAF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2455",
+        "label": "55",
+        "long": "Ohauiti - Toi Ohomai - Greerton - Hospital - Tauranga City",
+        "short": "55",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "453B97",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "2459",
+        "label": "59",
+        "long": "Greerton - Watling Street - Tauranga City",
+        "short": "59",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002452",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "2460",
+        "label": "60",
+        "long": "Cambridge Heights - Brookfield - Ngatai Road - Tauranga City",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "940670",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2462",
+        "label": "62",
+        "long": "Bethlehem - Brookfield - Tauranga City",
+        "short": "62",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D60D8C",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "24721",
+        "label": "72a",
+        "long": "Otumoetai - Brookfield - Tauranga City",
+        "short": "72a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D60D8C",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "24722",
+        "label": "72b",
+        "long": "Otumoetai - Brookfield - Tauranga City",
+        "short": "72b",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006948",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2701",
+        "label": "1",
+        "long": "Ngongotaha - Rotorua CBD",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D82332",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2703",
+        "label": "3",
+        "long": "Owhata - Lynmore - Rotorua CBD",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "26347D",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "2704",
+        "label": "4",
+        "long": "Sunnybrook - Fordlands - Rotorua CBD",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A3234C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2705",
+        "label": "5",
+        "long": "Western Heights - Selwyn Heights - Rotorua CBD",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9C5926",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "2706",
+        "label": "6",
+        "long": "Kawaha Point - Hospital - Rotorua CBD",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "359B42",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2707",
+        "label": "7",
+        "long": "Mitchell Downs - Clayton Road - Rotorua CBD",
+        "short": "7",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0099A4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2708",
+        "label": "8",
+        "long": "Westbrook - Glenholme - Rotorua CBD",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005186",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2709",
+        "label": "9",
+        "long": "Springfield - Rotorua CBD",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0079B0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2710",
+        "label": "10",
+        "long": "Airport - Holdens Bay - Ngapuna - Rotorua CBD",
+        "short": "10",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E06E2C",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "2711",
+        "label": "11",
+        "long": "Toi Ohomai - Te Puia - Rotorua CBD",
+        "short": "11",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B847",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "2712",
+        "label": "12",
+        "long": "Tihi-O-Tonga - Toi Ohomai - Glenholme - Rotorua CBD",
+        "short": "12",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BD003A",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "2715",
+        "label": "15",
+        "long": "Murupara - Rotorua CBD",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BD003A",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "27151",
+        "label": "15a",
+        "long": "Ruatahuna - Murupara - Rotorua CBD",
+        "short": "15a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFC726",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "28122",
+        "label": "122",
+        "long": "Whakatane - Ohope",
+        "short": "122",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00AD68",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "28131",
+        "label": "131",
+        "long": "Whakatane - Matata",
+        "short": "131",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D32939",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "28135",
+        "label": "135",
+        "long": "Whakatane - Kawerau",
+        "short": "135",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A31126",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "28143",
+        "label": "143",
+        "long": "Whakatane - Tauranga via Te Puke",
+        "short": "143",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00529B",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "28147",
+        "label": "147",
+        "long": "Whakatane - Opotiki",
+        "short": "147",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008193",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "28150",
+        "label": "150",
+        "long": "Potaka - Opotiki",
+        "short": "150",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "50892E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2880",
+        "label": "80",
+        "long": "Katikati - Tauranga",
+        "short": "80",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009CDD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2881",
+        "label": "81",
+        "long": "Omokoroa - Tauranga",
+        "short": "81",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F26322",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "7267",
+        "label": "85",
+        "long": "Waihi - Waihi Beach - Katikati",
+        "short": "85",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1198,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1198,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "1198 of 1198 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 9726,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "9726 of 9726 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

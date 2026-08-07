@@ -1,0 +1,860 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-envia",
+    "name": "R\u00e9seau urbain Envia",
+    "subdivision_code": "FR-PAC",
+    "subdivision_name": "Provence-Alpes-C\u00f4te-d\u2019Azur"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 17.1,
+          "stops_marked_accessible_pct": 27.4,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 27.4,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 14.9,
+          "wheelchair_stops": 6.9,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 3383,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 99.9,
+        "headsign_scored_pct": 99.9,
+        "mixed_case_stop_name_pct": 99.6,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 784,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 3383,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 27.4,
+        "wheelchair_marked_accessible_pct": 27.4,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 569,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 18.1,
+          "severity": "WARNING",
+          "what": "569 of 784 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 3383,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "3383 of 3383 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 2,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "2 of 3383 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 44.3,
+      "status": "measured",
+      "summary": "27% of stops state wheelchair accessibility (27% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 9,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 31,
+          "WARNING": 171
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
+          "count": 112,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Equal shape distance diff coordinates distance below threshold (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "same_name_and_description_for_route",
+          "count": 29,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_route' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Same name and description for route (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 24,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 2,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 2,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "same_name_and_description_for_stop",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Same name and description for stop (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 23,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 8,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the bus ends up, so a midpoint name can send them the wrong way."
+        }
+      ],
+      "name": "correctness",
+      "score": 62.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 9 kinds of issue across 202 instances (0 error, 171 warning, 31 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 147,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 147 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "coverage_pct": 94.4,
+        "covered_trips": 17,
+        "drift": {
+          "median_seconds": 8,
+          "observations": 1678,
+          "on_time_share_pct": 92.2,
+          "p90_abs_seconds": 123
+        },
+        "kinds_configured": 2,
+        "kinds_reachable": 2,
+        "reachable_kinds": [
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "rt_freshness": "fresh",
+        "samples": 6,
+        "scheduled_trips_in_window": 18,
+        "vehicles_checked": 49,
+        "vehicles_on_route_pct": 100.0,
+        "worst_lag_seconds": 28
+      },
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 1,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 1.9,
+          "severity": "WARNING",
+          "what": "1 of 18 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        }
+      ],
+      "name": "realtime",
+      "score": 98.1,
+      "status": "measured",
+      "summary": "Sampled 6 times: 2 of 2 configured feeds healthy; 94.4% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 8s behind schedule.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 6 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 27% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 27% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including commercial reuse is permitted with attribution to CA d'Arles-Crau-Camargue-Montagnette and the update date.",
+    "reachable": true,
+    "sha256": "e3c467478efeae1faf16b7ac645de9ba759c2f079aace954abbf0ae39cb8f876",
+    "size_bytes": 1900248,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/52216d2f-072e-4b7d-af0c-15d8d4e98b09"
+  },
+  "fetch": {
+    "final_url": "https://static.data.gouv.fr/resources/donnees-statiques-et-temps-reels-reseau-envia/20260729-064934/gtfs-envia-20260729.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      4.36584,
+      43.35105,
+      4.82402,
+      43.86559
+    ],
+    "lat": 43.66878,
+    "lon": 4.63911,
+    "stop_count": 784
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 29,
+        "trip_count": 3383,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 29,
+    "trip_count": 3383
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 9.6,
+    "margin_to_next_band": 0.4,
+    "score": 69.6
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 9,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "9 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (A10, A20, A30, A50, A40, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 14,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "14 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"St Pierre\", \"St Pierre\", \"Rd Point de la M\u00e9diterran\u00e9e\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 499,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 3383
+  },
+  "route_map": {
+    "drawn_route_count": 29,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-envia/geometry.geojson",
+    "route_count": 29,
+    "routes": [
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "10",
+        "label": "114",
+        "long": "114 - Raph\u00e8le Interne",
+        "short": "114",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "11",
+        "label": "101",
+        "long": "101 - Raph\u00e8le <> Moules <> Arles",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "12",
+        "label": "105",
+        "long": "105 - Saliers <> Arles",
+        "short": "105",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "13",
+        "label": "106",
+        "long": "106 - Salin de Giraud <> Arles",
+        "short": "106",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "14",
+        "label": "102",
+        "long": "102 - Saint Martin de Crau <> Arles",
+        "short": "102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "15",
+        "label": "103",
+        "long": "103 - Tarascon <> Arles",
+        "short": "103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "16",
+        "label": "104",
+        "long": "104 - Tarascon Interne",
+        "short": "104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "17",
+        "label": "107",
+        "long": "107 - Salin de Giraud <> Port St Louis",
+        "short": "107",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "21",
+        "label": "109",
+        "long": "109 - Arles <> Tarascon <> Beaucaire",
+        "short": "109",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "22",
+        "label": "108",
+        "long": "108 - Arles <> St Martin de Crau",
+        "short": "108",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "23",
+        "label": "112",
+        "long": "112 - Les Stes Maries de la Mer Interne",
+        "short": "112",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CCFFCC",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "31",
+        "label": "A10",
+        "long": "AGGLO 10 - Salin de Giraud Camargue <> Arles Gare SNCF",
+        "short": "A10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFCC00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "32",
+        "label": "A20",
+        "long": "AGGLO 20 - Arles Gare SNCF <> Tarascon Gare SNCF",
+        "short": "A20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF6C6C",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "33",
+        "label": "A30",
+        "long": "AGGLO 30 - St Martin de Crau Gare SNCF <> Arles Gare SNCF",
+        "short": "A30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00CCFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "34",
+        "label": "A40",
+        "long": "AGGLO 40 - Tarascon Gare SNCF <> Boulbon <> St Pierre de M\u00e9zoargues",
+        "short": "A40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC99FF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "35",
+        "label": "A50",
+        "long": "AGGLO 50 - Stes Maries de la Mer - Les Massoucles <> Arles - Gare SNCF",
+        "short": "A50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "38",
+        "label": "1",
+        "long": "1 - Gare SNCF <> Barriol",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3366FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "39",
+        "label": "12",
+        "long": "12 - Barriol <> CC La Plaine de Montmajour",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000080",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "40",
+        "label": "2",
+        "long": "2 - H\u00f4pital <> C.C La Plaine de Montmajour",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "41",
+        "label": "3",
+        "long": "3 - Gimeaux <> La Crau",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC99FF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "42",
+        "label": "4",
+        "long": "4 - C.C La Plaine Montmajour <> Pont Van Gogh",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "43",
+        "label": "5",
+        "long": "5 - ZI Nord <> Tournesol",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "45",
+        "label": "T",
+        "long": "T - La Tarasque <> ZAC du Roubian",
+        "short": "T",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "5",
+        "label": "110",
+        "long": "110 - Gageron <> Arles",
+        "short": "110",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "6",
+        "label": "111",
+        "long": "111 - St Martin de Crau Interne",
+        "short": "111",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "73",
+        "label": "113",
+        "long": "113 - Saliers <> Le Paty <> Albaron",
+        "short": "113",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF4646",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "75",
+        "label": "11",
+        "long": "11 - Gare SNCF <> Parking des Minimes",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "77",
+        "label": "116",
+        "long": "116 - Mas-Thibert <> St Martin de Crau",
+        "short": "116",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "9",
+        "label": "115",
+        "long": "115 - Moules Interne",
+        "short": "115",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 784,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 569,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 18.1,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "569 of 784 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 3383,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "3383 of 3383 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,0 +1,920 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-pan-81342",
+    "name": "R\u00e9seau urbain et scolaire T'CAP \u2014 sco24data-gtfs-2024-10-16-10-39-46.zip",
+    "operating_note": "One of 2 distinct schedule resources in the same official dataset; each resource is counted as one feed record.",
+    "subdivision_code": "FR-ARA",
+    "subdivision_name": "Auvergne-Rh\u00f4ne-Alpes"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 93.3,
+          "stops_marked_accessible_pct": 7.5,
+          "stops_marked_not_accessible_pct": 92.5,
+          "stops_stated_pct": 100.0,
+          "trips_stated_pct": 82.2
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 14.5,
+          "stop_names": 15.0,
+          "wheelchair_stops": 25.0,
+          "wheelchair_trips": 12.3
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 169,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 96.4,
+        "headsign_scored_pct": 96.4,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 601,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 169,
+        "wheelchair_accessible_pct": 82.2,
+        "wheelchair_boarding_pct": 100.0,
+        "wheelchair_marked_accessible_pct": 7.5,
+        "wheelchair_marked_not_accessible_pct": 92.5
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 30,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 2.7,
+          "severity": "WARNING",
+          "what": "30 of 169 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 6,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "WARNING",
+          "what": "6 of 169 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 74.3,
+      "status": "measured",
+      "summary": "100% of stops state wheelchair accessibility (7% marked accessible, 93% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 11,
+        "instances_by_severity": {
+          "ERROR": 3,
+          "INFO": 117,
+          "WARNING": 85
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "stop_time_with_arrival_before_previous_departure_time",
+          "count": 3,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Stop time with arrival before previous departure time (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 45,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 23,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "leading_or_trailing_whitespaces",
+          "count": 9,
+          "effort": "Usually one export setting.",
+          "fix": "Trim leading and trailing spaces on export. The scorecard's auto-fixed copy already does this.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some values have extra spaces at the start or end.",
+          "why": "A stray space can break a match, so a stop or route may fail to link across files."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 4,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 3,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 77,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "unused_station",
+          "count": 21,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unused_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Unused station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unsorted_stop_times",
+          "count": 11,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unsorted_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Unsorted stop times (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 8,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the bus ends up, so a midpoint name can send them the wrong way."
+        }
+      ],
+      "name": "correctness",
+      "score": 54.8,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 11 kinds of issue across 205 instances (3 error, 85 warning, 117 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 55,
+        "effective_expiry_date": "2026-09-30",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-09-30",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 76.7,
+      "status": "measured",
+      "summary": "Service data covers the next 55 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 56 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 100% of stops and 82% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 100% of stops and 82% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including commercial reuse is permitted with attribution to Communaut\u00e9 d'Agglom\u00e9ration Privas Centre Ard\u00e8che and the update date.",
+    "reachable": true,
+    "sha256": "e298f1d90c54d392ad69c64512b5941dee3a53ad4e0d616409d8c8c8c54b5707",
+    "size_bytes": 64801,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/5120cc52-6cc0-46b7-83b0-4c5cfd8f920c"
+  },
+  "fetch": {
+    "final_url": "https://static.data.gouv.fr/resources/reseau-urbain-interurbain-et-scolaire-de-la-communaute-dagglomeration-privas-centre-ardeche/20250917-112807/gtfs-scol-tcap-17-09-25.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      4.40051,
+      44.67549,
+      4.83459,
+      44.93562
+    ],
+    "lat": 44.78567,
+    "lon": 4.59875,
+    "stop_count": 601
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 36,
+        "trip_count": 169,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 36,
+    "trip_count": 169
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 6.4,
+    "margin_to_next_band": 3.6,
+    "score": 66.4
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 30,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "30 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (LASCO, LBSCO, LCSCO, LDSCO, LR02SCO, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 225,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "225 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"PRANLES St Jean\", \"ST JEAN CHAMBRE Ecole\", \"ST MICHEL DE CHABRILLANOUX Roves\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 291,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 4,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "4 of 291 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 4,
+    "single_stop_trips": 0,
+    "trips_total": 169
+  },
+  "route_map": {
+    "drawn_route_count": 32,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-pan-81342/geometry.geojson",
+    "route_count": 36,
+    "routes": [
+      {
+        "color": "F7AB46",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "LASCO",
+        "label": "LASCO",
+        "long": "LIGNE A SCOLAIRE : PRIVAS-PRIVAS Coll\u00e8ge Bernard de Ventadour",
+        "short": "LASCO",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00CAFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "LBSCO",
+        "label": "LBSCO",
+        "long": "LIGNE B SCOLAIRE : CHOMERAC-ALISSAS-PRIVAS Coll\u00e8ge Bernard de Ventadour",
+        "short": "LBSCO",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF11",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LCSCO",
+        "label": "LCSCO",
+        "long": "LIGNE C SCOLAIRE : VEYRAS-PRIVAS Coll\u00e8ge Bernard de Ventadour",
+        "short": "LCSCO",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E29D2B",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "LDSCO",
+        "label": "LDSCO",
+        "long": "LIGNE D SCOLAIRE : ST PRIEST-PRIVAS Coll\u00e8ge Bernard de Ventadour",
+        "short": "LDSCO",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F61414",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "LR02SCO",
+        "label": "LR02SCO",
+        "long": "LIGNE 02 SCOLAIRE : FLAVIAC-ST JULIEN EN ST ALBAN-LE POUZIN Coll\u00e8ge Alex M\u00e9zenc",
+        "short": "LR02SCO",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DA8D0B",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "LR03SCO",
+        "label": "LR03SCO",
+        "long": "LIGNE 03 SCOLAIRE : BEAUCHASTEL-ST LAURENT PAPE-LA VOULTE Coll\u00e8ge Les Trois Vall\u00e9es",
+        "short": "LR03SCO",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D300FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "PR01",
+        "label": "PR01",
+        "long": "ROCHESSAUVE-PRIVAS Lyc\u00e9es-Coll\u00e8ges",
+        "short": "PR01",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D300FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "PR01-ECOLE",
+        "label": "PR01 Ecole",
+        "long": "ROCHESSAUVE-ALISSAS Ecole",
+        "short": "PR01 Ecole",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3498DB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "PR02",
+        "label": "PR02 HAM",
+        "long": "HAMEAUX DE PRANLES-PRIVAS Coll\u00e8ge Bernard de Ventadour",
+        "short": "PR02 HAM",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0080FF",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "PR02 RPI",
+        "label": "PR02 RPI",
+        "long": "RPI COUX-LYAS",
+        "short": "PR02 RPI",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3498DB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "PR02-PRAN",
+        "label": "PR02 PRAN",
+        "long": "PRANLES-LYAS-COUX RD02-PRIVAS Lyc\u00e9es-Coll\u00e8ges",
+        "short": "PR02 PRAN",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0027",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "PR03",
+        "label": "PR03",
+        "long": "SAINT JULIEN DU GUA-PRIVAS Lyc\u00e9es-Coll\u00e8ges",
+        "short": "PR03",
+        "text_color": "040404",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "PR03-ECOLE",
+        "label": "PR03 Ecole",
+        "long": "LYAS Ecole",
+        "short": "PR03 Ecole",
+        "text_color": "090909",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1ED2AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "PR04",
+        "label": "PR04",
+        "long": "CREYSSEILLES-PRIVAS Lyc\u00e9e-Coll\u00e8ges",
+        "short": "PR04",
+        "text_color": "090909",
+        "type_label": "Bus"
+      },
+      {
+        "color": "229954",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "SV01",
+        "label": "SV01",
+        "long": "ST FORTUNAT-DUNIERE-LES OLLIERES-ST SAUVEUR DE MONTAGUT Coll\u00e8ge de L'Eyrieux",
+        "short": "SV01",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E74C3C",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "SV02",
+        "label": "SV02",
+        "long": "ST MICHEL DE CHABRILLANOUX-ST SAUVEUR DE MONTAGUT Coll\u00e8ge de L'Eyrieux",
+        "short": "SV02",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7D3C98",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "SV03",
+        "label": "SV03",
+        "long": "ST JULIEN DU GUA-ISSAMOULENC-ST ETIENNE DE SERRE-ST SAUVEUR DE MONTAGUT Coll\u00e8ge de L'Eyrieux",
+        "short": "SV03",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D35400",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "SV04",
+        "label": "SV04",
+        "long": "MARCOLS LES EAUX-ALBON-ST PIERREVILLE-GLUIRAS-ST SAUVEUR DE MONTAGUT Coll\u00e8ge de L'Eyrieux",
+        "short": "SV04",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5DADE2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "SV05",
+        "label": "SV05",
+        "long": "ST VINCENT DE DURFORT-LES OLLIERES-ST SAUVEUR DE MONTAGUT Coll\u00e8ge de L'Eyrieux",
+        "short": "SV05",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5DADE2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "SV05-ECOLE",
+        "label": "SV05 Ecole",
+        "long": "PRANLES Ecole",
+        "short": "SV05 Ecole",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC031A",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "SV06",
+        "label": "SV06",
+        "long": "BEAUVENE-GLUIRAS-ST SAUVEUR DE MONTAGUT Coll\u00e8ge de l'Eyrieux",
+        "short": "SV06",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC031A",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "SV06-ECOLE",
+        "label": "SV06 Ecole",
+        "long": "ST ETIENNE DE SERRE Ecole",
+        "short": "SV06 Ecole",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2E86C1",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "SV07",
+        "label": "SV07",
+        "long": "MARCOLS LES EAUX-ALBON-ST PIERREVILLE-ST SAUVEUR DE MONTAGUT correspondance PRIVAS",
+        "short": "SV07",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2E86C1",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "SV07-ECOLE",
+        "label": "SV07 Ecole",
+        "long": "LES OLLIERES Ecole",
+        "short": "SV07 Ecole",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED84F7",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "SV08",
+        "label": "SV08",
+        "long": "ST JULIEN DU GUA Ecole",
+        "short": "SV08",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0FFA00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "VA01",
+        "label": "VA01",
+        "long": "ST CIERGE LA SERRE-ROMPON-LE POUZIN Coll\u00e8ge Alex M\u00e9zenc",
+        "short": "VA01",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FAE3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "VA02",
+        "label": "VA02",
+        "long": "ST SAUVEUR DE MONTAGUT-LES OLLIERES-DUNIERE-ST FORTUNAT-LA VOULTE Coll\u00e8ge Les Trois Vall\u00e9es",
+        "short": "VA02",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAB600",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "VA03",
+        "label": "VA03",
+        "long": "ROMPON Rondette-ROMPON Les Fonts du Pouzin-LE POUZIN Coll\u00e8ge Alex M\u00e9zenc",
+        "short": "VA03",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAB600",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "VA03-ECOLE",
+        "label": "VA03 Ecole",
+        "long": "ROMPON Rondette-ROMPON Ecole",
+        "short": "VA03 Ecole",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FA00D0",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "VA04",
+        "label": "VA04",
+        "long": "GILHAC ET BRUZAC-ST LAURENT DU PAPE Ecoles-LA VOULTE Coll\u00e8ge Les Trois Vall\u00e9es",
+        "short": "VA04",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E44AD",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "VX01",
+        "label": "VX01",
+        "long": "CHALENCON-SILHAC-VERNOUX Coll\u00e8ge Pierre Delarbre",
+        "short": "VX01",
+        "text_color": "FFF0F0",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F1C40F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "VX02",
+        "label": "VX02",
+        "long": "ST BASILE Cluac-SILHAC-ST APOLLINAIRE DE RIAS-VERNOUX Coll\u00e8ge Pierre Delarbre",
+        "short": "VX02",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F1C40F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "VX02-FUMA",
+        "label": "VX02 Fuma",
+        "long": "VERNOUX Fuma-CHATEAUNEUF DE VERNOUX-VERNOUX Coll\u00e8ge",
+        "short": "VX02 Fuma",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "VX03",
+        "label": "VX03",
+        "long": "ST APOLLINAIRE DE RIAS-ST JEAN CHAMBRE Ecole-VERNOUX Ecoles",
+        "short": "VX03",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FA0B00",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "VX04",
+        "label": "VX04",
+        "long": "CHATEAUNEUF DE VERNOUX-VERNOUX  Coll\u00e8ge Pierre Delarbre-VERNOUX Ecoles",
+        "short": "VX04",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8000FF",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "VX05",
+        "label": "VX05",
+        "long": "ST JULIEN LE ROUX-VERNOUX Ecole-Coll\u00e8ge",
+        "short": "VX05",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 601,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "stop_time_with_arrival_before_previous_departure_time",
+      "count": 3,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'stop_time_with_arrival_before_previous_departure_time' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 12.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Stop time with arrival before previous departure time (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

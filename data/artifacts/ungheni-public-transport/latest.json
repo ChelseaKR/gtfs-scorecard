@@ -1,0 +1,807 @@
+{
+  "agency": {
+    "country": "MD",
+    "id": "ungheni-public-transport",
+    "name": "Transport Public Ungheni",
+    "subdivision_code": "MD-UN",
+    "subdivision_name": "Ungheni"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 78.8,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 98.4,
+          "stops_stated_pct": 98.4,
+          "trips_stated_pct": 46.1
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 14.9,
+          "wheelchair_stops": 24.6,
+          "wheelchair_trips": 6.9
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 726,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.5,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 382,
+        "translations": {
+          "feed_lang": "ro",
+          "has_translations": true,
+          "languages": [
+            "bg",
+            "bn",
+            "cs",
+            "de",
+            "el",
+            "en",
+            "es",
+            "fr",
+            "hi",
+            "hu",
+            "it",
+            "ne",
+            "pl",
+            "pt",
+            "ru",
+            "si",
+            "ta",
+            "tr",
+            "uk",
+            "ur"
+          ],
+          "translated_tables": [
+            "stops"
+          ],
+          "translation_count": 40
+        },
+        "trips": 726,
+        "wheelchair_accessible_pct": 46.1,
+        "wheelchair_boarding_pct": 98.4,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 98.4
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 6,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 0.4,
+          "severity": "WARNING",
+          "what": "6 of 382 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 391,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 8.1,
+          "severity": "WARNING",
+          "what": "391 of 726 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        }
+      ],
+      "name": "completeness",
+      "score": 91.5,
+      "status": "measured",
+      "summary": "98% of stops state wheelchair accessibility (0% marked accessible, 98% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 2,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 4,
+          "WARNING": 0
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "unknown_column",
+          "count": 2,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "unknown_file",
+          "count": 2,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 99.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 2 kinds of issue across 4 instances (0 error, 0 warning, 4 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 511,
+        "effective_expiry_date": "2027-12-31",
+        "feed_end_date": "2027-12-31",
+        "feed_start_date": "2026-08-01",
+        "feed_version": "1.0.20",
+        "has_feed_info": true,
+        "last_service_date": "2027-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 511 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 513 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 98% of stops and 46% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 98% of stops and 46% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Creative Commons Attribution 4.0 (CC BY 4.0) on the operator's open-data page; commercial reuse is permitted with attribution.",
+    "reachable": true,
+    "sha256": "470bcb314af96e075fb80f19b46b861cfa79bdee80014e13226b808654826997",
+    "size_bytes": 1618274,
+    "static_url": "https://github.com/UngheniTransport/gtfs/raw/refs/heads/main/ungheni_gtfs.zip"
+  },
+  "fetch": {
+    "final_url": "https://raw.githubusercontent.com/UngheniTransport/gtfs/refs/heads/main/ungheni_gtfs.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      27.57027,
+      47.02523,
+      28.86255,
+      47.76986
+    ],
+    "lat": 47.22736,
+    "lon": 27.81083,
+    "stop_count": 382
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 39,
+        "trip_count": 726,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 39,
+    "trip_count": 726
+  },
+  "overall": {
+    "grade": "A",
+    "margin_to_lower_band": 6.9,
+    "margin_to_next_band": null,
+    "score": 96.9
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 2,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "2 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (U2, U3).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 64,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "64 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Str. \u0218tefan cel Mare / Str. D\u0103nu\u021beni\", \"Str. \u0218tefan cel Mare / Str. P. Cazacu\", \"Str. \u0218tefan cel Mare / Str. Zamfir Arbore\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 382,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 726
+  },
+  "route_map": {
+    "drawn_route_count": 38,
+    "has_shapes": true,
+    "path": "data/artifacts/ungheni-public-transport/geometry.geojson",
+    "route_count": 39,
+    "routes": [
+      {
+        "color": "B59610",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "MD4380_MD0100_1025609001851_N01",
+        "label": "TA-Chisinau",
+        "long": "Taxobeni \u21c4 Chi\u015fin\u0103u",
+        "short": "TA-Chisinau",
+        "text_color": "1A1A1A",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A00E20",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "MD6001_RO95079_1025609001851_N01",
+        "label": "Nispor.-Ia\u0219i",
+        "long": "Nisporeni \u21c4 Ia\u015fi",
+        "short": "Nispor.-Ia\u0219i",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B59610",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "MD9201_MD0100_1025609001851",
+        "label": "Ung-Chi\u0219in\u0103u",
+        "long": "Ungheni \u21c4 Chi\u0219in\u0103u",
+        "short": "Ung-Chi\u0219in\u0103u",
+        "text_color": "1A1A1A",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B59610",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "MD9201_MD0300_1025609001851_N01",
+        "label": "UN-Balti",
+        "long": "Ungheni \u21c4 B\u0103l\u0163i",
+        "short": "UN-Balti",
+        "text_color": "1A1A1A",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD4380_1025609001851_N01",
+        "label": "UN-Taxobeni",
+        "long": "Ungheni \u21c4 Taxobeni",
+        "short": "UN-Taxobeni",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B59610",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "MD9201_MD6001_1025609001851_N01",
+        "label": "Ungheni-Nisp",
+        "long": "Ungheni \u21c4 Nisporeni",
+        "short": "Ungheni-Nisp",
+        "text_color": "1A1A1A",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B59610",
+        "color_name": "orange",
+        "has_shape": false,
+        "id": "MD9201_MD6001_1025609001851_N02",
+        "label": "UN-Nisporeni",
+        "long": "Ungheni \u21c4 Nisporeni (Slavena)",
+        "short": "UN-Nisporeni",
+        "text_color": "1A1A1A",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9224_1025609001851_N01",
+        "label": "UN-Bumbata",
+        "long": "Ungheni \u21c4 Bumbata",
+        "short": "UN-Bumbata",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9226_1025609001851_N01",
+        "label": "UN-Cetireni",
+        "long": "Ungheni \u21c4 Cetireni",
+        "short": "UN-Cetireni",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9227_1025609001851_N01",
+        "label": "UN-Chirileni",
+        "long": "Ungheni \u21c4 Chirileni",
+        "short": "UN-Chirileni",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9231_1025609001851_N01",
+        "label": "UN-Condrate.",
+        "long": "Ungheni \u21c4 Condr\u0103te\u015fti",
+        "short": "UN-Condrate.",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9234_1025609001851_N01",
+        "label": "UN-Cornova",
+        "long": "Ungheni \u21c4 Cornova",
+        "short": "UN-Cornova",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9235_1025609001851_N01",
+        "label": "UN-Costuleni",
+        "long": "Ungheni \u21c4 Costuleni",
+        "short": "UN-Costuleni",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9236_1025609001851_N01",
+        "label": "UN-Floritoa.",
+        "long": "Ungheni \u21c4 Flori\u0163oaia Veche",
+        "short": "UN-Floritoa.",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9242_1025609001851_N01",
+        "label": "UN-Minzates.",
+        "long": "Ungheni \u21c4 M\u00eenz\u0103te\u015fti",
+        "short": "UN-Minzates.",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9244_1025609001851_N01",
+        "label": "UN-Macaresti",
+        "long": "Ungheni \u21c4 M\u0103c\u0103re\u015fti",
+        "short": "UN-Macaresti",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9245_1025609001851_N01",
+        "label": "UN-Fr\u0103sine\u015f.",
+        "long": "Ungheni \u21c4 Fr\u0103sine\u015fti",
+        "short": "UN-Fr\u0103sine\u015f.",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9247_1025609001851_N01",
+        "label": "UN-Manoiles.",
+        "long": "Ungheni \u21c4 M\u0103noile\u015fti",
+        "short": "UN-Manoiles.",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9249_1025609001851_N01",
+        "label": "UN-Rezina",
+        "long": "Ungheni \u21c4 Rezina",
+        "short": "UN-Rezina",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9251_1025609001851_N01",
+        "label": "UN-Morenii .",
+        "long": "Ungheni \u21c4 Morenii Noi",
+        "short": "UN-Morenii .",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9254_1025609001851_N01",
+        "label": "UN-Napadeni",
+        "long": "Ungheni \u21c4 N\u0103p\u0103deni",
+        "short": "UN-Napadeni",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9256_1025609001851_N01",
+        "label": "UN-Coseni",
+        "long": "Ungheni \u21c4 Co\u015feni",
+        "short": "UN-Coseni",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9259_1025609001851_N01",
+        "label": "UN-Petre\u0219ti",
+        "long": "Ungheni \u21c4 Petre\u0219ti",
+        "short": "UN-Petre\u0219ti",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9261_1025609001851_N01",
+        "label": "UN-Pirlita",
+        "long": "Ungheni \u21c4 P\u00eerli\u0163a #1",
+        "short": "UN-Pirlita",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9261_1025609001851_N02",
+        "label": "UN-Pirlita",
+        "long": "Ungheni \u21c4 P\u00eerli\u0163a #2",
+        "short": "UN-Pirlita",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9262_1025609001851_N01",
+        "label": "UN-R\u0103denii V",
+        "long": "Ungheni \u21c4 R\u0103denii Vechi",
+        "short": "UN-R\u0103denii V",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9267_1025609001851_N01",
+        "label": "UN-Sinesti",
+        "long": "Ungheni \u21c4 Sine\u015fti",
+        "short": "UN-Sinesti",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9269_1025609001851_N01",
+        "label": "UN-Tescureni",
+        "long": "Ungheni \u21c4 Te\u015fcureni",
+        "short": "UN-Tescureni",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9271_1025609001851_N01",
+        "label": "UN-Todiresti",
+        "long": "Ungheni \u21c4 Todire\u015fti",
+        "short": "UN-Todiresti",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9273_1025609001851_N01",
+        "label": "UN-Un\u021be\u015fti",
+        "long": "Ungheni \u21c4 Un\u021be\u015fti",
+        "short": "UN-Un\u021be\u015fti",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "002B7F",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_MD9279_1025609001851_N01",
+        "label": "UN-Semeni",
+        "long": "Ungheni \u21c4 Semeni",
+        "short": "UN-Semeni",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A00E20",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "MD9201_RO95079_1025609001851_N01",
+        "label": "Ungheni-Ia\u0219i",
+        "long": "Ungheni \u21c4 Ia\u015fi",
+        "short": "Ungheni-Ia\u0219i",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5300EB",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "MD9201_U1_1025609001851_N01",
+        "label": "U1",
+        "long": "D\u0103nu\u021beni \u21c4 Tineretului",
+        "short": "U1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB3E00",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "MD9201_U2_1025609001851_N01",
+        "label": "U2",
+        "long": "Curculeovca \u21c4 Tineretului",
+        "short": "U2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008B02",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MD9201_U3_1025609001851_N01",
+        "label": "U3",
+        "long": "Zagarancea \u21c4 Ungheni Deal",
+        "short": "U3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006B76",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "MD9201_U4_1025609001851_N01",
+        "label": "U4",
+        "long": "Zagarancea \u21c4 Ungheni Vale",
+        "short": "U4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FCCB00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "MD9201_U5_1025609001851_N01",
+        "label": "U5",
+        "long": "Tineretului \u21c4 Curculeovca",
+        "short": "U5",
+        "text_color": "1A1A1A",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FCCB00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "MD9201_U5_1025609001851_N02",
+        "label": "U5",
+        "long": "Tineretului \u21c4 Vile Ciachir",
+        "short": "U5",
+        "text_color": "1A1A1A",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FCCB00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "MD9201_U5_1025609001851_N03",
+        "label": "U5",
+        "long": "Tineretului \u21c4 Cimitirul \u201eChetri\u0219\"",
+        "short": "U5",
+        "text_color": "1A1A1A",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 382,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 391,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 8.1,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "391 of 726 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 6,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 0.4,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "6 of 382 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "unknown_column",
+      "count": 2,
+      "effort": "A quick look at the flagged files.",
+      "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+      "owner": "",
+      "points": 0.5,
+      "rank": 3,
+      "severity": "INFO",
+      "what": "Some files contain columns that are not part of the GTFS spec.",
+      "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

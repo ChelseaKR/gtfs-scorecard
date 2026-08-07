@@ -1,0 +1,1463 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "lignes-dazur-nice",
+    "name": "Lignes d'Azur (Nice)",
+    "subdivision_code": "FR-PAC",
+    "subdivision_name": "Provence-Alpes-C\u00f4te-d\u2019Azur"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 16.2,
+          "stops_marked_accessible_pct": 25.8,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 25.8,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 15.0,
+          "headsigns": 9.2,
+          "stop_names": 15.0,
+          "wheelchair_stops": 6.5,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 18636,
+        "headsign_loop_exempt_trips": 60,
+        "headsign_pct": 61.2,
+        "headsign_scored_pct": 61.5,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 4333,
+        "translations": {
+          "feed_lang": "fr",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 18696,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 25.8,
+        "wheelchair_marked_accessible_pct": 25.8,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 3213,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 18.5,
+          "severity": "WARNING",
+          "what": "3213 of 4333 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 18696,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "18696 of 18696 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 7189,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 5.8,
+          "severity": "WARNING",
+          "what": "7189 of 18696 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 53.2,
+      "status": "measured",
+      "summary": "26% of stops state wheelchair accessibility (26% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 8,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 18904,
+          "WARNING": 9246
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 7016,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 1797,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
+          "count": 431,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Equal shape distance diff coordinates distance below threshold (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 1,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "unsorted_stop_times",
+          "count": 18678,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unsorted_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Unsorted stop times (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 139,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the transit vehicle ends up, so a midpoint name can send them the wrong way."
+        },
+        {
+          "code": "service_window_outside_feed_period",
+          "count": 87,
+          "effort": "Two fields in feed_info.txt, or one export setting.",
+          "fix": "Widen feed_start_date and feed_end_date to cover all service dates, or fix the dates that fall outside.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some service dates fall outside the date window set in feed_info.txt.",
+          "why": "feed_info.txt should span every day your service runs, so apps know when the data applies."
+        }
+      ],
+      "name": "correctness",
+      "score": 65.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 8 kinds of issue across 28150 instances (0 error, 9246 warning, 18904 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 38,
+        "effective_expiry_date": "2026-09-13",
+        "feed_end_date": "2026-09-14",
+        "feed_start_date": "2026-08-05",
+        "feed_version": null,
+        "has_feed_info": true,
+        "last_service_date": "2026-09-13",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 63.3,
+      "status": "measured",
+      "summary": "Service data covers the next 38 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 39 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 26% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 26% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "export_diff": {
+    "changes": [
+      "Route BUSCP (Colomars La Manda - Cr\u00e9mat-Le Pal), SUCP (Colomars La Manda - Cr\u00e9mat-Le Pal) are no longer in the export.",
+      "6 stops left the export.",
+      "5 new stops appeared.",
+      "2 stops moved more than 100 m.",
+      "The export now has 18,696 trips, 2,553 more than before."
+    ],
+    "from_sha256": "d8940958d1329e281179edb17f928bb1e2069849d5298c73fca4cdfc0bbea2b7",
+    "to_sha256": "17db03500b821cc1e5c045e228efd8c3eab681ab03970282d34e1b5f05ce63be"
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0; published by the M\u00e9tropole Nice C\u00f4te d'Azur through France's National Access Point. Derived measurements by GTFS Scorecard.",
+    "reachable": true,
+    "sha256": "17db03500b821cc1e5c045e228efd8c3eab681ab03970282d34e1b5f05ce63be",
+    "size_bytes": 5406531,
+    "static_url": "https://chouette.enroute.mobi/api/v1/datas/OpendataRLA/gtfs.zip"
+  },
+  "fetch": {
+    "final_url": "https://chouette.enroute.mobi/api/v1/datas/OpendataRLA/gtfs.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      6.86643,
+      43.65081,
+      7.39461,
+      44.28372
+    ],
+    "lat": 43.71359,
+    "lon": 7.23803,
+    "stop_count": 4333
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 4,
+        "trip_count": 4243,
+        "trip_share_pct": 22.7
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 85,
+        "trip_count": 14453,
+        "trip_share_pct": 77.3
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 89,
+    "trip_count": 18696
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 0.9,
+    "margin_to_next_band": 9.1,
+    "score": 60.9
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 57,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "57 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (06, 09, 14, 15, 16, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 427,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "427 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Abbaye de Roseland / Napol\u00e9on III\", \"A\u00e9roport / Promenade\", \"A\u00e9roport / Promenade\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 2754,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 18696
+  },
+  "route_map": {
+    "drawn_route_count": 89,
+    "has_shapes": true,
+    "path": "data/artifacts/lignes-dazur-nice/geometry.geojson",
+    "route_count": 89,
+    "routes": [
+      {
+        "color": "3065AF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "05",
+        "label": "05",
+        "long": "Rimiez Saint-George/Rimiez Les Sources - Deloye/Dubouchage",
+        "short": "05",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2FA948",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "06",
+        "label": "06",
+        "long": "Magnan - La Madeleine",
+        "short": "06",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "741D5B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "07",
+        "label": "07",
+        "long": "Port Lympia - Ariane / G\u00e9n\u00e9ral Saramito",
+        "short": "07",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FEC703",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "08",
+        "label": "8+",
+        "long": "Saint-Sylvestre - Palais des Expositions",
+        "short": "8+",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EF7D00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "09",
+        "label": "09",
+        "long": "Grand Ar\u00e9nas - Le Gu\u00e9/Shopping promenade - Halte Routi\u00e8re de l'Ara",
+        "short": "09",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "31A948",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "Croix de Berra - Magnan",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9C3F8F",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "11",
+        "label": "11",
+        "long": "Square Daudet - Vallon des Fleurs - Bella Vista",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DE1381",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "12",
+        "label": "12+",
+        "long": "Centre Commercial CAP3000 - H\u00f4pital Pasteur",
+        "short": "12+",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F6A42F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "14",
+        "label": "14",
+        "long": "Vauban - Les Ch\u00eanes Verts",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "15B1AF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "15",
+        "label": "15",
+        "long": "Port de Saint-Jean - Lyc\u00e9e Mass\u00e9na",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "35BEEB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "16",
+        "label": "16",
+        "long": "Ch\u00e9nier - Col de Bast - Coll\u00e8ge Matisse",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "418ABF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17",
+        "label": "17",
+        "long": "STAPS / Arboras - Ferber",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9778B3",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "18",
+        "label": "18",
+        "long": "Saint Sylvestre - Riquier",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9C3F8F",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "19",
+        "label": "19",
+        "long": "Defly/Klein - Vauban - Saint-Andr\u00e9-de-la-Roche / Tourette-Levens / Levens",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F6A320",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "20",
+        "label": "20",
+        "long": "Giono / Les Pugets - Grand Ar\u00e9nas",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0CB1B0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21",
+        "label": "21",
+        "long": "Le Gu\u00e9/Polygone Riviera - Grand Ar\u00e9nas",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3D8AC1",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22",
+        "label": "22",
+        "long": "Carros Pagnol - Le Peyron - CADAM / Centre Administratif",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3D8AC1",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "30",
+        "label": "30",
+        "long": "Vauban (par boulevard Mont-Boron) - Vauban (par boulevard Carnot)",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "52AE32",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31",
+        "label": "31",
+        "long": "Pont du G\u00e9nie - Madeleine Sup\u00e9rieur - La Madeleine - Hameaux de la Costi\u00e8re",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F6A320",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "32",
+        "label": "32",
+        "long": "Caucade / Place Sainte-Marguerite - Ferber",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "52AE32",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "33",
+        "label": "33",
+        "long": "Mont Boron - Coll\u00e8ge Matisse",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D3E90",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "34",
+        "label": "34",
+        "long": "Le Centenaire - G\u00e9ronima - Vallon Barla - Coll\u00e8ge de l'Archet",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B57F2D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "35",
+        "label": "35",
+        "long": "Cernuschi - Vauban",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "52AE32",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "36",
+        "label": "36",
+        "long": "Las Planas - Sappia - Rimiez / Saint-George",
+        "short": "36",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "35BEEB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "37",
+        "label": "37",
+        "long": "R\u00e9sidence Universitaire Montebello - Riquier",
+        "short": "37",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F6A320",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "38",
+        "label": "38",
+        "long": "Tr\u00e9sorerie - R\u00e9sidence des Baumettes",
+        "short": "38",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "418ABF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "40",
+        "label": "40",
+        "long": "Cimiez / H\u00f4pital - Pasteur / Gassin",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "418ABF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "41",
+        "label": "41",
+        "long": "Coll\u00e8ge A. Malraux/Vallon des Vaux - Parc des Sports",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "936037",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "42",
+        "label": "42",
+        "long": "Coll\u00e8ge Pagnol - Le Riou",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5B7BBC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43",
+        "label": "43",
+        "long": "Coll\u00e8ge de l'Archet - St-Isidore/Ginesti\u00e8re - Tennis de Cr\u00e9mat - Lingosti\u00e8re Gare",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B57F2D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "44",
+        "label": "44",
+        "long": "Le Ch\u00e2teau - Square Bourdet",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3D8AC1",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "45",
+        "label": "45",
+        "long": "Square Bourdet - Parking du Cros",
+        "short": "45",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "35BEEB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "47",
+        "label": "47",
+        "long": "P\u00f4le d'Echanges Pierre Servella - Halte Routi\u00e8re de l'Ara",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D16AA4",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "49",
+        "label": "49",
+        "long": "La Gaude Stade - Le Peyron - Gare de Cagnes-sur-Mer",
+        "short": "49",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "95C11F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "50",
+        "label": "50",
+        "long": "CADAM / Centre Administratif - Ferber",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008D3F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "51",
+        "label": "51",
+        "long": "Ferber (par l'avenue de Fabron puis la Corniche Fleurie) - Ferber (par la Corniche Fleurie puis l\u2019avenue de Fabron)",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B57F2D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "52",
+        "label": "52",
+        "long": "Maison M\u00e9dicale/La Manda - Centre Commercial  Saint-Isidore",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F5A32F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "54",
+        "label": "54",
+        "long": "Saint-Jeannet - Centre Commercial CAP3000 - Grand Ar\u00e9nas",
+        "short": "54",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D069A3",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "55",
+        "label": "55",
+        "long": "La Pompe - Ecole Manon des Sources - Centre Commercial CAP 3000",
+        "short": "55",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "428ABF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "57",
+        "label": "57",
+        "long": "Las Planas / Sappia - Riquier",
+        "short": "57",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008D3F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "58",
+        "label": "58",
+        "long": "Pont des Pugets - Square Bourdet (par Coll\u00e8ge A. Malraux)",
+        "short": "58",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5BC5F2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "59",
+        "label": "59",
+        "long": "Plan du Var - CADAM Centre Administratif",
+        "short": "59",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F6A421",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "60",
+        "label": "60",
+        "long": "Croix de Berra - Magnan",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9677B4",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "61",
+        "label": "61",
+        "long": "Magnan - Ferber",
+        "short": "61",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "35BEEB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "62",
+        "label": "62",
+        "long": "Magnan - Fort Casal Colomars - Aspremont Village",
+        "short": "62",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D069A3",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "63",
+        "label": "63",
+        "long": "Cernuschi - Borriglione (par Saint-Pancrace)",
+        "short": "63",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "35BEEB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "64",
+        "label": "64",
+        "long": "Saint-Pancrace - Urf\u00e9",
+        "short": "64",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3C8AC3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "68",
+        "label": "68",
+        "long": "17\u00e8me Ter - Rue 18bis (par Colomars La Manda) - M\u00e9diath\u00e8que",
+        "short": "68",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F5D706",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "69",
+        "label": "69",
+        "long": "Langevin - Pagnol - Lei Feirri\u00e8ro - Centre Commercial Lingosti\u00e8re",
+        "short": "69",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B77F26",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "70",
+        "label": "70",
+        "long": "Urf\u00e9 - CPAM Entr\u00e9e",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "418ABF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "71",
+        "label": "71",
+        "long": "Corniche Bellevue - Gare Thiers",
+        "short": "71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3AAA35",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "72",
+        "label": "72",
+        "long": "Righi - PN / Halte Gambetta",
+        "short": "72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5BC5F2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "73",
+        "label": "73",
+        "long": "Centre Commercial CAP 3000 - M\u00e9diath\u00e8que (par Pont des Pugets ou Chemin de la Digue)",
+        "short": "73",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "27A737",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "75",
+        "label": "75",
+        "long": "Hameaux de la Costi\u00e8re - Gare Thiers",
+        "short": "75",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D3E90",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "76",
+        "label": "76",
+        "long": "Aspremont village/Saint Blaise Village/ Castagniers Village - Place Fontaine du Temple",
+        "short": "76",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B1EB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "80",
+        "label": "80",
+        "long": "Riquier - Vauban - Le Gentilhomme - Rochambeau",
+        "short": "80",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F7D800",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "81",
+        "label": "81",
+        "long": "Ariane / G\u00e9n\u00e9ral Saramito - Pnt de Peille/La Condamine",
+        "short": "81",
+        "text_color": "1D1D1B",
+        "type_label": "Bus"
+      },
+      {
+        "color": "825637",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "82",
+        "label": "82",
+        "long": "Plateau de la Justice - Vauban",
+        "short": "82",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "52AE32",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "83",
+        "label": "83",
+        "long": "Plateau de la Justice - Baie des Fourmis",
+        "short": "83",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "15B1AF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "84",
+        "label": "84",
+        "long": "Baie des Fourmis - Riquier",
+        "short": "84",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D16AA4",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "88",
+        "label": "88",
+        "long": "La Piscine - Marojade - Place Jules Musso - Vauban",
+        "short": "88",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3D8AC1",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "89",
+        "label": "89",
+        "long": "Les Ch\u00eanes Verts - La Colle / Le Ch\u00e2teau",
+        "short": "89",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "81563A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "90",
+        "label": "90",
+        "long": "La Bolline - Les Arboras / Universit\u00e9",
+        "short": "90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "81563A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "91",
+        "label": "91",
+        "long": "Auron - Les Arboras / Universit\u00e9",
+        "short": "91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "81563A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "92",
+        "label": "92",
+        "long": "Isola 2000 - Les Arboras / Universit\u00e9",
+        "short": "92",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "825637",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "93",
+        "label": "93",
+        "long": "Belv\u00e9d\u00e8re Place Pavy - Lantosque",
+        "short": "93",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "825637",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "94",
+        "label": "94",
+        "long": "Centre de Cure Thermale - Roquebilli\u00e8re",
+        "short": "94",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D06985",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "97",
+        "label": "97",
+        "long": "Tzarewitch / Gambetta",
+        "short": "97",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D069A3",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "98",
+        "label": "98",
+        "long": "Gustavin / Parc Vigier par Quai - Gustavin / Parc Vigier par Port Lympia",
+        "short": "98",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D069A4",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "99",
+        "label": "99",
+        "long": "Jean Medecin - Jean M\u00e9decin",
+        "short": "99",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4FB054",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "AUR3",
+        "label": "AUR3",
+        "long": "Auron - St Dalmas",
+        "short": "AUR3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFDD00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "B",
+        "label": "B",
+        "long": "A\u00e9roport Terminal 2 - CADAM / Centre Administratif",
+        "short": "B",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "265AA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "CE",
+        "label": "CE",
+        "long": "CADAM EST  centre administratif - Ch\u00eanes Verts",
+        "short": "CE",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000E1",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "CN",
+        "label": "CN",
+        "long": "Comte de Falicon - CADAM Centre Administratif / Les Arboras",
+        "short": "CN",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "98C035",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Exp2",
+        "label": "Exp2",
+        "long": "P\u00f4le d\u2019Echanges Pierre Servella - Pont Michel (par Rue 18bis)",
+        "short": "Exp2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "98C132",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Exp4",
+        "label": "Exp4",
+        "long": "17\u00e8me  Ter - CADAM/Centre Administratif - Grand Ar\u00e9nas",
+        "short": "Exp4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36BEE9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "FOOT",
+        "label": "FOOT",
+        "long": "Centre Commercial / Saint-Isidore - Plan du Var",
+        "short": "FOOT",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D20A11",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "L1",
+        "label": "L1",
+        "long": "H\u00f4pital Pasteur - Henri Sappia",
+        "short": "L1",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "1F488F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "L2",
+        "label": "L2",
+        "long": "Port Lympia -  A\u00e9roport Terminal 2",
+        "short": "L2",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "00853E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "L3",
+        "label": "L3",
+        "long": "Port Lympia - Saint-Isidore",
+        "short": "L3",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "52AE32",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LIso",
+        "label": "LIso",
+        "long": "Isola 2000 - Isola Village",
+        "short": "LIso",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2AA137",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "NBOR",
+        "label": "NBOR",
+        "long": "Navette du Bor\u00e9on",
+        "short": "NBOR",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2AA137",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "NGOR",
+        "label": "NGOR",
+        "long": "Navette de La Gordolasque",
+        "short": "NGOR",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9C3F8F",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "NVDB",
+        "label": "NVDB",
+        "long": "Navette vignobles de Bellet",
+        "short": "NVDB",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36BEE9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "NVMA",
+        "label": "NVMA",
+        "long": "Navette Maeght / Matisse",
+        "short": "NVMA",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D16AA4",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "NVN1",
+        "label": "NVN1",
+        "long": "Camping - Le Taude (par Halte Routi\u00e8re de l'Ara)",
+        "short": "NVN1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B77F26",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "NVN2",
+        "label": "NVN2",
+        "long": "Square Maliver - Square Maliver (par Ecole Freinet)",
+        "short": "NVN2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D3E90",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "NVN3",
+        "label": "NVN3",
+        "long": "Square Maliver",
+        "short": "NVN3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2AA137",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "VESU",
+        "label": "VESU",
+        "long": "Navette \u00c9T\u00c9 V\u00e9subie",
+        "short": "VESU",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 4333,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 3213,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 18.5,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "3213 of 4333 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 18696,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "18696 of 18696 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+    },
+    {
+      "code": "equal_shape_distance_same_coordinates",
+      "count": 7016,
+      "effort": "Usually one export setting.",
+      "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some route lines list the same point twice in a row.",
+      "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

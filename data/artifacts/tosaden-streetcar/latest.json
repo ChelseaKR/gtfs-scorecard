@@ -1,0 +1,420 @@
+{
+  "agency": {
+    "country": "JP",
+    "id": "tosaden-streetcar",
+    "name": "Tosaden Kotsu Streetcar (\u3068\u3055\u3067\u3093\u4ea4\u901a \u8def\u9762\u96fb\u8eca)",
+    "operating_note": "Tosaden Kotsu's Kochi city streetcar / tram network (\u8def\u9762\u96fb\u8eca); a first-party operator feed counted as one feed record.",
+    "subdivision_code": "JP-39",
+    "subdivision_name": "Kochi"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 1024,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 152,
+        "translations": {
+          "feed_lang": "ja",
+          "has_translations": true,
+          "languages": [
+            "en",
+            "ja",
+            "ja-hrkt",
+            "ja-latn"
+          ],
+          "translated_tables": [
+            "agency",
+            "feed_info",
+            "routes",
+            "stops"
+          ],
+          "translation_count": 85
+        },
+        "trips": 1024,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 152,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "152 of 152 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 1024,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "1024 of 1024 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        }
+      ],
+      "name": "completeness",
+      "score": 60.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 4,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 6,
+          "WARNING": 31842
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "non_ascii_or_non_printable_char",
+          "count": 30818,
+          "effort": "A planned ID change, not a quick text cleanup.",
+          "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some internal IDs use characters outside the basic text set.",
+          "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 1021,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "duplicate_route_name",
+          "count": 3,
+          "effort": "One field per route.",
+          "fix": "Give each route a distinct short or long name.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Two or more routes share the same name.",
+          "why": "Riders can't tell the routes apart in apps."
+        },
+        {
+          "code": "platform_without_parent_station",
+          "count": 6,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'platform_without_parent_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Platform without parent station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 79.2,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 31848 instances (0 error, 31842 warning, 6 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 237,
+        "effective_expiry_date": "2027-04-01",
+        "feed_end_date": "2027-04-01",
+        "feed_start_date": "2026-02-21",
+        "feed_version": "2026\u5e742\u670821\u65e5\u6539\u6b63",
+        "has_feed_info": true,
+        "last_service_date": "2027-04-01",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 237 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 239 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0; published as GTFS-JP open data by Tosaden Kotsu through the GTFS Data Repository (gtfs-data.jp). Credit Tosaden Kotsu.",
+    "reachable": true,
+    "sha256": "0cc31f047f775b5d5b571cc88908f5834cbd69582c0163612f166e9fb4bd7e5d",
+    "size_bytes": 291743,
+    "static_url": "https://api.gtfs-data.jp/v2/organizations/tosaden-kotsu/feeds/GTFS-Tosadentraffic_Streetcar/files/feed.zip?rid=current"
+  },
+  "fetch": {
+    "final_url": "https://prodgtfsdatareposharedinfrasta-filebucketcdfcd6de-1qqhtsxlwh6la.s3.amazonaws.com/tosaden-kotsu/GTFS-Tosadentraffic_Streetcar/86fd3e6d-a380-4d14-b7cd-9dbb12e13357/feed.zip?response-content-disposition=attachment%3B%20filename%3Dfeed_tosaden-kotsu_GTFS-Tosadentraffic_Streetcar_20260221_20260217221647.zip&AWSAccessKeyId=ASIARI5CFYANBJBLEFVK&Signature=ndZQ%2FLscRbaYfi4Lp9TslBqmSQQ%3D&x-amz-security-token=IQoJb3JpZ2luX2VjEGAaDmFwLW5vcnRoZWFzdC0xIkcwRQIhAI9xyuJFdiu9HTU7Xbgf9JWRoNaBoTWjbGayOjus1iITAiBWvoA%2FvcNLuMS6IvhN4c9LfHz3maX9pOsJ%2ByitZpK2vCrQBAgpEAUaDDA4Nzg1MDA3NDEzOCIMNayGb7FMqoQ5QT3ZKq0E8kDERHc%2BwvCHzYPsHFpk0o7WpZ6%2FZkSFFq8aiN4Xtea4%2Fh7Ywxc6RpkRGiIkzQxNFVTQGIJfCbAqZhbNSP8mgSvbADBytbqJqg0z8b34m3ZYtSCl9g8avpf5WRrc5D6Yyqf0QYOQWpctmULXWV9avBZaqBi8Equ83qSOMlWK62OjK5bh9LCuPAFh2vTTttp%2B0lHbWYnQQfEQq2qmfRrzj36cKh1c%2FU1dZjmxzBPvBBrKKZAqzWwABWOpEMvTJsqGYyfQf60jyLCfg%2BPQS208xd%2BP71hv6IvcQ4ZLqkyYmyL4vgXX7hXSEO0%2FSy%2FRXM2DOIP4pZmbHQ9NOiN%2F8TW4irFSPDa9UXkERFTLv2QwV4Fi%2Bt4rPEwxXn9nJ%2FfoqWDhgRj4mNW2rhMU%2FsX0VXjVNsUxLeO2s7%2FbsZzOXfnratAyHjUnf1BQsfOg7ldWFljFrhBjLs5iplqMhllwcLrJYxsSvC2Ns7r61GLKud045N67lTHSP2ee4wrGai%2FqGe8ij8aIVxT1VgRdl6DGybSSmhnt9tD1dmKzI5fYUpOsIycJBCeG7edX%2Bvd8UnCCcPPYOPmXJxWXboOubVSa4oi2aD%2FMcn%2FdlMlDpw4ND98DwFN2TP%2BcE7yMBNGb3O7T1fVG%2F1LiAg%2F3Y0cIldZdkbFlp2vdWymS7upezfE38nUSnf494%2F3bo7%2FxmVd34S1Lc8KyTKyWYCeSMo%2BJcGyiQ0ZO5FgZUwYxZLLhQX6bk30w%2BLTN0wY6owFYEOjxjThTosrmslCqTUEW3jhS1zK9SO1lD84vmdkHK2AmT3SCFzlqOPG5mkC6WTGYxEQ%2BP1LKl8cdszg43ehhCOMtgzRjXWeHZjnKTkShR1lhngkcf6YVkmReBL7hcMrAAhxXNcORiMaDvWzHMwEc46myYvRlK77h0vFaGNUTNTPsCwYCKqQRK%2Fa3WF7uynF4oTIyAN9SlpdETZgY3QUNqa7U&Expires=1785944966",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      133.42849,
+      33.54046,
+      133.65069,
+      33.57711
+    ],
+    "lat": 33.55789,
+    "lon": 133.54357,
+    "stop_count": 152
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 4,
+        "trip_count": 1024,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "tram",
+    "primary_mode_label": "Tram / light rail",
+    "route_count": 4,
+    "trip_count": 1024
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 8.4,
+    "margin_to_next_band": 1.6,
+    "score": 78.4
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 4,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "4 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (\u3068\u3055\u3067\u3093\u8def\u9762\u96fb\u8eca, \u3068\u3055\u3067\u3093\u8def\u9762\u96fb\u8eca, \u3068\u3055\u3067\u3093\u8def\u9762\u96fb\u8eca, \u3068\u3055\u3067\u3093\u8def\u9762\u96fb\u8eca).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 152,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 1024
+  },
+  "route_map": {
+    "drawn_route_count": 4,
+    "has_shapes": true,
+    "path": "data/artifacts/tosaden-streetcar/geometry.geojson",
+    "route_count": 4,
+    "routes": [
+      {
+        "color": "00895D",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "\u5357\u5317\u7dda\u4e0a\u308a_A",
+        "label": "\u3068\u3055\u3067\u3093\u8def\u9762\u96fb\u8eca",
+        "long": "\u3068\u3055\u3067\u3093\u8def\u9762\u96fb\u8eca",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "00895D",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "\u5357\u5317\u7dda\u4e0b\u308a_A",
+        "label": "\u3068\u3055\u3067\u3093\u8def\u9762\u96fb\u8eca",
+        "long": "\u3068\u3055\u3067\u3093\u8def\u9762\u96fb\u8eca",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "00895D",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "\u6771\u897f\u7dda\u4e0a\u308a_A",
+        "label": "\u3068\u3055\u3067\u3093\u8def\u9762\u96fb\u8eca",
+        "long": "\u3068\u3055\u3067\u3093\u8def\u9762\u96fb\u8eca",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "00895D",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "\u6771\u897f\u7dda\u4e0b\u308a_A",
+        "label": "\u3068\u3055\u3067\u3093\u8def\u9762\u96fb\u8eca",
+        "long": "\u3068\u3055\u3067\u3093\u8def\u9762\u96fb\u8eca",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      }
+    ],
+    "stop_count": 152,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 152,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "152 of 152 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 1024,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "1024 of 1024 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+    },
+    {
+      "code": "non_ascii_or_non_printable_char",
+      "count": 30818,
+      "effort": "A planned ID change, not a quick text cleanup.",
+      "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+      "owner": "",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some internal IDs use characters outside the basic text set.",
+      "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

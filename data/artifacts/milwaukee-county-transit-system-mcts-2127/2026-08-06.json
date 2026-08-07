@@ -1,0 +1,1094 @@
+{
+  "agency": {
+    "id": "milwaukee-county-transit-system-mcts-2127",
+    "name": "Milwaukee County Transit System (MCTS)",
+    "subdivision_code": "US-WI",
+    "subdivision_name": "Wisconsin"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 15.0,
+          "headsigns": 14.5,
+          "stop_names": 0.3,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 19275,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 96.8,
+        "headsign_scored_pct": 96.8,
+        "mixed_case_stop_name_pct": 1.7,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 3696,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 19275,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 3696,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "3696 of 3696 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 19275,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "19275 of 19275 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 3632,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 14.7,
+          "severity": "INFO",
+          "what": "About 3632 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 616,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "WARNING",
+          "what": "616 of 19275 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.3,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 5,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 1,
+          "WARNING": 1020568
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_timepoint_value",
+          "count": 1000610,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_timepoint_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Missing timepoint value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 19950,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 7,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "unknown_column",
+          "count": 1,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        }
+      ],
+      "name": "correctness",
+      "score": 73.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 1020569 instances (0 error, 1020568 warning, 1 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 121,
+        "effective_expiry_date": "2026-12-05",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-12-05",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 121 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "alerts_content": {
+          "alerts": 7,
+          "ended_over_30_days_ago": 0,
+          "with_cause_and_effect": 7,
+          "with_description": 7,
+          "with_header_text": 7,
+          "with_informed_entity": 7
+        },
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "coverage_pct": 78.7,
+        "covered_trips": 122,
+        "drift": {
+          "median_seconds": 36,
+          "observations": 4260,
+          "on_time_share_pct": 80.3,
+          "p90_abs_seconds": 269
+        },
+        "kinds_configured": 3,
+        "kinds_reachable": 3,
+        "reachable_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "rt_freshness": "fresh",
+        "samples": 9,
+        "scheduled_trips_in_window": 155,
+        "vehicles_checked": 466,
+        "vehicles_on_route_pct": 96.6,
+        "worst_lag_seconds": 11
+      },
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 33,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "WARNING",
+          "what": "33 of 155 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        }
+      ],
+      "name": "realtime",
+      "score": 92.0,
+      "status": "measured",
+      "summary": "Sampled 9 times: 3 of 3 configured feeds healthy; 78.7% of scheduled trips had live predictions; 96.6% of vehicles on their route; predictions ran a median of 36s behind schedule.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 122 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "1f3fd55c1bcfc1d1e2c7d7ec13932e5b67b7074aeb13d7f1dbc0060bd8b23b26",
+    "size_bytes": 9257880,
+    "static_url": "https://kamino.mcts.org/gtfs/google_transit.zip"
+  },
+  "fetch": {
+    "final_url": "https://kamino.mcts.org/gtfs/google_transit.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -88.07006,
+      42.87075,
+      -87.84947,
+      43.18924
+    ],
+    "lat": 43.0521,
+    "lon": -87.95647,
+    "stop_count": 3696
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 52,
+        "trip_count": 19275,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 52,
+    "trip_count": 19275
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "MCTS"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data covers the next 122 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "ready",
+    "summary": "Published at a public URL, valid, current, and identified with agency_id: the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 filings make that official; this is a heads-up, not a determination."
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 0.5,
+    "margin_to_next_band": 9.5,
+    "score": 70.5
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 1,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "1 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (92).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 3679,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "3679 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"GREENFIELD & S101\", \"ATKINSON & ROOSEVELT\", \"S27 & S3744\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 3696,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 19275
+  },
+  "route_map": {
+    "drawn_route_count": 52,
+    "has_shapes": true,
+    "path": "data/artifacts/milwaukee-county-transit-system-mcts-2127/geometry.geojson",
+    "route_count": 52,
+    "routes": [
+      {
+        "color": "00B451",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "11",
+        "label": "11",
+        "long": "Hampton Avenue",
+        "short": "11",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "93D500",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "12",
+        "label": "12",
+        "long": "Teutonia Avenue",
+        "short": "12",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0055B8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "14",
+        "label": "14",
+        "long": "Humboldt Blvd - Wisconsin",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8300",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "15",
+        "label": "15",
+        "long": "Holton - Kinnickinnic",
+        "short": "15",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B2E3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "18",
+        "label": "18",
+        "long": "National - Greenfield",
+        "short": "18",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFD600",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "19",
+        "label": "19",
+        "long": "M.L. King - S.13th Street",
+        "short": "19",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "93D500",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "20",
+        "label": "20",
+        "long": "S. 20th Street",
+        "short": "20",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B2E3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21",
+        "label": "21",
+        "long": "North Avenue",
+        "short": "21",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA0029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "22",
+        "label": "22",
+        "long": "Center Street",
+        "short": "22",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A67CB7",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "24",
+        "label": "24",
+        "long": "Forest Home - 16th Street",
+        "short": "24",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFD600",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "28",
+        "label": "28",
+        "long": "108th Street",
+        "short": "28",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00AF9A",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "30",
+        "label": "30",
+        "long": "Sherman - Wisconsin",
+        "short": "30",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B451",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31",
+        "label": "31",
+        "long": "State - Highland",
+        "short": "31",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFBE00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "33",
+        "label": "33",
+        "long": "Vliet - 84th Street",
+        "short": "33",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A67CB7",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "34",
+        "label": "34",
+        "long": "Hopkins - Congress",
+        "short": "34",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8300",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "35",
+        "label": "35",
+        "long": "35th Street",
+        "short": "35",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008556",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "40S",
+        "label": "40",
+        "long": "College Ave Summerfest Flyer",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008556",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "40U",
+        "label": "40U",
+        "long": "College   UBUS",
+        "short": "40U",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008556",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "43S",
+        "label": "43",
+        "long": "Hales Corners Summerfest Flyer",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008556",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "44U",
+        "label": "44U",
+        "long": "Fair Park - Whitnall  UBUS",
+        "short": "44U",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008556",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "49S",
+        "label": "49",
+        "long": "Brown Deer East - Summerfest Flyer",
+        "short": "49",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E50695",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "51",
+        "label": "51",
+        "long": "Oklahoma Avenue",
+        "short": "51",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "93D500",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "52",
+        "label": "52",
+        "long": "Clement - Pennsylvania",
+        "short": "52",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B2E3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "53",
+        "label": "53",
+        "long": "Lincoln Avenue",
+        "short": "53",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA0029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "54",
+        "label": "54",
+        "long": "Mitchell - Burnham",
+        "short": "54",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA0029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "55",
+        "label": "55",
+        "long": "Layton Avenue",
+        "short": "55",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "863399",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "56",
+        "label": "56",
+        "long": "Greenfield  Avenue - Beloit",
+        "short": "56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0075C9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "57",
+        "label": "57",
+        "long": "Walnut - Appleton",
+        "short": "57",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8300",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "58",
+        "label": "58",
+        "long": "Villard Avenue",
+        "short": "58",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A67CB7",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "59",
+        "label": "59",
+        "long": "Drexel Avenue",
+        "short": "59",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFD600",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "60",
+        "label": "60",
+        "long": "60th Street",
+        "short": "60",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B2E3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "63",
+        "label": "63",
+        "long": "Silver Spring Drive",
+        "short": "63",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "863399",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "66",
+        "label": "66",
+        "long": "Burleigh Street",
+        "short": "66",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "93D500",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "68",
+        "label": "68",
+        "long": "Port Washington - Capitol",
+        "short": "68",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A67CB7",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "73",
+        "label": "73",
+        "long": "Mill Road",
+        "short": "73",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B451",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "74",
+        "label": "74",
+        "long": "S. 43rd Street",
+        "short": "74",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B31983",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "76",
+        "label": "76",
+        "long": "76th Street",
+        "short": "76",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E50695",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "80",
+        "label": "80",
+        "long": "6th Street",
+        "short": "80",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8300",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "81",
+        "label": "81",
+        "long": "Amazon Oak Creek",
+        "short": "81",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0075C9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "82",
+        "label": "82",
+        "long": "S. 13th Street - Howell Avenue",
+        "short": "82",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8300",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "88",
+        "label": "88",
+        "long": "Brown Deer Road",
+        "short": "88",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0080FF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "92",
+        "label": "92",
+        "long": "92nd Street",
+        "short": "92",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "153E83",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "BLU",
+        "label": "BLU",
+        "long": "BlueLine",
+        "short": "BLU",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "379ED7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "CN1",
+        "label": "CN1",
+        "long": "Connect 1 Wisconsin Ave",
+        "short": "CN1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008B73",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GRE",
+        "label": "GRE",
+        "long": "GreenLine",
+        "short": "GRE",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008556",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "HF1",
+        "label": "HF1",
+        "long": "Via Rt 12",
+        "short": "HF1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008556",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "HF2",
+        "label": "HF2",
+        "long": "Via Rt 30 & Blueline",
+        "short": "HF2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "533073",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "PUR",
+        "label": "PUR",
+        "long": "PurpleLine",
+        "short": "PUR",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C33223",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "RED",
+        "label": "RED",
+        "long": "RedLine",
+        "short": "RED",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA0029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "RR1",
+        "label": "RR1",
+        "long": "Via Rt 19",
+        "short": "RR1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA0029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "RR2",
+        "label": "RR2",
+        "long": "Via PurpleLine",
+        "short": "RR2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA0029",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "RR3",
+        "label": "RR3",
+        "long": "Via Rt 20 & Blueline",
+        "short": "RR3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 3696,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 19275 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 19275,
+    "trips_with_shape": 19275
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 3696,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "3696 of 3696 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 19275,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "19275 of 19275 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,24 +1,39 @@
 {
   "agency_count": 7,
-  "average_score": null,
-  "common_fixes": [],
+  "average_score": 46.4,
+  "common_fixes": [
+    {
+      "agencies": 2,
+      "code": "scorecard_rt_trip_updates_unreachable",
+      "fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
+    }
+  ],
   "comparison": {
     "absolute_rankings_published": false,
-    "eligible_count": 0,
-    "excluded_count": 7,
+    "eligible_count": 2,
+    "excluded_count": 5,
     "exclusion_counts": {
-      "rubric_version_mismatch": 7,
-      "scoring_profile_missing": 7,
-      "scoring_profile_rubric_missing": 7,
+      "measured_category_set_mismatch": 2,
+      "rubric_version_mismatch": 3,
+      "scoring_profile_mismatch": 3,
+      "scoring_profile_rubric_mismatch": 3,
       "service_data_long_expired": 3
     },
     "individual_percentiles_published": false,
-    "measured_category_cohorts": {},
-    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
-    "required_measured_categories": [],
+    "measured_category_cohorts": {
+      "correctness+freshness+completeness": 2,
+      "correctness+freshness+completeness+realtime": 2
+    },
+    "note": "Score aggregates and named changes use one current producer contract, raw reader archive profile, and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [
+      "correctness",
+      "freshness",
+      "completeness",
+      "realtime"
+    ],
     "required_reader_archive_profile": "raw-v1",
-    "required_rubric_version": "1.2",
-    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_rubric_version": "1.3",
+    "required_scoring_profile_id": "gtfs-scorecard-1.3",
     "required_validator_version": "8.0.1"
   },
   "expired": {
@@ -26,13 +41,15 @@
     "stale": 3,
     "total": 4
   },
-  "generated_at": "2026-07-14T09:01:50+00:00",
-  "grade_distribution": {},
+  "generated_at": "2026-08-07T02:19:46+00:00",
+  "grade_distribution": {
+    "F": 2
+  },
   "members": [
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1404,
+      "days_until_expiry": -1432,
       "expiry_status": "stale",
       "grade": "F",
       "id": "casco-bay-lines",
@@ -40,13 +57,14 @@
       "needs_attention": true,
       "score": 46.6,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1161,
+      "days_until_expiry": -1189,
       "expiry_status": "stale",
       "grade": "F",
       "id": "greater-portland-metro-bus",
@@ -54,27 +72,29 @@
       "needs_attention": true,
       "score": 23.5,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 30 day(s)",
-      "days_until_expiry": 30,
+      "attention_reason": "Service data expires in 29 day(s)",
+      "days_until_expiry": 29,
       "expiry_status": "expiring_soon",
       "grade": "F",
       "id": "greater-portland-metro-bus-2642",
       "name": "Greater Portland Metro Bus",
       "needs_attention": true,
-      "score": 56.0,
+      "score": 55.7,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "top_fix_code": "scorecard_feed_expiring_soon"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1562,
+      "days_until_expiry": -1590,
       "expiry_status": "stale",
       "grade": "F",
       "id": "south-portland",
@@ -82,50 +102,54 @@
       "needs_attention": true,
       "score": 37.2,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -278,
+      "days_until_expiry": -306,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "south-portland-2641",
       "name": "South Portland",
       "needs_attention": true,
       "score": 37.0,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 174,
+      "days_until_expiry": 146,
       "expiry_status": "current",
       "grade": "C",
       "id": "biddeford-saco-old-orchard-beach-transit",
       "name": "Biddeford Saco Old Orchard Beach Transit",
       "needs_attention": false,
-      "score": 78.9,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "score": 79.4,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "top_fix_code": "scorecard_wheelchair_boarding_unknown"
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 1024,
+      "days_until_expiry": 996,
       "expiry_status": "current",
       "grade": "D",
       "id": "lakes-region-explorer",
       "name": "Lakes Region Explorer",
       "needs_attention": false,
       "score": 62.2,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "top_fix_code": "scorecard_wheelchair_boarding_unknown"
     }
   ],
   "needs_attention": 5,
@@ -133,12 +157,12 @@
     "id": "maine",
     "name": "Maine agencies"
   },
-  "schema_version": "1.11",
+  "schema_version": "1.17",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 3,
+    "not_measured": 0,
     "not_ready": 0,
-    "ready": 4,
+    "ready": 7,
     "total": 7
   },
   "state_percentile": null

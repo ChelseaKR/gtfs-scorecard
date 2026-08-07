@@ -1,0 +1,1457 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-pan-81462",
+    "name": "R\u00e9seau interurbain BreizhGo Car \u2014 Breizhgo Car 29",
+    "operating_note": "One of 3 distinct schedule resources in the same official dataset; each resource is counted as one feed record.",
+    "subdivision_code": "FR-BRE",
+    "subdivision_name": "Bretagne"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 28.7,
+          "stops_marked_accessible_pct": 31.2,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 31.2,
+          "trips_stated_pct": 24.6
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 7.8,
+          "wheelchair_trips": 3.7
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 3603,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.9,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1142,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 3603,
+        "wheelchair_accessible_pct": 24.6,
+        "wheelchair_boarding_pct": 31.2,
+        "wheelchair_marked_accessible_pct": 31.2,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 786,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 17.2,
+          "severity": "WARNING",
+          "what": "786 of 1142 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 2715,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 11.3,
+          "severity": "WARNING",
+          "what": "2715 of 3603 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 49.0,
+      "status": "measured",
+      "summary": "31% of stops state wheelchair accessibility (31% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 15,
+        "instances_by_severity": {
+          "ERROR": 407190,
+          "INFO": 1008,
+          "WARNING": 10254
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "equal_shape_distance_diff_coordinates",
+          "count": 407075,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "decreasing_or_equal_stop_time_distance",
+          "count": 73,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+          "owner": "Likely your export tool",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Some trips have stop times whose distances along the route go backwards.",
+          "why": "Apps can show buses jumping backwards or mis-order stops."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance",
+          "count": 42,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 18.0,
+          "severity": "ERROR",
+          "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
+          "count": 9606,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Equal shape distance diff coordinates distance below threshold (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 382,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "unexpected_enum_value",
+          "count": 84,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unexpected_enum_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Unexpected enum value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 52,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "stop_has_too_many_matches_for_shape",
+          "count": 42,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'stop_has_too_many_matches_for_shape' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Stop has too many matches for shape (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 35,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 23,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 23,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 4,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "fast_travel_between_far_stops",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'fast_travel_between_far_stops' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Fast travel between far stops (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 1008,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 0.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 15 kinds of issue across 418452 instances (407190 error, 10254 warning, 1008 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 330,
+        "effective_expiry_date": "2027-07-03",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2027-07-03",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 330 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "3 validator errors to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 331 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 31% of stops and 25% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 3 validator errors to resolve. States wheelchair access on 31% of stops and 25% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Open Database License (ODbL), recorded by France's National Access Point; credit R\u00e9gion Bretagne, identify the ODbL, and preserve share-alike terms where they apply.",
+    "reachable": true,
+    "sha256": "6d414126a9aa3516987f85feea476cab5249c6e70412e20f043f1e5783e32d0c",
+    "size_bytes": 15698197,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/c407501a-ee0d-425d-b954-42927c0eaffa"
+  },
+  "fetch": {
+    "final_url": "https://www.korrigo.bzh/ftp/OPENDATA/BREIZHGO_CAR_29.gtfs.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-06T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -4.78053,
+      47.79599,
+      -3.55058,
+      48.72348
+    ],
+    "lat": 48.28518,
+    "lon": -4.2748,
+    "stop_count": 1142
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 84,
+        "trip_count": 3603,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 84,
+    "trip_count": 3603
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 36.6,
+    "margin_to_next_band": 23.4,
+    "score": 36.6
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 49,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "49 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (913, 914, 916, 927, 929, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 9,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "9 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Bourg/Coll\u00e8ge\", \"Bourg/Coll\u00e8ge\", \"Carrefour Corn ar Gazel/Avel Vor\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1142,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 3603
+  },
+  "route_map": {
+    "drawn_route_count": 84,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-pan-81462/geometry.geojson",
+    "route_count": 84,
+    "routes": [
+      {
+        "color": "2A317E",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "111",
+        "label": "911",
+        "long": "Le Conquet - Brest",
+        "short": "911",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "1111TAD",
+        "label": "9111",
+        "long": "Ploumoguer - Locmaria-Plouzan\u00e9 - Brest",
+        "short": "9111",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4C74B5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "112",
+        "label": "912",
+        "long": "Saint-Renan - Brest",
+        "short": "912",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CF7A26",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "113",
+        "label": "913",
+        "long": "Lampaul-Plouarzel - Saint-Renan (Brest)",
+        "short": "913",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "1131TAD",
+        "label": "9131",
+        "long": "Ploumoguer- Saint Renan- Brest",
+        "short": "9131",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "1132TAD",
+        "label": "9132",
+        "long": "TAD Tr\u00e9zien",
+        "short": "9132",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9FB935",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "114",
+        "label": "914",
+        "long": "Ploudalm\u00e9zeau - Brest",
+        "short": "914",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "1141TAD",
+        "label": "9141",
+        "long": "Plourin - Landunvez - Ploudalm\u00e9zeau - Saint Renan -  Brest",
+        "short": "9141",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "114TAD",
+        "label": "9114",
+        "long": "Saint-Pabu - Plouguin (Brest)",
+        "short": "9114",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005A66",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "115",
+        "label": "915",
+        "long": "Guipronvel - Milizac - Brest",
+        "short": "915",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7E7DAB",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "116",
+        "label": "916",
+        "long": "Porspoder - Lanrivoare - Saint-Renan (Brest)",
+        "short": "916",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "1161TAD",
+        "label": "9161",
+        "long": "Melon - Lanildut - Br\u00e9l\u00e8s - Saint Renan - Brest",
+        "short": "9161",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "69003F",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "119",
+        "label": "936",
+        "long": "Carhaix - Morlaix",
+        "short": "936",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7E7DAB",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "137",
+        "label": "937",
+        "long": "Camaret - Quimper",
+        "short": "937",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C18A7E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "178",
+        "label": "945",
+        "long": "Sca\u00ebr - Coray - Quimper",
+        "short": "945",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B0006B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "20",
+        "label": "920",
+        "long": "Lannilis - Porte de Gouesnou",
+        "short": "920",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0094AB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22",
+        "label": "922",
+        "long": "Plouvien - Plabennec - Brest",
+        "short": "922",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CE006D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "220TAD",
+        "label": "920 TAD",
+        "long": "Gouesnou - Plouguerneau",
+        "short": "920 TAD",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EED969",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "227",
+        "label": "927",
+        "long": "Ploudaniel - Saint-Divy - Brest",
+        "short": "927",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6E8225",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "229",
+        "label": "929",
+        "long": "Roscoff - Morlaix",
+        "short": "929",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9FB935",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "23",
+        "label": "923",
+        "long": "Kerlouan - Lesneven (Brest)",
+        "short": "923",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4C74B5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "231",
+        "label": "960",
+        "long": "Morlaix - Huelgoat - Quimper",
+        "short": "960",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B4CCEC",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "238",
+        "label": "961",
+        "long": "Carhaix - Brest",
+        "short": "961",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "239",
+        "label": "9611",
+        "long": "Collorec - Plon\u00e9v\u00e9ez du Faou - Sp\u00e9zet - St Goazec - Chateauneuf - Brest",
+        "short": "9611",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B0252E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "24",
+        "label": "924",
+        "long": "Brignogan - Lesneven (Brest)",
+        "short": "924",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2A317E",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "246",
+        "label": "962",
+        "long": "Carhaix - Ch\u00e2teaulin Le Pouillot - Quimper",
+        "short": "962",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "248",
+        "label": "9621",
+        "long": "Collorec - Plon\u00e9vez du Faou - Sp\u00e9zet - St Goazec - Chateauneuf - Quimper",
+        "short": "9621",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2A317E",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "25",
+        "label": "925",
+        "long": "Roscoff - Lesneven (Brest)",
+        "short": "925",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "81A1D5",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "26",
+        "label": "926",
+        "long": "Landerneau - Lesneven",
+        "short": "926",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2678B9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26TAD",
+        "label": "926 TAD",
+        "long": "Lesneven - Landerneau",
+        "short": "926 TAD",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "998608",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "280A",
+        "label": "980",
+        "long": "Sizun - Landivisiau",
+        "short": "980",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "998608",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "280B",
+        "label": "981",
+        "long": "Plouz\u00e9v\u00e9d\u00e9 - Landivisiau",
+        "short": "981",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "281TAD",
+        "label": "9801",
+        "long": "Saint Cadou - Guimiliau - Landivisiau",
+        "short": "9801",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "282 TAD",
+        "label": "9802",
+        "long": "Guiclan - Landivisiau",
+        "short": "9802",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "283 TAD",
+        "label": "9803",
+        "long": "Saint Derrien - Ploun\u00e9venter - bodilis - Landivisiau",
+        "short": "9803",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "284 TAD",
+        "label": "9804",
+        "long": "Loc Eguiner-Landivisiau",
+        "short": "9804",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B0252E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "30",
+        "label": "931",
+        "long": "Quimper - Brest",
+        "short": "931",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF9900",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "317",
+        "label": "938",
+        "long": "Com Communes Pleyben Chateaulin Porzay",
+        "short": "938",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8EB9C5",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "33",
+        "label": "933",
+        "long": "Dirinon - Loperhet - Brest",
+        "short": "933",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9FB935",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "39",
+        "label": "939",
+        "long": "Daoulas - Landerneau",
+        "short": "939",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "391",
+        "label": "9372",
+        "long": "Chateaulin",
+        "short": "9372",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "392",
+        "label": "9612",
+        "long": "Lann\u00e9dern - Le Clo\u00eetre Pleyben - Lennon - Gou\u00e9zec - Lothey - Brest",
+        "short": "9612",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "393",
+        "label": "9340",
+        "long": "Roscanvel - Land\u00e9vennec - Morgat - Brest",
+        "short": "9340",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7E7DAB",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "394",
+        "label": "9379",
+        "long": "Camaret - St Nic - Quimper - 937 TAD",
+        "short": "9379",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B4CCEC",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "396",
+        "label": "9619",
+        "long": "Carhaix - Lennon - Brest - 961 TAD",
+        "short": "9619",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "398",
+        "label": "9371",
+        "long": "Tr\u00e9garvan - Din\u00e9ault - Port Launay - St S\u00e9gal - St Coulitz - Ch\u00e2teaulin - Cast - Quimper",
+        "short": "9371",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "399",
+        "label": "9622",
+        "long": "Lann\u00e9dern - Le Clo\u00eetre Pleyben - Lennon - Gou\u00e9zec - Lothey - Quimper",
+        "short": "9622",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "400",
+        "label": "9342",
+        "long": "Intra Presqu'\u00eele",
+        "short": "9342",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "405",
+        "label": "9341",
+        "long": "Morgat - Camaret - Landevennec - Le Fret",
+        "short": "9341",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2A317E",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "419",
+        "label": "9629",
+        "long": "Carhaix - Lennon - Quimper - 962 TAD",
+        "short": "9629",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "641814",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "441",
+        "label": "941",
+        "long": "B\u00e9nodet - Quimper",
+        "short": "941",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9FB935",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "442",
+        "label": "942",
+        "long": "Fouesnant - Quimper",
+        "short": "942",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C1CA90",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "443",
+        "label": "943",
+        "long": "Pont-Aven - Tr\u00e9gunc - Concarneau - Quimper",
+        "short": "943",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "69003F",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "446",
+        "label": "946",
+        "long": "Elliant - Saint-Yvi - Quimper",
+        "short": "946",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "69003F",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "446 TAD",
+        "label": "9469",
+        "long": "Elliant - Saint Yvi - Quimper",
+        "short": "9469",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4C74B5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "448",
+        "label": "948",
+        "long": "B\u00e9nodet - Concarneau",
+        "short": "948",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4C74B5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "53",
+        "label": "932",
+        "long": "Le Faou - Daoulas - Brest",
+        "short": "932",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6E8225",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "551",
+        "label": "951",
+        "long": "Douarnenez - Quimper",
+        "short": "951",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2A317E",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "552",
+        "label": "952",
+        "long": "Audierne - Douarnenez (Quimper)",
+        "short": "952",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B0006B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "553",
+        "label": "953",
+        "long": "Audierne - Quimper",
+        "short": "953",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4C74B5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "554",
+        "label": "954",
+        "long": "Pouldreuzic - Plon\u00e9our-Lanvern - Pont-L'Abb\u00e9",
+        "short": "954",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "69003F",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "555",
+        "label": "955",
+        "long": "Pouldreuzic - Plon\u00e9our-Lanvern - Quimper",
+        "short": "955",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BC87A2",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "556A",
+        "label": "956",
+        "long": "Pont l'Abb\u00e9 - Quimper",
+        "short": "956",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005A66",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "556B",
+        "label": "959",
+        "long": "Penmarc'h - Plomeur - Pont-L'Abb\u00e9 (Quimper)",
+        "short": "959",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B0252E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "556C",
+        "label": "957",
+        "long": "Lesconil - Loctudy - Pont-L'Abb\u00e9 (Quimper)",
+        "short": "957",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D5B082",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "67",
+        "label": "934",
+        "long": "Camaret - Brest",
+        "short": "934",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "998608",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "80",
+        "label": "935",
+        "long": "Carhaix - Ch\u00e2teaulin",
+        "short": "935",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "641814",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "921",
+        "label": "921",
+        "long": "Lesneven - Brest",
+        "short": "921",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D5B082",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "9349",
+        "label": "9349",
+        "long": "Camaret - Rosno\u00ebn - Brest - 934 TAD",
+        "short": "9349",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "9451",
+        "label": "9451",
+        "long": "St Thois - Laz - Tr\u00e9gourez - Leuhan - Coray - Quimper",
+        "short": "9451",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A8A8A8",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "9511",
+        "label": "9511",
+        "long": "Poullan-Sur-Mer - Douarnenez",
+        "short": "9511",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A8A8A8",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "9512",
+        "label": "9512",
+        "long": "Pouldergat - Douarnenez",
+        "short": "9512",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A8A8A8",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "9513",
+        "label": "9513",
+        "long": "Le Juch - Douarnenez",
+        "short": "9513",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A8A8A8",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "9514",
+        "label": "9514",
+        "long": "Kerlaz - Douarnenez",
+        "short": "9514",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A8A8A8",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "9515",
+        "label": "9515",
+        "long": "Pouldergat - Le Juch",
+        "short": "9515",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A8A8A8",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "9521",
+        "label": "9521",
+        "long": "Goulizon - Guiler Sur Goyen",
+        "short": "9521",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A8A8A8",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "9531",
+        "label": "9531",
+        "long": "Cap Sizun",
+        "short": "9531",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A8A8A8",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "9541",
+        "label": "9541",
+        "long": "Haut Pays Bigouden",
+        "short": "9541",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A8A8A8",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "9564",
+        "label": "9564",
+        "long": "Pays Bigouden Sud",
+        "short": "9564",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BA88A4",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "958",
+        "label": "958",
+        "long": "Saint Gu\u00e9nol\u00e9 - Le Guilvinec - Pont l'Abb\u00e9",
+        "short": "958",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "SV010114",
+        "label": "9221",
+        "long": "Lesneven Plouvien",
+        "short": "9221",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E8E8E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "SV010191",
+        "label": "9261",
+        "long": "Saint-M\u00e9en - Lesneven",
+        "short": "9261",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "81A1D5",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "chouette:Line:80f3d6a8-f949-4992-b8f1-9756306001de:LOC",
+        "label": "950",
+        "long": "Plogoff Pointe du Raz - Douarnenez",
+        "short": "950",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "61B0C8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "chouette:Line:a369d6fc-c7f8-4bb6-85c2-c9991a07c91d:LOC",
+        "label": "940",
+        "long": "Combrit - Sainte Marine - Quimper",
+        "short": "940",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1142,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "equal_shape_distance_diff_coordinates",
+      "count": 407075,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 24.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "decreasing_or_equal_stop_time_distance",
+      "count": 73,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+      "owner": "Likely your export tool",
+      "points": 24.0,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "Some trips have stop times whose distances along the route go backwards.",
+      "why": "Apps can show buses jumping backwards or mis-order stops."
+    },
+    {
+      "code": "trip_distance_exceeds_shape_distance",
+      "count": 42,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 18.0,
+      "rank": 3,
+      "severity": "ERROR",
+      "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

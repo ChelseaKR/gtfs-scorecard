@@ -1,0 +1,2250 @@
+{
+  "agency": {
+    "id": "sound-transit-metro-transit-city-of-seattle-king-county-metro",
+    "name": "Sound Transit, Metro Transit, City of Seattle - King County Metro",
+    "subdivision_code": "US-WA",
+    "subdivision_name": "Washington"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 99.2,
+          "stops_marked_accessible_pct": 95.5,
+          "stops_marked_not_accessible_pct": 3.2,
+          "stops_stated_pct": 98.7,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 24.7,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": true,
+          "has_products": true,
+          "has_transfer_rules": true,
+          "model": "v2",
+          "product_count": 32
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 62614,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 6446,
+        "translations": {
+          "feed_lang": "EN",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 62614,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 98.7,
+        "wheelchair_marked_accessible_pct": 95.5,
+        "wheelchair_marked_not_accessible_pct": 3.2
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 83,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 0.3,
+          "severity": "WARNING",
+          "what": "83 of 6446 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 12,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "12 of 62614 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        }
+      ],
+      "name": "completeness",
+      "score": 99.7,
+      "status": "measured",
+      "summary": "99% of stops state wheelchair accessibility (96% marked accessible, 3% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 7,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 5,
+          "WARNING": 958
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 827,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 76,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 46,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "route_short_name_too_long",
+          "count": 8,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'route_short_name_too_long' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Route short name too long (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 1,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "unknown_column",
+          "count": 4,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 1,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 67.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 7 kinds of issue across 963 instances (0 error, 958 warning, 5 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 232,
+        "effective_expiry_date": "2027-03-26",
+        "feed_end_date": "2027-03-26",
+        "feed_start_date": "2026-07-20",
+        "feed_version": "SPR26-160.8-Combined-EasyLoop",
+        "has_feed_info": true,
+        "last_service_date": "2027-03-26",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 232 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": true,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 233 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 99% of stops and 100% of trips.",
+        "key": "accessible",
+        "met": true
+      }
+    ],
+    "status": "awarded",
+    "summary": "This feed earns the conformance mark: valid, current, and stating wheelchair access on nearly every stop and trip."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "eacf2b5b9f618fabaa6f52b891c478b017709651c429ff332ab4a72c19d075e4",
+    "size_bytes": 17475566,
+    "static_url": "http://metro.kingcounty.gov/GTFS/google_transit.zip"
+  },
+  "ferry_profile": {
+    "accessibility": {
+      "measures": "published_values_not_physical_usability",
+      "terminals": {
+        "allowed_count": 3,
+        "allowed_pct": 75.0,
+        "not_allowed_count": 0,
+        "not_allowed_pct": 0.0,
+        "stated_count": 3,
+        "stated_pct": 75.0,
+        "total_count": 4
+      },
+      "trips": {
+        "allowed_count": 406,
+        "allowed_pct": 100.0,
+        "not_allowed_count": 0,
+        "not_allowed_pct": 0.0,
+        "stated_count": 406,
+        "stated_pct": 100.0,
+        "total_count": 406
+      }
+    },
+    "bikes": {
+      "allowed_count": 406,
+      "allowed_pct": 100.0,
+      "not_allowed_count": 0,
+      "not_allowed_pct": 0.0,
+      "stated_count": 406,
+      "stated_pct": 100.0,
+      "total_count": 406
+    },
+    "cars": {
+      "allowed_count": 0,
+      "allowed_pct": 0.0,
+      "not_allowed_count": 0,
+      "not_allowed_pct": 0.0,
+      "stated_count": 0,
+      "stated_pct": 0.0,
+      "total_count": 406
+    },
+    "fares": {
+      "applied": true,
+      "fare_free": false,
+      "model": "v2",
+      "scope": "whole_feed"
+    },
+    "graded": false,
+    "measured": true,
+    "realtime": {
+      "configured_kinds": [],
+      "kinds_configured": 0,
+      "scope": "whole_feed"
+    },
+    "route_count": 2,
+    "scope": "ferry_routes_and_trips",
+    "stop_access": {
+      "direct_count": 0,
+      "eligible_terminal_count": 0,
+      "stated_count": 0,
+      "stated_pct": null,
+      "through_station_count": 0
+    },
+    "terminal_hierarchy": {
+      "boarding_location_count": 4,
+      "parented_boarding_location_count": 0,
+      "parented_boarding_location_pct": 0.0,
+      "referenced_station_count": 0
+    },
+    "trip_count": 406
+  },
+  "fetch": {
+    "final_url": "http://metro.kingcounty.gov/GTFS/google_transit.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -122.50662,
+      47.18912,
+      -121.70999,
+      47.86559
+    ],
+    "lat": 47.58766,
+    "lon": -122.29181,
+    "stop_count": 6446
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": true,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 2,
+        "trip_count": 696,
+        "trip_share_pct": 1.1
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 153,
+        "trip_count": 61512,
+        "trip_share_pct": 98.2
+      },
+      {
+        "key": "ferry",
+        "label": "Ferry",
+        "route_count": 2,
+        "trip_count": 406,
+        "trip_share_pct": 0.6
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 157,
+    "trip_count": 62614
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "1",
+      "23",
+      "40",
+      "6289"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data covers the next 233 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "ready",
+    "summary": "Published at a public URL, valid, current, and identified with agency_id: the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 filings make that official; this is a heads-up, not a determination."
+  },
+  "overall": {
+    "grade": "B",
+    "margin_to_lower_band": 5.5,
+    "margin_to_next_band": 4.5,
+    "score": 85.5
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 4,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "4 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (973, 975, South Lake Union Streetcar, First Hill Streetcar).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 6446,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 62614
+  },
+  "route_map": {
+    "drawn_route_count": 157,
+    "has_shapes": true,
+    "path": "data/artifacts/sound-transit-metro-transit-city-of-seattle-king-county-metro/geometry.geojson",
+    "route_count": 157,
+    "routes": [
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100001",
+        "label": "1",
+        "long": "",
+        "short": "1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100002",
+        "label": "10",
+        "long": "",
+        "short": "10",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100003",
+        "label": "101",
+        "long": "",
+        "short": "101",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100004",
+        "label": "105",
+        "long": "",
+        "short": "105",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100005",
+        "label": "106",
+        "long": "",
+        "short": "106",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100006",
+        "label": "107",
+        "long": "",
+        "short": "107",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100009",
+        "label": "11",
+        "long": "",
+        "short": "11",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100011",
+        "label": "111",
+        "long": "",
+        "short": "111",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100012",
+        "label": "113",
+        "long": "",
+        "short": "113",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100016",
+        "label": "118",
+        "long": "",
+        "short": "118",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100017",
+        "label": "119",
+        "long": "",
+        "short": "119",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100018",
+        "label": "12",
+        "long": "",
+        "short": "12",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100020",
+        "label": "121",
+        "long": "",
+        "short": "121",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100023",
+        "label": "124",
+        "long": "",
+        "short": "124",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100024",
+        "label": "125",
+        "long": "",
+        "short": "125",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100026",
+        "label": "128",
+        "long": "",
+        "short": "128",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100028",
+        "label": "13",
+        "long": "",
+        "short": "13",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100030",
+        "label": "131",
+        "long": "",
+        "short": "131",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100031",
+        "label": "132",
+        "long": "",
+        "short": "132",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100039",
+        "label": "14",
+        "long": "",
+        "short": "14",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100042",
+        "label": "148",
+        "long": "",
+        "short": "148",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100045",
+        "label": "150",
+        "long": "",
+        "short": "150",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100048",
+        "label": "153",
+        "long": "",
+        "short": "153",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100057",
+        "label": "164",
+        "long": "",
+        "short": "164",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100058",
+        "label": "166",
+        "long": "",
+        "short": "166",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100060",
+        "label": "168",
+        "long": "",
+        "short": "168",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100062",
+        "label": "17",
+        "long": "",
+        "short": "17",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100068",
+        "label": "177",
+        "long": "",
+        "short": "177",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100072",
+        "label": "181",
+        "long": "",
+        "short": "181",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100073",
+        "label": "182",
+        "long": "",
+        "short": "182",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100074",
+        "label": "183",
+        "long": "",
+        "short": "183",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100089",
+        "label": "2",
+        "long": "",
+        "short": "2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100099",
+        "label": "208",
+        "long": "",
+        "short": "208",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100101",
+        "label": "21",
+        "long": "",
+        "short": "21",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100104",
+        "label": "212",
+        "long": "",
+        "short": "212",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100111",
+        "label": "22",
+        "long": "",
+        "short": "22",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100132",
+        "label": "24",
+        "long": "",
+        "short": "24",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100133",
+        "label": "240",
+        "long": "",
+        "short": "240",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100136",
+        "label": "245",
+        "long": "",
+        "short": "245",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100146",
+        "label": "255",
+        "long": "",
+        "short": "255",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100160",
+        "label": "269",
+        "long": "",
+        "short": "269",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100161",
+        "label": "27",
+        "long": "",
+        "short": "27",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100162",
+        "label": "271",
+        "long": "",
+        "short": "271",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100169",
+        "label": "28",
+        "long": "",
+        "short": "28",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100173",
+        "label": "3",
+        "long": "",
+        "short": "3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100177",
+        "label": "303",
+        "long": "",
+        "short": "303",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100184",
+        "label": "31",
+        "long": "",
+        "short": "31",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100193",
+        "label": "32",
+        "long": "",
+        "short": "32",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100194",
+        "label": "33",
+        "long": "",
+        "short": "33",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100196",
+        "label": "331",
+        "long": "",
+        "short": "331",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100202",
+        "label": "345",
+        "long": "",
+        "short": "345",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100203",
+        "label": "346",
+        "long": "",
+        "short": "346",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100205",
+        "label": "348",
+        "long": "",
+        "short": "348",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100210",
+        "label": "36",
+        "long": "",
+        "short": "36",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100214",
+        "label": "372",
+        "long": "",
+        "short": "372",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100219",
+        "label": "4",
+        "long": "",
+        "short": "4",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100223",
+        "label": "43",
+        "long": "",
+        "short": "43",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100224",
+        "label": "44",
+        "long": "",
+        "short": "44",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100225",
+        "label": "45",
+        "long": "",
+        "short": "45",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100228",
+        "label": "48",
+        "long": "",
+        "short": "48",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100229",
+        "label": "5",
+        "long": "",
+        "short": "5",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100230",
+        "label": "50",
+        "long": "",
+        "short": "50",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "100232",
+        "label": "522",
+        "long": "",
+        "short": "522",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "100236",
+        "label": "545",
+        "long": "",
+        "short": "545",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "100239",
+        "label": "550",
+        "long": "",
+        "short": "550",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "100240",
+        "label": "554",
+        "long": "",
+        "short": "554",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100242",
+        "label": "56",
+        "long": "",
+        "short": "56",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100246",
+        "label": "57",
+        "long": "",
+        "short": "57",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100249",
+        "label": "60",
+        "long": "",
+        "short": "60",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100252",
+        "label": "62",
+        "long": "",
+        "short": "62",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100254",
+        "label": "65",
+        "long": "",
+        "short": "65",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100259",
+        "label": "67",
+        "long": "",
+        "short": "67",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100263",
+        "label": "7",
+        "long": "",
+        "short": "7",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100264",
+        "label": "70",
+        "long": "",
+        "short": "70",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100269",
+        "label": "75",
+        "long": "",
+        "short": "75",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100271",
+        "label": "77",
+        "long": "",
+        "short": "77",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "100272",
+        "label": "773",
+        "long": "",
+        "short": "773",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100275",
+        "label": "8",
+        "long": "",
+        "short": "8",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100289",
+        "label": "9",
+        "long": "",
+        "short": "9",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "100290",
+        "label": "901",
+        "long": "",
+        "short": "901",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "100292",
+        "label": "903",
+        "long": "",
+        "short": "903",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "100297",
+        "label": "914",
+        "long": "",
+        "short": "914",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "100300",
+        "label": "917",
+        "long": "",
+        "short": "917",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4298CC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "100336",
+        "label": "973",
+        "long": "",
+        "short": "973",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "32CD32",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "100337",
+        "label": "975",
+        "long": "",
+        "short": "975",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "F47836",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "100340",
+        "label": "South Lake Union Streetcar",
+        "long": "",
+        "short": "South Lake Union Streetcar",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100341",
+        "label": "982",
+        "long": "",
+        "short": "982",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100344",
+        "label": "986",
+        "long": "",
+        "short": "986",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100345",
+        "label": "987",
+        "long": "",
+        "short": "987",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100346",
+        "label": "988",
+        "long": "",
+        "short": "988",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100347",
+        "label": "989",
+        "long": "",
+        "short": "989",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100447",
+        "label": "49",
+        "long": "",
+        "short": "49",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "100451",
+        "label": "556",
+        "long": "",
+        "short": "556",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100459",
+        "label": "218",
+        "long": "",
+        "short": "218",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100473",
+        "label": "981",
+        "long": "",
+        "short": "981",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "100481",
+        "label": "775",
+        "long": "",
+        "short": "775",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100487",
+        "label": "102",
+        "long": "",
+        "short": "102",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100489",
+        "label": "156",
+        "long": "",
+        "short": "156",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "100495",
+        "label": "193",
+        "long": "",
+        "short": "193",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "100496",
+        "label": "930",
+        "long": "",
+        "short": "930",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "100511",
+        "label": "542",
+        "long": "",
+        "short": "542",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9C182F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "100512",
+        "label": "A Line",
+        "long": "",
+        "short": "A Line",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9C182F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "102548",
+        "label": "B Line",
+        "long": "",
+        "short": "B Line",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102552",
+        "label": "226",
+        "long": "",
+        "short": "226",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102557",
+        "label": "915",
+        "long": "",
+        "short": "915",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102558",
+        "label": "931",
+        "long": "",
+        "short": "931",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102561",
+        "label": "907",
+        "long": "",
+        "short": "907",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102574",
+        "label": "40",
+        "long": "",
+        "short": "40",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9C182F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "102576",
+        "label": "C Line",
+        "long": "",
+        "short": "C Line",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9C182F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "102581",
+        "label": "D Line",
+        "long": "",
+        "short": "D Line",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102593",
+        "label": "906",
+        "long": "",
+        "short": "906",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9C182F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "102615",
+        "label": "E Line",
+        "long": "",
+        "short": "E Line",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9C182F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "102619",
+        "label": "F Line",
+        "long": "",
+        "short": "F Line",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102634",
+        "label": "630",
+        "long": "",
+        "short": "630",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102636",
+        "label": "631",
+        "long": "",
+        "short": "631",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F47836",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "102638",
+        "label": "First Hill Streetcar",
+        "long": "",
+        "short": "First Hill Streetcar",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "F7B6D2",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "102646",
+        "label": "Trailhead Direct Issaquah Alps",
+        "long": "",
+        "short": "Trailhead Direct Issaquah Alps",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102647",
+        "label": "635",
+        "long": "",
+        "short": "635",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8C6D31",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "102650",
+        "label": "Trailhead Direct Mt. Si",
+        "long": "",
+        "short": "Trailhead Direct Mt. Si",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102652",
+        "label": "204",
+        "long": "",
+        "short": "204",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102653",
+        "label": "224",
+        "long": "",
+        "short": "224",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102698",
+        "label": "Duvall-Monroe Shuttle",
+        "long": "",
+        "short": "Duvall-Monroe Shuttle",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102699",
+        "label": "Valley Shuttle",
+        "long": "",
+        "short": "Valley Shuttle",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102701",
+        "label": "225",
+        "long": "",
+        "short": "225",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102702",
+        "label": "239",
+        "long": "",
+        "short": "239",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102703",
+        "label": "231",
+        "long": "",
+        "short": "231",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102704",
+        "label": "250",
+        "long": "",
+        "short": "250",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102705",
+        "label": "230",
+        "long": "",
+        "short": "230",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102715",
+        "label": "162",
+        "long": "",
+        "short": "162",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102717",
+        "label": "165",
+        "long": "",
+        "short": "165",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102718",
+        "label": "184",
+        "long": "",
+        "short": "184",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102719",
+        "label": "161",
+        "long": "",
+        "short": "161",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102720",
+        "label": "160",
+        "long": "",
+        "short": "160",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102729",
+        "label": "322",
+        "long": "",
+        "short": "322",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102732",
+        "label": "79",
+        "long": "",
+        "short": "79",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102734",
+        "label": "566",
+        "long": "",
+        "short": "566",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9C182F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "102736",
+        "label": "H Line",
+        "long": "",
+        "short": "H Line",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102744",
+        "label": "365",
+        "long": "",
+        "short": "365",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9C182F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "102745",
+        "label": "G Line",
+        "long": "",
+        "short": "G Line",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102746",
+        "label": "333",
+        "long": "",
+        "short": "333",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102747",
+        "label": "61",
+        "long": "",
+        "short": "61",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102752",
+        "label": "223",
+        "long": "",
+        "short": "223",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102753",
+        "label": "222",
+        "long": "",
+        "short": "222",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102754",
+        "label": "256",
+        "long": "",
+        "short": "256",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102755",
+        "label": "203",
+        "long": "",
+        "short": "203",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102756",
+        "label": "249",
+        "long": "",
+        "short": "249",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102757",
+        "label": "187",
+        "long": "",
+        "short": "187",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102758",
+        "label": "570",
+        "long": "",
+        "short": "570",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102763",
+        "label": "Waterfront Shuttle",
+        "long": "",
+        "short": "Waterfront Shuttle",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102764",
+        "label": "220",
+        "long": "",
+        "short": "220",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102765",
+        "label": "902",
+        "long": "",
+        "short": "902",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102766",
+        "label": "270",
+        "long": "",
+        "short": "270",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102767",
+        "label": "547",
+        "long": "",
+        "short": "547",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102768",
+        "label": "72",
+        "long": "",
+        "short": "72",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB71A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102769",
+        "label": "215",
+        "long": "",
+        "short": "215",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102770",
+        "label": "Golden Gardens Direct",
+        "long": "",
+        "short": "Golden Gardens Direct",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "7994",
+        "label": "Easy Loop",
+        "long": "",
+        "short": "Easy Loop",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 6446,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 62614 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 62614,
+    "trips_with_shape": 62614
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "trip_distance_exceeds_shape_distance_below_threshold",
+      "count": 827,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "On some trips the stop distances run a little past the end of the route line.",
+      "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+    },
+    {
+      "code": "stop_too_far_from_shape_using_user_distance",
+      "count": 76,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+      "why": "Trip planners may draw the route down the wrong path or point riders to the wrong boarding location."
+    },
+    {
+      "code": "stop_too_far_from_shape",
+      "count": 46,
+      "effort": "A few minutes per flagged stop.",
+      "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+      "owner": "Likely your export tool",
+      "points": 6.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some stops sit far from the route line they belong to.",
+      "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,0 +1,2397 @@
+{
+  "agency": {
+    "country": "ES",
+    "id": "titsa-tenerife",
+    "name": "TITSA (Tenerife)",
+    "subdivision_code": "ES-TF",
+    "subdivision_name": "Santa Cruz de Tenerife"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 0.1,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 61470,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 0.7,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 3873,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 61470,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 3873,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "3873 of 3873 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 61470,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "61470 of 61470 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 3846,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 14.9,
+          "severity": "INFO",
+          "what": "About 3846 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 22.6,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 5,
+        "instances_by_severity": {
+          "ERROR": 2,
+          "INFO": 0,
+          "WARNING": 61841
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "equal_shape_distance_diff_coordinates",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 61006,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 550,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "fast_travel_between_far_stops",
+          "count": 284,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'fast_travel_between_far_stops' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Fast travel between far stops (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        }
+      ],
+      "name": "correctness",
+      "score": 60.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 61843 instances (2 error, 61841 warning, 0 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 178,
+        "effective_expiry_date": "2027-02-01",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2027-02-01",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 178 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 180 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "export_diff": {
+    "changes": [
+      "Service now runs through 2027-02-01 (was 2027-01-31)."
+    ],
+    "from_sha256": "1fd57d4eb673fa2220eb0792bc44b48f840ec6b53e81fb1be087ba37fd415df6",
+    "to_sha256": "23f786b424b45b8eb0de947935fd5b1336e8a189f61757f85ff09da4e51b8d2b"
+  },
+  "feed": {
+    "license_note": "CC BY per the datos.gob.es federated record; credit Transportes Interurbanos de Tenerife and the Cabildo de Tenerife.",
+    "reachable": true,
+    "sha256": "23f786b424b45b8eb0de947935fd5b1336e8a189f61757f85ff09da4e51b8d2b",
+    "size_bytes": 22486102,
+    "static_url": "http://www.titsa.com/Google_transit.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.titsa.com:443/Google_transit.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -16.9198,
+      28.0067,
+      -16.1544,
+      28.5739
+    ],
+    "lat": 28.3922,
+    "lon": -16.4396,
+    "stop_count": 3873
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 179,
+        "trip_count": 61470,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 179,
+    "trip_count": 61470
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 54.6,
+    "margin_to_next_band": 5.4,
+    "score": 54.6
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 1,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "1 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"HOSPITALITO DR GUIGOU\").",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 3873,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 61470
+  },
+  "route_map": {
+    "drawn_route_count": 179,
+    "has_shapes": true,
+    "path": "data/artifacts/titsa-tenerife/geometry.geojson",
+    "route_count": 179,
+    "routes": [
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "1",
+        "label": "139",
+        "long": "SANTA CRUZ RADAZUL BAJO TABAIBA RADAZUL SANTA CRUZ",
+        "short": "139",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "10",
+        "label": "483",
+        "long": "LOS CRISTIANOS GUAZA PARQUE LA REINA CHAFIRAS COSTA SAN MIGUEL LOS ABRIGOS",
+        "short": "483",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "100",
+        "label": "111",
+        "long": "SANTA CRUZ COSTA ADEJE",
+        "short": "111",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "101",
+        "label": "342",
+        "long": "COSTA ADEJE LOS CRISTIANOS CA\u00d1ADAS DEL TEIDE EL PORTILLO",
+        "short": "342",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "102",
+        "label": "383",
+        "long": "PUERTO DE LA CRUZ  LAS ARENAS LA VERA CIRCULAR",
+        "short": "383",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "104",
+        "label": "26",
+        "long": "SANTA CRUZ - LA LAGUNA  POR BARRIO LA SALUD Y FINCA ESPA\u00d1A",
+        "short": "26",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "105",
+        "label": "373",
+        "long": "LAS DEHESAS LA FLORIDA CAMINO POLO LA PIEDAD LAS DEHESAS",
+        "short": "373",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "106",
+        "label": "376",
+        "long": "ESTACION OROTAVA LAS DEHESAS EL RINC\u00d3N",
+        "short": "376",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "107",
+        "label": "381",
+        "long": "PLAZA REYES CAT\u00d3LICOS PUNTA BRAVA LORO PARQUE LA LONGUERA",
+        "short": "381",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "108",
+        "label": "382",
+        "long": "PLAZA REYES CAT\u00d3LICOS PLAZA DEL CHARCO MERCADO LA VERA",
+        "short": "382",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "109",
+        "label": "33",
+        "long": "G\u00dcIMAR FASNIA LA SOMBRERA",
+        "short": "33",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "11",
+        "label": "920",
+        "long": "INTERCAMBIADOR PLAZA DE ESPA\u00d1A LA MARINA  RAMBLAS REYES CAT\u00d3LICOS TRES DE MAYO INTERCAMBIADOR",
+        "short": "920",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "110",
+        "label": "127",
+        "long": "G\u00dcIMAR CANDELARIA POR TF28",
+        "short": "127",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "111",
+        "label": "126",
+        "long": "CANDELARIA GUAJARA UNIVERSIDAD HOSPITAL LA CANDELARIA SANTA CRUZ",
+        "short": "126",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "112",
+        "label": "372",
+        "long": "LAS DEHESAS SAN ANTONIO LA PIEDAD LAS DEHESAS",
+        "short": "372",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "113",
+        "label": "490",
+        "long": "CALLE DEL CAMPO GUIA ISORA TEJINA VERA DE ERQUES",
+        "short": "490",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "114",
+        "label": "492",
+        "long": "CHIGUERGUE ESTACION GU\u00cdA DE  ISORA",
+        "short": "492",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "115",
+        "label": "477",
+        "long": "ESTACI\u00d3N COSTA ADEJE LOS GIGANTES DIRECTO",
+        "short": "477",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "116",
+        "label": "330",
+        "long": "CIRCULAR LOS REALEJOS SAN VICENTE LAS LLANADAS",
+        "short": "330",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "117",
+        "label": "418",
+        "long": "ESTACI\u00d3N COSTA ADEJE VALLE SAN LORENZO",
+        "short": "418",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "118",
+        "label": "231",
+        "long": "INTERCAMBIADOR SANTA CRUZ LA GALLEGA DIRECTO",
+        "short": "231",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "119",
+        "label": "468",
+        "long": "GUAZA EL FRAILE COSTA DEL SILENCIO GUARGACHO PALM MAR GUAZA",
+        "short": "468",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "12",
+        "label": "921",
+        "long": "INTERCAMBIADOR AVENIDA REYES CAT\u00d3LICOS INTERCAMBIADOR",
+        "short": "921",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "122",
+        "label": "106",
+        "long": "SANTA CRUZ ICOD DE LOS VINOS DIRECTA",
+        "short": "106",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "123",
+        "label": "945",
+        "long": "INTERCAMBIADOR  SAN ANDRES  IGUESTE DE SAN ANDR\u00c9S",
+        "short": "945",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "124",
+        "label": "546",
+        "long": "REALEJO ALTO REALEJO BAJO SAN AGUST\u00cdN PLAYA DEL SOCORRO",
+        "short": "546",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "125",
+        "label": "904",
+        "long": "PLAZA WEYLER BARRIO LA SALUD CUESTA PIEDRA",
+        "short": "904",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "126",
+        "label": "902",
+        "long": "INTERCAMBIADOR  PLAZA LOS PATOS  BARRIO NUEVO",
+        "short": "902",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "127",
+        "label": "936",
+        "long": "CIRCULAR INTERCAMBIADOR A\u00d1AZA SANTA MAR\u00cdA TACO INTERCAMBIADOR",
+        "short": "936",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "128",
+        "label": "357",
+        "long": "ESTACI\u00d3N DE ICOD PR\u00cdNCIPES DE ESPA\u00d1A HOSPITAL DEL NORTE CIRCULAR",
+        "short": "357",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F1780",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "129",
+        "label": "274",
+        "long": "INTERCAMBIADOR LAGUNA EL BAT\u00c1N POR LAS MERCEDES",
+        "short": "274",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "13",
+        "label": "11",
+        "long": "LA LAGUNA - EL SAUZAL POR EL CALVARIO DE TACORONTE",
+        "short": "11",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F1780",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "130",
+        "label": "271",
+        "long": "INTERCAMBIADOR LAGUNA EL CAMINO CRUZ DE LOS \u00c1LAMOS LAS MERCEDES",
+        "short": "271",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F1780",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "131",
+        "label": "273",
+        "long": "INTERCAMBIADOR LAGUNA CRUZ DEL CARMEN POR LAS MERCEDES",
+        "short": "273",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F1780",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "132",
+        "label": "253",
+        "long": "INTERCAMBIADOR LAGUNA GUAMASA GARIMBA",
+        "short": "253",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F1780",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "133",
+        "label": "260",
+        "long": "INTERCAMBIADOR LAGUNA LOS BALD\u00cdOS LLANO DEL MORO",
+        "short": "260",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F1780",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "134",
+        "label": "219",
+        "long": "INTERCAMBIADOR LAGUNA EL CARDONAL TACO SAN MATIAS",
+        "short": "219",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F1780",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "135",
+        "label": "217",
+        "long": "INTERCAMBIADOR LAGUNA ANDENES CARDONAL HOSPITAL UNIVERSITARIO TF5 INTERCAMBIADOR",
+        "short": "217",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F1780",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "136",
+        "label": "224",
+        "long": "INTERCAMBIADOR LAGUNA VALLE GUERRA TEJINA POR EL BOQUERON",
+        "short": "224",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "137",
+        "label": "76",
+        "long": "LA LAGUNA CRUZ DEL CARMEN AFUR",
+        "short": "76",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "138",
+        "label": "77",
+        "long": "LA LAGUNA EL BAILADERO POR LAS MERCEDES",
+        "short": "77",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F1780",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "139",
+        "label": "201",
+        "long": "INTERCAMBIADOR LAGUNA LA VERDELLADA INTERCAMBIADOR",
+        "short": "201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "14",
+        "label": "12",
+        "long": "LA LAGUNA - EL SAUZAL - POR ZONA CENTRO DE TACORONTE",
+        "short": "12",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F1780",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "140",
+        "label": "203",
+        "long": "INTERCAMBIADOR LAGUNA SAN L\u00c1ZARO CAMINO TORNERO LAS GAVIAS SAN BENITO TRINIDAD INTERCAMBIADOR",
+        "short": "203",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F1780",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "141",
+        "label": "204",
+        "long": "INTERCAMBIADOR LAGUNA LA R\u00daA LOMO LARGO EL RAYO LAS CA\u00d1AS TRINIDAD INTERCAMBIADOR",
+        "short": "204",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F1780",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "142",
+        "label": "206",
+        "long": "INTERCAMBIADOR LAGUNA LA VERDELLADA PLAZA DEL CRISTO RANCHO GRANDE SAN BENITO INTERCAMBIADOR",
+        "short": "206",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F1780",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "143",
+        "label": "275",
+        "long": "INTERCAMBIADOR LAGUNA LAS CARBONERAS TABORNO",
+        "short": "275",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F1780",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "144",
+        "label": "270",
+        "long": "INTERCAMBIADOR LAGUNA LAS MERCEDES POR LAS CANTERAS",
+        "short": "270",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "145",
+        "label": "463",
+        "long": "CHIMICHE LOS BLANQUITOS INSTITUTO GRANADILLA",
+        "short": "463",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "146",
+        "label": "923",
+        "long": "MUELLE NORTE  RAMBLAS  MORADITAS PARTE BAJA",
+        "short": "923",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "147",
+        "label": "919",
+        "long": "INTERCAMBIADOR BARRIO SALUD CUESTA PIEDRA  POR BARRANCO DE SANTOS",
+        "short": "919",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "148",
+        "label": "905",
+        "long": "MUELLE NORTE OFRA JUAN XXIII",
+        "short": "905",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "149",
+        "label": "971",
+        "long": "INTERCAMBIADOR BARRIO SALUD OFRA NOCTURNA",
+        "short": "971",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "15",
+        "label": "14",
+        "long": "SANTA CRUZ - LA LAGUNA  POR LA CUESTA",
+        "short": "14",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "150",
+        "label": "972",
+        "long": "INTERCAMBIADOR  BARRIO SALUD CUESTA PIEDRA NOCTURNA",
+        "short": "972",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "151",
+        "label": "901",
+        "long": "NTERCAMBIADOR BARRIO SALUD  POR MIRAFLORES Y RAM\u00d3N Y CAJAL",
+        "short": "901",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "156",
+        "label": "104",
+        "long": "SANTA CRUZ PUERTO DE LA CRUZ POR TACORONTE",
+        "short": "104",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "158",
+        "label": "34",
+        "long": "EL TABLADO GRANADILLA POR FASNIA Y ARICO",
+        "short": "34",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "159",
+        "label": "36",
+        "long": "G\u00dcIMAR GRANADILLA POR TF1 Y LOS ROQUES",
+        "short": "36",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "16",
+        "label": "15",
+        "long": "SANTA CRUZ - LA LAGUNA DIRECTA",
+        "short": "15",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "160",
+        "label": "365",
+        "long": "BUENAVISTA MASCA",
+        "short": "365",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "162",
+        "label": "39",
+        "long": "G\u00dcIMAR GRANADILLA POR TF1 Y EL TABLADO",
+        "short": "39",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "163",
+        "label": "408",
+        "long": "GRANADILLA  SAN ISIDRO  EL M\u00c9DANO",
+        "short": "408",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "164",
+        "label": "409",
+        "long": "SAN MIGUEL EL ROQUE GRANADILLA SAN ISIDRO  EL M\u00c9DANO",
+        "short": "409",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "165",
+        "label": "410",
+        "long": "GRANADILLA SAN ISIDRO  EL M\u00c9DANO LOS ABRIGOS",
+        "short": "410",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "166",
+        "label": "411",
+        "long": "GRANADILLA SAN ISIDRO  EL M\u00c9DANO MONTA\u00d1A PELADA",
+        "short": "411",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "167",
+        "label": "412",
+        "long": "GRANADILLA SAN ISIDRO LOS ABRIGOS",
+        "short": "412",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "168",
+        "label": "415",
+        "long": "EL FRAILE  AEROPUERTO SUR  SAN ISIDRO POR LAS GALLETAS",
+        "short": "415",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "169",
+        "label": "419",
+        "long": "GRANADILLA INSTITUTO GRANADILLA SAN MIGUEL LA ESCALONA VILAFLOR",
+        "short": "419",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "17",
+        "label": "18",
+        "long": "LA LAGUNA - A\u00d1AZA  POR CENTROS COMERCIALES",
+        "short": "18",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "171",
+        "label": "421",
+        "long": "VALLE SAN LORENZO LA  CAMELLA  CABO BLANCO  INSTITUTO LAS GALLETAS",
+        "short": "421",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "172",
+        "label": "447",
+        "long": "LOS CRISTIANOS COSTA ADEJE EL CERCO ADEJE LAS TORRES",
+        "short": "447",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "175",
+        "label": "461",
+        "long": "ARGUAYO LOS GIGANTES",
+        "short": "461",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "176",
+        "label": "486",
+        "long": "GRANADILLA  SAN MIGUEL  ALDEA BLANCA  LAS CHAFIRAS  EL FRAILE",
+        "short": "486",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "177",
+        "label": "494",
+        "long": "GU\u00cdA DE ISORA CALLE  DEL CAMPO LOS GIGANTES POR PIEDRA HINCADA",
+        "short": "494",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "178",
+        "label": "711",
+        "long": "INTERCAMBIADOR AEROPUERTO SUR LOS CRISTIANOS COSTA ADEJE NOCTURNA",
+        "short": "711",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "18",
+        "label": "21",
+        "long": "TACORONTE - SANTA CATALINA - MESA DEL MAR",
+        "short": "21",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "181",
+        "label": "32",
+        "long": "G\u00dcIMAR LAS ERAS LA SOMBRERA",
+        "short": "32",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "19",
+        "label": "23",
+        "long": "TACORONTE - EL PRIS - POR EL CALVARIO",
+        "short": "23",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "2",
+        "label": "940",
+        "long": "INTERCAMBIADOR ACOR\u00c1N  COSTANERA",
+        "short": "940",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "20",
+        "label": "35",
+        "long": "G\u00dcIMAR GRANADILLA POR FASNIA Y ARICO",
+        "short": "35",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "21",
+        "label": "50",
+        "long": "LA LAGUNA TEGUESTE BAJAMAR PUNTA DEL HIDALGO",
+        "short": "50",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "22",
+        "label": "51",
+        "long": "CIRCULAR LA LAGUNA TEJINA TACORONTE LA LAGUNA",
+        "short": "51",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "226",
+        "label": "369",
+        "long": "BUENAVISTA PUNTA DE TENO",
+        "short": "369",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "228",
+        "label": "424",
+        "long": "LOS CRISTIANOS COSTA ADEJE TORVISCAS ALTA CENTRO COMERCIAL  EL DUQUE",
+        "short": "424",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "23",
+        "label": "52",
+        "long": "LA LAGUNA TEGUESTE POR EL SOCORRO",
+        "short": "52",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "231",
+        "label": "20",
+        "long": "SANTA CRUZ - LA LAGUNA - AEROPUERTO  NORTE",
+        "short": "20",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "232",
+        "label": "30",
+        "long": "PUERTO DE LA CRUZ AEROPUERTO NORTE",
+        "short": "30",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "234",
+        "label": "40",
+        "long": "ESTACION COSTA ADEJE LOS CRISTIANOS AEROPUERTO SUR",
+        "short": "40",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "235",
+        "label": "346",
+        "long": "ESTACI\u00d3N LA OROTAVA AGUAMANSA EL VELO LA CALDERA",
+        "short": "346",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "238",
+        "label": "974",
+        "long": "INTERCAMBIADOR TACO A\u00d1AZA SANTA MARIA DEL MAR NOCTURNA",
+        "short": "974",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "239",
+        "label": "948",
+        "long": "AZANOS PLAYA DE ALMACIGA BENIJO",
+        "short": "948",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "24",
+        "label": "54",
+        "long": "LA LAGUNA ALTOS DEL SAUZAL LA LAGUNA",
+        "short": "54",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "240",
+        "label": "475",
+        "long": "GRANADILLA  CRUZ DE TEA",
+        "short": "475",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "242",
+        "label": "128",
+        "long": "SANTA CRUZ ARAFO GUIMAR",
+        "short": "128",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "244",
+        "label": "351",
+        "long": "PUERTO DE LA CRUZ BOT\u00c1NICO ESTACION DE LA OROTAVA",
+        "short": "351",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "245",
+        "label": "341",
+        "long": "PARADOR DE TURISMO TELEFERICO EL PORTILLO CENTRO DE VISTANTES PORTILLO BAJO",
+        "short": "341",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "246",
+        "label": "100",
+        "long": "SANTA CRUZ PUERTO DE LA CRUZ SIN PARADAS",
+        "short": "100",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "247",
+        "label": "10",
+        "long": "SANTA CRUZ AEROPUERTO DEL SUR TFS",
+        "short": "10",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "248",
+        "label": "112",
+        "long": "SANTA CRUZ LOS CRISTIANOS",
+        "short": "112",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "249",
+        "label": "452",
+        "long": "SAN ISIDRO COSTA ADEJE LA CALETA",
+        "short": "452",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "25",
+        "label": "55",
+        "long": "LA LAGUNA BARRANCO GRANDE POR GENETO",
+        "short": "55",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "250",
+        "label": "975",
+        "long": "INTERCAMBIADOR TINCER LA GALLEGA NOCTURNA",
+        "short": "975",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "251",
+        "label": "970",
+        "long": "INTERCAMBIADOR  SAN ANDR\u00c9S NOCTURNA",
+        "short": "970",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5C0A8A",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "252",
+        "label": "608",
+        "long": "LANZADERA ULL LOS REALEJOS CAMPUS DE GUAJARA",
+        "short": "608",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5C0A8A",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "253",
+        "label": "606",
+        "long": "LANZADERA ULL ICOD CAMPUS DE GUAJARA",
+        "short": "606",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5C0A8A",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "255",
+        "label": "611",
+        "long": "LANZADERA ULL COSTA ADEJE CAMPUS DE GUAJARA HOSPITAL",
+        "short": "611",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5C0A8A",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "256",
+        "label": "605",
+        "long": "LANZADERA ULL LA OROTAVA CAMPUS GUAJARA HOSPITALES",
+        "short": "605",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "257",
+        "label": "915",
+        "long": "INTERCAMBIADOR CAMINO DEL HIERRO OFRA INTERCAMBIADOR",
+        "short": "915",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "259",
+        "label": "114",
+        "long": "SANTA CRUZ ENLACE G\u00dc\u00cdMAR SAN ISIDRO",
+        "short": "114",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "26",
+        "label": "56",
+        "long": "LA LAGUNA BARRANCO GRANDE POR LLANO DEL MORO",
+        "short": "56",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "261",
+        "label": "385",
+        "long": "ESTACION DURAZNO BOTANICO PISCINA MUNICIPAL ESTACION",
+        "short": "385",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "28",
+        "label": "101",
+        "long": "LA LAGUNA LA OROTAVA",
+        "short": "101",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "29",
+        "label": "103",
+        "long": "LA LAGUNA PUERTO DE LA CRUZ DIRECTA POR EL BOT\u00c1NICO",
+        "short": "103",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "3",
+        "label": "941",
+        "long": "INTERCAMBIADOR  A\u00d1AZA ACORAN  BOCA CANGREJO",
+        "short": "941",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "30",
+        "label": "57",
+        "long": "CIRCULAR LA LAGUNA TACORONTE TEJINA LA LAGUNA",
+        "short": "57",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "31",
+        "label": "906",
+        "long": "INTERCAMBIADOR  BARRIO DE LA SALUD POR BENITO PEREZ ARMAS",
+        "short": "906",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "32",
+        "label": "909",
+        "long": "INTERCAMBIADOR  BARRIO DE LA ALEGR\u00cdA",
+        "short": "909",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "33",
+        "label": "105",
+        "long": "SANTA CRUZ PUNTA DEL HIDALGO POR LA LAGUNA",
+        "short": "105",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "34",
+        "label": "110",
+        "long": "SANTA CRUZ COSTA ADEJE",
+        "short": "110",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "38",
+        "label": "120",
+        "long": "SANTA CRUZ CANDELARIA PUERTITO DE G\u00dc\u00cdMAR G\u00dcIMAR",
+        "short": "120",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "39",
+        "label": "121",
+        "long": "G\u00dcIMAR ARAFO POL\u00cdGONO DE G\u00dcIMAR CANDELARIA",
+        "short": "121",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "4",
+        "label": "142",
+        "long": "SANTA CRUZ A\u00d1AZA ACOR\u00c1N BARRANCO HONDO",
+        "short": "142",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "40",
+        "label": "122",
+        "long": "SANTA CRUZ LAS CALETILLAS CANDELARIA",
+        "short": "122",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "44",
+        "label": "933",
+        "long": "TACO BARRANCO GRANDE  CRUCE SANTA MARIA EL TABLERO",
+        "short": "933",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "45",
+        "label": "138",
+        "long": "SANTA CRUZ RADAZUL TABAIBA RADAZUL BAJO SANTA CRUZ",
+        "short": "138",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "46",
+        "label": "228",
+        "long": "INTERCAMBIADOR SANTA CRUZ LOS CAMPITOS POR LA CUESTA",
+        "short": "228",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "47",
+        "label": "232",
+        "long": "INTERCAMBIADOR SANTA CRUZ EL CARDONAL LA GALLEGA",
+        "short": "232",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "48",
+        "label": "233",
+        "long": "INTERCAMBIADOR SANTA CRUZ EL CARDONAL FINCA ESPA\u00d1A",
+        "short": "233",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "49",
+        "label": "934",
+        "long": "CIRCULAR INTERCAMBIADOR  TACO  SANTA MARIA DEL MAR  A\u00d1AZA  INTERCAMBIADOR",
+        "short": "934",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "5",
+        "label": "944",
+        "long": "EL TABLERO  LA GALLEGA  LAS HESPERIDES TINCER TACO",
+        "short": "944",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "50",
+        "label": "935",
+        "long": "INTERCAMBIADOR SANTA CRUZ  A\u00d1AZA  ALISIOS  SANTA  MARIA DEL MAR",
+        "short": "935",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "51",
+        "label": "937",
+        "long": "INTERCAMBIADOR TACO TINCER CRUCE EL SOBRADILLO",
+        "short": "937",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "52",
+        "label": "238",
+        "long": "INTERCAMBIADOR SANTA CRUZ SAN MATIAS POR CHAMBER\u00cd",
+        "short": "238",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "53",
+        "label": "939",
+        "long": "TACO EL SOBRADILLO LLANO DEL MORO",
+        "short": "939",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "54",
+        "label": "392",
+        "long": "ICOD DE LOS VINOS  PUERTO DE ERJOS  POR EL TANQUE",
+        "short": "392",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "55",
+        "label": "102",
+        "long": "SANTA CRUZ PUERTO DE LA CRUZ POR LAS ARENAS",
+        "short": "102",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "57",
+        "label": "108",
+        "long": "ENLACE LOS REALEJOS SANTA CRUZ",
+        "short": "108",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "58",
+        "label": "946",
+        "long": "INTERCAMBIADOR  SAN ANDRES  TAGANANA  ALM\u00c1CIGA",
+        "short": "946",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "59",
+        "label": "947",
+        "long": "INTERCAMBIADOR SAN ANDRES BAILADERO CHAMORGA",
+        "short": "947",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "6",
+        "label": "380",
+        "long": "LA CORUJERA TIGAIGA POR LA OROTAVA",
+        "short": "380",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "60",
+        "label": "325",
+        "long": "PUERTO DE LA CRUZ ICOD LOS GIGANTES",
+        "short": "325",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "62",
+        "label": "343",
+        "long": "PUERTO DE LA CRUZ COSTA ADEJE POR AEROPUERTOS NORTE Y SUR",
+        "short": "343",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "63",
+        "label": "345",
+        "long": "PUERTO DE LA CRUZ OROTAVA AGUAMANSA",
+        "short": "345",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "64",
+        "label": "347",
+        "long": "LA OROTAVA PALO BLANCO REALEJO ALTO",
+        "short": "347",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "65",
+        "label": "348",
+        "long": "PUERTO DE LA CRUZ EL PORTILLO CA\u00d1ADAS DEL TEIDE",
+        "short": "348",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "67",
+        "label": "352",
+        "long": "PUERTO DE LA CRUZ OROTAVA REALEJOS CIRCULAR",
+        "short": "352",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "68",
+        "label": "353",
+        "long": "PUERTO DE LA CRUZ REALEJOS OROTAVA CIRCULAR",
+        "short": "353",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "69",
+        "label": "354",
+        "long": "ICOD DE LOS VINOS ENLACE LOS REALEJOS",
+        "short": "354",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "7",
+        "label": "903",
+        "long": "MUELLE NORTE  RAMBLAS GARC\u00cdA ESC\u00c1MEZ MORADITAS PARTE BAJA",
+        "short": "903",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "70",
+        "label": "355",
+        "long": "BUENAVISTA MASCA SANTIAGO DEL TEIDE",
+        "short": "355",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "71",
+        "label": "358",
+        "long": "ICOD DE LOS VINOS SANTA B\u00c1RBARA",
+        "short": "358",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "72",
+        "label": "360",
+        "long": "ICOD DE LOS VINOS PUERTO DE ERJOS",
+        "short": "360",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "73",
+        "label": "362",
+        "long": "ICOD DE LOS VINOS PLAYA SAN MARCOS",
+        "short": "362",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "74",
+        "label": "363",
+        "long": "PUERTO DE LA CRUZ BUENAVISTA POR ICOD DE LOS VINOS",
+        "short": "363",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "75",
+        "label": "364",
+        "long": "ICOD HOSPITAL DEL NORTE LA GUANCHA SAN JUAN DE LA RAMBLA POR SAN JOS\u00c9",
+        "short": "364",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "76",
+        "label": "366",
+        "long": "BUENAVISTA EL PALMAR LAS PORTELAS",
+        "short": "366",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "77",
+        "label": "390",
+        "long": "PUERTO DE LA CRUZ  ARENAS LA VERA LA MONTA\u00d1A REALEJOS LA VERA ARENAS PUERTO",
+        "short": "390",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "79",
+        "label": "416",
+        "long": "GRANADILLA SAN MIGUEL VALLE SAN LORENZO LOS CRISTIANOS",
+        "short": "416",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "8",
+        "label": "471",
+        "long": "LOS CRISTIANOS  ESTACI\u00d3N COSTA ADEJE  PLAYA PARA\u00cdSO",
+        "short": "471",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "80",
+        "label": "430",
+        "long": "GRANADILLA  ARICO EL POR\u00cdS COSTA DE ARICO LAS MARETAS",
+        "short": "430",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "81",
+        "label": "460",
+        "long": "ICOD DE LOS VINOS ESTACION GU\u00cdA DE ISORA ESTACION COSTA ADEJE",
+        "short": "460",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "82",
+        "label": "462",
+        "long": "GUIA DE ISORA VALLE SANTIAGO LOS GIGANTES",
+        "short": "462",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "83",
+        "label": "467",
+        "long": "COSTA DEL SILENCIO LOS CRISTIANOS ESTACION COSTA ADEJE LA CALETA",
+        "short": "467",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "84",
+        "label": "470",
+        "long": "EL MEDANO COSTA SAN MIGUEL GOLF DEL SUR LAS GALLETAS LOS CRISTIANOS",
+        "short": "470",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "85",
+        "label": "473",
+        "long": "LOS CRISTIANOS ESTACION COSTA ADEJE CALLAO SALVAJE LOS GIGANTES",
+        "short": "473",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "87",
+        "label": "480",
+        "long": "ARONA LA SABINITA LA CAMELLA CHAYOFA LOS CRISTIANOS",
+        "short": "480",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "88",
+        "label": "482",
+        "long": "VILAFLOR LA ESCALONA ARONA LA SABINITA LA CAMELLA CABO BLANCO LOS CRISTIANOS",
+        "short": "482",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "89",
+        "label": "484",
+        "long": "GRANADILLA SAN MIGUEL ALDEA BLANCA LAS CHAFIRAS",
+        "short": "484",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "9",
+        "label": "417",
+        "long": "COSTA ADEJE ESTACION ADEJE EL CERCO GUIA DE ISORA",
+        "short": "417",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "91",
+        "label": "493",
+        "long": "GUIA DE ISORA  LOS GIGANTES",
+        "short": "493",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "92",
+        "label": "908",
+        "long": "INTERCAMBIADOR BARRIO DE OFRA JUAN XXIII INTERCAMBIADOR",
+        "short": "908",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "93",
+        "label": "910",
+        "long": "INTERCAMBIADOR  SAN ANDR\u00c9S PLAYA DE LAS TERESITAS",
+        "short": "910",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "94",
+        "label": "911",
+        "long": "MUELLE NORTE RAMBLAS BARRIO DE LA SALUD JUAN XXIII",
+        "short": "911",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "95",
+        "label": "912",
+        "long": "INTERCAMBIADOR  IFARA LOS CAMPITOS",
+        "short": "912",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "96",
+        "label": "914",
+        "long": "INTERCAMBIADOR  PLAZA WEYLER CALLE EL PILAR PLAZA DE ESPA\u00d1A  INTERCAMBIADOR",
+        "short": "914",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "97",
+        "label": "916",
+        "long": "INTERCAMBIADOR MAR\u00cdA JIM\u00c9MEZ LOS VALLES",
+        "short": "916",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3F8FCF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "98",
+        "label": "917",
+        "long": "INTERCAMBIADOR  VALLESECO LA QUEBRADA",
+        "short": "917",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AD1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "99",
+        "label": "450",
+        "long": "ESTACION COSTA ADEJE LOS CRISTIANOS SAN ISIDRO",
+        "short": "450",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 3873,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "equal_shape_distance_diff_coordinates",
+      "count": 2,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 12.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 3873,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "3873 of 3873 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 61470,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "61470 of 61470 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

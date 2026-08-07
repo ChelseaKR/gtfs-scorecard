@@ -1,0 +1,1866 @@
+{
+  "agency": {
+    "country": "DE",
+    "id": "vpe-pforzheim-enzkreis",
+    "name": "Verkehrsverbund Pforzheim-Enzkreis (VPE)",
+    "operating_note": "One association feed for the Pforzheim and Enzkreis area's operators; counted as one feed record, not a distinct-agency count.",
+    "subdivision_code": "DE-BW",
+    "subdivision_name": "Baden-W\u00fcrttemberg"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 38.2,
+          "stops_marked_accessible_pct": 1.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 1.0,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.3,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 14940,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 2393,
+        "translations": {
+          "feed_lang": "DE",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 14940,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 1.0,
+        "wheelchair_marked_accessible_pct": 1.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2368,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 24.7,
+          "severity": "WARNING",
+          "what": "2368 of 2393 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 2,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "2 of 14940 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 52.8,
+      "status": "measured",
+      "summary": "1% of stops state wheelchair accessibility (1% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 15,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 989,
+          "WARNING": 3817
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 1714,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 919,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 520,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "unused_shape",
+          "count": 446,
+          "effort": "One setting.",
+          "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "The feed contains route shapes no trip uses.",
+          "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 120,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 53,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a transit vehicle can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no transit vehicle can meet."
+        },
+        {
+          "code": "fast_travel_between_far_stops",
+          "count": 31,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'fast_travel_between_far_stops' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Fast travel between far stops (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "duplicate_route_name",
+          "count": 8,
+          "effort": "One field per route.",
+          "fix": "Give each route a distinct short or long name.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Two or more routes share the same name.",
+          "why": "Riders can't tell the routes apart in apps."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 3,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "single_shape_point",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'single_shape_point' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Single shape point (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 1,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the transit vehicle doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 597,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "platform_without_parent_station",
+          "count": 391,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'platform_without_parent_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Platform without parent station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 1,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the transit vehicle ends up, so a midpoint name can send them the wrong way."
+        }
+      ],
+      "name": "correctness",
+      "score": 21.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 15 kinds of issue across 4806 instances (0 error, 3817 warning, 989 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 127,
+        "effective_expiry_date": "2026-12-12",
+        "feed_end_date": "2026-12-12",
+        "feed_start_date": "2026-05-03",
+        "feed_version": "20260802",
+        "has_feed_info": true,
+        "last_service_date": "2026-12-12",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 127 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 129 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 1% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 1% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Datenlizenz Deutschland - Namensnennung 2.0 through NVBW's open data portal; mark reuse as a dataset of NVBW GmbH with a link back to the portal. Route shapes derive from OpenStreetMap and carry the OpenStreetMap contributors credit.",
+    "reachable": true,
+    "sha256": "0396e8e3045c208c058cc0ba53ee90684947901d6263d6834dfda61ae4464d4d",
+    "size_bytes": 34468246,
+    "static_url": "https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/vpe.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/vpe.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -1.67233,
+      47.74965,
+      13.27972,
+      52.50761
+    ],
+    "lat": 48.89384,
+    "lon": 8.70899,
+    "stop_count": 2393
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 3,
+        "trip_count": 5163,
+        "trip_share_pct": 34.6
+      },
+      {
+        "key": "rail",
+        "label": "Rail",
+        "route_count": 16,
+        "trip_count": 2362,
+        "trip_share_pct": 15.8
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 101,
+        "trip_count": 7415,
+        "trip_share_pct": 49.6
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 120,
+    "trip_count": 14940
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 50.9,
+    "margin_to_next_band": 9.1,
+    "score": 50.9
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 83,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "83 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"W\u00f6rth/Rh, Bahnhof\", \"W\u00f6rth/Rh, Bienwaldhalle Gleis 1\", \"W\u00f6rth/Rh, Bienwaldhalle Gleis 2\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 2327,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 14940
+  },
+  "route_map": {
+    "drawn_route_count": 109,
+    "has_shapes": true,
+    "path": "data/artifacts/vpe-pforzheim-enzkreis/geometry.geojson",
+    "route_count": 120,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "bus-2-N21A-1",
+        "label": "N215",
+        "long": "",
+        "short": "N215",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-1-801-1",
+        "label": "801",
+        "long": "Bad Liebenzell - Unterhaugstett - Neuhausen - Steinegg - Hamberg - Schellbronn",
+        "short": "801",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "cw-35-X63-1",
+        "label": "X63",
+        "long": "Calw - Bad Wildbad - Bad Herrenalb",
+        "short": "X63",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-007Y-1",
+        "label": "Hbf ZOB - S\u00fcdausgang",
+        "long": "Hbf ZOB - S\u00fcdausgang",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-008Y-1",
+        "label": "S\u00fcdausgang - Hbf ZOB",
+        "long": "S\u00fcdausgang - Hbf ZOB",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-017Y-1",
+        "label": "ZOB Lauda - Hauptbahnhof/Busbahnhof",
+        "long": "ZOB Lauda - Hauptbahnhof/Busbahnhof",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-018Y-1",
+        "label": "S\u00fcdausgang - Hbf ZOB",
+        "long": "S\u00fcdausgang - Hbf ZOB",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-019Y-1",
+        "label": "Hbf ZOB - S\u00fcdausgang",
+        "long": "Hbf ZOB - S\u00fcdausgang",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-020Y-1",
+        "label": "Hbf ZOB - S\u00fcdausgang",
+        "long": "Hbf ZOB - S\u00fcdausgang",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-032Y-1",
+        "label": "Hbf (Arnulf-Klett-Platz) - Hauptbahnhof/Busbahnhof",
+        "long": "Hbf (Arnulf-Klett-Platz) - Hauptbahnhof/Busbahnhof",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-033Y-1",
+        "label": "Hbf ZOB - S\u00fcdausgang",
+        "long": "Hbf ZOB - S\u00fcdausgang",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "ddb-87-T01-1",
+        "label": "SEV",
+        "long": "",
+        "short": "SEV",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T01-1",
+        "label": "RE 1",
+        "long": "",
+        "short": "RE 1",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T17A-1",
+        "label": "MEX17a",
+        "long": "",
+        "short": "MEX17a",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T17C-1",
+        "label": "MEX17c",
+        "long": "",
+        "short": "MEX17c",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T71S-1",
+        "label": "RE 71",
+        "long": "",
+        "short": "RE 71",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T72-1",
+        "label": "RB 72",
+        "long": "",
+        "short": "RB 72",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T72P-1",
+        "label": "RB 72",
+        "long": "",
+        "short": "RB 72",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ddb-90-T74-1",
+        "label": "RB 74",
+        "long": "",
+        "short": "RB 74",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-10-143C-1",
+        "label": "143",
+        "long": "Knittlingen - Gro\u00dfvillars - Oberderdingen - Flehingennur g\u00fcltig am 29. Juli 2026",
+        "short": "143",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "kvv-22-305E-1",
+        "label": "S5",
+        "long": "W\u00f6rth - Pforzheim",
+        "short": "S5",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "kvv-22-306E-1",
+        "label": "S6",
+        "long": "Bad Wildbad - Pforzheim",
+        "short": "S6",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "DD3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "kvv-22-351E-1",
+        "label": "S51",
+        "long": "Germersheim - Pforzheim",
+        "short": "S51",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-40-916E-1",
+        "label": "SEV S6",
+        "long": "SCHIENENERSATZVERKEHR g\u00fcltig 29.06. bis 10.07.2026 (03:00 Uhr)  Bad Wildbad - H\u00f6fen - Neuenb\u00fcrg - Pforzheim ZOB/Hbf",
+        "short": "SEV S6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-40-950E-1",
+        "label": "SEV S5/S51",
+        "long": "SCHIENENERSATZVERKEHR g\u00fcltig 01.06. bis 02.06.2026 (05:30 Uhr)   S\u00f6llingen - Wilferdingen-Singen - Pforzheim",
+        "short": "SEV S5/S51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-40-950E-2",
+        "label": "SEV S5/S51",
+        "long": "SCHIENENERSATZVERKEHR g\u00fcltig am 03.06. und 05.06.2026   Wilferdingen-Singen - Pforzheim",
+        "short": "SEV S5/S51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-40-950E-3",
+        "label": "SEV S5/S51",
+        "long": "SCHIENENERSATZVERKEHR g\u00fcltig 04.12. bis 05.12.2026 (03:30 Uhr)   S\u00f6llingen - Wilferdingen - Pforzheim",
+        "short": "SEV S5/S51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "kvv-5-719C-1",
+        "label": "719",
+        "long": "Bad Wildbad - H\u00f6fen (Enz) - Dobel - Bad Herrenalb SONDERFAHRPLAN - letzter Schultag vor den Sommerferien am 29.07.2026",
+        "short": "719",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rab-34-844-1",
+        "label": "MEX17",
+        "long": "",
+        "short": "MEX17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rab-34-848-1",
+        "label": "RB71",
+        "long": "",
+        "short": "RB71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rab-34-878-1",
+        "label": "RB74",
+        "long": "",
+        "short": "RB74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-001-1",
+        "label": "1",
+        "long": "",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-002-1",
+        "label": "2",
+        "long": "",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-003-1",
+        "label": "3",
+        "long": "",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-004-1",
+        "label": "4",
+        "long": "",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-005-1",
+        "label": "5",
+        "long": "",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-006-1",
+        "label": "6",
+        "long": "",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-007-1",
+        "label": "7",
+        "long": "",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-009-1",
+        "label": "9",
+        "long": "",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-010-1",
+        "label": "10",
+        "long": "",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-011-1",
+        "label": "11",
+        "long": "",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-016-1",
+        "label": "16",
+        "long": "",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-017-1",
+        "label": "17",
+        "long": "",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-020-1",
+        "label": "20",
+        "long": "",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-041-1",
+        "label": "41",
+        "long": "",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-042-1",
+        "label": "42",
+        "long": "",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-043-1",
+        "label": "43",
+        "long": "",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-741-1",
+        "label": "741",
+        "long": "",
+        "short": "741",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "rvs-1-742-1",
+        "label": "742",
+        "long": "",
+        "short": "742",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-101-1",
+        "label": "101",
+        "long": "Lomersheim - Bahnhof - Heidenw\u00e4ldle",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-102-1",
+        "label": "102",
+        "long": "Gro\u00dfglattbach - Lomersheim - Bahnhof",
+        "short": "102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-103-1",
+        "label": "103",
+        "long": "D\u00fcrrmenz - Bahnhof - Eckenweiher",
+        "short": "103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-105-1",
+        "label": "105",
+        "long": "Senderhang - Bahnhof - Enzkreiskliniken",
+        "short": "105",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-106-1",
+        "label": "106",
+        "long": "St\u00f6ckach - Bahnhof - Enzkreiskliniken",
+        "short": "106",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-107-1",
+        "label": "107",
+        "long": "",
+        "short": "107",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-109-1",
+        "label": "109",
+        "long": "M\u00fchlhausen / Enz - Lomersheim - Enzkreiskliniken - Bahnhof",
+        "short": "109",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "vpe-4-594-1",
+        "label": "AST594",
+        "long": "Anrufsammeltaxi  Sch\u00fctzingen - Illingen",
+        "short": "AST594",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-700-1",
+        "label": "700",
+        "long": "Bretten - Knittlingen - (Freudenst.) - Maulbronn - M\u00fchlacker",
+        "short": "700",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-701-1",
+        "label": "701",
+        "long": "Enzberg Spitz\u00e4cker - Enzberg Bf - (B 10) - M\u00fchlacker",
+        "short": "701",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-702-1",
+        "label": "702",
+        "long": "Oberderdingen - Sternenfels - Zaisersweiher - M\u00fchlacker",
+        "short": "702",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-703-1",
+        "label": "703",
+        "long": "Iptingen - Serres - Wiernsheim - Pinache - M\u00fchlacker",
+        "short": "703",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-705-1",
+        "label": "705",
+        "long": "D\u00fcrrn - \u00d6tisheim - M\u00fchlacker",
+        "short": "705",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-706-1",
+        "label": "706",
+        "long": "Knittlingen - Freudenstein - Diefenbach - Zaisersweiher - Maulbronn",
+        "short": "706",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-707-1",
+        "label": "707",
+        "long": "Gro\u00dfglattbach - Vaihingen (Enz) - Illingen M\u00fchlacker Sch\u00fctzingen",
+        "short": "707",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-707A-1",
+        "label": "707",
+        "long": "Gro\u00dfglattbach - Vaihingen (Enz) - Illingen M\u00fchlacker Sch\u00fctzingen",
+        "short": "707",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-712-1",
+        "label": "712",
+        "long": "Birkenfeld Kirchplatz - Birkenfeld Dammfeld - Pforzheim",
+        "short": "712",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-715-1",
+        "label": "715",
+        "long": "Ittersbach - Pfinzweiler - Schwann - Birkenfeld  - Pforzheim",
+        "short": "715",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-716-1",
+        "label": "716",
+        "long": "Bad Herrenalb - Dobel - Schwann - Pforzheim",
+        "short": "716",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-716A-1",
+        "label": "716",
+        "long": "Bad Herrenalb - Dobel - Schwann - Pforzheim",
+        "short": "716",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-717-1",
+        "label": "717",
+        "long": "Ittersbach - Langenalb - Schwann - Birkenfeld - Pforzheim",
+        "short": "717",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-718-1",
+        "label": "718",
+        "long": "Conweiler Schule - Feldrennach - Gr\u00e4fenhausen - Birkenfeld - Pforzheim",
+        "short": "718",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-720-1",
+        "label": "720",
+        "long": "Ittersbach - Ellmendingen - Dietlingen - Pforzheim",
+        "short": "720",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-721-1",
+        "label": "721",
+        "long": "Langensteinbach - Ellmendingen - Birkenfeld Dammfeld - Pforzheim",
+        "short": "721",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-722-1",
+        "label": "722",
+        "long": "Wilferdingen - Ellmendingen - Dietlingen - Pforzheim",
+        "short": "722",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-724-1",
+        "label": "724",
+        "long": "Neuenb\u00fcrg - Ellmendingen",
+        "short": "724",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-725-1",
+        "label": "725",
+        "long": "Sch\u00f6mberg - Neuenb\u00fcrg - Ellmendingen",
+        "short": "725",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-731-1",
+        "label": "731",
+        "long": "K\u00f6nigsbach - Stein - Eisingen - Ispringen - Pforzheim",
+        "short": "731",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-733-1",
+        "label": "733",
+        "long": "Bretten - Nu\u00dfbaum - G\u00f6brichen - Bauschlott - Pforzheim",
+        "short": "733",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-734-1",
+        "label": "734",
+        "long": "Knittlingen - \u00d6lbronn - D\u00fcrrn - Kieselbronn - Pforzheim",
+        "short": "734",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-735-1",
+        "label": "735",
+        "long": "Maulbronn - \u00d6lbronn - D\u00fcrrn - Kieselbronn - Pforzheim",
+        "short": "735",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-736-1",
+        "label": "736",
+        "long": "\u00d6schelbronn - Niefern - Pforzheim",
+        "short": "736",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-737-1",
+        "label": "737",
+        "long": "Wiernsheim - Pinache - \u00d6schelbronn - Niefern - Pforzheim",
+        "short": "737",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-738-1",
+        "label": "738",
+        "long": "Niefern - Pforzheim",
+        "short": "738",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-739-1",
+        "label": "739",
+        "long": "Wurmberg - Wiernsheim - Pinache - \u00d6schelbronn - Niefern - Pforzheim",
+        "short": "739",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-743-1",
+        "label": "743",
+        "long": "Bieselsberg - Sch\u00f6mberg - Langenbrand - Salmbach - Pforzheim",
+        "short": "743",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-744-1",
+        "label": "744",
+        "long": "Kapfenhardt - Salmbach - Engelsbrand - Grunbach - Pforzheim",
+        "short": "744",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-762-1",
+        "label": "762",
+        "long": "Renningen - Heimsheim - Friolzheim - Wimsheim - Wurmberg - Pforzheim",
+        "short": "762",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-763-1",
+        "label": "763",
+        "long": "Weissach / Iptingen - M\u00f6nsheim - Wimsheim - Wurmberg - Pforzheim",
+        "short": "763",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-803-1",
+        "label": "803",
+        "long": "",
+        "short": "803",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-804-1",
+        "label": "804",
+        "long": "",
+        "short": "804",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-805-1",
+        "label": "805",
+        "long": "",
+        "short": "805",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-807-1",
+        "label": "807",
+        "long": "",
+        "short": "807",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-808-1",
+        "label": "808",
+        "long": "",
+        "short": "808",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-809-1",
+        "label": "809",
+        "long": "",
+        "short": "809",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-901-1",
+        "label": "901",
+        "long": "Schulbusse Maulbronn - Illingen",
+        "short": "901",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-902-1",
+        "label": "902",
+        "long": "Schulbusse  Ochsenburg - Sternenfels - Freudenstein - Maulbronn (-M\u00fchlacker)",
+        "short": "902",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-903-1",
+        "label": "903",
+        "long": "Schulbusse Lomersheim JCB Schule - Wiernsheim - Friolzheim  (- Leonberg)",
+        "short": "903",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-916-1",
+        "label": "916",
+        "long": "Schulbusse Bad Herrenalb - Dobel - Conweiler - Neuenb\u00fcrg",
+        "short": "916",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-917-1",
+        "label": "917",
+        "long": "Schulbusse Conweiler - Neuenb\u00fcrg - Birkenfeld",
+        "short": "917",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-919-1",
+        "label": "919",
+        "long": "Schulbusse Conweiler / Neuenb\u00fcrg - Keltern",
+        "short": "919",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-922-1",
+        "label": "922",
+        "long": "Schulbusse Remchingen - Keltern und Keltern - Birkenfeld",
+        "short": "922",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-923-1",
+        "label": "923",
+        "long": "Schulbusse  Ittersb. - Langensteinb.- Keltern - Pfhm. und innerhalb Keltern",
+        "short": "923",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-933-1",
+        "label": "933",
+        "long": "Schulbusse K\u00f6nigsbach - Stein - Neulingen",
+        "short": "933",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-933A-1",
+        "label": "933",
+        "long": "Schulbusse K\u00f6nigsbach - Stein - Neulingen",
+        "short": "933",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-936-1",
+        "label": "936",
+        "long": "Schulbusse Wiernsheim - \u00d6schelbronn - Niefern - Pforzheim",
+        "short": "936",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-938-1",
+        "label": "938",
+        "long": "Schulbusse Niefern - Kieselbronn",
+        "short": "938",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-939-1",
+        "label": "939",
+        "long": "Schulbusse M\u00f6nsheim - Wiernsheim - Wurmberg - Neub\u00e4rental",
+        "short": "939",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-943-1",
+        "label": "943",
+        "long": "Schulbusse Unterlengenhardt - Sch\u00f6mberg - Engelsbrand - Pforzheim",
+        "short": "943",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-952-1",
+        "label": "952",
+        "long": "Schulbusse Heimsheim - Friolzheim - M\u00f6nsheim - Serres /  Wiernsheim",
+        "short": "952",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vpe-4-961-1",
+        "label": "961",
+        "long": "Schulbusse Heimsheim - Neuhausen - Steinegg",
+        "short": "961",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-652-1",
+        "label": "652",
+        "long": "Weissach Porsche - Heimsheim Dieb - Friolzheim - Tiefenbronn - Heimsheim - Leonberg",
+        "short": "652",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-653-1",
+        "label": "653",
+        "long": "Weissach / Wiernsheim - M\u00f6nsheim - Heimsheim - Rutesheim - Leonberg",
+        "short": "653",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-653a-1",
+        "label": "653A",
+        "long": "Heckeng\u00e4u - Rutesheim / Weissach / JCB-Schule (Sch\u00fclerverkehr)",
+        "short": "653A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-660-1",
+        "label": "660",
+        "long": "Schnellbus Leonberg - Heimsheim - M\u00f6nsheim - Wiernsheim",
+        "short": "660",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-663-1",
+        "label": "663",
+        "long": "Weil der Stadt - Merklingen - M\u00fcnklingen - Neuhausen (Enzkreis)",
+        "short": "663",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-666-1",
+        "label": "666",
+        "long": "Weil der Stadt - Lehningen - Tiefenbronn - Pforzheim",
+        "short": "666",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-31-666a-1",
+        "label": "666A",
+        "long": "Sch\u00fclerverkehr: Steinegg - Neuhausen - Tiefenbronn",
+        "short": "666A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-36-001r-1",
+        "label": "RE1E",
+        "long": "M\u00fchlacker - Vaihingen (E) - Bietigheim",
+        "short": "RE1E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-36-017e-1",
+        "label": "MEX17E",
+        "long": "M\u00fchlacker - Bietigheim",
+        "short": "MEX17E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "vvs-77-765-1",
+        "label": "765",
+        "long": "Weissach Porsche - M\u00f6nsheim - Wiernsheim",
+        "short": "765",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2393,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 2368,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 24.7,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "2368 of 2393 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "service_has_no_active_day_of_the_week",
+      "count": 1714,
+      "effort": "A few minutes in your scheduling software.",
+      "fix": "Delete the empty calendars or set their service days.",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some service calendars have no days of the week switched on.",
+      "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

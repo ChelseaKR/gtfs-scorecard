@@ -1,0 +1,1814 @@
+{
+  "agency": {
+    "id": "san-diego-international-airport-metropolitan-transit-system-mts",
+    "name": "San Diego International Airport, Metropolitan Transit System (MTS)",
+    "subdivision_code": "US-CA",
+    "subdivision_name": "California"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 89.3,
+          "stops_marked_accessible_pct": 72.1,
+          "stops_marked_not_accessible_pct": 10.7,
+          "stops_stated_pct": 82.9,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 20.7,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": true,
+          "has_products": true,
+          "has_transfer_rules": true,
+          "model": "v2",
+          "product_count": 87
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 21374,
+        "headsign_loop_exempt_trips": 59,
+        "headsign_pct": 99.7,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 4367,
+        "translations": {
+          "feed_lang": "EN",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 21433,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 82.9,
+        "wheelchair_marked_accessible_pct": 72.1,
+        "wheelchair_marked_not_accessible_pct": 10.7
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 748,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 4.3,
+          "severity": "WARNING",
+          "what": "748 of 4367 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 95.7,
+      "status": "measured",
+      "summary": "83% of stops state wheelchair accessibility (72% marked accessible, 11% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 16,
+        "instances_by_severity": {
+          "ERROR": 527,
+          "INFO": 24,
+          "WARNING": 9206
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "trip_distance_exceeds_shape_distance",
+          "count": 464,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates",
+          "count": 63,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 8480,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "missing_bike_allowance",
+          "count": 258,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_bike_allowance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Missing bike allowance (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 227,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
+          "count": 126,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Equal shape distance diff coordinates distance below threshold (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 103,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 5,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no transit vehicle is scheduled to arrive."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 4,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "route_short_name_too_long",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'route_short_name_too_long' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Route short name too long (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 1,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "unused_shape",
+          "count": 1,
+          "effort": "One setting.",
+          "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "The feed contains route shapes no trip uses.",
+          "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
+        },
+        {
+          "code": "unknown_column",
+          "count": 20,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 2,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "unknown_file",
+          "count": 1,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        },
+        {
+          "code": "unused_station",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unused_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Unused station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 0.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 16 kinds of issue across 9757 instances (527 error, 9206 warning, 24 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 30,
+        "effective_expiry_date": "2026-09-05",
+        "feed_end_date": "2026-09-05",
+        "feed_start_date": "2026-06-07",
+        "feed_version": "Generated on 20260707",
+        "has_feed_info": true,
+        "last_service_date": "2026-09-05",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 50.0,
+      "status": "measured",
+      "summary": "Service data covers the next 30 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "2 validator errors to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 42 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 83% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 2 validator errors to resolve. States wheelchair access on 83% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "License: https://www.sdmts.com/business-center-developers/terms-and-conditions",
+    "reachable": true,
+    "sha256": "cadf7b2538a1db92f085c43bbe56964a46969b0f935476d0cdafb3cf068e2539",
+    "size_bytes": 4531175,
+    "static_url": "https://www.sdmts.com/google_transit_files/google_transit.zip"
+  },
+  "ferry_profile": {
+    "accessibility": {
+      "measures": "published_values_not_physical_usability",
+      "terminals": {
+        "allowed_count": 0,
+        "allowed_pct": 0.0,
+        "not_allowed_count": 3,
+        "not_allowed_pct": 100.0,
+        "stated_count": 3,
+        "stated_pct": 100.0,
+        "total_count": 3
+      },
+      "trips": {
+        "allowed_count": 258,
+        "allowed_pct": 100.0,
+        "not_allowed_count": 0,
+        "not_allowed_pct": 0.0,
+        "stated_count": 258,
+        "stated_pct": 100.0,
+        "total_count": 258
+      }
+    },
+    "bikes": {
+      "allowed_count": 0,
+      "allowed_pct": 0.0,
+      "not_allowed_count": 0,
+      "not_allowed_pct": 0.0,
+      "stated_count": 0,
+      "stated_pct": 0.0,
+      "total_count": 258
+    },
+    "cars": {
+      "allowed_count": 0,
+      "allowed_pct": 0.0,
+      "not_allowed_count": 0,
+      "not_allowed_pct": 0.0,
+      "stated_count": 0,
+      "stated_pct": 0.0,
+      "total_count": 258
+    },
+    "fares": {
+      "applied": true,
+      "fare_free": false,
+      "model": "v2",
+      "scope": "whole_feed"
+    },
+    "graded": false,
+    "measured": true,
+    "realtime": {
+      "configured_kinds": [],
+      "kinds_configured": 0,
+      "scope": "whole_feed"
+    },
+    "route_count": 1,
+    "scope": "ferry_routes_and_trips",
+    "stop_access": {
+      "direct_count": 0,
+      "eligible_terminal_count": 0,
+      "stated_count": 0,
+      "stated_pct": null,
+      "through_station_count": 0
+    },
+    "terminal_hierarchy": {
+      "boarding_location_count": 3,
+      "parented_boarding_location_count": 0,
+      "parented_boarding_location_pct": 0.0,
+      "referenced_station_count": 0
+    },
+    "trip_count": 258
+  },
+  "fetch": {
+    "final_url": "https://www.sdmts.com/google_transit_files/google_transit.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-25T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -117.27792,
+      32.54282,
+      -116.18446,
+      33.25689
+    ],
+    "lat": 32.7482,
+    "lon": -117.09334,
+    "stop_count": 4367
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": true,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 6,
+        "trip_count": 3635,
+        "trip_share_pct": 17.0
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 98,
+        "trip_count": 17540,
+        "trip_share_pct": 81.8
+      },
+      {
+        "key": "ferry",
+        "label": "Ferry",
+        "route_count": 1,
+        "trip_count": 258,
+        "trip_share_pct": 1.2
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 105,
+    "trip_count": 21433
+  },
+  "ntd_id_alignment": {
+    "detail": "Your feed's agency_id is MTS, SAN; your National Transit Database ID is 90026. A feed that serves several agencies (a shared regional feed) can legitimately carry more than one agency_id. The values do not need to equal the five-digit NTD ID, so this difference is allowed and carries no score.",
+    "feed_agency_ids": [
+      "MTS",
+      "SAN"
+    ],
+    "fix": "Confirm that P-50 crosswalks agency_id MTS, SAN to NTD ID 90026, and keep the feed value stable. Do not change it solely to make the two values equal.",
+    "ntd_id": "90026",
+    "status": "mismatch"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "2 validator errors to resolve.",
+        "key": "valid",
+        "status": "at_risk"
+      },
+      {
+        "detail": "Service data covers the next 42 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "at_risk",
+    "summary": "This feed is close to NTD-ready. 2 validator errors to resolve."
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 42.4,
+    "margin_to_next_band": 17.6,
+    "score": 42.4
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 2,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "2 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (Green, Orange).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 4031,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "4031 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"11th Ave & Broadway\", \"12th & Imperial Station\", \"12th & Imperial Station Bayside\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 4264,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 5,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "5 of 4264 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 5,
+    "single_stop_trips": 0,
+    "trips_total": 21433
+  },
+  "route_map": {
+    "drawn_route_count": 104,
+    "has_shapes": true,
+    "path": "data/artifacts/san-diego-international-airport-metropolitan-transit-system-mts/geometry.geojson",
+    "route_count": 105,
+    "routes": [
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "Fashion Valley - La Mesa",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "Old Town - University/College",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "105",
+        "label": "105",
+        "long": "Old Town - University City",
+        "short": "105",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "11",
+        "label": "11",
+        "long": "SDSU - Downtown San Diego",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "115",
+        "label": "115",
+        "long": "El Cajon T.C. - SDSU T.C.",
+        "short": "115",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "12",
+        "label": "12",
+        "long": "12th & Imperial - Skyline Hills",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "120",
+        "label": "120",
+        "long": "Downtown San Diego - Kearny Mesa Transit Center",
+        "short": "120",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "13",
+        "label": "13",
+        "long": "Kaiser Hospital  - 24th St Transit Center",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "14",
+        "label": "14",
+        "long": "Grantville Trolley  -  Baltimore & Lake Murray",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "18",
+        "label": "18",
+        "long": "Grantville Trlly via Camino del Rio",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "Downtown San Diego - 30th & Adams",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "20",
+        "label": "20",
+        "long": "Downtown - Rancho Bernardo Transit Station",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "201",
+        "label": "201",
+        "long": "Super Loop - Counterclockwise",
+        "short": "201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "202",
+        "label": "202",
+        "long": "Super Loop - Clockwise",
+        "short": "202",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "204",
+        "label": "204",
+        "long": "Super Loop - Judicial Dr.",
+        "short": "204",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "215",
+        "label": "215",
+        "long": "Mid-City Rapid",
+        "short": "215",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "225",
+        "label": "225",
+        "long": "Downtown - Otay Mesa TC",
+        "short": "225",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "227",
+        "label": "227",
+        "long": "Imperial Beach - Otay Mesa TC",
+        "short": "227",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "235",
+        "label": "235",
+        "long": "Downtown - Escondido Transit Center",
+        "short": "235",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "237",
+        "label": "237",
+        "long": "Miramar College Transit Station - UCSD",
+        "short": "237",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "25",
+        "label": "25",
+        "long": "Fashion Valley - Kearny Mesa TC",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "27",
+        "label": "27",
+        "long": "Pacific Beach - Kearny Mesa Transit Center",
+        "short": "27",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "28",
+        "label": "28",
+        "long": "Old Town T.C. - Shelter Island",
+        "short": "28",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "280",
+        "label": "280",
+        "long": "Escondido Transit Center - Downtown",
+        "short": "280",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "290",
+        "label": "290",
+        "long": "Sabre Springs Station - Downtown",
+        "short": "290",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "UCSD Hospital - Euclid Transit Center",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "30",
+        "label": "30",
+        "long": "Old Town  - UTC via Pacific Beach",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "31",
+        "label": "31",
+        "long": "UTC - Mira Mesa",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "35",
+        "label": "35",
+        "long": "Ocean Beach - Old Town",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "4",
+        "label": "4",
+        "long": "12th & Imperial Trolley - Lomita Village",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "41",
+        "label": "41",
+        "long": "Fashion Valley -  UCSD",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "43",
+        "label": "43",
+        "long": "Balboa Av TC - Kearny Mesa",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "44",
+        "label": "44",
+        "long": "Old Town - Kearny Mesa",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "5",
+        "label": "5",
+        "long": "Downtown San Diego - Euclid Transit Center",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "510",
+        "label": "Blue",
+        "long": "San Ysidro - UTC",
+        "short": "Blue",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "FF6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "520",
+        "label": "Orange",
+        "long": "El Cajon - Courthouse",
+        "short": "Orange",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "009900",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "530",
+        "label": "Green",
+        "long": "El Cajon - 12th & Imperial",
+        "short": "Green",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "B87333",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "535",
+        "label": "Copper",
+        "long": "Santee - El Cajon",
+        "short": "Copper",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "CC0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "540",
+        "label": "MTG Event Line",
+        "long": "Magic: The Gathering Event Line",
+        "short": "MTG Event Line",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "B4BCC2",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "550",
+        "label": "Silver",
+        "long": "Downtown Loop",
+        "short": "Silver",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "6",
+        "label": "6",
+        "long": "North Park - Fashion Valley",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "60",
+        "label": "60",
+        "long": "Euclid Av Transit Center - UTC  via Convoy",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "Downtown San Diego - University/College",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "701",
+        "label": "701",
+        "long": "H St Transit Center - Palomar St TC via Hilltop Dr",
+        "short": "701",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "704",
+        "label": "704",
+        "long": "E St Transit Center - Palomar Transit Center",
+        "short": "704",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "705",
+        "label": "705",
+        "long": "E St Transit Center - Plaza Bonita",
+        "short": "705",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "707",
+        "label": "707",
+        "long": "Otay Ranch Town Center - Southwestern College",
+        "short": "707",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "709",
+        "label": "709",
+        "long": "H St Transit Center - Otay Ranch Town Center",
+        "short": "709",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "712",
+        "label": "712",
+        "long": "Palomar Transit Center - Southwestern College",
+        "short": "712",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "8",
+        "label": "8",
+        "long": "Old Town - Balboa Av TC",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "815",
+        "label": "815",
+        "long": "El Cajon Transit Center - East Main St",
+        "short": "815",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "816",
+        "label": "816",
+        "long": "El Cajon TC - Cuyamaca College",
+        "short": "816",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "83",
+        "label": "83",
+        "long": "Downtown San Diego - Old Town",
+        "short": "83",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "832",
+        "label": "832",
+        "long": "Santee Center - NE Santee Loop Clockwise",
+        "short": "832",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "833",
+        "label": "833",
+        "long": "Santee Center - Parkway Plaza",
+        "short": "833",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "834",
+        "label": "834",
+        "long": "West Santee Loop",
+        "short": "834",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "838",
+        "label": "838",
+        "long": "East County Square - Viejas",
+        "short": "838",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "84",
+        "label": "84",
+        "long": "Point Loma Shuttle",
+        "short": "84",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "848",
+        "label": "848",
+        "long": "El Cajon - Lakeside",
+        "short": "848",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "851",
+        "label": "851",
+        "long": "Spring Valley - La Mesa",
+        "short": "851",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "852",
+        "label": "852",
+        "long": "University & 54th - Grossmont Transit Ctr",
+        "short": "852",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "854",
+        "label": "854",
+        "long": "Grossmont Transit Ctr -- Grossmont College",
+        "short": "854",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "855",
+        "label": "855",
+        "long": "Rancho San Diego - La Mesa",
+        "short": "855",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "856",
+        "label": "856",
+        "long": "SDSU - Cuyamaca College",
+        "short": "856",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "864",
+        "label": "864",
+        "long": "El Cajon - East County Sq",
+        "short": "864",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "872",
+        "label": "872",
+        "long": "El Cajon Shuttle Loop Counterclockwise",
+        "short": "872",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "874",
+        "label": "874",
+        "long": "El Cajon Eastside Shuttle Clockwise",
+        "short": "874",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "875",
+        "label": "875",
+        "long": "El Cajon Eastside Shuttle Counterclockwise",
+        "short": "875",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "88",
+        "label": "88",
+        "long": "Old Town - Hotel Circle",
+        "short": "88",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "663300",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "888",
+        "label": "888",
+        "long": "Jacumba - El Cajon",
+        "short": "888",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "663300",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "891",
+        "label": "891",
+        "long": "Borrego - El Cajon via Shelter Valley",
+        "short": "891",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "663300",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "892",
+        "label": "892",
+        "long": "Borrego - El Cajon via Ranchita/Lake Henshaw",
+        "short": "892",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "663300",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "894",
+        "label": "894",
+        "long": "Morena/Campo - El Cajon",
+        "short": "894",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "9",
+        "label": "9",
+        "long": "Old Town - Jewell & Garnet",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "901",
+        "label": "901",
+        "long": "Iris Transit Center - Downtown",
+        "short": "901",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "904",
+        "label": "904",
+        "long": "Coronado Shuttle",
+        "short": "904",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "905",
+        "label": "905",
+        "long": "Iris Transit Center - Otay Mesa Transit Center",
+        "short": "905",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "906",
+        "label": "906",
+        "long": "Iris Transit Center - San Ysidro Clockwise",
+        "short": "906",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "907",
+        "label": "907",
+        "long": "Iris Transit Center - San Ysidro Counterclockwise",
+        "short": "907",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "909",
+        "label": "909",
+        "long": "Otay Mesa Transit Center - SWC at Otay Mesa",
+        "short": "909",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "910",
+        "label": "910",
+        "long": "Downtown - San Ysidro (OWL Service)",
+        "short": "910",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "916",
+        "label": "916",
+        "long": "Oak Park-Emerald Hills Loop CW",
+        "short": "916",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "917",
+        "label": "917",
+        "long": "Oak Park-Emerald Hills Loop CCW",
+        "short": "917",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "921",
+        "label": "921",
+        "long": "UTC - Miramar College Transit Station",
+        "short": "921",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "923",
+        "label": "923",
+        "long": "Downtown to Point Loma",
+        "short": "923",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "928",
+        "label": "928",
+        "long": "Fashion Valley - Kearny Mesa",
+        "short": "928",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "929",
+        "label": "929",
+        "long": "12th & Imperial - Iris Transit Center",
+        "short": "929",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "932",
+        "label": "932",
+        "long": "Iris Transit Center - 8th St. Transit Center",
+        "short": "932",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "933",
+        "label": "933",
+        "long": "Iris TC Loop - Imperial Beach Counterclock",
+        "short": "933",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "934",
+        "label": "934",
+        "long": "Iris TC Loop - Imperial Beach Clockwise",
+        "short": "934",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "936",
+        "label": "936",
+        "long": "Spring Valley - SDSU",
+        "short": "936",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "944",
+        "label": "944",
+        "long": "Sabre Springs Station - Poway",
+        "short": "944",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "945",
+        "label": "945",
+        "long": "Rancho Bernardo Station - Poway",
+        "short": "945",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "955",
+        "label": "955",
+        "long": "National City - San Diego State University",
+        "short": "955",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "961",
+        "label": "961",
+        "long": "24th St Transit Center - Encanto Trolley",
+        "short": "961",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "962",
+        "label": "962",
+        "long": "8th St Transit Center - Spring Valley",
+        "short": "962",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "963",
+        "label": "963",
+        "long": "8th St Transit Center - Paradise Hills",
+        "short": "963",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "964",
+        "label": "964",
+        "long": "Mira Mesa - Alliant University via MCTS",
+        "short": "964",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "965",
+        "label": "965",
+        "long": "City Heights Shuttle",
+        "short": "965",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "967",
+        "label": "967",
+        "long": "24th St Transit Center - Division & Ava",
+        "short": "967",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "968",
+        "label": "968",
+        "long": "8th St Transit Center - Plaza Bonita",
+        "short": "968",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "985",
+        "label": "985",
+        "long": "UCSD Central Campus Station - Torrey Pines",
+        "short": "985",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "992",
+        "label": "992",
+        "long": "Airport/Downtown Shuttle",
+        "short": "992",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "AIR",
+        "label": "Old Town to Airport Shuttle",
+        "long": "Old Town to Airport Shuttle",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "COR",
+        "label": "Coronado Ferry",
+        "long": "Coronado Ferry",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Ferry"
+      }
+    ],
+    "stop_count": 4367,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "21175 of 21433 trips have a shape; 258 do not.",
+    "fix": "Fill in shapes.txt and trips.shape_id for the remaining trips so every trip has a path. Reduced, Rural, and Tribal NTD reporters need full coverage by Report Year 2026.",
+    "status": "at_risk",
+    "total_trips": 21433,
+    "trips_with_shape": 21175
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "trip_distance_exceeds_shape_distance",
+      "count": 464,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 24.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "equal_shape_distance_diff_coordinates",
+      "count": 63,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 24.0,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "equal_shape_distance_same_coordinates",
+      "count": 8480,
+      "effort": "Usually one export setting.",
+      "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some route lines list the same point twice in a row.",
+      "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+    }
+  ],
+  "validator_version": "8.0.1"
+}
