@@ -1,0 +1,1174 @@
+{
+  "agency": {
+    "country": "LT",
+    "id": "utena-public-transport",
+    "name": "Utena public transport",
+    "operating_note": "Official municipality-level export from the national GTFS directory. Counted as one feed record, not as a census of distinct operators.",
+    "subdivision_code": "LT-54",
+    "subdivision_name": "Utena"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 11.4,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 470,
+        "headsign_loop_exempt_trips": 2,
+        "headsign_pct": 75.8,
+        "headsign_scored_pct": 76.3,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 833,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 472,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 833,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "833 of 833 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 472,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "472 of 472 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 112,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 3.6,
+          "severity": "WARNING",
+          "what": "112 of 472 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 33.9,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 6,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 59,
+          "WARNING": 6
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 3,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 2,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "service_extends_far_in_the_future",
+          "count": 36,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'service_extends_far_in_the_future' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Service extends far in the future (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unknown_column",
+          "count": 13,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 10,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 85.8,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 65 instances (0 error, 6 warning, 59 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 2420,
+        "effective_expiry_date": "2033-03-23",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2033-03-23",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 2420 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 2420 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through Lithuania's official open-data portal; credit the Lithuanian Transport Safety Administration and the named municipality.",
+    "reachable": true,
+    "sha256": "423cc2114aa2891c8b174006fad1dad6bfc124c011565d547437adbe74f499d4",
+    "size_bytes": 784132,
+    "static_url": "https://www.visimarsrutai.lt/gtfs/UtenosR.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.visimarsrutai.lt/gtfs/UtenosR.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-07T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      25.09892,
+      55.33882,
+      26.25014,
+      55.73503
+    ],
+    "lat": 55.49664,
+    "lon": 25.61094,
+    "stop_count": 833
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 69,
+        "trip_count": 472,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 69,
+    "trip_count": 472
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 9.4,
+    "margin_to_next_band": 0.6,
+    "score": 69.4
+  },
+  "recommendations": [],
+  "routability": {
+    "boardable_stops": 833,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 472
+  },
+  "route_map": {
+    "drawn_route_count": 69,
+    "has_shapes": true,
+    "path": "data/artifacts/utena-public-transport/geometry.geojson",
+    "route_count": 69,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1045",
+        "label": "12",
+        "long": "Utena - Anyk\u0161\u010diai per Skiemonis",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1057",
+        "label": "32",
+        "long": "Utena - Ma\u017eionys per Vy\u017euonas, U\u017epalius",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1060",
+        "label": "50",
+        "long": "Utena - Vilu\u010diai per Ra\u0161\u0119, U\u017epalius, Kaimynus",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1062",
+        "label": "51",
+        "long": "Utena - U\u017epaliai per Ra\u0161\u0119",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1068",
+        "label": "67",
+        "long": "Utena - Sirvyd\u017eiai per Tauragnus",
+        "short": "67",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1095",
+        "label": "39",
+        "long": "Utena - Salduti\u0161kis per Tauragnus, Gaidelius",
+        "short": "39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1100",
+        "label": "38",
+        "long": "Utena - Skuduti\u0161kis per Kani\u016bkus",
+        "short": "38",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "11521",
+        "label": "20E",
+        "long": "Auk\u0161takalnio \u017eiedas-Kult\u016bros centras-Turgus-Pramon\u0117s raj.",
+        "short": "20E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "11541",
+        "label": "21E",
+        "long": "Auk\u0161takalnio \u017eiedas-Autobus\u0173 stotis-PMC-Pramon\u0117s rajonas",
+        "short": "21E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "11875",
+        "label": "41",
+        "long": "Miesto sodas - Pramon\u0117s raj. - \u0104\u017euolija - Meno mokykla",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "11877",
+        "label": "40E",
+        "long": "Meno m-la - \u0104\u017euolija - Kra\u0161uonos prog-ja - Pramon\u0117s raj. - Turgus",
+        "short": "40E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "11883",
+        "label": "20U",
+        "long": "Auk\u0161takalnio \u017eiedas - Kult\u016bros centras - Turgus - Utenos trikota\u017eas",
+        "short": "20U",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "11884",
+        "label": "17-2",
+        "long": "Autobus\u0173 stotis - Vy\u017euonai\u010dio e\u017e. - \u0104\u017euolija - Turgus - Utenos trikota\u017eas null",
+        "short": "17-2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "11885",
+        "label": "14",
+        "long": "Autobus\u0173 stotis - Vai\u017eganto - Ligonin\u0117 - Reabilitacijos skyrius",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17075",
+        "label": "P67",
+        "long": "Utena - Tauragnai -Sirvyd\u017eiai",
+        "short": "P67",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17076",
+        "label": "P28",
+        "long": "Utena - Mock\u0117nai - Raudoni\u0161kis - Medeniai - Utena",
+        "short": "P28",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17077",
+        "label": "P29",
+        "long": "Utena - Kvykliai",
+        "short": "P29",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17080",
+        "label": "P37",
+        "long": "Utena - Salduti\u0161kis - Kirdeikiai",
+        "short": "P37",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17081",
+        "label": "P38",
+        "long": "Utena - Pakalniai - Skuduti\u0161kis",
+        "short": "P38",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17083",
+        "label": "P32",
+        "long": "Utena - Vy\u017euonos - U\u017epaliai - Ma\u017eionys",
+        "short": "P32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17085",
+        "label": "P39",
+        "long": "Utena - Tauragnai - Gaideliai - Salduti\u0161kis",
+        "short": "P39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17086",
+        "label": "P40",
+        "long": "Utena - Pakalniai",
+        "short": "P40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17087",
+        "label": "P41",
+        "long": "Utena - Antalg\u0117 - \u0160ileikiai",
+        "short": "P41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17089",
+        "label": "P47",
+        "long": "Utena - Tauragnai - \u0160eimatis - \u0160uminai",
+        "short": "P47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17090",
+        "label": "P48",
+        "long": "Utena - Vy\u017euonos - U\u017epaliai",
+        "short": "P48",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17091",
+        "label": "P49",
+        "long": "Ma\u017eionys - Il\u010diukai - U\u017epaliai - Vy\u017euonos - Utena",
+        "short": "P49",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17092",
+        "label": "P42",
+        "long": "Utena - Spitr\u0117nai - Sirvyd\u017eiai - \u0160lepe\u010diai",
+        "short": "P42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17093",
+        "label": "P43",
+        "long": "Kubiliai - Daugailiai - Utena",
+        "short": "P43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17094",
+        "label": "P44",
+        "long": "Utena - Tauragnai",
+        "short": "P44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17095",
+        "label": "P50",
+        "long": "Utena - Ra\u0161\u0117 - Kaimynai - Vilu\u010diai",
+        "short": "P50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17096",
+        "label": "P51",
+        "long": "Utena - Ra\u0161\u0117 - U\u017epaliai",
+        "short": "P51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17097",
+        "label": "P13",
+        "long": "Utena - Antandraja - Bik\u016bnai",
+        "short": "P13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17101",
+        "label": "P11",
+        "long": "Utena - Pakalniai - Alanta",
+        "short": "P11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17103",
+        "label": "P12",
+        "long": "Utena - Skiemonys - Anyk\u0161\u010diai",
+        "short": "P12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17104",
+        "label": "P56",
+        "long": "Utena - Kukti\u0161k\u0117s - Salduti\u0161kis",
+        "short": "P56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17105",
+        "label": "P17",
+        "long": "Utena - Salduti\u0161kis - Kirdeikiai - Vai\u0161ni\u016bnai - Ignalina",
+        "short": "P17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17106",
+        "label": "P18",
+        "long": "Utena - Sudeikiai - Biku\u0161kis - Bik\u016bnai",
+        "short": "P18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17107",
+        "label": "P60",
+        "long": "Utena - Ra\u0161\u0117 - U\u017epaliai - Vilu\u010diai",
+        "short": "P60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17109",
+        "label": "P26",
+        "long": "Utena - Tauragnai - Kirdeikiai",
+        "short": "P26",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17110",
+        "label": "P27",
+        "long": "Utena - Daugailiai - Gaid\u017eiai - Kubiliai",
+        "short": "P27",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17111",
+        "label": "P64",
+        "long": "Utena - Degu\u010diai - Zarasai",
+        "short": "P64",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17112",
+        "label": "P21",
+        "long": "Utena - Tauragnai - Jukn\u0117nai",
+        "short": "P21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17259",
+        "label": "11-2",
+        "long": "\u0104\u017euolija - J.Basanavi\u010diaus g. - Au\u0161ros g. - Ligonin\u0117 - Reabilitacijos skyrius null",
+        "short": "11-2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17326",
+        "label": "21E-2",
+        "long": "Auk\u0161takalnio \u017eiedas - Autobus\u0173 stotis - PMC - Pramon\u0117s rajonas null",
+        "short": "21E-2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17327",
+        "label": "21",
+        "long": "Auk\u0161takalnio \u017eiedas - Autobus\u0173 stotis - PMC - Pramon\u0117s rajonas",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17328",
+        "label": "30E",
+        "long": "Auk\u0161takalnio \u017eiedas - Autobus\u0173 stotis - Joneli\u0161kio - \u0104\u017euolija",
+        "short": "30E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17329",
+        "label": "22",
+        "long": "Auk\u0161takalnio \u017eiedas - Umaras",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17330",
+        "label": "20E-2",
+        "long": "Auk\u0161takalnio \u017eiedas - Kult\u016bros centras - Turgus - Pramon\u0117s raj. (\u017eiedinis mar\u0161rutas) null",
+        "short": "20E-2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17331",
+        "label": "20",
+        "long": "Auk\u0161takalnio \u017eiedas - Kult\u016bros centras - Turgus - Pramon\u0117s raj.",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "19623",
+        "label": "16",
+        "long": "Jasonys - A.\u0160apokos gimnazija - Auk\u0161takalnio \u017eiedas - Ligonin\u0117 - Ra\u0161ytoj\u0173 - Kra\u0161uonos prog-ja - Autobus\u0173 stotis",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "19624",
+        "label": "15",
+        "long": "Uten\u0117l\u0117 - Nark\u016bnai - Dauni\u0161kis - Auk\u0161takalnio \u017eiedas",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "19808",
+        "label": "P68",
+        "long": "Utena - Sudeikiai",
+        "short": "P68",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2046",
+        "label": "48",
+        "long": "Utena - U\u017epaliai per Vy\u017euonas",
+        "short": "48",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2052",
+        "label": "40",
+        "long": "Utena - Pakalniai",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20724",
+        "label": "12-2",
+        "long": "Auk\u0161takalnio \u017eiedas - Naujosios kapin\u0117s null",
+        "short": "12-2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "20725",
+        "label": "13",
+        "long": "Autobus\u0173 stotis - Vy\u017euonai\u010dio e\u017e. - \u0104\u017euolija - U\u017epali\u0173 g. - Voveryn\u0117",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21583",
+        "label": "12A",
+        "long": "Auk\u0161takalnio \u017eiedas - Naujosios kapin\u0117s",
+        "short": "12A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22061",
+        "label": "P34",
+        "long": "Utena - Tauragnai - Min\u010dia - R\u016bg\u0161t\u0117li\u0161kis",
+        "short": "P34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2671",
+        "label": "60",
+        "long": "Utena - Vilu\u010diai per Ra\u0161\u0119, U\u017epalius",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "357",
+        "label": "18",
+        "long": "Utena-Bik\u016bnai per Sudeikius, Biku\u0161k\u012f",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "5381",
+        "label": "7A",
+        "long": "\u0104\u017euolija - AB\u2019\u2019Utenos trikota\u017eas\u2019\u2019",
+        "short": "7A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6501",
+        "label": "5A",
+        "long": "AUK\u0160TAKALNIS- \u0160ILIN\u0116 (U\u017epali\u0173 gatve)",
+        "short": "5A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "7235",
+        "label": "17",
+        "long": "Utena - Salduti\u0161kis - Kirdeikiai - Vai\u0161ni\u016bnai - Ignalina",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8145",
+        "label": "37 .",
+        "long": "Utena - Kirdeikiai per Salduti\u0161k\u012f",
+        "short": "37 .",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8161",
+        "label": "4 (1)",
+        "long": "Auk\u0161takalnis - Pramon\u0117s rajonas",
+        "short": "4 (1)",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "878",
+        "label": "29",
+        "long": "Utena - Kvykliai",
+        "short": "29",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "884",
+        "label": "11",
+        "long": "Utena- Alanta per Pakalnius",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "902",
+        "label": "26",
+        "long": "Utena - Kirdeikiai per Tauragnus",
+        "short": "26",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "928",
+        "label": "44",
+        "long": "Utena - Tauragnai",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 833,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 833,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "833 of 833 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 472,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "472 of 472 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,0 +1,1452 @@
+{
+  "agency": {
+    "id": "metropolitan-transit-authority-mta-510",
+    "name": "NYC Bus Company",
+    "subdivision_code": "US-NY",
+    "subdivision_name": "New York"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 2.7,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 28845,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 18.2,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 2732,
+        "translations": {
+          "feed_lang": "EN",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 28845,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2732,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "2732 of 2732 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 28845,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "28845 of 28845 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 2235,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 12.3,
+          "severity": "INFO",
+          "what": "About 2235 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        }
+      ],
+      "name": "completeness",
+      "score": 32.7,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 2,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 0,
+          "WARNING": 30111
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 30079,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 32,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        }
+      ],
+      "name": "correctness",
+      "score": 86.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 2 kinds of issue across 30111 instances (0 error, 30111 warning, 0 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 30,
+        "effective_expiry_date": "2026-09-05",
+        "feed_end_date": "2026-09-05",
+        "feed_start_date": "2026-06-28",
+        "feed_version": "gtfs_busco_20260611T155311Z",
+        "has_feed_info": true,
+        "last_service_date": "2026-09-05",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 50.0,
+      "status": "measured",
+      "summary": "Service data covers the next 30 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "alerts_content": {
+          "alerts": 189,
+          "ended_over_30_days_ago": 0,
+          "with_cause_and_effect": 0,
+          "with_description": 189,
+          "with_header_text": 189,
+          "with_informed_entity": 189
+        },
+        "configured_kinds": [
+          "service_alerts"
+        ],
+        "coverage_pct": null,
+        "kinds_configured": 1,
+        "kinds_reachable": 1,
+        "reachable_kinds": [
+          "service_alerts"
+        ],
+        "rt_freshness": null,
+        "samples": 3,
+        "worst_lag_seconds": null
+      },
+      "findings": [],
+      "name": "realtime",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Sampled 3 times: 1 of 1 configured feed healthy.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 3 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 42 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "License: http://web.mta.info/developers/developer-data-terms.html",
+    "reachable": true,
+    "sha256": "94933c1af1f182b3cf20a7e11881f14b9afd4a3c75ea310ee5f368b55a62c636",
+    "size_bytes": 5621861,
+    "static_url": "http://web.mta.info/developers/data/busco/google_transit.zip"
+  },
+  "fetch": {
+    "final_url": "http://rrgtfsfeeds.s3.amazonaws.com/gtfs_busco.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-25T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -74.01628,
+      40.56612,
+      -73.70256,
+      40.93364
+    ],
+    "lat": 40.73185,
+    "lon": -73.85673,
+    "stop_count": 2732
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 92,
+        "trip_count": 28845,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 92,
+    "trip_count": 28845
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "MTABC"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data covers the next 42 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "ready",
+    "summary": "Published at a public URL, valid, current, and identified with agency_id: the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 filings make that official; this is a heads-up, not a determination."
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 8.3,
+    "margin_to_next_band": 1.7,
+    "score": 68.3
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 80,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "80 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (Q6, Q7, Q8, Q10, Q11, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 2732,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "2732 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"GRAND CONCOURSE/E 161 ST\", \"GRAND CONCOURSE/E 165 ST\", \"GRAND CONCOURSE/MOUNT EDEN AV\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 2732,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 28845
+  },
+  "route_map": {
+    "drawn_route_count": 92,
+    "has_shapes": true,
+    "path": "data/artifacts/metropolitan-transit-authority-mta-510/geometry.geojson",
+    "route_count": 92,
+    "routes": [
+      {
+        "color": "B933AD",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "B100",
+        "label": "B100",
+        "long": "Mill Basin - Midwood",
+        "short": "B100",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "B103",
+        "label": "B103",
+        "long": "Canarsie - Downtown Brooklyn Ltd",
+        "short": "B103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BM1",
+        "label": "BM1",
+        "long": "Mill Basin - Downtown/Midtown",
+        "short": "BM1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BM2",
+        "label": "BM2",
+        "long": "Canarsie/Spring Creek - Downtown/Midtown",
+        "short": "BM2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BM3",
+        "label": "BM3",
+        "long": "Sheepshead Bay - Downtown/Midtown",
+        "short": "BM3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BM4",
+        "label": "BM4",
+        "long": "Gerritsen Beach - Downtown/Midtown",
+        "short": "BM4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BM5",
+        "label": "BM5",
+        "long": "Spring Creek - Midtown",
+        "short": "BM5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B933AD",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "BX23",
+        "label": "Bx23",
+        "long": "Pelham Bay - Co-Op City",
+        "short": "Bx23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BXM1",
+        "label": "BxM1",
+        "long": "Riverdale - East Midtown",
+        "short": "BxM1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BXM10",
+        "label": "BxM10",
+        "long": "Williamsbridge/Morris Park - Midtown",
+        "short": "BxM10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BXM11",
+        "label": "BxM11",
+        "long": "Wakefield - Midtown",
+        "short": "BxM11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BXM18",
+        "label": "BxM18",
+        "long": "Riverdale - Downtown",
+        "short": "BxM18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BXM2",
+        "label": "BxM2",
+        "long": "Riverdale - West Midtown",
+        "short": "BxM2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BXM3",
+        "label": "BxM3",
+        "long": "Yonkers - Midtown",
+        "short": "BxM3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BXM4",
+        "label": "BxM4",
+        "long": "Woodlawn - Midtown",
+        "short": "BxM4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BXM6",
+        "label": "BxM6",
+        "long": "Parkchester - Midtown",
+        "short": "BxM6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BXM7",
+        "label": "BxM7",
+        "long": "Co-Op City - Midtown",
+        "short": "BxM7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BXM8",
+        "label": "BxM8",
+        "long": "Pelham Bay/City Island - Midtown",
+        "short": "BxM8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "BXM9",
+        "label": "BxM9",
+        "long": "Throgs Neck - Midtown Express",
+        "short": "BxM9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE352E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "Q06",
+        "label": "Q6",
+        "long": "Jamaica - Sutphin Blvd - Jfk Cargo Area",
+        "short": "Q6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q07",
+        "label": "Q7",
+        "long": "Cypress Hills - Rockaway Blvd - Jfk Travel Plz.",
+        "short": "Q7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE352E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "Q08",
+        "label": "Q8",
+        "long": "Gateway Mall / East Ny - Jamaica",
+        "short": "Q8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B933AD",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "Q09",
+        "label": "Q9",
+        "long": "Jamaica - South Ozone Park",
+        "short": "Q9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q10",
+        "label": "Q10",
+        "long": "Jfk Airtrain - Kew Gardens Via Rockaway",
+        "short": "Q10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE352E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "Q100",
+        "label": "Q100",
+        "long": "Rikers Island - Long Island City Ltd",
+        "short": "Q100",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q101",
+        "label": "Q101",
+        "long": "Steinway - Hunters Point",
+        "short": "Q101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q102",
+        "label": "Q102",
+        "long": "Roosevelt Island - Long Island City",
+        "short": "Q102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q103",
+        "label": "Q103",
+        "long": "Astoria - Hunters Point",
+        "short": "Q103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q104",
+        "label": "Q104",
+        "long": "Astoria - Sunnyside",
+        "short": "Q104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6CBE45",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "Q11",
+        "label": "Q11",
+        "long": "Howard Beach - Elmhurst",
+        "short": "Q11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q110",
+        "label": "Q110",
+        "long": "Jamaica Avenue East",
+        "short": "Q110",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B933AD",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "Q111",
+        "label": "Q111",
+        "long": "Rosedale - Jamaica Rush",
+        "short": "Q111",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE352E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "Q112",
+        "label": "Q112",
+        "long": "Jamaica - East Ny",
+        "short": "Q112",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE352E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "Q113",
+        "label": "Q113",
+        "long": "Far Rockaway - Jamaica Limited",
+        "short": "Q113",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B933AD",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "Q114",
+        "label": "Q114",
+        "long": "Far Rockaway - Jamaica Rush",
+        "short": "Q114",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE352E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "Q115",
+        "label": "Q115",
+        "long": "Brewer Blvd. Local",
+        "short": "Q115",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q18",
+        "label": "Q18",
+        "long": "Astoria - Maspeth",
+        "short": "Q18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q19",
+        "label": "Q19",
+        "long": "Flushing - Astoria",
+        "short": "Q19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE352E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "Q22",
+        "label": "Q22",
+        "long": "Rockaway Beach Bl / Beach Channel Dr",
+        "short": "Q22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q23",
+        "label": "Q23",
+        "long": "East Elmhurst - Forest Hills",
+        "short": "Q23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q25",
+        "label": "Q25",
+        "long": "College Point - Jamaica",
+        "short": "Q25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q26",
+        "label": "Q26",
+        "long": "College Point - Fresh Meadows",
+        "short": "Q26",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B933AD",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "Q28",
+        "label": "Q28",
+        "long": "Flushing - Bay Terrace Rush",
+        "short": "Q28",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q32",
+        "label": "Q32",
+        "long": "Jackson Heights - Penn Station (Midtown)",
+        "short": "Q32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q33",
+        "label": "Q33",
+        "long": "Marine Air Terminal Lga-Jackson Heights",
+        "short": "Q33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006CB7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "Q35",
+        "label": "Q35",
+        "long": "Rockaway Park - Midwood / Brooklyn Coll.",
+        "short": "Q35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00AEEF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "Q37",
+        "label": "Q37",
+        "long": "Kew Gardens - South Ozone Park",
+        "short": "Q37",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B933AD",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "Q40",
+        "label": "Q40",
+        "long": "South Ozone Park - Jamaica",
+        "short": "Q40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q41",
+        "label": "Q41",
+        "long": "Jamaica - Howard Beach",
+        "short": "Q41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q47",
+        "label": "Q47",
+        "long": "East Elmhurst - Glendale",
+        "short": "Q47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q49",
+        "label": "Q49",
+        "long": "East Elmhurst - Jackson Heights",
+        "short": "Q49",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE352E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "Q50",
+        "label": "Q50",
+        "long": "Co-Op City/Pelham Bay - Flushing Ltd",
+        "short": "Q50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE352E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "Q51",
+        "label": "Q51",
+        "long": "Linden Blvd Limited",
+        "short": "Q51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006CB7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "Q52+",
+        "label": "Q52-SBS",
+        "long": "Elmhurst - Arverne Sbs Vis Woodhaven/Cross Bay",
+        "short": "Q52-SBS",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006CB7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "Q53+",
+        "label": "Q53-SBS",
+        "long": "Woodside - Rockaway Park",
+        "short": "Q53-SBS",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q60",
+        "label": "Q60",
+        "long": "Queens Blvd. - East Midtown",
+        "short": "Q60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B933AD",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "Q63",
+        "label": "Q63",
+        "long": "Flushing - Long Island City Rush",
+        "short": "Q63",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q64",
+        "label": "Q64",
+        "long": "Electchester - Forest Hills",
+        "short": "Q64",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q65",
+        "label": "Q65",
+        "long": "Flushing - Jamaica",
+        "short": "Q65",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q66",
+        "label": "Q66",
+        "long": "Flushing - Long Island City",
+        "short": "Q66",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q69",
+        "label": "Q69",
+        "long": "East Elmhurst - Long Island City",
+        "short": "Q69",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006CB7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "Q70+",
+        "label": "Q70-SBS",
+        "long": "LaGuardia Link",
+        "short": "Q70-SBS",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAA61A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "Q72",
+        "label": "Q72",
+        "long": "Laguardia Airport - Rego Park",
+        "short": "Q72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE352E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "Q74",
+        "label": "Q74",
+        "long": "Forest Hills - Qcc Ltd",
+        "short": "Q74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE352E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "Q80",
+        "label": "Q80",
+        "long": "Jfk Airtrain - Kew Gardens Via Lefferts",
+        "short": "Q80",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM1",
+        "label": "QM1",
+        "long": "Fresh Meadows - Midtown Express",
+        "short": "QM1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM10",
+        "label": "QM10",
+        "long": "Lefrak City - Midtown Express",
+        "short": "QM10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM11",
+        "label": "QM11",
+        "long": "Forest Hills - Downtown Express",
+        "short": "QM11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM12",
+        "label": "QM12",
+        "long": "Forest Hills - Midtown Express",
+        "short": "QM12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM15",
+        "label": "QM15",
+        "long": "Lindenwood - Midtown Express",
+        "short": "QM15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM16",
+        "label": "QM16",
+        "long": "Neponsit - Midtown Express",
+        "short": "QM16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM17",
+        "label": "QM17",
+        "long": "Far Rockaway - Midtown Express",
+        "short": "QM17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM18",
+        "label": "QM18",
+        "long": "South Ozone Park - Midtown Express",
+        "short": "QM18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM2",
+        "label": "QM2",
+        "long": "Bay Terrace - Midtown Express",
+        "short": "QM2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM20",
+        "label": "QM20",
+        "long": "Bay Terrace - Midtown Express",
+        "short": "QM20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM21",
+        "label": "QM21",
+        "long": "Rochdale Village - Midtown Exp.",
+        "short": "QM21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM24",
+        "label": "QM24",
+        "long": "Glendale - Midtown Express",
+        "short": "QM24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM25",
+        "label": "QM25",
+        "long": "Glendale - Downtown Express",
+        "short": "QM25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM31",
+        "label": "QM31",
+        "long": "Fresh Meadows - Midtown Express",
+        "short": "QM31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM32",
+        "label": "QM32",
+        "long": "Bay Terrace - Midtown Express",
+        "short": "QM32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM34",
+        "label": "QM34",
+        "long": "Glendale - Midtown Express",
+        "short": "QM34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM35",
+        "label": "QM35",
+        "long": "Glen Oaks - Midtown Express",
+        "short": "QM35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM36",
+        "label": "QM36",
+        "long": "Lake Success - Midtown Express",
+        "short": "QM36",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM4",
+        "label": "QM4",
+        "long": "Electchester - Midtown Express",
+        "short": "QM4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM40",
+        "label": "QM40",
+        "long": "Lefrak City - Midtown Express",
+        "short": "QM40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM42",
+        "label": "QM42",
+        "long": "Forest Hills - Midtown Express",
+        "short": "QM42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM44",
+        "label": "QM44",
+        "long": "Electchester - Midtown Express",
+        "short": "QM44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM5",
+        "label": "QM5",
+        "long": "Glen Oaks - Midtown Express",
+        "short": "QM5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM6",
+        "label": "QM6",
+        "long": "Lake Success - Midtown Express",
+        "short": "QM6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM65",
+        "label": "QM65",
+        "long": "Laurelton-Rochdale-Lower Manhattan",
+        "short": "QM65",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM7",
+        "label": "QM7",
+        "long": "Fresh Meadows - Downtown Express",
+        "short": "QM7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00933C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "QM8",
+        "label": "QM8",
+        "long": "Glen Oaks - Downtown Express",
+        "short": "QM8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2732,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 28845 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 28845,
+    "trips_with_shape": 28845
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 2732,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "2732 of 2732 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 28845,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "28845 of 28845 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

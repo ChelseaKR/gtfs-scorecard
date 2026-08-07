@@ -42,12 +42,12 @@ feed records, mostly in the United States and Canada, plus reviewed canaries
 across Europe, Asia-Pacific, and South America. Scoring is scheduled daily for
 every registered feed, and the public status page reports the exact current
 configured and published counts along with when the latest run completed. Read
-the published total there rather than from this repository: generated data
-stopped being committed at the S3 cutover (see
-[docs/follow-ups.md](docs/follow-ups.md)), so what git still carries is the
-fallback snapshot taken that day,
-with more than 1,100 numeric scorecards published, and the live service has
-grown well past it. CI can only gate the
+the published total there rather than from this repository: automation stopped
+committing generated data at the S3 cutover (see
+[docs/follow-ups.md](docs/follow-ups.md)), so what git carries is a fallback
+snapshot that moves only when it is deliberately re-materialized from the live
+corpus (last refreshed 2026-08-07),
+with more than 2,100 numeric scorecards published. CI can only gate the
 snapshot figure, because `make verify` runs offline. A feed record is not
 always a distinct transit agency: regional feeds, modal variants, and retired
 aliases are counted separately while the identity registry is reconciled.

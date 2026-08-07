@@ -1,0 +1,933 @@
+{
+  "agency": {
+    "id": "maryland-transit-administration-467",
+    "name": "Commuter Bus",
+    "subdivision_code": "US-MD",
+    "subdivision_name": "Maryland"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 37.5,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 12.6,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 694,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 83.8,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 487,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 694,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 487,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "487 of 487 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 79,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 2.4,
+          "severity": "INFO",
+          "what": "About 79 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 50.1,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 12,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 17,
+          "WARNING": 1536
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 1206,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 244,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 33,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 20,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 10,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
+        },
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 9,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "unused_shape",
+          "count": 6,
+          "effort": "One setting.",
+          "fix": "Turn on 'remove unused shapes' (or the like) in your export tool.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "The feed contains route shapes no trip uses.",
+          "why": "Harmless to riders, but it bloats the feed and suggests stale export data."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 4,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 3,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 16,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "unknown_file",
+          "count": 1,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 40.8,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 12 kinds of issue across 1553 instances (0 error, 1536 warning, 17 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 147,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 147 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 159 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "5b6b4a74e43d7b262e98ecc3d4175289ecbbb31a5020ddf465831e70a87f7149",
+    "size_bytes": 1653829,
+    "static_url": "https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_commuterbus.zip"
+  },
+  "fetch": {
+    "final_url": "https://mdotmta-gtfs.s3.amazonaws.com/mdotmta_gtfs_commuterbus.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-25T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -77.73211,
+      38.34976,
+      -76.09163,
+      39.60188
+    ],
+    "lat": 39.14876,
+    "lon": -76.82864,
+    "stop_count": 487
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 36,
+        "trip_count": 694,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 36,
+    "trip_count": 694
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "30034"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data covers the next 159 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "ready",
+    "summary": "Published at a public URL, valid, current, and identified with agency_id: the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 filings make that official; this is a heads-up, not a determination."
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 54.8,
+    "margin_to_next_band": 5.2,
+    "score": 54.8
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 461,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "461 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"BALTIMORE ST & BALTIMORE ARENA\", \"ROWE BLVD & TAYLOR AVE fs\", \"HICKORY PARK & RIDE\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 487,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 10,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "10 of 487 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 10,
+    "single_stop_trips": 0,
+    "trips_total": 694
+  },
+  "route_map": {
+    "drawn_route_count": 36,
+    "has_shapes": true,
+    "path": "data/artifacts/maryland-transit-administration-467/geometry.geojson",
+    "route_count": 36,
+    "routes": [
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11694",
+        "label": "201",
+        "long": "GAITHERSBURG - BWI BUSINESS DIST",
+        "short": "201",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11695",
+        "label": "203",
+        "long": "COLUMBIA - BETHESDA",
+        "short": "203",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11696",
+        "label": "204",
+        "long": "FREDERICK - COLLEGE PARK",
+        "short": "204",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11697",
+        "label": "210",
+        "long": "KENT ISLAND - ANNAPOLIS/BALTIMORE",
+        "short": "210",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11698",
+        "label": "215",
+        "long": "BALTIMORE - ANNAPOLIS",
+        "short": "215",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11699",
+        "label": "220",
+        "long": "ANNAPOLIS - WASHINGTON DC",
+        "short": "220",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11700",
+        "label": "230",
+        "long": "SEVERNA PARK & ANNAPOLIS - DC",
+        "short": "230",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11701",
+        "label": "240",
+        "long": "KENT ISLAND - WASHINGTON DC",
+        "short": "240",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11702",
+        "label": "250",
+        "long": "KENT ISLAND & DAVIDSONVILLE - DC",
+        "short": "250",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11703",
+        "label": "260",
+        "long": "SEVERNA PARK & DAVIDSONVILLE - DC",
+        "short": "260",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11707",
+        "label": "305",
+        "long": "COLUMBIA & SILVER SPRING - DC",
+        "short": "305",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11708",
+        "label": "310",
+        "long": "COLUMBIA - BALTIMORE",
+        "short": "310",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11709",
+        "label": "315",
+        "long": "COLUMBIA & SILVER SPRING - DC",
+        "short": "315",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11710",
+        "label": "320",
+        "long": "BALTIMORE - LAUREL",
+        "short": "320",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11711",
+        "label": "325",
+        "long": "COLUMBIA & SILVER SPRING - DC",
+        "short": "325",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11712",
+        "label": "335",
+        "long": "CLARKSVILLE & COLUMBIA - DC",
+        "short": "335",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11713",
+        "label": "345",
+        "long": "ELLICOTT CITY & COLUMBIA - DC",
+        "short": "345",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11714",
+        "label": "410",
+        "long": "CHURCHVILLE - BALTIMORE",
+        "short": "410",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11715",
+        "label": "411",
+        "long": "HICKORY - HOPKINS HOSPITAL",
+        "short": "411",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11716",
+        "label": "420",
+        "long": "HAVRE DE GRACE - HOPKINS",
+        "short": "420",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11717",
+        "label": "505",
+        "long": "HAGERSTOWN-SHADY GROVE/ROCK SPRING",
+        "short": "505",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11718",
+        "label": "515",
+        "long": "FREDERICK - SHADY GROVE/ROCK SPRING",
+        "short": "515",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11719",
+        "label": "610",
+        "long": "WALDORF - WASHINGTON DC",
+        "short": "610",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11720",
+        "label": "620",
+        "long": "WALDORF - WASHINGTON DC",
+        "short": "620",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11721",
+        "label": "630",
+        "long": "LA PLATA/WALDORF - WASHINGTON DC",
+        "short": "630",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11722",
+        "label": "640",
+        "long": "WALDORF & ACCOKEEK - WASHINGTON DC",
+        "short": "640",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11723",
+        "label": "650",
+        "long": "LA PLATA - WALDORF & ACCOKEEK - DC",
+        "short": "650",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11724",
+        "label": "705",
+        "long": "CHARLOTTE HALL/WALDORF -  DC",
+        "short": "705",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11725",
+        "label": "715",
+        "long": "CHARLOTTE HALL/WALDORF - DC",
+        "short": "715",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11726",
+        "label": "725",
+        "long": "CALIFORNIA/CHARLOTTE HALL - DC",
+        "short": "725",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11727",
+        "label": "735",
+        "long": "CHARLOTTE HALL/WALDORF - DC",
+        "short": "735",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11728",
+        "label": "810",
+        "long": "PINDELL - WASHINGTON DC",
+        "short": "810",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11729",
+        "label": "820",
+        "long": "NORTH BEACH/PG EQUESTRIAN CTR - DC",
+        "short": "820",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11730",
+        "label": "830",
+        "long": "SUNDERLAND / DUNKIRK - DC",
+        "short": "830",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11731",
+        "label": "840",
+        "long": "ST LEONARD / PRINCE FREDERICK - DC",
+        "short": "840",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "11732",
+        "label": "850",
+        "long": "PR FREDERICK/DUNKIRK - SUITLAND/DC",
+        "short": "850",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 487,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 694 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 694,
+    "trips_with_shape": 694
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 487,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "487 of 487 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

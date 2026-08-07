@@ -1,0 +1,500 @@
+{
+  "agency": {
+    "id": "tar-river-transit-472",
+    "name": "Tar River Transit"
+  },
+  "autofix": {
+    "available": false
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 12.7,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": true
+        },
+        "has_fares": true,
+        "headsign_pct": 84.5,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 298,
+        "trips": 194,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 298,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "298 of 298 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 194,
+          "effort": "Often one default setting in your export.",
+          "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "194 of 194 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 30,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Populate trip_headsign to match what the bus displays.",
+          "owner": "Likely your export tool",
+          "points": 2.3,
+          "severity": "WARNING",
+          "what": "30 of 194 trips have no headsign.",
+          "why": "Riders at the stop can't tell which direction a bus is going."
+        },
+        {
+          "code": "scorecard_flex_no_booking_rules",
+          "count": 1,
+          "effort": "A small file; one rule often covers the whole service.",
+          "fix": "Add booking_rules.txt saying how far ahead and how to book (phone, app, or web).",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed describes flexible (demand-responsive) service but has no booking_rules.txt.",
+          "why": "Riders can see the service area but not how or when to reserve a trip, so they can't actually use the service."
+        }
+      ],
+      "name": "completeness",
+      "score": 57.7,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 3,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 44,
+          "WARNING": 0
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "unknown_column",
+          "count": 34,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "unknown_file",
+          "count": 8,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unknown_file' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Unknown file (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "service_window_outside_feed_period",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'service_window_outside_feed_period' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Service window outside feed period (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 98.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 3 kinds of issue across 44 instances (0 error, 0 warning, 44 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 206,
+        "feed_end_date": "2027-02-01",
+        "feed_start_date": "2026-07-10",
+        "feed_version": "UTC: 10-Jul-2026 15:46",
+        "has_feed_info": true,
+        "last_service_date": "2027-02-01",
+        "seasonal_boundary": false,
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 206 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 206 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "d5d97d16388d3c6c4fd1feb47d16ffbd15a5b4a382c853c0c7f24e7e3e7208f2",
+    "size_bytes": 135162,
+    "static_url": "http://data.trilliumtransit.com/gtfs/tarriver-nc-us/tarriver-nc-us.zip"
+  },
+  "fetch": {
+    "final_url": "http://data.trilliumtransit.com/gtfs/tarriver-nc-us/tarriver-nc-us.zip",
+    "max_attempts": 4,
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-10T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -77.8991,
+      35.91651,
+      -77.74502,
+      36.0627
+    ],
+    "lat": 35.94369,
+    "lon": -77.80289,
+    "stop_count": 298
+  },
+  "ntd_id_alignment": {
+    "detail": "Setting your GTFS agency_id to your five-digit NTD ID is an optional way to line a feed up with its National Transit Database record. FTA links the two on your P-50 form, so it is not a required feed change. We don't have your NTD ID on file, so this is not checked yet.",
+    "feed_agency_ids": [
+      "560"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data covers the next 206 days.",
+        "key": "current",
+        "status": "ready"
+      }
+    ],
+    "status": "ready",
+    "summary": "Published at a public URL, valid, and current: the three things the NTD GTFS requirement asks of a feed all hold here. Only your own D-10 certification makes that official; this is a heads-up, not a determination."
+  },
+  "overall": {
+    "grade": "B",
+    "margin_to_lower_band": 5.9,
+    "margin_to_next_band": 4.1,
+    "score": 85.9
+  },
+  "recommendations": [
+    {
+      "category": "flex",
+      "code": "scorecard_flex_completeness_no_booking_rules",
+      "count": 1,
+      "effort": "A small file; one rule often covers the whole service.",
+      "fix": "Add booking_rules.txt with how far ahead and how to reserve (phone, app, or web).",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "Flex zones are published but no booking_rules.txt is present.",
+      "why": "Riders can see the service area but not how to book, so they can't complete a trip."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 7,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "7 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (1, 2, 3, 4, 5, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 262,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "262 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Sunset & Jones - Eastbound\", \"Winstead Ave. & Triangle Bank - Southbound\", \"Fairview & Edgecombe County Social Services - Northbound\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "routability": {
+    "boardable_stops": 298,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 194
+  },
+  "route_map": {
+    "drawn_route_count": 10,
+    "has_shapes": true,
+    "path": "data/artifacts/tar-river-transit-472/geometry.geojson",
+    "route_count": 10,
+    "routes": [
+      {
+        "color": "0070FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "4685",
+        "label": "1",
+        "long": "Meadowbrook",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "38A800",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4686",
+        "label": "2",
+        "long": "Oakwood",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E64C00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4687",
+        "label": "3",
+        "long": "South Rocky Mount",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E64C00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4688",
+        "label": "4",
+        "long": "Hillsdale",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "34AC00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4689",
+        "label": "5",
+        "long": "Golden East",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "4690",
+        "label": "6",
+        "long": "Ravenwood",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8400A8",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4691",
+        "label": "7",
+        "long": "Sunset",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00C5",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4692",
+        "label": "8",
+        "long": "Nash Community College",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A80000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "4693",
+        "label": "9",
+        "long": "Battleboro/Goldrock",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8400A8",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4694",
+        "label": "10",
+        "long": "Rocky Mount East",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 298,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.1",
+  "schema_version": "1.7",
+  "shapes_readiness": {
+    "detail": "All 194 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 194,
+    "trips_with_shape": 194
+  },
+  "snapshot_date": "2026-07-10",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 298,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "298 of 298 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 194,
+      "effort": "Often one default setting in your export.",
+      "fix": "Set wheelchair_accessible on every trip (most small-agency fleets are 100% accessible, so this is often a single default).",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "194 of 194 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_missing_headsigns",
+      "count": 30,
+      "effort": "Usually a bulk edit in your scheduling software.",
+      "fix": "Populate trip_headsign to match what the bus displays.",
+      "owner": "Likely your export tool",
+      "points": 2.3,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "30 of 194 trips have no headsign.",
+      "why": "Riders at the stop can't tell which direction a bus is going."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

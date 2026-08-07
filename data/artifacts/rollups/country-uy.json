@@ -1,0 +1,67 @@
+{
+  "agency_count": 1,
+  "average_score": 48.5,
+  "common_fixes": [],
+  "comparison": {
+    "absolute_rankings_published": false,
+    "eligible_count": 1,
+    "excluded_count": 0,
+    "exclusion_counts": {},
+    "individual_percentiles_published": false,
+    "measured_category_cohorts": {
+      "correctness+freshness+completeness": 1
+    },
+    "note": "Score aggregates and named changes use one current producer contract, raw reader archive profile, and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [
+      "correctness",
+      "freshness",
+      "completeness"
+    ],
+    "required_reader_archive_profile": "raw-v1",
+    "required_rubric_version": "1.3",
+    "required_scoring_profile_id": "gtfs-scorecard-1.3",
+    "required_validator_version": "8.0.1"
+  },
+  "expired": {
+    "lapsed": 0,
+    "stale": 0,
+    "total": 0
+  },
+  "generated_at": "2026-08-07T02:19:46+00:00",
+  "grade_distribution": {
+    "F": 1
+  },
+  "members": [
+    {
+      "annual_trips": null,
+      "attention_reason": null,
+      "days_until_expiry": 140,
+      "expiry_status": "current",
+      "grade": "F",
+      "id": "mtop-uruguay-metropolitan",
+      "name": "Servicios metropolitanos de \u00f3mnibus (MTOP Uruguay)",
+      "needs_attention": false,
+      "score": 48.5,
+      "shapes_status": null,
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Review the rule documentation for 'point_near_origin' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "top_fix_code": "point_near_origin"
+    }
+  ],
+  "needs_attention": 0,
+  "rollup": {
+    "country_code": "UY",
+    "country_name": "Uruguay",
+    "id": "country-uy",
+    "name": "Uruguay"
+  },
+  "schema_version": "1.17",
+  "shapes_readiness": {
+    "at_risk": 0,
+    "not_measured": 1,
+    "not_ready": 0,
+    "ready": 0,
+    "total": 1
+  },
+  "state_percentile": null
+}

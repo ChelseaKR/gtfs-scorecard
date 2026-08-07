@@ -1,0 +1,1445 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "tango-nimes",
+    "name": "Tango (N\u00eemes M\u00e9tropole)",
+    "subdivision_code": "FR-OCC",
+    "subdivision_name": "Occitanie"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 0.2,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 41660,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 1.1,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1138,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 41660,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1138,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "1138 of 1138 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 41660,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "41660 of 41660 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 1125,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 14.8,
+          "severity": "INFO",
+          "what": "About 1125 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 22.7,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 9,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 3690,
+          "WARNING": 23904
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 23709,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 89,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 76,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 24,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "leading_or_trailing_whitespaces",
+          "count": 3,
+          "effort": "Usually one export setting.",
+          "fix": "Trim leading and trailing spaces on export. The scorecard's auto-fixed copy already does this.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some values have extra spaces at the start or end.",
+          "why": "A stray space can break a match, so a stop or route may fail to link across files."
+        },
+        {
+          "code": "unexpected_enum_value",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unexpected_enum_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Unexpected enum value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 3670,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the bus ends up, so a midpoint name can send them the wrong way."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 20,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 56.2,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 9 kinds of issue across 27594 instances (0 error, 23904 warning, 3690 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 146,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 146 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0 (Etalab) as recorded on the French national access point transport.data.gouv.fr; reuse including commercial reuse is permitted with attribution to N\u00eemes M\u00e9tropole (r\u00e9seau Tango) and the update date.",
+    "reachable": true,
+    "sha256": "9ae7405c3828b297a852f5ec09da9ca1dd4e9c0b26c0d171df19922f4b2c6029",
+    "size_bytes": 7708087,
+    "static_url": "https://transport.data.gouv.fr/resources/82911/download"
+  },
+  "fetch": {
+    "final_url": "https://static.data.gouv.fr/resources/offre-de-transport-du-reseau-tango-de-nimes-metropole-gtfs-gtfs-rt/20260721-052312/gtfs-production.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      4.12544,
+      43.67123,
+      4.56533,
+      43.97613
+    ],
+    "lat": 43.83588,
+    "lon": 4.35679,
+    "stop_count": 1138
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 88,
+        "trip_count": 41660,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 88,
+    "trip_count": 41660
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 52.9,
+    "margin_to_next_band": 7.1,
+    "score": 52.9
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 58,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "58 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (6, 7, 9, 12, 16, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 15,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "15 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"ST ETIENNE\", \"ST ETIENNE\", \"ST ETIENNE\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1138,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 41660
+  },
+  "route_map": {
+    "drawn_route_count": 88,
+    "has_shapes": true,
+    "path": "data/artifacts/tango-nimes/geometry.geojson",
+    "route_count": 88,
+    "routes": [
+      {
+        "color": "AADD6D",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "MAS D'ESCATTES - GARE FEUCHERES",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "100",
+        "label": "100",
+        "long": "COLLEGE JULES VERNE - MAS ROMAN",
+        "short": "100",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "101",
+        "label": "101",
+        "long": "COLLEGE JEAN ROSTAND - PISSEVIN",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "103",
+        "label": "103",
+        "long": "COLLEGE JEAN ROSTAND-VACQUEROLLES-GOLF-P.VEDELIN",
+        "short": "103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "104",
+        "label": "104",
+        "long": "COLLEGE JULES VERNE - ROMARINS",
+        "short": "104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "105",
+        "label": "105",
+        "long": "LYCEE CAMUS - MAS ROMAN",
+        "short": "105",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "107",
+        "label": "107",
+        "long": "COLLEGE JEAN ROSTAND - CAMPLANIER",
+        "short": "107",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00BCE2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "11",
+        "label": "11",
+        "long": "BERNIS - MILHAUD - GARE TRIAIRE",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "115",
+        "label": "115",
+        "long": "MAZET DES MOURGUES - NIMES GARE ROUTIERE",
+        "short": "115",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0F4D2A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "12",
+        "label": "12",
+        "long": "POULX - N\u00ceMES",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "48D597",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "13",
+        "label": "13",
+        "long": "MAS DES ROSIERS - GARE FEUCHERES",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFA0BF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "14",
+        "label": "14",
+        "long": "VACQUEROLLES GOLF/ CASTANET - PONT DE JUSTICE",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FEDD00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "15",
+        "label": "15",
+        "long": "LAENNEC - PONT DE JUSTICE",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CE0037",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "16",
+        "label": "16",
+        "long": "SERRE CAVALIER - VILLE ACTIVE",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AA0061",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "17",
+        "label": "17",
+        "long": "POULX-ADA LOVELACE-SULLY",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3ED62C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "20",
+        "label": "20",
+        "long": "NAVETTE MARGUERITTES",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "203A",
+        "label": "203A",
+        "long": "COLLEGE LOU CASTELLAS - POULX",
+        "short": "203A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "203B",
+        "label": "203B",
+        "long": "COLLEGE LOU CASTELLAS - LEDENON",
+        "short": "203B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "205",
+        "label": "205",
+        "long": "LYCEE AGRICOLE DE RODILHAN - MARGUERITTES",
+        "short": "205",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "206",
+        "label": "206",
+        "long": "LYCEE PHILIPPE LAMOUR - MARGUERITTES",
+        "short": "206",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF9B00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "21",
+        "label": "21",
+        "long": "LEDENON - NIMES",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "211",
+        "label": "211",
+        "long": "COLLEGE LES FONTAINES - RODILHAN",
+        "short": "211",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "212",
+        "label": "212",
+        "long": "COLLEGE VIA DOMITIA - REDESSAN",
+        "short": "212",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "214",
+        "label": "214",
+        "long": "LYCEE PHILIPPE LAMOUR - BOUILLARGUES",
+        "short": "214",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "216",
+        "label": "216",
+        "long": "COLLEGE LES FONTAINES - GARONS",
+        "short": "216",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "217",
+        "label": "217",
+        "long": "COLLEGE LES FONTAINES -CAISSARGUES",
+        "short": "217",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "218",
+        "label": "218",
+        "long": "EUROPE/IUT DAYAN - GARONS",
+        "short": "218",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "219",
+        "label": "219",
+        "long": "EUROPE/IUT DAYAN - SAINT - GILLES",
+        "short": "219",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "752641",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "22",
+        "label": "22",
+        "long": "SERNHAC - NIMES",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "220A",
+        "label": "220A",
+        "long": "COLLEGE JEAN VILAR - SAINT - FRANCOIS",
+        "short": "220A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "220C",
+        "label": "220C",
+        "long": "COLLEGE JEAN VILAR - CAVEAU SAINT - ANDRE",
+        "short": "220C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "220D",
+        "label": "220D",
+        "long": "COLLEGE JEAN VILAR - MAS BEAUCHENE",
+        "short": "220D",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "221",
+        "label": "221",
+        "long": "LYCEE DE MILHAUD - GENERAC - SAINT - GILLES",
+        "short": "221",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "222",
+        "label": "222",
+        "long": "COLLEGE JEAN VILAR - GENERAC",
+        "short": "222",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "227",
+        "label": "227",
+        "long": "ST DIONISY - LANGLADE - CAVEIRAC - EUROPE",
+        "short": "227",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "228",
+        "label": "228",
+        "long": "COLLEGE DE CLARENSAC - ST COME ET MARUEJOLS",
+        "short": "228",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "229",
+        "label": "229",
+        "long": "COLLEGE DE CLARENSAC - LANGLADE",
+        "short": "229",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "230",
+        "label": "230",
+        "long": "COLLEGE DE CLARENSAC-CAVEIRAC PERDRIX VIA LANGLADE",
+        "short": "230",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "231",
+        "label": "231",
+        "long": "LYCEE DE MILHAUD - CAVEIRAC",
+        "short": "231",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AC9600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "31",
+        "label": "31",
+        "long": "REDESSAN - NIMES",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "59058D",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "32",
+        "label": "32",
+        "long": "MANDUEL - NIMES",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D60077",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "33",
+        "label": "33",
+        "long": "NAVETTE GARES",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "41",
+        "label": "41",
+        "long": "GARONS - CAISSARGUES - NIMES",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D21034",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "42",
+        "label": "42",
+        "long": "SAINT GILLES - CAISSARGUES - NIMES",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "244C5A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "43",
+        "label": "43",
+        "long": "GENERAC - NIMES",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00AFAD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "51",
+        "label": "51",
+        "long": "ST DIONISY - LANGLADE",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "603311",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "52",
+        "label": "52",
+        "long": "CAVEIRAC - MARUEJOLS/CLARENSAC",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0051BA",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "6",
+        "label": "6",
+        "long": "CALVAS - HALLE DES SPORTS",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CD5806",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "61",
+        "label": "61",
+        "long": "SAINT CHAPTES - NIMES",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B760",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "62",
+        "label": "62",
+        "long": "SAINTE-ANASTASIE- SAINT GENIES DE MALGOIRES",
+        "short": "62",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "444F51",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "VALMY - VILLE ACTIVE",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F46BAF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "70",
+        "label": "70",
+        "long": "HAUTS DE NIMES - JAURES",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "024930",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "71",
+        "label": "71",
+        "long": "ANTIQUAILLES - GAMBETTA COUPOLE",
+        "short": "71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E47AD",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "72",
+        "label": "72",
+        "long": "MASSILLAN - DAGUET",
+        "short": "72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AF1E2D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "73",
+        "label": "73",
+        "long": "MAS MICHEL - DAGUET",
+        "short": "73",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FCC963",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "74",
+        "label": "74",
+        "long": "GOELANDS - LEA BLAIN",
+        "short": "74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B5B58E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "75",
+        "label": "75",
+        "long": "BAS DE THOLOZAN - BOUQUERIE",
+        "short": "75",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6D3011",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "76",
+        "label": "76",
+        "long": "CHAMBRE D'AGRICULTURE - GARE TRIAIRE",
+        "short": "76",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "919693",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "77",
+        "label": "77",
+        "long": "MONTAURY - JAURES",
+        "short": "77",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CCE226",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "78",
+        "label": "78",
+        "long": "CAMPLANIER - JAURES",
+        "short": "78",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75AADB",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "8",
+        "label": "8",
+        "long": "GALILEE - PONT DE JUSTICE",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BF910C",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "80",
+        "label": "80",
+        "long": "EAU BOUILLIE",
+        "short": "80",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "800",
+        "label": "800",
+        "long": "F.DESMONS - MONTIGNARGUES-PARIGNARGUES-GAJAN",
+        "short": "800",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "801",
+        "label": "801",
+        "long": "DESSERTE DES ECOLES  DE FONS / GAJAN / ST BAUZELY",
+        "short": "801",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "802",
+        "label": "802",
+        "long": "DESSERTE DES ECOLES DE LA ROUVIERE / MONTIGNARGUES",
+        "short": "802",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "803",
+        "label": "803",
+        "long": "ECOLES DE DOMESSARGUES / MAURESSARGUES / MONTAGNAC",
+        "short": "803",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "804A",
+        "label": "804A",
+        "long": "LYCEE CAMUS - MOULEZAN",
+        "short": "804A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D30547",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "804B",
+        "label": "804B",
+        "long": "LYCEE J.RAIMU - MAURESSARGUES",
+        "short": "804B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6B7EB6",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "805",
+        "label": "805",
+        "long": "COLLEGE F.DESMONS - CLARENSAC",
+        "short": "805",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFE016",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "85",
+        "label": "85",
+        "long": "AIR PUR - 3 PONTS",
+        "short": "85",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00BCE2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "86",
+        "label": "86",
+        "long": "MAS DE ROULAN - BOUQUERIE",
+        "short": "86",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0054A0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "87",
+        "label": "87",
+        "long": "CONDAMINE - GARE TRIAIRE",
+        "short": "87",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0F1889",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "88",
+        "label": "88",
+        "long": "NAVETTE GALILEE - CAPITELLES",
+        "short": "88",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8C2633",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "9",
+        "label": "9",
+        "long": "ROUTE D'ALES - BOUILLARGUES/ROUTE D'ARLES",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "90",
+        "label": "90",
+        "long": "JAURES - SERRE CAVALIER",
+        "short": "90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "AERO",
+        "label": "AERO",
+        "long": "NAVETTE AEROPORT",
+        "short": "AERO",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F74902",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "F1",
+        "label": "F1",
+        "long": "CAISSARGUES-MONTCALM-CAISSARGUES",
+        "short": "F1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFA0BF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "F14",
+        "label": "F14",
+        "long": "GOLF-PETIT VEDELIN-MAS DE VILLE",
+        "short": "F14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00436E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "F2",
+        "label": "F2",
+        "long": "CHU CAREMEAU-MARGUERITTES",
+        "short": "F2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0051BA",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "F6",
+        "label": "F6",
+        "long": "GARE TRIAIRE >> CALVAS",
+        "short": "F6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8C2633",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "F9",
+        "label": "F9",
+        "long": "MONTCALM >> ROUTE D'ALES",
+        "short": "F9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8C4799",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "NMAR",
+        "label": "NMAR",
+        "long": "NAVETTE MARCHE",
+        "short": "NMAR",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "NNO",
+        "label": "NNO",
+        "long": "NAVETTE STADE",
+        "short": "NNO",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F74902",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "T1",
+        "label": "T1",
+        "long": "GAMBETTA COUPOLE - PARKING RELAIS A54",
+        "short": "T1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00436E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "T2",
+        "label": "T2",
+        "long": "CHU CAREMEAU - PALOMA",
+        "short": "T2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00BB31",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "T3",
+        "label": "T3",
+        "long": "GALILEE - GARE FEUCHERES",
+        "short": "T3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AF1685",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "T4",
+        "label": "T4",
+        "long": "MARGUERITTES - CAISSARGUES/CANAUX",
+        "short": "T4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A0E1",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "T5",
+        "label": "T5",
+        "long": "CLARENSAC - GARE FEUCHERES",
+        "short": "T5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1138,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1138,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "1138 of 1138 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 41660,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "41660 of 41660 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

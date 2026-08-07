@@ -1,0 +1,1761 @@
+{
+  "agency": {
+    "id": "valley-metro-vm",
+    "name": "Valley Metro (VM)",
+    "subdivision_code": "US-AZ",
+    "subdivision_name": "Arizona"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 18157,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 8027,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 18157,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 8027,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "8027 of 8027 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 18157,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "18157 of 18157 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 45.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 7,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 65,
+          "WARNING": 51
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "same_name_and_description_for_stop",
+          "count": 47,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Same name and description for stop (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 2,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 2,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 56,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the transit vehicle ends up, so a midpoint name can send them the wrong way."
+        },
+        {
+          "code": "unknown_column",
+          "count": 6,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "platform_without_parent_station",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'platform_without_parent_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Platform without parent station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unknown_file",
+          "count": 1,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 83.2,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 7 kinds of issue across 116 instances (0 error, 51 warning, 65 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 80,
+        "effective_expiry_date": "2026-10-25",
+        "feed_end_date": "2026-10-25",
+        "feed_start_date": "2026-07-27",
+        "feed_version": "GTFS_v4.5_20260616",
+        "has_feed_info": true,
+        "last_service_date": "2026-10-25",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 80 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "alerts_content": {
+          "alerts": 14,
+          "ended_over_30_days_ago": 0,
+          "with_cause_and_effect": 14,
+          "with_description": 14,
+          "with_header_text": 14,
+          "with_informed_entity": 14
+        },
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "coverage_pct": 96.4,
+        "covered_trips": 406,
+        "drift": {
+          "median_seconds": 35,
+          "observations": 11639,
+          "on_time_share_pct": 81.5,
+          "p90_abs_seconds": 385
+        },
+        "kinds_configured": 3,
+        "kinds_reachable": 3,
+        "reachable_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "rt_freshness": "fresh",
+        "samples": 9,
+        "scheduled_trips_in_window": 421,
+        "vehicles_checked": 1212,
+        "vehicles_on_route_pct": 96.1,
+        "worst_lag_seconds": 11
+      },
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 15,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 1.2,
+          "severity": "WARNING",
+          "what": "15 of 421 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        }
+      ],
+      "name": "realtime",
+      "score": 98.2,
+      "status": "measured",
+      "summary": "Sampled 9 times: 3 of 3 configured feeds healthy; 96.4% of scheduled trips had live predictions; 96.1% of vehicles on their route; predictions ran a median of 35s behind schedule.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 81 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "License: http://www.opendefinition.org/licenses/odc-by",
+    "reachable": true,
+    "sha256": "f5aa6cc225bfc77b948c0d24708b79cd33489f7a315066007f6cf847c295289e",
+    "size_bytes": 7110085,
+    "static_url": "https://phoenixopendata.com/dataset/3eae9a4a-98b9-40c8-8df7-8c00c1756235/resource/28ccc0a5-49c8-495c-b91f-193de5ce2cb7/download/googletransit.zip"
+  },
+  "fetch": {
+    "final_url": "https://s3.amazonaws.com:443/og-production-open-data-phoenixaz-892364687672/resources/28ccc0a5-49c8-495c-b91f-193de5ce2cb7/googletransit.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAJJIENTAPKHZMIPXQ%2F20260805%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20260805T155214Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=bdde9d0faf60784610cd30ed2523ed08e19e5422d69723eee795ff91b6c4d559",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -112.87219,
+      32.37204,
+      -111.66091,
+      33.71367
+    ],
+    "lat": 33.46573,
+    "lon": -112.04747,
+    "stop_count": 8027
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 4,
+        "trip_count": 1395,
+        "trip_share_pct": 7.7
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 108,
+        "trip_count": 16762,
+        "trip_share_pct": 92.3
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 112,
+    "trip_count": 18157
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "1",
+      "10"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data covers the next 81 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "ready",
+    "summary": "Published at a public URL, valid, current, and identified with agency_id: the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 filings make that official; this is a heads-up, not a determination."
+  },
+  "overall": {
+    "grade": "B",
+    "margin_to_lower_band": 0.0,
+    "margin_to_next_band": 10.0,
+    "score": 80.0
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 7901,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "7901 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Bell Rd & 44th St\", \"Alice Av & 66th Dr\", \"Atlanta Av & 11th Av\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 7941,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 18157
+  },
+  "route_map": {
+    "drawn_route_count": 112,
+    "has_shapes": true,
+    "path": "data/artifacts/valley-metro-vm/geometry.geojson",
+    "route_count": 112,
+    "routes": [
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "0",
+        "label": "0",
+        "long": "Central Ave",
+        "short": "0",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "Washington St",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "Roosevelt St",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "104",
+        "label": "104",
+        "long": "Alma School Rd",
+        "short": "104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "106",
+        "label": "106",
+        "long": "Peoria Ave",
+        "short": "106",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "108",
+        "label": "108",
+        "long": "Elliot Rd/48th St",
+        "short": "108",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "112",
+        "label": "112",
+        "long": "Country Club Dr/Arizona Ave",
+        "short": "112",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "12",
+        "label": "12",
+        "long": "12th St",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "120",
+        "label": "120",
+        "long": "Mesa Dr",
+        "short": "120",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "122",
+        "label": "122",
+        "long": "Cactus Rd",
+        "short": "122",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "128",
+        "label": "128",
+        "long": "Stapley Dr",
+        "short": "128",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "13",
+        "label": "13",
+        "long": "Buckeye Rd",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "136",
+        "label": "136",
+        "long": "Gilbert Rd",
+        "short": "136",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "138",
+        "label": "138",
+        "long": "Thunderbird Rd",
+        "short": "138",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "140",
+        "label": "140",
+        "long": "Ray Rd",
+        "short": "140",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "15",
+        "label": "15",
+        "long": "15th Ave",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "154",
+        "label": "154",
+        "long": "Greenway Rd",
+        "short": "154",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "156",
+        "label": "156",
+        "long": "Chandler Blvd",
+        "short": "156",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "16",
+        "label": "16",
+        "long": "16th St",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "16s",
+        "label": "16s",
+        "long": "16th St",
+        "short": "16s",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "17",
+        "label": "17",
+        "long": "McDowell Rd",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "170",
+        "label": "170",
+        "long": "Bell Rd",
+        "short": "170",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "17s",
+        "label": "17s",
+        "long": "McDowell Rd",
+        "short": "17s",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "184",
+        "label": "184",
+        "long": "Power Rd",
+        "short": "184",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "186",
+        "label": "186",
+        "long": "Union Hills Dr/Mayo Blvd",
+        "short": "186",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "19",
+        "label": "19",
+        "long": "19th Ave",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "27",
+        "label": "27",
+        "long": "27th Ave",
+        "short": "27",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28",
+        "label": "28",
+        "long": "Lower Buckeye Rd",
+        "short": "28",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "29",
+        "label": "29",
+        "long": "Thomas Rd",
+        "short": "29",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "Van Buren St",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30",
+        "label": "30",
+        "long": "University Dr",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "32",
+        "label": "32",
+        "long": "32nd St/40th St",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "32s",
+        "label": "32s",
+        "long": "32nd St/40th St",
+        "short": "32s",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "35",
+        "label": "35",
+        "long": "35th Ave",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "39",
+        "label": "39",
+        "long": "North 40th St",
+        "short": "39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "40",
+        "label": "40",
+        "long": "Main St",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "41",
+        "label": "41",
+        "long": "Indian School Rd",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "43",
+        "label": "43",
+        "long": "43rd Ave",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "44",
+        "label": "44",
+        "long": "44th St/Tatum Blvd",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "45",
+        "label": "45",
+        "long": "Broadway Rd",
+        "short": "45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "48",
+        "label": "48",
+        "long": "48th St",
+        "short": "48",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "50",
+        "label": "50",
+        "long": "Camelback Rd",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "51",
+        "label": "51",
+        "long": "51st Ave",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "514",
+        "label": "514",
+        "long": "Scottsdale Express",
+        "short": "514",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "52",
+        "label": "52",
+        "long": "Roeser Rd",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "521",
+        "label": "521",
+        "long": "Central Tempe Express",
+        "short": "521",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "522",
+        "label": "522",
+        "long": "South Tempe Express",
+        "short": "522",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "52s",
+        "label": "52s",
+        "long": "Roeser Rd",
+        "short": "52s",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "531",
+        "label": "531",
+        "long": "Mesa/Gilbert Express",
+        "short": "531",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "533",
+        "label": "533",
+        "long": "Mesa Express",
+        "short": "533",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "535",
+        "label": "535",
+        "long": "Northeast Mesa Express",
+        "short": "535",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "542",
+        "label": "542",
+        "long": "Chandler Express",
+        "short": "542",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "56",
+        "label": "56",
+        "long": "Priest Dr",
+        "short": "56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "562",
+        "label": "562",
+        "long": "Goodyear Express",
+        "short": "562",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "563",
+        "label": "563",
+        "long": "Avondale/Buckeye Express",
+        "short": "563",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "571",
+        "label": "571",
+        "long": "Surprise Express",
+        "short": "571",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "573",
+        "label": "573",
+        "long": "West Glendale Express",
+        "short": "573",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "575",
+        "label": "575",
+        "long": "North Glendale Express",
+        "short": "575",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "59",
+        "label": "59",
+        "long": "59th Ave",
+        "short": "59",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "59s",
+        "label": "59s",
+        "long": "59th Ave",
+        "short": "59s",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "60",
+        "label": "60",
+        "long": "Bethany Home Rd",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "61",
+        "label": "61",
+        "long": "Southern Ave",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "61s",
+        "label": "61s",
+        "long": "Southern Ave",
+        "short": "61s",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "62",
+        "label": "62",
+        "long": "Hardy Dr",
+        "short": "62",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "62s",
+        "label": "62s",
+        "long": "Hardy Dr",
+        "short": "62s",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "66",
+        "label": "66",
+        "long": "Mill Ave/Kyrene Rd",
+        "short": "66",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "67",
+        "label": "67",
+        "long": "67th Ave",
+        "short": "67",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "685",
+        "label": "685",
+        "long": "Ajo/Gila Bend",
+        "short": "685",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "68CM",
+        "label": "68CM",
+        "long": "68th St/Camelback Rd",
+        "short": "68CM",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "7th St",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "70",
+        "label": "70",
+        "long": "24th St/Glendale Ave",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "72",
+        "label": "72",
+        "long": "Scottsdale Rd/Rural Rd",
+        "short": "72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "75",
+        "label": "75",
+        "long": "75th Ave",
+        "short": "75",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "77",
+        "label": "77",
+        "long": "Baseline Rd",
+        "short": "77",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "7s",
+        "label": "7s",
+        "long": "7th St",
+        "short": "7s",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "8",
+        "label": "8",
+        "long": "7th Ave",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "80",
+        "label": "80",
+        "long": "Northern Ave/Shea Blvd",
+        "short": "80",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "81",
+        "label": "81",
+        "long": "Hayden Rd/McClintock Dr",
+        "short": "81",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "81s",
+        "label": "81s",
+        "long": "Hayden Rd/McClintock Dr",
+        "short": "81s",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "83",
+        "label": "83",
+        "long": "83rd Ave",
+        "short": "83",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "90",
+        "label": "90",
+        "long": "Dunlap Ave/Cave Creek Rd",
+        "short": "90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "96",
+        "label": "96",
+        "long": "Dobson Rd",
+        "short": "96",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1E8ECD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "A",
+        "label": "A",
+        "long": "Valley Metro Rail A Line",
+        "short": "A",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ALEX",
+        "label": "ALEX",
+        "long": "ALEX Circulator",
+        "short": "ALEX",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B76912",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "B",
+        "label": "B",
+        "long": "Valley Metro Rail B Line",
+        "short": "B",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "DASH",
+        "label": "DASH",
+        "long": "Downtown DASH",
+        "short": "DASH",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "DBUZ",
+        "label": "DBUZ",
+        "long": "Downtown BUZZ",
+        "short": "DBUZ",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "EART",
+        "label": "EART",
+        "long": "Orbit Earth",
+        "short": "EART",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "FBUZ",
+        "label": "FBUZ",
+        "long": "Fiesta BUZZ",
+        "short": "FBUZ",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "FLSH",
+        "label": "FLSH",
+        "long": "FLASH",
+        "short": "FLSH",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "GAL",
+        "label": "GAL",
+        "long": "Grand Ave Limited",
+        "short": "GAL",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "GUS1",
+        "label": "GUS1",
+        "long": "GUS 1",
+        "short": "GUS1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "GUS2",
+        "label": "GUS2",
+        "long": "GUS 2",
+        "short": "GUS2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "GUS3",
+        "label": "GUS3",
+        "long": "GUS 3",
+        "short": "GUS3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "I10E",
+        "label": "I10E",
+        "long": "I-10 East RAPID",
+        "short": "I10E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "I10W",
+        "label": "I10W",
+        "long": "I-10 West RAPID",
+        "short": "I10W",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "I17",
+        "label": "I17",
+        "long": "I-17 RAPID",
+        "short": "I17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "JUPI",
+        "label": "JUPI",
+        "long": "Orbit Jupiter",
+        "short": "JUPI",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "MARS",
+        "label": "MARS",
+        "long": "Orbit Mars",
+        "short": "MARS",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "MARY",
+        "label": "MARY",
+        "long": "MARY Circulator",
+        "short": "MARY",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "MARz",
+        "label": "MARz",
+        "long": "Orbit Mars",
+        "short": "MARz",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "MERC",
+        "label": "MERC",
+        "long": "Orbit Mercury",
+        "short": "MERC",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "MLHD",
+        "label": "MLHD",
+        "long": "Miller Rd/Hayden Rd",
+        "short": "MLHD",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "MSTG",
+        "label": "MSTG",
+        "long": "Mustang",
+        "short": "MSTG",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6D8932",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "S",
+        "label": "S",
+        "long": "Valley Metro Streetcar",
+        "short": "S",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "53565F",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "SKYT",
+        "label": "SKYT",
+        "long": "PHX Sky Train",
+        "short": "SKYT",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "SME",
+        "label": "SME",
+        "long": "South Mountain East RAPID",
+        "short": "SME",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "SMRT",
+        "label": "SMRT",
+        "long": "SMART Circulator",
+        "short": "SMRT",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "SMW",
+        "label": "SMW",
+        "long": "South Mountain West RAPID",
+        "short": "SMW",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "SR51",
+        "label": "SR51",
+        "long": "SR 51 RAPID",
+        "short": "SR51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "STRN",
+        "label": "STRN",
+        "long": "Orbit Saturn",
+        "short": "STRN",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "591769",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "VENU",
+        "label": "VENU",
+        "long": "Orbit Venus",
+        "short": "VENU",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 8027,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 18157 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 18157,
+    "trips_with_shape": 18157
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 8027,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "8027 of 8027 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 18157,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "18157 of 18157 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

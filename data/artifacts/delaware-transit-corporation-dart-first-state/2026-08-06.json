@@ -1,0 +1,1042 @@
+{
+  "agency": {
+    "id": "delaware-transit-corporation-dart-first-state",
+    "name": "Delaware Transit Corporation (DART First State)",
+    "subdivision_code": "US-DE",
+    "subdivision_name": "Delaware"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 0.4,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 4123,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 2.6,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 2334,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 4123,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2334,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "2334 of 2334 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 4123,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "4123 of 4123 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 2273,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 14.6,
+          "severity": "INFO",
+          "what": "About 2273 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.9,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 13,
+        "instances_by_severity": {
+          "ERROR": 13,
+          "INFO": 1,
+          "WARNING": 11441
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "equal_shape_distance_diff_coordinates",
+          "count": 13,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 18.0,
+          "severity": "ERROR",
+          "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
+          "count": 8990,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Equal shape distance diff coordinates distance below threshold (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 2288,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 110,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 33,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 6,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 5,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 3,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 3,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 1,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 1,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 21.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 13 kinds of issue across 11455 instances (13 error, 11441 warning, 1 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 100,
+        "effective_expiry_date": "2026-11-14",
+        "feed_end_date": "2026-11-14",
+        "feed_start_date": "2026-05-17",
+        "feed_version": "May 2026_20260429",
+        "has_feed_info": true,
+        "last_service_date": "2026-11-14",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 100 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 112 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "d6940cbe4262c1e6e695e5a498d4d0fa74b5e924e61c84c808da748688447ea0",
+    "size_bytes": 3186805,
+    "static_url": "http://dartfirststate.com/RiderInfo/Routes/gtfs_data/dartfirststate_de_us.zip"
+  },
+  "fetch": {
+    "final_url": "https://dartfirststate.com/RiderInfo/Routes/gtfs_data/dartfirststate_de_us.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-25T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -75.76963,
+      38.4494,
+      -75.05148,
+      39.83281
+    ],
+    "lat": 39.68747,
+    "lon": -75.55431,
+    "stop_count": 2334
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 46,
+        "trip_count": 4123,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 46,
+    "trip_count": 4123
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "DART_DE"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "status": "at_risk"
+      },
+      {
+        "detail": "Service data covers the next 112 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "at_risk",
+    "summary": "This feed is close to NTD-ready. 1 validator error to resolve."
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 46.2,
+    "margin_to_next_band": 13.8,
+    "score": 46.2
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 14,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "14 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (004, 009, 010, 013, 014, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 2267,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "2267 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"ORANGE ST @ 8TH ST\", \"ORANGE ST @ 10TH ST\", \"11TH ST @ KING ST (RODNEY SQUARE)\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 2334,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 4123
+  },
+  "route_map": {
+    "drawn_route_count": 46,
+    "has_shapes": true,
+    "path": "data/artifacts/delaware-transit-corporation-dart-first-state/geometry.geojson",
+    "route_count": 46,
+    "routes": [
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "8143",
+        "label": "002",
+        "long": "Concord Pike",
+        "short": "002",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8144",
+        "label": "004",
+        "long": "W 4th Street / Governor Printz Blvd",
+        "short": "004",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "8145",
+        "label": "005",
+        "long": "Maryland Ave / Christiana Mall",
+        "short": "005",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "8146",
+        "label": "006",
+        "long": "Kirkwood Highway",
+        "short": "006",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "8147",
+        "label": "008",
+        "long": "8th and 9th Streets",
+        "short": "008",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "8148",
+        "label": "009",
+        "long": "Boxwood Rd / Broom St / Vandever Ave",
+        "short": "009",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8149",
+        "label": "010",
+        "long": "Wilmington / Univ Plz / Newark",
+        "short": "010",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "8150",
+        "label": "011",
+        "long": "Washington Street / Arden",
+        "short": "011",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8151",
+        "label": "013",
+        "long": "Philadelphia Pike / Market St",
+        "short": "013",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "8152",
+        "label": "014",
+        "long": "Baylor/DHSS / Miller Rd Shop Ctr",
+        "short": "014",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "8153",
+        "label": "015",
+        "long": "New Castle Av / Jeff Farm / Ch Mall",
+        "short": "015",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8154",
+        "label": "018",
+        "long": "Pike Creek / Wilmington / Foulk Rd",
+        "short": "018",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "8155",
+        "label": "020",
+        "long": "Lancaster Pike / Hockessin",
+        "short": "020",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "8156",
+        "label": "025",
+        "long": "Wrangle Hill / Miller Road Shop Ctr",
+        "short": "025",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "8157",
+        "label": "028",
+        "long": "Nemours / Riveredge Ind Pk",
+        "short": "028",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "8158",
+        "label": "033",
+        "long": "Christiana Mall / Newark",
+        "short": "033",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "8159",
+        "label": "035",
+        "long": "Brandywine Town Center / Shipley Rd",
+        "short": "035",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "8160",
+        "label": "040",
+        "long": "Glasgow / Wilmington",
+        "short": "040",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "8161",
+        "label": "046",
+        "long": "Newark / Glasgow / Middletown",
+        "short": "046",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "8162",
+        "label": "051",
+        "long": "New Castle Av / DE 273 / Ch Mall",
+        "short": "051",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "8163",
+        "label": "053",
+        "long": "Wrangle Hill P&R / Newark Hub",
+        "short": "053",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "8164",
+        "label": "055",
+        "long": "Ch Mall / Old Baltimore Pk / Newark",
+        "short": "055",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "8165",
+        "label": "061",
+        "long": "Naamans Road",
+        "short": "061",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "8166",
+        "label": "064",
+        "long": "Glasgow / Christiana Mall",
+        "short": "064",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8167",
+        "label": "101",
+        "long": "Walker Road",
+        "short": "101",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8168",
+        "label": "104",
+        "long": "Camden Walmart",
+        "short": "104",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8169",
+        "label": "105",
+        "long": "Dover AFB",
+        "short": "105",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8170",
+        "label": "107",
+        "long": "Luther Village",
+        "short": "107",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "8171",
+        "label": "108",
+        "long": "Persimmon Tree / Town Point",
+        "short": "108",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8172",
+        "label": "109",
+        "long": "Dover Mall",
+        "short": "109",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "8173",
+        "label": "112",
+        "long": "DelTech / West Dover",
+        "short": "112",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8174",
+        "label": "117",
+        "long": "Harrington / Dover",
+        "short": "117",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "8175",
+        "label": "201",
+        "long": "Lewes TC / Rehoboth Beach",
+        "short": "201",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "8176",
+        "label": "204",
+        "long": "Lewes TC / Lewes-Ferry",
+        "short": "204",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8177",
+        "label": "206",
+        "long": "Georgetown / Lewes TC",
+        "short": "206",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "8178",
+        "label": "208",
+        "long": "Lewes / Ocean City, MD",
+        "short": "208",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "8179",
+        "label": "210",
+        "long": "Milford",
+        "short": "210",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "8180",
+        "label": "212",
+        "long": "Georgetown / Seaford / Laurel",
+        "short": "212",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8000FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "8181",
+        "label": "215",
+        "long": "Rehoboth P&R / Millsboro",
+        "short": "215",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8182",
+        "label": "301",
+        "long": "Intercounty Wilmington / Dover",
+        "short": "301",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "8183",
+        "label": "302",
+        "long": "Intercounty Dover / Middletown",
+        "short": "302",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C0DCC0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "8184",
+        "label": "303",
+        "long": "Intercounty Dover / Milford / Georgetown",
+        "short": "303",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "8185",
+        "label": "305",
+        "long": "Intercounty Wilmington / Rehoboth",
+        "short": "305",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "8186",
+        "label": "307",
+        "long": "Intercounty Lewes TC / Dover",
+        "short": "307",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "8187",
+        "label": "903",
+        "long": "Seaford Flex",
+        "short": "903",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "8189",
+        "label": "207",
+        "long": "Rehoboth / Massey's Landing",
+        "short": "207",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2334,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 4123 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 4123,
+    "trips_with_shape": 4123
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "equal_shape_distance_diff_coordinates",
+      "count": 13,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 18.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 2334,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "2334 of 2334 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 4123,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "4123 of 4123 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

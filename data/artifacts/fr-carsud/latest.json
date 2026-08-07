@@ -1,0 +1,1013 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-carsud",
+    "name": "R\u00e9seau urbain CarSud",
+    "subdivision_code": "FR-974",
+    "subdivision_name": "La R\u00e9union"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 1352,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.9,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 2145,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 1352,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2145,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "2145 of 2145 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 1352,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "1352 of 1352 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 11,
+        "instances_by_severity": {
+          "ERROR": 28,
+          "INFO": 5,
+          "WARNING": 6516
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "decreasing_or_equal_stop_time_distance",
+          "count": 25,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+          "owner": "Likely your export tool",
+          "points": 18.0,
+          "severity": "ERROR",
+          "what": "Some trips have stop times whose distances along the route go backwards.",
+          "why": "Apps can show buses jumping backwards or mis-order stops."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates",
+          "count": 3,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 4882,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 922,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "non_ascii_or_non_printable_char",
+          "count": 441,
+          "effort": "A planned ID change, not a quick text cleanup.",
+          "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some internal IDs use characters outside the basic text set.",
+          "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
+          "count": 221,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Equal shape distance diff coordinates distance below threshold (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 44,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 4,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 1,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 5,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 19.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 11 kinds of issue across 6549 instances (28 error, 6516 warning, 5 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 146,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 146 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "coverage_pct": 72.7,
+        "covered_trips": 8,
+        "drift": {
+          "median_seconds": 13,
+          "observations": 212,
+          "on_time_share_pct": 26.9,
+          "p90_abs_seconds": 1399
+        },
+        "kinds_configured": 2,
+        "kinds_reachable": 2,
+        "reachable_kinds": [
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "rt_freshness": "fresh",
+        "samples": 6,
+        "scheduled_trips_in_window": 11,
+        "vehicles_checked": 24,
+        "vehicles_on_route_pct": 87.5,
+        "worst_lag_seconds": 0
+      },
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 3,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 9.5,
+          "severity": "WARNING",
+          "what": "3 of 11 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        },
+        {
+          "code": "scorecard_rt_vehicles_off_route",
+          "count": 3,
+          "effort": "A vendor support ticket with the trip ids attached.",
+          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
+          "owner": "",
+          "points": 1.9,
+          "severity": "WARNING",
+          "what": "3 of 24 sampled vehicle positions were far from their assigned route (worst: 491 m).",
+          "why": "A bus shown off its route usually means a wrong trip assignment; riders watch their bus drive the wrong streets."
+        }
+      ],
+      "name": "realtime",
+      "score": 88.6,
+      "status": "measured",
+      "summary": "Sampled 6 times: 2 of 2 configured feeds healthy; 72.7% of scheduled trips had live predictions; 87.5% of vehicles on their route; predictions ran a median of 13s behind schedule.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 6 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "2 validator errors to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 2 validator errors to resolve. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including commercial reuse is permitted with attribution to CA du Sud and the update date.",
+    "reachable": true,
+    "sha256": "a7b2d3265e680b7d72da59db4d3abda3285656c2b6cd17b926da5852900a9dee",
+    "size_bytes": 1339552,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/8f3642e3-9fc3-45ed-af46-8c532966ace3"
+  },
+  "fetch": {
+    "final_url": "https://static.data.gouv.fr/resources/referentiel-topologique-reseau-carsud/20251221-164735/gtfs-carsud-17122025v1.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      55.46025,
+      -21.38712,
+      55.80191,
+      -21.18229
+    ],
+    "lat": -21.28965,
+    "lon": 55.55829,
+    "stop_count": 2145
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 43,
+        "trip_count": 1352,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 43,
+    "trip_count": 1352
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 50.9,
+    "margin_to_next_band": 9.1,
+    "score": 50.9
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 10,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "10 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (73, 77, 78, 84, FLOR, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 27,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "27 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Gare Routi\u00e8re De St Pierre\", \"Grand Fond Int. / Ext.\", \"Coll\u00e8ge Bory St Vincent\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 2145,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 1352
+  },
+  "route_map": {
+    "drawn_route_count": 43,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-carsud/geometry.geojson",
+    "route_count": 43,
+    "routes": [
+      {
+        "color": "C1BFC0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "71",
+        "label": "71",
+        "long": "Gare St Joseph Les Goyaves Gare St Joseph",
+        "short": "71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BA549F",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "72",
+        "label": "72",
+        "long": "Plaine Des Gr\u00e8gues Carosse Gare Saint Joseph",
+        "short": "72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "262972",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "73",
+        "label": "73",
+        "long": "Bel Air Rampe De Bezaves Gare de Saint Joseph",
+        "short": "73",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "13A04E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "74",
+        "label": "74",
+        "long": "Plaine Des Gr\u00e8gues Cayenne Gare Saint Joseph",
+        "short": "74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F3EB0C",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "75",
+        "label": "75",
+        "long": "Grand Coude Jean Petit Gare Saint Joseph",
+        "short": "75",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "69BD45",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "76",
+        "label": "76",
+        "long": "Grand Galet La Passerelle Gare Saint Joseph",
+        "short": "76",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6CCCDE",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "76Bi",
+        "label": "76Bi",
+        "long": "Grand D\u00e9ffrich\u00e9 - La Passerelle - Gare St Jo",
+        "short": "76Bi",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3352A4",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "77",
+        "label": "77",
+        "long": "La Cr\u00e8te 1 Parc A Mouton Gare Saint Joseph",
+        "short": "77",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BB549F",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "77Bi",
+        "label": "77Bi",
+        "long": "Chemin Des Orties - Gare ST Joseph",
+        "short": "77Bi",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9E3E3F",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "78",
+        "label": "78",
+        "long": "La Cr\u00e8te RD 37 Les Jacques Gare St Joseph",
+        "short": "78",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808033",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "81",
+        "label": "81",
+        "long": "Jean Petit Aim\u00e9 Turpin C.Grosset Gare Saint Joseph",
+        "short": "81",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FEC00D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "83",
+        "label": "83",
+        "long": "Charri\u00e9  Les Lianes Gare de Saint Joseph",
+        "short": "83",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "087F81",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "84",
+        "label": "84",
+        "long": "Manapany Les Bains Centre Ville Vincendo",
+        "short": "84",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF7300",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ANA1",
+        "label": "ANA1",
+        "long": "Mairie23 Petite Ferme Coin Tranquille Sahale",
+        "short": "ANA1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF2600",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ANA2",
+        "label": "ANA2",
+        "long": "17e Km <--> 23e Km",
+        "short": "ANA2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D53F3F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ANA3",
+        "label": "ANA3",
+        "long": "23e Km Palais Fromage Les Genets",
+        "short": "ANA3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F3EB0C",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ED38",
+        "label": "ED38",
+        "long": "Gare ED - Bras Long - Grand Fond Ext Int",
+        "short": "ED38",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "69BD45",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "ED39",
+        "label": "ED39",
+        "long": "Gare ED-CD26-Arc En Ciel-Argamasse",
+        "short": "ED39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5900FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "FLOR",
+        "label": "FLOR",
+        "long": "Floribus Navette Centre Ville Tampon",
+        "short": "FLOR",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1100FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "GECK",
+        "label": "GECK",
+        "long": "GeckoBus Navette Centre Ville St Joseph",
+        "short": "GECK",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004CFF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "GERA",
+        "label": "GERA",
+        "long": "G\u00e9ranium Navette Centre Ville Entre-Deux",
+        "short": "GERA",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0091FF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "MAGM",
+        "label": "MAGM",
+        "long": "MagmaBus Navette Centre Ville St Philippe",
+        "short": "MAGM",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE1F25",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "STA",
+        "label": "STA",
+        "long": "Entre Deux - RDC - 3 Mares - Gare du Tampon",
+        "short": "STA",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE1F25",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "STC",
+        "label": "STC",
+        "long": "Gare Du Tampon <-> Gare Saint Joseph",
+        "short": "STC",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE1F25",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "STD",
+        "label": "STD",
+        "long": "Pointe  Tremblet  -Langevin - Gare St Joseph",
+        "short": "STD",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "919192",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "T01",
+        "label": "T01",
+        "long": "Petit Tampon - Gare Routi\u00e8re Du Tampon",
+        "short": "T01",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "919192",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "T01A",
+        "label": "T01A",
+        "long": "La Bergerie - Petit Tampon - Gare Routi\u00e8re Tampon",
+        "short": "T01A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "919192",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "T01B",
+        "label": "T01B",
+        "long": "Gare Routi\u00e8re Tampon - Petit Tampon - La Bergerie",
+        "short": "T01B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F05153",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "T02",
+        "label": "T02",
+        "long": "Mairie 23\u00e8me - Coin Tranquille - Gare Routi\u00e8re  TA",
+        "short": "T02",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F36F43",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "T03",
+        "label": "T03",
+        "long": "Mairie 23\u00e8me - Piton Hyacinthe - Gare Du Tampon",
+        "short": "T03",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F89730",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "T04",
+        "label": "T04",
+        "long": "Grand Tampon - Gare Routi\u00e8re Du Tampon",
+        "short": "T04",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7E277D",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "T05",
+        "label": "T05",
+        "long": "Ligne d'Equerre - B\u00e9rive - Gare du Tampon",
+        "short": "T05",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "919135",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "T05B",
+        "label": "T05B",
+        "long": "Eglise Berive - Ville Blanche - Eglise B\u00e9rive",
+        "short": "T05B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CE39",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "T06",
+        "label": "T06",
+        "long": "Gare Routi\u00e8re Du Tampon - Cit\u00e9 Cassiop\u00e9",
+        "short": "T06",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4F5121",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "T07",
+        "label": "T07",
+        "long": "Quatorzi\u00e8me - Gare Du Tampon - La Pointe",
+        "short": "T07",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "40B864",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "T08",
+        "label": "T08",
+        "long": "Boulodrome BC - Dachery/Fidelio Rbrt - GR Tampon",
+        "short": "T08",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6CCCDE",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "T09",
+        "label": "T09",
+        "long": "Rond Point 14\u00e8me - 3Mares - Gare Routi\u00e8re Tampon",
+        "short": "T09",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F3EB0C",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "T09B",
+        "label": "T09B",
+        "long": "Mairie 3Mares - Epidor - Courteline",
+        "short": "T09B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5D81C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "T11",
+        "label": "T11",
+        "long": "Gare De La Plaine Des Cafre - RN3 - Gare Du Tampon",
+        "short": "T11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F1B31A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "T12",
+        "label": "T12",
+        "long": "Mairie 23\u00e8me- Petite Ferme- Bois Court",
+        "short": "T12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EF549E",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "T12B",
+        "label": "T12B",
+        "long": "Mairie 23 - Ec Notre Dame De La Paix",
+        "short": "T12B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "050505",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "T13",
+        "label": "T13",
+        "long": "Mairie Pont D'Yves - 3Mares - Gare Du Tampon",
+        "short": "T13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "828133",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "T14",
+        "label": "T14",
+        "long": "14\u00e8me Ch Hermitage St\u00e9phane Trois Mares Gare Du TA",
+        "short": "T14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2145,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "decreasing_or_equal_stop_time_distance",
+      "count": 25,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+      "owner": "Likely your export tool",
+      "points": 18.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Some trips have stop times whose distances along the route go backwards.",
+      "why": "Apps can show buses jumping backwards or mis-order stops."
+    },
+    {
+      "code": "equal_shape_distance_diff_coordinates",
+      "count": 3,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 12.0,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 2145,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "2145 of 2145 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

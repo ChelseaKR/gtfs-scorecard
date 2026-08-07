@@ -1,0 +1,1455 @@
+{
+  "agency": {
+    "country": "LV",
+    "id": "rigas-satiksme",
+    "name": "R\u012bgas satiksme",
+    "operating_note": "Bus, tram, and trolleybus network of R\u012bga, operated by the municipal company R\u012bgas satiksme.",
+    "subdivision_code": "LV-RIX",
+    "subdivision_name": "R\u012bga"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 2.4,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 6.3
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.9
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 12767,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1660,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 12767,
+        "wheelchair_accessible_pct": 6.3,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1660,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "1660 of 1660 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 11964,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 14.1,
+          "severity": "WARNING",
+          "what": "11964 of 12767 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 38.4,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 8,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 24,
+          "WARNING": 522
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 431,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 90,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 14,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "transfer_distance_above_2_km",
+          "count": 6,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'transfer_distance_above_2_km' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Transfer distance above 2 km (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unknown_column",
+          "count": 2,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "platform_without_parent_station",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'platform_without_parent_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Platform without parent station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unknown_file",
+          "count": 1,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 77.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 8 kinds of issue across 546 instances (0 error, 522 warning, 24 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 359,
+        "effective_expiry_date": "2027-08-01",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2027-08-01",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 359 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 359 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 6% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 6% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC0 1.0 per the data.gov.lv \"R\u012bgas satiksme public transport routes\" dataset. The scored URL is the operator's stable production endpoint.",
+    "reachable": true,
+    "sha256": "150b5bbe7df78daf24dfa3a3f4326ab6ff2d3dd34f07341644e55a0d62fb45ab",
+    "size_bytes": 2812590,
+    "static_url": "https://saraksti.rigassatiksme.lv/gtfs.zip"
+  },
+  "fetch": {
+    "final_url": "https://saraksti.rigassatiksme.lv/gtfs.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-07T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      23.90414,
+      56.85944,
+      24.37973,
+      57.07655
+    ],
+    "lat": 56.95336,
+    "lon": 24.12492,
+    "stop_count": 1660
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 8,
+        "trip_count": 1780,
+        "trip_share_pct": 13.9
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 59,
+        "trip_count": 6274,
+        "trip_share_pct": 49.1
+      },
+      {
+        "key": "trolleybus",
+        "label": "Trolleybus",
+        "route_count": 23,
+        "trip_count": 4713,
+        "trip_share_pct": 36.9
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 90,
+    "trip_count": 12767
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 7.0,
+    "margin_to_next_band": 3.0,
+    "score": 67.0
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 82,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "82 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (2, 3, 4, 6, 7, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 50,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "50 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Kazarmu iela/Lielie kapi\", \"Kazarmu iela/Lielie kapi\", \"Kazarmu iela/Lielie kapi\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "routability": {
+    "boardable_stops": 1660,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 12767
+  },
+  "route_map": {
+    "drawn_route_count": 87,
+    "has_shapes": true,
+    "path": "data/artifacts/rigas-satiksme/geometry.geojson",
+    "route_count": 90,
+    "routes": [
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_10",
+        "label": "10",
+        "long": "Abrenes iela - Jaunm\u0101rupe",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_11",
+        "label": "11",
+        "long": "Abrenes iela - Jaunciems - Su\u017ei",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_12",
+        "label": "12",
+        "long": "Abrenes iela - Ziedonis",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_13",
+        "label": "13",
+        "long": "Bab\u012btes stacija - Kleisti - Pre\u010du 2",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_16",
+        "label": "16",
+        "long": "Abrenes iela - Sun\u012b\u0161i",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_18",
+        "label": "18",
+        "long": "D\u0101rzi\u0146i - \u0136engarags",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_2",
+        "label": "2",
+        "long": "Abrenes iela - Vecm\u012blgr\u0101vis",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_20",
+        "label": "20",
+        "long": "P\u0113tersala - P\u013cavnieku kapi",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_21",
+        "label": "21",
+        "long": "Imanta - Jugla",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_22",
+        "label": "22",
+        "long": "Abrenes iela - Lidosta",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_23",
+        "label": "23",
+        "long": "Abrenes iela - Balo\u017ei",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_24",
+        "label": "24",
+        "long": "Abrenes iela - Manga\u013csala",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_25",
+        "label": "25",
+        "long": "Abrenes iela - M\u0101rupe",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_26",
+        "label": "26",
+        "long": "Abrenes iela - Katlakalns",
+        "short": "26",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_28",
+        "label": "28",
+        "long": "Jugla - Langsti\u0146i",
+        "short": "28",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_29",
+        "label": "29",
+        "long": "Me\u017eciems - Vecm\u012blgr\u0101vis",
+        "short": "29",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_3",
+        "label": "3",
+        "long": "Daugavgr\u012bva - P\u013cavnieki",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_30",
+        "label": "30",
+        "long": "Centr\u0101l\u0101 stacija - Daugavgr\u012bva",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_31",
+        "label": "31",
+        "long": "Jugla - \u0136engarags",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_32",
+        "label": "32",
+        "long": "Abrenes iela - Pi\u0146\u0137i",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_33",
+        "label": "33",
+        "long": "D\u0101rzciems - Jugla",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_34",
+        "label": "34",
+        "long": "Centr\u0101ltirgus - Saul\u012b\u0161i",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_36",
+        "label": "36",
+        "long": "Imanta - Vakarbu\u013c\u013ci",
+        "short": "36",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_37",
+        "label": "37",
+        "long": "Esplan\u0101de - Imanta",
+        "short": "37",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_38",
+        "label": "38",
+        "long": "Abrenes iela - Dzirciema iela",
+        "short": "38",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_39",
+        "label": "39",
+        "long": "Abrenes iela - L\u0101\u010dupes kapi",
+        "short": "39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_4",
+        "label": "4",
+        "long": "Abrenes iela - Pi\u0146\u0137i",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_41",
+        "label": "41",
+        "long": "Esplan\u0101de - Imanta",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_43",
+        "label": "43",
+        "long": "Abrenes iela - Skulte",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_44",
+        "label": "44",
+        "long": "Ziepniekkalns - Zolit\u016bde",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_45",
+        "label": "45",
+        "long": "Jugla - \u0136engarags",
+        "short": "45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_46",
+        "label": "46",
+        "long": "Ziepniekkalns - Zolit\u016bde",
+        "short": "46",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_47",
+        "label": "47",
+        "long": "Purvciems - Getli\u0146i",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_48",
+        "label": "48",
+        "long": "P\u013cavnieku kapi - Sarkandaugava",
+        "short": "48",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_49",
+        "label": "49",
+        "long": "Daudersala - \u0136engarags",
+        "short": "49",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_50",
+        "label": "50",
+        "long": "Abrenes iela - TEC 2",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_51",
+        "label": "51",
+        "long": "Abrenes iela - Ulbroka",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_52",
+        "label": "52",
+        "long": "Abrenes iela - P\u013cavnieku kapi",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_53",
+        "label": "53",
+        "long": "Esplan\u0101de - Zolit\u016bde",
+        "short": "53",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_54",
+        "label": "54",
+        "long": "Bot\u0101niskais d\u0101rzs - Voleri",
+        "short": "54",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_55",
+        "label": "55",
+        "long": "Abrenes iela - Jaunm\u0101rupe",
+        "short": "55",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_56",
+        "label": "56",
+        "long": "Daugavgr\u012bva - Ziepniekkalns",
+        "short": "56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_57",
+        "label": "57",
+        "long": "\u0136\u012bpsala - Tor\u0146akalna stacija",
+        "short": "57",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_58",
+        "label": "58",
+        "long": "Purvciems - Vecm\u012blgr\u0101vis - Vec\u0101\u0137i",
+        "short": "58",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_6",
+        "label": "6",
+        "long": "Abrenes iela - Bi\u0137eri",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_60",
+        "label": "60",
+        "long": "\u0136engarags - Ziepniekkalns",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_63",
+        "label": "63",
+        "long": "Me\u017eciems - \u0160amp\u0113teris",
+        "short": "63",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_7",
+        "label": "7",
+        "long": "Abrenes iela - St\u012bpnieki",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_8",
+        "label": "8",
+        "long": "Stacijas laukums - Zolit\u016bde",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "riga_bus_9",
+        "label": "9",
+        "long": "Abrenes iela - Me\u017eaparks",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4B427",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "riga_bus_99",
+        "label": "99",
+        "long": "R\u012aGAS SATIKSME",
+        "short": "99",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "riga_nightbus_N1",
+        "label": "N1",
+        "long": "Centrs - Teika - Jugla - Me\u017eciems - Centrs",
+        "short": "N1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "riga_nightbus_N10",
+        "label": "N10",
+        "long": "Centrs - Tor\u0146akalns - Ziepniekkalns - Centrs",
+        "short": "N10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "riga_nightbus_N2",
+        "label": "N2",
+        "long": "Centrs - Sarkandaugava - Vecm\u012blgr\u0101vis",
+        "short": "N2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "riga_nightbus_N22",
+        "label": "N22",
+        "long": "Centrs - Lidosta",
+        "short": "N22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "riga_nightbus_N3",
+        "label": "N3",
+        "long": "Centrs - I\u013c\u0123uciems - Daugavgr\u012bva",
+        "short": "N3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "riga_nightbus_N4",
+        "label": "N4",
+        "long": "Centrs - Imanta - Zolit\u016bde - \u0100genskalns - Centrs",
+        "short": "N4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "riga_nightbus_N6",
+        "label": "N6",
+        "long": "Centrs - Purvciems - P\u013cavnieki - D\u0101rzciems - Centrs",
+        "short": "N6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "riga_nightbus_N7",
+        "label": "N7",
+        "long": "Centrs - \u0136engarags - Latgales iela - Centrs",
+        "short": "N7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF000C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "riga_tram_1",
+        "label": "1",
+        "long": "Imanta - Jugla",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "FF000C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "riga_tram_10",
+        "label": "10",
+        "long": "Centr\u0101ltirgus - Bi\u0161umui\u017ea",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "FF000C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "riga_tram_11",
+        "label": "11",
+        "long": "Ausek\u013ca iela - Me\u017eaparks",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "FF000C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "riga_tram_14",
+        "label": "14",
+        "long": "I\u013c\u0123uciems - \u0136engarags",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "FF000C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "riga_tram_5",
+        "label": "5",
+        "long": "I\u013c\u0123uciems - M\u012blgr\u0101vis",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "FF000C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "riga_tram_7",
+        "label": "7",
+        "long": "Ausek\u013ca iela - \u0136engarags",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "FF000C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "riga_tram_8",
+        "label": "8",
+        "long": "M\u012blgr\u0101vis - Tape\u0161u iela",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "FF000C",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "riga_tram_99",
+        "label": "99",
+        "long": "R\u012aGAS SATIKSME",
+        "short": "99",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_1",
+        "label": "1",
+        "long": "Valmieras iela - P\u0113tersala",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_11",
+        "label": "11",
+        "long": "Centr\u0101l\u0101 stacija - Ieri\u0137u iela",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_12",
+        "label": "12",
+        "long": "\u0100genskalna priedes - \u0160merlis",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_13",
+        "label": "13",
+        "long": "Centr\u0101ltirgus - Ieri\u0137u iela",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_14",
+        "label": "14",
+        "long": "Esplan\u0101de - Me\u017eciems",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_15",
+        "label": "15",
+        "long": "Latvijas Universit\u0101te - \u0136engarags",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_16",
+        "label": "16",
+        "long": "P\u013cavnieki - \u0160merlis",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_17",
+        "label": "17",
+        "long": "Centr\u0101l\u0101 stacija - Purvciems",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_18",
+        "label": "18",
+        "long": "Centr\u0101l\u0101 stacija - Me\u017eciems",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_19",
+        "label": "19",
+        "long": "P\u0113tersala - Ziepniekkalns",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_20",
+        "label": "20",
+        "long": "Latvijas Universit\u0101te - Telev\u012bzijas centrs",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_22",
+        "label": "22",
+        "long": "Centr\u0101l\u0101 stacija - P\u013cavnieki",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_23",
+        "label": "23",
+        "long": "Centr\u0101l\u0101 stacija - Purvciems",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_25",
+        "label": "25",
+        "long": "Br\u012bv\u012bbas iela - I\u013c\u0123uciems",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_27",
+        "label": "27",
+        "long": "Stacijas laukums - Ziepniekkalns",
+        "short": "27",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_3",
+        "label": "3",
+        "long": "Centr\u0101ltirgus - Sarkandaugava",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_31",
+        "label": "31",
+        "long": "Centr\u0101ltirgus - Ber\u0123uciems",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_34",
+        "label": "34",
+        "long": "Centr\u0101ltirgus - Maz\u0101 Juglas iela",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_35",
+        "label": "35",
+        "long": "Centr\u0101ltirgus - Me\u017eciems",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_4",
+        "label": "4",
+        "long": "Jugla - Ziepniekkalns",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_5",
+        "label": "5",
+        "long": "Daugavas stadions - Paula Stradi\u0146a slimn\u012bca",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "riga_trol_9",
+        "label": "9",
+        "long": "Stacijas laukums - I\u013c\u0123uciems",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "009DE0",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "riga_trol_99",
+        "label": "99",
+        "long": "APS TEST 1",
+        "short": "99",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      }
+    ],
+    "stop_count": 1660,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1660,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "1660 of 1660 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

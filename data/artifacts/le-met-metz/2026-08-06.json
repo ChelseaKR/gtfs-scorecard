@@ -1,0 +1,1380 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "le-met-metz",
+    "name": "LE MET' (Metz)",
+    "subdivision_code": "FR-GES",
+    "subdivision_name": "Grand-Est"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 62.1,
+          "stops_marked_accessible_pct": 39.4,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 39.4,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 0.3,
+          "wheelchair_stops": 9.8,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 13633,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 1.7,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1590,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 13633,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 39.4,
+        "wheelchair_marked_accessible_pct": 39.4,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 964,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 15.2,
+          "severity": "WARNING",
+          "what": "964 of 1590 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 1563,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 14.7,
+          "severity": "INFO",
+          "what": "About 1563 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 47.6,
+      "status": "measured",
+      "summary": "39% of stops state wheelchair accessibility (39% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 4,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 1,
+          "WARNING": 1055
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 725,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
+          "count": 329,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Equal shape distance diff coordinates distance below threshold (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "unknown_column",
+          "count": 1,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        }
+      ],
+      "name": "correctness",
+      "score": 79.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 1056 instances (0 error, 1055 warning, 1 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 24,
+        "effective_expiry_date": "2026-08-30",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-08-30",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expiring_soon",
+          "count": 1,
+          "effort": "One export setting.",
+          "fix": "Re-export with a validity window that reaches at least 60 days out.",
+          "owner": "Likely your export tool",
+          "points": 56.0,
+          "severity": "WARNING",
+          "what": "Service data runs out in 24 day(s).",
+          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+        },
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 25.0,
+      "status": "measured",
+      "summary": "Service data runs out in 24 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data runs out in 25 days; renew to qualify.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 39% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. Service data runs out in 25 days; renew to qualify. States wheelchair access on 39% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0; published by the Eurom\u00e9tropole de Metz through France's National Access Point. Derived measurements by GTFS Scorecard.",
+    "reachable": true,
+    "sha256": "442b1745c26eb90e668d3570c95b401a40b7cbbfd6586fe62da340881ddae41b",
+    "size_bytes": 3636364,
+    "static_url": "https://data.lemet.fr/documents/LEMET-gtfs.zip"
+  },
+  "ferry_profile": {
+    "accessibility": {
+      "measures": "published_values_not_physical_usability",
+      "terminals": {
+        "allowed_count": 6,
+        "allowed_pct": 100.0,
+        "not_allowed_count": 0,
+        "not_allowed_pct": 0.0,
+        "stated_count": 6,
+        "stated_pct": 100.0,
+        "total_count": 6
+      },
+      "trips": {
+        "allowed_count": 144,
+        "allowed_pct": 100.0,
+        "not_allowed_count": 0,
+        "not_allowed_pct": 0.0,
+        "stated_count": 144,
+        "stated_pct": 100.0,
+        "total_count": 144
+      }
+    },
+    "bikes": {
+      "allowed_count": 0,
+      "allowed_pct": 0.0,
+      "not_allowed_count": 144,
+      "not_allowed_pct": 100.0,
+      "stated_count": 144,
+      "stated_pct": 100.0,
+      "total_count": 144
+    },
+    "cars": {
+      "allowed_count": 0,
+      "allowed_pct": 0.0,
+      "not_allowed_count": 0,
+      "not_allowed_pct": 0.0,
+      "stated_count": 0,
+      "stated_pct": 0.0,
+      "total_count": 144
+    },
+    "fares": {
+      "applied": false,
+      "fare_free": false,
+      "model": "none",
+      "scope": "whole_feed"
+    },
+    "graded": false,
+    "measured": true,
+    "realtime": {
+      "configured_kinds": [],
+      "kinds_configured": 0,
+      "scope": "whole_feed"
+    },
+    "route_count": 2,
+    "scope": "ferry_routes_and_trips",
+    "stop_access": {
+      "direct_count": 0,
+      "eligible_terminal_count": 6,
+      "stated_count": 0,
+      "stated_pct": 0.0,
+      "through_station_count": 0
+    },
+    "terminal_hierarchy": {
+      "boarding_location_count": 6,
+      "parented_boarding_location_count": 6,
+      "parented_boarding_location_pct": 100.0,
+      "referenced_station_count": 6
+    },
+    "trip_count": 144
+  },
+  "fetch": {
+    "final_url": "https://data.lemet.fr/documents/LEMET-gtfs.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      6.00312,
+      48.97574,
+      6.32448,
+      49.20366
+    ],
+    "lat": 49.11082,
+    "lon": 6.16951,
+    "stop_count": 1590
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": true,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 76,
+        "trip_count": 13489,
+        "trip_share_pct": 98.9
+      },
+      {
+        "key": "ferry",
+        "label": "Ferry",
+        "route_count": 2,
+        "trip_count": 144,
+        "trip_share_pct": 1.1
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 78,
+    "trip_count": 13633
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 55.9,
+    "margin_to_next_band": 4.1,
+    "score": 55.9
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 6,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "6 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (C12, C13, C14, C15, C16, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 27,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "27 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"CROIX ST JOSEPH\", \"CROISEMENT RD6\", \"P+R ROCHAMBEAU\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1036,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 13633
+  },
+  "route_map": {
+    "drawn_route_count": 43,
+    "has_shapes": true,
+    "path": "data/artifacts/le-met-metz/geometry.geojson",
+    "route_count": 78,
+    "routes": [
+      {
+        "color": "B22E75",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "1",
+        "label": "L1",
+        "long": "MOULINS TOURNEBRIDE - LA CORCHADE",
+        "short": "L1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "97BF0D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "101",
+        "label": "P101",
+        "long": "POLE D'ECHANGES MULTIMODAL (PEM) - COIN-SUR-SEILLE",
+        "short": "P101",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "97BF0D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "102",
+        "label": "P102",
+        "long": "POLE D'ECHANGES MULTIMODAL (PEM) - MARDIGNY",
+        "short": "P102",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "97BF0D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "103",
+        "label": "P103",
+        "long": "ROI GEORGE - VERNEVILLE",
+        "short": "P103",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "97BF0D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "105",
+        "label": "P105",
+        "long": "INTENDANTS JOBA - WOIPPY BELLEVUE",
+        "short": "P105",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "97BF0D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "106",
+        "label": "P106",
+        "long": "SQUARE DU LUXEMBOURG - AMANVILLERS",
+        "short": "P106",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "97BF0D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "107",
+        "label": "P107",
+        "long": "SQUARE DU LUXEMBOURG - RONCOURT",
+        "short": "P107",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "97BF0D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "108",
+        "label": "P108",
+        "long": "TANNERIE - VANY",
+        "short": "P108",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "97BF0D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "110",
+        "label": "P110",
+        "long": "INTENDANTS JOBA - WOIPPY ST-REMY",
+        "short": "P110",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "97BF0D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "111",
+        "label": "P111",
+        "long": "SQUARE DU LUXEMBOURG - LA MAXE",
+        "short": "P111",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "97BF0D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "112",
+        "label": "P112",
+        "long": "GRANDES ECOLES - LAQUENEXY",
+        "short": "P112",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "97BF0D",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "113",
+        "label": "P113",
+        "long": "P+R FAUBOURG - POUILLY",
+        "short": "P113",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A8BE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "12",
+        "label": "C12",
+        "long": "GRANGE AUX BOIS - REPUBLIQUE",
+        "short": "C12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A8BE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "13",
+        "label": "C13",
+        "long": "NOISSEVILLE - COSTES ET BELLONTE",
+        "short": "C13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A8BE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "14",
+        "label": "C14",
+        "long": "MARCHE DE BORNY - MOULINS MAIRIE",
+        "short": "C14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A8BE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "15",
+        "label": "C15",
+        "long": "MONTIGNY BLORY - PLAPPEVILLE",
+        "short": "C15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A8BE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "16",
+        "label": "C16",
+        "long": "WOIPPY - INTENDANTS JOBA",
+        "short": "C16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A8BE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "17",
+        "label": "C17",
+        "long": "HOPITAL SCHUMAN - MOULINS TOURNEBRIDE",
+        "short": "C17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "18",
+        "label": "N18",
+        "long": "SQUARE DU LUXEMBOURG - ST-JULIEN FORT",
+        "short": "N18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "19",
+        "label": "N19",
+        "long": "NAVETTE LONGEVILLE (TAD)",
+        "short": "N19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B22E75",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "2",
+        "label": "L2",
+        "long": "REPUBLIQUE - MARLY",
+        "short": "L2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "200",
+        "label": "S200",
+        "long": "Scolaire VAUX - PREVILLE",
+        "short": "S200",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "201",
+        "label": "S201",
+        "long": "Scolaire ROZERIEULLES / JUSSY - PREVILLE",
+        "short": "S201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "202",
+        "label": "S202",
+        "long": "Scolaire CHATEL MAIRIE - LESSY - PREVILLE",
+        "short": "S202",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "203",
+        "label": "S203",
+        "long": "Scolaire SCY-CHAZELLES - PREVILLE",
+        "short": "S203",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "204",
+        "label": "S204",
+        "long": "Scolaire SCY CHAZELLES - SCY BAS",
+        "short": "S204",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "205",
+        "label": "S205",
+        "long": "Scolaire VANTOUX - NOUILLY",
+        "short": "S205",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "206",
+        "label": "S206",
+        "long": "Scolaire LONGEVILLE - PREVILLE",
+        "short": "S206",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "207",
+        "label": "S207",
+        "long": "Scolaire LAQUENEXY - ST MAXIMIN",
+        "short": "S207",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "208",
+        "label": "S208",
+        "long": "Scolaire IME JUSSY - MAISON NEUVE",
+        "short": "S208",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "212",
+        "label": "S212",
+        "long": "Scolaire LES VALLONS - JURY via VSP",
+        "short": "S212",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "213",
+        "label": "S213",
+        "long": "Scolaire JURY - PELTRE - MECLEUVES - CHESNY - C.E.S. MAGNY",
+        "short": "S213",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "272",
+        "label": "S272",
+        "long": "Scolaire GRANGE AUX BOIS - GIRAUDOUX",
+        "short": "S272",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "273",
+        "label": "S273",
+        "long": "Scolaire LA MAXE - P.E.M.",
+        "short": "S273",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "278",
+        "label": "S278",
+        "long": "Scolaire SERRET - LEP CITROEN",
+        "short": "S278",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "281",
+        "label": "S281",
+        "long": "Scolaire HAUTS DE VALLIERES - GIRAUDOUX",
+        "short": "S281",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "282",
+        "label": "S282",
+        "long": "Scolaire CARRIERES - ARAGO",
+        "short": "S282",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "283",
+        "label": "S283",
+        "long": "Scolaire CHIEULLES VANY - MEY - LYCEE R S.",
+        "short": "S283",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "284",
+        "label": "S284",
+        "long": "Scolaire VANY CHIEULLES - JULES LAGNEAU",
+        "short": "S284",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "285",
+        "label": "S285",
+        "long": "Scolaire NOISSEVILLE - JULES LAGNEAU - INSTITUTION DE LA SALLE",
+        "short": "S285",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "286",
+        "label": "S286",
+        "long": "Scolaire PLAPPEVILLE - BAN ST MARTIN",
+        "short": "S286",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "287",
+        "label": "S287",
+        "long": "Scolaire MARIEULLES - MERMOZ",
+        "short": "S287",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "288",
+        "label": "S288",
+        "long": "Scolaire COIN SUR SEILLE - MERMOZ",
+        "short": "S288",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "289",
+        "label": "S289",
+        "long": "Scolaire CUVRY - MERMOZ",
+        "short": "S289",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "290",
+        "label": "S290",
+        "long": "Scolaire AUGNY - MERMOZ",
+        "short": "S290",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "291",
+        "label": "S291",
+        "long": "Scolaire FEY - VEZON",
+        "short": "S291",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "292",
+        "label": "S292",
+        "long": "Scolaire GRANGE AUX BOIS - P. VALERY - BELLETANCHE",
+        "short": "S292",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "296",
+        "label": "S296",
+        "long": "Scolaire LORRY - COLLEGE J. BAUCHEZ",
+        "short": "S296",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "297",
+        "label": "S297",
+        "long": "Scolaire SAULNY - COLLEGE PIERRE MENDES France",
+        "short": "S297",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "299",
+        "label": "S299",
+        "long": "Scolaire ST PRIVAT LA MONTAGNE - P.E.M.",
+        "short": "S299",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B22E75",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "3",
+        "label": "L3",
+        "long": "WOIPPY LE PATIS - COSTES ET BELLONTE",
+        "short": "L3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B22E75",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4",
+        "label": "L4",
+        "long": "GRANGE AUX BOIS - PLAPPEVILLE / DEVANT LES PONTS",
+        "short": "L4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B22E75",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "5",
+        "label": "L5",
+        "long": "MAGNY - MAISON NEUVE",
+        "short": "L5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B22E75",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "6",
+        "label": "L6",
+        "long": "ST-JULIEN-LES-METZ - DEVANT LES PONTS",
+        "short": "L6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "70",
+        "label": "N70",
+        "long": "FRESCATY (AMAZON) - POLE D'ECHANGES MULTIMODAL (PEM)",
+        "short": "N70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "71",
+        "label": "N71",
+        "long": "MARCHE BORNY - ST-JULIEN-LES-METZ",
+        "short": "N71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "81",
+        "label": "N81",
+        "long": "CITY",
+        "short": "N81",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "82",
+        "label": "N82",
+        "long": "MARLY - LES ALIZES",
+        "short": "N82",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "83",
+        "label": "N83",
+        "long": "CENTRE POMPIDOU METZ - PREFECTURE",
+        "short": "N83",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "84a",
+        "label": "N84a",
+        "long": "NAVETTE ACTISUD",
+        "short": "N84a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "84b",
+        "label": "N84b",
+        "long": "NAVETTE AUGNY - TOURNEBRIDE",
+        "short": "N84b",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "85",
+        "label": "N85",
+        "long": "CENTRE POMPIDOU METZ - COTEAUX DE LA SEILLE",
+        "short": "N85",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "86",
+        "label": "N86",
+        "long": "MAISON NEUVE - JUSSY",
+        "short": "N86",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "87",
+        "label": "N87",
+        "long": "MAISON NEUVE - CHATEL ST GERMAIN",
+        "short": "N87",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "88",
+        "label": "N88",
+        "long": "MAISON NEUVE - LESSY",
+        "short": "N88",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "89",
+        "label": "N89",
+        "long": "EN PRILLE - SCY-CHAZELLES",
+        "short": "N89",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "90",
+        "label": "N90",
+        "long": "MOULINS-LES-METZ - VAUX",
+        "short": "N90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "92",
+        "label": "N92",
+        "long": "PELTRE > MERCY > JURY > M\u0083CLEUVES > CHESNY > PELTRE",
+        "short": "N92",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "914F19",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "93",
+        "label": "N93",
+        "long": "PELTRE > MERCY > JURY > M\u0083CLEUVES > CHESNY > PELTRE",
+        "short": "N93",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0980F",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "A",
+        "label": "MA",
+        "long": "BORNY / HOPITAL SCHUMAN - WOIPPY ST-ELOY",
+        "short": "MA",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0980F",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "B",
+        "label": "MB",
+        "long": "HOPITAL MERCY - UNIVERSITE SAULCY",
+        "short": "MB",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004AA3",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "F1",
+        "label": "F1",
+        "long": "FLEXO 1 - DEVANT LES PONTS / WOIPPY",
+        "short": "F1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004AA3",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "F2",
+        "label": "F2",
+        "long": "FLEXO 2 - KINEPOLIS / CORCHADE / QUEULEU / GR. AUX BOIS",
+        "short": "F2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004AA3",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "F3",
+        "label": "F3",
+        "long": "FLEXO 3 - MONTIGNY / MARLY / MAGNY",
+        "short": "F3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004AA3",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "F4",
+        "label": "F4",
+        "long": "FLEXO 4 - MONTIGNY / MOULINS / MAISON NEUVE",
+        "short": "F4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004AA3",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "F5",
+        "label": "F5",
+        "long": "FLEXO 5 - KINEPOLIS / REPUBLIQUE / SAULNY",
+        "short": "F5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "66BEB0",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "O1",
+        "label": "O1",
+        "long": "MOYEN PONT - LONGEVILLE CENTRE",
+        "short": "O1",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      },
+      {
+        "color": "66BEB0",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "O2",
+        "label": "O2",
+        "long": "MOYEN PONT - MOULINS-LES-METZ",
+        "short": "O2",
+        "text_color": "000000",
+        "type_label": "Ferry"
+      }
+    ],
+    "stop_count": 1590,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expiring_soon",
+      "count": 1,
+      "effort": "One export setting.",
+      "fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "owner": "Likely your export tool",
+      "points": 56.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "Service data runs out in 24 day(s).",
+      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 964,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 15.2,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "964 of 1590 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

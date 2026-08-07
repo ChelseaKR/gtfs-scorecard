@@ -1,0 +1,888 @@
+{
+  "agency": {
+    "id": "san-joaquin-regional-transit-district-rtd",
+    "name": "San Joaquin Regional Transit District (RTD)",
+    "subdivision_code": "US-CA",
+    "subdivision_name": "California"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 37.5,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 14.8,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": true,
+          "has_products": true,
+          "has_transfer_rules": true,
+          "model": "v2",
+          "product_count": 50
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 2339,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 98.8,
+        "headsign_scored_pct": 98.8,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 898,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 2339,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 898,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "898 of 898 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 28,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.2,
+          "severity": "WARNING",
+          "what": "28 of 2339 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        }
+      ],
+      "name": "completeness",
+      "score": 74.8,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 6,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 2,
+          "WARNING": 505
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 427,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 44,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "fast_travel_between_far_stops",
+          "count": 30,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'fast_travel_between_far_stops' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Fast travel between far stops (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 3,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 1,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 2,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 71.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 507 instances (0 error, 505 warning, 2 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 170,
+        "effective_expiry_date": "2027-01-23",
+        "feed_end_date": "2027-01-23",
+        "feed_start_date": "2026-07-26",
+        "feed_version": "20260726-20270123",
+        "has_feed_info": true,
+        "last_service_date": "2027-01-23",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 170 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "mirror",
+    "level": "provisional",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 171 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "License: http://sanjoaquinrtd.com/preview/terms-of-use/",
+    "reachable": true,
+    "sha256": "f6b2a9ec8d0a80e2c9581e529dab6be9a4406c4ea09a939dd1d22139f8f3f613",
+    "size_bytes": 929621,
+    "static_url": "http://sjrtd.com/RTD-GTFS/RTD-GTFS.zip"
+  },
+  "fetch": {
+    "final_url": "https://files.mobilitydatabase.org/mdb-886/latest.zip",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "reader_archive_profile": "raw-v1",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -121.89784,
+      37.70279,
+      -120.99476,
+      38.58006
+    ],
+    "lat": 37.96921,
+    "lon": -121.29531,
+    "stop_count": 898
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 42,
+        "trip_count": 2339,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 42,
+    "trip_count": 2339
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "90012"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data covers the next 171 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "ready",
+    "summary": "Published at a public URL, valid, current, and identified with agency_id: the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 filings make that official; this is a heads-up, not a determination."
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 9.7,
+    "margin_to_next_band": 0.3,
+    "score": 79.7
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 7,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "7 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (340, 360, 378, 380, 510, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 898,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 2339
+  },
+  "route_map": {
+    "drawn_route_count": 42,
+    "has_shapes": true,
+    "path": "data/artifacts/san-joaquin-regional-transit-district-rtd/geometry.geojson",
+    "route_count": 42,
+    "routes": [
+      {
+        "color": "00BCE4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "MTS-March-Quaillakes",
+        "short": "1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "150",
+        "label": "150",
+        "long": "Stockton-BART",
+        "short": "150",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "163",
+        "label": "163",
+        "long": "Stockton-Lodi-Sacramento",
+        "short": "163",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "49A942",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "MTS-Swain-Plymouth-Hammer",
+        "short": "2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EFBA37",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "MTS-Knickerbocker-Hammer",
+        "short": "3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F16D9A",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "315",
+        "label": "315",
+        "long": "Houston-Mlk-Sanjoaquin-Dtc",
+        "short": "315",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F78E1E",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "340",
+        "label": "340",
+        "long": "Myrtle-Alpine-Holman-Morada",
+        "short": "340",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFB913",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "345",
+        "label": "345",
+        "long": "MTS-Kermit-Hammer-Kaiser",
+        "short": "345",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B38808",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "360",
+        "label": "360",
+        "long": "Dtc-Harding-Alpine-Holman",
+        "short": "360",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D79CC3",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "375",
+        "label": "375",
+        "long": "Calworks-Cherokee-Holman-Morada",
+        "short": "375",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "378",
+        "label": "378",
+        "long": "Section-Dtc-MTS",
+        "short": "378",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8A8D09",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "380",
+        "label": "380",
+        "long": "10Th-Farmington-Oro-Myrtle",
+        "short": "380",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D60D8C",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "385",
+        "label": "385",
+        "long": "Boeing-B-Oro-Myrtle-Dtc",
+        "short": "385",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFD478",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "390",
+        "label": "390",
+        "long": "Pock-Oro-Myrtle-Dtc",
+        "short": "390",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D31245",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "4",
+        "label": "4",
+        "long": "Dtc-Pixiewoods-MTS",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "872434",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "40",
+        "label": "40",
+        "long": "Dtc-Malls-HTS",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "872434",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "43",
+        "label": "43",
+        "long": "Hammer-HTS-Walmart",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "872434",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "44",
+        "label": "44",
+        "long": "Ralph-Airport-Ace-Dtc",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "872434",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "47",
+        "label": "47",
+        "long": "Dmv-Dtc-Myrtle/Oro",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "872434",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "49",
+        "label": "49",
+        "long": "Edison-Mlk-UTS-Mariposa",
+        "short": "49",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F57E20",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "5",
+        "label": "5",
+        "long": "Dtc-California-MTS",
+        "short": "5",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EF4135",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "510",
+        "label": "510",
+        "long": "Sjchospital-Amtrak-Dtc",
+        "short": "510",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C1D82F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "515",
+        "label": "515",
+        "long": "8Th-Lincoln-Dtc",
+        "short": "515",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D18316",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "520",
+        "label": "520",
+        "long": "Dtc-California-Kaiser",
+        "short": "520",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BA9DCA",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "525",
+        "label": "525",
+        "long": "Dtc-Main-Gertrude",
+        "short": "525",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "540",
+        "label": "540",
+        "long": "Dtc-Hammerlane",
+        "short": "540",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "97005E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "545",
+        "label": "545",
+        "long": "Dtc-Countryclub-MTS",
+        "short": "545",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "629080",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "555",
+        "label": "555",
+        "long": "Mlkblvd-Stanislaus-Dtc",
+        "short": "555",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D60D8C",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "566",
+        "label": "566",
+        "long": "Poncedeleon-Hickock-Spanosparkwest",
+        "short": "566",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "571",
+        "label": "571",
+        "long": "Rosemarie-MTS-Bianchi-Holman",
+        "short": "571",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005596",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "576",
+        "label": "576",
+        "long": "Dtc-Eastlandplaza-Sanguinetti",
+        "short": "576",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDB913",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "578",
+        "label": "578",
+        "long": "Dtc-Acacia-Pershing-MTS",
+        "short": "578",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4C182",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "580",
+        "label": "580",
+        "long": "Oro-B-Wilson-Dtc",
+        "short": "580",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A54399",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "6",
+        "label": "6",
+        "long": "MTS-Hammertown-Lorriane",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "793",
+        "label": "793",
+        "long": "Stockton-Lodi",
+        "short": "793",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "797",
+        "label": "797",
+        "long": "Tracy-Lathrop-Stockton-Manteca",
+        "short": "797",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A88F",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "9",
+        "label": "9",
+        "long": "Dtc-Wilson-Waterloo-Wilcox",
+        "short": "9",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "49A942",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "90",
+        "label": "90",
+        "long": "Stockton-Lathrop-Tracy",
+        "short": "90",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "49A942",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "91",
+        "label": "91",
+        "long": "Stockton-Manteca-Ripon",
+        "short": "91",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "49A942",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "93",
+        "label": "93",
+        "long": "Stockton-Lodi",
+        "short": "93",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "95",
+        "label": "95",
+        "long": "Stockton-Manteca-Escalon",
+        "short": "95",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "49A942",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "97",
+        "label": "97",
+        "long": "Tracy-Lathrop-Manteca",
+        "short": "97",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 898,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 2339 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 2339,
+    "trips_with_shape": 2339
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 898,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "898 of 898 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "stop_too_far_from_shape_using_user_distance",
+      "count": 427,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+      "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+    },
+    {
+      "code": "fast_travel_between_consecutive_stops",
+      "count": 44,
+      "effort": "A few minutes per flagged trip.",
+      "fix": "Check the flagged stop times for transposed minutes.",
+      "owner": "",
+      "points": 6.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some scheduled trips move faster between stops than a bus can.",
+      "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

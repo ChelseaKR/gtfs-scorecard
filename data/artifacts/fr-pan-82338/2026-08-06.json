@@ -1,0 +1,1567 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-pan-82338",
+    "name": "R\u00e9seau interurbain - Gironde (33)",
+    "subdivision_code": "FR-NAQ",
+    "subdivision_name": "Nouvelle-Aquitaine"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 53.4,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 85.4,
+          "stops_stated_pct": 85.4,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 21.4,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 2786,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.8,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 6206,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 2786,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 85.4,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 85.4
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 903,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 3.6,
+          "severity": "WARNING",
+          "what": "903 of 6206 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 2786,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "2786 of 2786 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 58.8,
+      "status": "measured",
+      "summary": "85% of stops state wheelchair accessibility (0% marked accessible, 85% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 13,
+        "instances_by_severity": {
+          "ERROR": 105,
+          "INFO": 2844,
+          "WARNING": 3273
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "decreasing_or_equal_stop_time_distance",
+          "count": 105,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+          "owner": "Likely your export tool",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Some trips have stop times whose distances along the route go backwards.",
+          "why": "Apps can show buses jumping backwards or mis-order stops."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 3137,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 46,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "unexpected_enum_value",
+          "count": 41,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unexpected_enum_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Unexpected enum value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "same_name_and_description_for_stop",
+          "count": 16,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Same name and description for stop (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 14,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 10,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "fast_travel_between_far_stops",
+          "count": 5,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'fast_travel_between_far_stops' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Fast travel between far stops (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 2,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "trip_coverage_not_active_for_next7_days",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Trim past service periods the next time you export.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Many of the feed's trips don't run at all in the next 7 days.",
+          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
+        },
+        {
+          "code": "trip_with_shape_dist_traveled_but_no_shape_distances",
+          "count": 2786,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'trip_with_shape_dist_traveled_but_no_shape_distances' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Trip with shape dist traveled but no shape distances (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 58,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 20.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 13 kinds of issue across 6222 instances (105 error, 3273 warning, 2844 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 359,
+        "effective_expiry_date": "2027-07-31",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2027-07-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 359 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 360 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 85% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 85% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Open Database License (ODbL), recorded by France's National Access Point; credit Nouvelle-Aquitaine Mobilit\u00e9s, identify the ODbL, and preserve share-alike terms where they apply.",
+    "reachable": true,
+    "sha256": "f35dd59becd2e23b4cc05f4f76a4852790e6d02ff8d08a013d4582b3f3855cb2",
+    "size_bytes": 6674695,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/ba4be162-cc7f-4c7c-9d96-376a225e9045"
+  },
+  "fetch": {
+    "final_url": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/gironde-aggregated-gtfs.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -1.25439,
+      44.28321,
+      0.07596,
+      45.56689
+    ],
+    "lat": 44.90905,
+    "lon": -0.54528,
+    "stop_count": 6206
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 94,
+        "trip_count": 2786,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 94,
+    "trip_count": 2786
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 48.4,
+    "margin_to_next_band": 11.6,
+    "score": 48.4
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 34,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "34 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (414, 4210, 424, 431, 462, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 201,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "201 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Rd Pt de la Barade\", \"Av. La Chapelle\", \"Rd Pt de Cabirac\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 3405,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 2786
+  },
+  "route_map": {
+    "drawn_route_count": 94,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-pan-82338/geometry.geojson",
+    "route_count": 94,
+    "routes": [
+      {
+        "color": "75D039",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2674",
+        "label": "4681",
+        "long": "COLLEGE DE VERAC",
+        "short": "4681",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "955500",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2675",
+        "label": "R431",
+        "long": "RENFORT BORDEAUX BUTTINIERE - BLAYE",
+        "short": "R431",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "71CC98",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2676",
+        "label": "R432",
+        "long": "RENFORT BORDEAUX LES AUBIERS - BLAYE",
+        "short": "R432",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7C878E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2677",
+        "label": "R4310",
+        "long": "RENFORT ST ANDRE DE CUBZAC - LARUSCADE",
+        "short": "R4310",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "307FE2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2678",
+        "label": "R4312",
+        "long": "RENFORT BLAYE - PLEINE SELVE",
+        "short": "R4312",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "71A89A",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2679",
+        "label": "4381",
+        "long": "COLLEGE DE ST CIERS SUR GIRONDE",
+        "short": "4381",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2680",
+        "label": "4382",
+        "long": "COLLEGE DE PEUJARD",
+        "short": "4382",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "708573",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2681",
+        "label": "R461",
+        "long": "RENFORT BORDEAUX - LIBOURNE parST LOUBES",
+        "short": "R461",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A45A2A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2682",
+        "label": "R462",
+        "long": "RENFORT BORDEAUX - LIBOURNE par RN89",
+        "short": "R462",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "87189D",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2683",
+        "label": "R464",
+        "long": "RENFORT LIBOURNE - ST ANDRE DE CUBZAC",
+        "short": "R464",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00629B",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2684",
+        "label": "R4610",
+        "long": "RENFORT LIBOURNE - VILLEFRANCHE DE LONCH",
+        "short": "R4610",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00C389",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2685",
+        "label": "R4612",
+        "long": "RENFORT LIBOURNE - FRANCS",
+        "short": "R4612",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C6579A",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2686",
+        "label": "R4613",
+        "long": "RENFORT LIBOURNE - PELLEGRUE",
+        "short": "R4613",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B0B9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2687",
+        "label": "R4614",
+        "long": "RENFORT LIBOURNE - SAUVETERRE",
+        "short": "R4614",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007A33",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2688",
+        "label": "R471",
+        "long": "RENFORT BORDEAUX - BRANNE SALLEBOEUF",
+        "short": "R471",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "62B5E5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2689",
+        "label": "R472",
+        "long": "RENFORT BORDEAUX - BRANNE CAMARSAC",
+        "short": "R472",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C4B000",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2690",
+        "label": "R473",
+        "long": "RENFORT BORDEAUX STALINGRAD - TARGON",
+        "short": "R473",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B58500",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2691",
+        "label": "R474",
+        "long": "RENFORT BORDEAUX STALINGRAD - CREON",
+        "short": "R474",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "623B2A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2692",
+        "label": "R475",
+        "long": "RENFORT BORDEAUX STALINGRAD - TABANAC",
+        "short": "R475",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2693",
+        "label": "4781",
+        "long": "COLLEGE DE CREON",
+        "short": "4781",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B74F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2694",
+        "label": "R481",
+        "long": "RENFORT BORDEAUX STALINGRAD - LANGON",
+        "short": "R481",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DA291C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2695",
+        "label": "R482",
+        "long": "RENFORT BORDEAUX PEIXOTTO -  LABREDE",
+        "short": "R482",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007749",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2696",
+        "label": "R4810",
+        "long": "RENFORT BX PEIXOTTO - ST SYMPHORIEN",
+        "short": "R4810",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF7800",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2697",
+        "label": "R411",
+        "long": "RENFORT BORDEAUX PEIXOTTO - BELIN BELIET",
+        "short": "R411",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "51B54A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2698",
+        "label": "4881",
+        "long": "COLLEGE DE LATRESNE",
+        "short": "4881",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2699",
+        "label": "4882",
+        "long": "COLLEGE DE CADILLAC",
+        "short": "4882",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "735022",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2700",
+        "label": "R412",
+        "long": "RENFORT BORDEAUX - LEGE CAP FERRET",
+        "short": "R412",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B86125",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2701",
+        "label": "R421",
+        "long": "RENFORT BORDEAUX - LACANAU",
+        "short": "R421",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AC9F3C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2702",
+        "label": "R422",
+        "long": "RENFORT BORDEAUX - LESPARRE",
+        "short": "R422",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0072CE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2703",
+        "label": "R423",
+        "long": "RENFORT BLANQUEFORT - ARSAC",
+        "short": "R423",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "84329B",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2704",
+        "label": "R424",
+        "long": "RENFORT BORDEAUX - PAUILLAC",
+        "short": "R424",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B388",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2705",
+        "label": "R4212",
+        "long": "RENFORT NAUJAC - HOURTIN",
+        "short": "R4212",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2707",
+        "label": "4282",
+        "long": "COLLEGE D'ARSAC",
+        "short": "4282",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2708",
+        "label": "4284",
+        "long": "ETS DE LESPARRE MEDOC",
+        "short": "4284",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D61FAE",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2709",
+        "label": "4285",
+        "long": "ETS DE PAUILLAC",
+        "short": "4285",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "955500",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2710",
+        "label": "431",
+        "long": "BORDEAUX BUTTINIERE- BLAYE",
+        "short": "431",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "71CC98",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2711",
+        "label": "432",
+        "long": "BORDEAUX LES AUBIERS - BLAYE",
+        "short": "432",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7C878E",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2712",
+        "label": "4310",
+        "long": "ST ANDRE DE CUBZAC - LARUSCADE",
+        "short": "4310",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DF1995",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2713",
+        "label": "4311",
+        "long": "BLAYE - ST CIERS SUR GIRONDE",
+        "short": "4311",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "307FE2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2714",
+        "label": "4312",
+        "long": "BLAYE - JONZAC",
+        "short": "4312",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E59E6D",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2715",
+        "label": "4314",
+        "long": "ST ANDRE DE CUBZAC - PERISSAC",
+        "short": "4314",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "708573",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2716",
+        "label": "461",
+        "long": "BORDEAUX BUTTINIERE - LIBOURNE par ST LO",
+        "short": "461",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A45A2A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2717",
+        "label": "462",
+        "long": "BORDEAUX Les Aubiers - LIBOURNE par RN89",
+        "short": "462",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DAAA00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2718",
+        "label": "463",
+        "long": "BORDEAUX BUTTINIERE - BEYCHAC ET CAILLAU",
+        "short": "463",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "87189D",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2719",
+        "label": "464",
+        "long": "LIBOURNE - ST ANDRE DE CUBZAC",
+        "short": "464",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00629B",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2720",
+        "label": "4610",
+        "long": "LIBOURNE - VILLEFRANCHE DE LONCHAT",
+        "short": "4610",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7BA4DB",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2721",
+        "label": "4611",
+        "long": "LIBOURNE - PUISSEGUIN",
+        "short": "4611",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00C389",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2722",
+        "label": "4612",
+        "long": "LIBOURNE - FRANCS",
+        "short": "4612",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C6579A",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2723",
+        "label": "4613",
+        "long": "LIBOURNE - PELLEGRUE",
+        "short": "4613",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B0B9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2724",
+        "label": "4614",
+        "long": "LIBOURNE - SAUVETERRE",
+        "short": "4614",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "485CC7",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2725",
+        "label": "4616",
+        "long": "LIBOURNE - ST GENES DE FRONSAC",
+        "short": "4616",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007A33",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2726",
+        "label": "471",
+        "long": "BORDEAUX STALINGRAD - BRANNE par SALLEBO",
+        "short": "471",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "62B5E5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2727",
+        "label": "472",
+        "long": "BORDEAUX STALINGRAD - BRANNE par CAMARSA",
+        "short": "472",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C4B000",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2728",
+        "label": "473",
+        "long": "BORDEAUX STALINGRAD - SAUVETERRE par TAR",
+        "short": "473",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B58500",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2729",
+        "label": "474",
+        "long": "BORDEAUX STALINGRAD - CREON",
+        "short": "474",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "623B2A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2730",
+        "label": "475",
+        "long": "BORDEAUX QUAI DESCHAMPS - TABANAC",
+        "short": "475",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "43B02A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2731",
+        "label": "476",
+        "long": "BORDEAUX CAMPUS - CREON",
+        "short": "476",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B74F",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2732",
+        "label": "481",
+        "long": "BORDEAUX STALINGRAD - LANGON",
+        "short": "481",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DA291C",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2733",
+        "label": "482",
+        "long": "BORDEAUX PEIXOTTO - LA BREDE",
+        "short": "482",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007749",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2734",
+        "label": "4810",
+        "long": "BORDEAUX PEIXOTTO - ST SYMPHORIEN",
+        "short": "4810",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A09958",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2735",
+        "label": "4811",
+        "long": "BORDEAUX CHU Pellegrin - HOSTENS - ST SYMPHORIEN",
+        "short": "4811",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF7800",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2736",
+        "label": "411",
+        "long": "BORDEAUX CHU PELLEGRIN - BELIN BELIET",
+        "short": "411",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4BD7AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2737",
+        "label": "4813",
+        "long": "LA REOLE - SAUVETERRE par BAGAS",
+        "short": "4813",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E89CAE",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2738",
+        "label": "4814",
+        "long": "LANGON - GRIGNOLS",
+        "short": "4814",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006BA6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2739",
+        "label": "4815",
+        "long": "LANGON - CAPTIEUX",
+        "short": "4815",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "861F41",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2740",
+        "label": "4816",
+        "long": "LA REOLE - SAUVETERRE par LANDERROUET",
+        "short": "4816",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5B7F95",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2742",
+        "label": "413",
+        "long": "BORDEAUX CHU PELLEGRIN - CESTAS",
+        "short": "413",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1E22AA",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2743",
+        "label": "414",
+        "long": "BIGANOS - HOSTENS",
+        "short": "414",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004E42",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2745",
+        "label": "4210",
+        "long": "BORDEAUX - LE PORGE",
+        "short": "4210",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B86125",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2746",
+        "label": "421",
+        "long": "BORDEAUX - LACANAU",
+        "short": "421",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AC9F3C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2747",
+        "label": "422",
+        "long": "BORDEAUX - LESPARRE",
+        "short": "422",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0072CE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2748",
+        "label": "423",
+        "long": "MERIGNAC - AVENSAN",
+        "short": "423",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "84329B",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2749",
+        "label": "424",
+        "long": "BORDEAUX - PAUILLAC",
+        "short": "424",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EAAA00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2750",
+        "label": "4211",
+        "long": "BORDEAUX - CARCANS",
+        "short": "4211",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B388",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2751",
+        "label": "4212",
+        "long": "LESPARRE - HOURTIN",
+        "short": "4212",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2752",
+        "label": "4213",
+        "long": "LESPARRE - GRAYAN par VENDAYS",
+        "short": "4213",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9A3324",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2753",
+        "label": "4214",
+        "long": "LESPARRE - LE VERDON SUR MER",
+        "short": "4214",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2757",
+        "label": "4181",
+        "long": "COLLEGE DE LEGE",
+        "short": "4181",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2758",
+        "label": "4182",
+        "long": "LYCEE ANDERNOS",
+        "short": "4182",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BA0C2F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2759",
+        "label": "470",
+        "long": "EXPRESS CREON - BORDEAUX",
+        "short": "470",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007DBA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2760",
+        "label": "4812",
+        "long": "BORDEAUX PEIXOTTO - CABANAC ET VILLAGRAINS",
+        "short": "4812",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D48BC8",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2761",
+        "label": "4313",
+        "long": "ST ANDRE DE CUBZAC - ST CHRISTOLY DE BLAYE",
+        "short": "4313",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E59E6D",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2763",
+        "label": "R4314",
+        "long": "RENFORT ST ANDRE DE CUBZAC - VAL DE VIRVEE",
+        "short": "R4314",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2764",
+        "label": "R4616",
+        "long": "RENFORT ST ANDRE DE CUBZAC - LIBOURNE",
+        "short": "R4616",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E1523D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2765",
+        "label": "4615",
+        "long": "LIBOURNE - PERISSAC",
+        "short": "4615",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E03E52",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2766",
+        "label": "4617",
+        "long": "BORDEAUX Quinconces - LIBOURNE - ST EMILION",
+        "short": "4617",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2767",
+        "label": "4383",
+        "long": "COLLEGE DE MARSAS",
+        "short": "4383",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BA0C2F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2768",
+        "label": "R470",
+        "long": "RENFORT EXPRESS CREON - BORDEAUX",
+        "short": "R470",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "GIRONDE:Line:2769",
+        "label": "4283",
+        "long": "COLLEGE LE PIAN MEDOC",
+        "short": "4283",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BA0C2F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "GIRONDE:Line:4665",
+        "label": "430",
+        "long": "EXPRESS BLAYE - BORDEAUX",
+        "short": "430",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F85E5",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GIRONDE:Line:4687",
+        "label": "4782",
+        "long": "LYCEE DE CREON",
+        "short": "4782",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BA0C2F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "GIRONDE:Line:5171",
+        "label": "410",
+        "long": "EXPRESS ARES LEGE - BORDEAUX",
+        "short": "410",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BA0C2F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "GIRONDE:Line:5237",
+        "label": "480",
+        "long": "EXPRESS BEAUTIRAN - LE HAILLAN 5 Chemins",
+        "short": "480",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "GIRONDE:Line:5446",
+        "label": "420",
+        "long": "EXPRESS LESPARRE - BORDEAUX",
+        "short": "420",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 6206,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "decreasing_or_equal_stop_time_distance",
+      "count": 105,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+      "owner": "Likely your export tool",
+      "points": 24.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Some trips have stop times whose distances along the route go backwards.",
+      "why": "Apps can show buses jumping backwards or mis-order stops."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 2786,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "2786 of 2786 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,0 +1,2157 @@
+{
+  "agency": {
+    "country": "IE",
+    "id": "tfi-local-link",
+    "name": "TFI Local Link",
+    "operating_note": "The National Transport Authority's rural and regional Local Link network, published as one per-operator file under the NTA CC BY 4.0 terms."
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 12305,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 3088,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": true,
+          "languages": [
+            "ga"
+          ],
+          "translated_tables": [
+            "stops"
+          ],
+          "translation_count": 3082
+        },
+        "trips": 12305,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 3088,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "3088 of 3088 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 12305,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "12305 of 12305 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        }
+      ],
+      "name": "completeness",
+      "score": 45.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 3,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 34,
+          "WARNING": 18
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 18,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 29,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "service_window_outside_feed_period",
+          "count": 5,
+          "effort": "Two fields in feed_info.txt, or one export setting.",
+          "fix": "Widen feed_start_date and feed_end_date to cover all service dates, or fix the dates that fall outside.",
+          "owner": "Likely your export tool",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some service dates fall outside the date window set in feed_info.txt.",
+          "why": "feed_info.txt should span every day your service runs, so apps know when the data applies."
+        }
+      ],
+      "name": "correctness",
+      "score": 92.8,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 3 kinds of issue across 52 instances (0 error, 18 warning, 34 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 364,
+        "effective_expiry_date": "2027-08-05",
+        "feed_end_date": "2027-08-05",
+        "feed_start_date": "2026-08-05",
+        "feed_version": "4B7380C7-76DE-4D78-BC81-176EC627C9A2",
+        "has_feed_info": true,
+        "last_service_date": "2027-08-05",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 364 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 365 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "export_diff": {
+    "changes": [
+      "Service now runs through 2027-08-05 (was 2027-08-04)."
+    ],
+    "from_sha256": "7674b8874101a284d9b0139275d74dce6d67c808699a2430b5d3bf4aa583d813",
+    "to_sha256": "433cc4e6631b12b43a9de642661a27ed85dfd4bbf1f9f9a2ac29370422265df4"
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through the National Transport Authority's public transport data page; credit the National Transport Authority.",
+    "reachable": true,
+    "sha256": "433cc4e6631b12b43a9de642661a27ed85dfd4bbf1f9f9a2ac29370422265df4",
+    "size_bytes": 12014407,
+    "static_url": "https://www.transportforireland.ie/transitData/Data/GTFS_Local_Link.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.transportforireland.ie/transitData/Data/GTFS_Local_Link.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -10.46157,
+      51.45159,
+      -6.04142,
+      55.37705
+    ],
+    "lat": 53.13562,
+    "lon": -7.47438,
+    "stop_count": 3088
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 162,
+        "trip_count": 12305,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 162,
+    "trip_count": 12305
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 9.7,
+    "margin_to_next_band": 0.3,
+    "score": 79.7
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 107,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "107 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Derry Patrick St\", \"Old Bawn Rd\", \"Old Bawn Rd\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 3088,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 12305
+  },
+  "route_map": {
+    "drawn_route_count": 162,
+    "has_shapes": true,
+    "path": "data/artifacts/tfi-local-link/geometry.geojson",
+    "route_count": 162,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCK 232 a",
+        "label": "232",
+        "long": "Castletownbere - Kilcrohane",
+        "short": "232",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCK 253 b",
+        "label": "253",
+        "long": "Kinsale - Clonakilty",
+        "short": "253",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCK 253c a",
+        "label": "253c",
+        "long": "Kinsale Town Shuttle",
+        "short": "253c",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCK 253t a",
+        "label": "253t",
+        "long": "Clonakilty - Technology Park",
+        "short": "253t",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCK 254 b",
+        "label": "254",
+        "long": "Bandon - Kinsale",
+        "short": "254",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCK 255 a",
+        "label": "255",
+        "long": "Kinsale - MTU Bishopstown",
+        "short": "255",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCK 263 a",
+        "label": "263",
+        "long": "Allihies - Castletownbere",
+        "short": "263",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCK 265 a",
+        "label": "265",
+        "long": "Mizen Head - Skibbereen",
+        "short": "265",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCK 266B a",
+        "label": "266b",
+        "long": "Baltimore - Union Hall",
+        "short": "266b",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCK 266a b",
+        "label": "266a",
+        "long": "Baltimore - Castletownshend",
+        "short": "266a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCK 522 a",
+        "label": "522",
+        "long": "Charleville - Mallow",
+        "short": "522",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCK 523 a",
+        "label": "523",
+        "long": "Mitchelstown - Mallow",
+        "short": "523",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCK 529 a",
+        "label": "529",
+        "long": "Mitchelstown - Fermoy",
+        "short": "529",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCK 530 a",
+        "label": "530",
+        "long": "Fermoy - Mallow",
+        "short": "530",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCN 171 a",
+        "label": "171",
+        "long": "Shercock - Dundalk",
+        "short": "171",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCN 172 a",
+        "label": "172",
+        "long": "Cootehill - Virginia",
+        "short": "172",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCN 176 d",
+        "label": "176",
+        "long": "Cavan - Monaghan",
+        "short": "176",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCN 178 a",
+        "label": "178",
+        "long": "Kells - Cootehill",
+        "short": "178",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCN 186 a",
+        "label": "186",
+        "long": "Baile Ghib - Cavan",
+        "short": "186",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCN 929 a a",
+        "label": "929",
+        "long": "Ballinamore - Cavan",
+        "short": "929",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCN C1 a",
+        "label": "C1",
+        "long": "Ballyhaise - Kilmore Hotel",
+        "short": "C1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCN C2 b",
+        "label": "C2",
+        "long": "Cavan Hospital - Kilnaleck",
+        "short": "C2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCN C3 a a",
+        "label": "C3",
+        "long": "Redhills - Cavan Hospital",
+        "short": "C3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCN MN1 a",
+        "label": "MN1",
+        "long": "Knockatallon - Monaghan",
+        "short": "MN1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCN MN2 a",
+        "label": "MN2",
+        "long": "Castleblayney - Monaghan",
+        "short": "MN2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCN MN3 a",
+        "label": "MN3",
+        "long": "Mullan - Monaghan",
+        "short": "MN3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCN MN33 a",
+        "label": "MN33",
+        "long": "Emyvale - Carrickroe",
+        "short": "MN33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCWKK 183 a",
+        "label": "183",
+        "long": "Arklow - Glendalough",
+        "short": "183",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCWKK 800 a",
+        "label": "800",
+        "long": "Arklow - Carlow",
+        "short": "800",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCWKK 800a a",
+        "label": "800a",
+        "long": "Carnew - Arklow Train Station",
+        "short": "800a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCWKK 817c c",
+        "label": "817c",
+        "long": "Sean Treacy Park - Grangemockler",
+        "short": "817c",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCWKK 881 a",
+        "label": "881",
+        "long": "Graiguenamanagh - Kilkenny Castle",
+        "short": "881",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCWKK 882 a",
+        "label": "882",
+        "long": "Inistioge - Kilkenny Castle",
+        "short": "882",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCWKK 885 a",
+        "label": "885",
+        "long": "Baltinglass - Sallins",
+        "short": "885",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCWKK 887 a",
+        "label": "887",
+        "long": "Carlow - New Ross",
+        "short": "887",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCWKK 891 a",
+        "label": "891",
+        "long": "Fiddown - Kilkenny",
+        "short": "891",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCWKK 895 a",
+        "label": "895",
+        "long": "Sallins - Glendalough",
+        "short": "895",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLCWKK 897 b",
+        "label": "897",
+        "long": "Kilkenny - Athy",
+        "short": "897",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 264",
+        "label": "264",
+        "long": "Ballyshannon - Letterkenny",
+        "short": "264",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 288 a",
+        "label": "288",
+        "long": "Ballybofey - Derry",
+        "short": "288",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 290 a",
+        "label": "290",
+        "long": "Ballybofey - Letterkenny",
+        "short": "290",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 292 a",
+        "label": "292",
+        "long": "Donegal - Ballyshannon",
+        "short": "292",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 293 a a",
+        "label": "293",
+        "long": "Gleann Cholm Cille - Donegal",
+        "short": "293",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 563 a",
+        "label": "563",
+        "long": "Sligo - Dromahair",
+        "short": "563",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 564 a",
+        "label": "564",
+        "long": "Swanlinbar - Carrick-on-Shannon",
+        "short": "564",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 566 b",
+        "label": "566",
+        "long": "Sligo - Dowra",
+        "short": "566",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 567 a",
+        "label": "567",
+        "long": "Carrick-on-Shannon - Manorhamilton",
+        "short": "567",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 572 b",
+        "label": "572",
+        "long": "Ballinamore - Sligo",
+        "short": "572",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 952 a",
+        "label": "952",
+        "long": "Carndonagh - Derry",
+        "short": "952",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 953 b",
+        "label": "953",
+        "long": "Greencastle - Letterkenny",
+        "short": "953",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 954 b",
+        "label": "954",
+        "long": "Malin Head - Carndonagh",
+        "short": "954",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 957 a",
+        "label": "957",
+        "long": "Greencastle - Derry",
+        "short": "957",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 959 a",
+        "label": "959",
+        "long": "Greencastle - Buncrana",
+        "short": "959",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 966 a",
+        "label": "966",
+        "long": "An F\u00e1l Carrach - An Cloch\u00e1n Liath",
+        "short": "966",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 967 a",
+        "label": "967",
+        "long": "Baile na Finne - An Cloch\u00e1n Liath",
+        "short": "967",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 971 a",
+        "label": "971",
+        "long": "Ailt an Chorr\u00e1in - Letterkenny",
+        "short": "971",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 973 a",
+        "label": "973",
+        "long": "Cionn Fh\u00e1nada - Letterkenny",
+        "short": "973",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 977 b",
+        "label": "977",
+        "long": "Castlerea - Sligo",
+        "short": "977",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 981 a",
+        "label": "981",
+        "long": "Coolaney - Sligo",
+        "short": "981",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 982 a a",
+        "label": "982",
+        "long": "Sligo - Ballyshannon",
+        "short": "982",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 983 a",
+        "label": "983",
+        "long": "Manorhamilton - Ballyshannon",
+        "short": "983",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 987 a",
+        "label": "987",
+        "long": "Lifford - Letterkenny",
+        "short": "987",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 988",
+        "label": "988",
+        "long": "An Cloch\u00e1n - Letterkenny",
+        "short": "988",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 989 b",
+        "label": "989",
+        "long": "Carrigans - Letterkenny",
+        "short": "989",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 993 b",
+        "label": "993",
+        "long": "Carraig Airt - Na D\u00fanaibh",
+        "short": "993",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLDSL 994 a",
+        "label": "994",
+        "long": "Portnoo - Donegal",
+        "short": "994",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLGY 431",
+        "label": "431",
+        "long": "Claremorris - An Cheathr\u00fa Rua",
+        "short": "431",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLGY 432 a",
+        "label": "432",
+        "long": "An Cheathr\u00fa Rua - Clifden",
+        "short": "432",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLGY 438 a",
+        "label": "438",
+        "long": "Galway - Tuam",
+        "short": "438",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLGY 439 a",
+        "label": "439",
+        "long": "Galway - Loughrea",
+        "short": "439",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLGY 546 a",
+        "label": "546",
+        "long": "Castlerea - Ballinasloe",
+        "short": "546",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLGY 547 b",
+        "label": "547",
+        "long": "Portumna - Ballinasloe",
+        "short": "547",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLGY 548",
+        "label": "548",
+        "long": "Loughrea - Athlone",
+        "short": "548",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLGY 934 a",
+        "label": "934",
+        "long": "Gort - Loughrea",
+        "short": "934",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKE 821 a",
+        "label": "821",
+        "long": "Newbridge - Sallins",
+        "short": "821",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKE 880",
+        "label": "880",
+        "long": "Carlow - Naas",
+        "short": "880",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKE 883 a",
+        "label": "883",
+        "long": "Athy - Newbridge",
+        "short": "883",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKE 888 a",
+        "label": "888",
+        "long": "Athy - Allenwood",
+        "short": "888",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKE 892 a",
+        "label": "892",
+        "long": "Newbridge - Dunlavin",
+        "short": "892",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKE SD3 a",
+        "label": "SD3",
+        "long": "Tallaght - Bohernabreena",
+        "short": "SD3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKE SD4 a",
+        "label": "SD4",
+        "long": "Tallaght - Tibradden",
+        "short": "SD4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKY 268 a",
+        "label": "268",
+        "long": "Dingle - Baile na nGall",
+        "short": "268",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKY 273 a",
+        "label": "273",
+        "long": "C\u00e9 Bhr\u00e9anainn - Tralee",
+        "short": "273",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKY 274 b",
+        "label": "274",
+        "long": "Tarbert - Tralee",
+        "short": "274",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKY 276 a",
+        "label": "276",
+        "long": "Killarney - Dingle",
+        "short": "276",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKY 277B a",
+        "label": "277b",
+        "long": "Dingle - D\u00fan Chaoin",
+        "short": "277b",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKY 277a b",
+        "label": "277a",
+        "long": "Dingle - D\u00fan Chaoin",
+        "short": "277a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKY 278 a",
+        "label": "278",
+        "long": "Fenit - Tralee",
+        "short": "278",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKY 280 a",
+        "label": "280",
+        "long": "Waterville - Killarney",
+        "short": "280",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKY 281 a",
+        "label": "281",
+        "long": "Waterville - Kenmare",
+        "short": "281",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKY 282 a",
+        "label": "282",
+        "long": "Castletownbere - Kenmare",
+        "short": "282",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKY 283 a",
+        "label": "283",
+        "long": "Currow - Tralee",
+        "short": "283",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKY 287a a a",
+        "label": "287a",
+        "long": "Knightstown - Cahersiveen",
+        "short": "287a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLKY 287b b",
+        "label": "287b",
+        "long": "Baile an Sceilg - Cahersiveen",
+        "short": "287b",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLC 318 b",
+        "label": "318",
+        "long": "Limerick - Ennis",
+        "short": "318",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLC 331 a",
+        "label": "331",
+        "long": "Ballyvaughan - Ennis",
+        "short": "331",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLC 335 a",
+        "label": "335",
+        "long": "Ennis - Kilrush",
+        "short": "335",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLC 337 c",
+        "label": "337",
+        "long": "Ennis - Kilrush",
+        "short": "337",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLC 339 b",
+        "label": "339",
+        "long": "Kilrush - Loop Head",
+        "short": "339",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLC 342 a",
+        "label": "342",
+        "long": "Flagmount - Ennis",
+        "short": "342",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLC 344 a",
+        "label": "344",
+        "long": "Whitegate - Ennis",
+        "short": "344",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLC 351 a",
+        "label": "351",
+        "long": "Cliffs of Moher - Galway",
+        "short": "351",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLC 521 a",
+        "label": "521",
+        "long": "Newcastle West - Charleville",
+        "short": "521",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLC 595",
+        "label": "595",
+        "long": "Tarbert - Croom",
+        "short": "595",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLMF 163 a",
+        "label": "163",
+        "long": "Br\u00fa na B\u00f3inne - Drogheda",
+        "short": "163",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLMF 177 a",
+        "label": "177",
+        "long": "Kells - Ardee",
+        "short": "177",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLMF 188 a",
+        "label": "188",
+        "long": "Athboy - Navan - Drogheda",
+        "short": "188",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLMF 189 a",
+        "label": "189",
+        "long": "Navan - Trim - Enfield",
+        "short": "189",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLMF 192 a",
+        "label": "192",
+        "long": "Swords - Balbriggan",
+        "short": "192",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLMF 195 b",
+        "label": "195",
+        "long": "Balbriggan - Ashbourne",
+        "short": "195",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLMF 196 b",
+        "label": "196",
+        "long": "Knocksedan - Swords",
+        "short": "196",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLO 806 a",
+        "label": "806",
+        "long": "Portarlington - Monasterevin",
+        "short": "806",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLO 815 a",
+        "label": "815",
+        "long": "Tullamore - Athlone",
+        "short": "815",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLO 822 a",
+        "label": "822",
+        "long": "Mountrath - Carlow",
+        "short": "822",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLO 823",
+        "label": "823",
+        "long": "Birr - Portlaoise",
+        "short": "823",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLO 834 b",
+        "label": "834",
+        "long": "Roscrea - Portlaoise",
+        "short": "834",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLO 840 b",
+        "label": "840",
+        "long": "Banagher - Tullamore",
+        "short": "840",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLO 850 a",
+        "label": "850",
+        "long": "Athlone - Thurles",
+        "short": "850",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLO 858 c",
+        "label": "858",
+        "long": "Thurles - Portlaoise",
+        "short": "858",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLO LS1 a",
+        "label": "LS1",
+        "long": "Borris-in-Ossory - Mount Lucas",
+        "short": "LS1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLO OY1 a",
+        "label": "OY1",
+        "long": "Tullamore - Mount Lucas",
+        "short": "OY1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLW 426 a",
+        "label": "426",
+        "long": "Longford - Roscommon",
+        "short": "426",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLW 468 a",
+        "label": "468",
+        "long": "Strokestown - Carrick-on-Shannon",
+        "short": "468",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLW 570",
+        "label": "570",
+        "long": "Boyle - Roscommon",
+        "short": "570",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLW 571 c",
+        "label": "571",
+        "long": "Arigna - Boyle",
+        "short": "571",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLW 816 a",
+        "label": "816",
+        "long": "Longford - Mullingar",
+        "short": "816",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLW 818 a",
+        "label": "818",
+        "long": "Castlepollard - Mullingar",
+        "short": "818",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLW 819 a",
+        "label": "819",
+        "long": "Athlone - Mullingar",
+        "short": "819",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLW 862 a",
+        "label": "862",
+        "long": "Longford - Cavan",
+        "short": "862",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLW 865 a",
+        "label": "865",
+        "long": "Lough Gowna - Longford",
+        "short": "865",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLLW LR24 a",
+        "label": "LR24",
+        "long": "Ballymahon - Longford",
+        "short": "LR24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLMO 454 a",
+        "label": "454",
+        "long": "Ballina - Castlebar",
+        "short": "454",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLMO 460a a",
+        "label": "460a",
+        "long": "Gob an Choire - Castlebar",
+        "short": "460a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLMO 460b a",
+        "label": "460b",
+        "long": "B\u00e9al an Mhuirthead - Castlebar",
+        "short": "460b",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLTY 322 a",
+        "label": "322",
+        "long": "Portumna - Nenagh",
+        "short": "322",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLTY 391 b",
+        "label": "391",
+        "long": "Thurles - Limerick",
+        "short": "391",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLTY 828 a",
+        "label": "828",
+        "long": "Cashel - Portlaoise",
+        "short": "828",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLTY 854 a",
+        "label": "854",
+        "long": "Ballybrophy - Silvermines",
+        "short": "854",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLTY 855 b",
+        "label": "855",
+        "long": "Tipperary - Cahir - Cashel",
+        "short": "855",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLTY 896 a a",
+        "label": "896",
+        "long": "Ballingarry - Thurles",
+        "short": "896",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLTY CL1 b",
+        "label": "CL1",
+        "long": "Crann Ard - Poppyfield Retail Park",
+        "short": "CL1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLTY CL2 b",
+        "label": "CL2",
+        "long": "Crann Ard - Ard Gaoithe Business Park",
+        "short": "CL2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLTY CL9 b",
+        "label": "CL9",
+        "long": "Crann Ard - Ard Gaoithe Business Park",
+        "short": "CL9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWD 356 a",
+        "label": "356",
+        "long": "Clonmel - Dungarvan",
+        "short": "356",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWD 357 b",
+        "label": "357",
+        "long": "Youghal - Dungarvan",
+        "short": "357",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWD 358 a",
+        "label": "358",
+        "long": "Tramore - Waterford",
+        "short": "358",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWD 361 a",
+        "label": "361",
+        "long": "Youghal - Dungarvan",
+        "short": "361",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWD 363 a",
+        "label": "363",
+        "long": "Fermoy - Dungarvan",
+        "short": "363",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWD 363a a",
+        "label": "363a",
+        "long": "Ballyduff Upper - Dungarvan",
+        "short": "363a",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWD 367 a",
+        "label": "367",
+        "long": "Tramore - Dungarvan",
+        "short": "367",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWD 667 b",
+        "label": "667",
+        "long": "Dungarvan - Waterford",
+        "short": "667",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWX 359 a",
+        "label": "359",
+        "long": "New Ross - Enniscorthy",
+        "short": "359",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWX 368 b",
+        "label": "368",
+        "long": "Enniscorthy - New Ross",
+        "short": "368",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWX 369 b",
+        "label": "369",
+        "long": "Enniscorthy - Tullow",
+        "short": "369",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWX 384 a",
+        "label": "384",
+        "long": "Wexford - Enniscorthy",
+        "short": "384",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWX 387 b",
+        "label": "387",
+        "long": "Wexford - Rosslare Harbour",
+        "short": "387",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWX 388 b",
+        "label": "388",
+        "long": "Duncormick - Wexford",
+        "short": "388",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWX 389 a",
+        "label": "389",
+        "long": "Riverchapel - Gorey",
+        "short": "389",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWX 392 a",
+        "label": "392",
+        "long": "Wellingtonbridge - New Ross",
+        "short": "392",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWX 399 b",
+        "label": "399",
+        "long": "Hook Head - New Ross",
+        "short": "399",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWX WX90 a",
+        "label": "WX90",
+        "long": "Wexford O'Hanrahan Station - Curracloe Beach",
+        "short": "WX90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "LLWX WX91 a",
+        "label": "WX91",
+        "long": "The Lyre - Curracloe Beach",
+        "short": "WX91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 3088,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 3088,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "3088 of 3088 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 12305,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "12305 of 12305 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

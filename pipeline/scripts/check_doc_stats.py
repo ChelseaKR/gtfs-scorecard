@@ -7,7 +7,7 @@ between those populations hides drift instead of explaining it. Each prose
 rule therefore names whether it means configured feed records or published
 scorecards with numeric latest scores.
 
-Narrative pages use a stable hundred-record floor such as "more than 1,100" and
+Narrative pages use a stable hundred-record floor such as "more than 2,100" and
 link to generated status output for the exact current count. Historical planning
 notes may still use an approximate exact figure. Each rule names the file, exact
 phrase pattern, denominator, and comparison mode. A missing pattern fails too,
@@ -27,19 +27,24 @@ first cannot catch its own blind spot: CLAUDE.md's registry count sat at 1,286
 while the registry grew past 2,100, and every *registered* claim stayed correct
 throughout. A number nobody registered is the one that rots.
 
-**The ``pages`` and ``scored`` denominators do not describe the live service.**
-They are read from ``data/artifacts/index.json``, which stopped being written by
-automation when generated data moved to S3 (docs/follow-ups.md, "Stop committing
-generated data and pages"). What is left in git is the cutover snapshot kept as
-an outage and fork fallback, so those two denominators are frozen at the day of
-the cutover while the deployed corpus keeps growing. Prose gated against them is
-a claim about the committed fallback, not about gtfsscorecard.org, and ``floor``
-mode's ``quoted + FLOOR_BUCKET`` ceiling actively rejects the larger, true live
-figure. Every rule below that names ``pages`` or ``scored`` therefore has to be
-worded as a statement about the snapshot; the live counts live on ``/status/``
-and ``/api/v1/stats.json``, which this check cannot read because ``make verify``
-is offline. ``registry``, ``europe_records`` and ``europe_countries`` are read
-from the registry YAML and are not affected — those still track the real thing.
+**The ``pages`` and ``scored`` denominators describe the committed snapshot,
+not the live service.** They are read from ``data/artifacts/index.json``, which
+stopped being written by automation when generated data moved to S3
+(docs/follow-ups.md, "Stop committing generated data and pages"). What git
+carries is a fallback snapshot kept for outages and forks, and it stands still
+between deliberate refreshes while the deployed corpus keeps growing — the
+cutover copy sat at 1,128 pages while the service passed 2,100. When the
+snapshot lags, ``floor`` mode's ``quoted + FLOOR_BUCKET`` ceiling actively
+rejects the larger, true live figure; the fix is never to loosen the gate but
+to re-materialize the snapshot from the live corpus (the bounded ``aws s3
+sync`` in ``.github/workflows/pages.yml``, then
+``scripts/materialize_current_artifacts.py``), after which this same gate
+forces every floored claim up to the refreshed denominator. Prose gated on
+``pages`` or ``scored`` is a claim about the snapshot as of its last refresh;
+the live counts live on ``/status/`` and ``/api/v1/stats.json``, which this
+check cannot read because ``make verify`` is offline. ``registry``,
+``europe_records`` and ``europe_countries`` are read from the registry YAML and
+are not affected — those still track the real thing.
 
 Run before committing doc edits that quote corpus figures:
 

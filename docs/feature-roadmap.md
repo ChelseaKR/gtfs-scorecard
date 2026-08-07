@@ -9,7 +9,7 @@ research history, not parallel queues.
 
 ## Status
 
-The previous feature list shipped across more than 1,100 published scorecard pages.
+The previous feature list shipped across more than 2,100 published scorecard pages.
 Daily scorecards, program rollups, alerts, finding-clearance records,
 provenance, data contracts, the read API, MCP server, badges, and the reusable
 Action and its Marketplace listing are available. They now support the work

@@ -1,0 +1,918 @@
+{
+  "agency": {
+    "country": "ES",
+    "id": "emt-malaga",
+    "name": "Empresa Malague\u00f1a de Transportes (EMT M\u00e1laga)",
+    "operating_note": "M\u00e1laga's city bus network published on the municipal open data portal.",
+    "subdivision_code": "ES-MA",
+    "subdivision_name": "M\u00e1laga"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 37105,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.8,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1127,
+        "translations": {
+          "feed_lang": "es",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 37105,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1127,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "1127 of 1127 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 37105,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "37105 of 37105 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 2,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 0,
+          "WARNING": 2
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 1,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        }
+      ],
+      "name": "correctness",
+      "score": 92.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 2 kinds of issue across 2 instances (0 error, 2 warning, 0 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 55,
+        "effective_expiry_date": "2026-09-30",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": "vers13julio2026",
+        "has_feed_info": true,
+        "last_service_date": "2026-09-30",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 76.7,
+      "status": "measured",
+      "summary": "Service data covers the next 55 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 56 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through M\u00e1laga's open data portal; commercial reuse and adaptation are permitted with attribution to EMT M\u00e1laga.",
+    "reachable": true,
+    "sha256": "d05b4598e48439ee5eacc0f9888098117eae090141f0415508e762e6bc5b4ab0",
+    "size_bytes": 8678112,
+    "static_url": "https://gtfs.emtmalaga.es/GTFS/google_transit.zip"
+  },
+  "fetch": {
+    "final_url": "https://gtfs.emtmalaga.es/GTFS/google_transit.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -4.57611,
+      36.64636,
+      -4.33577,
+      36.78003
+    ],
+    "lat": 36.72231,
+    "lon": -4.44193,
+    "stop_count": 1127
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 48,
+        "trip_count": 37105,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 48,
+    "trip_count": 37105
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 1.1,
+    "margin_to_next_band": 8.9,
+    "score": 71.1
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 10,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "10 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (1, 4, 10, 22, 27, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 35,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "35 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Av. Aurora - Correos\", \"Av. Andaluc\u00eda - Hacienda\", \"Vel\u00e1zquez - La Luz/La Paz\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1127,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 37105
+  },
+  "route_map": {
+    "drawn_route_count": 45,
+    "has_shapes": true,
+    "path": "data/artifacts/emt-malaga/geometry.geojson",
+    "route_count": 48,
+    "routes": [
+      {
+        "color": "12A96A",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "Parque del Sur - Alameda Principal - San Andr\u00e9s",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "319E16",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "Alameda Principal - Churriana por C/ Torremolinos",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F57B91",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "11",
+        "label": "11",
+        "long": "Universidad - Alameda Principal - El Palo (P. Virginia)",
+        "short": "11",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "120",
+        "label": "20E",
+        "long": "Ciudad Jard\u00edn - Alameda Principal (Expr\u00e9s)",
+        "short": "20E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7D8FED",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "14",
+        "label": "14",
+        "long": "Paseo de la Farola - Carranque - Teatinos",
+        "short": "14",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F57B91",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "15",
+        "label": "15",
+        "long": "Virreina - Carlos Haya - Santa Paula",
+        "short": "15",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B413CE",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "17",
+        "label": "17",
+        "long": "Alameda Principal - Las Virreinas - La Palma",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA6868",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "18",
+        "label": "18",
+        "long": "Ciudad Jard\u00edn - Teatinos",
+        "short": "18",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ACC9DF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "19",
+        "label": "19",
+        "long": "Paseo del Parque - Campanillas - Maqueda (Por O. Gasset)",
+        "short": "19",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6EE6D7",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "2",
+        "label": "2",
+        "long": "Alameda Principal - Ciudad Jard\u00edn",
+        "short": "2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D184E4",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "20",
+        "label": "20",
+        "long": "Ciudad Jard\u00edn - Alameda Principal - Los Prados",
+        "short": "20",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D184E4",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "21",
+        "label": "21",
+        "long": "Paseo del Parque - Carlos Haya - Puerto de la  Torre",
+        "short": "21",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AEA812",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "22",
+        "label": "22",
+        "long": "Avda. de Moliere - Tiro de Pich\u00f3n - Universidad",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC725E",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "23",
+        "label": "23",
+        "long": "Paseo del Parque - El Consul -  Parque Cementerio",
+        "short": "23",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "25",
+        "label": "25",
+        "long": "Paseo del Parque - Campanillas - Maqueda",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DEBB07",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "27",
+        "label": "27",
+        "long": "Avda. M. A. Heredia - Santa B\u00e1rbara - P. I. Guadalhorce",
+        "short": "27",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "28",
+        "label": "28",
+        "long": "Santa \u00c1gueda - Campanillas - Bda. Los Nu\u00f1ez",
+        "short": "28",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "29",
+        "label": "29",
+        "long": "Jarazm\u00edn - El Palo - Jarazm\u00edn",
+        "short": "29",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC207D",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "3",
+        "label": "3",
+        "long": "Puerta Blanca - Alameda Principal - El Palo (Olias)",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "30",
+        "label": "30",
+        "long": "Alameda Principal - Mangas Verdes",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "31",
+        "label": "31",
+        "long": "Paseo del Parque - Carranque - Palacio Deportes",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D74355",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "32",
+        "label": "32",
+        "long": "Av. Andaluc\u00eda - Limonar - Mayorazgo",
+        "short": "32",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "12B3BE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "33",
+        "label": "33",
+        "long": "Av. Andaluc\u00eda - Cerrado de Calder\u00f3n",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "559C1C",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "34",
+        "label": "34",
+        "long": "Av. Andaluc\u00eda  - Pedregalejo",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "361FBF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "35",
+        "label": "35",
+        "long": "Av. Andaluc\u00eda - Gibralfaro",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A9A66B",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "36",
+        "label": "36",
+        "long": "Av. Andaluc\u00eda - Conde Ure\u00f1a",
+        "short": "36",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ED0D28",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "37",
+        "label": "37",
+        "long": "Av. Andaluc\u00eda - Altamira - Monte Dorado",
+        "short": "37",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3CDCAC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "38",
+        "label": "38",
+        "long": "Paseo del Parque - Granja Su\u00e1rez - San Alberto",
+        "short": "38",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "319E16",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4",
+        "label": "4",
+        "long": "Paseo del Parque - Cruz Humilladero - Cortijo Alto",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A66868",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "40",
+        "label": "40",
+        "long": "Paseo de la Farola - Sacaba Beach",
+        "short": "40",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4EA06",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "41",
+        "label": "N1",
+        "long": "Puerta Blanca - Alameda Principal - El Palo (Nocturno 1)",
+        "short": "N1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "42",
+        "label": "N2",
+        "long": "Plaza de la Marina - Circular (Nocturno 2)",
+        "short": "N2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4ED6DF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "43",
+        "label": "N3",
+        "long": "Pso. del Parque - Ortega y Gasset -Campanillas (Nocturno 3)",
+        "short": "N3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0F7614",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "44",
+        "label": "N4",
+        "long": "Paseo del Parque - Teatinos - Pto. de la Torre (Nocturno 4)",
+        "short": "N4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "22F4CE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "5",
+        "label": "5",
+        "long": "Alameda Principal - Guadalmar - Parque de Ocio",
+        "short": "5",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B92323",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "62",
+        "label": "C5",
+        "long": "CIRCULAR 5 - Puerto de la Torre",
+        "short": "C5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "64",
+        "label": "CC",
+        "long": "City Center - Comic Con",
+        "short": "CC",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0C86AC",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "65",
+        "label": "L",
+        "long": "UMA - Ampliaci\u00f3n Campus",
+        "short": "L",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D91010",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "Parque Litoral - Alameda Principal - Carlinda",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "257409",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "70",
+        "label": "E",
+        "long": "Paseo del Parque - PTA  (Expr\u00e9s)",
+        "short": "E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B0E1F1",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "71",
+        "label": "C1",
+        "long": "CIRCULAR 1",
+        "short": "C1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5597E4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "72",
+        "label": "C2",
+        "long": "CIRCULAR 2",
+        "short": "C2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "718AC9",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "73",
+        "label": "C3",
+        "long": "CIRCULAR 3 - Parque Clavero",
+        "short": "C3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ECE53E",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "75",
+        "label": "A",
+        "long": "Paseo del Parque -  Aeropuerto (Expr\u00e9s)",
+        "short": "A",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D927C7",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "76",
+        "label": "C6",
+        "long": "CIRCULAR 6 - La Milagrosa",
+        "short": "C6",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C62F2F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "78",
+        "label": "C8",
+        "long": "CIRCULAR 8 -Churriana",
+        "short": "C8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "93BE4D",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "8",
+        "label": "8",
+        "long": "El Palo - Colonia Santa In\u00e9s - Cl\u00ednico",
+        "short": "8",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DA5ED5",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "9",
+        "label": "9",
+        "long": "Alameda Principal - Churriana por C/Maestro Vert",
+        "short": "9",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1127,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1127,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "1127 of 1127 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 37105,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "37105 of 37105 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

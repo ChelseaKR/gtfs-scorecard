@@ -1,4 +1,4 @@
 agency_id,agency_name,grade,score,checked,expiry_status,days_until_expiry,needs_attention,attention_reason,top_fix,shapes_txt_status
-capital-area-transit-system-cats,Capital Area Transit System (CATS),F,46.2,2026-07-10,lapsed,-141,yes,Service data has expired,Confirm your next service period is published: export its calendar and set feed_info feed_end_date past it.,ready
-capital-area-transit-system-cats-2065,Capital Area Transit System (CATS),D,64.7,2026-07-10,current,174,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,
-shreveport-and-bossier-city,Shreveport and Bossier City,F,34.7,2026-07-10,current,26837,no,,Re-generate shape distances in your export; flag to your vendor if it persists.,ready
+capital-area-transit-system-cats,Capital Area Transit System (CATS),F,46.2,2026-08-07,lapsed,-169,yes,Service data has expired,Confirm your next service period is published: export its calendar and set feed_info feed_end_date past it.,ready
+capital-area-transit-system-cats-2065,Capital Area Transit System (CATS),D,66.5,2026-08-07,current,146,no,,Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.,ready
+shreveport-and-bossier-city,Shreveport and Bossier City,F,34.7,2026-08-07,current,26809,no,,Check the trip updates endpoint with your AVL vendor; it should return a fresh GTFS-Realtime protobuf on every request.,ready

@@ -1,0 +1,1860 @@
+{
+  "agency": {
+    "id": "miami-dade-transit",
+    "name": "Miami-Dade Transit",
+    "subdivision_code": "US-FL",
+    "subdivision_name": "Florida"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 100.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 100.0,
+          "stops_stated_pct": 100.0,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 9.9,
+          "wheelchair_stops": 25.0,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 24285,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 66.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 6973,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 24285,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 100.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 100.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 2369,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 5.1,
+          "severity": "INFO",
+          "what": "About 2369 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 72.4,
+      "status": "measured",
+      "summary": "100% of stops state wheelchair accessibility (0% marked accessible, 100% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 9,
+        "instances_by_severity": {
+          "ERROR": 21,
+          "INFO": 0,
+          "WARNING": 28032
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "equal_shape_distance_diff_coordinates",
+          "count": 21,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 18.0,
+          "severity": "ERROR",
+          "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 26898,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 917,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 145,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a transit vehicle can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no transit vehicle can meet."
+        },
+        {
+          "code": "fast_travel_between_far_stops",
+          "count": 54,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'fast_travel_between_far_stops' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Fast travel between far stops (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 10,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 5,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the transit vehicle doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 2,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        }
+      ],
+      "name": "correctness",
+      "score": 32.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 9 kinds of issue across 28053 instances (21 error, 28032 warning, 0 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 512,
+        "effective_expiry_date": "2027-12-31",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2027-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 512 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 513 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 100% of stops and 100% of trips.",
+        "key": "accessible",
+        "met": true
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "785460181e910e47af9172ccb9da0b10aa61ba9d55539fd6b69d0ad181758ef5",
+    "size_bytes": 8419295,
+    "static_url": "http://www.miamidade.gov/transit/googletransit/current/google_transit.zip"
+  },
+  "fetch": {
+    "final_url": "http://www.miamidade.gov/transit/googletransit/current/google_transit.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -81.07572,
+      24.71614,
+      -80.11922,
+      25.98469
+    ],
+    "lat": 25.79693,
+    "lon": -80.25992,
+    "stop_count": 6973
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 3,
+        "trip_count": 6703,
+        "trip_share_pct": 27.6
+      },
+      {
+        "key": "rail",
+        "label": "Rail",
+        "route_count": 1,
+        "trip_count": 876,
+        "trip_share_pct": 3.6
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 119,
+        "trip_count": 16706,
+        "trip_share_pct": 68.8
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 123,
+    "trip_count": 24285
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "DTPW305"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "status": "at_risk"
+      },
+      {
+        "detail": "Service data covers the next 513 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "at_risk",
+    "summary": "This feed is close to NTD-ready. 1 validator error to resolve."
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 57.9,
+    "margin_to_next_band": 2.1,
+    "score": 57.9
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 71,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "71 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (7, 9, 11, 12, 14, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 6636,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "6636 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"SW 114 AVE & QUAIL ROOST DR\", \"SW 211 ST @ OP S DADE GOVT CTR\", \"TRANSITWAY & CORAL REEF DR STATION\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 6973,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 24285
+  },
+  "route_map": {
+    "drawn_route_count": 122,
+    "has_shapes": true,
+    "path": "data/artifacts/miami-dade-transit/geometry.geojson",
+    "route_count": 123,
+    "routes": [
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "14456",
+        "label": "MMO",
+        "long": "METROMOVER OMNI/BRICKELL OUTER LOOP",
+        "short": "MMO",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "14457",
+        "label": "MMI",
+        "long": "METROMOVER INNER LOOP",
+        "short": "MMI",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "008080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "14458",
+        "label": "MIA",
+        "long": "AIRPORT PEOPLE MOVER",
+        "short": "MIA",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "47B877",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "23885",
+        "label": "AVTGRN",
+        "long": "City of Aventura Exp (Green)",
+        "short": "AVTGRN",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "651B60",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "23886",
+        "label": "AVTPUR",
+        "long": "City of Aventura Exp (Purple)",
+        "short": "AVTPUR",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF06",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "23888",
+        "label": "AVTYEL",
+        "long": "City of Aventura Exp (Yellow)",
+        "short": "AVTYEL",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "23891",
+        "label": "CGABLE",
+        "long": "City of Coral Gables Trolley",
+        "short": "CGABLE",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "23892",
+        "label": "DLOOP1",
+        "long": "City of Doral Trolley (Rt. 1)",
+        "short": "DLOOP1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "23893",
+        "label": "DLOOP2",
+        "long": "City of Doral Trolley (Rt. 2)",
+        "short": "DLOOP2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "23894",
+        "label": "DLOOP3",
+        "long": "City of Doral Trolley (Rt. 3)",
+        "short": "DLOOP3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF80C0",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "23895",
+        "label": "HIAFLA",
+        "long": "City of Hialeah Transit (Flamingo)",
+        "short": "HIAFLA",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0080C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "23896",
+        "label": "HIAMAR",
+        "long": "City of Hialeah Transit (Marlin)",
+        "short": "HIAMAR",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "23903",
+        "label": "MIAALP",
+        "long": "City of Miami - Allapattah Route",
+        "short": "MIAALP",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000080",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "23904",
+        "label": "MIABIS",
+        "long": "City of Miami - Biscayne Route",
+        "short": "MIABIS",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "23905",
+        "label": "MIABRK",
+        "long": "City of Miami - Brickell Route",
+        "short": "MIABRK",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "23906",
+        "label": "MIACOR",
+        "long": "City of Miami - Coral Way Route",
+        "short": "MIACOR",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0080FF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "23907",
+        "label": "MIAHLT",
+        "long": "City of Miami - Health District Rte",
+        "short": "MIAHLT",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8080FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "23908",
+        "label": "MIAOVT",
+        "long": "City of Miami - Overtown Route",
+        "short": "MIAOVT",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "23909",
+        "label": "MIASPG",
+        "long": "City of Miami Springs Free-Bee",
+        "short": "MIASPG",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3E41C1",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "23910",
+        "label": "MIASTA",
+        "long": "City of Miami - Stadium Route",
+        "short": "MIASTA",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "23912",
+        "label": "MSHEST",
+        "long": "Miami Shores Village East",
+        "short": "MSHEST",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "23916",
+        "label": "NOMBLU",
+        "long": "City of North Miami Blue",
+        "short": "NOMBLU",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "23917",
+        "label": "NOMGRN",
+        "long": "City of North Miami Green",
+        "short": "NOMGRN",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "23918",
+        "label": "NOMRED",
+        "long": "City of North Miami Red",
+        "short": "NOMRED",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8040",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "23919",
+        "label": "NOMORG",
+        "long": "City of North Miami Orange",
+        "short": "NOMORG",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "23920",
+        "label": "OPALKAN",
+        "long": "City of Opa-locka Exp North",
+        "short": "OPALKAN",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "23924",
+        "label": "PALPNR",
+        "long": "Village of Palmetto Bay Park & Ride",
+        "short": "PALPNR",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28802",
+        "label": "DLOOP4",
+        "long": "City of Doral Trolley (FIU Rt.)",
+        "short": "DLOOP4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28803",
+        "label": "HOMEDT",
+        "long": "City of Homestead Downtown Trolley",
+        "short": "HOMEDT",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28804",
+        "label": "HOMELR",
+        "long": "City of Homestead Lucy Route",
+        "short": "HOMELR",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28805",
+        "label": "HOMECR",
+        "long": "City of Homestead Campbell Route",
+        "short": "HOMECR",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28806",
+        "label": "SWTWTA",
+        "long": "City of Sweetwater Trolley A Route",
+        "short": "SWTWTA",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28807",
+        "label": "SWTWTB",
+        "long": "City of Sweetwater Trolley B Loop",
+        "short": "SWTWTB",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28809",
+        "label": "CGABGA",
+        "long": "City of Coral Gables Grand Avenue",
+        "short": "CGABGA",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28810",
+        "label": "CGABDT",
+        "long": "City of Coral Gables Downtown Xpres",
+        "short": "CGABDT",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28811",
+        "label": "SUNNYBL",
+        "long": "City of Sunny Isles Beach Blue Rt",
+        "short": "SUNNYBL",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28812",
+        "label": "SUNNYOR",
+        "long": "City of Sunny Isles Beach Orange Rt",
+        "short": "SUNNYOR",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28816",
+        "label": "OPALCKA",
+        "long": "City of Opa-Locka North Link",
+        "short": "OPALCKA",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28817",
+        "label": "NMBEACB",
+        "long": "City of North Miami Beach Gold Rt.",
+        "short": "NMBEACB",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28818",
+        "label": "NMBEACC",
+        "long": "City of North Miami Beach Blue Rt",
+        "short": "NMBEACC",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28819",
+        "label": "NMBEACD",
+        "long": "City of North Miami Beach Purple Rt",
+        "short": "NMBEACD",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28822",
+        "label": "MIACOCO",
+        "long": "City of Miami - Coconut Grove Route",
+        "short": "MIACOCO",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28823",
+        "label": "MIAFLAG",
+        "long": "City of Miami - Flagami Route",
+        "short": "MIAFLAG",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28824",
+        "label": "MIALIB",
+        "long": "City of Miami - Liberty City Route",
+        "short": "MIALIB",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28826",
+        "label": "MIAWYNW",
+        "long": "City of Miami - Wynwood Route",
+        "short": "MIAWYNW",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "28827",
+        "label": "MIAHAVA",
+        "long": "City of Miami - Little Havana Route",
+        "short": "MIAHAVA",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "29124",
+        "label": "MIAHAIT",
+        "long": "City of Miami Little Haiti Trolley",
+        "short": "MIAHAIT",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "29133",
+        "label": "JITNEY",
+        "long": "Miami Minibus Jitney",
+        "short": "JITNEY",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8040",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "31009",
+        "label": "2600",
+        "long": "REGULAR METRORAIL SERVICE",
+        "short": "2600",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31099",
+        "label": "2",
+        "long": "DOWNTOWN- NE 84 ST VIA NW 2 AVE",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "31100",
+        "label": "3",
+        "long": "AVENTURA-DOWNTOWN VIA BISC.BLVD.",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "31101",
+        "label": "7",
+        "long": "DOWNTOWN-DOLPH MALL/AIRPORT VIA 7ST",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "31102",
+        "label": "8",
+        "long": "BRICKELL-107AV/WSTCHSTR VIA SW 8 ST",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31103",
+        "label": "9",
+        "long": "AVENTURA-DOWNTOWN VIA NE 2 AVE",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8040",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "31104",
+        "label": "11",
+        "long": "FIU-DOWNTOWN VIA FLAGLER ST",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "31105",
+        "label": "12",
+        "long": "NORTHSIDE - MERCY HOSP.",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "31106",
+        "label": "14",
+        "long": "MT SINAI TO OMNI TERMINAL",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "31107",
+        "label": "15",
+        "long": "OMNI TO MIAMI BEACH VIA VENETIAN",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "31108",
+        "label": "16",
+        "long": "163 ST- 79ST VIA NE 6AV & NE 16AV",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008040",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31109",
+        "label": "17",
+        "long": "163 ST TERM-VIZ VIA 17 AV",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "31110",
+        "label": "20",
+        "long": "AIRPORT STATION TO LINCOLN RD",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "31111",
+        "label": "21",
+        "long": "NORTHSIDE - DOWNTOWN",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "31112",
+        "label": "22",
+        "long": "MDC NORTH-COCO GROVE VIA 22 AVE",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31113",
+        "label": "24",
+        "long": "CORAL WAY LIMITED",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "31114",
+        "label": "25",
+        "long": "MDC NORTH - NE 135 ST/12 AVE",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "31115",
+        "label": "26",
+        "long": "BRICKELL STATION-KEY BISCAYNE",
+        "short": "26",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "31116",
+        "label": "27",
+        "long": "COCO GROVE-MIA GARDENS VIA NW 27 AV",
+        "short": "27",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "31117",
+        "label": "32",
+        "long": "MIAMI GRDNS-OMNI VIA NW 32 AVE-20ST",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "31118",
+        "label": "35",
+        "long": "CUTLER BAY-FLA.CITY VIA LEISURE CTY",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "31119",
+        "label": "36",
+        "long": "DORAL-AIRPORT-MIAMI BEACH VIA 36 ST",
+        "short": "36",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "31120",
+        "label": "37",
+        "long": "HIALEAH-SO.MIAMI VIA PALM/37 AVE",
+        "short": "37",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "31121",
+        "label": "40",
+        "long": "BIRD RD/152 AVE TO DOUGLAS RD STA",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "31122",
+        "label": "42",
+        "long": "DGLS RD-OPALOCKA TRI-RAIL",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "31123",
+        "label": "52",
+        "long": "GOULDS TO CORAL REEF DR STATION",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "31124",
+        "label": "54",
+        "long": "HIALEAH-MIAMI LAKES-BISCA VIA 54 ST",
+        "short": "54",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31125",
+        "label": "56",
+        "long": "WEST DADE TO UNIV. STAT. VIA 56 ST",
+        "short": "56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "31126",
+        "label": "57",
+        "long": "AIRPORT-GABLES-CHILD HOSP-UNIV STAT",
+        "short": "57",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8040",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "31127",
+        "label": "62",
+        "long": "HIALEAH-BISC BLVD VIA 62 ST",
+        "short": "62",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "31128",
+        "label": "70",
+        "long": "CUTLER BAY-FL CITY VIA PRINCETON",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "31129",
+        "label": "72",
+        "long": "W KENDALL-SOUTH MIAMI VIA 72 ST",
+        "short": "72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "31130",
+        "label": "73",
+        "long": "OKEECHOBEE-DADELAND SO-PALM BAY",
+        "short": "73",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "31131",
+        "label": "75",
+        "long": "MIAMI LAKES-NORTH MIAMI-SUNNY ISLES",
+        "short": "75",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000080",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "31132",
+        "label": "77",
+        "long": "NORWOOD - DOWNTOWN VIA NW 7 AVE",
+        "short": "77",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31133",
+        "label": "79",
+        "long": "HIALEAH-MIAMI BEACH VIA 79 ST",
+        "short": "79",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "31134",
+        "label": "87",
+        "long": "MEDLEY-DADELAND NORTH VIA 87 AVE",
+        "short": "87",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "31135",
+        "label": "88",
+        "long": "162 AVE TO DADELAND NORTH VIA 88 ST",
+        "short": "88",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "31136",
+        "label": "95",
+        "long": "I-95 GOLDEN GLADES EXPRESS",
+        "short": "95",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31137",
+        "label": "97",
+        "long": "SO.MIAMI HTS-PERRINE VIA CUTLER BAY",
+        "short": "97",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "31138",
+        "label": "100",
+        "long": "DOWNTOWN-AVENTURA MALL VIA MIABEACH",
+        "short": "100",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A6CAF0",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "31139",
+        "label": "101",
+        "long": "MT SINAI HOSP - DOWNTOWN VIA ALTON",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "31140",
+        "label": "103",
+        "long": "HIA GARDENS-BISC BLVD VIA 103 ST",
+        "short": "103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF80",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "31141",
+        "label": "104",
+        "long": "HAMMOCKS-MDC-DADELAND NO.VIA 104 ST",
+        "short": "104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "31142",
+        "label": "107",
+        "long": "DOLPHIN MALL-MDC KEND-CUTLER BAY",
+        "short": "107",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "408080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "31143",
+        "label": "125",
+        "long": "MDC NORTH TO MIAMI BEACH VIA 125 ST",
+        "short": "125",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "31144",
+        "label": "132",
+        "long": "HIA.TRI-RAIL STA-DORAL VIA 36ST",
+        "short": "132",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8000FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "31145",
+        "label": "135",
+        "long": "OPALOCKA-NORTH MIAMI VIA 135 ST",
+        "short": "135",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF80",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "31146",
+        "label": "136",
+        "long": "DOUGLAS RD-OLD CUTLER-SW 136 ST",
+        "short": "136",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "804000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "31147",
+        "label": "137",
+        "long": "DOLPHIN MALL-CUTLER BAY VIA 137 AVE",
+        "short": "137",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "31148",
+        "label": "150",
+        "long": "MIAMI BEACH AIRPORT FLYER",
+        "short": "150",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "31149",
+        "label": "152",
+        "long": "COUNTRY WALK-TRANSITWAY VIA 152 ST",
+        "short": "152",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000080",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "31150",
+        "label": "183",
+        "long": "AVENTURA-HIALEAH VIA 183 ST/67 AVE",
+        "short": "183",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31151",
+        "label": "199",
+        "long": "COUNTRY CLUB-AVENTURA MALL VIA 199",
+        "short": "199",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "31152",
+        "label": "203",
+        "long": "DOWNTOWN-AVENTURA VIA BISCAYNE BLVD",
+        "short": "203",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "31153",
+        "label": "204",
+        "long": "HAMMOCKS-DADELAND NORTH VIA 104 ST",
+        "short": "204",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "31154",
+        "label": "207",
+        "long": "LITTLE HAVANA CONNECTION",
+        "short": "207",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000080",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "31155",
+        "label": "208",
+        "long": "LITTLE HAVANA CONNECTION",
+        "short": "208",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31156",
+        "label": "211",
+        "long": "SWEETWATER-DOWNTOWN VIA FLAGLER ST",
+        "short": "211",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "31157",
+        "label": "272",
+        "long": "WEST KENDALL-DADELAND NO VIA 72 ST",
+        "short": "272",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8080",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "31158",
+        "label": "279",
+        "long": "MIAMI BEACH-NORTHSIDE",
+        "short": "279",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "31159",
+        "label": "287",
+        "long": "CUTLER BAY TO RICHMOND DR STATION",
+        "short": "287",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "31160",
+        "label": "288",
+        "long": "W. KENDALL TO DADELAND N VIA 88  ST",
+        "short": "288",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "804000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "31161",
+        "label": "301",
+        "long": "DADE/MONROE EXPRESS",
+        "short": "301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808000",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "31162",
+        "label": "302",
+        "long": "CARD SOUND EXPRESS",
+        "short": "302",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "31163",
+        "label": "338",
+        "long": "WEEKEND EXPRESS",
+        "short": "338",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF80",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "31164",
+        "label": "344",
+        "long": "HOMESTEAD TO FL CITY",
+        "short": "344",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "31165",
+        "label": "400",
+        "long": "DADELAND SOUTH-DOWNTOWN VIA US 1",
+        "short": "400",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "31166",
+        "label": "401",
+        "long": "163 ST MALL-DOWNTOWN VIA 22 AVE",
+        "short": "401",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8040",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "31167",
+        "label": "500",
+        "long": "CUTLER BAY LOCAL",
+        "short": "500",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "804040",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "31168",
+        "label": "510",
+        "long": "SKYLAKE CIRCULATOR",
+        "short": "510",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "31169",
+        "label": "601",
+        "long": "METRO EXPRESS",
+        "short": "601",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "31170",
+        "label": "602",
+        "long": "TRANSITWAY LOCAL",
+        "short": "602",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "31171",
+        "label": "836",
+        "long": "DOLPHIN PARK-AND-RIDE TO DOWNTOWN",
+        "short": "836",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "31172",
+        "label": "837",
+        "long": "TAMIAMI PARK-AND-RIDE TO DOWNTOWN",
+        "short": "837",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 6973,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 24285 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 24285,
+    "trips_with_shape": 24285
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "equal_shape_distance_diff_coordinates",
+      "count": 21,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 18.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Equal shape distance diff coordinates (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

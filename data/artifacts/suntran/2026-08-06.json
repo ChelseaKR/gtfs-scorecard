@@ -1,0 +1,1007 @@
+{
+  "agency": {
+    "id": "suntran",
+    "name": "SunTran",
+    "subdivision_code": "US-AZ",
+    "subdivision_name": "Arizona"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 14.8,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 4976,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 98.8,
+        "headsign_scored_pct": 98.8,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 2252,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 4976,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2252,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "2252 of 2252 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 4976,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "4976 of 4976 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 58,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.2,
+          "severity": "WARNING",
+          "what": "58 of 4976 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        }
+      ],
+      "name": "completeness",
+      "score": 44.8,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 5,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 0,
+          "WARNING": 37
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 18,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a transit vehicle can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no transit vehicle can meet."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 14,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 3,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "feed_expiration_date7_days",
+          "count": 1,
+          "effort": "Usually a re-export from your scheduling software.",
+          "fix": "Export and publish an updated GTFS feed that covers at least the next 30 days of service.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "This feed's service calendar runs out within the next 7 days.",
+          "why": "When the calendar ends, Google Maps and other trip planners drop your agency entirely. Riders see no service at all."
+        },
+        {
+          "code": "trip_coverage_not_active_for_next7_days",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Trim past service periods the next time you export.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Many of the feed's trips don't run at all in the next 7 days.",
+          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
+        }
+      ],
+      "name": "correctness",
+      "score": 76.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 37 instances (0 error, 37 warning, 0 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": -446,
+        "effective_expiry_date": "2025-05-17",
+        "feed_end_date": "2025-05-17",
+        "feed_start_date": "2025-02-23",
+        "feed_version": "Feb2325_20250131",
+        "has_feed_info": true,
+        "last_service_date": "2025-05-17",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expired",
+          "count": 1,
+          "effort": "Usually one export setting; export on a schedule so it never lapses again.",
+          "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+          "owner": "Likely your export tool",
+          "points": 100.0,
+          "severity": "ERROR",
+          "what": "Service data ended 446 day(s) ago.",
+          "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
+        }
+      ],
+      "name": "freshness",
+      "score": 0.0,
+      "status": "measured",
+      "summary": "Service data ended 446 day(s) ago. Trip planners have likely already dropped this feed.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "mirror",
+    "level": "provisional",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The agency's own feed URL was unreachable, so the Mobility Database's hosted mirror copy was scored instead."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data expired 445 days ago.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. Service data expired 445 days ago. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "License: https://www.suntran.com/developers_terms.php",
+    "reachable": true,
+    "sha256": "4fc31a329970245488a0fe0bc19c7077bcd0f12832b19ca7b4cb0dc5752db7f1",
+    "size_bytes": 1987281,
+    "static_url": "https://www.suntran.com/wp-content/uploads/2021/08/SunTranGTFS.zip"
+  },
+  "fetch": {
+    "final_url": "https://files.mobilitydatabase.org/mdb-144/latest.zip",
+    "max_attempts": 1,
+    "origin_error": "HTTPError",
+    "reader_archive_profile": "raw-v1",
+    "source": "mirror",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -112.87227,
+      31.86837,
+      -110.77245,
+      32.48443
+    ],
+    "lat": 32.22253,
+    "lon": -110.94834,
+    "stop_count": 2252
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 1,
+        "trip_count": 409,
+        "trip_share_pct": 8.2
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 48,
+        "trip_count": 4567,
+        "trip_share_pct": 91.8
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 49,
+    "trip_count": 4976
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "SunTran"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data expired 445 days ago, so FTA would find the link out of date.",
+        "key": "current",
+        "status": "not_ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "not_ready",
+    "summary": "Resolve this before you certify on the D-10. Service data expired 445 days ago, so FTA would find the link out of date."
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 47.2,
+    "margin_to_next_band": 12.8,
+    "score": 47.2
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 25,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "25 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (10, 103X, 108X, 110X, 12, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 2213,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "2213 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Park/Speedway (NE)\", \"Glenn/Campbell (SE)\", \"Glenn/Alvernon (SE)\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 2252,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 4976
+  },
+  "route_map": {
+    "drawn_route_count": 49,
+    "has_shapes": true,
+    "path": "data/artifacts/suntran/geometry.geojson",
+    "route_count": 49,
+    "routes": [
+      {
+        "color": "FFD457",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "22297",
+        "label": "1",
+        "long": "Glenn/Swan",
+        "short": "1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FA0CA0",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "22298",
+        "label": "10",
+        "long": "Flowing Wells",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "003B7B",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22299",
+        "label": "101X",
+        "long": "Golf Links-Downtown Express",
+        "short": "101X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "806300",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "22300",
+        "label": "102X",
+        "long": "Northwest-UA Express",
+        "short": "102X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "957CA0",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "22301",
+        "label": "103X",
+        "long": "Northwest-Downtown Express",
+        "short": "103X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "451F03",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "22302",
+        "label": "104X",
+        "long": "Marana-Downtown Express",
+        "short": "104X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E00085",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "22303",
+        "label": "105X",
+        "long": "Foothills-Downtown Express",
+        "short": "105X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5B57A6",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "22304",
+        "label": "107X",
+        "long": "Oro Valley-Downtown Express",
+        "short": "107X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DA9B3C",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "22305",
+        "label": "108X",
+        "long": "Broadway-Downtown Express",
+        "short": "108X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4D4A8D",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "22306",
+        "label": "109X",
+        "long": "Catalina Hwy-Downtown Express",
+        "short": "109X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7C5C36",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "22307",
+        "label": "11",
+        "long": "Alvernon Way",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B1EB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22308",
+        "label": "110X",
+        "long": "Rita Ranch-Downtown Express",
+        "short": "110X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C652B4",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "22309",
+        "label": "12",
+        "long": "10th/12th Ave",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00569C",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22310",
+        "label": "15",
+        "long": "Campbell Ave",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A3B4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22311",
+        "label": "16",
+        "long": "Oracle/Ina",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00AEAE",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22312",
+        "label": "17",
+        "long": "Country Club/29th St.",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F68A39",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "22313",
+        "label": "18",
+        "long": "S 6th Ave",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00C200",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "22314",
+        "label": "19",
+        "long": "Stone Ave",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C4A4A5",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "22315",
+        "label": "2",
+        "long": "Pueblo Gardens",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BE5F5C",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "22316",
+        "label": "201X",
+        "long": "Eastside-Aero Park Express",
+        "short": "201X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "92278F",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "22317",
+        "label": "203X",
+        "long": "Oro Valley-Aero Park  Express",
+        "short": "203X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00AB67",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "22318",
+        "label": "204X",
+        "long": "Northwest- Aero Park Express",
+        "short": "204X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CE1957",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "22319",
+        "label": "21",
+        "long": "Congress/Silverbell",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0056CE",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "22321",
+        "label": "23",
+        "long": "Mission Road",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB6D1D",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "22322",
+        "label": "24",
+        "long": "S 12th Ave",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0AF13",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "22324",
+        "label": "26",
+        "long": "Benson Highway",
+        "short": "26",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E6C75A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "22325",
+        "label": "27",
+        "long": "Midvale Park",
+        "short": "27",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "896EFF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "22326",
+        "label": "29",
+        "long": "Valencia",
+        "short": "29",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0AF13",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "22327",
+        "label": "3",
+        "long": "6th St/Wilmot",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F7941E",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "22328",
+        "label": "34",
+        "long": "Craycroft/Ft Lowell",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "994708",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "22329",
+        "label": "37",
+        "long": "Pantano",
+        "short": "37",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0096D1",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22330",
+        "label": "4",
+        "long": "Speedway",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "28903B",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "22331",
+        "label": "401",
+        "long": "N Oracle/Catalina",
+        "short": "401",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0054A4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22332",
+        "label": "412",
+        "long": "Thornydale/Orange Grove",
+        "short": "412",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "72AAA0",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "22333",
+        "label": "413",
+        "long": "Marana/I-10",
+        "short": "413",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "621100",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "22334",
+        "label": "421X",
+        "long": "Green Valley/Sahuarita Connector",
+        "short": "421X",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A1A234",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "22335",
+        "label": "430",
+        "long": "Tucson Estates",
+        "short": "430",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9D4D0A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "22336",
+        "label": "440",
+        "long": "San Xavier",
+        "short": "440",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C1272D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "22337",
+        "label": "450",
+        "long": "Southeast Tucson/Rita Ranch",
+        "short": "450",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2890CF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22338",
+        "label": "486",
+        "long": "Ajo",
+        "short": "486",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "566C11",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "22339",
+        "label": "5",
+        "long": "Pima/West Speedway",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AAC02A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "22341",
+        "label": "6",
+        "long": "Euclid/N 1st Ave",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8A1F03",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "22342",
+        "label": "61",
+        "long": "La Cholla",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008066",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "22343",
+        "label": "7",
+        "long": "22nd St",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "22344",
+        "label": "700",
+        "long": "Sun Link",
+        "short": "700",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "CE1141",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "22347",
+        "label": "8",
+        "long": "Broadway",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7D007D",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "22348",
+        "label": "9",
+        "long": "Grant Road",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "59A36C",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "22350",
+        "label": "22",
+        "long": "El Rio/W. Speedway",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00AB67",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "22351",
+        "label": "25",
+        "long": "S Park Ave",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2252,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 4976 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 4976,
+    "trips_with_shape": 4976
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expired",
+      "count": 1,
+      "effort": "Usually one export setting; export on a schedule so it never lapses again.",
+      "fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "owner": "Likely your export tool",
+      "points": 100.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Service data ended 446 day(s) ago.",
+      "why": "When the calendar runs out, trip planners stop showing this agency even though the buses are still running. Riders are told the service does not exist."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 2252,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "2252 of 2252 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 4976,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "4976 of 4976 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

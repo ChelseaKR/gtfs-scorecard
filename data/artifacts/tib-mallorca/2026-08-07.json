@@ -1,0 +1,1283 @@
+{
+  "agency": {
+    "country": "ES",
+    "id": "tib-mallorca",
+    "name": "Consorci de Transports de Mallorca (TIB)",
+    "operating_note": "One consortium feed for Mallorca's interurban bus, rail, and metro network; counted as one feed record, not a distinct-agency count.",
+    "subdivision_code": "ES-PM",
+    "subdivision_name": "Illes Balears [Islas Baleares]"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 1.5,
+          "stops_marked_accessible_pct": 1.6,
+          "stops_marked_not_accessible_pct": 0.8,
+          "stops_stated_pct": 2.4,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.6,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 4290,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.7,
+        "pathways": {
+          "has_entrances": true,
+          "has_levels": true,
+          "has_pathways": true,
+          "has_stations": true,
+          "has_step_free": true,
+          "pathway_count": 30
+        },
+        "stops": 789,
+        "translations": {
+          "feed_lang": "ca",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 4290,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 2.4,
+        "wheelchair_marked_accessible_pct": 1.6,
+        "wheelchair_marked_not_accessible_pct": 0.8
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 770,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 24.4,
+          "severity": "WARNING",
+          "what": "770 of 789 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 4290,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "4290 of 4290 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_station_pathways",
+          "count": 30,
+          "effort": "None.",
+          "fix": "No action needed.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "INFO",
+          "what": "This feed describes station pathways, including step-free (elevator) routes.",
+          "why": "Riders can be routed through the station, and wheelchair users can see whether a step-free route exists."
+        }
+      ],
+      "name": "completeness",
+      "score": 45.6,
+      "status": "measured",
+      "summary": "2% of stops state wheelchair accessibility (2% marked accessible, 1% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 4,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 226,
+          "WARNING": 5
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 3,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "unexpected_enum_value",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unexpected_enum_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Unexpected enum value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "service_extends_far_in_the_future",
+          "count": 113,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'service_extends_far_in_the_future' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Service extends far in the future (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "service_window_outside_feed_period",
+          "count": 113,
+          "effort": "Two fields in feed_info.txt, or one export setting.",
+          "fix": "Widen feed_start_date and feed_end_date to cover all service dates, or fix the dates that fall outside.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some service dates fall outside the date window set in feed_info.txt.",
+          "why": "feed_info.txt should span every day your service runs, so apps know when the data applies."
+        }
+      ],
+      "name": "correctness",
+      "score": 90.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 231 instances (0 error, 5 warning, 226 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 180,
+        "effective_expiry_date": "2027-02-03",
+        "feed_end_date": "2027-02-03",
+        "feed_start_date": "2023-11-01",
+        "feed_version": "2026.08.03.02.02.21",
+        "has_feed_info": true,
+        "last_service_date": "2036-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 180 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 182 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 2% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 2% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through the consortium's open data page; the stated obligation is to correctly attribute authorship of the data.",
+    "reachable": true,
+    "sha256": "a70fcd8a60331b752f67418d03f797a9fecb3151ca4462d7d7055e70eb64a09c",
+    "size_bytes": 6391290,
+    "static_url": "https://www.tib.org/documents/20124/478141/ctm-mallorca-es.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.tib.org/documents/20124/478141/ctm-mallorca-es.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      2.35004,
+      39.31685,
+      3.45909,
+      39.96109
+    ],
+    "lat": 39.59563,
+    "lon": 2.78094,
+    "stop_count": 789
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "subway",
+        "label": "Subway / metro",
+        "route_count": 1,
+        "trip_count": 200,
+        "trip_share_pct": 4.7
+      },
+      {
+        "key": "rail",
+        "label": "Rail",
+        "route_count": 3,
+        "trip_count": 348,
+        "trip_share_pct": 8.1
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 75,
+        "trip_count": 3742,
+        "trip_share_pct": 87.2
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 79,
+    "trip_count": 4290
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 8.6,
+    "margin_to_next_band": 1.4,
+    "score": 78.6
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 75,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "75 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (101, 102, 103, 104, 105, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 28,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "28 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Ctra. Andratx - Av. Mallorca 2 (11011)\", \"Ctra. Andratx - Av. Mallorca 1 (11012)\", \"Av. Mallorca - Av. Balear 1 (11059)\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 772,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 4290
+  },
+  "route_map": {
+    "drawn_route_count": 79,
+    "has_shapes": true,
+    "path": "data/artifacts/tib-mallorca/geometry.geojson",
+    "route_count": 79,
+    "routes": [
+      {
+        "color": "FFDD00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "216",
+        "label": "M1",
+        "long": "Palma - UIB - ParcBit",
+        "short": "M1",
+        "text_color": "000000",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "005192",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "218",
+        "label": "T1",
+        "long": "Palma - Inca",
+        "short": "T1",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "005192",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "219",
+        "label": "T2",
+        "long": "Palma - sa Pobla",
+        "short": "T2",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "005192",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "220",
+        "label": "T3",
+        "long": "Palma - Manacor",
+        "short": "T3",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "222",
+        "label": "201",
+        "long": "Galilea - Palma",
+        "short": "201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "223",
+        "label": "205",
+        "long": "Bunyola - Palma",
+        "short": "205",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "224",
+        "label": "303",
+        "long": "Bunyola - H. Joan March - Palma",
+        "short": "303",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "225",
+        "label": "341",
+        "long": "P\u00f2rtol - Son Ll\u00e0tzer - FAN",
+        "short": "341",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "233",
+        "label": "121",
+        "long": "Sant Elm - Andratx",
+        "short": "121",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "234",
+        "label": "101",
+        "long": "Port d'Andratx - Palma",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "235",
+        "label": "122",
+        "long": "Port d'Andratx - Santa Pon\u00e7a",
+        "short": "122",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "236",
+        "label": "123",
+        "long": "Santa Pon\u00e7a - Cas Catal\u00e0",
+        "short": "123",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "237",
+        "label": "102",
+        "long": "Peguera - Palma",
+        "short": "102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "239",
+        "label": "107",
+        "long": "Es Capdell\u00e0 - Palma",
+        "short": "107",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "240",
+        "label": "106",
+        "long": "El Toro - Palma",
+        "short": "106",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "241",
+        "label": "104",
+        "long": "Magaluf - Palma",
+        "short": "104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "242",
+        "label": "105",
+        "long": "Sol de Mallorca -  Palma",
+        "short": "105",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "243",
+        "label": "202",
+        "long": "Estellencs - Palma",
+        "short": "202",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "244",
+        "label": "108",
+        "long": "Son Caliu - Palma",
+        "short": "108",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "247",
+        "label": "422",
+        "long": "Cala Mesquida - Cala Rajada",
+        "short": "422",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "249",
+        "label": "423",
+        "long": "Font de sa Cala - Cala Rajada",
+        "short": "423",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "254",
+        "label": "424",
+        "long": "Cala Rajada - Portocristo",
+        "short": "424",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3013",
+        "label": "203",
+        "long": "Valldemossa / Dei\u00e0",
+        "short": "203",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3014",
+        "label": "204",
+        "long": "Port de S\u00f3ller - Palma",
+        "short": "204",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3015",
+        "label": "232",
+        "long": "Port de S\u00f3ller - Fornalutx",
+        "short": "232",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3016",
+        "label": "301",
+        "long": "Port de Pollen\u00e7a - Palma",
+        "short": "301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3017",
+        "label": "302",
+        "long": "Can Picafort - Palma",
+        "short": "302",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3018",
+        "label": "304",
+        "long": "Inca - Sencelles - Palma",
+        "short": "304",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3019",
+        "label": "311",
+        "long": "Mancor de la Vall - Inca",
+        "short": "311",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3020",
+        "label": "312",
+        "long": "Lluc - Inca - Muro",
+        "short": "312",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3021",
+        "label": "314",
+        "long": "Campanet / B\u00fager",
+        "short": "314",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3022",
+        "label": "316",
+        "long": "Son Serra - Inca",
+        "short": "316",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3023",
+        "label": "321",
+        "long": "Cala de Sant Vicen\u00e7",
+        "short": "321",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3024",
+        "label": "322",
+        "long": "Pollen\u00e7a - Port d'Alc\u00fadia",
+        "short": "322",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3026",
+        "label": "331",
+        "long": "Alar\u00f3 - Orient",
+        "short": "331",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3027",
+        "label": "342",
+        "long": "Alar\u00f3 - Estaci\u00f3 - Consell",
+        "short": "342",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3028",
+        "label": "421",
+        "long": "Col\u00f2nia de Sant Pere - Art\u00e0",
+        "short": "421",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3066",
+        "label": "401",
+        "long": "Cala Millor - Palma",
+        "short": "401",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3068",
+        "label": "403",
+        "long": "Campos - Algaida - Palma",
+        "short": "403",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3071",
+        "label": "416",
+        "long": "Cales de Mallorca - Manacor",
+        "short": "416",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3072",
+        "label": "417",
+        "long": "Porreres - Manacor - Son Carri\u00f3",
+        "short": "417",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3073",
+        "label": "441",
+        "long": "Ariany - Maria - Sineu",
+        "short": "441",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3074",
+        "label": "442",
+        "long": "Sant Joan",
+        "short": "442",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3075",
+        "label": "501",
+        "long": "Manacor - Campos - Palma",
+        "short": "501",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3078",
+        "label": "504",
+        "long": "Tolleric - Palma",
+        "short": "504",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3080",
+        "label": "512",
+        "long": "Portocolom - Felanitx",
+        "short": "512",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3081",
+        "label": "514",
+        "long": "Cala d'Or - Felanitx - Porreres",
+        "short": "514",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3082",
+        "label": "515",
+        "long": "Cala d'Or - Campos",
+        "short": "515",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3083",
+        "label": "516",
+        "long": "Cala Figuera - Campos",
+        "short": "516",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3084",
+        "label": "517",
+        "long": "Santany\u00ed - Col\u00f2nia de Sant Jordi - Campos",
+        "short": "517",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3100",
+        "label": "324",
+        "long": "Can Picafort - Alc\u00fadia",
+        "short": "324",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3102",
+        "label": "521",
+        "long": "Cala d'Or - Cala Mondrag\u00f3",
+        "short": "521",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3106",
+        "label": "334",
+        "long": "Alc\u00fadia - Formentor",
+        "short": "334",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3111",
+        "label": "A11",
+        "long": "Peguera - Aeroport",
+        "short": "A11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3113",
+        "label": "A32",
+        "long": "Can Picafort - Aeroport",
+        "short": "A32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3114",
+        "label": "A42",
+        "long": "Cala Bona - Aeroport",
+        "short": "A42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3119",
+        "label": "231",
+        "long": "Port de S\u00f3ller - Alc\u00fadia",
+        "short": "231",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3121",
+        "label": "A51",
+        "long": "Campos - Aeroport",
+        "short": "A51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3123",
+        "label": "315",
+        "long": "Sa Pobla - Badia d'Alc\u00fadia",
+        "short": "315",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3126",
+        "label": "412",
+        "long": "Costa dels Pins - Manacor",
+        "short": "412",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3127",
+        "label": "501e",
+        "long": "Campos - Palma, expr\u00e9s",
+        "short": "501e",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3129",
+        "label": "411",
+        "long": "Cala Rajada - Manacor",
+        "short": "411",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3131",
+        "label": "427",
+        "long": "Cala Mendia - Portocristo",
+        "short": "427",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3132",
+        "label": "425",
+        "long": "Cala Bona - Portocristo",
+        "short": "425",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3135",
+        "label": "508",
+        "long": "Sa R\u00e0pita - Palma",
+        "short": "508",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3136",
+        "label": "505",
+        "long": "Cala Pi - Tolleric",
+        "short": "505",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3138",
+        "label": "428",
+        "long": "Cala d'Or - Portocristo",
+        "short": "428",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3145",
+        "label": "103",
+        "long": "Santa Pon\u00e7a - Palma",
+        "short": "103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3146",
+        "label": "518",
+        "long": "Sa R\u00e0pita - Campos",
+        "short": "518",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3147",
+        "label": "431d",
+        "long": "Algaida - Llucmajor",
+        "short": "431d",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3148",
+        "label": "323",
+        "long": "Alcanada - Es Mal Pas",
+        "short": "323",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3149",
+        "label": "325",
+        "long": "Alc\u00fadia - Cala Rajada",
+        "short": "325",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3150",
+        "label": "432",
+        "long": "Sineu - Algaida",
+        "short": "432",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3154",
+        "label": "313",
+        "long": "Selva - Inca",
+        "short": "313",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3155",
+        "label": "131",
+        "long": "Santa Pon\u00e7a - Banyalbufar",
+        "short": "131",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3157",
+        "label": "327",
+        "long": "Alc\u00fadia - Estany Petit",
+        "short": "327",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3158",
+        "label": "411e",
+        "long": "Cala Rajada - Palma",
+        "short": "411e",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3160",
+        "label": "515e",
+        "long": "Cala d'Or - Palma",
+        "short": "515e",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA2423",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3227",
+        "label": "343d",
+        "long": "Santa Eug\u00e8nia - Santa Maria",
+        "short": "343d",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 789,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 770,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 24.4,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "770 of 789 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 4290,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "4290 of 4290 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

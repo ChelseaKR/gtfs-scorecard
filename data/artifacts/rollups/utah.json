@@ -1,25 +1,28 @@
 {
   "agency_count": 5,
-  "average_score": null,
+  "average_score": 58.6,
   "common_fixes": [],
   "comparison": {
     "absolute_rankings_published": false,
-    "eligible_count": 0,
-    "excluded_count": 5,
+    "eligible_count": 1,
+    "excluded_count": 4,
     "exclusion_counts": {
       "duplicate_feed_identity": 2,
-      "rubric_version_mismatch": 5,
-      "scoring_profile_missing": 5,
-      "scoring_profile_rubric_missing": 5,
       "service_data_long_expired": 2
     },
     "individual_percentiles_published": false,
-    "measured_category_cohorts": {},
-    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
-    "required_measured_categories": [],
+    "measured_category_cohorts": {
+      "correctness+freshness+completeness": 1
+    },
+    "note": "Score aggregates and named changes use one current producer contract, raw reader archive profile, and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [
+      "correctness",
+      "freshness",
+      "completeness"
+    ],
     "required_reader_archive_profile": "raw-v1",
-    "required_rubric_version": "1.2",
-    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_rubric_version": "1.3",
+    "required_scoring_profile_id": "gtfs-scorecard-1.3",
     "required_validator_version": "8.0.1"
   },
   "expired": {
@@ -27,13 +30,15 @@
     "stale": 2,
     "total": 2
   },
-  "generated_at": "2026-07-14T09:01:50+00:00",
-  "grade_distribution": {},
+  "generated_at": "2026-08-07T02:19:46+00:00",
+  "grade_distribution": {
+    "F": 1
+  },
   "members": [
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -3326,
+      "days_until_expiry": -3354,
       "expiry_status": "stale",
       "grade": "F",
       "id": "elevated-transit",
@@ -41,13 +46,14 @@
       "needs_attention": true,
       "score": 47.5,
       "shapes_status": "not_ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -818,
+      "days_until_expiry": -846,
       "expiry_status": "stale",
       "grade": "F",
       "id": "uta",
@@ -55,41 +61,44 @@
       "needs_attention": true,
       "score": 19.6,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 36 day(s)",
-      "days_until_expiry": 36,
-      "expiry_status": "current",
+      "attention_reason": "Service data expires in 8 day(s)",
+      "days_until_expiry": 8,
+      "expiry_status": "expiring_soon",
       "grade": "F",
       "id": "uta-2349",
       "name": "UTA",
       "needs_attention": true,
-      "score": 48.2,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-generate shape distances in your export; flag to your vendor if it persists."
+      "score": 34.7,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "top_fix_code": "scorecard_feed_expiring_soon"
     },
     {
       "annual_trips": null,
-      "attention_reason": "Service data expires in 36 day(s)",
-      "days_until_expiry": 36,
-      "expiry_status": "current",
+      "attention_reason": "Service data expires in 8 day(s)",
+      "days_until_expiry": 8,
+      "expiry_status": "expiring_soon",
       "grade": "F",
       "id": "utah-transit-authority-uta",
       "name": "Utah Transit Authority (UTA)",
       "needs_attention": true,
-      "score": 48.2,
+      "score": 34.7,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-generate shape distances in your export; flag to your vendor if it persists."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "top_fix_code": "scorecard_feed_expiring_soon"
     },
     {
       "annual_trips": null,
       "attention_reason": null,
-      "days_until_expiry": 1665,
+      "days_until_expiry": 1637,
       "expiry_status": "current",
       "grade": "F",
       "id": "suntran-utah",
@@ -97,8 +106,9 @@
       "needs_attention": false,
       "score": 58.6,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "top_fix_code": "scorecard_wheelchair_boarding_unknown"
     }
   ],
   "needs_attention": 4,
@@ -106,12 +116,12 @@
     "id": "utah",
     "name": "Utah agencies"
   },
-  "schema_version": "1.11",
+  "schema_version": "1.17",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 1,
+    "not_measured": 0,
     "not_ready": 1,
-    "ready": 3,
+    "ready": 4,
     "total": 5
   },
   "state_percentile": null

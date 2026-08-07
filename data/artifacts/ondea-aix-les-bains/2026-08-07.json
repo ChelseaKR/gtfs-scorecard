@@ -1,0 +1,1292 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "ondea-aix-les-bains",
+    "name": "Ond\u00e9a (Aix-les-Bains)",
+    "subdivision_code": "FR-ARA",
+    "subdivision_name": "Auvergne-Rh\u00f4ne-Alpes"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 76.3,
+          "stops_marked_accessible_pct": 61.4,
+          "stops_marked_not_accessible_pct": 0.9,
+          "stops_stated_pct": 62.3,
+          "trips_stated_pct": 99.7
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 15.6,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 3059,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.8,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1287,
+        "translations": {
+          "feed_lang": "fr",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 3059,
+        "wheelchair_accessible_pct": 99.7,
+        "wheelchair_boarding_pct": 62.3,
+        "wheelchair_marked_accessible_pct": 61.4,
+        "wheelchair_marked_not_accessible_pct": 0.9
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 485,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 9.4,
+          "severity": "WARNING",
+          "what": "485 of 1287 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 8,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "8 of 3059 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 68.0,
+      "status": "measured",
+      "summary": "62% of stops state wheelchair accessibility (61% marked accessible, 1% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 18,
+        "instances_by_severity": {
+          "ERROR": 58,
+          "INFO": 588,
+          "WARNING": 10112
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "decreasing_or_equal_stop_time_distance",
+          "count": 58,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+          "owner": "Likely your export tool",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Some trips have stop times whose distances along the route go backwards.",
+          "why": "Apps can show buses jumping backwards or mis-order stops."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
+          "count": 8329,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Equal shape distance diff coordinates distance below threshold (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 1319,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 431,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 14,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 6,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 4,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 4,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 2,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "non_ascii_or_non_printable_char",
+          "count": 1,
+          "effort": "A planned ID change, not a quick text cleanup.",
+          "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some internal IDs use characters outside the basic text set.",
+          "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 1,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "unused_station",
+          "count": 460,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unused_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Unused station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unsorted_stop_times",
+          "count": 90,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unsorted_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Unsorted stop times (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 32,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the bus ends up, so a midpoint name can send them the wrong way."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 4,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "service_window_outside_feed_period",
+          "count": 1,
+          "effort": "Two fields in feed_info.txt, or one export setting.",
+          "fix": "Widen feed_start_date and feed_end_date to cover all service dates, or fix the dates that fall outside.",
+          "owner": "Likely your export tool",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some service dates fall outside the date window set in feed_info.txt.",
+          "why": "feed_info.txt should span every day your service runs, so apps know when the data applies."
+        },
+        {
+          "code": "unknown_column",
+          "count": 1,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        }
+      ],
+      "name": "correctness",
+      "score": 11.8,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 18 kinds of issue across 10758 instances (58 error, 10112 warning, 588 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 146,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": "2026-12-31",
+        "feed_start_date": "2026-07-02",
+        "feed_version": "2026-07-02 14:29:47.602474 UTC",
+        "has_feed_info": true,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 146 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 62% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 62% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0; published by Grand Lac (CTLB) through France's National Access Point. Derived measurements by GTFS Scorecard.",
+    "reachable": true,
+    "sha256": "2b23b3b76d5b007bf858356d1303497d1a43f974700f54362991ea54dfe30eb9",
+    "size_bytes": 2954074,
+    "static_url": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/ctlb-aix-les-bains/exports/pan.zip"
+  },
+  "fetch": {
+    "final_url": "https://s3.eu-west-1.amazonaws.com/files.orchestra.ratpdev.com/networks/ctlb-aix-les-bains/exports/pan.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      5.77867,
+      45.57036,
+      6.01244,
+      45.95924
+    ],
+    "lat": 45.70348,
+    "lon": 5.9104,
+    "stop_count": 1287
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 64,
+        "trip_count": 3059,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 64,
+    "trip_count": 3059
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 51.4,
+    "margin_to_next_band": 8.6,
+    "score": 51.4
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 43,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "43 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (Mobi'Aix, 03, DIM, 11, 100, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 14,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "14 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Braille RD\", \"Braille RD\", \"Ecole St Jean\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 827,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 6,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "6 of 827 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 6,
+    "single_stop_trips": 0,
+    "trips_total": 3059
+  },
+  "route_map": {
+    "drawn_route_count": 64,
+    "has_shapes": true,
+    "path": "data/artifacts/ondea-aix-les-bains/geometry.geojson",
+    "route_count": 64,
+    "routes": [
+      {
+        "color": "E5004B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "01",
+        "label": "01",
+        "long": "Pont Rouge - Technolac INSEEC",
+        "short": "01",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004899",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "02",
+        "label": "02",
+        "long": "Coll\u00e8ge de Gr\u00e9sy - Centre Commercial Drumettaz /Hexapole",
+        "short": "02",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "12A537",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "03",
+        "label": "03",
+        "long": "Avenue du Petit Port - Thermes Chevalley",
+        "short": "03",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B80E80",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "10",
+        "label": "10",
+        "long": "Plage d'Aix - ESAT",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "32A8CF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "100",
+        "label": "100",
+        "long": "Lyc\u00e9e Marlioz/Gare SNCF - Coll\u00e8ge Garibaldi",
+        "short": "100",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "50A060",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "101",
+        "label": "101",
+        "long": "Lyc\u00e9e Marlioz/Gare SNCF - Coll\u00e8ge Garibaldi",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CD6467",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "102",
+        "label": "102",
+        "long": "Lyc\u00e9e Marlioz - Coll\u00e8ge Garibaldi / Saintinaix",
+        "short": "102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "90B53B",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "103",
+        "label": "103",
+        "long": "Pont Rouge - Lyc\u00e9e Marlioz",
+        "short": "103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "995494",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "104",
+        "label": "104",
+        "long": "Chemin des Griattes - Lyc\u00e9e Marlioz",
+        "short": "104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "47437A",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "105",
+        "label": "105",
+        "long": "Chemin de Recouten / Atrium - Lyc\u00e9e Marlioz",
+        "short": "105",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "408A92",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "106",
+        "label": "106",
+        "long": "Patte d'Oie - Voglans Ecole / Lyc\u00e9e Marlioz",
+        "short": "106",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ABA015",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "107",
+        "label": "107",
+        "long": "Lyc\u00e9e Marlioz / Coll\u00e8ge Garibaldi - M\u00e9ry Fournet",
+        "short": "107",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C8273D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "108",
+        "label": "108",
+        "long": "Lyc\u00e9e Marlioz - Mouxy l'Angolet",
+        "short": "108",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EF7D00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "11",
+        "label": "11",
+        "long": "Coll\u00e8ge Garibaldi - ESAT",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "32A8CF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "200",
+        "label": "200",
+        "long": "Mairie de Gr\u00e9sy - Lyc\u00e9e Marlioz",
+        "short": "200",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "50A060",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "201",
+        "label": "201",
+        "long": "Les Aillouds - Coll\u00e8ge de Gr\u00e9sy",
+        "short": "201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CD6467",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "202",
+        "label": "202",
+        "long": "V\u00e9niper - Lyc\u00e9e Marlioz",
+        "short": "202",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "90B53B",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "203",
+        "label": "203",
+        "long": "Clairefontaine - Ecole Pugny",
+        "short": "203",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "995494",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "204",
+        "label": "204",
+        "long": "Chapelle Ste Euph\u00e9mie - Coll\u00e8ge de Gr\u00e9sy",
+        "short": "204",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "47437A",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "205",
+        "label": "205",
+        "long": "Les Laurents - Coll\u00e8ge de Gr\u00e9sy",
+        "short": "205",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "408A92",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "206",
+        "label": "206",
+        "long": "V\u00e9niper - Coll\u00e8ge de Gr\u00e9sy",
+        "short": "206",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ABA015",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "207",
+        "label": "207",
+        "long": "Clairefontaine - Coll\u00e8ge de Gr\u00e9sy",
+        "short": "207",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C8273D",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "208",
+        "label": "208",
+        "long": "Les Chenevriers - Lyc\u00e9e Marlioz",
+        "short": "208",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E46A96",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "209",
+        "label": "209",
+        "long": "Mouxy l'Angolet - Coll\u00e8ge de Gr\u00e9sy",
+        "short": "209",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "32A8CF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "300",
+        "label": "300",
+        "long": "Plage du Bourget - Lyc\u00e9e Marlioz",
+        "short": "300",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "50A060",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "301",
+        "label": "301",
+        "long": "Bourdeau La Fosse / Plaisse - Coll\u00e8ge G. Sand /Lyc\u00e9e Louis Armand",
+        "short": "301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CD6467",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "302",
+        "label": "302",
+        "long": "Plage du Bourget - Clos Fleuri",
+        "short": "302",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "90B53B",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "303",
+        "label": "303",
+        "long": "Ontex Village - Coll\u00e8ge G. Sand",
+        "short": "303",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "995494",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "304",
+        "label": "304",
+        "long": "Chapelle du Mont du Chat Communal - Le Bourget du Lac Ecole",
+        "short": "304",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "47437A",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "305",
+        "label": "305",
+        "long": "Clos Fleuri - Plage du Bourget",
+        "short": "305",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2DA4DD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "400",
+        "label": "400",
+        "long": "Remollard - P\u00f4le d'\u00e9changes Entrelacs",
+        "short": "400",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "339933",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "401",
+        "label": "401",
+        "long": "Pont de la Chavanne - P\u00f4le d'\u00e9changes Entrelacs",
+        "short": "401",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6666",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "402",
+        "label": "402",
+        "long": "Laval Dessous - P\u00f4le d'Echanges Entrelacs",
+        "short": "402",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "99C044",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "403",
+        "label": "403",
+        "long": "Les Dagand - P\u00f4le d'Echanges Entrelacs",
+        "short": "403",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "333366",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "405",
+        "label": "405",
+        "long": "Chez les Michaud - P\u00f4le d'\u00e9changes Entrelacs",
+        "short": "405",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "336666",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "406",
+        "label": "406",
+        "long": "Savigny - P\u00f4le d'\u00e9changes Entrelacs",
+        "short": "406",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B2A706",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "407",
+        "label": "407",
+        "long": "La Rippe - P\u00f4le d'\u00e9changes Entrelacs",
+        "short": "407",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "990000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "408",
+        "label": "408",
+        "long": "Les Terrasses d'Albens - P\u00f4le d'\u00e9changes Entrelacs",
+        "short": "408",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF3399",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "409",
+        "label": "409",
+        "long": "La Croix du Sable - Parking de l'Albanais",
+        "short": "409",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "06CACA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "410",
+        "label": "410",
+        "long": "Savigny - Parking de l'Albanais",
+        "short": "410",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "886B28",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "411",
+        "label": "411",
+        "long": "Les Granges Cessens - Cessens Ecole",
+        "short": "411",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009999",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "412",
+        "label": "412",
+        "long": "Remollard - Lyc\u00e9e Marlioz",
+        "short": "412",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB9E25",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "413",
+        "label": "413",
+        "long": "St-Germain \u00c9cole - Cessens \u00c9cole",
+        "short": "413",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "22AE8D",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "414",
+        "label": "414",
+        "long": "Remollard - Parking de l'Albanais",
+        "short": "414",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "147FD0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "415",
+        "label": "415",
+        "long": "P\u00f4le d'\u00e9changes Entrelacs - Parking de l'Albanais",
+        "short": "415",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9933CC",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "416",
+        "label": "416",
+        "long": "St-Girod Chef Lieu - Lyc\u00e9e Marlioz",
+        "short": "416",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0033CC",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "417",
+        "label": "417",
+        "long": "P\u00f4le d'\u00e9changes Entrelacs - Parking de l'Albanais",
+        "short": "417",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "C40606",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "418",
+        "label": "418",
+        "long": "Cessens \u00c9cole - Lyc\u00e9e Marlioz",
+        "short": "418",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE7F34",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "419",
+        "label": "419",
+        "long": "Place Montillet - Chamb\u00e9ry Gare Routi\u00e8re",
+        "short": "419",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "32A8CF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "500",
+        "label": "500",
+        "long": "Portout - Lyc\u00e9e Marlioz",
+        "short": "500",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "50A060",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "501",
+        "label": "501",
+        "long": "Chateaufort Salle des F\u00eates - Lyc\u00e9e Marlioz",
+        "short": "501",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6666",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "502",
+        "label": "502",
+        "long": "Le Dorly - Seyssel Coll\u00e8ge",
+        "short": "502",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "90B53B",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "503",
+        "label": "503",
+        "long": "Crozan - Coll\u00e8ge Culoz",
+        "short": "503",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "954EBC",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "504",
+        "label": "504",
+        "long": "Le Mollard - Vions Ecole",
+        "short": "504",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "47437A",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "505",
+        "label": "505",
+        "long": "Serri\u00e8res Chef-Lieu - Coll\u00e8ge Seyssel",
+        "short": "505",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "408A92",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "506",
+        "label": "506",
+        "long": "Ecole de Serri\u00e8res - Motz Chef Lieu Ecole",
+        "short": "506",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ABA015",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "507",
+        "label": "507",
+        "long": "Landard - Chanaz Ecole",
+        "short": "507",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "990000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "508",
+        "label": "508",
+        "long": "Ruffieux Chef-Lieu - Ecole de Serri\u00e8res",
+        "short": "508",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E46A96",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "509",
+        "label": "509",
+        "long": "Ontex Eglise - Conjux \u00c9cole",
+        "short": "509",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "51B0B4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "510",
+        "label": "510",
+        "long": "Portout - Coll\u00e8ge Culoz",
+        "short": "510",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AE8044",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "511",
+        "label": "511",
+        "long": "Chanaz Ecole - Coll\u00e8ge Culoz",
+        "short": "511",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "03A6D7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "DIM",
+        "label": "DIM",
+        "long": "Lafin - Plage du Bourget",
+        "short": "DIM",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2F9CCA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "NCV",
+        "label": "Mobi'Aix",
+        "long": "MOBI'Aix",
+        "short": "Mobi'Aix",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC33CC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "TAD",
+        "label": "TAD",
+        "long": "TAD",
+        "short": "TAD",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1287,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "decreasing_or_equal_stop_time_distance",
+      "count": 58,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+      "owner": "Likely your export tool",
+      "points": 24.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Some trips have stop times whose distances along the route go backwards.",
+      "why": "Apps can show buses jumping backwards or mis-order stops."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 485,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 9.4,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "485 of 1287 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

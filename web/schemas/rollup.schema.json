@@ -27,7 +27,16 @@
       "additionalProperties": false,
       "properties": {
         "id": { "type": "string" },
-        "name": { "type": "string" }
+        "name": { "type": "string" },
+        "country_code": {
+          "description": "ISO 3166-1 alpha-2 identity carried by country rollups (rollups.py _rollup_identity, shipped with the country program pages) so renderers can state the cohort's scope without keying off id naming conventions. Absent on state and named-cohort rollups.",
+          "type": "string",
+          "pattern": "^[A-Z]{2}$"
+        },
+        "country_name": {
+          "description": "Display name for country_code, resolved by the pipeline's location tables.",
+          "type": "string"
+        }
       }
     },
     "generated_at": {

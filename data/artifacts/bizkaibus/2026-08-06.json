@@ -1,0 +1,1476 @@
+{
+  "agency": {
+    "country": "ES",
+    "id": "bizkaibus",
+    "name": "Bizkaibus",
+    "subdivision_code": "ES-BI",
+    "subdivision_name": "Bizkaia"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 63.6,
+          "stops_marked_accessible_pct": 41.8,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 41.8,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 0.1,
+          "wheelchair_stops": 10.4,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 43803,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 0.9,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": true,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 2335,
+        "translations": {
+          "feed_lang": "es",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 43803,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 41.8,
+        "wheelchair_marked_accessible_pct": 41.8,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1359,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 14.6,
+          "severity": "WARNING",
+          "what": "1359 of 2335 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 2314,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 14.9,
+          "severity": "INFO",
+          "what": "About 2314 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        }
+      ],
+      "name": "completeness",
+      "score": 70.6,
+      "status": "measured",
+      "summary": "42% of stops state wheelchair accessibility (42% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 6,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 3,
+          "WARNING": 8188
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 5848,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 2108,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 128,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 94,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 10,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 3,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 61.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 8191 instances (0 error, 8188 warning, 3 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 46,
+        "effective_expiry_date": "2026-09-21",
+        "feed_end_date": "2026-09-21",
+        "feed_start_date": "2026-07-21",
+        "feed_version": "20260722",
+        "has_feed_info": true,
+        "last_service_date": "2026-09-21",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 76.7,
+      "status": "measured",
+      "summary": "Service data covers the next 46 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 47 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 42% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 42% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through Bizkaia's open data portal; credit the Diputaci\u00f3n Foral de Bizkaia.",
+    "reachable": true,
+    "sha256": "282a5048fbd68b978be3da334fb55320a0c0789cf381e2fc5b58144dd19dff83",
+    "size_bytes": 21947023,
+    "static_url": "https://baliabideak.bizkaia.eus/Bizkaibus/GTFS/Bizkaibus.zip"
+  },
+  "fetch": {
+    "final_url": "https://baliabideak.bizkaia.eus/Bizkaibus/GTFS/Bizkaibus.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -3.43868,
+      42.98915,
+      -2.38827,
+      43.44646
+    ],
+    "lat": 43.29332,
+    "lon": -2.91181,
+    "stop_count": 2335
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 99,
+        "trip_count": 43803,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 99,
+    "trip_count": 43803
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 8.1,
+    "margin_to_next_band": 1.9,
+    "score": 68.1
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 291,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "291 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"BIZKAIA ZUBIA/PUENTE BIZKAIA (1)\", \"DONIBANE/SAN JUAN (KONTSERBATORIOA) (11)\", \"ELEXALDE (AUZO ETXEA/CENTRO C\u00cdVICO) (12)\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 2335,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 43803
+  },
+  "route_map": {
+    "drawn_route_count": 99,
+    "has_shapes": true,
+    "path": "data/artifacts/bizkaibus/geometry.geojson",
+    "route_count": 99,
+    "routes": [
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2151",
+        "label": "A2151",
+        "long": "Areeta/Las Arenas-LARRABETZU",
+        "short": "A2151",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2153",
+        "label": "A2153",
+        "long": "BILBAO-TXORIERRI-LARRABETZU",
+        "short": "A2153",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2161",
+        "label": "A2161",
+        "long": "Bizkaia Zubia/Puente Bizkaia - UPV/EHU",
+        "short": "A2161",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2162",
+        "label": "A2162",
+        "long": "Andramari/Santa Mar\u00eda Getxo - UPV/EHU (Algorta)",
+        "short": "A2162",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2163",
+        "label": "A2163",
+        "long": "ERANDIO-UPV/EHU",
+        "short": "A2163",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2164",
+        "label": "A2164",
+        "long": "Andramari/Santa Maria Getxo - UPV/EHU (Fadura)",
+        "short": "A2164",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2166",
+        "label": "A2166",
+        "long": "URIBE KOSTA \u2013 UPV/EHU",
+        "short": "A2166",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2312",
+        "label": "A2312",
+        "long": "Zabalburu-UPV/EHU (Juan de Garay)",
+        "short": "A2312",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2314",
+        "label": "A2314",
+        "long": "Bilbao-Erandiogoikoa-UPV/EHU",
+        "short": "A2314",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2315",
+        "label": "A2315",
+        "long": "SANTURTZI-PORTUGALETE-UPV/EHU",
+        "short": "A2315",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2316",
+        "label": "A2316",
+        "long": "SESTAO-UPV/EHU",
+        "short": "A2316",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2318",
+        "label": "A2318",
+        "long": "Termibus-UPV/EHU (Autopista)",
+        "short": "A2318",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2321",
+        "label": "A2321",
+        "long": "Santutxu-UPV/EHU (Autopista)",
+        "short": "A2321",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2322",
+        "label": "A2322",
+        "long": "BILBAO - ERANDIO - Astrabudua - UPV/EHU",
+        "short": "A2322",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2324",
+        "label": "A2324",
+        "long": "BILBAO-UPV/EHU (Enekuri)",
+        "short": "A2324",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2326",
+        "label": "A2326",
+        "long": "BARAKALDO-UPV/EHU",
+        "short": "A2326",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2336",
+        "label": "A2336",
+        "long": "MUSKIZ-UPV/EHU",
+        "short": "A2336",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2610",
+        "label": "A2610",
+        "long": "GALDAKAO - UPV/EHU",
+        "short": "A2610",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "2611",
+        "label": "A2611",
+        "long": "UGAO MIRABALLES-BASAURI-ETXEBARRI-UPV/EHU",
+        "short": "A2611",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3115",
+        "label": "A3115",
+        "long": "BILBAO-SANTURTZI",
+        "short": "A3115",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3122",
+        "label": "A3122",
+        "long": "BILBAO-SESTAO-Errepelega/Repelega",
+        "short": "A3122",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3129",
+        "label": "A3129",
+        "long": "Lutxana-Gurutzeta/Cruces-SANTURTZI",
+        "short": "A3129",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3135",
+        "label": "A3135",
+        "long": "SESTAO-Cabieces",
+        "short": "A3135",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3136",
+        "label": "A3136",
+        "long": "BILBAO-BARAKALDO-SANTURTZI",
+        "short": "A3136",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3137",
+        "label": "A3137",
+        "long": "BILBAO-BARAKALDO",
+        "short": "A3137",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3141",
+        "label": "A3141",
+        "long": "Gurutzeta/Cruces-Bagatza-VALLE DE TRAPAGA TRAPAGARAN",
+        "short": "A3141",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3144",
+        "label": "A3144",
+        "long": "BILBAO - Gurutzeta/Cruces - BARAKALDO (Ugarte)",
+        "short": "A3144",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3151",
+        "label": "A3151",
+        "long": "BILBAO-SANTURTZI-PORTUGALETE (Autopista)",
+        "short": "A3151",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3223",
+        "label": "A3223",
+        "long": "BILBAO - LARRABETZU (Artxandako Tunelak/Tuneles Artxanda)",
+        "short": "A3223",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3224",
+        "label": "A3224",
+        "long": "BILBAO - DERIO - Teknologia Parkea/Parque Tecnol\u00f3gico",
+        "short": "A3224",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3225",
+        "label": "A3225",
+        "long": "BILBAO - LAUKIZ - MUNGIA",
+        "short": "A3225",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3247",
+        "label": "A3247",
+        "long": "BILBAO - Aireportua/Aeropuerto",
+        "short": "A3247",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3250",
+        "label": "A3250",
+        "long": "BILBAO-TEKNOLOGIA PARKEA (Artxandako tunelak)",
+        "short": "A3250",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3321",
+        "label": "A3321",
+        "long": "PORTUGALETE-ZIERBENA-LA Arena-MUSKIZ",
+        "short": "A3321",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3323",
+        "label": "A3323",
+        "long": "PORTUGALETE-GALDAMES",
+        "short": "A3323",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3331",
+        "label": "A3331",
+        "long": "SESTAO-VALLE DE TRAPAGA TRAPAGARAN",
+        "short": "A3331",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3332",
+        "label": "A3332",
+        "long": "VALLE DE TRAPAGA TRAPAGARAN - SANTURTZI",
+        "short": "A3332",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3333",
+        "label": "A3333",
+        "long": "Gallarta-SANTURTZI",
+        "short": "A3333",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3334",
+        "label": "A3334",
+        "long": "SANTURTZI-BALMASEDA",
+        "short": "A3334",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3335",
+        "label": "A3335",
+        "long": "MUSKIZ-ZIERBENA-SESTAO",
+        "short": "A3335",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3336",
+        "label": "A3336",
+        "long": "BILBAO-MUSKIZ",
+        "short": "A3336",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3338",
+        "label": "A3338",
+        "long": "MUSKIZ-BARAKALDO-Areeta/Las Arenas",
+        "short": "A3338",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3339",
+        "label": "A3339",
+        "long": "Gurutzeta/Cruces-BARAKALDO-La Arena",
+        "short": "A3339",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3340",
+        "label": "A3340",
+        "long": "BILBAO -  ABANTO ZIERBENA - MUSKIZ (Autopista)",
+        "short": "A3340",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3341",
+        "label": "A3341",
+        "long": "BILBAO-Sodupe-Arrespalditza/Respaldiza",
+        "short": "A3341",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3342",
+        "label": "A3342",
+        "long": "BILBAO-Sodupe-ARTZINIEGA",
+        "short": "A3342",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3343",
+        "label": "A3343",
+        "long": "BILBAO - Sodupe - GORDEXOLA",
+        "short": "A3343",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3411",
+        "label": "A3411",
+        "long": "BILBAO-GETXO-Azkorri",
+        "short": "A3411",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3414",
+        "label": "A3414",
+        "long": "BILBAO-GETXO (Artxandako tuneletatik/por t\u00faneles Artxanda)",
+        "short": "A3414",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3422",
+        "label": "A3422",
+        "long": "AREETA/LAS ARENAS-BERANGO (Artea m.g/CC Artea)",
+        "short": "A3422",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3451",
+        "label": "A3451",
+        "long": "AREETA/LAS ARENAS-ARMINTZA",
+        "short": "A3451",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3471",
+        "label": "A3471",
+        "long": "GETXO-GURUTZETA/CRUCES (Faduratik/Por Fadura)",
+        "short": "A3471",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3472",
+        "label": "A3472",
+        "long": "GETXO-GURUTZETA/CRUCES (Areetatik/desde las Arenas)",
+        "short": "A3472",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3499",
+        "label": "A3499",
+        "long": "PLENTZIA-GORLIZ",
+        "short": "A3499",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3512",
+        "label": "A3512",
+        "long": "BILBAO - LEKEITIO (Autopista)",
+        "short": "A3512",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3513",
+        "label": "A3513",
+        "long": "BILBAO-Galdakao Ospitalea-GERNIKA LUMO-EA-LEKEITIO",
+        "short": "A3513",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3514",
+        "label": "A3514",
+        "long": "BILBAO - AMOREBIETA ETXANO - GERNIKA LUMO",
+        "short": "A3514",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3515",
+        "label": "A3515",
+        "long": "BILBAO-AMOREBIETA ETXANO-GERNIKA LUMO-BERMEO",
+        "short": "A3515",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3516",
+        "label": "A3516",
+        "long": "BILBAO-MUNGIA (Autopista)",
+        "short": "A3516",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3517",
+        "label": "A3517",
+        "long": "BILBAO-DERIO-MUNGIA",
+        "short": "A3517",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3518",
+        "label": "A3518",
+        "long": "BILBAO-MUNGIA-BAKIO (Autopista)",
+        "short": "A3518",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3522",
+        "label": "A3522",
+        "long": "MUNGIA-DERIO-Gurutzeta/Cruces",
+        "short": "A3522",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3523",
+        "label": "A3523",
+        "long": "BILBAO-Galdakao Ospitalea-GERNIKA LUMO-AULESTI-LEKEITIO",
+        "short": "A3523",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3525",
+        "label": "A3525",
+        "long": "GERNIKA LUMO-AMOREBIETA ETXANO-UPV/EHU",
+        "short": "A3525",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3526",
+        "label": "A3526",
+        "long": "MUNGIA-GERNIKA LUMO-IBARRANGELU",
+        "short": "A3526",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3527",
+        "label": "A3527",
+        "long": "BILBAO-MUNGIA-BERMEO Autopista",
+        "short": "A3527",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3528",
+        "label": "A3528",
+        "long": "BERMEO-MUNGIA-DERIO-UPV/EHU",
+        "short": "A3528",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3529",
+        "label": "A3529",
+        "long": "MUNGIA - GAMIZ FIKA",
+        "short": "A3529",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3530",
+        "label": "A3530",
+        "long": "MUNGIA - ME\u00d1AKA - ARRIETA",
+        "short": "A3530",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3531",
+        "label": "A3531",
+        "long": "LEIOA - URDULIZ OSPITALEA - MUNGIA",
+        "short": "A3531",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3532",
+        "label": "A3532",
+        "long": "GERNIKA LUMO - EA",
+        "short": "A3532",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3533",
+        "label": "A3533",
+        "long": "MORGA - GERNIKA LUMO - MENDATA",
+        "short": "A3533",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3534",
+        "label": "A3534",
+        "long": "ERRIGOITI - GERNIKA LUMO - ERE\u00d1O",
+        "short": "A3534",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3537",
+        "label": "A3537",
+        "long": "PLENTZIA - GORLIZ - MUNGIA",
+        "short": "A3537",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3613",
+        "label": "A3613",
+        "long": "BILBAO-UGAO MIRABALLES-OROZKO",
+        "short": "A3613",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3622",
+        "label": "A3622",
+        "long": "BILBAO-BASAURI-ARTUNDUAGA-SAN MIGUEL-ZARATAMO",
+        "short": "A3622",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3631",
+        "label": "A3631",
+        "long": "BILBAO - GALDAKAO - LARRABETZU",
+        "short": "A3631",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3632",
+        "label": "A3632",
+        "long": "BILBAO-ETXEBARRI-BASAURI-San Miguel (Bego\u00f1a)",
+        "short": "A3632",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3641",
+        "label": "A3641",
+        "long": "NERBIOI GARAIA/ALTO NERVION-ARRIGORRIAGA-GALDAKAO OSPITALEA",
+        "short": "A3641",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3642",
+        "label": "A3642",
+        "long": "BASAURI - HOSPITAL GALDAKAO OSPITALEA (Bengoetxe)",
+        "short": "A3642",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3911",
+        "label": "A3911",
+        "long": "BILBAO-HOSPITAL GALDAKAO OSPITALEA-LEMOA-DURANGO-ELORRIO",
+        "short": "A3911",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3912",
+        "label": "A3912",
+        "long": "BILBAO-HOSPITAL GALDAKAO OSPITALEA-LEMOA-DURANGO-ERMUA-EIBAR",
+        "short": "A3912",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3913",
+        "label": "A3913",
+        "long": "ARRAZOLA - DURANGO",
+        "short": "A3913",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3915",
+        "label": "A3915",
+        "long": "BILBAO-DURANGO-ONDARROA (Autopista)",
+        "short": "A3915",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3916",
+        "label": "A3916",
+        "long": "BILBAO-ERMUA-ONDARROA (Autopista)",
+        "short": "A3916",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3917",
+        "label": "A3917",
+        "long": "BILBAO-HOSPITAL GALDAKAO OSPITALEA-LEMOA-ZEANURI",
+        "short": "A3917",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3923",
+        "label": "A3923",
+        "long": "BILBAO-DURANGO-ELORRIO (Autopista)",
+        "short": "A3923",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3924",
+        "label": "A3924",
+        "long": "ERMUA - DURANGO - UPV/EHU",
+        "short": "A3924",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3925",
+        "label": "A3925",
+        "long": "BILBAO-LEMOA-OTXANDIO-UBIDE",
+        "short": "A3925",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3926",
+        "label": "A3926",
+        "long": "BILBAO-ERMUA-EIBAR (Autopista)",
+        "short": "A3926",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3927",
+        "label": "A3927",
+        "long": "BILBAO-LEMOA-ZEANURI Autopista",
+        "short": "A3927",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3928",
+        "label": "A3928",
+        "long": "ARTEA - ZEBERIO - UGAO MIRABALLES",
+        "short": "A3928",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3930",
+        "label": "A3930",
+        "long": "BILBAO - GALDAKAO (Autopista)",
+        "short": "A3930",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3932",
+        "label": "A3932",
+        "long": "GALDAKAO - Metro BOLUETA",
+        "short": "A3932",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "3933",
+        "label": "A3933",
+        "long": "BILBAO - DURANGO (Autopista)",
+        "short": "A3933",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "651",
+        "label": "A0651",
+        "long": "BILBAO-BALMASEDA",
+        "short": "A0651",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "652",
+        "label": "A0652",
+        "long": "LANESTOSA-BALMASEDA",
+        "short": "A0652",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "653",
+        "label": "A0653",
+        "long": "TRUCIOS TURTZIOZ-ARTZENTALES",
+        "short": "A0653",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9CCD64",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "654",
+        "label": "A0654",
+        "long": "BALMASEDA - Gurutzeta/Cruces - UPV/EHU",
+        "short": "A0654",
+        "text_color": "01573C",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2335,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1359,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 14.6,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "1359 of 2335 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "mixed_case_recommended_field",
+      "count": 5848,
+      "effort": "Often a bulk fix in your scheduling software.",
+      "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+      "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+    },
+    {
+      "code": "stop_too_far_from_shape_using_user_distance",
+      "count": 2108,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+      "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

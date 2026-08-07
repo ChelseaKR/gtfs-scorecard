@@ -1,0 +1,1569 @@
+{
+  "agency": {
+    "country": "JP",
+    "id": "donan-bus",
+    "name": "Donan Bus (\u9053\u5357\u30d0\u30b9)",
+    "operating_note": "A southern Hokkaido regional bus operator, following the same official open-data path as the Nasu Town canary; counted as one feed record.",
+    "subdivision_code": "JP-01",
+    "subdivision_name": "Hokkaido"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 2832,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.7,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 2329,
+        "translations": {
+          "feed_lang": "ja",
+          "has_translations": true,
+          "languages": [
+            "ja-hrkt"
+          ],
+          "translated_tables": [
+            "stops"
+          ],
+          "translation_count": 1195
+        },
+        "trips": 2832,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2329,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "2329 of 2329 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 2832,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "2832 of 2832 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        }
+      ],
+      "name": "completeness",
+      "score": 60.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 5,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 3,
+          "WARNING": 296606
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "non_ascii_or_non_printable_char",
+          "count": 293447,
+          "effort": "A planned ID change, not a quick text cleanup.",
+          "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some internal IDs use characters outside the basic text set.",
+          "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 3147,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "duplicate_route_name",
+          "count": 11,
+          "effort": "One field per route.",
+          "fix": "Give each route a distinct short or long name.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Two or more routes share the same name.",
+          "why": "Riders can't tell the routes apart in apps."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 1,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "platform_without_parent_station",
+          "count": 3,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'platform_without_parent_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Platform without parent station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 73.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 296609 instances (0 error, 296606 warning, 3 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 54,
+        "effective_expiry_date": "2026-09-30",
+        "feed_end_date": "2026-09-30",
+        "feed_start_date": "2026-04-01",
+        "feed_version": "20260401_2026\u5e7404\u670801\u65e5\uff08\u6539\u6b63\uff09 \u305d\u306e\u7b4b\u5c4b 2.019 \u25cfODPT\u57fa\u672c\u30e9\u30a4\u30bb\u30f3\u30b9(https://developer.odpt.org/terms/data_basic_license.html)",
+        "has_feed_info": true,
+        "last_service_date": "2026-09-30",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 90.0,
+      "status": "measured",
+      "summary": "Service data covers the next 54 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 56 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY through the Hokkaido open data platform (HODA); credit Donan Bus and the Regional Revitalization Mobility Consortium. Published as GTFS-JP, the Japanese national GTFS profile.",
+    "reachable": true,
+    "sha256": "1c00ed8f6688c20aa3215ad966e144dd48269a28b307261ffa3fd971f6af56e6",
+    "size_bytes": 3639786,
+    "static_url": "https://ckan.hoda.jp/dataset/24d1dd70-5395-4d6b-b41f-0d83e8eabdb9/resource/a70d369c-405c-4c25-996c-c70aa53682bc/download/dounan_bus.zip"
+  },
+  "fetch": {
+    "final_url": "https://ckan.hoda.jp/dataset/24d1dd70-5395-4d6b-b41f-0d83e8eabdb9/resource/a70d369c-405c-4c25-996c-c70aa53682bc/download/dounan_bus.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      140.68605,
+      42.1588,
+      142.79888,
+      43.06473
+    ],
+    "lat": 42.5793,
+    "lon": 141.36008,
+    "stop_count": 2329
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 108,
+        "trip_count": 2832,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 108,
+    "trip_count": 2832
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 3.4,
+    "margin_to_next_band": 6.6,
+    "score": 73.4
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 31,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "31 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (33 \u5ba4\u862d\u99c5\u30fb\u8cc7\u6599\u9928\u7dda, 1 \u5de5\u5927\u5faa\u74b0\u7dda\uff08\u4e2d\u5cf6\u2192\u9df2\u5225\u7d4c\u7531\uff09, 34 \u30bf\u30fc\u30df\u30ca\u30eb\u8cc7\u6599\u9928\u7dda\uff08\u6c50\u5e73\u56e3\u5730\u7d4c\u7531\uff09, 23 \u3052\u3093\u304d\u9928\u30bf\u30fc\u30df\u30ca\u30eb\u7dda, 37 \u5343\u4ee3\u306e\u53f0\u7dda\uff08\u6771\u5ba4\u862d\u99c5\u897f\u53e3\u7d4c\u7531\uff09, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 2329,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 2832
+  },
+  "route_map": {
+    "drawn_route_count": 108,
+    "has_shapes": true,
+    "path": "data/artifacts/donan-bus/geometry.geojson",
+    "route_count": 108,
+    "routes": [
+      {
+        "color": "3E6FD2",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "\u3059\u305a\u304b\u3051\u7dda_A",
+        "label": "24 \u3059\u305a\u304b\u3051\u7dda",
+        "long": "24 \u3059\u305a\u304b\u3051\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F0F000",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u3059\u305a\u304b\u3051\u7dda_B",
+        "label": "25 \u516b\u4e01\u5e73\u3059\u305a\u304b\u3051\u7dda",
+        "long": "25 \u516b\u4e01\u5e73\u3059\u305a\u304b\u3051\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00C5CA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u307f\u305f\u3089\u30fb\u6c34\u65cf\u9928\u524d\u5730\u7403\u5cac\u56e3\u5730\u7dda_A",
+        "label": "13 \u307f\u305f\u3089\u30fb\u5730\u7403\u5cac\u56e3\u5730\u7dda",
+        "long": "13 \u307f\u305f\u3089\u30fb\u5730\u7403\u5cac\u56e3\u5730\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00C5CA",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u307f\u305f\u3089\u30fb\u6c34\u65cf\u9928\u524d\u5730\u7403\u5cac\u56e3\u5730\u7dda_B",
+        "label": "14 \u307f\u305f\u3089\u30fb\u5730\u7403\u5cac\u56e3\u5730\u7dda",
+        "long": "14 \u307f\u305f\u3089\u30fb\u5730\u7403\u5cac\u56e3\u5730\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2100A6",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "\u307f\u305f\u3089\u30fb\u6c34\u65cf\u9928\u524d\u5de5\u5927\u7dda(120000)",
+        "label": "8 \u7d75\u9786\u30fb\u5de5\u5927\u7dda\uff08\u795d\u6d25\u2192\u9df2\u5225\u7d4c\u7531\uff09",
+        "long": "8 \u7d75\u9786\u30fb\u5de5\u5927\u7dda\uff08\u795d\u6d25\u2192\u9df2\u5225\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "535445",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "\u307f\u305f\u3089\u30fb\u6c34\u65cf\u9928\u524d\u5de5\u5927\u7dda(120200)",
+        "label": "7 \u7d75\u9786\u30fb\u5de5\u5927\u7dda\uff08\u4e2d\u5cf6\u2192\u795d\u6d25\u7d4c\u7531\uff09",
+        "long": "7 \u7d75\u9786\u30fb\u5de5\u5927\u7dda\uff08\u4e2d\u5cf6\u2192\u795d\u6d25\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EECFC6",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u307f\u305f\u3089\u30fb\u6c34\u65cf\u9928\u524d\u5de5\u5927\u7dda(121100)",
+        "label": "10 \u7d75\u9786\u30fb\u5de5\u5927\u7dda(\u9ad8\u78022\u4e01\u76ee\u7d4c\u7531)",
+        "long": "10 \u7d75\u9786\u30fb\u5de5\u5927\u7dda(\u9ad8\u78022\u4e01\u76ee\u7d4c\u7531)",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "73F951",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "\u307f\u305f\u3089\u30fb\u6c34\u65cf\u9928\u524d\u5de5\u5927\u7dda_A",
+        "label": "9 \u7d75\u9786\u30fb\u5de5\u5927\u7dda\uff08\u4e2d\u5cf6\u2192\u5897\u5e02\u7d4c\u7531\uff09",
+        "long": "9 \u7d75\u9786\u30fb\u5de5\u5927\u7dda\uff08\u4e2d\u5cf6\u2192\u5897\u5e02\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F9E4B",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "\u307f\u305f\u3089\u30fb\u6c34\u65cf\u9928\u524d\u6771\u5ba4\u862d\u99c5\u6771\u53e3\u7dda_A",
+        "label": "11 \u307f\u305f\u3089\u30fb\u6771\u5ba4\u862d\u99c5\u6771\u53e3\u7dda\uff08\u795d\u6d25\u753a\u7d4c\u7531\uff09",
+        "long": "11 \u307f\u305f\u3089\u30fb\u6771\u5ba4\u862d\u99c5\u6771\u53e3\u7dda\uff08\u795d\u6d25\u753a\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FDD102",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u307f\u305f\u3089\u30fb\u6c34\u65cf\u9928\u524d\u6771\u5ba4\u862d\u99c5\u6771\u53e3\u7dda_B",
+        "label": "12 \u307f\u305f\u3089\u30fb\u6771\u5ba4\u862d\u99c5\u6771\u53e3\u7dda\uff08\u5897\u5e02\u901a\u7d4c\u7531\uff09",
+        "long": "12 \u307f\u305f\u3089\u30fb\u6771\u5ba4\u862d\u99c5\u6771\u53e3\u7dda\uff08\u5897\u5e02\u901a\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u307f\u305f\u3089\u30fb\u6c34\u65cf\u9928\u524d\u6771\u5ba4\u862d\u99c5\u6771\u53e3\u7dda_C",
+        "label": "\u5b66\u751f\u4fbf",
+        "long": "\u5b66\u751f\u4fbf",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9101A5",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "\u308d\u3046\u5b66\u6821\u7dda_B",
+        "label": "6 \u308d\u3046\u5b66\u6821\u7dda\uff08\u9ad8\u7802\uff12\u4e01\u76ee\u7d4c\u7531\uff09",
+        "long": "6 \u308d\u3046\u5b66\u6821\u7dda\uff08\u9ad8\u7802\uff12\u4e01\u76ee\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF660D",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "\u30bf\u30fc\u30df\u30ca\u30eb\u5de5\u5927\u7dda_A",
+        "label": "1 \u5de5\u5927\u5faa\u74b0\u7dda\uff08\u4e2d\u5cf6\u2192\u9df2\u5225\u7d4c\u7531\uff09",
+        "long": "1 \u5de5\u5927\u5faa\u74b0\u7dda\uff08\u4e2d\u5cf6\u2192\u9df2\u5225\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33FFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u30bf\u30fc\u30df\u30ca\u30eb\u5de5\u5927\u7dda_B",
+        "label": "2 \u5de5\u5927\u5faa\u74b0\u7dda\uff08\u9df2\u5225\u2192\u4e2d\u5cf6\u7d4c\u7531\uff09",
+        "long": "2 \u5de5\u5927\u5faa\u74b0\u7dda\uff08\u9df2\u5225\u2192\u4e2d\u5cf6\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "54853D",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "\u30bf\u30fc\u30df\u30ca\u30eb\u8cc7\u6599\u9928\u7dda_A",
+        "label": "34 \u30bf\u30fc\u30df\u30ca\u30eb\u8cc7\u6599\u9928\u7dda\uff08\u6c50\u5e73\u56e3\u5730\u7d4c\u7531\uff09",
+        "long": "34 \u30bf\u30fc\u30df\u30ca\u30eb\u8cc7\u6599\u9928\u7dda\uff08\u6c50\u5e73\u56e3\u5730\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "408080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u30bf\u30fc\u30df\u30ca\u30eb\u8cc7\u6599\u9928\u7dda_B",
+        "label": "35 \u30bf\u30fc\u30df\u30ca\u30eb\u8cc7\u6599\u9928\u7dda\uff08\u82e5\u8349\u5c0f\u5b66\u6821\u524d\u7d4c\u7531\uff09",
+        "long": "35 \u30bf\u30fc\u30df\u30ca\u30eb\u8cc7\u6599\u9928\u7dda\uff08\u82e5\u8349\u5c0f\u5b66\u6821\u524d\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7AC565",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "\u30d5\u30a7\u30ea\u30fc\u7dda_A",
+        "label": "24 \u30d5\u30a7\u30ea\u30fc\u7dda",
+        "long": "24 \u30d5\u30a7\u30ea\u30fc\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00E6AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u4e0a\u7a00\u5e9c\u7dda_A",
+        "label": "\u4e0a\u7a00\u5e9c\u7dda",
+        "long": "\u8c4a\u6d66\uff5e\u6d1e\u723a\u6e56\u6e29\u6cc9\uff5e\u4f0a\u9054\u99c5\u524d\uff5e\u5e83\u57df\u30bb\u30f3\u30bf\u30fc\u30d3\u30eb\u30fb\u5ba4\u862d\u99c5\u524d\u5e83\u5834",
+        "short": "\u4e0a\u7a00\u5e9c\u7dda",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF660D",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "\u4e2d\u592e\u753a\u5de5\u5927\u5faa\u74b0\u7dda_A",
+        "label": "\u5faa1 \u4e2d\u592e\u753a\u5de5\u5927\u5faa\u74b0\u7dda\uff08\u4e2d\u5cf6\u2192\u9df2\u5225\u7d4c\u7531\uff09",
+        "long": "\u5faa1 \u4e2d\u592e\u753a\u5de5\u5927\u5faa\u74b0\u7dda\uff08\u4e2d\u5cf6\u2192\u9df2\u5225\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33FFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u4e2d\u592e\u753a\u5de5\u5927\u5faa\u74b0\u7dda_B",
+        "label": "\u5faa2 \u4e2d\u592e\u753a\u5de5\u5927\u5faa\u74b0\u7dda\uff08\u9df2\u5225\u2192\u4e2d\u5cf6\u7d4c\u7531\uff09",
+        "long": "\u5faa2 \u4e2d\u592e\u753a\u5de5\u5927\u5faa\u74b0\u7dda\uff08\u9df2\u5225\u2192\u4e2d\u5cf6\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "82C7FF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u4e2d\u5cf6\u753a\u8cc7\u6599\u9928\u7dda_A",
+        "label": "30 \u4e2d\u5cf6\u753a\u8cc7\u6599\u9928\u7dda",
+        "long": "30 \u4e2d\u5cf6\u753a\u8cc7\u6599\u9928\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "\u4eac\u6975\u7dda_A",
+        "label": "\u4eac\u6975\u7dda",
+        "long": "\u5036\u77e5\u5b89~\u4eac\u6975\u30d0\u30b9\u30bf\u30fc\u30df\u30ca\u30eb~\u559c\u8302\u5225",
+        "short": "\u4eac\u6975\u7dda",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "\u4f0a\u9054\u5e02\u5185\u5faa\u74b0\u30d0\u30b9_A",
+        "label": "\u4f0a\u9054\u99c5\u524d\uff5e\u821f\u5ca1\uff5e\u898b\u6674\u30fb\u6885\u672c\u753a\uff5e\u4f0a\u9054\u99c5\u524d",
+        "long": "\u4f0a\u9054\u99c5\u524d\uff5e\u821f\u5ca1\uff5e\u898b\u6674\u30fb\u6885\u672c\u753a\uff5e\u4f0a\u9054\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "\u4f0a\u9054\u5e02\u5185\u5faa\u74b0\u30d0\u30b9_B",
+        "label": "\u4f0a\u9054\u99c5\u524d\uff5e\u6771\u95a2\u5185\u30fb\u4f0a\u9054\u9ad8\u6821\uff5e\u4f0a\u9054\u99c5\u524d",
+        "long": "\u4f0a\u9054\u99c5\u524d\uff5e\u6771\u95a2\u5185\u30fb\u4f0a\u9054\u9ad8\u6821\uff5e\u4f0a\u9054\u99c5\u524d",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFA6E2",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5036\u77e5\u5b89\uff5e\u6771\u5c0f\u30fb\u5927\u548c\uff5e\u5036\u77e5\u5b89_A",
+        "label": "\u5036\u77e5\u5b89\uff5e\u6771\u5c0f\uff5e\u5927\u548c\uff5e\u5036\u77e5\u5b89",
+        "long": "\u5036\u77e5\u5b89\uff5e\u6771\u5c0f\uff5e\u5927\u548c\uff5e\u5036\u77e5\u5b89",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF00D9",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "\u5149\u6d0b\u3068\u304d\u308f\u7dda_A",
+        "label": "12 \u5149\u6d0b\u3068\u304d\u308f\u7dda",
+        "long": "12 \u5149\u6d0b\u3068\u304d\u308f\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF79BC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "\u5149\u6d0b\u6f84\u5ddd\u7dda_A",
+        "label": "102 \u5149\u6d0b\u6f84\u5ddd\u7dda",
+        "long": "102 \u5149\u6d0b\u6f84\u5ddd\u7dda",
+        "short": "",
+        "text_color": "F4007A",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u52c7\u6255\u6771\u9ad8\u6821\u7dda(805510)",
+        "label": "\u5b66\u4fbf \u52c7\u6255\u6771\u9ad8\u6821\u7dda",
+        "long": "\u5b66\u4fbf \u52c7\u6255\u6771\u9ad8\u6821\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u52c7\u6255\u6771\u9ad8\u6821\u7dda(805520)",
+        "label": "\u5b66\u4fbf \u52c7\u6255\u6771\u9ad8\u6821\u7dda",
+        "long": "\u5b66\u4fbf \u52c7\u6255\u6771\u9ad8\u6821\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7EF9",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "\u52c7\u6255\u7dda_A",
+        "label": "25 \u52c7\u6255\u7dda",
+        "long": "25 \u52c7\u6255\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1E64A4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u52c7\u821e\u7a7a\u6e2f\u7dda_A",
+        "label": "\u52c7\u821e\u7a7a\u6e2f\u7dda",
+        "long": "\u52c7\u821e\u7a7a\u6e2f\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D07A62",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "\u5343\u4ee3\u306e\u53f0\u7dda_A",
+        "label": "37 \u5343\u4ee3\u306e\u53f0\u7dda\uff08\u6771\u5ba4\u862d\u99c5\u897f\u53e3\u7d4c\u7531\uff09",
+        "long": "37 \u5343\u4ee3\u306e\u53f0\u7dda\uff08\u6771\u5ba4\u862d\u99c5\u897f\u53e3\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "300077",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "\u5343\u4ee3\u306e\u53f0\u7dda_B",
+        "label": "38 \u5343\u4ee3\u306e\u53f0\u7dda\uff08\u5bff\u753a\uff11\u4e01\u76ee\u7d4c\u7531\uff09",
+        "long": "38 \u5343\u4ee3\u306e\u53f0\u7dda\uff08\u5bff\u753a\uff11\u4e01\u76ee\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "636363",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "\u5343\u6b73\u7a7a\u6e2f\u7dda_A",
+        "label": "30 \u5343\u6b73\u7a7a\u6e2f\u7dda",
+        "long": "30 \u5343\u6b73\u7a7a\u6e2f\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5357\u9ad8\u6821\u6cbc\u30ce\u7aef\u7dda(804150)",
+        "label": "\u5b66\u4fbf \u5357\u9ad8\u6821\u6cbc\u30ce\u7aef\u7dda",
+        "long": "\u5b66\u4fbf \u5357\u9ad8\u6821\u6cbc\u30ce\u7aef\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5357\u9ad8\u6821\u6cbc\u30ce\u7aef\u7dda(804160)",
+        "label": "\u5b66\u4fbf \u5357\u9ad8\u6821\u6cbc\u30ce\u7aef\u7dda",
+        "long": "\u5b66\u4fbf \u5357\u9ad8\u6821\u6cbc\u30ce\u7aef\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5357\u9ad8\u6821\u9244\u5317\u7dda(805610)",
+        "label": "\u5b66\u4fbf \u5357\u9ad8\u6821\u9244\u5317\u7dda",
+        "long": "\u5b66\u4fbf \u5357\u9ad8\u6821\u9244\u5317\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5357\u9ad8\u6821\u9244\u5317\u7dda(884100)",
+        "label": "\u5b66\u4fbf \u5357\u9ad8\u6821\u9244\u5317\u7dda",
+        "long": "\u5b66\u4fbf \u5357\u9ad8\u6821\u9244\u5317\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5357\u9ad8\u6821\u9244\u5317\u7dda(884110)",
+        "label": "\u5b66\u4fbf \u5357\u9ad8\u6821\u9244\u5317\u7dda",
+        "long": "\u5b66\u4fbf \u5357\u9ad8\u6821\u9244\u5317\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09(120800)",
+        "label": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09",
+        "long": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09(120900)",
+        "label": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09",
+        "long": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09(121000)",
+        "label": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09",
+        "long": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09(123800)",
+        "label": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09",
+        "long": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09(127100)",
+        "label": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09",
+        "long": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09(127200)",
+        "label": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09",
+        "long": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09(128000)",
+        "label": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09",
+        "long": "\u5b66\u751f\u4fbf\uff08\u5ba4\u862d\u5e02\u5185\uff09",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00E6AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u5ba4\u862d\u4f0a\u9054\u7dda_B",
+        "label": "\u5ba4\u862d\u4f0a\u9054\u7dda",
+        "long": "\u8c4a\u6d66\uff5e\u6d1e\u723a\u6e56\u6e29\u6cc9~\u4f0a\u9054\u99c5\u524d~\u5e83\u57df\u30bb\u30f3\u30bf\u30fc\u30d3\u30eb\u30fb\u5ba4\u862d\u99c5\u524d\u5e83\u5834",
+        "short": "\u5ba4\u862d\u4f0a\u9054\u7dda",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00E6AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u5ba4\u862d\u6d1e\u723a\u7dda_A",
+        "label": "\u5ba4\u862d\u6d1e\u723a\u7dda",
+        "long": "\u8c4a\u6d66\uff5e\u6d1e\u723a\u6e56\u6e29\u6cc9~\u4f0a\u9054\u99c5\u524d~\u5e83\u57df\u30bb\u30f3\u30bf\u30fc\u30d3\u30eb\u30fb\u5ba4\u862d\u99c5\u524d\u5e83\u5834",
+        "short": "\u5ba4\u862d\u6d1e\u723a\u7dda",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ADADAD",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "\u5ba4\u862d\u99c5\u30fb\u8cc7\u6599\u9928\u7dda(101110)",
+        "label": "33 \u5ba4\u862d\u99c5\u30fb\u8cc7\u6599\u9928\u7dda",
+        "long": "33 \u5ba4\u862d\u99c5\u30fb\u8cc7\u6599\u9928\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "83493D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "\u5ba4\u862d\u99c5\u524d\u5e83\u5834\uff5e\u767b\u5225\u6e29\u6cc9_A",
+        "label": "\u5e83\u57df\u30bb\u30f3\u30bf\u30fc\u30d3\u30eb\u30fb\u6771\u753a\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u82e5\u5c71\u55b6\u696d\u6240\u2192\u5e4c\u5225\u99c5\u897f\u53e3\u2192\u767b",
+        "long": "\u5e83\u57df\u30bb\u30f3\u30bf\u30fc\u30d3\u30eb\u30fb\u6771\u753a\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u82e5\u5c71\u55b6\u696d\u6240\u2192\u5e4c\u5225\u99c5\u897f\u53e3\u2192\u767b",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "83493D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "\u5ba4\u862d\u99c5\u524d\u5e83\u5834\uff5e\u767b\u5225\u6e29\u6cc9_B",
+        "label": "\u767b\u5225\u6e29\u6cc9\u2192\u5e4c\u5225\u99c5\u897f\u53e3\u2192\u82e5\u5c71\u55b6\u696d\u6240\u2192\u5ba4\u862d\u99c5\u524d\u5e83\u5834",
+        "long": "\u767b\u5225\u6e29\u6cc9\u2192\u5e4c\u5225\u99c5\u897f\u53e3\u2192\u82e5\u5c71\u55b6\u696d\u6240\u2192\u5ba4\u862d\u99c5\u524d\u5e83\u5834",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33FFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u5ba4\u99c5\u5e83\u30fb\u5de5\u5927\u30fb\u308d\u3046\u5b66\u6821\u7dda_A",
+        "label": "4 \u9df2\u5225\u30fb\u5de5\u5927\u7dda",
+        "long": "4 \u9df2\u5225\u30fb\u5de5\u5927\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF660D",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "\u5ba4\u99c5\u5e83\u30fb\u5de5\u5927\u30fb\u308d\u3046\u5b66\u6821\u7dda_B",
+        "label": "3 \u4e2d\u5cf6\u30fb\u5de5\u5927\u7dda",
+        "long": "3 \u4e2d\u5cf6\u30fb\u5de5\u5927\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FEAE56",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u5bae\u306e\u68ee\u306f\u307e\u306a\u3059\u7dda_A",
+        "label": "16 \u5bae\u306e\u68ee\u306f\u307e\u306a\u3059\u7dda",
+        "long": "16 \u5bae\u306e\u68ee\u306f\u307e\u306a\u3059\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5de5\u696d\u9244\u5317\u7dda(806410)",
+        "label": "\u5b66\u4fbf \u5de5\u696d\u9244\u5317\u7dda",
+        "long": "\u5b66\u4fbf \u5de5\u696d\u9244\u5317\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5de5\u696d\u9ad8\u5c02\u9244\u5317\u7dda(884120)",
+        "label": "\u5b66\u4fbf \u5de5\u696d\u9ad8\u5c02\u9244\u5317\u7dda",
+        "long": "\u5b66\u4fbf \u5de5\u696d\u9ad8\u5c02\u9244\u5317\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u5de5\u696d\u9ad8\u5c02\u9244\u5317\u7dda(884130)",
+        "label": "\u5b66\u4fbf \u5de5\u696d\u9ad8\u5c02\u9244\u5317\u7dda",
+        "long": "\u5b66\u4fbf \u5de5\u696d\u9ad8\u5c02\u9244\u5317\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "7ED1B3",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "\u5e4c\u5225\u99c5\u7dda(104100)",
+        "label": "32 \u5e4c\u5225\u99c5\u7dda\uff08\u5bff\u753a1\u4e01\u76ee\u7d4c\u7531\uff09",
+        "long": "32 \u5e4c\u5225\u99c5\u7dda\uff08\u5bff\u753a1\u4e01\u76ee\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F9A4AA",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "\u5e4c\u5225\u99c5\u7dda_A",
+        "label": "31 \u5e4c\u5225\u99c5\u7dda\uff08\u6771\u5ba4\u862d\u99c5\u897f\u53e3\u7d4c\u7531\uff09",
+        "long": "31 \u5e4c\u5225\u99c5\u7dda\uff08\u6771\u5ba4\u862d\u99c5\u897f\u53e3\u7d4c\u7531\uff09",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D2D200",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u65b0\u3072\u3060\u304b\u753a\u5185\u5faa\u74b0\u7dda_A",
+        "label": "\u65b0\u3072\u3060\u304b\u753a\u5185\u5faa\u74b0\u7dda",
+        "long": "",
+        "short": "\u65b0\u3072\u3060\u304b\u753a\u5185\u5faa\u74b0\u7dda",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "37B397",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u65e5\u306e\u51fa\u753a\u7dda_A",
+        "label": "21 \u65e5\u306e\u51fa\u753a\u7dda",
+        "long": "21 \u65e5\u306e\u51fa\u753a\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D2D200",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u65e5\u9ad8\uff5e\u632f\u5185\u6848\u5185\u6240\uff5e\u5e73\u53d6\uff5e\u5bcc\u5ddd\u9ad8\u6821_A",
+        "label": "\u65e5\u9ad8\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u632f\u5185\u6848\u5185\u6240\u2192\u5e73\u53d6\u2192\u5bcc\u5ddd\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "\u65e5\u9ad8\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u632f\u5185\u6848\u5185\u6240\u2192\u5e73\u53d6\u2192\u5bcc\u5ddd\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D2D200",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u65e5\u9ad8\uff5e\u632f\u5185\u6848\u5185\u6240\uff5e\u5e73\u53d6\uff5e\u5bcc\u5ddd\u9ad8\u6821_B",
+        "label": "\u5bcc\u5ddd\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u5e73\u53d6\u2192\u632f\u5185\u6848\u5185\u6240\u2192\u65e5\u9ad8\u30bf\u30fc\u30df\u30ca\u30eb",
+        "long": "\u5bcc\u5ddd\u30bf\u30fc\u30df\u30ca\u30eb\u2192\u5e73\u53d6\u2192\u632f\u5185\u6848\u5185\u6240\u2192\u65e5\u9ad8\u30bf\u30fc\u30df\u30ca\u30eb",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0080FF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u6709\u73e0\u306e\u6ca2\u7dda_A",
+        "label": "15 \u6709\u73e0\u306e\u6ca2\u7dda",
+        "long": "15 \u6709\u73e0\u306e\u6ca2\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8000FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "\u672d\u5e4c\u6d1e\u723a\u6e56\u7dda_A",
+        "label": "\u672d\u5e4c\u6d1e\u723a\u6e56\u7dda",
+        "long": "\u672d\u5e4c~\u6d1e\u723a\u6e56\u6e29\u6cc9",
+        "short": "\u672d\u5e4c\u6d1e\u723a\u6e56\u7dda",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF2254",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "\u6771\u5ba4\u862d\u99c5\u6771\u53e3\u5730\u7403\u5cac\u56e3\u5730\u7dda_A",
+        "label": "16 \u6771\u5ba4\u862d\u99c5\u6771\u53e3\u5730\u7403\u5cac\u56e3\u5730\u7dda",
+        "long": "16 \u6771\u5ba4\u862d\u99c5\u6771\u53e3\u5730\u7403\u5cac\u56e3\u5730\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4F400",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u6771\u5faa\u74b0\u7dda(\u82eb\u5c0f\u7267)_A",
+        "label": "05 \u6771\u5faa\u74b0\u7dda",
+        "long": "05 \u6771\u5faa\u74b0\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F4F400",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u6771\u5faa\u74b0\u7dda(\u82eb\u5c0f\u7267)_B",
+        "label": "06 \u6771\u5faa\u74b0\u7dda",
+        "long": "06 \u6771\u5faa\u74b0\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u6771\u9ad8\u6821\u9244\u5317\u7dda(806310)",
+        "label": "\u5b66\u4fbf \u6771\u9ad8\u6821\u9244\u5317\u7dda",
+        "long": "\u5b66\u4fbf \u6771\u9ad8\u6821\u9244\u5317\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "\u685c\u5742\u56fd\u9053\u7dda_A",
+        "label": "04 \u685c\u5742\u56fd\u9053\u7dda",
+        "long": "04 \u685c\u5742\u56fd\u9053\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "01D17E",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u6c38\u798f\u4e09\u6761\u7dda_A",
+        "label": "01 \u6c38\u798f\u4e09\u6761\u7dda",
+        "long": "01 \u6c38\u798f\u4e09\u6761\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFA67B",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "\u6cbc\u30ce\u7aef\u52c7\u6255\u7dda_A",
+        "label": "103 \u6cbc\u30ce\u7aef\u52c7\u6255\u7dda",
+        "long": "103 \u6cbc\u30ce\u7aef\u52c7\u6255\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u6d1e\u723a\u6e56\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3_A",
+        "label": "\u6d1e\u723a\u6e56\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3",
+        "long": "\u6d1e\u723a\u6e56\u753a\u30b3\u30df\u30e5\u30cb\u30c6\u30a3",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3AC1FC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u6d1e\u723a\u6e56\u7dda_A",
+        "label": "\u6d1e\u723a\u6e56\u7dda",
+        "long": "\u662d\u548c\u65b0\u5c71\uff5e\u6771\u753a\uff5e\u6d1e\u723a\u6e56\u6e29\u6cc9\uff5e\u897f\u5c71\u904a\u6b69\u9053\u30fb\u4e09\u8c4a\u30c8\u30f3\u30cd\u30eb\uff5e\u6d1e\u723a\u99c5",
+        "short": "\u6d1e\u723a\u6e56\u7dda",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00E6AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u6d1e\u723a\u6e56\u7dda_B",
+        "label": "\u6d1e\u723a\u6e56\u7dda",
+        "long": "\u8c4a\u6d66\uff5e\u6d1e\u723a\u6e56\u6e29\u6cc9\uff5e\u4f0a\u9054\u99c5\u524d\uff5e\u5e83\u57df\u30bb\u30f3\u30bf\u30fc\u30d3\u30eb\u30fb\u5ba4\u862d\u99c5\u524d\u5e83\u5834",
+        "short": "\u6d1e\u723a\u6e56\u7dda",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "79604F",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "\u6e2f\u5317\u67cf\u6728\u7dda_A",
+        "label": "22 \u6e2f\u5317\u67cf\u6728\u7dda",
+        "long": "22 \u6e2f\u5317\u67cf\u6728\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3AC1FC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u6e56\u7554\u7dda_A",
+        "label": "\u6e56\u7554\u7dda",
+        "long": "\u6d1e\u723a\u6e56\u6e29\u6cc9\uff5e\u58ee\u77a5\uff5e\u6d1e\u723a\u6c34\u306e\u99c5\uff5e\u6d1e\u723a\u6e56\u6e29\u6cc9",
+        "short": "\u6e56\u7554\u7dda",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4360E9",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "\u6f84\u5ddd\u9326\u5ca1\u7dda_A",
+        "label": "11 \u6f84\u5ddd\u9326\u5ca1\u7dda",
+        "long": "11 \u6f84\u5ddd\u9326\u5ca1\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFA6E2",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u7559\u5bff\u90fd\u5036\u77e5\u5b89\u7dda_A",
+        "label": "\u7559\u5bff\u90fd\u5036\u77e5\u5b89\u7dda",
+        "long": "\u5036\u77e5\u5b89\uff5e\u771f\u72e9\uff5e\u30eb\u30b9\u30c4\u30ea\u30be\u30fc\u30c8\uff5e\u6d1e\u723a\u6e56\u6e29\u6cc9",
+        "short": "\u7559\u5bff\u90fd\u5036\u77e5\u5b89\u7dda",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "95CF1B",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u767b\u5225\u6e29\u6cc9\uff0d\u82eb\u5c0f\u7267_A",
+        "label": "\u82eb\u5c0f\u7267\u99c5\u524d~\u767d\u8001\u99c5\u524d~\u767b\u5225\u99c5\u524d~\u767b\u5225\u6e29\u6cc9",
+        "long": "\u82eb\u5c0f\u7267\u99c5\u524d~\u767d\u8001\u99c5\u524d~\u767b\u5225\u99c5\u524d~\u767b\u5225\u6e29\u6cc9",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "95CF1B",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u767b\u5225\u82eb\u5c0f\u7267\u7dda_A",
+        "label": "\u767b\u5225\u82eb\u5c0f\u7267\u7dda",
+        "long": "\u82eb\u5c0f\u7267\u99c5\u524d~\u767d\u8001\u99c5\u524d~\u767b\u5225\u99c5\u524d~\u767b\u5225\u6e29\u6cc9",
+        "short": "\u767b\u5225\u82eb\u5c0f\u7267\u7dda",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1E89FF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u767b\u5225\u99c5\u524d\u7dda_B",
+        "label": "ND \u767b\u5225\u99c5\u524d\u7dda",
+        "long": "\u767b\u5225\u6e29\u6cc9\uff5e\u767b\u5225\u99c5\u524d",
+        "short": "ND \u767b\u5225\u99c5\u524d\u7dda",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u767d\u8001\u753a\u5143\u6c17\u53f7_A",
+        "label": "\u767d\u8001\u753a\u5143\u6c17\u53f7",
+        "long": "\u767d\u8001\u753a\u5143\u6c17\u53f7",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F773B1",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "\u767d\u9ce5\u53f0\u7dda_A",
+        "label": "23 \u3052\u3093\u304d\u9928\u30bf\u30fc\u30df\u30ca\u30eb\u7dda",
+        "long": "23 \u3052\u3093\u304d\u9928\u30bf\u30fc\u30df\u30ca\u30eb\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AE00AE",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "\u767d\u9ce5\u53f0\u7dda_B",
+        "label": "26 \u6e2f\u5317\u767d\u9ce5\u53f0\u7dda",
+        "long": "26 \u6e2f\u5317\u767d\u9ce5\u53f0\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D2D200",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u7a42\u5225\u9d61\u5ddd\u7dda_A",
+        "label": "\u7a42\u5225\u51fa\u5f35\u6240\uff5e\u9d61\u5ddd\u99c5\u524d\u30fb\u539a\u751f\u75c5\u9662\u524d",
+        "long": "\u7a42\u5225\u51fa\u5f35\u6240\uff5e\u9d61\u5ddd\u99c5\u524d\u30fb\u539a\u751f\u75c5\u9662\u524d",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u7d75\u9786\u5faa\u74b0\u7dda_A",
+        "label": "\u7d75\u9786\u5faa\u74b0\u7dda",
+        "long": "\u7d75\u9786\u5faa\u74b0\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFA6E2",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u7f8a\u8e44\u7dda_B",
+        "label": "\u7f8a\u8e44\u7dda",
+        "long": "\u5036\u77e5\u5b89\uff5e\u771f\u72e9\uff5e\u30eb\u30b9\u30c4\u30ea\u30be\u30fc\u30c8\uff5e\u6d1e\u723a\u6e56\u6e29\u6cc9",
+        "short": "\u7f8a\u8e44\u7dda",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u7f8e\u3005\u7a7a\u6e2f\u7dda_A",
+        "label": "\u7f8e\u3005\u7a7a\u6e2f\u7dda",
+        "long": "\u7f8e\u3005\u7a7a\u6e2f\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "\u80c6\u632f\u7dda_B",
+        "label": "\u80c6\u632f\u7dda",
+        "long": "\u4f0a\u9054\u99c5\u524d~\u58ee\u77a5\u5f79\u5834\u524d\uff5e\u5317\u6e6f\u6ca2\u6e29\u6cc9\uff5e\u5927\u6edd",
+        "short": "\u80c6\u632f\u7dda",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D2D200",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u82eb\u5c0f\u7267\u30fb\u5e73\u53d6\u7dda_A",
+        "label": "\u5e73\u53d6\uff5e\u82eb\u5c0f\u7267",
+        "long": "\u5e73\u53d6\uff5e\u82eb\u5c0f\u7267",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D2D200",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u82eb\u5c0f\u7267\u30fb\u9759\u5185\u7dda_A",
+        "label": "\u82eb\u5c0f\u7267\u99c5\u524d\u2192\u9759\u5185",
+        "long": "\u82eb\u5c0f\u7267\u99c5\u524d\u2192\u9759\u5185",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D2D200",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u82eb\u5c0f\u7267\u30fb\u9759\u5185\u7dda_B",
+        "label": "\u9759\u5185\u2192\u82eb\u5c0f\u7267\u99c5\u524d",
+        "long": "\u9759\u5185\u2192\u82eb\u5c0f\u7267\u99c5\u524d",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "\u897f\u5faa\u74b0\u7dda(\u82eb\u5c0f\u7267)_A",
+        "label": "07 \u897f\u5faa\u74b0\u7dda",
+        "long": "07 \u897f\u5faa\u74b0\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8E008E",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "\u897f\u5faa\u74b0\u7dda(\u82eb\u5c0f\u7267)_B",
+        "label": "08 \u897f\u5faa\u74b0\u7dda",
+        "long": "08 \u897f\u5faa\u74b0\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F20000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "\u9244\u5317\u5317\u53e3\u7dda_A",
+        "label": "03 \u9244\u5317\u5317\u53e3\u7dda",
+        "long": "03 \u9244\u5317\u5317\u53e3\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u9244\u5317\u7dda\u5b66\u751f\u4fbf_A",
+        "label": "\u5b66\u4fbf \u9244\u5317\u7dda",
+        "long": "\u5b66\u4fbf \u9244\u5317\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "869DF9",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "\u9326\u5ca1\u7dda_A",
+        "label": "17 \u9326\u5ca1\u7dda",
+        "long": "17 \u9326\u5ca1\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00994D",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "\u9326\u897f\u7a7a\u6e2f\u7dda_A",
+        "label": "101 \u9326\u897f\u7a7a\u6e2f\u7dda",
+        "long": "101 \u9326\u897f\u7a7a\u6e2f\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D2D200",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u9759\u5185\uff5e\u5e73\u53d6_A",
+        "label": "\u5e73\u53d6\uff5e\u9759\u5185",
+        "long": "\u5e73\u53d6\uff5e\u9759\u5185",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D2D200",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u9759\u5185\uff5e\u6d66\u6cb3_A",
+        "label": "\u9759\u5185\uff5e\u6d66\u6cb3\u8001\u4eba\u30db\u30fc\u30e0\u524d",
+        "long": "\u9759\u5185\uff5e\u6d66\u6cb3\u8001\u4eba\u30db\u30fc\u30e0\u524d",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BDBD00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u990a\u8b77\u5b66\u6821\u7dda_A",
+        "label": "21 \u516b\u4e01\u5e73\u5faa\u74b0\u7dda",
+        "long": "21 \u516b\u4e01\u5e73\u5faa\u74b0\u7dda",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "\u99d2\u6ca2\u9244\u5317\u7dda(806210)",
+        "label": "\u5b66\u4fbf \u99d2\u6ca2\u9244\u5317\u7dda",
+        "long": "\u5b66\u4fbf \u99d2\u6ca2\u9244\u5317\u7dda",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "95CF1B",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "\u9ad8\u901f\u304a\u3093\u305b\u3093\u53f7_A",
+        "label": "\u9ad8\u901f\u304a\u3093\u305b\u3093\u53f7",
+        "long": "\u9ad8\u901f\u304a\u3093\u305b\u3093\u53f7",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF2BB5",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "\u9ad8\u901f\u306f\u3084\u3076\u3055\u53f7_A",
+        "label": "\u9ad8\u901f\u306f\u3084\u3076\u3055\u53f7",
+        "long": "\u9ad8\u901f\u306f\u3084\u3076\u3055\u53f7",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DD0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "\u9ad8\u901f\u30da\u30ac\u30b5\u30b9\u53f7_A",
+        "label": "\u9ad8\u901f\u30da\u30ac\u30b5\u30b9\u53f7",
+        "long": "\u9ad8\u901f\u30da\u30ac\u30b5\u30b9\u53f7",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF9F40",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "\u9ad8\u901f\u767b\u5225\u6e29\u6cc9\u30a8\u30a2\u30dd\u30fc\u30c8\u53f7_A",
+        "label": "\u9ad8\u901f\u30a8\u30a2\u30dd\u30fc\u30c8\u53f7",
+        "long": "\u9ad8\u901f\u30a8\u30a2\u30dd\u30fc\u30c8\u53f7",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "83493D",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "\u9ad8\u901f\u767d\u9ce5\u53f7_A",
+        "label": "\u9ad8\u901f\u767d\u9ce5\u53f7",
+        "long": "\u9ad8\u901f\u767d\u9ce5\u53f7",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2329,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 2329,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "2329 of 2329 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 2832,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "2832 of 2832 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "non_ascii_or_non_printable_char",
+      "count": 293447,
+      "effort": "A planned ID change, not a quick text cleanup.",
+      "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+      "owner": "",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some internal IDs use characters outside the basic text set.",
+      "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

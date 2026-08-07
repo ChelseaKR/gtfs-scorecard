@@ -1,24 +1,33 @@
 {
   "agency_count": 3,
-  "average_score": null,
-  "common_fixes": [],
+  "average_score": 51.3,
+  "common_fixes": [
+    {
+      "agencies": 2,
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+    }
+  ],
   "comparison": {
     "absolute_rankings_published": false,
-    "eligible_count": 0,
-    "excluded_count": 3,
+    "eligible_count": 2,
+    "excluded_count": 1,
     "exclusion_counts": {
-      "rubric_version_mismatch": 3,
-      "scoring_profile_missing": 3,
-      "scoring_profile_rubric_missing": 3,
       "service_data_long_expired": 1
     },
     "individual_percentiles_published": false,
-    "measured_category_cohorts": {},
-    "note": "Score aggregates and named changes use one current producer contract and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
-    "required_measured_categories": [],
+    "measured_category_cohorts": {
+      "correctness+freshness+completeness": 2
+    },
+    "note": "Score aggregates and named changes use one current producer contract, raw reader archive profile, and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
+    "required_measured_categories": [
+      "correctness",
+      "freshness",
+      "completeness"
+    ],
     "required_reader_archive_profile": "raw-v1",
-    "required_rubric_version": "1.2",
-    "required_scoring_profile_id": "gtfs-scorecard-1.2",
+    "required_rubric_version": "1.3",
+    "required_scoring_profile_id": "gtfs-scorecard-1.3",
     "required_validator_version": "8.0.1"
   },
   "expired": {
@@ -26,13 +35,16 @@
     "stale": 1,
     "total": 2
   },
-  "generated_at": "2026-07-14T09:01:50+00:00",
-  "grade_distribution": {},
+  "generated_at": "2026-08-07T02:19:46+00:00",
+  "grade_distribution": {
+    "D": 1,
+    "F": 1
+  },
   "members": [
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -1206,
+      "days_until_expiry": -1234,
       "expiry_status": "stale",
       "grade": "F",
       "id": "advance-transit-at",
@@ -40,36 +52,39 @@
       "needs_attention": true,
       "score": 42.3,
       "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "annual_trips": null,
-      "attention_reason": "Service data expires in 48 day(s)",
-      "days_until_expiry": 48,
-      "expiry_status": "current",
-      "grade": "C",
-      "id": "dartmouth-college",
-      "name": "Dartmouth College",
-      "needs_attention": true,
-      "score": 75.2,
-      "shapes_status": "ready",
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops."
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
     },
     {
       "annual_trips": null,
       "attention_reason": "Service data has expired",
-      "days_until_expiry": -9,
+      "days_until_expiry": -37,
       "expiry_status": "lapsed",
       "grade": "F",
       "id": "concord-area-transit",
-      "name": "Flex",
+      "name": "Concord Area Transit Flex",
       "needs_attention": true,
-      "score": 41.1,
-      "shapes_status": null,
-      "snapshot_date": "2026-07-10",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
+      "score": 39.3,
+      "shapes_status": "not_ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change.",
+      "top_fix_code": "scorecard_feed_expired"
+    },
+    {
+      "annual_trips": null,
+      "attention_reason": "Service data expires in 20 day(s)",
+      "days_until_expiry": 20,
+      "expiry_status": "expiring_soon",
+      "grade": "D",
+      "id": "dartmouth-college",
+      "name": "Dartmouth College",
+      "needs_attention": true,
+      "score": 63.4,
+      "shapes_status": "ready",
+      "snapshot_date": "2026-08-07",
+      "top_fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "top_fix_code": "scorecard_feed_expiring_soon"
     }
   ],
   "needs_attention": 3,
@@ -77,11 +92,11 @@
     "id": "new-hampshire",
     "name": "New Hampshire agencies"
   },
-  "schema_version": "1.11",
+  "schema_version": "1.17",
   "shapes_readiness": {
     "at_risk": 0,
-    "not_measured": 1,
-    "not_ready": 0,
+    "not_measured": 0,
+    "not_ready": 1,
     "ready": 2,
     "total": 3
   },

@@ -1,0 +1,1929 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-pan-38889",
+    "name": "R\u00e9seau interurbain - Allier (03)",
+    "subdivision_code": "FR-ARA",
+    "subdivision_name": "Auvergne-Rh\u00f4ne-Alpes"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 2.8,
+          "stops_marked_accessible_pct": 4.6,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 4.6,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 1.1,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 946,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.9,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1536,
+        "translations": {
+          "feed_lang": "fr",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 946,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 4.6,
+        "wheelchair_marked_accessible_pct": 4.6,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1466,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 23.9,
+          "severity": "WARNING",
+          "what": "1466 of 1536 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 946,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "946 of 946 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 38.6,
+      "status": "measured",
+      "summary": "5% of stops state wheelchair accessibility (5% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 8,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 141,
+          "WARNING": 450
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 214,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "unexpected_enum_value",
+          "count": 133,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unexpected_enum_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Unexpected enum value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 74,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 16,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 11,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "trip_coverage_not_active_for_next7_days",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Trim past service periods the next time you export.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Many of the feed's trips don't run at all in the next 7 days.",
+          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 141,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 55.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 8 kinds of issue across 591 instances (0 error, 450 warning, 141 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 390,
+        "effective_expiry_date": "2027-08-31",
+        "feed_end_date": "2027-08-31",
+        "feed_start_date": "2026-07-30",
+        "feed_version": "20260730",
+        "has_feed_info": true,
+        "last_service_date": "2027-08-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 390 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 391 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 5% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 5% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Open Database License (ODbL), recorded by France's National Access Point; credit R\u00e9gion Auvergne-Rh\u00f4ne-Alpes, identify the ODbL, and preserve share-alike terms where they apply.",
+    "reachable": true,
+    "sha256": "aa2351df61058bc9ec5c85efc05539f6ec7e7ed294a49eef86f103d5ea95d14d",
+    "size_bytes": 12498018,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/edf15063-dbbb-4543-a39d-60a39a418ee3"
+  },
+  "fetch": {
+    "final_url": "https://api.oura3.cityway.fr/dataflow/offre-tc/download?provider=ALLIER&dataFormat=GTFS&dataProfil=OPENDATA",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      2.19613,
+      46.03089,
+      4.06199,
+      46.83712
+    ],
+    "lat": 46.35272,
+    "lon": 3.15507,
+    "stop_count": 1536
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 133,
+        "trip_count": 946,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 133,
+    "trip_count": 946
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 1.1,
+    "margin_to_next_band": 8.9,
+    "score": 61.1
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 12,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "12 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (B04, B04-R, B07, B07-R, B08, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 61,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "61 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Carrefour des Bourdiers RD583\", \"Carrefour RD68 RD243\", \"Inter. D 35/D 223\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1383,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 946
+  },
+  "route_map": {
+    "drawn_route_count": 133,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-pan-38889/geometry.geojson",
+    "route_count": 133,
+    "routes": [
+      {
+        "color": "148900",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ALLIER:FlexibleLine:1000284:LOC",
+        "label": "B03-R",
+        "long": "R\u00e9servation Lurcy L\u00e9vis - Moulins",
+        "short": "B03-R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF6603",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ALLIER:FlexibleLine:1000286:LOC",
+        "label": "B04-R",
+        "long": "R\u00e9servation Bourbon Lancy - Moulins",
+        "short": "B04-R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9903FA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ALLIER:FlexibleLine:1000288:LOC",
+        "label": "B05-R",
+        "long": "R\u00e9servation Bellenaves -Gannat - Vichy",
+        "short": "B05-R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E30205",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ALLIER:FlexibleLine:1000290:LOC",
+        "label": "B06-R",
+        "long": "R\u00e9servation Le Donjon - Lapalisse -Vichy",
+        "short": "B06-R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36B0FF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ALLIER:FlexibleLine:1000292:LOC",
+        "label": "B07-R",
+        "long": "R\u00e9servation Commentry- Montlu\u00e7on",
+        "short": "B07-R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC2BFF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ALLIER:FlexibleLine:1000294:LOC",
+        "label": "B08-R",
+        "long": "R\u00e9servation Le Donjon - Jaligny -Moulins",
+        "short": "B08-R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "32D484",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ALLIER:FlexibleLine:1000298:LOC",
+        "label": "B10-R",
+        "long": "R\u00e9servation Buxieres - Cosne - Montlu\u00e7on",
+        "short": "B10-R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1C66FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "ALLIER:FlexibleLine:1000301:LOC",
+        "label": "B12-R",
+        "long": "R\u00e9servation Ch\u00e2teaumeillant - Montlu\u00e7on",
+        "short": "B12-R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "910000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ALLIER:FlexibleLine:1000305:LOC",
+        "label": "B16-R",
+        "long": "R\u00e9servation Cosne - Moulins",
+        "short": "B16-R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B3AEBA",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "ALLIER:FlexibleLine:1000307:LOC",
+        "label": "B18-R",
+        "long": "R\u00e9servation C\u00e9rilly - Montlu\u00e7on",
+        "short": "B18-R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "82FF00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000280:LOC",
+        "label": "B01",
+        "long": "MOULINS - MONTLUCON",
+        "short": "B01",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B3FF9C",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000281:LOC",
+        "label": "B02",
+        "long": "VICHY - MONTLUCON",
+        "short": "B02",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "148900",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000283:LOC",
+        "label": "B03",
+        "long": "LURCY LEVIS - MOULINS",
+        "short": "B03",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF6603",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000285:LOC",
+        "label": "B04",
+        "long": "BOURBON LANCY - MOULINS",
+        "short": "B04",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9900FA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000287:LOC",
+        "label": "B05",
+        "long": "BELLENAVES - GANNAT - VICHY",
+        "short": "B05",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E30205",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000289:LOC",
+        "label": "B06",
+        "long": "LE DONJON - LAPALISSE- VICHY",
+        "short": "B06",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "36B0FF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000291:LOC",
+        "label": "B07",
+        "long": "MARCILLAT EN COMBRAILLE - MONTLUCON",
+        "short": "B07",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC2BFF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000293:LOC",
+        "label": "B08",
+        "long": "LE DONJON - JALIGNY - MOULINS",
+        "short": "B08",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FC08F5",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000295:LOC",
+        "label": "B09",
+        "long": "MOULINS - GANNAT",
+        "short": "B09",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "32D484",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000297:LOC",
+        "label": "B10",
+        "long": "BUXIERES - COSNE - MONTLUCON",
+        "short": "B10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFB00F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000299:LOC",
+        "label": "B11",
+        "long": "DECIZE - MOULINS",
+        "short": "B11",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1C66FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000300:LOC",
+        "label": "B12",
+        "long": "CHATEAUMEILLANT - MONTLUCON",
+        "short": "B12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0066",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000302:LOC",
+        "label": "B13",
+        "long": "VARENNES S/ALLIER - MOULINS",
+        "short": "B13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF4D00",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000303:LOC",
+        "label": "B14",
+        "long": "BEZENET - COMMENTRY",
+        "short": "B14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000311:LOC",
+        "label": "03-NAVETTE",
+        "long": "Navettes",
+        "short": "03-NAVETTE",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000313:LOC",
+        "label": "03-101",
+        "long": "101",
+        "short": "03-101",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000314:LOC",
+        "label": "03-103",
+        "long": "103",
+        "short": "03-103",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000315:LOC",
+        "label": "03-104",
+        "long": "104",
+        "short": "03-104",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000316:LOC",
+        "label": "03-106",
+        "long": "106",
+        "short": "03-106",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000318:LOC",
+        "label": "03-108",
+        "long": "108",
+        "short": "03-108",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000320:LOC",
+        "label": "03-110",
+        "long": "110",
+        "short": "03-110",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000321:LOC",
+        "label": "03-111",
+        "long": "111",
+        "short": "03-111",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000323:LOC",
+        "label": "03-117",
+        "long": "117",
+        "short": "03-117",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000324:LOC",
+        "label": "03-118",
+        "long": "118",
+        "short": "03-118",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000325:LOC",
+        "label": "03-121",
+        "long": "121",
+        "short": "03-121",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000326:LOC",
+        "label": "03-122",
+        "long": "122",
+        "short": "03-122",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000327:LOC",
+        "label": "03-124",
+        "long": "124",
+        "short": "03-124",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000328:LOC",
+        "label": "03-126",
+        "long": "126",
+        "short": "03-126",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000332:LOC",
+        "label": "03-130",
+        "long": "130",
+        "short": "03-130",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000334:LOC",
+        "label": "03-132",
+        "long": "132",
+        "short": "03-132",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000335:LOC",
+        "label": "03-133",
+        "long": "133",
+        "short": "03-133",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000336:LOC",
+        "label": "03-134",
+        "long": "134",
+        "short": "03-134",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000337:LOC",
+        "label": "03-135",
+        "long": "135",
+        "short": "03-135",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000338:LOC",
+        "label": "03-137",
+        "long": "137",
+        "short": "03-137",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000339:LOC",
+        "label": "03-138",
+        "long": "138",
+        "short": "03-138",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000340:LOC",
+        "label": "03-139",
+        "long": "139",
+        "short": "03-139",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000341:LOC",
+        "label": "03-140",
+        "long": "140",
+        "short": "03-140",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000342:LOC",
+        "label": "03-141",
+        "long": "141",
+        "short": "03-141",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000344:LOC",
+        "label": "03-143",
+        "long": "143",
+        "short": "03-143",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000345:LOC",
+        "label": "03-144",
+        "long": "144",
+        "short": "03-144",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000346:LOC",
+        "label": "03-145",
+        "long": "145",
+        "short": "03-145",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000349:LOC",
+        "label": "03-159",
+        "long": "159",
+        "short": "03-159",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000350:LOC",
+        "label": "03-160",
+        "long": "160",
+        "short": "03-160",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000351:LOC",
+        "label": "03-163",
+        "long": "163",
+        "short": "03-163",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000353:LOC",
+        "label": "03-185",
+        "long": "185",
+        "short": "03-185",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000354:LOC",
+        "label": "03-187",
+        "long": "187",
+        "short": "03-187",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000355:LOC",
+        "label": "03-188",
+        "long": "188",
+        "short": "03-188",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000356:LOC",
+        "label": "03-189",
+        "long": "189",
+        "short": "03-189",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000357:LOC",
+        "label": "03-200",
+        "long": "200",
+        "short": "03-200",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000358:LOC",
+        "label": "03-201",
+        "long": "201",
+        "short": "03-201",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000359:LOC",
+        "label": "03-203",
+        "long": "203",
+        "short": "03-203",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000360:LOC",
+        "label": "03-206",
+        "long": "206",
+        "short": "03-206",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000361:LOC",
+        "label": "03-209",
+        "long": "209",
+        "short": "03-209",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000362:LOC",
+        "label": "03-210",
+        "long": "210",
+        "short": "03-210",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000363:LOC",
+        "label": "03-211",
+        "long": "211",
+        "short": "03-211",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000364:LOC",
+        "label": "03-214",
+        "long": "214",
+        "short": "03-214",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000365:LOC",
+        "label": "03-215",
+        "long": "215",
+        "short": "03-215",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000366:LOC",
+        "label": "03-216",
+        "long": "216",
+        "short": "03-216",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000367:LOC",
+        "label": "03-217",
+        "long": "217",
+        "short": "03-217",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000368:LOC",
+        "label": "03-218",
+        "long": "218",
+        "short": "03-218",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000369:LOC",
+        "label": "03-225",
+        "long": "225",
+        "short": "03-225",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000370:LOC",
+        "label": "03-227",
+        "long": "227",
+        "short": "03-227",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000376:LOC",
+        "label": "03-238",
+        "long": "238",
+        "short": "03-238",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000378:LOC",
+        "label": "03-240",
+        "long": "240",
+        "short": "03-240",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000379:LOC",
+        "label": "03-241",
+        "long": "241",
+        "short": "03-241",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000380:LOC",
+        "label": "03-242",
+        "long": "242",
+        "short": "03-242",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000381:LOC",
+        "label": "03-243",
+        "long": "243",
+        "short": "03-243",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000382:LOC",
+        "label": "03-244",
+        "long": "244",
+        "short": "03-244",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000383:LOC",
+        "label": "03-245",
+        "long": "245",
+        "short": "03-245",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000385:LOC",
+        "label": "03-247",
+        "long": "247",
+        "short": "03-247",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000386:LOC",
+        "label": "03-248",
+        "long": "248",
+        "short": "03-248",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000387:LOC",
+        "label": "03-249",
+        "long": "249",
+        "short": "03-249",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000388:LOC",
+        "label": "03-250",
+        "long": "250",
+        "short": "03-250",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000389:LOC",
+        "label": "03-251",
+        "long": "251",
+        "short": "03-251",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000390:LOC",
+        "label": "03-253",
+        "long": "253",
+        "short": "03-253",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000391:LOC",
+        "label": "03-260",
+        "long": "260",
+        "short": "03-260",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000392:LOC",
+        "label": "03-261",
+        "long": "261",
+        "short": "03-261",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000393:LOC",
+        "label": "03-264",
+        "long": "264",
+        "short": "03-264",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000394:LOC",
+        "label": "03-270",
+        "long": "270",
+        "short": "03-270",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000395:LOC",
+        "label": "03-271",
+        "long": "271",
+        "short": "03-271",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000397:LOC",
+        "label": "03-293",
+        "long": "293",
+        "short": "03-293",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000398:LOC",
+        "label": "03-294",
+        "long": "294",
+        "short": "03-294",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000399:LOC",
+        "label": "03-295",
+        "long": "295",
+        "short": "03-295",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000400:LOC",
+        "label": "03-296",
+        "long": "296",
+        "short": "03-296",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000401:LOC",
+        "label": "03-297",
+        "long": "297",
+        "short": "03-297",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000402:LOC",
+        "label": "03-298",
+        "long": "298",
+        "short": "03-298",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000403:LOC",
+        "label": "03-299",
+        "long": "299",
+        "short": "03-299",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000404:LOC",
+        "label": "03-301",
+        "long": "301",
+        "short": "03-301",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000406:LOC",
+        "label": "03-304",
+        "long": "304",
+        "short": "03-304",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000407:LOC",
+        "label": "03-306",
+        "long": "306",
+        "short": "03-306",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000408:LOC",
+        "label": "03-308",
+        "long": "308",
+        "short": "03-308",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000409:LOC",
+        "label": "03-309",
+        "long": "309",
+        "short": "03-309",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000410:LOC",
+        "label": "03-310",
+        "long": "310",
+        "short": "03-310",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000411:LOC",
+        "label": "03-311",
+        "long": "311",
+        "short": "03-311",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000412:LOC",
+        "label": "03-312",
+        "long": "312",
+        "short": "03-312",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000413:LOC",
+        "label": "03-313",
+        "long": "313",
+        "short": "03-313",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000414:LOC",
+        "label": "03-318",
+        "long": "318",
+        "short": "03-318",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000415:LOC",
+        "label": "03-319",
+        "long": "319",
+        "short": "03-319",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000418:LOC",
+        "label": "03-329",
+        "long": "329",
+        "short": "03-329",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000419:LOC",
+        "label": "03-330",
+        "long": "330",
+        "short": "03-330",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000420:LOC",
+        "label": "03-334",
+        "long": "334",
+        "short": "03-334",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000421:LOC",
+        "label": "03-335",
+        "long": "335",
+        "short": "03-335",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000422:LOC",
+        "label": "03-336",
+        "long": "336",
+        "short": "03-336",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000423:LOC",
+        "label": "03-337",
+        "long": "337",
+        "short": "03-337",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000424:LOC",
+        "label": "03-338",
+        "long": "338",
+        "short": "03-338",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000425:LOC",
+        "label": "03-339",
+        "long": "339",
+        "short": "03-339",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000426:LOC",
+        "label": "03-343",
+        "long": "343",
+        "short": "03-343",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000427:LOC",
+        "label": "03-344",
+        "long": "344",
+        "short": "03-344",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000428:LOC",
+        "label": "03-345",
+        "long": "345",
+        "short": "03-345",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000429:LOC",
+        "label": "03-346",
+        "long": "346",
+        "short": "03-346",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000430:LOC",
+        "label": "03-347",
+        "long": "347",
+        "short": "03-347",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000432:LOC",
+        "label": "03-350",
+        "long": "350",
+        "short": "03-350",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000436:LOC",
+        "label": "03-358",
+        "long": "358",
+        "short": "03-358",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000437:LOC",
+        "label": "03-359",
+        "long": "359",
+        "short": "03-359",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000438:LOC",
+        "label": "03-360",
+        "long": "360",
+        "short": "03-360",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000439:LOC",
+        "label": "03-361",
+        "long": "361",
+        "short": "03-361",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000440:LOC",
+        "label": "03-362",
+        "long": "362",
+        "short": "03-362",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000441:LOC",
+        "label": "03-365",
+        "long": "365",
+        "short": "03-365",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000442:LOC",
+        "label": "03-366",
+        "long": "366",
+        "short": "03-366",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000443:LOC",
+        "label": "03-370",
+        "long": "370",
+        "short": "03-370",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000452:LOC",
+        "label": "03-405",
+        "long": "405",
+        "short": "03-405",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E6D900",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "ALLIER:Line:1000970:LOC",
+        "label": "B19",
+        "long": "MONTLUCON-SAINT ELOY LES MINES",
+        "short": "B19",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "ALLIER:Line:1006999:LOC",
+        "label": "03-125",
+        "long": "Montoldre - Rongeres",
+        "short": "03-125",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1536,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1466,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 23.9,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "1466 of 1536 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 946,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "946 of 946 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

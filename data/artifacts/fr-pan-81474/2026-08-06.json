@@ -1,0 +1,1517 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-pan-81474",
+    "name": "R\u00e9seau interurbain BreizhGo TER",
+    "subdivision_code": "FR-BRE",
+    "subdivision_name": "Bretagne"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 6080,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 427,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 6080,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 427,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "427 of 427 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 6080,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "6080 of 6080 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 7,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 6148,
+          "WARNING": 31
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 13,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 11,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "equal_shape_distance_diff_coordinates_distance_below_threshold",
+          "count": 5,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'equal_shape_distance_diff_coordinates_distance_below_threshold' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Equal shape distance diff coordinates distance below threshold (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 1,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "trip_with_shape_dist_traveled_but_no_shape_distances",
+          "count": 6033,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'trip_with_shape_dist_traveled_but_no_shape_distances' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Trip with shape dist traveled but no shape distances (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 115,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 74.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 7 kinds of issue across 6179 instances (0 error, 31 warning, 6148 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 90,
+        "effective_expiry_date": "2026-11-04",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-11-04",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 90 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 90 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "export_diff": {
+    "changes": [
+      "Service now runs through 2026-11-04 (was 2026-11-03)."
+    ],
+    "from_sha256": "132cb3e089c01864fa27a379cd1a0a5e574bc30f492592c88e5d755eea0e565d",
+    "to_sha256": "671443a65abb8ed86d3420c6d7de3990075762e317647b3ea95af3bdb3b8ecf8"
+  },
+  "feed": {
+    "license_note": "Open Database License (ODbL), recorded by France's National Access Point; credit R\u00e9gion Bretagne, identify the ODbL, and preserve share-alike terms where they apply.",
+    "reachable": true,
+    "sha256": "671443a65abb8ed86d3420c6d7de3990075762e317647b3ea95af3bdb3b8ecf8",
+    "size_bytes": 683284,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/b7a835d4-7a93-4d8b-87bd-c657800fc29f"
+  },
+  "fetch": {
+    "final_url": "https://www.korrigo.bzh/ftp/OPENDATA/BREIZHGO_TER.gtfs.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-06T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -4.48031,
+      46.1527,
+      3.08996,
+      50.63658
+    ],
+    "lat": 48.21347,
+    "lon": -0.87936,
+    "stop_count": 427
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "rail",
+        "label": "Rail",
+        "route_count": 93,
+        "trip_count": 6033,
+        "trip_share_pct": 99.2
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 6,
+        "trip_count": 47,
+        "trip_share_pct": 0.8
+      }
+    ],
+    "primary_mode": "rail",
+    "primary_mode_label": "Rail",
+    "route_count": 99,
+    "trip_count": 6080
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 5.3,
+    "margin_to_next_band": 4.7,
+    "score": 65.3
+  },
+  "recommendations": [],
+  "routability": {
+    "boardable_stops": 427,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 6080
+  },
+  "route_map": {
+    "drawn_route_count": 99,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-pan-81474/geometry.geojson",
+    "route_count": 99,
+    "routes": [
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1000",
+        "label": "Rennes - Brest",
+        "long": "Rennes - Brest",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1027",
+        "label": "Guingamp - Paimpol",
+        "long": "Guingamp - Paimpol",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1079",
+        "label": "Tours - Saumur",
+        "long": "Tours - Saumur",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1103",
+        "label": "Quimper - Brest",
+        "long": "Quimper - Brest",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1219",
+        "label": "Lannion - Brest",
+        "long": "Lannion - Brest",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1233",
+        "label": "Rennes - Quimper",
+        "long": "Rennes - Quimper",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1266",
+        "label": "Nantes - Redon",
+        "long": "Nantes - Redon",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1371",
+        "label": "Rennes - Vannes",
+        "long": "Rennes - Vannes",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1891",
+        "label": "Le Mans - Tours",
+        "long": "Le Mans - Tours",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1907",
+        "label": "Rennes - Retiers",
+        "long": "Rennes - Retiers",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "1928",
+        "label": "Nantes - Rennes",
+        "long": "Nantes - Rennes",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2268",
+        "label": "Nantes - Cholet",
+        "long": "Nantes - Cholet",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2356",
+        "label": "Laval - Le Mans",
+        "long": "Laval - Le Mans",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2357",
+        "label": "Laval - Rennes",
+        "long": "Laval - Rennes",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2773",
+        "label": "Caen - Cherbourg",
+        "long": "Caen - Cherbourg",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2804",
+        "label": "Rennes - St-Brieuc",
+        "long": "Rennes - St-Brieuc",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2805",
+        "label": "Rennes - St-Malo",
+        "long": "Rennes - St-Malo",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2812",
+        "label": "Brest - Landerneau",
+        "long": "Brest - Landerneau",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2822",
+        "label": "Nantes - Quimper",
+        "long": "Nantes - Quimper",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2823",
+        "label": "Nantes - Pornic",
+        "long": "Nantes - Pornic",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "2825",
+        "label": "Nantes - Savenay",
+        "long": "Nantes - Savenay",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "3884",
+        "label": "Quimper - Redon",
+        "long": "Quimper - Redon",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4290",
+        "label": "Beauvais - Abancourt - Le Tr\u00e9port",
+        "long": "Beauvais - Abancourt - Le Tr\u00e9port",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4292",
+        "label": "Lille - Amiens - Abancourt - (Rouen Rive-Droite)",
+        "long": "Lille - Amiens - Abancourt - (Rouen Rive-Droite)",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4495",
+        "label": "Saint-Brieuc - Lannion",
+        "long": "Saint-Brieuc - Lannion",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4536",
+        "label": "ROUEN - VERNON - PARIS",
+        "long": "ROUEN - VERNON - PARIS",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4537",
+        "label": "PARIS - ARGENTAN - GRANVILLE",
+        "long": "PARIS - ARGENTAN - GRANVILLE",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4538",
+        "label": "Caen - Le Mans - Tours",
+        "long": "Caen - Le Mans - Tours",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4539",
+        "label": "Le Mans - Paris Montparnasse",
+        "long": "Le Mans - Paris Montparnasse",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4540",
+        "label": "Paris - Chartres - Le Mans",
+        "long": "Paris - Chartres - Le Mans",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4541",
+        "label": "Paris - Le Havre",
+        "long": "Paris - Le Havre",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4542",
+        "label": "Paris - Dieppe",
+        "long": "Paris - Dieppe",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4543",
+        "label": "Paris - Cherbourg",
+        "long": "Paris - Cherbourg",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4544",
+        "label": "PARIS - CAEN",
+        "long": "PARIS - CAEN",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4545",
+        "label": "Paris - Deauville",
+        "long": "Paris - Deauville",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4554",
+        "label": "Cars CAEN - GRANVILLE - RENNES",
+        "long": "Cars CAEN - GRANVILLE - RENNES",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4555",
+        "label": "LE HAVRE - BREAUTE - FECAMP",
+        "long": "LE HAVRE - BREAUTE - FECAMP",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4557",
+        "label": "Nantes - Challans - St-Gilles-Croix-De-Vie",
+        "long": "Nantes - Challans - St-Gilles-Croix-De-Vie",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4559",
+        "label": "Rennes - Messac-Guipry",
+        "long": "Rennes - Messac-Guipry",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4560",
+        "label": "Rennes - Redon (Vers Nantes Via Rdn)",
+        "long": "Rennes - Redon (Vers Nantes Via Rdn)",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4562",
+        "label": "Dol - Dinan",
+        "long": "Dol - Dinan",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4563",
+        "label": "Dinan - Saint-Brieuc",
+        "long": "Dinan - Saint-Brieuc",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4564",
+        "label": "Rouen - Le Havre",
+        "long": "Rouen - Le Havre",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4565",
+        "label": "Angers St Laud - Le Mans",
+        "long": "Angers St Laud - Le Mans",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4566",
+        "label": "Nantes - Les Sables D'Olonne",
+        "long": "Nantes - Les Sables D'Olonne",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4567",
+        "label": "Le Croisic - Nantes - Rennes Via Sabl\u00e9",
+        "long": "Le Croisic - Nantes - Rennes Via Sabl\u00e9",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4571",
+        "label": "Auray - Quiberon",
+        "long": "Auray - Quiberon",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4579",
+        "label": "Rouen - Amiens",
+        "long": "Rouen - Amiens",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4581",
+        "label": "YVETOT - ROUEN - ELBEUF",
+        "long": "YVETOT - ROUEN - ELBEUF",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4582",
+        "label": "PARIS - EVREUX - SERQUIGNY",
+        "long": "PARIS - EVREUX - SERQUIGNY",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4584",
+        "label": "Rouen - Dieppe",
+        "long": "Rouen - Dieppe",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4585",
+        "label": "CAEN - ROUEN",
+        "long": "CAEN - ROUEN",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4586",
+        "label": "CAEN - LISIEUX (p\u00e9riurbain)",
+        "long": "CAEN - LISIEUX (p\u00e9riurbain)",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4587",
+        "label": "Lisieux - Deauville",
+        "long": "Lisieux - Deauville",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4588",
+        "label": "CAEN- COUTANCES - GRANVILLE - RENNES",
+        "long": "CAEN- COUTANCES - GRANVILLE - RENNES",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4589",
+        "label": "Rennes - Chateaubriant",
+        "long": "Rennes - Chateaubriant",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4590",
+        "label": "Rennes - Dinan",
+        "long": "Rennes - Dinan",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4591",
+        "label": "Rennes - Montreuil-Sur-L'Ille",
+        "long": "Rennes - Montreuil-Sur-L'Ille",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4592",
+        "label": "Rennes - Vitre",
+        "long": "Rennes - Vitre",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4593",
+        "label": "GUINGAMP - CARHAIX",
+        "long": "GUINGAMP - CARHAIX",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4594",
+        "label": "Rennes - La Brohiniere",
+        "long": "Rennes - La Brohiniere",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4595",
+        "label": "Morlaix - Brest",
+        "long": "Morlaix - Brest",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4598",
+        "label": "Alen\u00e7on - Le Mans - Tours",
+        "long": "Alen\u00e7on - Le Mans - Tours",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4599",
+        "label": "Tours - Le Mans - Alen\u00e7on",
+        "long": "Tours - Le Mans - Alen\u00e7on",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4600",
+        "label": "Alen\u00e7on - Ch\u00e2teau Du Loir",
+        "long": "Alen\u00e7on - Ch\u00e2teau Du Loir",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4601",
+        "label": "Tours - Le Mans - Caen",
+        "long": "Tours - Le Mans - Caen",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4602",
+        "label": "Le Croisic - Nantes - Le Mans",
+        "long": "Le Croisic - Nantes - Le Mans",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4603",
+        "label": "Nantes - Angers St Laud - Le Mans",
+        "long": "Nantes - Angers St Laud - Le Mans",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4605",
+        "label": "Rennes - Vitre - Laval",
+        "long": "Rennes - Vitre - Laval",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4606",
+        "label": "Nantes - St Nazaire - Le Croisic",
+        "long": "Nantes - St Nazaire - Le Croisic",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4607",
+        "label": "Nantes - Le Croisic",
+        "long": "Nantes - Le Croisic",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4608",
+        "label": "Brest - Quimper -  Redon (Vers Nantes)",
+        "long": "Brest - Quimper -  Redon (Vers Nantes)",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4609",
+        "label": "Nantes - Brest",
+        "long": "Nantes - Brest",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4610",
+        "label": "Nantes - Rennes Via Redon",
+        "long": "Nantes - Rennes Via Redon",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4611",
+        "label": "Tours - Le Croisic",
+        "long": "Tours - Le Croisic",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4612",
+        "label": "Orl\u00e9ans - Le Croisic",
+        "long": "Orl\u00e9ans - Le Croisic",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4614",
+        "label": "La Roche Sur Yon - Saumur - Tours",
+        "long": "La Roche Sur Yon - Saumur - Tours",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4615",
+        "label": "Nantes - St-Gilles-Croix-De-Vie",
+        "long": "Nantes - St-Gilles-Croix-De-Vie",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4616",
+        "label": "Nantes - Ancenis",
+        "long": "Nantes - Ancenis",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4617",
+        "label": "Nantes - Clisson",
+        "long": "Nantes - Clisson",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4618",
+        "label": "Nantes - La Rochelle",
+        "long": "Nantes - La Rochelle",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4619",
+        "label": "Orl\u00e9ans - Nantes - Le Croisic",
+        "long": "Orl\u00e9ans - Nantes - Le Croisic",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4620",
+        "label": "Tours - Saumur - Angers - Nantes",
+        "long": "Tours - Saumur - Angers - Nantes",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4622",
+        "label": "Paris - Chartres - Nogent le Rotrou",
+        "long": "Paris - Chartres - Nogent le Rotrou",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4623",
+        "label": "Chartres - Le Mans - Angers",
+        "long": "Chartres - Le Mans - Angers",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4624",
+        "label": "Angers St Laud - Le Mans - Paris Montparnasse",
+        "long": "Angers St Laud - Le Mans - Paris Montparnasse",
+        "short": "",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4657",
+        "label": "C305",
+        "long": "Car Lison-Coutances-Granville-Pontorson (cars)",
+        "short": "C305",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4661",
+        "label": "C424",
+        "long": "Car Surdon-Alen\u00e7on (cars)",
+        "short": "C424",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4663",
+        "label": "P65",
+        "long": "10. Saumur -Thouars - Bressuire (cars)",
+        "short": "P65",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4664",
+        "label": "C3",
+        "long": "Paris - Chartres",
+        "short": "C3",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4670",
+        "label": "P31",
+        "long": "DEAUVILLE-DIVES",
+        "short": "P31",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4673",
+        "label": "P30",
+        "long": "Tours - Ch\u00e2teau du Loir - Le Mans",
+        "short": "P30",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4675",
+        "label": "P75",
+        "long": "Saumur - Les Sables d'Olonne",
+        "short": "P75",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4695",
+        "label": "P41",
+        "long": "Le Mans - Laval - Vitr\u00e9 - Rennes",
+        "short": "P41",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4696",
+        "label": "P41",
+        "long": "Rennes Le Mans",
+        "short": "P41",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4698",
+        "label": "S54",
+        "long": "Bayeux - Arromanches (cars)",
+        "short": "S54",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4700",
+        "label": "S06",
+        "long": "Paris Nord - Le Tr\u00e9port",
+        "short": "S06",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4844",
+        "label": "C42",
+        "long": "Ancenis - Savenay",
+        "short": "C42",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "8844AA",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "5076",
+        "label": "C20",
+        "long": "Cholet Angers Saumur",
+        "short": "C20",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      }
+    ],
+    "stop_count": 427,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 427,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "427 of 427 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 6080,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "6080 of 6080 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+    },
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

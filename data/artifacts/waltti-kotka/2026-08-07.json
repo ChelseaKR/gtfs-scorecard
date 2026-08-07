@@ -1,0 +1,2157 @@
+{
+  "agency": {
+    "country": "FI",
+    "id": "waltti-kotka",
+    "name": "Waltti (Kotka)",
+    "operating_note": "One regional feed with five operator rows and 151 bus routes. Counted as one feed record.",
+    "subdivision_code": "FI-09",
+    "subdivision_name": "Kymenlaakso"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 15.7,
+          "stops_marked_accessible_pct": 2.2,
+          "stops_marked_not_accessible_pct": 0.6,
+          "stops_stated_pct": 2.8,
+          "trips_stated_pct": 37.3
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 14.6,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.7,
+          "wheelchair_trips": 5.6
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 2085,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 97.1,
+        "headsign_scored_pct": 97.1,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1051,
+        "translations": {
+          "feed_lang": "fi",
+          "has_translations": true,
+          "languages": [
+            "sv"
+          ],
+          "translated_tables": [
+            "stops"
+          ],
+          "translation_count": 12
+        },
+        "trips": 2085,
+        "wheelchair_accessible_pct": 37.3,
+        "wheelchair_boarding_pct": 2.8,
+        "wheelchair_marked_accessible_pct": 2.2,
+        "wheelchair_marked_not_accessible_pct": 0.6
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1022,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 24.3,
+          "severity": "WARNING",
+          "what": "1022 of 1051 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 1307,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 9.4,
+          "severity": "WARNING",
+          "what": "1307 of 2085 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 61,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.4,
+          "severity": "WARNING",
+          "what": "61 of 2085 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 43.3,
+      "status": "measured",
+      "summary": "3% of stops state wheelchair accessibility (2% marked accessible, 1% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 14,
+        "instances_by_severity": {
+          "ERROR": 11,
+          "INFO": 31,
+          "WARNING": 60853
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "transfer_with_invalid_trip_and_route",
+          "count": 9,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'transfer_with_invalid_trip_and_route' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 18.0,
+          "severity": "ERROR",
+          "what": "Transfer with invalid trip and route (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "decreasing_or_equal_stop_time_distance",
+          "count": 2,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+          "owner": "Likely your export tool",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Some trips have stop times whose distances along the route go backwards.",
+          "why": "Apps can show buses jumping backwards or mis-order stops."
+        },
+        {
+          "code": "non_ascii_or_non_printable_char",
+          "count": 60614,
+          "effort": "A planned ID change, not a quick text cleanup.",
+          "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some internal IDs use characters outside the basic text set.",
+          "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 144,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 57,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 16,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 12,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 5,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 3,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 1,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "unknown_column",
+          "count": 15,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "unknown_file",
+          "count": 10,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 6,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 15.8,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 14 kinds of issue across 60895 instances (11 error, 60853 warning, 31 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 86,
+        "effective_expiry_date": "2026-11-01",
+        "feed_end_date": "2026-11-01",
+        "feed_start_date": "2026-06-01",
+        "feed_version": "202608061509",
+        "has_feed_info": true,
+        "last_service_date": "2026-11-01",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 86 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "2 validator errors to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 86 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 3% of stops and 37% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 2 validator errors to resolve. States wheelchair access on 3% of stops and 37% of trips; the mark needs 90% of each."
+  },
+  "export_diff": {
+    "changes": [
+      "Route 78 (78 Pyh\u00e4lt\u00f6 - Husula -  linja-autoasema) is no longer in the export.",
+      "Route 78 (78 Pyh\u00e4lt\u00f6 - Kirkkoj\u00e4rvi  -  linja-autoasema) is new in this export."
+    ],
+    "from_sha256": "b55f282f74d6811c906a1cb71b47219a69620c4f107daacded57007c2167457a",
+    "to_sha256": "8de83da2959c0ac118f91168ff53322972dc1d90158760ca82b586bd57987bb7"
+  },
+  "feed": {
+    "license_note": "CC BY 4.0; credit Waltti, link the licence, and indicate any changes made to the source data.",
+    "reachable": true,
+    "sha256": "8de83da2959c0ac118f91168ff53322972dc1d90158760ca82b586bd57987bb7",
+    "size_bytes": 2007340,
+    "static_url": "https://tvv.fra1.digitaloceanspaces.com/217.zip"
+  },
+  "fetch": {
+    "final_url": "https://tvv.fra1.digitaloceanspaces.com/217.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-07T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      26.53701,
+      60.43003,
+      27.36429,
+      60.75207
+    ],
+    "lat": 60.53272,
+    "lon": 26.93577,
+    "stop_count": 1051
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 146,
+        "trip_count": 2085,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 146,
+    "trip_count": 2085
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 45.4,
+    "margin_to_next_band": 14.6,
+    "score": 45.4
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 2,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "2 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (P077, P079).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 54,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "54 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Hillontie / Kynt\u00f6miehentie\", \"Siitosentie / Ajuksentie I (virtuaali)\", \"Husupy\u00f6lintie / Husulan koulu E\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "routability": {
+    "boardable_stops": 1050,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 2085
+  },
+  "route_map": {
+    "drawn_route_count": 146,
+    "has_shapes": true,
+    "path": "data/artifacts/waltti-kotka/geometry.geojson",
+    "route_count": 146,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1",
+        "label": "1",
+        "long": "1 Kotka - Karhula - Hamina",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1001",
+        "label": "P001",
+        "long": "P001 Keskusta-Hovinsaari-Koskenrinne",
+        "short": "P001",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1004",
+        "label": "P004",
+        "long": "P004 Keskusta-Katariina",
+        "short": "P004",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "101",
+        "label": "1U",
+        "long": "1U Karhula - Uusi-Summa - Ruissalo - Alakaupunki",
+        "short": "1U",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "102",
+        "label": "1Y",
+        "long": "1Y Yl\u00e4nummi - Karhula - keskusta",
+        "short": "1Y",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1051",
+        "label": "5B",
+        "long": "5B  Karhula-Sunila-Tiutinen-Suulisniemi",
+        "short": "5B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1095",
+        "label": "9R",
+        "long": "9R Karhula-Tavastilan as-Yl\u00e4nummi",
+        "short": "9R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1101",
+        "label": "P001",
+        "long": "P001 Keskusta - Hovinsaari -. Keskussairaala - Koskenrinne",
+        "short": "P001",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1104",
+        "label": "P004",
+        "long": "P004 Kauppator - Meripuista - Katriina - Sapokka - Kauppatori",
+        "short": "P004",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "111",
+        "label": "1M",
+        "long": "1M Haminan linja-autoasema - Vehkalahden koulu - Karhula",
+        "short": "1M",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1110",
+        "label": "P010",
+        "long": "P010 Karhula - Sunila - Tiutinen",
+        "short": "P010",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1112",
+        "label": "P012",
+        "long": "P012 Keskusta - Karhula - Peippola",
+        "short": "P012",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1113",
+        "label": "P013",
+        "long": "P013 Karhula - Korkeakoski / Sutela / Em\u00e4nn\u00e4nraitti",
+        "short": "P013",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1114",
+        "label": "P014",
+        "long": "P014 Koskenrinne - Sutela - Kotkan tori",
+        "short": "P014",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "112",
+        "label": "1U",
+        "long": "1U Karhula - Uusi-Summa - Haminan linja-autoasema - ( Vehkalahden koulu)",
+        "short": "1U",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "113",
+        "label": "1V",
+        "long": "1V Karhula - Uusi-Summa - Hamina linja-autoas - Alakaupunki",
+        "short": "1V",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1137",
+        "label": "37B",
+        "long": "37B Karhula - M\u00e4ntykangas - Ristinkallio - Malminki - Karhula",
+        "short": "37B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "12",
+        "label": "12",
+        "long": "12 Keskusta - Lankila - Aittakorpi - Karhuvuori - Mussalo",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "13",
+        "label": "13",
+        "long": "13 Keskusta - Lankila - Aittakorpi - Karhuvuori - Mussalo - Keskusta",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "131",
+        "label": "13M",
+        "long": "13M Kantasatama-Karhuvuori-Munsaari-Mussalo-Kantasatama",
+        "short": "13M",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "135",
+        "label": "13H",
+        "long": "13H Hirssaari-MussaloKeskusta",
+        "short": "13H",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "151",
+        "label": "15K",
+        "long": "15K Keskusta - Karhuvuori - Aittakorpi - keskusta",
+        "short": "15K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "18",
+        "label": "18",
+        "long": "18 Keskusta-Parikka",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "19",
+        "label": "19",
+        "long": "19 Mussalo-Parikka-Laajakoski",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1A",
+        "label": "1A",
+        "long": "1A Kotka - Karhula - Hamina - Alakaupunki",
+        "short": "1A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "1K",
+        "label": "1K",
+        "long": "1K Keskusta - Karhula",
+        "short": "1K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2007",
+        "label": "7K",
+        "long": "7K Karhula-Koivula",
+        "short": "7K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2013",
+        "label": "P013",
+        "long": "P013 Karhula-Koivula-Keltakallio-It\u00e4ranta-Is\u00e4nn\u00e4nraitti-Prisma",
+        "short": "P013",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2020",
+        "label": "20H",
+        "long": "20H Hirssaari - Mussalo - Karhuvuori - Karhula",
+        "short": "20H",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2235",
+        "label": "23S",
+        "long": "23S Keskusta-Santalahti",
+        "short": "23S",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "245",
+        "label": "45",
+        "long": "45 Rantahaka - Suulisniemi - Karhula - keskusta",
+        "short": "45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "25",
+        "label": "25",
+        "long": "25 Keskusta - Mussalo - Karhuvuori - Karhula",
+        "short": "25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2501",
+        "label": "25S",
+        "long": "25S Keskusta - Mussalo - Karhuvuori - Karhula - Suulisniemi",
+        "short": "25S",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2502",
+        "label": "25T",
+        "long": "25T Keskusta - Mussalo - Karhuvuori - Karhula - Sunila - Tiutinen",
+        "short": "25T",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2503",
+        "label": "25Y",
+        "long": "25Y Keskusta - Mussalo - Karhuvuori - Karhula - Tavastilan as - Yl\u00e4nummi",
+        "short": "25Y",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "251",
+        "label": "25K",
+        "long": "25K Keskusta - Mussalo - Karhuvuori - Karhula - Koivula",
+        "short": "25K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "252",
+        "label": "25H",
+        "long": "25H Keskusta - Mussalo - Karhuvuori - Karhula - Koivula",
+        "short": "25H",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "25O",
+        "label": "25O",
+        "long": "25O Keskusta-Mussalo-K:vuori-Karhula-M\u00e4ntykangas",
+        "short": "25O",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "274",
+        "label": "27H",
+        "long": "27H Kantasatma-Hirssaari-Mussalo-K:vuori-Kantasatama",
+        "short": "27H",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "27M",
+        "label": "27M",
+        "long": "27M Kotkan keskusta-Mussalo-Munsaari-Karhuvuori-Kesk",
+        "short": "27M",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "28",
+        "label": "2C",
+        "long": "\"C Sutela Pernoo",
+        "short": "2C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "29",
+        "label": "2P",
+        "long": "2P Keskusta - Sutela - Kaukola - J\u00e4ppil\u00e4 - Pernoo",
+        "short": "2P",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2J",
+        "label": "2J",
+        "long": "2J J\u00e4ppil\u00e4 - Kaukola - keskusta",
+        "short": "2J",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "2P",
+        "label": "2P",
+        "long": "2P Pernoo - J\u00e4ppil\u00e4 - Kaukola - keskusta",
+        "short": "2P",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3002",
+        "label": "2L",
+        "long": "2L Pernoo-Sutela - Lankila",
+        "short": "2L",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3010",
+        "label": "P010",
+        "long": "P010 Karhula-Tiutinen",
+        "short": "P010",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3021",
+        "label": "2C",
+        "long": "2C Sutela - Pernoo",
+        "short": "2C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3061",
+        "label": "6B",
+        "long": "6B PALI Karhula-Suulisniemi-Sunila",
+        "short": "6B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3095",
+        "label": "9J",
+        "long": "9J Karhula-Juurikorpi",
+        "short": "9J",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "325",
+        "label": "32B",
+        "long": "32B Karhula - Koivula",
+        "short": "32B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "3341",
+        "label": "34B",
+        "long": "34B  Karhula-Laajakoski",
+        "short": "34B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "342",
+        "label": "34B",
+        "long": "34B Karhula - Peippola - Laajakoski",
+        "short": "34B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "351",
+        "label": "35B",
+        "long": "35B Karhula - Peippola - Huruksela",
+        "short": "35B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "371",
+        "label": "37B",
+        "long": "37B Karhula - M\u00e4ntykangas - Ristinkallio - Karhula",
+        "short": "37B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "391",
+        "label": "39B",
+        "long": "39B Karhula - Peippola",
+        "short": "39B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4012",
+        "label": "P012",
+        "long": "P012 Kotka-Huruksela",
+        "short": "P012",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "4014",
+        "label": "P014",
+        "long": "P014 Koskenrinne-Prisma-Karhuvuori-Mussalo-Kotkansaari",
+        "short": "P014",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "501",
+        "label": "5B",
+        "long": "5B Tiutinen - Sunila - Karhula",
+        "short": "5B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "51",
+        "label": "5B",
+        "long": "5B Karhula - Sunila - Tiutinen",
+        "short": "5B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "521",
+        "label": "2C",
+        "long": "2C Sutela - J\u00e4ppil\u00e4 - Pernoo",
+        "short": "2C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "522",
+        "label": "2L",
+        "long": "2L Langikosken koulu - Lankila - Sutela - Pernoo",
+        "short": "2L",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "5230",
+        "label": "P023",
+        "long": "P023 Kantasatama - Hirssaari - Munsaari",
+        "short": "P023",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "5231",
+        "label": "P023S",
+        "long": "P023 S Kantasatama - Hirssaari - Munsaari - Santalahti  - Kantasatama-",
+        "short": "P023S",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6",
+        "label": "6",
+        "long": "6 Keskusta - Karhula - Suulisniemi",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "89DF20",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "6070B",
+        "label": "P070B",
+        "long": "P070B Linja-autoasema - Poitsila - Hillo - Uusi-Summa - linja-autoasema",
+        "short": "P070B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5A9315",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "6071",
+        "label": "P071",
+        "long": "P071 Linja-autoasema - Pit\u00e4j\u00e4nsaari - Poitsila - Ruissalo - Salmenkyl\u00e4 - linja-autoasema",
+        "short": "P071",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "89DF20",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "6074",
+        "label": "P074",
+        "long": "P074 La-Asema-Mets\u00e4kyl\u00e4",
+        "short": "P074",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "89DF20",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "6076",
+        "label": "P076",
+        "long": "P076 La-Asema-Pappilansaari-Ristiniemi",
+        "short": "P076",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6077",
+        "label": "P077",
+        "long": "P077-La-Asema-Vilniemi-Py\u00f6tsaari",
+        "short": "P077",
+        "text_color": "89DF20",
+        "type_label": "Bus"
+      },
+      {
+        "color": "89DF20",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "6079",
+        "label": "P079",
+        "long": "P079 LA-Asema-Summa-Neuvoton-Uusi-Summa",
+        "short": "P079",
+        "text_color": "17E84B",
+        "type_label": "Bus"
+      },
+      {
+        "color": "89DF20",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "6081",
+        "label": "P081",
+        "long": "P081 Linja-autoasema - terveysasema",
+        "short": "P081",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6171",
+        "label": "P071",
+        "long": "P071 Linja-autoas - Pit\u00e4j\u00e4nsaari - Poitsila - Ruissalo - Salmenkyl\u00e4 - linja-autoasema",
+        "short": "P071",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6172",
+        "label": "P072",
+        "long": "P072 Linja-autoasema - tori - Meltti - Tompurinm\u00e4ki - Saviniemi - linja-autoasema",
+        "short": "P072",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6173",
+        "label": "P073",
+        "long": "P073 Linja-autoas - Summa - Reitkalli - Kusula - Salmenkyl\u00e4 - linja-autoas",
+        "short": "P073",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6175",
+        "label": "P075",
+        "long": "P075 Linja-autoasema - Husula - Kitula",
+        "short": "P075",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6176",
+        "label": "P076",
+        "long": "P076 Linja-autoas - Pappilasaari - Ristiniemi - Vilniemi- linja-autoas",
+        "short": "P076",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6177",
+        "label": "P077",
+        "long": "P077 Linja-autoasema - Alakaupunki - Py\u00f6tsaari - Vilniemi - Alakaupunki - linja-autoasema",
+        "short": "P077",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6178",
+        "label": "P078",
+        "long": "P078 Linja-autoasema - Husula - Pyh\u00e4lt\u00f6",
+        "short": "P078",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6179",
+        "label": "P079",
+        "long": "P079 Linja-autoasema - Neuvoton - Uusi-Summa - linja-autoasema",
+        "short": "P079",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6181",
+        "label": "P081",
+        "long": "P081 Linja-autoasema - terveysasema",
+        "short": "P081",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "62",
+        "label": "6S",
+        "long": "6S Keskusta- Karhula - Sunila",
+        "short": "6S",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6270",
+        "label": "P070B",
+        "long": "P070B Linja-autoasema - tori - Et-Poitsila - Hillo - uusi-Summa - Pit\u00e4j\u00e4saari - tori - linja-autoasema",
+        "short": "P070B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6274",
+        "label": "P074",
+        "long": "P074 Linja-autoasema - Husula - Mets\u00e4kyl\u00e4",
+        "short": "P074",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6275",
+        "label": "P075B",
+        "long": "P075B Linja-autoasema - Tallinm\u00e4ki - Kirkkoj\u00e4rvi - T\u00f6yt\u00e4ri - Kitula",
+        "short": "P075B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6374",
+        "label": "P074B",
+        "long": "P074B  Linja-autoasema - Husula - Mets\u00e4kyl\u00e4",
+        "short": "P074B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "65",
+        "label": "6B",
+        "long": "6B Karhula-Suulisniemi",
+        "short": "6B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "673",
+        "label": "74L",
+        "long": "74L Linja-autoasema - Husula - Mets\u00e4kyl\u00e4 - Mets\u00e4kulma",
+        "short": "74L",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "674",
+        "label": "74",
+        "long": "74 Hamina - Husula - Mets\u00e4kyl\u00e4 - Mets\u00e4kulma",
+        "short": "74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "676",
+        "label": "77V",
+        "long": "77V Hamina - Vilniemi",
+        "short": "77V",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "677",
+        "label": "77",
+        "long": "77 Hamina - Vilniemi - M\u00e4ntlahti",
+        "short": "77",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "678",
+        "label": "78",
+        "long": "78 Linja-autoasema - Husula - Pyh\u00e4lt\u00f6",
+        "short": "78",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "6M",
+        "label": "6M",
+        "long": "6M Suulisniemi-Karhula-moottoritie-Keskusta",
+        "short": "6M",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "7",
+        "label": "7",
+        "long": "7 Keskusta-Korkeakoski-Karhula",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D6A829",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "7070",
+        "label": "707 ELY",
+        "long": "707 ELY Hamina-Lelu th-Virolahti",
+        "short": "707 ELY",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E9BF16",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "7071",
+        "label": "707 ELY",
+        "long": "707 ELY Virolahti-Lelu th-Hamina",
+        "short": "707 ELY",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "89DF20",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "7075",
+        "label": "P075",
+        "long": "P075 Kannusj\u00e4rvi-Kitula",
+        "short": "P075",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "89DF20",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "7078",
+        "label": "P078",
+        "long": "P078 La-Asema-Husula-Pyh\u00e4lt\u00f6",
+        "short": "P078",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "74 KCL",
+        "label": "74",
+        "long": "74 Haminan linja-autoasema - Mets\u00e4kyl\u00e4",
+        "short": "74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "742",
+        "label": "74P",
+        "long": "74P Haminan linja-autoasema - Husula - Mets\u00e4kyl\u00e4 - Sipil\u00e4nm\u00e4ki",
+        "short": "74P",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "743",
+        "label": "74R",
+        "long": "74R Sipil\u00e4nm\u00e4ki - Husula - Ruissalo",
+        "short": "74R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "75 KCL",
+        "label": "75",
+        "long": "75 Haminan linja-autoasema - Kannusj\u00e4rvi - Kitula",
+        "short": "75",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "751",
+        "label": "75A",
+        "long": "75A Kitula-Husula-Ruissalo-Hamina LA-Alakaupunki",
+        "short": "75A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "752",
+        "label": "75J",
+        "long": "75J Kannusj\u00e4rvi - Hamina",
+        "short": "75J",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "753",
+        "label": "75R",
+        "long": "75R Kannusj\u00e4rvi - Husula - Ruissalo",
+        "short": "75R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EBB514",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "776",
+        "label": "77TC",
+        "long": "77TC Virojoki - M\u00e4ntlahti-Vilniemi-Hamina",
+        "short": "77TC",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "78",
+        "label": "78",
+        "long": "78 Pyh\u00e4lt\u00f6 - Kirkkoj\u00e4rvi  -  linja-autoasema",
+        "short": "78",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "781",
+        "label": "78V",
+        "long": "78V Ruissalo- linja-autoas - Kirkkoj\u00e4rvi - Pyh\u00e4lt\u00f6",
+        "short": "78V",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "782",
+        "label": "78K",
+        "long": "78K Hamin linja-autoasema - Husula - Pyh\u00e4lt\u00f6 - ( Kannusj\u00e4rvi)",
+        "short": "78K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "783",
+        "label": "78H",
+        "long": "78H Hamina linja-autoasema- Husula - Pyh\u00e4lt\u00f6",
+        "short": "78H",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "78JYRK",
+        "label": "78",
+        "long": "78 Hamina LA-Pyh\u00e4lt\u00f6",
+        "short": "78",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "78KCL",
+        "label": "78",
+        "long": "78 Pyh\u00e4lt\u00f6 - Husula -. linja-autoasema",
+        "short": "78",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "79",
+        "label": "79",
+        "long": "79 Alakaupunki - linja-autoasema - Ruissalo - Neuvoton - Rantahaka",
+        "short": "79",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "793",
+        "label": "79U",
+        "long": "79U Alakaupunki - linja-autoasema - Ruissalo - Uusi- Summa - Neuvoton - Rantahaka",
+        "short": "79U",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "7K",
+        "label": "7K",
+        "long": "7K Karhula-Korkeakoski-Koivula-Katariina-Keskusta",
+        "short": "7K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "7V",
+        "label": "7V",
+        "long": "7V Keskusta - Koivula - Korkeakoski - Karhula",
+        "short": "7V",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8",
+        "label": "8",
+        "long": "8 Keskusta - Koivula",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "89DF20",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "8072",
+        "label": "P072",
+        "long": "P072 La-Asema-Meltti-Hevoshaka-Tompurinm\u00e4ki-Saviniemi",
+        "short": "P072",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "89DF20",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "8073",
+        "label": "P073",
+        "long": "P073 La-Asema-Summa-Reitkalli-Husula",
+        "short": "P073",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "89DF20",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "8074B",
+        "label": "P074B",
+        "long": "P074B La-Asema-Husula-Mets\u00e4kyl\u00e4",
+        "short": "P074B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "80H_KCL",
+        "label": "80H",
+        "long": "80H Hamina - Husula - T\u00f6yt\u00e4ri - Kirkkoj\u00e4rvi - Alakaupunki - Hamina",
+        "short": "80H",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "81",
+        "label": "8K",
+        "long": "8K Keskusta - Karhula - Koivula",
+        "short": "8K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "86",
+        "label": "86",
+        "long": "86 Alakaupunki - linja-autoasema",
+        "short": "86",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "891",
+        "label": "89S",
+        "long": "89S Huutj\u00e4rvi - Sutela",
+        "short": "89S",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "892",
+        "label": "89S",
+        "long": "89S Huutj\u00e4rvi - Sutela",
+        "short": "89S",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "90",
+        "label": "90",
+        "long": "90 Kangas - Pyht\u00e4\u00e4 kk - Huutj\u00e4rvi - Kotka",
+        "short": "90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "901",
+        "label": "90H",
+        "long": "90H Pyht\u00e4\u00e4 kk-Huutj\u00e4rvi",
+        "short": "90H",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "907",
+        "label": "90L",
+        "long": "90L Huutj\u00e4rvi-Pyht\u00e4\u00e4 kk- Limalahti th",
+        "short": "90L",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "9075",
+        "label": "P075B",
+        "long": "P075B Hamina-Kitula",
+        "short": "P075B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "908",
+        "label": "98H",
+        "long": "98H Huutj\u00e4rvi-Hirvikoski",
+        "short": "98H",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "91",
+        "label": "9B",
+        "long": "9B Karhula-Yl\u00e4nummi",
+        "short": "9B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "921",
+        "label": "9J",
+        "long": "9J Karhula Tavastila - Yl\u00e4nummi",
+        "short": "9J",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "922",
+        "label": "9M",
+        "long": "9M Karhula - Juurikorpi",
+        "short": "9M",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "923",
+        "label": "9R",
+        "long": "9R Karhula - Tavastila - Yl\u00e4nummi",
+        "short": "9R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "93",
+        "label": "93",
+        "long": "93 Pyht\u00e4\u00e4 kk-Siltakyl\u00e4-Kotka",
+        "short": "93",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "931",
+        "label": "93P",
+        "long": "93P Kangas-Pyht\u00e4\u00e4 kk-Purola-Huutj\u00e4rvi-Kotka",
+        "short": "93P",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "932",
+        "label": "93S",
+        "long": "93S Siltakyl\u00e4 - Huutj\u00e4rvi - Sutela",
+        "short": "93S",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "933",
+        "label": "93P",
+        "long": "93P Sutela -  Huutj\u00e4rvi - Purola - Kangas",
+        "short": "93P",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "934",
+        "label": "93M",
+        "long": "93M Munapirtti - Purola - Siltakyl\u00e4 - Huutj\u00e4rvi - Sutela",
+        "short": "93M",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "935",
+        "label": "93",
+        "long": "93 Kantasatama - Sutela - Huutj\u00e4rvi - Siltakyl\u00e4",
+        "short": "93",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "936",
+        "label": "93S",
+        "long": "93S Sutela - Huutj\u00e4rvi - Siltakyl\u00e4",
+        "short": "93S",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "94",
+        "label": "94",
+        "long": "94 Sutela - Huutj\u00e4rvi - Purola",
+        "short": "94",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "95",
+        "label": "90P",
+        "long": "90P Kangas - Pyht\u00e4\u00e4 kk - Huutj\u00e4rvi - Kotka",
+        "short": "90P",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "98",
+        "label": "98",
+        "long": "98 Hirvikoski / Vastila - Huutj\u00e4rvi - Kotka",
+        "short": "98",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "98V",
+        "label": "98V",
+        "long": "98V Kotka-Valkmusa",
+        "short": "98V",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "99",
+        "label": "99",
+        "long": "99 Pyht\u00e4\u00e4 kk - Huutj\u00e4rvi - Karhula - Hamina",
+        "short": "99",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "991",
+        "label": "99R",
+        "long": "99R Rantahaka - Karhula - Huutj\u00e4rvi - Munapirtti - Pyht\u00e4\u00e4 KK",
+        "short": "99R",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1051,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "transfer_with_invalid_trip_and_route",
+      "count": 9,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'transfer_with_invalid_trip_and_route' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 18.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Transfer with invalid trip and route (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "decreasing_or_equal_stop_time_distance",
+      "count": 2,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+      "owner": "Likely your export tool",
+      "points": 12.0,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "Some trips have stop times whose distances along the route go backwards.",
+      "why": "Apps can show buses jumping backwards or mis-order stops."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1022,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 24.3,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "1022 of 1051 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -34,7 +34,7 @@ sequence. Treat these capabilities as baseline:
 
 - The registry has more than 2,100 configured feed records in the current worldwide
   coverage, still concentrated in the United States and Canada. The artifact index
-  has numeric current scores for more than 1,100 of them. The public status page
+  has numeric current scores for more than 2,100 of them. The public status page
   reports the exact current configured and published counts.
 - Sharded GitHub Actions validation, S3 artifacts, static Pages delivery, and
   public run health.

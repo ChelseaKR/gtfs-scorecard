@@ -1,0 +1,1145 @@
+{
+  "agency": {
+    "country": "IT",
+    "id": "trenord",
+    "name": "Trenord",
+    "operating_note": "The regional rail network for Lombardia; counted as one feed record.",
+    "subdivision_code": "IT-25",
+    "subdivision_name": "Lombardia"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 0.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 8470,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 0.0,
+        "headsign_scored_pct": 0.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 566,
+        "translations": {
+          "feed_lang": "it-IT",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 8470,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 566,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "566 of 566 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 8470,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "8470 of 8470 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 8470,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "8470 of 8470 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 22.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 6,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 0,
+          "WARNING": 55
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "stop_without_stop_time",
+          "count": 46,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no transit vehicle is scheduled to arrive."
+        },
+        {
+          "code": "missing_recommended_field",
+          "count": 3,
+          "effort": "A field at a time; not urgent.",
+          "fix": "Review the flagged fields and fill in the ones your riders would use.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some files leave out fields that GTFS asks for but does not require.",
+          "why": "Recommended fields like agency_phone or stop descriptions make the feed more useful to riders and trip planners."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 2,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 2,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "route_short_name_too_long",
+          "count": 1,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'route_short_name_too_long' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Route short name too long (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 74.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 55 instances (0 error, 55 warning, 0 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 127,
+        "effective_expiry_date": "2026-12-12",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": true,
+        "last_service_date": "2026-12-12",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 127 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 129 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through Regione Lombardia's open data portal; credit Trenord and Regione Lombardia.",
+    "reachable": true,
+    "sha256": "b4296f145b42ccb35c26085470ff4b3fd5dffe533251c0aab312312a73820ad6",
+    "size_bytes": 1660043,
+    "static_url": "https://www.dati.lombardia.it/download/3z4k-mxz9/application%2Fzip"
+  },
+  "fetch": {
+    "final_url": "https://www.dati.lombardia.it/api/views/3z4k-mxz9/files/146cd409-3afb-4423-85b1-b6c3ca6f5e7b?filename=GTFS_TN.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      7.66363,
+      43.70848,
+      11.35805,
+      46.5276
+    ],
+    "lat": 45.5526,
+    "lon": 9.2369,
+    "stop_count": 566
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "rail",
+        "label": "Rail",
+        "route_count": 60,
+        "trip_count": 6745,
+        "trip_share_pct": 79.6
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 3,
+        "trip_count": 1725,
+        "trip_share_pct": 20.4
+      }
+    ],
+    "primary_mode": "rail",
+    "primary_mode_label": "Rail",
+    "route_count": 63,
+    "trip_count": 8470
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 0.7,
+    "margin_to_next_band": 9.3,
+    "score": 60.7
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 39,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "39 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (R23, R7, R40, R31, R1, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 566,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 46,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "46 of 566 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 46,
+    "single_stop_trips": 0,
+    "trips_total": 8470
+  },
+  "route_map": {
+    "drawn_route_count": 0,
+    "has_shapes": false,
+    "path": "data/artifacts/trenord/geometry.geojson",
+    "route_count": 63,
+    "routes": [
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R1",
+        "label": "R1",
+        "long": "Bergamo-Brescia",
+        "short": "R1",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R11",
+        "label": "R11",
+        "long": "Colico-Chiavenna",
+        "short": "R11",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R12",
+        "label": "R12",
+        "long": "Sondrio-Tirano",
+        "short": "R12",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R13",
+        "label": "R13",
+        "long": "Lecco-Colico-Sondrio",
+        "short": "R13",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R14",
+        "label": "R14",
+        "long": "Bergamo-Carnate-Milano",
+        "short": "R14",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R16",
+        "label": "R16",
+        "long": "Asso-Milano",
+        "short": "R16",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R17",
+        "label": "R17",
+        "long": "Como-Saronno-Milano",
+        "short": "R17",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R18",
+        "label": "R18",
+        "long": "Como-Molteno-Lecco",
+        "short": "R18",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R2",
+        "label": "R2",
+        "long": "Bergamo-Treviglio",
+        "short": "R2",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R21",
+        "label": "R21",
+        "long": "Luino-Gallarate-Milano",
+        "short": "R21",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R22",
+        "label": "R22",
+        "long": "Varese-Saronno-Milano",
+        "short": "R22",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R23",
+        "label": "R23",
+        "long": "Domodossola-Arona-Gallarate-Milano",
+        "short": "R23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R25",
+        "label": "R25",
+        "long": "Novara-Mortara",
+        "short": "R25",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R27",
+        "label": "R27",
+        "long": "Novara-Saronno-Milano",
+        "short": "R27",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R3",
+        "label": "R3",
+        "long": "Brescia-Iseo-Breno",
+        "short": "R3",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R31",
+        "label": "R31",
+        "long": "Mortara-Milano",
+        "short": "R31",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R34",
+        "label": "R34",
+        "long": "Stradella-Pavia-Milano",
+        "short": "R34",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R35",
+        "label": "R35",
+        "long": "Pavia-Torreberetti-Alessandria",
+        "short": "R35",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R36",
+        "label": "R36",
+        "long": "Pavia-Mortara-Vercelli",
+        "short": "R36",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R37",
+        "label": "R37",
+        "long": "Pavia-Codogno",
+        "short": "R37",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R38",
+        "label": "R38",
+        "long": "Piacenza-Lodi-Milano",
+        "short": "R38",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R39",
+        "label": "R39",
+        "long": "Codogno-Cremona",
+        "short": "R39",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R4",
+        "label": "R4",
+        "long": "Brescia-Treviglio-Milano",
+        "short": "R4",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R40",
+        "label": "R40",
+        "long": "Cremona-Mantova",
+        "short": "R40",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R41",
+        "label": "R41",
+        "long": "Voghera-Piacenza",
+        "short": "R41",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R5",
+        "label": "R5",
+        "long": "Brescia-Cremona",
+        "short": "R5",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R6",
+        "label": "R6",
+        "long": "Cremona-Treviglio",
+        "short": "R6",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R7",
+        "label": "R7",
+        "long": "Lecco-Bergamo",
+        "short": "R7",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R8",
+        "label": "R8",
+        "long": "Brescia-Piadena-Parma",
+        "short": "R8",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "94C120",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "R9",
+        "label": "R9",
+        "long": "Rovato-Bornato-Iseo",
+        "short": "R9",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "E40314",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "RE_1",
+        "label": "RE1",
+        "long": "Laveno-Varese-Saronno-Milano",
+        "short": "RE1",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "E40314",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "RE_11",
+        "label": "RE11",
+        "long": "Mantova-Cremona-Codogno-Milano",
+        "short": "RE11",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "E40314",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "RE_13",
+        "label": "RE13",
+        "long": "Alessandria-Pavia-Milano",
+        "short": "RE13",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "E40314",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "RE_2",
+        "label": "RE2",
+        "long": "Bergamo-Pioltello-Milano",
+        "short": "RE2",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "E40314",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "RE_3",
+        "label": "RE3",
+        "long": "Brescia-Iseo-Edolo",
+        "short": "RE3",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "E40314",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "RE_4",
+        "label": "RE4",
+        "long": "Domodossola-Milano",
+        "short": "RE4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E40314",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "RE_5",
+        "label": "RE5",
+        "long": "Porto Ceresio-Varese-Gallarate-Milano",
+        "short": "RE5",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "E40314",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "RE_51",
+        "label": "RE51",
+        "long": "Gallarate-Malpensa-Milano Centrale",
+        "short": "RE51",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "E40314",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "RE_54",
+        "label": "RE54",
+        "long": "Malpensa-Milano Cadorna",
+        "short": "RE54",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "E40314",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "RE_6",
+        "label": "RE6",
+        "long": "Verona-Brescia-Milano",
+        "short": "RE6",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "E40314",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "RE_7",
+        "label": "RE7",
+        "long": "Como-Saronno-Milano",
+        "short": "RE7",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "E40314",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "RE_8",
+        "label": "RE8",
+        "long": "Tirano-Sondrio-Lecco-Milano",
+        "short": "RE8",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "004DFF",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "RE_80",
+        "label": "RE80",
+        "long": "Locarno-Lugano-Chiasso-Milano Centrale",
+        "short": "RE80",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "E40520",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "S1",
+        "label": "S1",
+        "long": "Saronno-Milano Passante-Lodi",
+        "short": "S1",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "E42313",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "S10",
+        "label": "S10",
+        "long": "Biasca-Bellinzona-Lugano-Chiasso-Como S.Giovanni",
+        "short": "S10",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "A593C6",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "S11",
+        "label": "S11",
+        "long": "Como-Milano-Rho",
+        "short": "S11",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "2C5234",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "S12",
+        "label": "S12",
+        "long": "Melegnano-Milano Passante-Milano Bovisa",
+        "short": "S12",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "A76D11",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "S13",
+        "label": "S13",
+        "long": "Pavia-Milano Passante-Garbagnate Milanese",
+        "short": "S13",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "663333",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "S19",
+        "label": "S19",
+        "long": "Albairate-Milano Rogoredo",
+        "short": "S19",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "009879",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "S2",
+        "label": "S2",
+        "long": "Seveso-Milano Passante-Milano Rogoredo",
+        "short": "S2",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "A90A2E",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "S3",
+        "label": "S3",
+        "long": "Saronno-Milano Bovisa-Milano Cadorna",
+        "short": "S3",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "00A74E",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "S30",
+        "label": "S30",
+        "long": "Cadenazzo-Luino-Gallarate",
+        "short": "S30",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "0058A2",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "S31",
+        "label": "S31",
+        "long": "Brescia-Iseo",
+        "short": "S31",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "83BB26",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "S4",
+        "label": "S4",
+        "long": "Camnago-Milano Bovisa-Milano Cadorna",
+        "short": "S4",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "6BC180",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "S40",
+        "label": "S40",
+        "long": "Como-Mendrisio-Varese",
+        "short": "S40",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "F39123",
+        "color_name": "orange",
+        "has_shape": false,
+        "id": "S5",
+        "label": "S5",
+        "long": "Varese-Milano Passante-Treviglio",
+        "short": "S5",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "834C16",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "S50",
+        "label": "S50",
+        "long": "Biasca-Bellinzona-Lugano-Varese-Malpensa",
+        "short": "S50",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "F6D200",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "S6",
+        "label": "S6",
+        "long": "Novara-Milano Passante-Treviglio",
+        "short": "S6",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "E50071",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "S7",
+        "label": "S7",
+        "long": "Lecco-Molteno-Monza-Milano",
+        "short": "S7",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "F6B6B6",
+        "color_name": "white",
+        "has_shape": false,
+        "id": "S8",
+        "label": "S8",
+        "long": "Lecco-Carnate-Milano Porta Garibaldi",
+        "short": "S8",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "A2338A",
+        "color_name": "purple",
+        "has_shape": false,
+        "id": "S9",
+        "label": "S9",
+        "long": "Saronno-Seregno-Milano-Albairate",
+        "short": "S9",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "006633",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "TN_Bus",
+        "label": "TN Bus",
+        "long": "TN Bus sostitutivi",
+        "short": "TN Bus",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006633",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "TN_Unspecified_Line",
+        "label": "Trenord (linea non specificata)",
+        "long": "Trenord (linea non specificata)",
+        "short": "Trenord (linea non specificata)",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      }
+    ],
+    "stop_count": 566,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 566,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "566 of 566 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 8470,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "8470 of 8470 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+    },
+    {
+      "code": "scorecard_missing_headsigns",
+      "count": 8470,
+      "effort": "Usually one value per route pattern in your scheduling source.",
+      "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "8470 of 8470 trips lack rider-facing destination or direction text.",
+      "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

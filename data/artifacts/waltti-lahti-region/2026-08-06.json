@@ -1,0 +1,1665 @@
+{
+  "agency": {
+    "country": "FI",
+    "id": "waltti-lahti-region",
+    "name": "Waltti (Lahti region)",
+    "operating_note": "One regional multi-operator package with six operator rows. Counted as one feed record.",
+    "subdivision_code": "FI-16",
+    "subdivision_name": "P\u00e4ij\u00e4t-H\u00e4me"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 8.5,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 22.7
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 3.4
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 33155,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.9,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 2320,
+        "translations": {
+          "feed_lang": "fi",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 33155,
+        "wheelchair_accessible_pct": 22.7,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2320,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "2320 of 2320 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 25629,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 11.6,
+          "severity": "WARNING",
+          "what": "25629 of 33155 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 7,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "7 of 33155 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 40.9,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 9,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 25,
+          "WARNING": 330057
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "non_ascii_or_non_printable_char",
+          "count": 329480,
+          "effort": "A planned ID change, not a quick text cleanup.",
+          "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some internal IDs use characters outside the basic text set.",
+          "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 560,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 7,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 5,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "equal_shape_distance_same_coordinates",
+          "count": 3,
+          "effort": "Usually one export setting.",
+          "fix": "Turn on shape cleanup in your export tool, or drop the repeated points from shapes.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route lines list the same point twice in a row.",
+          "why": "Repeated points don't hurt riders, but they can skew distance math and hint at a shaky export."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 1,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "unknown_column",
+          "count": 15,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "unknown_file",
+          "count": 10,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 60.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 9 kinds of issue across 330082 instances (0 error, 330057 warning, 25 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 147,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": "2026-12-31",
+        "feed_start_date": "2026-07-28",
+        "feed_version": "202608041249",
+        "has_feed_info": true,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 147 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 23% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 23% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0; credit Waltti, link the licence, and indicate any changes made to the source data.",
+    "reachable": true,
+    "sha256": "7ea3ae8a5379ab080ca6e9196a5110039f929ba70b17e504de1b7f02bfdd44fd",
+    "size_bytes": 13918883,
+    "static_url": "https://tvv.fra1.digitaloceanspaces.com/223.zip"
+  },
+  "fetch": {
+    "final_url": "https://tvv.fra1.digitaloceanspaces.com/223.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      25.00627,
+      60.6788,
+      26.08,
+      61.35102
+    ],
+    "lat": 60.98548,
+    "lon": 25.65835,
+    "stop_count": 2320
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 108,
+        "trip_count": 33155,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 108,
+    "trip_count": 33155
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 4.2,
+    "margin_to_next_band": 5.8,
+    "score": 64.2
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 2,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "2 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (81C, 81D).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 2317,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 33155
+  },
+  "route_map": {
+    "drawn_route_count": 108,
+    "has_shapes": true,
+    "path": "data/artifacts/waltti-lahti-region/geometry.geojson",
+    "route_count": 108,
+    "routes": [
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "010",
+        "label": "1",
+        "long": "Liipola - Soltti",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "013",
+        "label": "1K",
+        "long": "Liipola - Karjusaari",
+        "short": "1K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "020",
+        "label": "2",
+        "long": "Myyntimiehenkatu - Mukkula (Kaivolankatu)",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "030",
+        "label": "3",
+        "long": "Mets\u00e4-Pietil\u00e4 - Ruoriniemi",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "040",
+        "label": "4",
+        "long": "Tiilikangas - Hiekkanummi",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "050",
+        "label": "5",
+        "long": "Mets\u00e4kangas - H\u00f6r\u00f6l\u00e4",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "060",
+        "label": "6",
+        "long": "Riihel\u00e4 - Kiikkula",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "070",
+        "label": "7",
+        "long": "Karisto - Renkom\u00e4ki",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "073",
+        "label": "7K",
+        "long": "Karisto - Renkom\u00e4ki",
+        "short": "7K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "080",
+        "label": "8",
+        "long": "Saksala - Rautakankare",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "083",
+        "label": "8K",
+        "long": "Saksala - PHKS",
+        "short": "8K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "090",
+        "label": "9",
+        "long": "Uusikyl\u00e4 - PHKS",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "100",
+        "label": "10",
+        "long": "Uusikyl\u00e4 - Kyt\u00f6l\u00e4",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "102",
+        "label": "10B",
+        "long": "Rakokivi - Matkakeskus",
+        "short": "10B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "103",
+        "label": "10K",
+        "long": "Uusikyl\u00e4 - Kyt\u00f6l\u00e4",
+        "short": "10K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1092",
+        "label": "9B",
+        "long": "Rakokivi - Matkakeskus",
+        "short": "9B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "110",
+        "label": "11",
+        "long": "Pajulahti - Kyt\u00f6l\u00e4",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "112",
+        "label": "11B",
+        "long": "Harjuviidantie - Kyt\u00f6l\u00e4",
+        "short": "11B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "114",
+        "label": "11V",
+        "long": "Pajulahti - Kyt\u00f6l\u00e4",
+        "short": "11V",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "120",
+        "label": "12",
+        "long": "Syv\u00e4ojankatu - Kauppatori",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "123",
+        "label": "12K",
+        "long": "Syv\u00e4ojankatu - Kauppatori",
+        "short": "12K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "140",
+        "label": "14",
+        "long": "Tiilikangas - Viuha",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1422",
+        "label": "42B",
+        "long": "Kalliolan koulu - Maakeski",
+        "short": "42B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1430",
+        "label": "43",
+        "long": "V\u00e4\u00e4ksyn koulukeskus - Maakeski",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1433",
+        "label": "43K",
+        "long": "V\u00e4\u00e4ksyn koulukeskus - Rantakulma - Maakeski",
+        "short": "43K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1440",
+        "label": "44",
+        "long": "V\u00e4\u00e4ksyn koulukeskus - Rantakulma - Uraj\u00e4rvi",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1450",
+        "label": "45",
+        "long": "V\u00e4\u00e4ksyn koulukeskus - Uraj\u00e4rvi",
+        "short": "45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1452",
+        "label": "45B",
+        "long": "V\u00e4\u00e4ksyn koulukeskus - Salonsaari",
+        "short": "45B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1453",
+        "label": "45K",
+        "long": "V\u00e4\u00e4ksyn koulukeskus - Salonsaari - Uraj\u00e4rvi",
+        "short": "45K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1460",
+        "label": "46",
+        "long": "V\u00e4\u00e4ksyn koulukeskus - Kalkkinen",
+        "short": "46",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1461",
+        "label": "46A",
+        "long": "V\u00e4\u00e4ksyn koulukeskus - Kalkkinen - Kuoppainkulma",
+        "short": "46A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1500",
+        "label": "50",
+        "long": "Salpakangas - Pyh\u00e4niemi",
+        "short": "50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1510",
+        "label": "51",
+        "long": "Salpakangas - Sairakkala",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1520",
+        "label": "52",
+        "long": "Salpakangas - Tennil\u00e4",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1550",
+        "label": "55",
+        "long": "Salpakangas - Miekki\u00f6",
+        "short": "55",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1554",
+        "label": "55V",
+        "long": "Salpakangas - Miekki\u00f6",
+        "short": "55V",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1560",
+        "label": "56",
+        "long": "Mets\u00e4-Pietil\u00e4 - Herrala",
+        "short": "56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1561",
+        "label": "56A",
+        "long": "Mets\u00e4-Pietil\u00e4 - Nostava - Herrala - Salpakangas - Mets\u00e4-Pietil\u00e4",
+        "short": "56A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1562",
+        "label": "56B",
+        "long": "Mets\u00e4-Pietil\u00e4 - Salpakangas - Herrala - Nostava - Mets\u00e4-Pietil\u00e4",
+        "short": "56B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1570",
+        "label": "57",
+        "long": "Salpakangas - Pyh\u00e4niemi",
+        "short": "57",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1573",
+        "label": "57K",
+        "long": "Salpakangas - Pyh\u00e4niemi",
+        "short": "57K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1580",
+        "label": "58",
+        "long": "Salpakangas - Sairakkala",
+        "short": "58",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "1583",
+        "label": "58K",
+        "long": "Salpakangas - Sairakkala",
+        "short": "58K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "160",
+        "label": "16",
+        "long": "Mets\u00e4-Hennala - Vierum\u00e4en urheiluopisto",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "200",
+        "label": "20",
+        "long": "Joutj\u00e4rvi - Korpikankare",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "201",
+        "label": "20A",
+        "long": "Joutj\u00e4rvi - Hollola kk.",
+        "short": "20A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "202",
+        "label": "20B",
+        "long": "Joutj\u00e4rvi - Kauppatori",
+        "short": "20B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "240",
+        "label": "24",
+        "long": "Tiilij\u00e4rvi - Hiekkanummi",
+        "short": "24",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "280",
+        "label": "28",
+        "long": "Matkakeskus - Messil\u00e4",
+        "short": "28",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "310",
+        "label": "31",
+        "long": "Koivukumpu - Mukkula",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "311",
+        "label": "31A",
+        "long": "Vierum\u00e4ki - Mukkula",
+        "short": "31A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "3113",
+        "label": "31AK",
+        "long": "Vierum\u00e4ki - Mukkula",
+        "short": "31AK",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "320",
+        "label": "32",
+        "long": "Myyntimiehenkatu - Mukkula (Pilkotunm\u00e4ki)",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "340",
+        "label": "34",
+        "long": "Kauppatori - Herrasmanni",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "343",
+        "label": "34K",
+        "long": "Kauppatori - Viuha",
+        "short": "34K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "370",
+        "label": "37",
+        "long": "Karisto - Ruoriniemi",
+        "short": "37",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "374",
+        "label": "37V",
+        "long": "Karisto - Ruoriniemi",
+        "short": "37V",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "390",
+        "label": "39",
+        "long": "Ruuhij\u00e4rvi - Nastola",
+        "short": "39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "400",
+        "label": "40",
+        "long": "V\u00e4\u00e4ksy - Lahti",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "410",
+        "label": "41",
+        "long": "V\u00e4\u00e4ksy - Rantakulma - V\u00e4\u00e4ksy",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "420",
+        "label": "42",
+        "long": "Padasjoki - Lahti",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "5900",
+        "label": "590",
+        "long": "Lahti (Matkakeskus) - Lammi",
+        "short": "590",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "5902",
+        "label": "590B",
+        "long": "Salpakangas - H\u00e4meenkoski",
+        "short": "590B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "5903",
+        "label": "590K",
+        "long": "Lahti (Matkakeskus) - Lammi",
+        "short": "590K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "600",
+        "label": "60",
+        "long": "Orimattila - Kauppatori",
+        "short": "60",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "604",
+        "label": "60V",
+        "long": "Orimattila - Kauppatori",
+        "short": "60V",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "610",
+        "label": "61",
+        "long": "Orimattila - Kauppatori",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "620",
+        "label": "62",
+        "long": "Orimattila - Kurunkulma",
+        "short": "62",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "624",
+        "label": "62V",
+        "long": "Orimattila - Kurunkulma",
+        "short": "62V",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "630",
+        "label": "63",
+        "long": "Orimattila - Kuivanto",
+        "short": "63",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "631",
+        "label": "63A",
+        "long": "Orimattila - Kuivanto (Sikopiirintie)",
+        "short": "63A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "632",
+        "label": "63B",
+        "long": "Orimattila - Montari",
+        "short": "63B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "634",
+        "label": "63V",
+        "long": "Orimattila - Kuivanto",
+        "short": "63V",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "640",
+        "label": "64",
+        "long": "Orimattila - Artj\u00e4rvi",
+        "short": "64",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "641",
+        "label": "64A",
+        "long": "Orimattila (T\u00f6nn\u00f6) - Artj\u00e4rvi",
+        "short": "64A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "642",
+        "label": "64B",
+        "long": "Orimattila - Niinikoski",
+        "short": "64B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "650",
+        "label": "65",
+        "long": "Kuivanto - Artj\u00e4rvi",
+        "short": "65",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "651",
+        "label": "65A",
+        "long": "Kuivanto (Sikopiirintie) - Artj\u00e4rvi",
+        "short": "65A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "652",
+        "label": "65B",
+        "long": "Vuorenm\u00e4en koulu - Artj\u00e4rvi",
+        "short": "65B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "660",
+        "label": "66",
+        "long": "Orimattila - Hennan asema",
+        "short": "66",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "663",
+        "label": "66K",
+        "long": "Orimattila - Hennan asema",
+        "short": "66K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "6741230",
+        "label": "23",
+        "long": "Nikkil\u00e4 - Kukkila",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "6741233",
+        "label": "23K",
+        "long": "Nikkil\u00e4 - Kukkila",
+        "short": "23K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "6957230",
+        "label": "23",
+        "long": "Nikkil\u00e4 - Kukkila",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "6957233",
+        "label": "23K",
+        "long": "Nikkil\u00e4 - Kukkila",
+        "short": "23K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "710",
+        "label": "71",
+        "long": "Kauppatori - Heinola kk.",
+        "short": "71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "713",
+        "label": "71K",
+        "long": "Kauppatori - Heinola kk.",
+        "short": "71K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "720",
+        "label": "72",
+        "long": "Kauppatori - Heinola kk.",
+        "short": "72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "723",
+        "label": "72K",
+        "long": "Kauppatori - Heinola kk.",
+        "short": "72K",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "740",
+        "label": "74",
+        "long": "Pirttiniemi - Reumanm\u00e4ki",
+        "short": "74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "742",
+        "label": "74B",
+        "long": "Pirttiniemi - Terveyskeskus",
+        "short": "74B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "810",
+        "label": "81",
+        "long": "Kaivokatu - Vuohkallio",
+        "short": "81",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "820",
+        "label": "L82",
+        "long": "Pyh\u00e4t\u00f6n - PHKS",
+        "short": "L82",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "840",
+        "label": "L84",
+        "long": "Vahva-Jussi - PHKS",
+        "short": "L84",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "910",
+        "label": "91",
+        "long": "Kauppatori - Renkom\u00e4ki",
+        "short": "91",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "920",
+        "label": "92",
+        "long": "Kauppatori - Karjusaari",
+        "short": "92",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "930",
+        "label": "93",
+        "long": "Kauppatori - Hiekkanummi",
+        "short": "93",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "940",
+        "label": "94",
+        "long": "Kauppatori - Tiilij\u00e4rvi",
+        "short": "94",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "950",
+        "label": "95",
+        "long": "Kauppatori - Mukkula",
+        "short": "95",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "960",
+        "label": "96",
+        "long": "Kauppatori - Mets\u00e4kangas",
+        "short": "96",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "970",
+        "label": "97",
+        "long": "Kauppatori - Karisto",
+        "short": "97",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "98",
+        "label": "98",
+        "long": "Kauppatori - Salpakankaantie",
+        "short": "98",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "9811",
+        "label": "81A",
+        "long": "Keskusta - Tommola - Keskusta",
+        "short": "81A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E01600",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "9812",
+        "label": "81B",
+        "long": "Keskusta - Kirkonkyl\u00e4 - Aapelinpelto - Keskusta",
+        "short": "81B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F07D1E",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "9813",
+        "label": "81C",
+        "long": "Keskusta - Niemel\u00e4 - Mustikkahaka - Keskusta",
+        "short": "81C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "09AA51",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "9814",
+        "label": "81D",
+        "long": "Keskusta - Myllyoja - Sinil\u00e4hde - T\u00e4htiniemi - Keskusta",
+        "short": "81D",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B10A95",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "9815",
+        "label": "81E",
+        "long": "Keskusta - Jyr\u00e4nk\u00f6 - Sep\u00e4nniemi - Keskusta",
+        "short": "81E",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005EBB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "990",
+        "label": "99",
+        "long": "Kauppatori - Nastola",
+        "short": "99",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2320,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 2320,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "2320 of 2320 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 25629,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 11.6,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "25629 of 33155 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,0 +1,918 @@
+{
+  "agency": {
+    "id": "community-transit-ct",
+    "name": "Community Transit (CT)",
+    "subdivision_code": "US-WA",
+    "subdivision_name": "Washington"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 37.5,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": true,
+          "supported": true
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 21577,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1773,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 21577,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1773,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "1773 of 1773 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 60.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 4,
+        "instances_by_severity": {
+          "ERROR": 57,
+          "INFO": 3,
+          "WARNING": 57
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "trip_distance_exceeds_shape_distance",
+          "count": 57,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 57,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "unknown_file",
+          "count": 2,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        },
+        {
+          "code": "unknown_column",
+          "count": 1,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        }
+      ],
+      "name": "correctness",
+      "score": 67.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 117 instances (57 error, 57 warning, 3 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 127,
+        "effective_expiry_date": "2026-12-11",
+        "feed_end_date": "2026-12-11",
+        "feed_start_date": "2026-07-30",
+        "feed_version": "20260730-20261211",
+        "has_feed_info": true,
+        "last_service_date": "2026-12-11",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 127 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "alerts_content": {
+          "alerts": 7,
+          "ended_over_30_days_ago": 0,
+          "with_cause_and_effect": 7,
+          "with_description": 7,
+          "with_header_text": 7,
+          "with_informed_entity": 7
+        },
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "coverage_pct": 100.0,
+        "covered_trips": 113,
+        "drift": {
+          "median_seconds": 1,
+          "observations": 5041,
+          "on_time_share_pct": 93.9,
+          "p90_abs_seconds": 169
+        },
+        "kinds_configured": 3,
+        "kinds_reachable": 3,
+        "reachable_kinds": [
+          "trip_updates",
+          "vehicle_positions",
+          "service_alerts"
+        ],
+        "rt_freshness": "fresh",
+        "samples": 9,
+        "scheduled_trips_in_window": 113,
+        "vehicles_checked": 340,
+        "vehicles_on_route_pct": 100.0,
+        "worst_lag_seconds": 28
+      },
+      "findings": [],
+      "name": "realtime",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Sampled 9 times: 3 of 3 configured feeds healthy; 100.0% of scheduled trips had live predictions; 100.0% of vehicles on their route; predictions ran a median of 1s behind schedule.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 9 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 128 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 0% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "e363623d9c4dc59d3703d67dafc60691b5af0053536a7b63e1487a84c082df17",
+    "size_bytes": 6592093,
+    "static_url": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.communitytransit.org/docs/default-source/open-data/gtfs/current.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -122.38471,
+      47.59201,
+      -121.601,
+      48.27854
+    ],
+    "lat": 47.8637,
+    "lon": -122.23829,
+    "stop_count": 1773
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 40,
+        "trip_count": 21577,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 40,
+    "trip_count": 21577
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "29",
+      "40"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "status": "at_risk"
+      },
+      {
+        "detail": "Service data covers the next 128 days.",
+        "key": "current",
+        "status": "ready"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "at_risk",
+    "summary": "This feed is close to NTD-ready. 1 validator error to resolve."
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 8.5,
+    "margin_to_next_band": 1.5,
+    "score": 78.5
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 2,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "2 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (Swift Green, Swift Orange).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 1679,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "1679 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Marine Dr NE & 27th Ave NE\", \"Marine Dr NE & 23rd Ave NE\", \"Marine Dr NE & Meridian Ave N\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1719,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 21577
+  },
+  "route_map": {
+    "drawn_route_count": 40,
+    "has_shapes": true,
+    "path": "data/artifacts/community-transit-ct/geometry.geojson",
+    "route_count": 40,
+    "routes": [
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "101",
+        "label": "101",
+        "long": "Mariner P&R - Aurora Village TC",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "102",
+        "label": "102",
+        "long": "Edmonds Station - Lynnwood City Center Station",
+        "short": "102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "103",
+        "label": "103",
+        "long": "Hardeson Road - Lynnwood City Center Station",
+        "short": "103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "106",
+        "label": "106",
+        "long": "Mariner P&R - UW Bothell/Cascadia College",
+        "short": "106",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "109",
+        "label": "109",
+        "long": "Ash Way P&R - Lake Stevens TC",
+        "short": "109",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "111",
+        "label": "111",
+        "long": "Brier - Mountlake Terrace Station",
+        "short": "111",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "112",
+        "label": "112",
+        "long": "Mountlake Terrace Station - Ash Way P&R",
+        "short": "112",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "114",
+        "label": "114",
+        "long": "Aurora Village TC - Lynnwood City Center Station",
+        "short": "114",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "117",
+        "label": "117",
+        "long": "Mukilteo Ferry - Lynnwood City Center Station",
+        "short": "117",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "119",
+        "label": "119",
+        "long": "Ash Way P&R - Mountlake Terrace Station",
+        "short": "119",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "120",
+        "label": "120",
+        "long": "UW Bothell/Cascadia - Lynnwood City Center Station",
+        "short": "120",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "121",
+        "label": "121",
+        "long": "Ash Way P&R - UW Bothell/Cascadia College",
+        "short": "121",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "130",
+        "label": "130",
+        "long": "Edmonds Station - Lynnwood City Center Station",
+        "short": "130",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "166",
+        "label": "166",
+        "long": "Edmonds Station - Silver Firs",
+        "short": "166",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "201",
+        "label": "201",
+        "long": "Smokey Point TC - Lynnwood City Center Station",
+        "short": "201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "202",
+        "label": "202",
+        "long": "Smokey Point TC - Lynnwood City Center Station",
+        "short": "202",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "209",
+        "label": "209",
+        "long": "Smokey Point TC - Lake Stevens TC",
+        "short": "209",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "220",
+        "label": "220",
+        "long": "Arlington - Smokey Point TC",
+        "short": "220",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "222",
+        "label": "222",
+        "long": "Marysville - Tulalip",
+        "short": "222",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "230",
+        "label": "230",
+        "long": "Darrington - Smokey Point TC",
+        "short": "230",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "240",
+        "label": "240",
+        "long": "Stanwood Downtown - Smokey Point TC",
+        "short": "240",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "270",
+        "label": "270",
+        "long": "Gold Bar - Everett Station",
+        "short": "270",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "271",
+        "label": "271",
+        "long": "Gold Bar - Everett Station",
+        "short": "271",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "280",
+        "label": "280",
+        "long": "Granite Falls P&R - Everett Station",
+        "short": "280",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "510",
+        "label": "510",
+        "long": "Everett Station - Seattle",
+        "short": "510",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "512",
+        "label": "512",
+        "long": "Everett Station - Lynnwood City Center Station",
+        "short": "512",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "513",
+        "label": "513",
+        "long": "Lynnwood City Center Station - Seaway TC",
+        "short": "513",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "515",
+        "label": "515",
+        "long": "Lynnwood City Center Station - Seattle",
+        "short": "515",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "532",
+        "label": "532",
+        "long": "Everett Station - Bellevue",
+        "short": "532",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2B376E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "535",
+        "label": "535",
+        "long": "Lynnwood City Center Station - Bellevue",
+        "short": "535",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006CFF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "701",
+        "label": "Swift Blue",
+        "long": "Everett Station - Shoreline North/185th Station",
+        "short": "Swift Blue",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00AA00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "702",
+        "label": "Swift Green",
+        "long": "Seaway TC - Canyon Park P&R",
+        "short": "Swift Green",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F24C21",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "703",
+        "label": "Swift Orange",
+        "long": "Edmonds College - McCollum Park P&R",
+        "short": "Swift Orange",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "901",
+        "label": "901",
+        "long": "Silver Firs - Lynnwood City Center Station",
+        "short": "901",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "903",
+        "label": "903",
+        "long": "Lake Stevens TC - Lynnwood City Center Station",
+        "short": "903",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "904",
+        "label": "904",
+        "long": "Marysville - Lynnwood City Center Station",
+        "short": "904",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "905",
+        "label": "905",
+        "long": "Stanwood Downtown - Lynnwood City Center Station",
+        "short": "905",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "907",
+        "label": "907",
+        "long": "Stanwood I-5 P&R - Paine Field Airport",
+        "short": "907",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "908",
+        "label": "908",
+        "long": "Bellevue - Snohomish P&R",
+        "short": "908",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0070C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "909",
+        "label": "909",
+        "long": "Edmonds Station - Mountlake Terrace Station",
+        "short": "909",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1773,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 21577 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 21577,
+    "trips_with_shape": 21577
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "trip_distance_exceeds_shape_distance",
+      "count": 57,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'trip_distance_exceeds_shape_distance' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 24.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Trip distance exceeds shape distance (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1773,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "1773 of 1773 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

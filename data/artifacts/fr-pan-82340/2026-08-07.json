@@ -1,0 +1,874 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-pan-82340",
+    "name": "R\u00e9seau interurbain - Haute-Vienne (87)",
+    "subdivision_code": "FR-NAQ",
+    "subdivision_name": "Nouvelle-Aquitaine"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 57.6,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 92.1,
+          "stops_stated_pct": 92.1,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 14.0,
+          "wheelchair_stops": 23.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 315,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 93.7,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1104,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 315,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 92.1,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 92.1
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 87,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 2.0,
+          "severity": "WARNING",
+          "what": "87 of 1104 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 315,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "315 of 315 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 70,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "About 70 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 59.6,
+      "status": "measured",
+      "summary": "92% of stops state wheelchair accessibility (0% marked accessible, 92% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 10,
+        "instances_by_severity": {
+          "ERROR": 4,
+          "INFO": 374,
+          "WARNING": 132
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "decreasing_or_equal_stop_time_distance",
+          "count": 4,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+          "owner": "Likely your export tool",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Some trips have stop times whose distances along the route go backwards.",
+          "why": "Apps can show buses jumping backwards or mis-order stops."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 64,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 33,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "same_name_and_description_for_stop",
+          "count": 13,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Same name and description for stop (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 12,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 6,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 3,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "trip_with_shape_dist_traveled_but_no_shape_distances",
+          "count": 310,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'trip_with_shape_dist_traveled_but_no_shape_distances' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Trip with shape dist traveled but no shape distances (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 64,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 46.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 10 kinds of issue across 510 instances (4 error, 132 warning, 374 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 350,
+        "effective_expiry_date": "2027-07-23",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2027-07-23",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 350 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "1 validator error to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 352 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 92% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 1 validator error to resolve. States wheelchair access on 92% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Open Database License (ODbL), recorded by France's National Access Point; credit Nouvelle-Aquitaine Mobilit\u00e9s, identify the ODbL, and preserve share-alike terms where they apply.",
+    "reachable": true,
+    "sha256": "8686108c911997b9b06dc776014b266d622b5f0e578c097b6f0588006ae1f73b",
+    "size_bytes": 1763774,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/8d1cc7f8-2b29-4844-b98c-4a5b35075d57"
+  },
+  "fetch": {
+    "final_url": "https://www.pigma.org/public/opendata/nouvelle_aquitaine_mobilites/publication/haute_vienne-aggregated-gtfs.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      0.16503,
+      45.50619,
+      2.19362,
+      46.31988
+    ],
+    "lat": 45.8297,
+    "lon": 1.20484,
+    "stop_count": 1104
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 33,
+        "trip_count": 315,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 33,
+    "trip_count": 315
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 0.0,
+    "margin_to_next_band": 10.0,
+    "score": 60.0
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 9,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "9 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (180, 192, 208, 215, 219, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 52,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "52 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"CHASSENEUIL-GARE SNCF VC 1/2t\", \"St Pard.- Bourg\", \"L.P. St Exup\u00e9ry\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 720,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 315
+  },
+  "route_map": {
+    "drawn_route_count": 33,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-pan-82340/geometry.geojson",
+    "route_count": 33,
+    "routes": [
+      {
+        "color": "01DFD7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3983",
+        "label": "203",
+        "long": "203 - Ambazac > Limoges",
+        "short": "203",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "58D3F7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3984",
+        "label": "202",
+        "long": "202 - Bessines > Limoges",
+        "short": "202",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1B6E53",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3985",
+        "label": "180",
+        "long": "180 - Limoges - Angoul\u00eame",
+        "short": "180",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FE2E2E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3986",
+        "label": "204",
+        "long": "204 - Limoges - Aubusson - Felletin",
+        "short": "204",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2E2E2E",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3987",
+        "label": "215",
+        "long": "215 - Saint Laurent les Eglises - Limoges",
+        "short": "215",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FACC2E",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3988",
+        "label": "231",
+        "long": "231 - Limoges - Beynac",
+        "short": "231",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0174DF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3989",
+        "label": "229",
+        "long": "229 - Maisonnais sur Tardoire - Saint Mathieu - Limoges",
+        "short": "229",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1B6E53",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3990",
+        "label": "237",
+        "long": "237 - Limoges - Saint Pardoux",
+        "short": "237",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DBA901",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3991",
+        "label": "194",
+        "long": "194 - Ch\u00e2teauponsac - Limoges",
+        "short": "194",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0B6121",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3992",
+        "label": "235",
+        "long": "235 - Ch\u00e2teauponsac- Limoges",
+        "short": "235",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F7D358",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3993",
+        "label": "205",
+        "long": "205  - Neuvic Entier - Limoges",
+        "short": "205",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F3E2A9",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3994",
+        "label": "236",
+        "long": "236 - Eymoutiers - Vassivi\u00e8re",
+        "short": "236",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B45F04",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3995",
+        "label": "200",
+        "long": "200 - Bussi\u00e8re Galant - St Junien - Limoges",
+        "short": "200",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5F04B4",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3996",
+        "label": "192",
+        "long": "192 - Val d'Issoire - Oradour sur Glane - Limoges",
+        "short": "192",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DF0101",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3997",
+        "label": "219",
+        "long": "219 - La Chapelle Montbrandeix - Dournazac - Limoges",
+        "short": "219",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0780B6",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3998",
+        "label": "207",
+        "long": "207 - Ch\u00e2lus - Limoges",
+        "short": "207",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0489B1",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:3999",
+        "label": "226",
+        "long": "226 - Magnac Laval - Limoges",
+        "short": "226",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "045FB4",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:4000",
+        "label": "230",
+        "long": "230 - Ambazac - Limoges",
+        "short": "230",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BFFF00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:4001",
+        "label": "191",
+        "long": "191 - Rochechouart - Vayres - Limoges",
+        "short": "191",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0101DF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:4002",
+        "label": "208",
+        "long": "208 - Aixe sur Vienne - Limoges",
+        "short": "208",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FE2222",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:4003",
+        "label": "217",
+        "long": "217 - Jourgnac - Bosmie l'Aiguille - Limoges",
+        "short": "217",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FE2E2E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:4004",
+        "label": "201",
+        "long": "201 - Le Dorat - Bellac - Limoges",
+        "short": "201",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FA8258",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:4005",
+        "label": "216",
+        "long": "216 - Pierre Buffi\u00e8re - Limoges",
+        "short": "216",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "04B404",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:4006",
+        "label": "193",
+        "long": "193 - Nieul - Couzeix - Limoges",
+        "short": "193",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FAAC58",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:4007",
+        "label": "206",
+        "long": "206 - Saint Yrieix la Perche - Limoges",
+        "short": "206",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F781D8",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:4008",
+        "label": "218",
+        "long": "218 - Ladignac le Long - Nexon - Limoges",
+        "short": "218",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8A0829",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:4009",
+        "label": "232",
+        "long": "232 - Cussac - Saint Junien",
+        "short": "232",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "58FA82",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:4010",
+        "label": "233",
+        "long": "233 - Saint Mathieu - Saint Junien",
+        "short": "233",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0080FF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:4011",
+        "label": "190",
+        "long": "190 - Cognac la For\u00eat- Limoges",
+        "short": "190",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D0F5A9",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:4012",
+        "label": "234",
+        "long": "234 - Limoges - Magnac Laval",
+        "short": "234",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "59FF00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:5116",
+        "label": "603",
+        "long": "603 - TPMR - Aixe sur Vienne - Limoges",
+        "short": "603",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5BBEFB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:5127",
+        "label": "602",
+        "long": "602- TAD - Saint-Sulpice les Feuilles - Bessines sur Gartempe",
+        "short": "602",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6BBFFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "HAUTE_VIENNE:Line:5138",
+        "label": "601",
+        "long": "601 - TAD - Ch\u00e2teauponsac - Bessines sur Gartempe",
+        "short": "601",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1104,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "decreasing_or_equal_stop_time_distance",
+      "count": 4,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+      "owner": "Likely your export tool",
+      "points": 12.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Some trips have stop times whose distances along the route go backwards.",
+      "why": "Apps can show buses jumping backwards or mis-order stops."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 315,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "315 of 315 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

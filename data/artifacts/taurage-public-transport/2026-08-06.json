@@ -1,0 +1,1166 @@
+{
+  "agency": {
+    "country": "LT",
+    "id": "taurage-public-transport",
+    "name": "Taurag\u0117 public transport",
+    "operating_note": "Official municipality-level export from the national GTFS directory. Counted as one feed record, not as a census of distinct operators.",
+    "subdivision_code": "LT-50",
+    "subdivision_name": "Taurag\u0117"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 553,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 951,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 553,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 951,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "951 of 951 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 553,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "553 of 553 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 6,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 43,
+          "WARNING": 9
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "stop_without_stop_time",
+          "count": 5,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no bus is scheduled to arrive."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 3,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 16,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "service_extends_far_in_the_future",
+          "count": 14,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'service_extends_far_in_the_future' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Service extends far in the future (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unknown_column",
+          "count": 13,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        }
+      ],
+      "name": "correctness",
+      "score": 85.8,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 52 instances (0 error, 9 warning, 43 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 26810,
+        "effective_expiry_date": "2099-12-31",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2099-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "unusually_distant",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service is published through 2099-12-31, an unusually distant end date. It may be intentional, but confirm it before treating the feed as maintained.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "The published window is current, but its service end date is unusually distant; confirm that date is intentional.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through Lithuania's official open-data portal; credit the Lithuanian Transport Safety Administration and the named municipality.",
+    "reachable": true,
+    "sha256": "c96797c9b33af645367dc461735e436466fbce1c14df6edf1f4c7989b16f1c65",
+    "size_bytes": 1194984,
+    "static_url": "https://www.visimarsrutai.lt/gtfs/TauragesR.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.visimarsrutai.lt/gtfs/TauragesR.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-06T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      21.13829,
+      55.05968,
+      23.50915,
+      55.92782
+    ],
+    "lat": 55.25523,
+    "lon": 22.41265,
+    "stop_count": 951
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 67,
+        "trip_count": 553,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 67,
+    "trip_count": 553
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 0.5,
+    "margin_to_next_band": 9.5,
+    "score": 70.5
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 91,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "91 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Meno mokyklos st.\", \"Pil\u0117n\u0173 st.\", \"Medelyno st.\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "routability": {
+    "boardable_stops": 951,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 5,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "5 of 951 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 5,
+    "single_stop_trips": 0,
+    "trips_total": 553
+  },
+  "route_map": {
+    "drawn_route_count": 67,
+    "has_shapes": true,
+    "path": "data/artifacts/taurage-public-transport/geometry.geojson",
+    "route_count": 67,
+    "routes": [
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21675",
+        "label": "M796",
+        "long": "Taurag\u0117 - \u0160ilal\u0117 - Laukuva - Klaip\u0117da",
+        "short": "M796",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21676",
+        "label": "J17A",
+        "long": "Jurbarkas - Serbenta",
+        "short": "J17A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21677",
+        "label": "SE8",
+        "long": "\u0160ilal\u0117 - Didkiemis",
+        "short": "SE8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21679",
+        "label": "SE7",
+        "long": "\u0160ilal\u0117 - Paj\u016bris - Teneniai",
+        "short": "SE7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21681",
+        "label": "SE5",
+        "long": "\u0160ilal\u0117 - Kv\u0117darna - Lembas",
+        "short": "SE5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21682",
+        "label": "SE2",
+        "long": "\u0160ilal\u0117 - Laukuva - Po\u017eer\u0117 - Kaltin\u0117nai",
+        "short": "SE2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21684",
+        "label": "SE1",
+        "long": "\u0160ilal\u0117 - Upyna - Kry\u017ekalnis",
+        "short": "SE1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21685",
+        "label": "R2",
+        "long": "Taurag\u0117 - \u0160ilal\u0117",
+        "short": "R2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21686",
+        "label": "R4",
+        "long": "Taurag\u0117 - Skaudvil\u0117 - Kry\u017ekalnis",
+        "short": "R4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21687",
+        "label": "R3",
+        "long": "Taurag\u0117 - Er\u017evilkas",
+        "short": "R3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21688",
+        "label": "R6",
+        "long": "Taurag\u0117 - \u017dukai - Vilky\u0161kiai - Pag\u0117giai - \u0160ilgaliai",
+        "short": "R6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21689",
+        "label": "R5",
+        "long": "Taurag\u0117 - Pag\u0117giai",
+        "short": "R5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21690",
+        "label": "T20",
+        "long": "Taurag\u0117 - \u017dygai\u010diai - \u0160ilut\u0117",
+        "short": "T20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21691",
+        "label": "T22",
+        "long": "Taurag\u0117 - Gaur\u0117 - Traklaukas - Pa\u0161altuonys",
+        "short": "T22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21693",
+        "label": "T26",
+        "long": "Taurag\u0117 - Ei\u010diai",
+        "short": "T26",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21697",
+        "label": "T27",
+        "long": "Taurag\u0117 - Joni\u0161k\u0117s kapin\u0117s",
+        "short": "T27",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21698",
+        "label": "S25",
+        "long": "Padievytis - Laukuva - Juodainiai",
+        "short": "S25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21706",
+        "label": "M801",
+        "long": "Taurag\u0117 - Kry\u017ekalnis - Kelm\u0117 - \u0160iauliai",
+        "short": "M801",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21708",
+        "label": "J25",
+        "long": "Jurbarkas - Smalininkai",
+        "short": "J25",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21710",
+        "label": "T33",
+        "long": "Taurag\u0117 - \u017dygai\u010diai - Sartininkai",
+        "short": "T33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21712",
+        "label": "J2A",
+        "long": "Autobus\u0173 stotis - Centras - Jurbark\u0173 seni\u016bnija - Pienin\u0117 - Ligonin\u0117",
+        "short": "J2A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21713",
+        "label": "T35",
+        "long": "Taurag\u0117 - Pilait\u0117",
+        "short": "T35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21715",
+        "label": "T36",
+        "long": "Taurag\u0117 - Pilait\u0117",
+        "short": "T36",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21716",
+        "label": "T39",
+        "long": "Taurag\u0117 - Kuisiai",
+        "short": "T39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21719",
+        "label": "T2",
+        "long": "Autobus\u0173 stotis - Industrinis parkas",
+        "short": "T2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21720",
+        "label": "T1",
+        "long": "\u017dalgiri\u0173 mikrorajonas - Jovarai",
+        "short": "T1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21722",
+        "label": "T4",
+        "long": "\u017dalgiri\u0173 mikrorajonas - \"\u0160altinio\" progimnazijos st. - Turgus - Ber\u017e\u0117 - Centras - \u017dalgiri\u0173 mikrorajonas",
+        "short": "T4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21724",
+        "label": "T3",
+        "long": "\u017dalgiri\u0173 mikrorajonas - Centras - Ber\u017e\u0117 - Turgus - \"\u0160altinio\" progimnazijos st. - \u017dalgiri\u0173 mikrorajonas",
+        "short": "T3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21725",
+        "label": "T6",
+        "long": "\u017dalgiri\u0173 mikrorajonas - Papu\u0161yn\u0117s kapin\u0117s",
+        "short": "T6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21726",
+        "label": "T5",
+        "long": "\u017dalgiri\u0173 mikrorajonas - Centras - Tarailiai - Butkeliai - Taurai",
+        "short": "T5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21727",
+        "label": "T8",
+        "long": "\u017dalgiri\u0173 mikrorajonas - \u201eAu\u0161ros\u201c progimnazija - Norkai\u010diai",
+        "short": "T8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21728",
+        "label": "T7",
+        "long": "\u017dalgiri\u0173 mikrorajonas - Centras - Norkai\u010diai",
+        "short": "T7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21729",
+        "label": "J6",
+        "long": "Sered\u017eius - Veliuona - Stakiai",
+        "short": "J6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21730",
+        "label": "J15",
+        "long": "Jurbarkas - Sered\u017eius",
+        "short": "J15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21731",
+        "label": "J5",
+        "long": "Sered\u017eius - Juodai\u010diai - Veliuona - Sered\u017eius",
+        "short": "J5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21733",
+        "label": "J8",
+        "long": "Sered\u017eius - Vosbutai - Klausu\u010diai - Sered\u017eius",
+        "short": "J8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21734",
+        "label": "J17",
+        "long": "Jurbarkas - P\u0117dam\u0117",
+        "short": "J17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21735",
+        "label": "J7",
+        "long": "Jurbarkas - Mosteikiai",
+        "short": "J7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21736",
+        "label": "J9",
+        "long": "Sered\u017eius - Ariogala",
+        "short": "J9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21739",
+        "label": "T46",
+        "long": "\u017dalgiri\u0173 mikrorajonas - Joni\u0161k\u0117s sodai - Juodpetri\u0173 sodai",
+        "short": "T46",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21740",
+        "label": "J2",
+        "long": "Lauko g. - Centras - Ligonin\u0117 - Kaln\u0117nai - Jurbarkai - Autobus\u0173 parkas",
+        "short": "J2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21741",
+        "label": "T45",
+        "long": "\u017dalgiri\u0173 mikrorajonas - Centras - Senosios miesto kapin\u0117s - Dunok\u0173 kapin\u0117s",
+        "short": "T45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21742",
+        "label": "J1",
+        "long": "Jurbarkas - Vad\u017egirys - Stakiai",
+        "short": "J1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21743",
+        "label": "T48",
+        "long": "Taurag\u0117 - Sartininkai - Skir\u017eem\u0117 - Sartininkai",
+        "short": "T48",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21744",
+        "label": "J4",
+        "long": "Jurbarkas - Raseiniai",
+        "short": "J4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21746",
+        "label": "J3",
+        "long": "Lauko g. - Centras - Turgus",
+        "short": "J3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21748",
+        "label": "R2-2",
+        "long": "Taurag\u0117 - \u0160ilal\u0117 null",
+        "short": "R2-2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21749",
+        "label": "R1",
+        "long": "Jurbarkas - Smalininkai - Taurag\u0117",
+        "short": "R1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21750",
+        "label": "J20",
+        "long": "Jurbarkas - Grei\u010diai",
+        "short": "J20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21751",
+        "label": "J23",
+        "long": "Jurbarkas - Raudon\u0117 - Stakiai",
+        "short": "J23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21757",
+        "label": "T59",
+        "long": "Skaudvil\u0117 - Sodal\u0117",
+        "short": "T59",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21758",
+        "label": "T58",
+        "long": "Skaudvil\u0117 - \u017dvirzd\u0117",
+        "short": "T58",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21767",
+        "label": "P2",
+        "long": "Pag\u0117giai - Pla\u0161kiai - U\u017ekarda",
+        "short": "P2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21770",
+        "label": "P1",
+        "long": "Kentriai - Pag\u0117giai",
+        "short": "P1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21771",
+        "label": "S1",
+        "long": "\u0160ilal\u0117 - Kaltin\u0117nai - Bijotai - \u0160ilal\u0117",
+        "short": "S1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21774",
+        "label": "P3",
+        "long": "Natki\u0161kiai - Pag\u0117giai - Panemun\u0117 - Pag\u0117giai - Taurag\u0117",
+        "short": "P3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21775",
+        "label": "J10",
+        "long": "Jurbarkas - Rutki\u0161kiai",
+        "short": "J10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21776",
+        "label": "J11",
+        "long": "Jurbarkas - Lybi\u0161kiai",
+        "short": "J11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "21777",
+        "label": "J12",
+        "long": "Jurbarkas - Er\u017evilkas - Skaudvil\u0117",
+        "short": "J12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22002",
+        "label": "S34",
+        "long": "\u017dadeikiai - Nevo\u010diai - \u0160ilal\u0117",
+        "short": "S34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22003",
+        "label": "S35",
+        "long": "\u0160ilal\u0117 - Vars\u0117d\u017eiai - \u0160ilal\u0117",
+        "short": "S35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22004",
+        "label": "S33",
+        "long": "Ber\u017e\u0117 - Kaltin\u0117nai - \u0160ilal\u0117",
+        "short": "S33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22005",
+        "label": "T50",
+        "long": "\u017dygai\u010diai - Bikav\u0117nai",
+        "short": "T50",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22006",
+        "label": "T42",
+        "long": "Taurag\u0117 - Batakiai - Skaudvil\u0117 - Sodal\u0117",
+        "short": "T42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22007",
+        "label": "T31",
+        "long": "Taurag\u0117 - Vaitim\u0117nai",
+        "short": "T31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22008",
+        "label": "T41",
+        "long": "Taurag\u0117 - Batakiai - Skaudvil\u0117",
+        "short": "T41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "22009",
+        "label": "T57",
+        "long": "Skaudvil\u0117 - O\u010dikiai",
+        "short": "T57",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 951,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 951,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "951 of 951 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 553,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "553 of 553 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

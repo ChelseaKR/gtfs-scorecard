@@ -4,7 +4,7 @@
 
 > **Status (2026-08):** the four build phases below have shipped, and the pilot
 > grew into a live service: the registry carries more than 2,100 curated feed
-> records, with more than 1,100
+> records, with more than 2,100
 > published scorecards, still concentrated in the US and Canada and now
 > carrying reviewed global canaries, scored daily at gtfsscorecard.org, with a
 > versioned read API, a GitHub Marketplace action, and an MCP server. This file

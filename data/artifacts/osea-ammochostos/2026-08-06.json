@@ -1,0 +1,973 @@
+{
+  "agency": {
+    "country": "CY",
+    "id": "osea-ammochostos",
+    "name": "\u039f\u03a3\u0395\u0391 (Ammochostos)",
+    "subdivision_code": "CY-04",
+    "subdivision_name": "Ammochostos"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 1488,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 445,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": true,
+          "languages": [
+            "el"
+          ],
+          "translated_tables": [
+            "routes",
+            "stops",
+            "trips"
+          ],
+          "translation_count": 2425
+        },
+        "trips": 1488,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 445,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "445 of 445 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 1488,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "1488 of 1488 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        }
+      ],
+      "name": "completeness",
+      "score": 60.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 4,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 1,
+          "WARNING": 284
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 265,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "fast_travel_between_far_stops",
+          "count": 17,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'fast_travel_between_far_stops' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Fast travel between far stops (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "same_name_and_description_for_stop",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Same name and description for stop (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "service_window_outside_feed_period",
+          "count": 1,
+          "effort": "Two fields in feed_info.txt, or one export setting.",
+          "fix": "Widen feed_start_date and feed_end_date to cover all service dates, or fix the dates that fall outside.",
+          "owner": "Likely your export tool",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some service dates fall outside the date window set in feed_info.txt.",
+          "why": "feed_info.txt should span every day your service runs, so apps know when the data applies."
+        }
+      ],
+      "name": "correctness",
+      "score": 81.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 285 instances (0 error, 284 warning, 1 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 88,
+        "effective_expiry_date": "2026-11-02",
+        "feed_end_date": "2026-11-02",
+        "feed_start_date": "2026-08-05",
+        "feed_version": "\u039f\u03a3\u0395\u039120260805050528",
+        "has_feed_info": true,
+        "last_service_date": "2026-11-03",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 88 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 89 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "export_diff": {
+    "changes": [
+      "Service now runs through 2026-11-03 (was 2026-11-02)."
+    ],
+    "from_sha256": "aab8c810c0002dbf58b72c2f316d835559ed1274cd8d1b201af8182dd0591a6b",
+    "to_sha256": "508600c7acc6d574f51a0fa8e86af516b3ab37a6fb2a6e32f1798455174eab42"
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through the Republic of Cyprus open-data portal; credit the Cyprus Public Works Department.",
+    "reachable": true,
+    "sha256": "508600c7acc6d574f51a0fa8e86af516b3ab37a6fb2a6e32f1798455174eab42",
+    "size_bytes": 1176087,
+    "static_url": "https://www.motionbuscard.org.cy/opendata/downloadfile?file=GTFS%5C4_google_transit.zip&rel=True"
+  },
+  "fetch": {
+    "final_url": "https://www.motionbuscard.org.cy/opendata/downloadfile?file=GTFS%5C4_google_transit.zip&rel=True",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      33.60029,
+      34.91634,
+      34.0701,
+      35.09548
+    ],
+    "lat": 35.01186,
+    "lon": 33.94839,
+    "stop_count": 445
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 53,
+        "trip_count": 1488,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 53,
+    "trip_count": 1488
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 9.4,
+    "margin_to_next_band": 0.6,
+    "score": 79.4
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 21,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "21 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (301, 501, 701, 701, 706, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 141,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "141 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Kryou Nerou Ave. - 2nd Stop\", \"Kryou Nerou Ave. - 1st Stop\", \"Kryou Nerou Ave. - Melission\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 445,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 1488
+  },
+  "route_map": {
+    "drawn_route_count": 45,
+    "has_shapes": true,
+    "path": "data/artifacts/osea-ammochostos/geometry.geojson",
+    "route_count": 53,
+    "routes": [
+      {
+        "color": "804040",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "40000011",
+        "label": "101",
+        "long": "Ag. Theklas - Waterpark - New Famagusta Central Bus Sta",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "408080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "40010011",
+        "label": "102",
+        "long": "Paralimni - Pernera - Protaras - Konnos - Cape Greco -",
+        "short": "102",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000A0",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "40020011",
+        "label": "201",
+        "long": "Evagora Pallikaridi - Kassandrou - Evagora Pallikaridi",
+        "short": "201",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0080",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "40030011",
+        "label": "301",
+        "long": "Par. Sq. Station-1 Apriliou (N)-G. Papad/lou-Kappari Av",
+        "short": "301",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "40040011",
+        "label": "501",
+        "long": "Deryneia (Green Line) - Frenaros - Liopetri - Waterpark",
+        "short": "501",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "40050011",
+        "label": "502",
+        "long": "Deryneia (Green Line) - Gen. Hospital - Paralimni - Ag.",
+        "short": "502",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF33CC",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "40060011",
+        "label": "701",
+        "long": "Ormideia - Xylofagou - Liopetri - Sotira - Deryneia - F",
+        "short": "701",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF33CC",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "40060012",
+        "label": "701",
+        "long": "Paralimni - Famagusta Gen. Hospital - Deryneia - Sotira",
+        "short": "701",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8040",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "40070011",
+        "label": "702",
+        "long": "Xylotympou - Dasaki Achnas - Avgorou - Frenaros - Deryn",
+        "short": "702",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8040",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "40070012",
+        "label": "702",
+        "long": "Paralimni - Famagusta General Hospital - Deryneia - Fre",
+        "short": "702",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "66FF66",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "40080011",
+        "label": "703",
+        "long": "E.A.C. Dhekelia - Ormideia - Xylofagou - Liopetri - Sot",
+        "short": "703",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "66FF66",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "40080012",
+        "label": "703",
+        "long": "Konnos - Protaras - Paralimni - Sotira - Liopetri - Xyl",
+        "short": "703",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "40090011",
+        "label": "704",
+        "long": "E.A.C. Dhekelia - Xylotympou - Ormideia - Xylofagou - A",
+        "short": "704",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "40090012",
+        "label": "704",
+        "long": "Agia Napa - Xylofagou - Ormideia - Xylotympou - E.A.C.",
+        "short": "704",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75610B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "40100011",
+        "label": "705",
+        "long": "Dasaki Achnas - Avgorou - Liopetri - Agia Napa",
+        "short": "705",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75610B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "40100012",
+        "label": "705",
+        "long": "Agia Napa - Liopetri - Avgorou - Dasaki Achnas",
+        "short": "705",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "40110011",
+        "label": "706",
+        "long": "Xylotympou - Dasaki Achnas - Avgorou - Frenaros - Deryn",
+        "short": "706",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "40110012",
+        "label": "706",
+        "long": "Konnos - Protaras - Kapparis - Paralimni - Deryneia - F",
+        "short": "706",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33CC33",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "40120011",
+        "label": "708",
+        "long": "Strovilia (Green Line) - Vrysoulles - Frenaros - Deryne",
+        "short": "708",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33CC33",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "40120012",
+        "label": "708",
+        "long": "Konnos - Protaras - Paralimni - Famagusta General Hospi",
+        "short": "708",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8080FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "40130011",
+        "label": "709",
+        "long": "Strovilia (Green Line) - Vrysoulles - Frenaros - Sotira",
+        "short": "709",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8080FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "40130012",
+        "label": "709",
+        "long": "Agia Napa - Sotira - Frenaros - Vrysoulles - Strovilia",
+        "short": "709",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00CC99",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "40140011",
+        "label": "710",
+        "long": "Deryneia - Sotira - Agia Napa",
+        "short": "710",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00CC99",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "40140012",
+        "label": "710",
+        "long": "Agia Napa - Sotira - Deryneia",
+        "short": "710",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4C610A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "40150011",
+        "label": "711",
+        "long": "Paralimni-Kapparis-Protaras-Konnos-Ag. Napa-Ag. Thekla",
+        "short": "711",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4C610A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "40150012",
+        "label": "711",
+        "long": "Metropolis Mall-New Hospital-Larnaka-Ormideia-Xylofagou",
+        "short": "711",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "46A5EB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "40160011",
+        "label": "712",
+        "long": "Paralimni-Gen. Hospital-Deryneia-Frenaros-Vrysoulles-Av",
+        "short": "712",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "46A5EB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "40160012",
+        "label": "712",
+        "long": "Metropolis Mall-New Hospital-Larnaka-Xylotympou-Dasaki-",
+        "short": "712",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "40170011",
+        "label": "714",
+        "long": "Paralimni-Famagusta Hospital-Deryneia-Sotira-Liopetri-X",
+        "short": "714",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "40170012",
+        "label": "714",
+        "long": "Metropolis Mall-New Hospital-Larnaka-Dhekelia-Xylofagou",
+        "short": "714",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0080C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "40180011",
+        "label": "510",
+        "long": "Gen. Hospital - Paralimni Lyceum - Kapparis - Paralimni",
+        "short": "510",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0080C0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "40180012",
+        "label": "510",
+        "long": "Ag. Thekla Beach - Waterpark - Ag. Napa - Paralimni - K",
+        "short": "510",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6E9BE6",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "40190011",
+        "label": "302",
+        "long": "Paralimni - Pernera - Kapparis Circle Line",
+        "short": "302",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A0A0A0",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "40200011",
+        "label": "303",
+        "long": "Paralimni - Kapparis - Pernera - Protaras - Konnos",
+        "short": "303",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A0A0A0",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "40200012",
+        "label": "303",
+        "long": "Konnos - Protaras - Pernera - Kapparis - Paralimni",
+        "short": "303",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8200",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "40210011",
+        "label": "304",
+        "long": "Paralimni - Pernera - Protaras - Konnos",
+        "short": "304",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8200",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "40210012",
+        "label": "304",
+        "long": "Konnos - Protaras - Pernera - Paralimni",
+        "short": "304",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8264",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "40220011",
+        "label": "202",
+        "long": "Evagora Pallikaridi - Kassandrou - Evagora Pallikaridi",
+        "short": "202",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "824100",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "40230011",
+        "label": "704A",
+        "long": "E.A.C. Dhekelia - Xylofagou - Agia Napa",
+        "short": "704A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "824100",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "40230012",
+        "label": "704A",
+        "long": "Agia Napa - Xylofagou - E.A.C. Dhekelia",
+        "short": "704A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF6EBE",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "40240011",
+        "label": "704B",
+        "long": "Xylotympou - Ormideia - Xylofagou - Agia Napa",
+        "short": "704B",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF6EBE",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "40240012",
+        "label": "704B",
+        "long": "Agia Napa - Xylofagou - Ormideia - Xylotympou",
+        "short": "704B",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E6554B",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "40250011",
+        "label": "704C",
+        "long": "Xylofagou - Liopetri - Agia Napa",
+        "short": "704C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E6554B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "40250012",
+        "label": "704C",
+        "long": "Agia Napa - Xylofagou",
+        "short": "704C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8282FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "40260011",
+        "label": "701A",
+        "long": "Xylofagou - Liopetri - Sotira - Paralimni - Famagusta G",
+        "short": "701A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8282FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "40260012",
+        "label": "701A",
+        "long": "Paralimni - Sotira - Liopetri - Xylofagou",
+        "short": "701A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000E1",
+        "color_name": "blue",
+        "has_shape": false,
+        "id": "40270011",
+        "label": "712A",
+        "long": "Paralimni - Gen. Hospital - Deryneia - Frenaros - Vryso",
+        "short": "712A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EB46C8",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "40280011",
+        "label": "714A",
+        "long": "Paralimni-Famagusta Hospital-Deryneia-Sotira-Liopetri-X",
+        "short": "714A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "69AA55",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "40290011",
+        "label": "702A",
+        "long": "Xylotympou - Dasaki Achnas - Avgorou - Liopetri - Frena",
+        "short": "702A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "69AA55",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "40290012",
+        "label": "702A",
+        "long": "Paralimni - Famagusta General Hospital - Deryneia - Fre",
+        "short": "702A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "40300012",
+        "label": "707",
+        "long": "Paralimni - Deryneia - Frenaros - Vrysoulles - Avgorou",
+        "short": "707",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0080C0",
+        "color_name": "teal",
+        "has_shape": false,
+        "id": "40310011",
+        "label": "709A",
+        "long": "Vrysoulles - Frenaros - Deryneia - Paralimni - Agia Nap",
+        "short": "709A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808040",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "40320011",
+        "label": "705A",
+        "long": "Avgorou - Frenaros - Sotira - Agia Napa",
+        "short": "705A",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 445,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 445,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "445 of 445 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 1488,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "1488 of 1488 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "fast_travel_between_consecutive_stops",
+      "count": 265,
+      "effort": "A few minutes per flagged trip.",
+      "fix": "Check the flagged stop times for transposed minutes.",
+      "owner": "",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some scheduled trips move faster between stops than a bus can.",
+      "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

@@ -1,0 +1,1176 @@
+{
+  "agency": {
+    "country": "LT",
+    "id": "kaunas-city-public-transport",
+    "name": "Kaunas city public transport",
+    "operating_note": "Official municipality-level export from the national GTFS directory. Counted as one feed record, not as a census of distinct operators.",
+    "subdivision_code": "LT-15",
+    "subdivision_name": "Kauno miestas"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 6803,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 996,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 6803,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 996,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "996 of 996 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 6803,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "6803 of 6803 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 5,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 14,
+          "WARNING": 223
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 193,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "stop_without_stop_time",
+          "count": 29,
+          "effort": "A review pass in your scheduling software.",
+          "fix": "Remove retired stops from the export, or add them back to the trips that should serve them.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some stops exist in the feed but no trip ever stops at them.",
+          "why": "Riders may walk to a stop where no transit vehicle is scheduled to arrive."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "unknown_column",
+          "count": 13,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 1,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 80.8,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 237 instances (0 error, 223 warning, 14 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 360,
+        "effective_expiry_date": "2027-08-01",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2027-08-01",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 360 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 361 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through Lithuania's official open-data portal; credit the Lithuanian Transport Safety Administration and the named municipality.",
+    "reachable": true,
+    "sha256": "73506d540ab28bbaba1fb9d7f220b9b3a21d96ef276c04f362ee542ffc705242",
+    "size_bytes": 3123925,
+    "static_url": "https://www.visimarsrutai.lt/gtfs/KaunoM.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.visimarsrutai.lt/gtfs/KaunoM.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      23.75568,
+      54.78263,
+      24.1218,
+      54.99101
+    ],
+    "lat": 54.91137,
+    "lon": 23.9293,
+    "stop_count": 996
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 54,
+        "trip_count": 4370,
+        "trip_share_pct": 64.2
+      },
+      {
+        "key": "trolleybus",
+        "label": "Trolleybus",
+        "route_count": 15,
+        "trip_count": 2433,
+        "trip_share_pct": 35.8
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 69,
+    "trip_count": 6803
+  },
+  "overall": {
+    "grade": "D",
+    "margin_to_lower_band": 8.3,
+    "margin_to_next_band": 1.7,
+    "score": 68.3
+  },
+  "recommendations": [],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 996,
+    "findings": [
+      {
+        "code": "scorecard_orphan_stops",
+        "count": 29,
+        "effort": "A cleanup pass in your scheduling software.",
+        "fix": "Remove stops no route serves, or add the trips that should call at them.",
+        "owner": "Likely your export tool",
+        "points": 0.0,
+        "severity": "INFO",
+        "what": "29 of 996 boardable stops are never served by any trip.",
+        "why": "Riders see these stops in apps and on the map but can never catch anything there, which erodes trust in the data."
+      }
+    ],
+    "orphan_stops": 29,
+    "single_stop_trips": 0,
+    "trips_total": 6803
+  },
+  "route_map": {
+    "drawn_route_count": 69,
+    "has_shapes": true,
+    "path": "data/artifacts/kaunas-city-public-transport/geometry.geojson",
+    "route_count": 69,
+    "routes": [
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "10210",
+        "label": "15",
+        "long": "Partizan\u0173 g. - Centras - Partizan\u0173 g.",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "10211",
+        "label": "7",
+        "long": "Partizan\u0173 g. - Kani\u016bkai",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "10212",
+        "label": "5",
+        "long": "Petra\u0161i\u016bnai - K\u0117daini\u0173 g.",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "10213",
+        "label": "1",
+        "long": "Islandijos pl. - Vaidoto g.",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "11761",
+        "label": "57",
+        "long": "Urmo turgus - \u0160ilainiai (Kumpiai)",
+        "short": "57",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "11762",
+        "label": "69B",
+        "long": "Kovo 11-osios g. - Karm\u0117lavos kapin\u0117s",
+        "short": "69B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "11763",
+        "label": "6B",
+        "long": "Kauno pilis - Mastai\u010diai",
+        "short": "6B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "11764",
+        "label": "69",
+        "long": "Kovo 11-osios g. - LEZ - Neveroni\u0173 \u017eiedas",
+        "short": "69",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "11765",
+        "label": "29",
+        "long": "Kauno oro uostas - Gele\u017einkelio stotis",
+        "short": "29",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "11766",
+        "label": "34",
+        "long": "Kauno ligonin\u0117 (\u0160ilainiai) - Pranc\u016bz\u0173 g.",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "11767",
+        "label": "48B",
+        "long": "Raudondvaris (\u0160ilelis) - Kani\u016bkai",
+        "short": "48B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "11768",
+        "label": "48C",
+        "long": "Raudondvaris (Didvyriai) - Kani\u016bkai",
+        "short": "48C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "15714",
+        "label": "71T",
+        "long": "Romainiai - Kani\u016bkai",
+        "short": "71T",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "15961",
+        "label": "2",
+        "long": "Islandijos pl. - Parodos g. - Kauno pilis",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "18396",
+        "label": "66",
+        "long": "R. Kalantos g. - Sporto mokykla",
+        "short": "66",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "20530",
+        "label": "0",
+        "long": "Tilto g. - Vai\u0161vydavos pl. - Lentpj\u016bv\u0117",
+        "short": "0",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "20723",
+        "label": "81",
+        "long": "Romainiai - \u0160ilainiai - Romainiai",
+        "short": "81",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0073AC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "257",
+        "label": "6G",
+        "long": "Technikos g. - Garliava",
+        "short": "6G",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "258",
+        "label": "3",
+        "long": "Kauno ligonin\u0117 (\u0160ilainiai) - Onkologijos ligonin\u0117",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "259",
+        "label": "6A",
+        "long": "Kauno ligonin\u0117 (\u0160an\u010diai) - Garliava",
+        "short": "6A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "263",
+        "label": "28",
+        "long": "Urmo turgus (Partizan\u0173 g.) - \u0160ven\u010dioni\u0173 g.",
+        "short": "28",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "264",
+        "label": "6",
+        "long": "Technikos g. - Garliava",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "267",
+        "label": "35",
+        "long": "Vyt\u0117nai - Freda",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "268",
+        "label": "32",
+        "long": "Gele\u017einkelio stotis - Ringaudai",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "269",
+        "label": "33",
+        "long": "Technikos g. - Palemonas",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "270",
+        "label": "38",
+        "long": "Gele\u017einkelio stotis - Mega",
+        "short": "38",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "271",
+        "label": "39",
+        "long": "Kauno ligonin\u0117 (\u0160ilainiai) - Neveroni\u0173 g. (Neveronys)",
+        "short": "39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "272",
+        "label": "36",
+        "long": "Pr\u016bs\u0173 g. - Technikos g.",
+        "short": "36",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "273",
+        "label": "37",
+        "long": "Juozo Gru\u0161o meno gimnazija - Partizan\u0173 g. (Kauno termofikacijos elektrin\u0117)",
+        "short": "37",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "274",
+        "label": "14",
+        "long": "Islandijos pl. - Centras - Islandijos pl.",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "275",
+        "label": "46",
+        "long": "\u0160lienava (\u017dieg\u017edriai) - Kauno pilis",
+        "short": "46",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "276",
+        "label": "13",
+        "long": "Islandijos pl. - Centras - islandijos pl.",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "278",
+        "label": "43",
+        "long": "Vi\u010di\u016bnai (Slaugos ligonin\u0117) - Kauno pienas",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "279",
+        "label": "16",
+        "long": "Partizan\u0173 g. - Centras - Partizan\u0173 g.",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "280",
+        "label": "44",
+        "long": "Kauno pilis - Liucijanavos g.",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "282",
+        "label": "41",
+        "long": "Chemijos g. - Kani\u016bkai",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "283",
+        "label": "10",
+        "long": "Partizan\u0173 g. - K\u0117daini\u0173 g.",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "286",
+        "label": "48",
+        "long": "Raudondvaris - Kauno pilis",
+        "short": "48",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "294",
+        "label": "18",
+        "long": "VDU \u017dem\u0117s \u016bkio akademija (Ringaudai) - Gele\u017einkelio stotis",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "296",
+        "label": "19",
+        "long": "Skubios pagalbos centras - Palemono keramika",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "299",
+        "label": "17",
+        "long": "Kauno ligonin\u0117 (\u0160ilainiai) - Neveroni\u0173 g.",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "301",
+        "label": "23",
+        "long": "Domeikava - Rokai",
+        "short": "23",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "302",
+        "label": "21",
+        "long": "Kauno pilis - Saliai",
+        "short": "21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "304",
+        "label": "22",
+        "long": "Gele\u017einkelio stotis - H. ir O. Minkovski\u0173 g.",
+        "short": "22",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "308",
+        "label": "61",
+        "long": "Gele\u017einkelio stotis - Vainatrakio kapin\u0117s",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "310",
+        "label": "4",
+        "long": "Islandijos pl. - Vaidoto g.",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3475",
+        "label": "47",
+        "long": "Kleboni\u0161kis - Onkologijos ligonin\u0117 (Kreidos g.)",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3476",
+        "label": "63",
+        "long": "Kani\u016bkai - Mega",
+        "short": "63",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "3477",
+        "label": "65",
+        "long": "Kazli\u0161kiai - Bitinink\u0173 g. - Gele\u017einkelio stotis",
+        "short": "65",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "4043",
+        "label": "45",
+        "long": "Kauno ligonin\u0117 (\u0160an\u010diai) - Palemonas",
+        "short": "45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "4263",
+        "label": "26",
+        "long": "Kauno pienas (Kitron-Novameta) - Kazli\u0161kiai",
+        "short": "26",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "4602",
+        "label": "42",
+        "long": "Technikumo g. - Kauno ligonin\u0117 (\u0160an\u010diai)",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "4603",
+        "label": "40",
+        "long": "Urmo turgus (Partizan\u0173 g.) - Kauno ligonin\u0117 (\u0160ilainiai)",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "5247",
+        "label": "8",
+        "long": "Draugyst\u0117s g. - Varni\u0173 g.",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "7421",
+        "label": "35A",
+        "long": "Vilniaus g. - Freda",
+        "short": "35A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "7423",
+        "label": "54",
+        "long": "Sarg\u0117nai - Onkologijos ligonin\u0117",
+        "short": "54",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "7424",
+        "label": "64",
+        "long": "E. Volterio g. - \u0160ilaini\u0173 poliklinika - E. Volterio g.",
+        "short": "64",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "7427",
+        "label": "68",
+        "long": "Tilto g. - Vai\u0161vydava",
+        "short": "68",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "7428",
+        "label": "67",
+        "long": "Tirkili\u0161kiai - Skubios pagalbos centras",
+        "short": "67",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "7429",
+        "label": "65A",
+        "long": "Prezidento V. Adamkaus gimnazija - Gele\u017einkelio stotis",
+        "short": "65A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "7435",
+        "label": "31A",
+        "long": "Technikumo g. - S. Dariaus ir S. Gir\u0117no g. - Kauno pilis",
+        "short": "31A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "8441",
+        "label": "20",
+        "long": "Partizan\u0173 g. - 2-asis fortas",
+        "short": "20",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "8783",
+        "label": "49",
+        "long": "Kauno pilis - Lamp\u0117d\u017eiai",
+        "short": "49",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "8784",
+        "label": "31",
+        "long": "Technikumo g. - S. Dariaus ir S. Gir\u0117no g. - Mega",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8786",
+        "label": "10A",
+        "long": "Partizan\u0173 g. - Kauno pilis",
+        "short": "10A",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "DC3131",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "8787",
+        "label": "47M",
+        "long": "Kleboni\u0161kis - Kalnie\u010diai",
+        "short": "47M",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8789",
+        "label": "11",
+        "long": "Islandijos pl. - Kani\u016bkai",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8790",
+        "label": "12",
+        "long": "Petra\u0161i\u016bnai - Klinikos - Petra\u0161i\u016bnai",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "8792",
+        "label": "9",
+        "long": "Petra\u0161i\u016bnai - Klinikos - Petra\u0161i\u016bnai",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Trolleybus"
+      }
+    ],
+    "stop_count": 996,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 996,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "996 of 996 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 6803,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "6803 of 6803 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

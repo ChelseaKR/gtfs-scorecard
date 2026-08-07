@@ -1,5 +1,5 @@
 {
-  "awarded": false,
+  "awarded": true,
   "criteria": [
     {
       "detail": "Passes validation with no errors.",
@@ -7,9 +7,9 @@
       "met": true
     },
     {
-      "detail": "Service data runs out in 10 days; renew to qualify.",
+      "detail": "Service data covers the next 66 days.",
       "key": "current",
-      "met": false
+      "met": true
     },
     {
       "detail": "States wheelchair access on 100% of stops and 100% of trips.",
@@ -17,6 +17,6 @@
       "met": true
     }
   ],
-  "status": "not_yet",
-  "summary": "This feed is close to the conformance mark. Service data runs out in 10 days; renew to qualify."
+  "status": "awarded",
+  "summary": "This feed earns the conformance mark: valid, current, and stating wheelchair access on nearly every stop and trip."
 }

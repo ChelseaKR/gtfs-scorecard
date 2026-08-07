@@ -1,0 +1,892 @@
+{
+  "agency": {
+    "country": "CA",
+    "id": "go-transit-metrolinx",
+    "name": "GO Transit (Metrolinx)",
+    "operating_note": "One regional network export for the Greater Golden Horseshoe (GO Transit rail and bus); counted as one feed record.",
+    "subdivision_code": "CA-ON",
+    "subdivision_name": "Ontario"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 100.0,
+          "stops_marked_accessible_pct": 86.7,
+          "stops_marked_not_accessible_pct": 13.3,
+          "stops_stated_pct": 100.0,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 25.0,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 57496,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 886,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 57496,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 100.0,
+        "wheelchair_marked_accessible_pct": 86.7,
+        "wheelchair_marked_not_accessible_pct": 13.3
+      },
+      "findings": [
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 92.5,
+      "status": "measured",
+      "summary": "100% of stops state wheelchair accessibility (87% marked accessible, 13% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 6,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 57498,
+          "WARNING": 115
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 111,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 3,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "unsorted_stop_times",
+          "count": 57496,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unsorted_stop_times' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Unsorted stop times (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "unknown_column",
+          "count": 1,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        },
+        {
+          "code": "unknown_file",
+          "count": 1,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 82.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 6 kinds of issue across 57613 instances (0 error, 115 warning, 57498 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 29,
+        "effective_expiry_date": "2026-09-04",
+        "feed_end_date": "2026-09-04",
+        "feed_start_date": "2026-07-30",
+        "feed_version": "20260730112119",
+        "has_feed_info": true,
+        "last_service_date": "2026-09-04",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expiring_soon",
+          "count": 1,
+          "effort": "One export setting.",
+          "fix": "Re-export with a validity window that reaches at least 60 days out.",
+          "owner": "Likely your export tool",
+          "points": 51.0,
+          "severity": "WARNING",
+          "what": "Service data runs out in 29 day(s).",
+          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+        }
+      ],
+      "name": "freshness",
+      "score": 48.3,
+      "status": "measured",
+      "summary": "Service data runs out in 29 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data runs out in 30 days; renew to qualify.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 100% of stops and 100% of trips.",
+        "key": "accessible",
+        "met": true
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. Service data runs out in 30 days; renew to qualify."
+  },
+  "feed": {
+    "license_note": "Open Government Licence \u2013 Ontario (Metrolinx): a licence to use, reproduce, and redistribute the data, including commercially, with attribution to Metrolinx. Derived measurements by GTFS Scorecard.",
+    "reachable": true,
+    "sha256": "f3a8ba09f1d9341f0d7d8233240d10de9c8d9b89775f6a7b36232a3cc6817464",
+    "size_bytes": 13551105,
+    "static_url": "https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip"
+  },
+  "fetch": {
+    "final_url": "https://assets.metrolinx.com/raw/upload/Documents/Metrolinx/Open%20Data/GO-GTFS.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -80.97574,
+      42.97671,
+      -78.28703,
+      44.37441
+    ],
+    "lat": 43.77292,
+    "lon": -79.6454,
+    "stop_count": 886
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "rail",
+        "label": "Rail",
+        "route_count": 7,
+        "trip_count": 13051,
+        "trip_share_pct": 22.7
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 37,
+        "trip_count": 44445,
+        "trip_share_pct": 77.3
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 44,
+    "trip_count": 57496
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 6.9,
+    "margin_to_next_band": 3.1,
+    "score": 76.9
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 9,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "9 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (RH, MI, LE, 96, 92, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 720,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "720 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"St. Catharines GO\", \"St. Catharines Downtown Terminal\", \"New Credit Variety & Gas Bar\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 886,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 57496
+  },
+  "route_map": {
+    "drawn_route_count": 44,
+    "has_shapes": true,
+    "path": "data/artifacts/go-transit-metrolinx/geometry.geojson",
+    "route_count": 44,
+    "routes": [
+      {
+        "color": "98002E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "06260926-11",
+        "label": "11",
+        "long": "Brock University",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "98002E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "06260926-12",
+        "label": "12",
+        "long": "Niagara Falls / Burlington",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "98002E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "06260926-15",
+        "label": "15",
+        "long": "Brantford / Aldershot",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "98002E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "06260926-16",
+        "label": "16",
+        "long": "Hamilton / Toronto Express",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F78025",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "06260926-17",
+        "label": "17",
+        "long": "Waterloo / Hamilton",
+        "short": "17",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "98002E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "06260926-18",
+        "label": "18",
+        "long": "Lakeshore West",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F57F25",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "06260926-19",
+        "label": "19",
+        "long": "Mississauga / North York",
+        "short": "19",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F57F25",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "06260926-21",
+        "label": "21",
+        "long": "Milton",
+        "short": "21",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F78025",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "06260926-22",
+        "label": "22",
+        "long": "Milton / Oakville",
+        "short": "22",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F57F25",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "06260926-25",
+        "label": "25",
+        "long": "Waterloo / Mississauga",
+        "short": "25",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F57F25",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "06260926-27",
+        "label": "27",
+        "long": "Milton / North York",
+        "short": "27",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00853E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "06260926-29",
+        "label": "29",
+        "long": "Guelph / Mississauga",
+        "short": "29",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00853E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "06260926-30",
+        "label": "30",
+        "long": "Kitchener / Bramalea",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00853E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "06260926-31",
+        "label": "31",
+        "long": "Guelph / Toronto",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00853E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "06260926-32",
+        "label": "32",
+        "long": "Brampton Trinity Common / North York",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00853E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "06260926-33",
+        "label": "33",
+        "long": "Guelph / North York",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00A6FF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "06260926-35",
+        "label": "35",
+        "long": "Union Pearson Express",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00853E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "06260926-36",
+        "label": "36",
+        "long": "Brampton / North York Express",
+        "short": "36",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00853E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "06260926-37",
+        "label": "37",
+        "long": "Orangeville / Brampton",
+        "short": "37",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00853E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "06260926-38",
+        "label": "38",
+        "long": "Bolton / Malton",
+        "short": "38",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A11984",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "06260926-40",
+        "label": "40",
+        "long": "Hamilton / Richmond Hill",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A21984",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "06260926-41",
+        "label": "41",
+        "long": "Hamilton / Pickering",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A21984",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "06260926-47",
+        "label": "47",
+        "long": "Hamilton / Hwy 407 Terminal",
+        "short": "47",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A21884",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "06260926-48",
+        "label": "48",
+        "long": "Guelph / Hwy 407 Terminal",
+        "short": "48",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6F298D",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "06260926-52",
+        "label": "52",
+        "long": "Oshawa / Hwy 407 Terminal",
+        "short": "52",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6F298D",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "06260926-56",
+        "label": "56",
+        "long": "Oshawa / Oakville",
+        "short": "56",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0099C7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "06260926-61",
+        "label": "61",
+        "long": "Richmond Hill",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "003767",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "06260926-65",
+        "label": "65",
+        "long": "Newmarket / Toronto",
+        "short": "65",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "003767",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "06260926-67",
+        "label": "67",
+        "long": "Keswick / North York",
+        "short": "67",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "003767",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "06260926-68",
+        "label": "68",
+        "long": "Barrie / Newmarket",
+        "short": "68",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "794500",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "06260926-70",
+        "label": "70",
+        "long": "Uxbridge / Mount Joy",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "794500",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "06260926-71",
+        "label": "71",
+        "long": "Stouffville",
+        "short": "71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0D00",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "06260926-88",
+        "label": "88",
+        "long": "Peterborough / Oshawa",
+        "short": "88",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0D00",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "06260926-90",
+        "label": "90",
+        "long": "Lakeshore East",
+        "short": "90",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0D00",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "06260926-92",
+        "label": "92",
+        "long": "Oshawa / Yorkdale",
+        "short": "92",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A21884",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "06260926-94",
+        "label": "94",
+        "long": "Pickering / Square One",
+        "short": "94",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0D00",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "06260926-96",
+        "label": "96",
+        "long": "Oshawa / Finch Express",
+        "short": "96",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "003767",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "06260926-BR",
+        "label": "BR",
+        "long": "Barrie",
+        "short": "BR",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "00853E",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "06260926-GT",
+        "label": "KI",
+        "long": "Kitchener",
+        "short": "KI",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "FF0D00",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "06260926-LE",
+        "label": "LE",
+        "long": "Lakeshore East",
+        "short": "LE",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "98002E",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "06260926-LW",
+        "label": "LW",
+        "long": "Lakeshore West",
+        "short": "LW",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "F57F25",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "06260926-MI",
+        "label": "MI",
+        "long": "Milton",
+        "short": "MI",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "0099C7",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "06260926-RH",
+        "label": "RH",
+        "long": "Richmond Hill",
+        "short": "RH",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      },
+      {
+        "color": "794500",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "06260926-ST",
+        "label": "ST",
+        "long": "Stouffville",
+        "short": "ST",
+        "text_color": "FFFFFF",
+        "type_label": "Rail"
+      }
+    ],
+    "stop_count": 886,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expiring_soon",
+      "count": 1,
+      "effort": "One export setting.",
+      "fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "owner": "Likely your export tool",
+      "points": 51.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "Service data runs out in 29 day(s).",
+      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+    },
+    {
+      "code": "mixed_case_recommended_field",
+      "count": 111,
+      "effort": "Often a bulk fix in your scheduling software.",
+      "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+      "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+    },
+    {
+      "code": "stop_too_far_from_shape",
+      "count": 3,
+      "effort": "A few minutes per flagged stop.",
+      "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+      "owner": "Likely your export tool",
+      "points": 4.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some stops sit far from the route line they belong to.",
+      "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

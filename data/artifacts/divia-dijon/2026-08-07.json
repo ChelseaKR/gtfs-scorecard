@@ -1,0 +1,1089 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "divia-dijon",
+    "name": "DiviaMobilit\u00e9s (Dijon)",
+    "subdivision_code": "FR-BFC",
+    "subdivision_name": "Bourgogne-Franche-Comt\u00e9"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 36.9,
+          "stops_marked_accessible_pct": 59.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 59.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 14.7,
+          "wheelchair_stops": 14.7,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 23779,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 99.7,
+        "headsign_scored_pct": 99.7,
+        "mixed_case_stop_name_pct": 98.1,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1095,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 23779,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 59.0,
+        "wheelchair_marked_accessible_pct": 59.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 449,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 10.3,
+          "severity": "WARNING",
+          "what": "449 of 1095 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 23779,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "23779 of 23779 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 78,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "78 of 23779 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 51.9,
+      "status": "measured",
+      "summary": "59% of stops state wheelchair accessibility (59% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 4,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 3544,
+          "WARNING": 681
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 395,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a transit vehicle can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no transit vehicle can meet."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 285,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 3544,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the transit vehicle ends up, so a midpoint name can send them the wrong way."
+        }
+      ],
+      "name": "correctness",
+      "score": 79.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 4225 instances (0 error, 681 warning, 3544 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 146,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 146 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 59% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 59% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Licence Ouverte 2.0 (Etalab) as recorded on the French national access point transport.data.gouv.fr; reuse including commercial reuse is permitted with attribution to Dijon M\u00e9tropole (r\u00e9seau DiviaMobilit\u00e9s) and the update date.",
+    "reachable": true,
+    "sha256": "86bdf2ee31dd9f3960f8b79741ff63f3622ac465868e333ec525f2124f167fde",
+    "size_bytes": 4625415,
+    "static_url": "https://transport.data.gouv.fr/resources/80742/download"
+  },
+  "fetch": {
+    "final_url": "https://static.data.gouv.fr/resources/gtfs-diviamobilites/20260804-205310/gtfs-diviamobilites-current.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      4.91631,
+      47.23035,
+      5.18295,
+      47.36859
+    ],
+    "lat": 47.31749,
+    "lon": 5.04391,
+    "stop_count": 1095
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 2,
+        "trip_count": 4323,
+        "trip_share_pct": 18.2
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 58,
+        "trip_count": 19456,
+        "trip_share_pct": 81.8
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 60,
+    "trip_count": 23779
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 2.0,
+    "margin_to_next_band": 8.0,
+    "score": 72.0
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 15,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "15 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (10, 12, 13, 14, 15, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 2,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "2 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"St Apollinaire C. Sportif\", \"St Apollinaire C. Sportif\").",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1095,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 23779
+  },
+  "route_map": {
+    "drawn_route_count": 56,
+    "has_shapes": true,
+    "path": "data/artifacts/divia-dijon/geometry.geojson",
+    "route_count": 60,
+    "routes": [
+      {
+        "color": "005CA9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-10",
+        "label": "10",
+        "long": "TALANT Citadelle <> AHUY",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005CA9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-12",
+        "label": "12",
+        "long": "PLOMBIERES <> Parc de la Colombiere",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005CA9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-13",
+        "label": "13",
+        "long": "Motte Giron <> FONTAINE Village",
+        "short": "13",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005CA9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-14",
+        "label": "14",
+        "long": "MARSANNAY Charon <> Charet",
+        "short": "14",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005CA9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-15",
+        "label": "15",
+        "long": "PERRIGNY <> Carraz",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005CA9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-16",
+        "label": "16",
+        "long": "QUETIGNY All\u00e9es Cavali\u00e8res <> NEUILLY-CRIMOLOIS",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005CA9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-18",
+        "label": "18",
+        "long": "LONGVIC Carm\u00e9lites <> Darcy",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "005CA9",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-19",
+        "label": "19",
+        "long": "ST-APOLLINAIRE Pre Thomas <> Gresilles",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-30",
+        "label": "30",
+        "long": "HAUTEVILLE <> DARCY",
+        "short": "30",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-31",
+        "label": "31",
+        "long": "LONGVIC Centre <> BRETENIERE",
+        "short": "31",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-32",
+        "label": "32",
+        "long": "LONGVIC Centre <> FENAY",
+        "short": "32",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-33",
+        "label": "33",
+        "long": "FLAVIGNEROT <> Monge CIGV",
+        "short": "33",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-34",
+        "label": "34",
+        "long": "Sainte-Anne <> Monge CIGV",
+        "short": "34",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-35",
+        "label": "35",
+        "long": "Montagne de Larrey <> Monge CIGV",
+        "short": "35",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-36",
+        "label": "36",
+        "long": "BRESSEY <> QUETIGNY Grand Marche",
+        "short": "36",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-37",
+        "label": "37",
+        "long": "MAGNY <> QUETIGNY Grand Marche",
+        "short": "37",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-38",
+        "label": "38",
+        "long": "Gare SNCF <> Ecole de Gendarmerie",
+        "short": "38",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-39",
+        "label": "39",
+        "long": "Fontaine d'Ouche <> Tulipes",
+        "short": "39",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-40",
+        "label": "40",
+        "long": "Toison d'Or <> Republique",
+        "short": "40",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-41",
+        "label": "41",
+        "long": "CHEVIGNY Z.I. <> Grand Marche",
+        "short": "41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-42",
+        "label": "42",
+        "long": "Les Ateliers <> CHENOVE C. Cial",
+        "short": "42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-43",
+        "label": "43",
+        "long": "Gresilles <> Ecoparc Dijon Bourg",
+        "short": "43",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-44",
+        "label": "44",
+        "long": "LONGVIC Centre <> ZI BEAUREGARD",
+        "short": "44",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-45",
+        "label": "45",
+        "long": "CEM <> CARRAZ <> ZI",
+        "short": "45",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-46",
+        "label": "46",
+        "long": "Gare SNCF <> Ec. de gendarmerie",
+        "short": "46",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FE3401",
+        "color_name": "red",
+        "has_shape": false,
+        "id": "4-51",
+        "label": "51",
+        "long": "MOF <> Combes \u00e0 la serpent",
+        "short": "51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-61",
+        "label": "61",
+        "long": "FENAY <> Coll\u00e8ge Dorgeles",
+        "short": "61",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-62",
+        "label": "62",
+        "long": "FENAY <> Lyc\u00e9e H. Fontaine",
+        "short": "62",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-63",
+        "label": "63",
+        "long": "BRETENIERE <> Coll\u00e8ge Dorgeles",
+        "short": "63",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-64",
+        "label": "64",
+        "long": "BRESSEY <> Lyc\u00e9e Boivin / C. Rostand",
+        "short": "64",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-65",
+        "label": "65",
+        "long": "HAUTEVILLE-DAIX <> Coll\u00e8ge Vian",
+        "short": "65",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-66",
+        "label": "66",
+        "long": "NEUILLY <> Coll\u00e8ge Dorgeles",
+        "short": "66",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-67",
+        "label": "67",
+        "long": "CRIMOLOIS-SENNECEY <> 30 Octobre",
+        "short": "67",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-68",
+        "label": "68",
+        "long": "BRETENIERE <> Lyc\u00e9e H. Fontaine",
+        "short": "68",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-69",
+        "label": "69",
+        "long": "CRIMOLOIS-SENNECEY <> L. Boivin",
+        "short": "69",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-70",
+        "label": "70",
+        "long": "PLOMBIERES <> Coll\u00e8ge Rameau",
+        "short": "70",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-71",
+        "label": "71",
+        "long": "Roosevelt <> Coll\u00e8ge Malraux",
+        "short": "71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-72",
+        "label": "72",
+        "long": "MAGNY <> Lyc\u00e9e Boivin",
+        "short": "72",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-73",
+        "label": "73",
+        "long": "QUETIGNY A. C. > Lyc\u00e9e Boivin",
+        "short": "73",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-74",
+        "label": "74",
+        "long": "ST-APO Pre Thomas <>L. Le Castel",
+        "short": "74",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3893AD",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-75",
+        "label": "75",
+        "long": "FLAVIGNEROT <> Coll\u00e8ge Dunant",
+        "short": "75",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "4-93",
+        "label": "93",
+        "long": "Navette Personnel + Bus RES",
+        "short": "93",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "4-98",
+        "label": "98",
+        "long": "Services ateliers",
+        "short": "98",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "4-99",
+        "label": "99",
+        "long": "Services speciaux",
+        "short": "99",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E63312",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "4-CITY",
+        "label": "CITY",
+        "long": "R\u00e9publique <> Republique",
+        "short": "CITY",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00B1EB",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-CO",
+        "label": "CO",
+        "long": "Fontaine d'Ouche <> Marmuzots",
+        "short": "CO",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F08050",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "4-FNI",
+        "label": "FNI",
+        "long": "F'Night - GRAND MARCHE<>CHEVIGNY",
+        "short": "FNI",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA619F",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4-L3",
+        "label": "L3",
+        "long": "Fontaine d'Ouche <> Epirey Capno",
+        "short": "L3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA619F",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4-L4",
+        "label": "L4",
+        "long": "MARSANNAY PDS<>MONGE",
+        "short": "L4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA619F",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4-L5",
+        "label": "L5",
+        "long": "TALANT Dullin <> Universite",
+        "short": "L5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA619F",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4-L6",
+        "label": "L6",
+        "long": "LONGVIC <> Toison d'Or",
+        "short": "L6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA619F",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4-L7",
+        "label": "L7",
+        "long": "QUETIGNY Europe <> CHEVIGNY",
+        "short": "L7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA619F",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4-L8",
+        "label": "L8",
+        "long": "Chicago <> ST-APOLLINAIRE Val Sully",
+        "short": "L8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA619F",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "4-L9",
+        "label": "L9",
+        "long": "Toison d'Or <> Monge CIGV",
+        "short": "L9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0CA799",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "4-LM",
+        "label": "LM",
+        "long": "Carraz <> Grangier",
+        "short": "LM",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "4-NAVC",
+        "label": "NAVC",
+        "long": "Navette boucle carraz Dimanche",
+        "short": "NAVC",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFC20E",
+        "color_name": "yellow",
+        "has_shape": false,
+        "id": "4-PB",
+        "label": "PB",
+        "long": "PLAN B",
+        "short": "PB",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "2C2276",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "4-PL",
+        "label": "PL",
+        "long": "Republique <> Mazen - Sully",
+        "short": "PL",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "AB0672",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4-T1",
+        "label": "T1",
+        "long": "DIJON Gare <> QUETIGNY Centre La Parenth\u00e8se",
+        "short": "T1",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "AB0672",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "4-T2",
+        "label": "T2",
+        "long": "CHENOVE Centre <> DIJON Valmy",
+        "short": "T2",
+        "text_color": "FFFFFF",
+        "type_label": "Tram / light rail"
+      }
+    ],
+    "stop_count": 1095,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 23779,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "23779 of 23779 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "scorecard_missing_feed_info_dates",
+      "count": 1,
+      "effort": "Two fields, set once in export settings.",
+      "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+      "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

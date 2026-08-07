@@ -1,276 +1,608 @@
 {
-  "agency_count": 1488,
-  "cache_hit": 203,
+  "agency_count": 2185,
+  "cache_hit": 1060,
   "degraded": false,
   "degraded_threshold": 0.05,
-  "generated_at": "2026-07-10T15:54:13.414501+00:00",
-  "mirrored": 192,
-  "reused": 1213,
-  "scored": 229,
-  "shard_count": 12,
+  "generated_at": "2026-08-05T16:26:28.346469+00:00",
+  "mirrored": 123,
+  "reused": 715,
+  "scored": 1397,
+  "shard_count": 32,
   "shards": [
     {
-      "agency_count": 124,
-      "cache_hit": 20,
-      "finished_at": "2026-07-10T15:48:11.077775+00:00",
-      "mirrored": 17,
-      "reused": 99,
-      "scored": 21,
+      "agency_count": 69,
+      "cache_hit": 25,
+      "finished_at": "2026-08-05T15:53:11.926438+00:00",
+      "mirrored": 1,
+      "reused": 29,
+      "scored": 36,
       "shard": "0",
-      "started_at": "2026-07-10T15:41:35+00:00",
+      "started_at": "2026-08-05T15:32:32+00:00",
       "unreachable": 4,
       "unreachable_agencies": [
-        "altamont-corridor-express-2684",
-        "arvin-transit-2233",
-        "elk-grove-transit",
-        "hawai-i-mass-transit-agency-hele-on-bus-2608"
-      ],
-      "wall_clock_seconds": 396.1
-    },
-    {
-      "agency_count": 124,
-      "cache_hit": 14,
-      "finished_at": "2026-07-10T15:53:39.477904+00:00",
-      "mirrored": 12,
-      "reused": 105,
-      "scored": 17,
-      "shard": "1",
-      "started_at": "2026-07-10T15:41:36+00:00",
-      "unreachable": 2,
-      "unreachable_agencies": [
-        "grt-ion-light-rail",
-        "south-county-transit-link-2203"
-      ],
-      "wall_clock_seconds": 723.5
-    },
-    {
-      "agency_count": 124,
-      "cache_hit": 14,
-      "finished_at": "2026-07-10T15:45:58.287577+00:00",
-      "mirrored": 14,
-      "reused": 107,
-      "scored": 14,
-      "shard": "10",
-      "started_at": "2026-07-10T15:41:35+00:00",
-      "unreachable": 3,
-      "unreachable_agencies": [
-        "alameda-contra-costa-transit-district-ac-transit-2455",
-        "eau-claire-transit",
-        "xpress-2426"
-      ],
-      "wall_clock_seconds": 263.3
-    },
-    {
-      "agency_count": 124,
-      "cache_hit": 19,
-      "finished_at": "2026-07-10T15:53:07.239863+00:00",
-      "mirrored": 17,
-      "reused": 100,
-      "scored": 21,
-      "shard": "11",
-      "started_at": "2026-07-10T15:41:35+00:00",
-      "unreachable": 3,
-      "unreachable_agencies": [
-        "san-clemente-trolley",
-        "santa-rosa-citybus-2948",
-        "tideline-water-taxi"
-      ],
-      "wall_clock_seconds": 692.2
-    },
-    {
-      "agency_count": 124,
-      "cache_hit": 20,
-      "finished_at": "2026-07-10T15:46:39.785705+00:00",
-      "mirrored": 20,
-      "reused": 98,
-      "scored": 21,
-      "shard": "2",
-      "started_at": "2026-07-10T15:41:35+00:00",
-      "unreachable": 5,
-      "unreachable_agencies": [
-        "clean-air-express",
-        "rockford-mass-transit-district",
-        "taft-area-transit-2236",
-        "the-rapid",
-        "transit-authority-of-river-city-tarc-2662"
-      ],
-      "wall_clock_seconds": 304.8
-    },
-    {
-      "agency_count": 124,
-      "cache_hit": 15,
-      "finished_at": "2026-07-10T15:45:36.112417+00:00",
-      "mirrored": 14,
-      "reused": 105,
-      "scored": 18,
-      "shard": "3",
-      "started_at": "2026-07-10T15:41:39+00:00",
-      "unreachable": 1,
-      "unreachable_agencies": [
-        "city-of-wasco"
-      ],
-      "wall_clock_seconds": 237.1
-    },
-    {
-      "agency_count": 124,
-      "cache_hit": 20,
-      "finished_at": "2026-07-10T15:47:03.869174+00:00",
-      "mirrored": 19,
-      "reused": 97,
-      "scored": 22,
-      "shard": "4",
-      "started_at": "2026-07-10T15:41:34+00:00",
-      "unreachable": 5,
-      "unreachable_agencies": [
-        "danville-mass-transit",
-        "gomonrovia",
-        "jacksonville-transportation-authority-jta",
-        "mountain-rides-transportation-authority-mrta-2282",
-        "south-lane-wheels"
-      ],
-      "wall_clock_seconds": 329.9
-    },
-    {
-      "agency_count": 124,
-      "cache_hit": 20,
-      "finished_at": "2026-07-10T15:46:55.149770+00:00",
-      "mirrored": 19,
-      "reused": 98,
-      "scored": 23,
-      "shard": "5",
-      "started_at": "2026-07-10T15:41:38+00:00",
-      "unreachable": 3,
-      "unreachable_agencies": [
-        "greenville-transit-authority-greenlink",
-        "metro-houston",
-        "sonoma-marin-area-rail-transit-smart-3222"
-      ],
-      "wall_clock_seconds": 317.1
-    },
-    {
-      "agency_count": 124,
-      "cache_hit": 14,
-      "finished_at": "2026-07-10T15:47:32.605757+00:00",
-      "mirrored": 14,
-      "reused": 99,
-      "scored": 18,
-      "shard": "6",
-      "started_at": "2026-07-10T15:41:38+00:00",
-      "unreachable": 7,
-      "unreachable_agencies": [
-        "camarillo-area-transit-2234",
-        "denton-county-transportation-authority-dcta",
-        "fairfax-cue-bus-cue-2609",
-        "glendale-beeline-3177",
+        "eco-transit",
         "lakes-region-explorer",
-        "tri-delta-transit-1974",
-        "university-of-michigan-transit-services"
+        "shreveport-and-bossier-city",
+        "torrance-transit"
       ],
-      "wall_clock_seconds": 354.6
+      "wall_clock_seconds": 1239.9
     },
     {
-      "agency_count": 124,
-      "cache_hit": 17,
-      "finished_at": "2026-07-10T15:46:42.773863+00:00",
-      "mirrored": 16,
-      "reused": 103,
-      "scored": 19,
-      "shard": "7",
-      "started_at": "2026-07-10T15:41:35+00:00",
-      "unreachable": 2,
-      "unreachable_agencies": [
-        "monterey-salinas-transit-mst",
-        "petaluma-transit-2947"
-      ],
-      "wall_clock_seconds": 307.8
-    },
-    {
-      "agency_count": 124,
-      "cache_hit": 16,
-      "finished_at": "2026-07-10T15:47:26.697817+00:00",
-      "mirrored": 16,
-      "reused": 99,
-      "scored": 20,
-      "shard": "8",
-      "started_at": "2026-07-10T15:41:34+00:00",
-      "unreachable": 5,
-      "unreachable_agencies": [
-        "c-tran-3129",
-        "greeley-evans-transit-get",
-        "samtrans",
-        "thousand-oaks-transit-2237",
-        "west-berkeley-shuttle-2238"
-      ],
-      "wall_clock_seconds": 352.7
-    },
-    {
-      "agency_count": 124,
-      "cache_hit": 14,
-      "finished_at": "2026-07-10T15:46:24.201200+00:00",
-      "mirrored": 14,
-      "reused": 103,
-      "scored": 15,
-      "shard": "9",
-      "started_at": "2026-07-10T15:41:38+00:00",
+      "agency_count": 69,
+      "cache_hit": 28,
+      "finished_at": "2026-08-05T15:57:09.370704+00:00",
+      "mirrored": 4,
+      "reused": 21,
+      "scored": 42,
+      "shard": "1",
+      "started_at": "2026-08-05T15:32:33+00:00",
       "unreachable": 6,
       "unreachable_agencies": [
-        "anaheim-regional-transportation",
-        "baldwin-park-transit-2247",
-        "cache-valley-transit-district",
-        "city-of-dixon",
-        "san-juan-capistrano-free-weekend-trolley-2235",
-        "selah-transit"
+        "beach-cities-transit",
+        "ku-on-wheels-lawrence-transit-system",
+        "north-county-transit-district-nctd-3093",
+        "puget-sound-express",
+        "selah-transit",
+        "transfort-city-of-fort-collins-transfort"
       ],
-      "wall_clock_seconds": 286.2
+      "wall_clock_seconds": 1476.4
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 36,
+      "finished_at": "2026-08-05T15:47:29.081638+00:00",
+      "mirrored": 6,
+      "reused": 22,
+      "scored": 44,
+      "shard": "10",
+      "started_at": "2026-08-05T15:32:46+00:00",
+      "unreachable": 2,
+      "unreachable_agencies": [
+        "hut-airport-shuttle",
+        "south-portland"
+      ],
+      "wall_clock_seconds": 883.1
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 30,
+      "finished_at": "2026-08-05T15:52:35.597541+00:00",
+      "mirrored": 2,
+      "reused": 19,
+      "scored": 46,
+      "shard": "11",
+      "started_at": "2026-08-05T15:32:34+00:00",
+      "unreachable": 3,
+      "unreachable_agencies": [
+        "casco-bay-lines",
+        "elk-grove-transit",
+        "tideline-water-taxi"
+      ],
+      "wall_clock_seconds": 1201.6
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 36,
+      "finished_at": "2026-08-05T15:45:00.276731+00:00",
+      "mirrored": 9,
+      "reused": 22,
+      "scored": 44,
+      "shard": "12",
+      "started_at": "2026-08-05T15:32:32+00:00",
+      "unreachable": 2,
+      "unreachable_agencies": [
+        "broome-county-transit-b-c-transit",
+        "santa-clarita-transit"
+      ],
+      "wall_clock_seconds": 748.3
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 31,
+      "finished_at": "2026-08-05T15:49:09.583944+00:00",
+      "mirrored": 3,
+      "reused": 20,
+      "scored": 47,
+      "shard": "13",
+      "started_at": "2026-08-05T15:32:33+00:00",
+      "unreachable": 1,
+      "unreachable_agencies": [
+        "embark"
+      ],
+      "wall_clock_seconds": 996.6
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 30,
+      "finished_at": "2026-08-05T15:54:33.944223+00:00",
+      "mirrored": 3,
+      "reused": 21,
+      "scored": 46,
+      "shard": "14",
+      "started_at": "2026-08-05T15:32:39+00:00",
+      "unreachable": 1,
+      "unreachable_agencies": [
+        "catalina-express"
+      ],
+      "wall_clock_seconds": 1314.9
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 34,
+      "finished_at": "2026-08-05T15:55:48.281608+00:00",
+      "mirrored": 4,
+      "reused": 23,
+      "scored": 44,
+      "shard": "15",
+      "started_at": "2026-08-05T15:32:34+00:00",
+      "unreachable": 1,
+      "unreachable_agencies": [
+        "express-arrow"
+      ],
+      "wall_clock_seconds": 1394.3
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 36,
+      "finished_at": "2026-08-05T15:52:52.279163+00:00",
+      "mirrored": 3,
+      "reused": 20,
+      "scored": 47,
+      "shard": "16",
+      "started_at": "2026-08-05T15:32:32+00:00",
+      "unreachable": 1,
+      "unreachable_agencies": [
+        "advance-transit-at"
+      ],
+      "wall_clock_seconds": 1220.3
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 29,
+      "finished_at": "2026-08-05T15:55:19.621405+00:00",
+      "mirrored": 2,
+      "reused": 20,
+      "scored": 42,
+      "shard": "17",
+      "started_at": "2026-08-05T15:32:34+00:00",
+      "unreachable": 6,
+      "unreachable_agencies": [
+        "amarillo-city-transit",
+        "bloomington-transit",
+        "connecticut-transit-597",
+        "danville-mass-transit",
+        "high-desert-point",
+        "rapidkuantan-bus"
+      ],
+      "wall_clock_seconds": 1365.6
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 34,
+      "finished_at": "2026-08-05T15:52:15.640727+00:00",
+      "mirrored": 0,
+      "reused": 17,
+      "scored": 47,
+      "shard": "18",
+      "started_at": "2026-08-05T15:32:32+00:00",
+      "unreachable": 4,
+      "unreachable_agencies": [
+        "kalamazoo-metro-transit",
+        "lextran",
+        "niagara-frontier-transportation-authority-nfta",
+        "santa-rosa-citybus"
+      ],
+      "wall_clock_seconds": 1183.6
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 30,
+      "finished_at": "2026-08-05T15:52:34.804612+00:00",
+      "mirrored": 4,
+      "reused": 22,
+      "scored": 44,
+      "shard": "19",
+      "started_at": "2026-08-05T15:32:35+00:00",
+      "unreachable": 2,
+      "unreachable_agencies": [
+        "fairfax-cue-bus-cue",
+        "greater-glens-falls-transit"
+      ],
+      "wall_clock_seconds": 1199.8
+    },
+    {
+      "agency_count": 69,
+      "cache_hit": 30,
+      "finished_at": "2026-08-05T15:50:39.865747+00:00",
+      "mirrored": 5,
+      "reused": 23,
+      "scored": 44,
+      "shard": "2",
+      "started_at": "2026-08-05T15:32:33+00:00",
+      "unreachable": 2,
+      "unreachable_agencies": [
+        "pulaski-area-transit-pat",
+        "transit-authority-of-northern-kentucky-tank"
+      ],
+      "wall_clock_seconds": 1086.9
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 31,
+      "finished_at": "2026-08-05T15:51:43.926859+00:00",
+      "mirrored": 2,
+      "reused": 24,
+      "scored": 41,
+      "shard": "20",
+      "started_at": "2026-08-05T15:32:37+00:00",
+      "unreachable": 3,
+      "unreachable_agencies": [
+        "berks-area-regional-transportation-authority-barta",
+        "capital-area-transit-system-cats",
+        "fr-pan-82136"
+      ],
+      "wall_clock_seconds": 1146.9
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 34,
+      "finished_at": "2026-08-05T15:50:21.676024+00:00",
+      "mirrored": 4,
+      "reused": 15,
+      "scored": 52,
+      "shard": "21",
+      "started_at": "2026-08-05T15:32:32+00:00",
+      "unreachable": 1,
+      "unreachable_agencies": [
+        "jamestown-s-klallam"
+      ],
+      "wall_clock_seconds": 1069.7
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 29,
+      "finished_at": "2026-08-05T15:51:13.738324+00:00",
+      "mirrored": 2,
+      "reused": 24,
+      "scored": 42,
+      "shard": "22",
+      "started_at": "2026-08-05T15:32:39+00:00",
+      "unreachable": 2,
+      "unreachable_agencies": [
+        "city-of-lompoc-transit-colt",
+        "makah-public-transit"
+      ],
+      "wall_clock_seconds": 1114.7
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 32,
+      "finished_at": "2026-08-05T15:54:56.787192+00:00",
+      "mirrored": 3,
+      "reused": 24,
+      "scored": 42,
+      "shard": "23",
+      "started_at": "2026-08-05T15:32:32+00:00",
+      "unreachable": 2,
+      "unreachable_agencies": [
+        "greater-portland-metro-bus",
+        "red-rose-transit-authority-rrta"
+      ],
+      "wall_clock_seconds": 1344.8
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 39,
+      "finished_at": "2026-08-05T15:55:40.298703+00:00",
+      "mirrored": 5,
+      "reused": 15,
+      "scored": 50,
+      "shard": "24",
+      "started_at": "2026-08-05T15:32:32+00:00",
+      "unreachable": 3,
+      "unreachable_agencies": [
+        "athens-public-transit",
+        "bethesda-circulator",
+        "jaunt-inc"
+      ],
+      "wall_clock_seconds": 1388.3
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 44,
+      "finished_at": "2026-08-05T15:53:28.696747+00:00",
+      "mirrored": 3,
+      "reused": 20,
+      "scored": 48,
+      "shard": "25",
+      "started_at": "2026-08-05T15:32:35+00:00",
+      "unreachable": 0,
+      "unreachable_agencies": [],
+      "wall_clock_seconds": 1253.7
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 40,
+      "finished_at": "2026-08-05T15:54:15.805667+00:00",
+      "mirrored": 5,
+      "reused": 19,
+      "scored": 47,
+      "shard": "26",
+      "started_at": "2026-08-05T15:32:37+00:00",
+      "unreachable": 2,
+      "unreachable_agencies": [
+        "squaxin-island-transit",
+        "xpress"
+      ],
+      "wall_clock_seconds": 1298.8
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 33,
+      "finished_at": "2026-08-05T15:47:56.222008+00:00",
+      "mirrored": 2,
+      "reused": 26,
+      "scored": 39,
+      "shard": "27",
+      "started_at": "2026-08-05T15:32:34+00:00",
+      "unreachable": 3,
+      "unreachable_agencies": [
+        "fr-rubis",
+        "public-transport-victoria",
+        "xpress-2355"
+      ],
+      "wall_clock_seconds": 922.2
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 34,
+      "finished_at": "2026-08-05T15:45:19.844621+00:00",
+      "mirrored": 4,
+      "reused": 23,
+      "scored": 43,
+      "shard": "28",
+      "started_at": "2026-08-05T15:32:36+00:00",
+      "unreachable": 2,
+      "unreachable_agencies": [
+        "akron-metro-regional-transit-authority-metro",
+        "morro-bay-transit"
+      ],
+      "wall_clock_seconds": 763.8
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 30,
+      "finished_at": "2026-08-05T15:49:44.692900+00:00",
+      "mirrored": 5,
+      "reused": 27,
+      "scored": 39,
+      "shard": "29",
+      "started_at": "2026-08-05T15:32:34+00:00",
+      "unreachable": 2,
+      "unreachable_agencies": [
+        "atm-milano",
+        "boston-harbor-islands-ferries"
+      ],
+      "wall_clock_seconds": 1030.7
+    },
+    {
+      "agency_count": 69,
+      "cache_hit": 31,
+      "finished_at": "2026-08-05T15:55:53.888335+00:00",
+      "mirrored": 0,
+      "reused": 29,
+      "scored": 38,
+      "shard": "3",
+      "started_at": "2026-08-05T15:32:40+00:00",
+      "unreachable": 2,
+      "unreachable_agencies": [
+        "national-park-service",
+        "roadrunner-transit"
+      ],
+      "wall_clock_seconds": 1393.9
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 37,
+      "finished_at": "2026-08-05T15:49:03.823860+00:00",
+      "mirrored": 4,
+      "reused": 22,
+      "scored": 45,
+      "shard": "30",
+      "started_at": "2026-08-05T15:32:36+00:00",
+      "unreachable": 1,
+      "unreachable_agencies": [
+        "the-jule"
+      ],
+      "wall_clock_seconds": 987.8
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 37,
+      "finished_at": "2026-08-05T15:50:34.578313+00:00",
+      "mirrored": 6,
+      "reused": 26,
+      "scored": 41,
+      "shard": "31",
+      "started_at": "2026-08-05T15:32:34+00:00",
+      "unreachable": 1,
+      "unreachable_agencies": [
+        "transvilles-valenciennes"
+      ],
+      "wall_clock_seconds": 1080.6
+    },
+    {
+      "agency_count": 69,
+      "cache_hit": 36,
+      "finished_at": "2026-08-05T15:54:35.709853+00:00",
+      "mirrored": 8,
+      "reused": 21,
+      "scored": 43,
+      "shard": "4",
+      "started_at": "2026-08-05T15:32:34+00:00",
+      "unreachable": 5,
+      "unreachable_agencies": [
+        "hawai-i-mass-transit-agency-hele-on-bus",
+        "navajo-transit-system",
+        "norwalk-transit-district",
+        "tri-delta-transit",
+        "wahkiakum-ferry"
+      ],
+      "wall_clock_seconds": 1321.7
+    },
+    {
+      "agency_count": 69,
+      "cache_hit": 35,
+      "finished_at": "2026-08-05T15:47:17.901217+00:00",
+      "mirrored": 8,
+      "reused": 25,
+      "scored": 41,
+      "shard": "5",
+      "started_at": "2026-08-05T15:32:40+00:00",
+      "unreachable": 3,
+      "unreachable_agencies": [
+        "grt-ion-light-rail",
+        "metropolitan-transit-authority-of-black-hawk-county",
+        "mountain-express-mtnexp"
+      ],
+      "wall_clock_seconds": 877.9
+    },
+    {
+      "agency_count": 69,
+      "cache_hit": 35,
+      "finished_at": "2026-08-05T15:50:48.495788+00:00",
+      "mirrored": 3,
+      "reused": 25,
+      "scored": 44,
+      "shard": "6",
+      "started_at": "2026-08-05T15:32:31+00:00",
+      "unreachable": 0,
+      "unreachable_agencies": [],
+      "wall_clock_seconds": 1097.5
+    },
+    {
+      "agency_count": 69,
+      "cache_hit": 31,
+      "finished_at": "2026-08-05T15:48:38.769519+00:00",
+      "mirrored": 2,
+      "reused": 25,
+      "scored": 43,
+      "shard": "7",
+      "started_at": "2026-08-05T15:32:34+00:00",
+      "unreachable": 1,
+      "unreachable_agencies": [
+        "chattanooga-area-regional-transportation-authority-carta"
+      ],
+      "wall_clock_seconds": 964.8
+    },
+    {
+      "agency_count": 69,
+      "cache_hit": 33,
+      "finished_at": "2026-08-05T15:48:51.118672+00:00",
+      "mirrored": 6,
+      "reused": 22,
+      "scored": 43,
+      "shard": "8",
+      "started_at": "2026-08-05T15:32:33+00:00",
+      "unreachable": 4,
+      "unreachable_agencies": [
+        "huntsville-shuttle",
+        "mountain-line-1148",
+        "rabbit-transit",
+        "university-of-michigan-transit-services"
+      ],
+      "wall_clock_seconds": 978.1
+    },
+    {
+      "agency_count": 68,
+      "cache_hit": 30,
+      "finished_at": "2026-08-05T15:52:50.406740+00:00",
+      "mirrored": 5,
+      "reused": 24,
+      "scored": 43,
+      "shard": "9",
+      "started_at": "2026-08-05T15:32:33+00:00",
+      "unreachable": 1,
+      "unreachable_agencies": [
+        "stark-area-regional-transit-authority-sarta"
+      ],
+      "wall_clock_seconds": 1217.4
     }
   ],
-  "unreachable": 46,
+  "unreachable": 73,
   "unreachable_agencies": [
-    "alameda-contra-costa-transit-district-ac-transit-2455",
-    "altamont-corridor-express-2684",
-    "anaheim-regional-transportation",
-    "arvin-transit-2233",
-    "baldwin-park-transit-2247",
-    "c-tran-3129",
-    "cache-valley-transit-district",
-    "camarillo-area-transit-2234",
-    "city-of-dixon",
-    "city-of-wasco",
-    "clean-air-express",
+    "advance-transit-at",
+    "akron-metro-regional-transit-authority-metro",
+    "amarillo-city-transit",
+    "athens-public-transit",
+    "atm-milano",
+    "beach-cities-transit",
+    "berks-area-regional-transportation-authority-barta",
+    "bethesda-circulator",
+    "bloomington-transit",
+    "boston-harbor-islands-ferries",
+    "broome-county-transit-b-c-transit",
+    "capital-area-transit-system-cats",
+    "casco-bay-lines",
+    "catalina-express",
+    "chattanooga-area-regional-transportation-authority-carta",
+    "city-of-lompoc-transit-colt",
+    "connecticut-transit-597",
     "danville-mass-transit",
-    "denton-county-transportation-authority-dcta",
-    "eau-claire-transit",
+    "eco-transit",
     "elk-grove-transit",
-    "fairfax-cue-bus-cue-2609",
-    "glendale-beeline-3177",
-    "gomonrovia",
-    "greeley-evans-transit-get",
-    "greenville-transit-authority-greenlink",
+    "embark",
+    "express-arrow",
+    "fairfax-cue-bus-cue",
+    "fr-pan-82136",
+    "fr-rubis",
+    "greater-glens-falls-transit",
+    "greater-portland-metro-bus",
     "grt-ion-light-rail",
-    "hawai-i-mass-transit-agency-hele-on-bus-2608",
-    "jacksonville-transportation-authority-jta",
+    "hawai-i-mass-transit-agency-hele-on-bus",
+    "high-desert-point",
+    "huntsville-shuttle",
+    "hut-airport-shuttle",
+    "jamestown-s-klallam",
+    "jaunt-inc",
+    "kalamazoo-metro-transit",
+    "ku-on-wheels-lawrence-transit-system",
     "lakes-region-explorer",
-    "metro-houston",
-    "monterey-salinas-transit-mst",
-    "mountain-rides-transportation-authority-mrta-2282",
-    "petaluma-transit-2947",
-    "rockford-mass-transit-district",
-    "samtrans",
-    "san-clemente-trolley",
-    "san-juan-capistrano-free-weekend-trolley-2235",
-    "santa-rosa-citybus-2948",
+    "lextran",
+    "makah-public-transit",
+    "metropolitan-transit-authority-of-black-hawk-county",
+    "morro-bay-transit",
+    "mountain-express-mtnexp",
+    "mountain-line-1148",
+    "national-park-service",
+    "navajo-transit-system",
+    "niagara-frontier-transportation-authority-nfta",
+    "north-county-transit-district-nctd-3093",
+    "norwalk-transit-district",
+    "public-transport-victoria",
+    "puget-sound-express",
+    "pulaski-area-transit-pat",
+    "rabbit-transit",
+    "rapidkuantan-bus",
+    "red-rose-transit-authority-rrta",
+    "roadrunner-transit",
+    "santa-clarita-transit",
+    "santa-rosa-citybus",
     "selah-transit",
-    "sonoma-marin-area-rail-transit-smart-3222",
-    "south-county-transit-link-2203",
-    "south-lane-wheels",
-    "taft-area-transit-2236",
-    "the-rapid",
-    "thousand-oaks-transit-2237",
+    "shreveport-and-bossier-city",
+    "south-portland",
+    "squaxin-island-transit",
+    "stark-area-regional-transit-authority-sarta",
+    "the-jule",
     "tideline-water-taxi",
-    "transit-authority-of-river-city-tarc-2662",
-    "tri-delta-transit-1974",
+    "torrance-transit",
+    "transfort-city-of-fort-collins-transfort",
+    "transit-authority-of-northern-kentucky-tank",
+    "transvilles-valenciennes",
+    "tri-delta-transit",
     "university-of-michigan-transit-services",
-    "west-berkeley-shuttle-2238",
-    "xpress-2426"
+    "wahkiakum-ferry",
+    "xpress",
+    "xpress-2355"
   ]
 }

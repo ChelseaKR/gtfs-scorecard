@@ -1,0 +1,22 @@
+{
+  "awarded": true,
+  "criteria": [
+    {
+      "detail": "Passes validation with no errors.",
+      "key": "valid",
+      "met": true
+    },
+    {
+      "detail": "Service data covers the next 184 days.",
+      "key": "current",
+      "met": true
+    },
+    {
+      "detail": "States wheelchair access on 100% of stops and 100% of trips.",
+      "key": "accessible",
+      "met": true
+    }
+  ],
+  "status": "awarded",
+  "summary": "This feed earns the conformance mark: valid, current, and stating wheelchair access on nearly every stop and trip."
+}

@@ -1,0 +1,846 @@
+{
+  "agency": {
+    "country": "IT",
+    "id": "trentino-trasporti",
+    "name": "Trentino Trasporti (urban networks)",
+    "subdivision_code": "IT-32",
+    "subdivision_name": "Trentino-Alto Adige"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 86.8,
+          "stops_marked_accessible_pct": 35.3,
+          "stops_marked_not_accessible_pct": 47.7,
+          "stops_stated_pct": 83.0,
+          "trips_stated_pct": 93.2
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 20.8,
+          "wheelchair_trips": 14.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 2437,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1073,
+        "translations": {
+          "feed_lang": "it",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 2437,
+        "wheelchair_accessible_pct": 93.2,
+        "wheelchair_boarding_pct": 83.0,
+        "wheelchair_marked_accessible_pct": 35.3,
+        "wheelchair_marked_not_accessible_pct": 47.7
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 182,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 4.2,
+          "severity": "WARNING",
+          "what": "182 of 1073 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 166,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 1.0,
+          "severity": "WARNING",
+          "what": "166 of 2437 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the transit vehicle itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        }
+      ],
+      "name": "completeness",
+      "score": 79.7,
+      "status": "measured",
+      "summary": "83% of stops state wheelchair accessibility (35% marked accessible, 48% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 4,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 3,
+          "WARNING": 147
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 143,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 4,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the transit vehicle doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 2,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "unknown_file",
+          "count": 1,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 87.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 4 kinds of issue across 150 instances (0 error, 147 warning, 3 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 38,
+        "effective_expiry_date": "2026-09-13",
+        "feed_end_date": "2026-09-13",
+        "feed_start_date": "2026-06-11",
+        "feed_version": "20260715200348.945",
+        "has_feed_info": true,
+        "last_service_date": "2026-09-13",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 63.3,
+      "status": "measured",
+      "summary": "Service data covers the next 38 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 39 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 83% of stops and 93% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 83% of stops and 93% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through the dati.trentino.it open data catalog; credit Trentino Trasporti and the Provincia Autonoma di Trento.",
+    "reachable": true,
+    "sha256": "46de9bb958b8f93e85cda9ed649fbc5fc84faaa5ab04cfc4192e9817bf8a9e44",
+    "size_bytes": 800645,
+    "static_url": "https://www.trentinotrasporti.it/opendata/google_transit_urbano_tte.zip"
+  },
+  "fetch": {
+    "final_url": "https://www.trentinotrasporti.it/opendata/google_transit_urbano_tte.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      10.97013,
+      45.83687,
+      11.18477,
+      46.17764
+    ],
+    "lat": 46.05177,
+    "lon": 11.10743,
+    "stop_count": 1073
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 40,
+        "trip_count": 2339,
+        "trip_share_pct": 96.0
+      },
+      {
+        "key": "cable_tram",
+        "label": "Cable tram",
+        "route_count": 1,
+        "trip_count": 98,
+        "trip_share_pct": 4.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 41,
+    "trip_count": 2437
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 8.8,
+    "margin_to_next_band": 1.2,
+    "score": 78.8
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 5,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "5 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (7, 15, 2, 6, 17).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 5,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "5 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Rosmini \"Cimitero\" / Muse\", \"Rosmini \"Cimitero\" / Muse\", \"Travai Al Nuoto / Muse\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1073,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 2437
+  },
+  "route_map": {
+    "drawn_route_count": 37,
+    "has_shapes": true,
+    "path": "data/artifacts/trentino-trasporti/geometry.geojson",
+    "route_count": 41,
+    "routes": [
+      {
+        "color": "C52720",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "396",
+        "label": "3",
+        "long": "Cortesano Gardolo P.Dante Villazzano 3",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F5C500",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "400",
+        "label": "5",
+        "long": "Piazza Dante P.Fiera Povo Oltrecastello",
+        "short": "5",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0A9B86",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "402",
+        "label": "7",
+        "long": "Canova Melta Piazza Dante Gocciadoro",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "52332A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "404",
+        "label": "8",
+        "long": "Centochiavi Piazza Dante Mattarello",
+        "short": "8",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8B4E2B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "406",
+        "label": "9",
+        "long": "P.Dante S.Don\u00e0 Cognola Villamontagna",
+        "short": "9",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0A5543",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "408",
+        "label": "10",
+        "long": "P.Dante Martignano Cognola / Montevaccino",
+        "short": "10",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "582E79",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "425",
+        "label": "11",
+        "long": "Dogana Ftm Via Brennero Gardolo Spini",
+        "short": "11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "BF6092",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "466",
+        "label": "13",
+        "long": "P.Dante Rosmini S.Rocco Povo Polo Soc.",
+        "short": "13",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "72E006",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "478",
+        "label": "15",
+        "long": "Dogana Ftm Interporto Spini Di Gardolo",
+        "short": "15",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3564B1",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "484",
+        "label": "16",
+        "long": "Centochiavi Martignano Cognola Povo",
+        "short": "16",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "512",
+        "label": "7",
+        "long": "Moietto Rosmini Campana Dei Caduti",
+        "short": "7",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9A6A2F",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "531",
+        "label": "Fu",
+        "long": "Funivia Trento Sardagna",
+        "short": "Fu",
+        "text_color": "FFFFFF",
+        "type_label": "Cable tram"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "533",
+        "label": "C",
+        "long": "Rsa \"S.Bart.\" \"Angeli Custodi\" Laste",
+        "short": "C",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "535",
+        "label": "5/",
+        "long": "P.Dante P.Fiera Universit\u00e0 Mesiano Povo",
+        "short": "5/",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1D3F72",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "536",
+        "label": "1",
+        "long": "Ospedale P.Dante Sopramonte",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB5826",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "538",
+        "label": "2",
+        "long": "Piedic. Stazione Osp.S.Chiara Regione Piedic.",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007BC3",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "539",
+        "label": "4",
+        "long": "Gardolo Roncafort Stazione V.Deg. Mad.Bianca",
+        "short": "4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "70B442",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "541",
+        "label": "6",
+        "long": "Vela P.Dante Villazzano Grotta",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "562",
+        "label": "A",
+        "long": "Brione Cesari Ospedale Podesta' Brione",
+        "short": "A",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "563",
+        "label": "B",
+        "long": "Ossario Osp. S.Giorgio Osp. Ossario",
+        "short": "B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "566",
+        "label": "AB",
+        "long": "Via Magazol S.Giorgio Cornacalda",
+        "short": "AB",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "568",
+        "label": "G",
+        "long": "Gardolo Gardolo Di Mezzo E Spini",
+        "short": "G",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "570",
+        "label": "CM",
+        "long": "Povo Borino Celva Passo Cimirlo",
+        "short": "CM",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "578",
+        "label": "1",
+        "long": "(Volano) Bettini Staz. Lizzana Marco",
+        "short": "1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "580",
+        "label": "6",
+        "long": "Costa Corso Rosmini S.Giorgio/Ospedale",
+        "short": "6",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "582",
+        "label": "2",
+        "long": "Nomi Villa Lagarina Stazione Mori",
+        "short": "2",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "594",
+        "label": "5",
+        "long": "Ospedale Stazione Isera Villa Lagar.",
+        "short": "5",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "598",
+        "label": "V",
+        "long": "Volano Besen. Call. Nomi Pomarolo",
+        "short": "V",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "601",
+        "label": "P",
+        "long": "Castellano Molini Villa Lagarina",
+        "short": "P",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "602",
+        "label": "S",
+        "long": "Savignano Pomarolo",
+        "short": "S",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "605",
+        "label": "3",
+        "long": "03 Peders. Brione Stazione Isera Lenzima",
+        "short": "3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "607",
+        "label": "L1",
+        "long": "01 Lavis Pressano Nave S.Felice Sorni",
+        "short": "L1",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "610",
+        "label": "L3",
+        "long": "03 Lavis Stazione Fs",
+        "short": "L3",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "612",
+        "label": "L4",
+        "long": "04 Lavis Zona Industriale Lavis",
+        "short": "L4",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "615",
+        "label": "M",
+        "long": "Martignano Montevaccino",
+        "short": "M",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "621",
+        "label": "N",
+        "long": "Zuffo Via Rosmini Italcementi",
+        "short": "N",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "623",
+        "label": "19",
+        "long": "Stazione Buc M.Baldo Muse Regione",
+        "short": "19",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "95293B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "624",
+        "label": "12",
+        "long": "P.Dante V.Ghiaie Ravina Romagnano",
+        "short": "12",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E490B0",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "626",
+        "label": "14",
+        "long": "P.Dante Via Sanseverino Belvedere",
+        "short": "14",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1F9ACF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "629",
+        "label": "17",
+        "long": "Dogana Ftm V.Bolzano Lavis Lavis Ftm",
+        "short": "17",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "634",
+        "label": "18",
+        "long": "P.Dante Ospedale V.Fersina Lidorno",
+        "short": "18",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1073,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    },
+    {
+      "code": "stop_too_far_from_shape",
+      "count": 143,
+      "effort": "A few minutes per flagged stop.",
+      "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "Some stops sit far from the route line they belong to.",
+      "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 182,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 4.2,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "182 of 1073 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

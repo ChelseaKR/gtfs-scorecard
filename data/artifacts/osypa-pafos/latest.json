@@ -1,0 +1,1626 @@
+{
+  "agency": {
+    "country": "CY",
+    "id": "osypa-pafos",
+    "name": "\u039f\u03a3\u03a5\u03a0\u0391 (Pafos)",
+    "subdivision_code": "CY-05",
+    "subdivision_name": "Pafos"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 15.0,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 4871,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 889,
+        "translations": {
+          "feed_lang": "en",
+          "has_translations": true,
+          "languages": [
+            "el"
+          ],
+          "translated_tables": [
+            "routes",
+            "stops",
+            "trips"
+          ],
+          "translation_count": 6733
+        },
+        "trips": 4871,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 889,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "889 of 889 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 4871,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "4871 of 4871 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        }
+      ],
+      "name": "completeness",
+      "score": 60.0,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 5,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 2,
+          "WARNING": 739
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 690,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "same_name_and_description_for_stop",
+          "count": 25,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'same_name_and_description_for_stop' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Same name and description for stop (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 14,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "duplicate_route_name",
+          "count": 10,
+          "effort": "One field per route.",
+          "fix": "Give each route a distinct short or long name.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Two or more routes share the same name.",
+          "why": "Riders can't tell the routes apart in apps."
+        },
+        {
+          "code": "trip_headsign_matches_intermediate_stop",
+          "count": 2,
+          "effort": "Usually a bulk edit in your scheduling software.",
+          "fix": "Set trip_headsign to the trip's last stop or its overall destination.",
+          "owner": "Likely your export tool",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some trip headsigns name a stop along the way, not the final destination.",
+          "why": "The sign should tell riders where the bus ends up, so a midpoint name can send them the wrong way."
+        }
+      ],
+      "name": "correctness",
+      "score": 73.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 5 kinds of issue across 741 instances (0 error, 739 warning, 2 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 85,
+        "effective_expiry_date": "2026-10-31",
+        "feed_end_date": "2026-11-03",
+        "feed_start_date": "2026-08-06",
+        "feed_version": "\u039f\u03a3\u03a5\u03a0\u039120260806050841",
+        "has_feed_info": true,
+        "last_service_date": "2026-10-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 85 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 86 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY 4.0 through the Republic of Cyprus open-data portal; credit the Cyprus Public Works Department.",
+    "reachable": true,
+    "sha256": "951645c9b06fcadb7c64893909750d8a4192f09f5af787d1c4a3108e362fc688",
+    "size_bytes": 1384427,
+    "static_url": "https://www.motionbuscard.org.cy/opendata/downloadfile?file=GTFS%5C2_google_transit.zip&rel=True"
+  },
+  "fetch": {
+    "final_url": "https://www.motionbuscard.org.cy/opendata/downloadfile?file=GTFS%5C2_google_transit.zip&rel=True",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-06T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      32.31941,
+      34.65123,
+      32.75626,
+      35.17117
+    ],
+    "lat": 34.8105,
+    "lon": 32.45122,
+    "stop_count": 889
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 112,
+        "trip_count": 4871,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 112,
+    "trip_count": 4871
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 5.9,
+    "margin_to_next_band": 4.1,
+    "score": 75.9
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 30,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "30 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (603B, 603B, 606, 606, 606, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 359,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "359 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"Georg. Griva Digeni Ave. - Ypol. N. Papageorgiou\", \"Archiep. Makariou C\u00b4 Ave. - Ellados\", \"Archiep. Makariou C\u00b4 Ave. - Olympiados\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 889,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 4871
+  },
+  "route_map": {
+    "drawn_route_count": 104,
+    "has_shapes": true,
+    "path": "data/artifacts/osypa-pafos/geometry.geojson",
+    "route_count": 112,
+    "routes": [
+      {
+        "color": "408080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "30000011",
+        "label": "601",
+        "long": "Karavella Station - Geroskipou - Timi - Anarita - Mandr",
+        "short": "601",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "408080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "30000012",
+        "label": "601",
+        "long": "Mandria - Anarita - Timi - Geroskipou - Karavella Stati",
+        "short": "601",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "408080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "30000021",
+        "label": "601",
+        "long": "Karavella Station - TEPAK - Technical School - Geroskip",
+        "short": "601",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "408080",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "30000022",
+        "label": "601",
+        "long": "Mandria - Anarita - Timi - Geroskipou -Technical School",
+        "short": "601",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000A0",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "30010011",
+        "label": "602",
+        "long": "Karavella Station - Hospital - Tech. School - Museum -",
+        "short": "602",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "80FFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "30020011",
+        "label": "603",
+        "long": "Karavella Station - Government offices - Universal Area",
+        "short": "603",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "80FFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "30020012",
+        "label": "603",
+        "long": "Tombs of the Kings Station - Agapinoros - Universal Are",
+        "short": "603",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "30030011",
+        "label": "603B",
+        "long": "Tombs of the Kings Station - Agapinoros - Universal Are",
+        "short": "603B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "30030012",
+        "label": "603B",
+        "long": "Al. Papagou (Alfamega) - Universal Area - Agapinoros -",
+        "short": "603B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "30040011",
+        "label": "604",
+        "long": "Karavella Station - Chloraka - Emba - Tala - Agios Neof",
+        "short": "604",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "30040012",
+        "label": "604",
+        "long": "Agios Neofytos Monastery - Tala - Emba - Chloraka - Kar",
+        "short": "604",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF33CC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30050011",
+        "label": "606",
+        "long": "Geroskipou (Pafiako) - Geroskipou Beach - Posidonos - N",
+        "short": "606",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF33CC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30050012",
+        "label": "606",
+        "long": "Harbour Station - Kings Av. Mall - Neapolis - Posidonos",
+        "short": "606",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF33CC",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "30050021",
+        "label": "606",
+        "long": "Geroskipou (Pafiako) - Posidonos - Kings Av. Mall - Har",
+        "short": "606",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF33CC",
+        "color_name": "pink",
+        "has_shape": false,
+        "id": "30050022",
+        "label": "606",
+        "long": "Harbour Station - Kings Av. Mall - Posidonos - Geroskip",
+        "short": "606",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30060011",
+        "label": "607",
+        "long": "Karavella Station - Chloraka - Lemba - \u039aissonerga - Peg",
+        "short": "607",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30060012",
+        "label": "607",
+        "long": "Pegia - \u039aissonerga - Lemba - Chloraka - \u039aaravella Stati",
+        "short": "607",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8040",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "30070011",
+        "label": "608",
+        "long": "Karavella Station - Immigration - Citizen Service Cente",
+        "short": "608",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8040",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "30070012",
+        "label": "608",
+        "long": "Anavargos - General Hospital - Citizen Service Center -",
+        "short": "608",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "66FF66",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "30080011",
+        "label": "609",
+        "long": "Karavella Station - Konia - Marathounta - Armou - Episk",
+        "short": "609",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "66FF66",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "30080012",
+        "label": "609",
+        "long": "Episkopi - Armou - Marathounta - Konia - Karavella Stat",
+        "short": "609",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30090011",
+        "label": "610",
+        "long": "Harbour Station - Ap. Pavlou - Agapinoros - Municipal M",
+        "short": "610",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30090012",
+        "label": "610",
+        "long": "Municipal Market - Agapinoros - Ap. Pavlou - Harbour St",
+        "short": "610",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "008000",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30090021",
+        "label": "610",
+        "long": "Harbour Station - Ap. Pavlou - Tombs of the Kings Stati",
+        "short": "610",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75610B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "30100011",
+        "label": "611",
+        "long": "Tombs of the Kings Station - Harbour Station - Posidono",
+        "short": "611",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75610B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "30100012",
+        "label": "611",
+        "long": "Geroskipou Beach (Waterpark) - Posidonos - Harbour Stat",
+        "short": "611",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75610B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "30100021",
+        "label": "611",
+        "long": "Tombs of the Kings Station - Harbour Station - Posidono",
+        "short": "611",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "75610B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "30100022",
+        "label": "611",
+        "long": "Geroskipou Beach - Posidonos - Harbour Station - Tombs",
+        "short": "611",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "30110011",
+        "label": "612",
+        "long": "Tombs of the Kings Station - Posidonos - Giannaki Talio",
+        "short": "612",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "30110012",
+        "label": "612",
+        "long": "Pafos Airport - Timi - Geroskipou - Giannaki Talioti Ly",
+        "short": "612",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808080",
+        "color_name": "gray",
+        "has_shape": false,
+        "id": "30110022",
+        "label": "612",
+        "long": "Pafos Airport - Timi - Geroskipou - Giannaki Talioti Ly",
+        "short": "612",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33CC33",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30120011",
+        "label": "613",
+        "long": "Karavella Station - Geroskipou - Achelia - Timi - Pafos",
+        "short": "613",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33CC33",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30120012",
+        "label": "613",
+        "long": "Pafos Airport - Timi - Achelia - Geroskipou - Karavella",
+        "short": "613",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8080FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30130011",
+        "label": "614",
+        "long": "Karavella Station - Tremithousa - Mesogi - Mesa Xorio -",
+        "short": "614",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8080FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30130012",
+        "label": "614",
+        "long": "Koili - Tsada - Mesa Xorio - Mesogi - Tremithousa - Kar",
+        "short": "614",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30140011",
+        "label": "615",
+        "long": "Tombs of the Kings Station - Potima - Coral Bay",
+        "short": "615",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00FF00",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30140012",
+        "label": "615",
+        "long": "Coral Bay - Potima - Tombs of the Kings Station",
+        "short": "615",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00CC99",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "30150011",
+        "label": "616",
+        "long": "Coral Bay - Pegia - Agios Georgios Pegias",
+        "short": "616",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00CC99",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "30150012",
+        "label": "616",
+        "long": "Agios Georgios Pegias - Pegia - Coral Bay",
+        "short": "616",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4C610A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "30160011",
+        "label": "618",
+        "long": "Karavella Station - Kennedy Square - Tombs of the Kings",
+        "short": "618",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "4C610A",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "30160012",
+        "label": "618",
+        "long": "Tombs of the Kings Station - Kennedy Square - Karavella",
+        "short": "618",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8080FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30170011",
+        "label": "622",
+        "long": "Polis Chrysochous - Prodromi - Latchi - Baths of Aphrod",
+        "short": "622",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8080FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30170012",
+        "label": "622",
+        "long": "Baths of Aphrodite - Latchi - Prodromi - Polis Chrysoch",
+        "short": "622",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "30180011",
+        "label": "623",
+        "long": "Polis Chrysochous - Prodromi - Neo Chorio",
+        "short": "623",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF8000",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "30180012",
+        "label": "623",
+        "long": "Neo Chorio - Prodromi - Polis Chrysochous",
+        "short": "623",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "65350B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "30190011",
+        "label": "624",
+        "long": "Polis Chrysochous - Pelathousa",
+        "short": "624",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "65350B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "30190012",
+        "label": "624",
+        "long": "Pelathousa - Polis Chrysochous",
+        "short": "624",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC00E0",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30200011",
+        "label": "625",
+        "long": "Polis Chrysochous - Makounta - Kinousa",
+        "short": "625",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC00E0",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30200012",
+        "label": "625",
+        "long": "Kinousa - Makounta - Polis Chrysochous",
+        "short": "625",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33CC33",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30210011",
+        "label": "630",
+        "long": "Karavella Station - Geroskipou - Timi - Kouklia - Petra",
+        "short": "630",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33CC33",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30210012",
+        "label": "630",
+        "long": "Pissouri - Petra tou Romiou - Kouklia - Timi - Geroskip",
+        "short": "630",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D6AA80",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30220011",
+        "label": "631",
+        "long": "Harbour Station - Posidonos - Geroskipou - Kouklia - Pe",
+        "short": "631",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D6AA80",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30220012",
+        "label": "631",
+        "long": "Petra tou Romiou - Kouklia - Geroskipou - Posidonos - H",
+        "short": "631",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D6AA80",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30220021",
+        "label": "631",
+        "long": "Harbour Station - Posidonos - Geroskipou - Kouklia - Pe",
+        "short": "631",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D6AA80",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30220022",
+        "label": "631",
+        "long": "Aphrodite Hills - Kouklia - Geroskipou - Posidonos - Ha",
+        "short": "631",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D6AA80",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30220031",
+        "label": "631",
+        "long": "Tombs of the Kings Station - Harbour Station - Posidono",
+        "short": "631",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF80C0",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30230011",
+        "label": "632",
+        "long": "Paphos - Geroskipou - Kouklia - Archimandrita",
+        "short": "632",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF80C0",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30230012",
+        "label": "632",
+        "long": "Archimandrita - Kouklia - Geroskipou - Paphos",
+        "short": "632",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF80C0",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30230021",
+        "label": "632",
+        "long": "Karavella St. - Tombs of the Kings St. - Geroskipou - A",
+        "short": "632",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "30240011",
+        "label": "633",
+        "long": "Karavella Station - Nikoklia - Fasoula - Mamonia - Pras",
+        "short": "633",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "30240012",
+        "label": "633",
+        "long": "Agios Nikolaos - Filousa - Pretori - Kedares - Prastio",
+        "short": "633",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "30240021",
+        "label": "633",
+        "long": "Karavella Station - Nikoklia - Fasoula - Mamonia - Pras",
+        "short": "633",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "30240022",
+        "label": "633",
+        "long": "Agios Nikolaos - Filousa - Arminou - Pretori - Kedares",
+        "short": "633",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "30250011",
+        "label": "634",
+        "long": "Karavella Station - Choletria - Stavrokonnou - Kelokeda",
+        "short": "634",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "30250012",
+        "label": "634",
+        "long": "Arminou - Mesana - Salamiou - Kelokedara - Stavrokonnou",
+        "short": "634",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "30250021",
+        "label": "634",
+        "long": "Karavella Station - Technical School - Choletria - Stav",
+        "short": "634",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "004000",
+        "color_name": "black",
+        "has_shape": false,
+        "id": "30250022",
+        "label": "634",
+        "long": "Arminou - Mesana - Salamiou - Kelokedara - Stavrokonnou",
+        "short": "634",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ACAE39",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "30260011",
+        "label": "635",
+        "long": "Agios Ioannis - Trachipedoula - Stavrokonnou",
+        "short": "635",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "ACAE39",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "30260012",
+        "label": "635",
+        "long": "Stavrokonnou - Trachipedoula - Agios Ioannis",
+        "short": "635",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1B9403",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30270011",
+        "label": "636",
+        "long": "Karavella St. - Ag. Varvara - Nata - Amargeti - Ag. Mar",
+        "short": "636",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1B9403",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30270012",
+        "label": "636",
+        "long": "Agios Fotios - Statos - Kilinia - Galataria - Pentalia",
+        "short": "636",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1B9403",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30270021",
+        "label": "636",
+        "long": "Karavella St. - Ag. Varvara - Nata - Amargeti - Nea Pen",
+        "short": "636",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1B9403",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30270022",
+        "label": "636",
+        "long": "Agios Fotios - Statos - Kilinia - Galataria - Pentalia",
+        "short": "636",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1B9403",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30270031",
+        "label": "636",
+        "long": "Karavella St. - Technical School - Ag. Varvara - Nata -",
+        "short": "636",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1B9403",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30270032",
+        "label": "636",
+        "long": "Agios Fotios - Statos - Nea Pentalia - Nata - Ag. Varva",
+        "short": "636",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1B9403",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "30270042",
+        "label": "636",
+        "long": "Agios Fotios - Statos - Koilineia - Galataria - Pentali",
+        "short": "636",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF33CC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30280011",
+        "label": "637",
+        "long": "Karavella Station - Tsada - Polemi - Psathi - Ag. Dimit",
+        "short": "637",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF33CC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30280012",
+        "label": "637",
+        "long": "Panagia - Asprogia - Kannaviou - Ag. Dimitrianos - Psat",
+        "short": "637",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF33CC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30280021",
+        "label": "637",
+        "long": "Karavella Station - Tsada - Polemi - Psathi - Ag. Dimit",
+        "short": "637",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF33CC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30280022",
+        "label": "637",
+        "long": "Panagia - Asprogia - Kannaviou - Ag. Dimitrianos - Psat",
+        "short": "637",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF33CC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30280032",
+        "label": "637",
+        "long": "Panagia - Asprogia (village) - Kannaviou - Ag. Dimitria",
+        "short": "637",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DF32FF",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "30290011",
+        "label": "638",
+        "long": "Ag. Dimitrianos - Milia - Drinia - Drimou - Simou - Las",
+        "short": "638",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000A0",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "30300011",
+        "label": "639",
+        "long": "Karavella Station - Tsada - Kallepia - Letimpou - Lemon",
+        "short": "639",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000A0",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "30300012",
+        "label": "639",
+        "long": "Choulou - Lemona - Letimpou - Kallepia - Tsada (Main Ro",
+        "short": "639",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8080FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30310011",
+        "label": "640",
+        "long": "Polis Chrysochous - Steni - Peristerona - Filousa - Lys",
+        "short": "640",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8080FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30310012",
+        "label": "640",
+        "long": "Lysos - Filousa - Peristerona - Steni - Polis Chrysocho",
+        "short": "640",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "400080",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "30320011",
+        "label": "641",
+        "long": "Polis Chrysochous - Terra - Kritou Terra - Inia - Drous",
+        "short": "641",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "400080",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "30320012",
+        "label": "641",
+        "long": "Paphos - Theletra - Kathikas - Arodes - Droushia - Inia",
+        "short": "641",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808040",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "30330011",
+        "label": "643A",
+        "long": "Pachyammos - Pomos - Nea Dimmata - Ag. Marina - Argaka",
+        "short": "643A",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "808040",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "30330012",
+        "label": "643A",
+        "long": "Polis Chrysochous - Argaka - Ag. Marina - Nea Dimmata -",
+        "short": "643A",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "30340011",
+        "label": "643B",
+        "long": "Pachyammos - Pomos - Nea Dimmata - Ag. Marina - Pano Gi",
+        "short": "643B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "30340012",
+        "label": "643B",
+        "long": "Polis Chrysochous - Pano Argaka - Argaka - Pano Gialia",
+        "short": "643B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF80",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "30350011",
+        "label": "645",
+        "long": "Polis Chrysochous - Chrysochou - Goudi - Choli - Skoull",
+        "short": "645",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF80",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "30350012",
+        "label": "645",
+        "long": "Karavella Station - Tsada - Stroumbi - Giolou - Skoulli",
+        "short": "645",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF80",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "30350021",
+        "label": "645",
+        "long": "Polis Chrysochous - Chrysochou - Goudi - Choli - Skoull",
+        "short": "645",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF80",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "30350022",
+        "label": "645",
+        "long": "Karavella St.- Government Offices - Tsada - Stroumbi -",
+        "short": "645",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF80",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "30350031",
+        "label": "645",
+        "long": "Polis Chrysochous - Polis Schools - Chrysochou - Goudi",
+        "short": "645",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFF80",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "30350032",
+        "label": "645",
+        "long": "Karavella Station - Tsada - Stroumbi - Giolou - Skoulli",
+        "short": "645",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF80FF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "30360011",
+        "label": "646",
+        "long": "Polis Chrysochous - Chrysochou - Goudi - Skoulli - Chol",
+        "short": "646",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF80FF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "30360012",
+        "label": "646",
+        "long": "Giolou - Miliou - Akourdalia - Choli - Skoulli - Goudi",
+        "short": "646",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "30370011",
+        "label": "647",
+        "long": "Polis Chrysochous - Prodromi - Androlykou",
+        "short": "647",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0000FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "30370012",
+        "label": "647",
+        "long": "Androlykou - Prodromi - Polis Chrysochous",
+        "short": "647",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30380011",
+        "label": "648",
+        "long": "Coral Bay - Pegia - Kathikas - Arodes - Inia - Droushia",
+        "short": "648",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30380012",
+        "label": "648",
+        "long": "Polis Chrysochous - Droushia - Inia - Arodes - Kathikas",
+        "short": "648",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A05A01",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "30390011",
+        "label": "649",
+        "long": "Polis Chrysochous - Chrysochou - Skoulli - Giolou - Str",
+        "short": "649",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "A05A01",
+        "color_name": "brown",
+        "has_shape": false,
+        "id": "30390012",
+        "label": "649",
+        "long": "Pafos Airport - Timi - Geroskipou - L. Mesogis - Tsada",
+        "short": "649",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007324",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30400011",
+        "label": "621",
+        "long": "Polis Chrysochous - Polis Hospital",
+        "short": "621",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "007324",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "30400012",
+        "label": "621",
+        "long": "Polis Hospital - Polis Chrysochous",
+        "short": "621",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8C008C",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30410011",
+        "label": "607B",
+        "long": "Karavella Station - Chloraka - Lemba - \u039aissonerga - Peg",
+        "short": "607B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "8C008C",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30410012",
+        "label": "607B",
+        "long": "Pegeia (Akoursos) - \u039aissonerga - Lemba - Chloraka - Kar",
+        "short": "607B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30420011",
+        "label": "616B",
+        "long": "Coral Bay - Sea Caves - Agios Georgios Pegias",
+        "short": "616B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "800080",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "30420012",
+        "label": "616B",
+        "long": "Agios Georgios Pegias - Sea Caves - Coral Bay",
+        "short": "616B",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 889,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 889,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "889 of 889 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 4871,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "4871 of 4871 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "mixed_case_recommended_field",
+      "count": 690,
+      "effort": "Often a bulk fix in your scheduling software.",
+      "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+      "owner": "Likely your export tool",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+      "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

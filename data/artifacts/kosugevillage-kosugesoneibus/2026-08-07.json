@@ -1,0 +1,404 @@
+{
+  "agency": {
+    "country": "JP",
+    "id": "kosugevillage-kosugesoneibus",
+    "name": "\u5c0f\u83c5\u6751\u55b6\u30d0\u30b9",
+    "operating_note": "\u5c0f\u83c5\u6751\u55b6\u30d0\u30b9 is the public schedule named by the repository. This registry item represents one feed record.",
+    "subdivision_code": "JP-19",
+    "subdivision_name": "Yamanashi"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 15.0,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 4,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 100.0,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 26,
+        "translations": {
+          "feed_lang": "ja",
+          "has_translations": true,
+          "languages": [
+            "en",
+            "ja-hrkt"
+          ],
+          "translated_tables": [
+            "routes",
+            "stops",
+            "trips"
+          ],
+          "translation_count": 66
+        },
+        "trips": 4,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 26,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "26 of 26 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 4,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "4 of 4 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 52.5,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 3,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 1,
+          "WARNING": 122
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "non_ascii_or_non_printable_char",
+          "count": 121,
+          "effort": "A planned ID change, not a quick text cleanup.",
+          "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some internal IDs use characters outside the basic text set.",
+          "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "unknown_file",
+          "count": 1,
+          "effort": "A quick look at the flagged file.",
+          "fix": "Check the flagged file name for a typo of a standard GTFS file. Remove it if it is a vendor extra.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "The feed includes a file that is not part of the GTFS spec.",
+          "why": "Apps ignore files they don't know, and a stray file can hide a misspelled standard file name."
+        }
+      ],
+      "name": "correctness",
+      "score": 87.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 3 kinds of issue across 123 instances (0 error, 122 warning, 1 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 236,
+        "effective_expiry_date": "2027-03-31",
+        "feed_end_date": "2027-03-31",
+        "feed_start_date": "2026-04-01",
+        "feed_version": "-2026\u5e7407\u670823\u65e5 09\u664204\u520635\u79d2-\u897f\u6ca2\u30c4\u30fc\u30ebver8.31",
+        "has_feed_info": true,
+        "last_service_date": "2027-03-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 236 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data covers the next 238 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC0 1.0; published by \u5c0f\u83c5\u6751 through the official Japanese GTFS Data Repository (gtfs-data.jp).",
+    "reachable": true,
+    "sha256": "3b867c4dc71a2443341420a46f5d976f131e4c5e6d0ab04e2abeea063dc4bb08",
+    "size_bytes": 6420,
+    "static_url": "https://api.gtfs-data.jp/v2/organizations/kosugevillage/feeds/kosugesoneibus/files/feed.zip?rid=current"
+  },
+  "fetch": {
+    "final_url": "https://prodgtfsdatareposharedinfrasta-filebucketcdfcd6de-1qqhtsxlwh6la.s3.amazonaws.com/kosugevillage/kosugesoneibus/35187ae2-0097-43f7-bfad-131b298d810f/feed.zip?response-content-disposition=attachment%3B%20filename%3Dfeed_kosugevillage_kosugesoneibus_20260401_20260723090808.zip&AWSAccessKeyId=ASIARI5CFYANLLI75AS5&Signature=bRA2zv2bKPjW0CuW7hoROtE7dtI%3D&x-amz-security-token=IQoJb3JpZ2luX2VjEF8aDmFwLW5vcnRoZWFzdC0xIkgwRgIhAM4%2B2oV%2Fti8LdUZy%2FsQlqaF0B9a1PZ1mtSi1QNQxZRM4AiEAzGbSmMIl8gl%2BZjh423j7t%2BU%2FKmR8dE5DYzH1xdpdydYq0AQIKRAFGgwwODc4NTAwNzQxMzgiDKgZ6aeCeDr%2F2UM9JCqtBCcEBy8zANESwfib8ATPN8DqaZ7dEBoBf%2Bfh%2Fyuc2K1s1P6xCa3DNhdWBomzrE%2FqcWd48oMz0d%2BPUvZrYjdOXKoZV11eQxU7cSa5QoNiuOtEYssBOmznTWs8zYD8Lw%2FeAFHbIUqpiH%2F23lIpI7hgxsZfJrmx8J1CQsMu6JUO5C8CbS1Ri%2Bfa4Oygrwu5PTqS%2Bg3Zi7T66WEr5q31lyAdEFfPu%2BFoPbC6qJsuh63iU5otJ%2BmW7Ai%2Fjix0duiIkmLB7N80aTvNXhPWoK3CyhvBMmw3WG3BJYm9eqlA7MQRrxYCqfsr2GQXUHoLsIOuloxbkWVlKxUxnRcMDuA5TCSIGqixuWLnUGjdkVNVfaCZoei3Y7V96pMnGUSgzTjAWHvQ1MYAspoFz2%2BwPBuxkNwu1QR1nZNHB3X2TfdSCYJv8YFu4LKxWjlpWb%2FTIKQow9PXoVdBLXzlz8uA9ter7a1Lg4agjHi7bj6F5Y3iXpHw4bgQloqpbPRM4ncG9hnqppqKOjs9728vZk4TETR32Zwd40c6ZtcNxgsScTVxNw4gPiKnar7W4TMtmKhrEj5VsCwk1HT%2BSPdYXxLl695gowjBf1Ms%2FdB3J%2BrnmGymfbucyCDDgYEA9cxPMJi7tFvV5iYxZCr6A3%2BvoL2gI4Ku5ubHTeru%2FbIEsYsDPMwl9ETamzEBRjvX8Ko%2BNiOgqaP%2F6XJ65N%2FMlVqN4PP3W85u3jvuxkkgE6XTKKOZuGjgYlFSMIWszdMGOqIBI2f1b0dkzXK%2FTnuAIgsviG%2BtvVsdlBMW2MfH%2BZ%2FSvHvxTr0aADO3Ru12b%2FGyqO9DqknxjB7MTaIFwSZ0puOgIlQrFB4o4T9blgcfSgrULo8O%2BGBWEbhpFSPDg7MkWba6s4QQ8gJzy75G9ciavFBN74um7IXXK0qIxmJWc%2FIQaQPp%2FwbyXorOoOsIWuo7qdQiIxnUN%2FM8D7CjjkNKqcF%2BaOTS&Expires=1785944451",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      138.92822,
+      35.72033,
+      139.00426,
+      35.77839
+    ],
+    "lat": 35.75892,
+    "lon": 138.96006,
+    "stop_count": 26
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 4,
+        "trip_count": 4,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 4,
+    "trip_count": 4
+  },
+  "overall": {
+    "grade": "C",
+    "margin_to_lower_band": 9.7,
+    "margin_to_next_band": 0.3,
+    "score": 79.7
+  },
+  "recommendations": [],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 26,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 4
+  },
+  "route_map": {
+    "drawn_route_count": 0,
+    "has_shapes": false,
+    "path": "data/artifacts/kosugevillage-kosugesoneibus/geometry.geojson",
+    "route_count": 4,
+    "routes": [
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "1",
+        "label": "\u5c0f\u83c5\u6751\u55b6\u30d0\u30b9\u7b2c1\u4fbf",
+        "long": "\u5c0f\u83c5\u6751\u55b6\u30d0\u30b9\u7b2c1\u4fbf",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "2",
+        "label": "\u5c0f\u83c5\u6751\u55b6\u30d0\u30b9\u7b2c2\u4fbf",
+        "long": "\u5c0f\u83c5\u6751\u55b6\u30d0\u30b9\u7b2c2\u4fbf",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "3",
+        "label": "\u5c0f\u83c5\u6751\u55b6\u30d0\u30b9\u7b2c3\u4fbf",
+        "long": "\u5c0f\u83c5\u6751\u55b6\u30d0\u30b9\u7b2c3\u4fbf",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1A7A46",
+        "color_name": "green",
+        "has_shape": false,
+        "id": "4",
+        "label": "\u5c0f\u83c5\u6751\u55b6\u30d0\u30b9\u7b2c4\u4fbf",
+        "long": "\u5c0f\u83c5\u6751\u55b6\u30d0\u30b9\u7b2c4\u4fbf",
+        "short": "",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 26,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 26,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "26 of 26 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    },
+    {
+      "code": "scorecard_wheelchair_accessible_unknown",
+      "count": 4,
+      "effort": "A default or per-trip field in your export.",
+      "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+      "owner": "Likely your export tool",
+      "points": 15.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "4 of 4 trips don't say whether the vehicle is wheelchair accessible.",
+      "why": "Even with accessible stops, riders need to know the bus itself can take them."
+    },
+    {
+      "code": "non_ascii_or_non_printable_char",
+      "count": 121,
+      "effort": "A planned ID change, not a quick text cleanup.",
+      "fix": "Only change the flagged IDs if an app needs basic ASCII values. Update each place that uses the ID. Keep all names and headsigns in their original language.",
+      "owner": "",
+      "points": 8.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "Some internal IDs use characters outside the basic text set.",
+      "why": "These IDs are valid UTF-8 data. This warning is only about support in older apps. It does not mean that names in other languages are wrong."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

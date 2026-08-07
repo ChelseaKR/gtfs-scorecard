@@ -28,6 +28,18 @@ the declared public surface).
 ## [Unreleased]
 
 ### Fixed
+- **The published rollup schema never learned the country identity fields the
+  pipeline has emitted since the country program pages shipped (#121).**
+  `rollups.py`'s `_rollup_identity` adds `country_code` and `country_name` to
+  every country rollup, but `web/schemas/rollup.schema.json` still closed the
+  `rollup` block over `id` and `name` alone — so every published
+  `rollups/country-*.json` violated its own advertised contract.
+  `test_every_published_rollup_conforms` could not catch it because the
+  committed artifact snapshot predated country rollups entirely; the first
+  re-materialized snapshot (below) put one in front of the test and it failed
+  immediately. The schema now declares both fields as optional, per its own
+  "additive within a major schema_version" rule; the top level and the
+  `rollup` block stay closed.
 - **The gate that exists to stop corpus figures going stale was itself reading
   a frozen number.** `check_doc_stats.py` measures its `pages` and `scored`
   denominators from `data/artifacts/index.json`, and automation stopped writing
@@ -157,6 +169,23 @@ the declared public surface).
 
 ### Changed
 
+- **Re-materialize the committed artifact fallback snapshot from the live S3
+  corpus (2026-08-07), moving the doc-stats denominator instead of weakening the
+  gate.** The previous entry made `check_doc_stats.py` name its frozen snapshot
+  honestly; this one refreshes the snapshot itself, using the same bounded flow
+  the Pages build runs (`aws s3 sync` of the documented public set, then
+  `scripts/materialize_current_artifacts.py` to validate index/latest parity).
+  `data/artifacts/index.json` now carries the corpus the service actually
+  publishes — 2,182 pages with 2,182 numeric latest scores, newest scoring date
+  2026-08-07, schema 1.17 — against the cutover snapshot's 1,128 pages frozen at
+  2026-07-10. With the denominator refreshed, the unchanged `floor` gate itself
+  forced every "more than 1,100" claim up to "more than 2,100" (README,
+  CLAUDE.md, `docs/roadmap.md`, `docs/product-roadmap.md`,
+  `docs/feature-roadmap.md`) and the landing page's static "1,100+" published
+  count up to "2,100+". The snapshot still only moves when it is deliberately
+  re-materialized — automation stopped committing generated data at the S3
+  cutover and still does not — so the gate's output keeps printing the
+  snapshot's own date beside the counts.
 - Cap oversized per-agency route tables at 500 rows while preserving the total
   route count and linking the complete current JSON record. Normal agency pages
   remain unchanged; national aggregates no longer produce multi-megabyte HTML.

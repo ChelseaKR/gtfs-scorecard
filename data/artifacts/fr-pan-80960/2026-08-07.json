@@ -1,0 +1,2028 @@
+{
+  "agency": {
+    "country": "FR",
+    "id": "fr-pan-80960",
+    "name": "R\u00e9seau interurbain et scolaire - Dr\u00f4me (26)",
+    "subdivision_code": "FR-ARA",
+    "subdivision_name": "Auvergne-Rh\u00f4ne-Alpes"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.9,
+          "stops_marked_accessible_pct": 1.4,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 1.4,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 15.0,
+          "stop_names": 14.9,
+          "wheelchair_stops": 0.3,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 1436,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 99.5,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 2274,
+        "translations": {
+          "feed_lang": "fr",
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 1436,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 1.4,
+        "wheelchair_marked_accessible_pct": 1.4,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2243,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 24.7,
+          "severity": "WARNING",
+          "what": "2243 of 2274 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 1436,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "1436 of 1436 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.8,
+      "status": "measured",
+      "summary": "1% of stops state wheelchair accessibility (1% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 15,
+        "instances_by_severity": {
+          "ERROR": 16,
+          "INFO": 169,
+          "WARNING": 1103
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "decreasing_or_equal_stop_time_distance",
+          "count": 11,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+          "owner": "Likely your export tool",
+          "points": 18.0,
+          "severity": "ERROR",
+          "what": "Some trips have stop times whose distances along the route go backwards.",
+          "why": "Apps can show buses jumping backwards or mis-order stops."
+        },
+        {
+          "code": "point_near_origin",
+          "count": 5,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'point_near_origin' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 12.0,
+          "severity": "ERROR",
+          "what": "Point near origin (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "trip_distance_exceeds_shape_distance_below_threshold",
+          "count": 690,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Re-generate shape_dist_traveled on export so stop and shape distances use the same units.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "On some trips the stop distances run a little past the end of the route line.",
+          "why": "The stop and shape distance values don't quite line up, so any math that uses them can drift."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 149,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "unexpected_enum_value",
+          "count": 135,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unexpected_enum_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Unexpected enum value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 89,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "fast_travel_between_consecutive_stops",
+          "count": 10,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the flagged stop times for transposed minutes.",
+          "owner": "",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some scheduled trips move faster between stops than a bus can.",
+          "why": "Usually a typo'd stop time; riders get arrival times no bus can meet."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 9,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the bus doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "fast_travel_between_far_stops",
+          "count": 5,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'fast_travel_between_far_stops' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Fast travel between far stops (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 5,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 5,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the bus route through the wrong streets or point riders to the wrong corner."
+        },
+        {
+          "code": "route_color_contrast",
+          "count": 4,
+          "effort": "One field per route.",
+          "fix": "Pick a darker/lighter route_text_color for the flagged routes.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route colors don't contrast with their text color.",
+          "why": "Route badges get hard to read, most of all for riders with low vision."
+        },
+        {
+          "code": "missing_feed_contact_email_and_url",
+          "count": 1,
+          "effort": "One field, set once in export settings.",
+          "fix": "Add feed_contact_email or feed_contact_url to feed_info.txt.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt lists no contact email and no contact URL.",
+          "why": "Without a contact, apps like Google Maps can't reach you when they find a problem in the feed."
+        },
+        {
+          "code": "trip_coverage_not_active_for_next7_days",
+          "count": 1,
+          "effort": "One setting in most export tools.",
+          "fix": "Trim past service periods the next time you export.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Many of the feed's trips don't run at all in the next 7 days.",
+          "why": "It usually means old service periods are still in the export, making the feed bigger and harder to check."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 169,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 1.0,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        }
+      ],
+      "name": "correctness",
+      "score": 1.0,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 15 kinds of issue across 1288 instances (16 error, 1103 warning, 169 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 389,
+        "effective_expiry_date": "2027-08-31",
+        "feed_end_date": "2027-08-31",
+        "feed_start_date": "2026-07-30",
+        "feed_version": "20260730",
+        "has_feed_info": true,
+        "last_service_date": "2027-08-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [],
+      "name": "freshness",
+      "score": 100.0,
+      "status": "measured",
+      "summary": "Service data covers the next 389 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "2 validator errors to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 391 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 1% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 2 validator errors to resolve. States wheelchair access on 1% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "Open Database License (ODbL), recorded by France's National Access Point; credit R\u00e9gion Auvergne-Rh\u00f4ne-Alpes, identify the ODbL, and preserve share-alike terms where they apply.",
+    "reachable": true,
+    "sha256": "78e95d29fe93e9d23780d4184d38bd19f23f23999d36108ea8fafb0ae0145ed6",
+    "size_bytes": 18354084,
+    "static_url": "https://www.data.gouv.fr/api/1/datasets/r/fda59af2-0eb3-4a8a-8e59-593f768f836a"
+  },
+  "fetch": {
+    "final_url": "https://api.oura3.cityway.fr/dataflow/offre-tc/download?provider=DROME&dataFormat=GTFS&dataProfil=OPENDATA",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -3.40456,
+      27.14097,
+      6.09014,
+      45.36924
+    ],
+    "lat": 44.73058,
+    "lon": 4.96954,
+    "stop_count": 2274
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 135,
+        "trip_count": 1436,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 135,
+    "trip_count": 1436
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 37.2,
+    "margin_to_next_band": 22.8,
+    "score": 37.2
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 4,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "4 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (D14, D25, D39, D42).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 26,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "26 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"RD540 RD179\", \"RD64 RD94\", \"RD571 VC\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1822,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 1436
+  },
+  "route_map": {
+    "drawn_route_count": 135,
+    "has_shapes": true,
+    "path": "data/artifacts/fr-pan-80960/geometry.geojson",
+    "route_count": 135,
+    "routes": [
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:FlexibleLine:1004911:LOC",
+        "label": "D50",
+        "long": "LORIOL-LIVRON-ALLEX-CREST-VALENCE TGV",
+        "short": "D50",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:FlexibleLine:1004912:LOC",
+        "label": "D51",
+        "long": "VALENCE TGV- TAIN- TOURNON",
+        "short": "D51",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:FlexibleLine:1004913:LOC",
+        "label": "D52",
+        "long": "VALENCE TGV- CREST- SAOU- BOURDEAUX",
+        "short": "D52",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:FlexibleLine:1004914:LOC",
+        "label": "D53",
+        "long": "VALENCE TGV- CREST- SAILLANS",
+        "short": "D53",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FB65E7",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "DROME:FlexibleLine:1006874:LOC",
+        "label": "D35TAD",
+        "long": "MONTELIMAR DIEULEFIT TAD",
+        "short": "D35TAD",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0977EC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "DROME:Line:1004882:LOC",
+        "label": "D01",
+        "long": "EPINOUZE - ST RAMBERT D'ALBON",
+        "short": "D01",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "34EA37",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "DROME:Line:1004883:LOC",
+        "label": "D02",
+        "long": "ANNEYRON - ST SORLIN - ST VALLIER",
+        "short": "D02",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F7A355",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "DROME:Line:1004884:LOC",
+        "label": "D03",
+        "long": "LE GRAND SERRE - HAUTERIVES - SAINT VALLIER",
+        "short": "D03",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE1717",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "DROME:Line:1004885:LOC",
+        "label": "D04",
+        "long": "VALENCE - TAIN L'HERMITAGE",
+        "short": "D04",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1FEF2D",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "DROME:Line:1004886:LOC",
+        "label": "D05",
+        "long": "VALENCE - ROMANS - VERCORS",
+        "short": "D05",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F8F22A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "DROME:Line:1004887:LOC",
+        "label": "D08",
+        "long": "VALENCE GARE - ST DONAT",
+        "short": "D08",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F312EB",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "DROME:Line:1004888:LOC",
+        "label": "D09",
+        "long": "BOURG DE PEAGE - ROMANS - ST VALLIER",
+        "short": "D09",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "1D77ED",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "DROME:Line:1004889:LOC",
+        "label": "D10",
+        "long": "TOURNON - TAIN L'HERMITAGE - ROMANS",
+        "short": "D10",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D11FF4",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "DROME:Line:1004890:LOC",
+        "label": "D11",
+        "long": "EPINOUZE - ANDANCETTE",
+        "short": "D11",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F971F5",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "DROME:Line:1004891:LOC",
+        "label": "D12",
+        "long": "ROMANS - HAUTERIVES - BEAUREPAIRE",
+        "short": "D12",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EA1F1F",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "DROME:Line:1004892:LOC",
+        "label": "D13",
+        "long": "CHANTEMERLE - ST DONAT - ROMANS",
+        "short": "D13",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "901414",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "DROME:Line:1004893:LOC",
+        "label": "D14",
+        "long": "ROMANS - VALHERBASSE - LE GRAND SERRE",
+        "short": "D14",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "3BB5F1",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "DROME:Line:1004894:LOC",
+        "label": "D23",
+        "long": "D23  VALENCE- GRANE",
+        "short": "D23",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E89A11",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "DROME:Line:1004895:LOC",
+        "label": "D24",
+        "long": "D24 VALENCE-CREST",
+        "short": "D24",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "871C1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "DROME:Line:1004896:LOC",
+        "label": "D25",
+        "long": "VALENCE - CREST - PLAN DE BAIX",
+        "short": "D25",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "EE49D8",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "DROME:Line:1004897:LOC",
+        "label": "D26",
+        "long": "D26 LIVRON-CREST",
+        "short": "D26",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "33A7F0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "DROME:Line:1004898:LOC",
+        "label": "D27",
+        "long": "BOURDEAUX - CREST",
+        "short": "D27",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "46EA43",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "DROME:Line:1004899:LOC",
+        "label": "D28",
+        "long": "D28 CREST-DIE",
+        "short": "D28",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F74040",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "DROME:Line:1004900:LOC",
+        "label": "D29",
+        "long": "BEAURIERES - LUC EN DIOIS - DIE",
+        "short": "D29",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "B730E8",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "DROME:Line:1004901:LOC",
+        "label": "D30",
+        "long": "D30 VALENCE-MONTELIMAR",
+        "short": "D30",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F57FF1",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "DROME:Line:1004902:LOC",
+        "label": "D35",
+        "long": "MONTELIMAR - DIEULEFIT - VALREAS",
+        "short": "D35",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "72F570",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "DROME:Line:1004903:LOC",
+        "label": "D36",
+        "long": "MONTELIMAR - GRIGNAN - VALREAS - NYONS",
+        "short": "D36",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "70F085",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "DROME:Line:1004904:LOC",
+        "label": "D37",
+        "long": "VAISON - NYONS - LA MOTTE CHALANCON",
+        "short": "D37",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "56A1F0",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "DROME:Line:1004905:LOC",
+        "label": "D38",
+        "long": "NYONS - BELLECOMBE TARRENDOL",
+        "short": "D38",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5F1B1B",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "DROME:Line:1004906:LOC",
+        "label": "D39",
+        "long": "VAISON - NYONS - LACHAU",
+        "short": "D39",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "631C1C",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "DROME:Line:1004907:LOC",
+        "label": "D42",
+        "long": "MONTELIMAR - ST PAUL TROIS CHATEAUX",
+        "short": "D42",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "E2EE3A",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "DROME:Line:1004908:LOC",
+        "label": "D43",
+        "long": "MEVOUILLON - LARAGNE",
+        "short": "D43",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "5691F0",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "DROME:Line:1004909:LOC",
+        "label": "D44",
+        "long": "NYONS - ST P - PIERRELATTE - MONTELIMAR",
+        "short": "D44",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "D8EE2F",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "DROME:Line:1004910:LOC",
+        "label": "D45",
+        "long": "NYONS - VALREAS - GRIGNAN - PIERRELATTE",
+        "short": "D45",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1004929:LOC",
+        "label": "26-18010",
+        "long": "SCO DESSERTE HAUTERIVES - LE GRAND SERRE",
+        "short": "26-18010",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1004999:LOC",
+        "label": "26-16008",
+        "long": "SCO POET CELARD - BOURDEAUX",
+        "short": "26-16008",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005000:LOC",
+        "label": "26-18003",
+        "long": "SCO MEVOUILLON - CARPENTRAS",
+        "short": "26-18003",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005001:LOC",
+        "label": "26-18004",
+        "long": "SCO VASSIEUX - LA CHAPELLE EN VERCORS",
+        "short": "26-18004",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005002:LOC",
+        "label": "26-18006",
+        "long": "SCO VALENCE - BOURG - LA ROCHE DE GLUN",
+        "short": "26-18006",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005003:LOC",
+        "label": "26-18007",
+        "long": "SCO CLAVEYSON  - LA MOTTE - FAY LE CLOS",
+        "short": "26-18007",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005004:LOC",
+        "label": "26-18008",
+        "long": "SCO PLAN DE BAIX - BEAUFORT SUR G - SUZE",
+        "short": "26-18008",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005005:LOC",
+        "label": "26-18009",
+        "long": "SCO SOUSPIERRE - LE POET L - DIEULEFIT",
+        "short": "26-18009",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005006:LOC",
+        "label": "26-19001",
+        "long": "SCO CLANSAYES - ST PAUL TROIS CHATEAUX",
+        "short": "26-19001",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005007:LOC",
+        "label": "26-19003",
+        "long": "SCO BEGUDE DE MAZENC -  PUY ST MARTIN",
+        "short": "26-19003",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005008:LOC",
+        "label": "26-19004",
+        "long": "SCO ROYNAC - PUY ST MARTIN",
+        "short": "26-19004",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005009:LOC",
+        "label": "26-19005",
+        "long": "SCO SOUSPIERRE - MANAS - PONT DE BARRET",
+        "short": "26-19005",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005010:LOC",
+        "label": "26-19017",
+        "long": "SCO MONTJOYER - REAUVILLE",
+        "short": "26-19017",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005011:LOC",
+        "label": "26-19018",
+        "long": "SCO BOUVIERES - BOURDEAUX",
+        "short": "26-19018",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005012:LOC",
+        "label": "26-19019",
+        "long": "SCO ROCHECHINARD - ST JEAN EN ROYANS",
+        "short": "26-19019",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005013:LOC",
+        "label": "26-24001",
+        "long": "SCO ROUSSIEUX - CHAUVAC - ROSANS",
+        "short": "26-24001",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005014:LOC",
+        "label": "26-24002",
+        "long": "SCO ROUSSAS - VALAURIE - PIERRELATTE",
+        "short": "26-24002",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005015:LOC",
+        "label": "26-24003",
+        "long": "SCO DONZERE - PIERRELATTE",
+        "short": "26-24003",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005016:LOC",
+        "label": "26-24004",
+        "long": "SCO COLONZELLE - CHAMARET",
+        "short": "26-24004",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005017:LOC",
+        "label": "26-24005",
+        "long": "SCO ALBON - ST UZE - PONSAS  - TOURNON",
+        "short": "26-24005",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005018:LOC",
+        "label": "26-24006",
+        "long": "SCO ROMANS - MERCUROL - TAIN L'HERMITAGE",
+        "short": "26-24006",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005019:LOC",
+        "label": "26-24007",
+        "long": "SCO BEAUSEMBLANT - ANNEYRON - ST RAMBERT",
+        "short": "26-24007",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005020:LOC",
+        "label": "26-24008",
+        "long": "SCO LENS LESTANG - EPINOUZE - ST SORLIN",
+        "short": "26-24008",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005021:LOC",
+        "label": "26-24009",
+        "long": "SCO ANNEYRON - CHATEAUNEUF DE GALAURE",
+        "short": "26-24009",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005022:LOC",
+        "label": "26-24010",
+        "long": "SCO ST CHR LE LARIS - LE GRAND SERRE",
+        "short": "26-24010",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005023:LOC",
+        "label": "26-24011",
+        "long": "SCO CLERIEUX - ST BARDOUX - ST DONAT",
+        "short": "26-24011",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005024:LOC",
+        "label": "26-24012",
+        "long": "SCO ALBON - ST MARTIN ROSIERS - ALBON",
+        "short": "26-24012",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005025:LOC",
+        "label": "26-24013",
+        "long": "SCO BOUVIERES - DIEULEFIT - MONTELIMAR",
+        "short": "26-24013",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005026:LOC",
+        "label": "26-24014",
+        "long": "SCO DIEULEFIT - CREST",
+        "short": "26-24014",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005027:LOC",
+        "label": "26-24015",
+        "long": "SCO SEDERON - GAP",
+        "short": "26-24015",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005028:LOC",
+        "label": "26-20016",
+        "long": "SCO LUS LA CROIX HAUTE -  LA JARJATTE",
+        "short": "26-20016",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005029:LOC",
+        "label": "26-20017",
+        "long": "SCO RECOUBEAU JANSAC - MONTLAUR EN DIOIS",
+        "short": "26-20017",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005030:LOC",
+        "label": "26-20018",
+        "long": "SCO MONTSEGUR - BOUCHET - SUZE LA ROUSSE",
+        "short": "26-20018",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005031:LOC",
+        "label": "26-20019",
+        "long": "SCO ROCHEGUDE - TULETTE - STE CECILE",
+        "short": "26-20019",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005032:LOC",
+        "label": "26-24016",
+        "long": "SCO MEVOUILLON - CARPENTRAS",
+        "short": "26-24016",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005033:LOC",
+        "label": "26-25001",
+        "long": "SCO BOUVANTE - ST JEAN EN ROYANS",
+        "short": "26-25001",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005034:LOC",
+        "label": "26-25002",
+        "long": "SCO RATIERES - ST AVIT",
+        "short": "26-25002",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005035:LOC",
+        "label": "26-21003",
+        "long": "SCO EYZAHUT - PONT DE BARRET",
+        "short": "26-21003",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005036:LOC",
+        "label": "26-21004",
+        "long": "SCO MONTBRISON - LE PEGUE",
+        "short": "26-21004",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005037:LOC",
+        "label": "26-21005",
+        "long": "SCO BOULC - GLANDAGE",
+        "short": "26-21005",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005038:LOC",
+        "label": "26-25003",
+        "long": "SCO DIVAJEU - AUTI - LA REP - CREST SUD",
+        "short": "26-25003",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005039:LOC",
+        "label": "26-25004",
+        "long": "SCO CHAMALOC - DIE",
+        "short": "26-25004",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005040:LOC",
+        "label": "26-25005",
+        "long": "SCO TRUINAS - BOURDEAUX",
+        "short": "26-25005",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005041:LOC",
+        "label": "26-25006",
+        "long": "SCO ROMEYER - DIE",
+        "short": "26-25006",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005042:LOC",
+        "label": "26-25007",
+        "long": "SCO ST JULIEN DE QUINT - VACHERES - DIE",
+        "short": "26-25007",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005043:LOC",
+        "label": "26-25008",
+        "long": "SCO AUREL - VERCHENY - PONTAIX - DIE",
+        "short": "26-25008",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005044:LOC",
+        "label": "26-25009",
+        "long": "SCO LORIOL - ALLEX - LIVRON",
+        "short": "26-25009",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005045:LOC",
+        "label": "26-25010",
+        "long": "SCO LIVRON - LORIOL",
+        "short": "26-25010",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005046:LOC",
+        "label": "26-25011",
+        "long": "SCO FRANCILLON SUR ROU - SOYANS - SAOU",
+        "short": "26-25011",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005047:LOC",
+        "label": "26-25012",
+        "long": "SCO LORIOL - LIVRON - LA VOULTE",
+        "short": "26-25012",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005048:LOC",
+        "label": "26-25013",
+        "long": "SCO BARSAC - VERCHENY - PONTAIX",
+        "short": "26-25013",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005049:LOC",
+        "label": "26-25014",
+        "long": "SCO CREST EST",
+        "short": "26-25014",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005050:LOC",
+        "label": "26-25015",
+        "long": "SCO MARIGNAC EN DIOIS - DIE",
+        "short": "26-25015",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005051:LOC",
+        "label": "26-25016",
+        "long": "SCO ST ROMAN - CHATILLON EN DIOIS",
+        "short": "26-25016",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005052:LOC",
+        "label": "26-25017",
+        "long": "SCO ROMANS - CHAB - VAUNAV - CREST NORD",
+        "short": "26-25017",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005053:LOC",
+        "label": "26-25018",
+        "long": "SCO ST NAZAIRE LE D - PRADELLE - DIE",
+        "short": "26-25018",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005054:LOC",
+        "label": "26-25019",
+        "long": "SCO MONTJOUX - LA ROCHE ST SECRET B",
+        "short": "26-25019",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005055:LOC",
+        "label": "26-25020",
+        "long": "SCO COLLEGE DE DIEULEFIT",
+        "short": "26-25020",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005056:LOC",
+        "label": "26-25021",
+        "long": "SCO MEVOUILLON - VILLEFRANCHE - SEDERON",
+        "short": "26-25021",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005057:LOC",
+        "label": "26-25022",
+        "long": "SCO LA CHARCE - LA MOTTE CHALANCON",
+        "short": "26-25022",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005058:LOC",
+        "label": "26-25023",
+        "long": "SCO CONDORCET - ST FEREOL - LES PILLES",
+        "short": "26-25023",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005059:LOC",
+        "label": "26-25024",
+        "long": "SCO CURNIER - SAHUNE",
+        "short": "26-25024",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005060:LOC",
+        "label": "26-21028",
+        "long": "SCO LA MOTTE - REMUZAT - NYONS",
+        "short": "26-21028",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005061:LOC",
+        "label": "26-25025",
+        "long": "SCO PONT DE L'ISERE - VALENCE",
+        "short": "26-25025",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005062:LOC",
+        "label": "26-25026",
+        "long": "SCO NYONS - DIE - LA CHAPELLE EN VERCORS",
+        "short": "26-25026",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005063:LOC",
+        "label": "26-25027",
+        "long": "SCO CREST OUEST",
+        "short": "26-25027",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005064:LOC",
+        "label": "26-21033",
+        "long": "SCO DIE - MONTELIMAR EREA",
+        "short": "26-21033",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005065:LOC",
+        "label": "26-21034",
+        "long": "SCO VILLEPERDRIX - SAHUNE",
+        "short": "26-21034",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005066:LOC",
+        "label": "26-21035",
+        "long": "SCO DESSERTE CFA LIVRON",
+        "short": "26-21035",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005067:LOC",
+        "label": "26-22001",
+        "long": "SCO ORIOL EN ROYANS - ST JEAN EN ROYANS",
+        "short": "26-22001",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005068:LOC",
+        "label": "26-22002",
+        "long": "SCO BELLEGARDE - ST DIZIER EN DIOIS",
+        "short": "26-22002",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005069:LOC",
+        "label": "26-22004",
+        "long": "SCO PONET ST AUBAN - DIE",
+        "short": "26-22004",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005070:LOC",
+        "label": "26-23001",
+        "long": "SCO LORIOL - LIVRON - ETOILE - VALENCE",
+        "short": "26-23001",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005071:LOC",
+        "label": "26-23002",
+        "long": "SCO GRANE - ALLEX - BEAUVALLON - VALENCE",
+        "short": "26-23002",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005072:LOC",
+        "label": "26-23003",
+        "long": "SCO CHAT DE BORDETTE - MIRABEL AUX BAR",
+        "short": "26-23003",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005073:LOC",
+        "label": "26-23004",
+        "long": "SCO VOLVENT - LA MOTTE CHALANCON",
+        "short": "26-23004",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005074:LOC",
+        "label": "26-23005",
+        "long": "SCO TULETTE- ROCHEGUDE- SUZE LA ROUSSE",
+        "short": "26-23005",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005075:LOC",
+        "label": "26-25028",
+        "long": "SCO BARRET DE LIOURE - SAULT",
+        "short": "26-25028",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005076:LOC",
+        "label": "26-23008",
+        "long": "SCO PIERRELATTE - LES BLACHES",
+        "short": "26-23008",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005077:LOC",
+        "label": "26-23009",
+        "long": "SCO FELINE SUR RIMANDOULE - PT DE BARRET",
+        "short": "26-23009",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005078:LOC",
+        "label": "26-23010",
+        "long": "SCO GRIGNAN - CHANTEMERLE LES GRIGNAN",
+        "short": "26-23010",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005079:LOC",
+        "label": "26-23011",
+        "long": "SCO PLAISIANS - EYGALIERS - B LES BAR",
+        "short": "26-23011",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005080:LOC",
+        "label": "26-23012",
+        "long": "SCO MONTAUBAN - ST AUBAN SUR LOUVEZE",
+        "short": "26-23012",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005081:LOC",
+        "label": "26-23013",
+        "long": "SCO ESPENEL - SAILLANS",
+        "short": "26-23013",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005082:LOC",
+        "label": "26-23014",
+        "long": "SCO MERINDOL - PROPRIAC - BUIS LES BAR",
+        "short": "26-23014",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005083:LOC",
+        "label": "26-23015",
+        "long": "SCO BUIS LES BARONNIES - MONTELIMAR",
+        "short": "26-23015",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005084:LOC",
+        "label": "26-23016",
+        "long": "SCO LA ROCHE SUR B - BUIS LES BARONNIES",
+        "short": "26-23016",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005085:LOC",
+        "label": "26-25029",
+        "long": "SCO ST AGNAN EN V - LA CHAPELLE EN V",
+        "short": "26-25029",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005086:LOC",
+        "label": "26-23018",
+        "long": "SCO ST JULIEN - LA CHAPELLE EN VERCORS",
+        "short": "26-23018",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005087:LOC",
+        "label": "26-23019",
+        "long": "SCO STE JALLE - ST SAUVEUR",
+        "short": "26-23019",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005088:LOC",
+        "label": "26-23020",
+        "long": "SCO ST EUPHEMIE - ST AUBAN",
+        "short": "26-23020",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005089:LOC",
+        "label": "26-23021",
+        "long": "SCO LA BEGUDE DE MAZENC - SOUSPIERRE",
+        "short": "26-23021",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1005090:LOC",
+        "label": "26-23022",
+        "long": "SCO LORIOL - LE POUZIN",
+        "short": "26-23022",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "F584F1",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "DROME:Line:1006877:LOC",
+        "label": "D35DOU",
+        "long": "MONTELIMAR DIEULEFIT DOUBLAGE",
+        "short": "D35DOU",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1006980:LOC",
+        "label": "26-25030",
+        "long": "SCO ST THOMAS EN ROYANS - ST LAURENT EN ROYANS",
+        "short": "26-25030",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1007705:LOC",
+        "label": "26-24017",
+        "long": "SCO SAUZET - CREST",
+        "short": "26-24017",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1007905:LOC",
+        "label": "26-20020",
+        "long": "SCO CLG DO MISTRAU - CLG STE CECILE",
+        "short": "26-20020",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "149DE1",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "DROME:Line:1008546:LOC",
+        "label": "D01DOU",
+        "long": "EPINOUZE ST RAMBERT DOUBLAGE",
+        "short": "D01DOU",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1009432:LOC",
+        "label": "D09DOU",
+        "long": "ST DONAT - ROMANS DOUBLAGE",
+        "short": "D09DOU",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1009452:LOC",
+        "label": "D25DOU",
+        "long": "VALENCE - CREST - PLAN DE BAIX DOUBLAGE",
+        "short": "D25DOU",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FFFFFF",
+        "color_name": "white",
+        "has_shape": true,
+        "id": "DROME:Line:1009472:LOC",
+        "label": "D02DOU",
+        "long": "SAINT VALLIER - SAINT SORLIN DOUBLAGE",
+        "short": "D02DOU",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 2274,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "decreasing_or_equal_stop_time_distance",
+      "count": 11,
+      "effort": "Usually an export-tool fix, not hand editing.",
+      "fix": "Re-generate shape distances in your export; flag to your vendor if it persists.",
+      "owner": "Likely your export tool",
+      "points": 18.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Some trips have stop times whose distances along the route go backwards.",
+      "why": "Apps can show buses jumping backwards or mis-order stops."
+    },
+    {
+      "code": "point_near_origin",
+      "count": 5,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'point_near_origin' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 12.0,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "Point near origin (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 2243,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 24.7,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "2243 of 2274 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

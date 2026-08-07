@@ -1,0 +1,1572 @@
+{
+  "agency": {
+    "id": "metropolitan-atlanta-rapid-transit-authority-marta",
+    "name": "Metropolitan Atlanta Rapid Transit Authority (MARTA)",
+    "subdivision_code": "US-GA",
+    "subdivision_name": "Georgia"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 74.9,
+          "stops_marked_accessible_pct": 59.8,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 59.8,
+          "trips_stated_pct": 100.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 0.0,
+          "headsigns": 14.9,
+          "stop_names": 0.1,
+          "wheelchair_stops": 14.9,
+          "wheelchair_trips": 15.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": false,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "none",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": false,
+        "headsign_applicable_trips": 52401,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 99.3,
+        "headsign_scored_pct": 99.3,
+        "mixed_case_stop_name_pct": 0.3,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": true,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 7057,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 52401,
+        "wheelchair_accessible_pct": 100.0,
+        "wheelchair_boarding_pct": 59.8,
+        "wheelchair_marked_accessible_pct": 59.8,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 2839,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 10.1,
+          "severity": "WARNING",
+          "what": "2839 of 7057 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_no_fare_data",
+          "count": 1,
+          "effort": "A small file for most flat-fare systems.",
+          "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+          "owner": "",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "The feed contains no fare information.",
+          "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 7033,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 14.9,
+          "severity": "INFO",
+          "what": "About 7033 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_missing_headsigns",
+          "count": 383,
+          "effort": "Usually one value per route pattern in your scheduling source.",
+          "fix": "Add the destination, direction, or 'via' label riders actually see to trip_headsign. Do not copy the route name. If the label changes during the trip, use stop_headsign.",
+          "owner": "",
+          "points": 0.1,
+          "severity": "WARNING",
+          "what": "383 of 52401 trips lack rider-facing destination or direction text.",
+          "why": "When a route has multiple directions or patterns, the route name alone may not tell riders which service is coming."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        },
+        {
+          "code": "scorecard_station_no_pathways",
+          "count": 1,
+          "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+          "fix": "Add pathways.txt connecting entrances, platforms, and any elevators, with a level for each.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "This feed models stations or entrances but has no pathways.txt.",
+          "why": "Trip planners can't guide riders through the station, and there is no step-free route information for wheelchair users."
+        }
+      ],
+      "name": "completeness",
+      "score": 52.4,
+      "status": "measured",
+      "summary": "60% of stops state wheelchair accessibility (60% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is not published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 9,
+        "instances_by_severity": {
+          "ERROR": 0,
+          "INFO": 2,
+          "WARNING": 13490
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 12334,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "stop_too_far_from_shape_using_user_distance",
+          "count": 1126,
+          "effort": "Usually an export-tool fix, not hand editing.",
+          "fix": "Check the flagged stops' shape_dist_traveled against the route shape, and re-generate it on export if they disagree.",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line, going by the feed's own distance values.",
+          "why": "Trip planners may draw the route down the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "service_has_no_active_day_of_the_week",
+          "count": 16,
+          "effort": "A few minutes in your scheduling software.",
+          "fix": "Delete the empty calendars or set their service days.",
+          "owner": "Likely your export tool",
+          "points": 6.0,
+          "severity": "WARNING",
+          "what": "Some service calendars have no days of the week switched on.",
+          "why": "Trips tied to these calendars never run; they are dead data that can mask real schedule problems."
+        },
+        {
+          "code": "expired_calendar",
+          "count": 4,
+          "effort": "One setting in most export tools.",
+          "fix": "Remove past service periods the next time you export the feed.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some service calendars in the feed have already ended.",
+          "why": "Expired calendars are dead weight and can hide real schedule problems from your staff and vendors."
+        },
+        {
+          "code": "route_long_name_contains_short_name",
+          "count": 4,
+          "effort": "One field per flagged route.",
+          "fix": "Drop the short name from route_long_name and keep the long name descriptive, like 'Downtown via 5th Ave'.",
+          "owner": "",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some route long names repeat the route's short name inside them.",
+          "why": "Apps show both names together, so riders see the number twice, like '5 5 Downtown'."
+        },
+        {
+          "code": "stop_too_far_from_shape",
+          "count": 4,
+          "effort": "A few minutes per flagged stop.",
+          "fix": "Check the flagged stops' coordinates and the route shape in your scheduling software; re-snap whichever is misplaced.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "Some stops sit far from the route line they belong to.",
+          "why": "Trip planners may draw the transit vehicle route through the wrong path or point riders to the wrong boarding location."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "stops_match_shape_out_of_order",
+          "count": 1,
+          "effort": "A few minutes per flagged trip.",
+          "fix": "Check the stop order and the shape direction in your scheduling software; the shape is often drawn backwards.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "On some trips the stops fall along the route line in a different order than the schedule lists.",
+          "why": "Trip planners can draw the transit vehicle doubling back or skipping ahead, which confuses riders reading the map."
+        },
+        {
+          "code": "unused_station",
+          "count": 2,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'unused_station' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Unused station (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        }
+      ],
+      "name": "correctness",
+      "score": 57.5,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 9 kinds of issue across 13492 instances (0 error, 13490 warning, 2 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 15,
+        "effective_expiry_date": "2026-08-21",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-08-21",
+        "seasonal_boundary": true,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_feed_expiring_soon",
+          "count": 1,
+          "effort": "One export setting.",
+          "fix": "Re-export with a validity window that reaches at least 60 days out.",
+          "owner": "Likely your export tool",
+          "points": 65.0,
+          "severity": "WARNING",
+          "what": "Service data runs out in 15 day(s).",
+          "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+        },
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 10.0,
+      "status": "measured",
+      "summary": "Service data runs out in 15 day(s). Publish an updated feed soon or riders will lose trip planning.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "details": {
+        "configured_kinds": [
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "coverage_pct": 20.0,
+        "covered_trips": 1,
+        "drift": {
+          "median_seconds": 4541,
+          "observations": 301,
+          "on_time_share_pct": 19.9,
+          "p90_abs_seconds": 8847
+        },
+        "kinds_configured": 2,
+        "kinds_reachable": 2,
+        "reachable_kinds": [
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "rt_freshness": "fresh",
+        "samples": 6,
+        "scheduled_trips_in_window": 5,
+        "vehicles_checked": 28,
+        "vehicles_on_route_pct": 46.4,
+        "worst_lag_seconds": 1
+      },
+      "findings": [
+        {
+          "code": "scorecard_rt_trip_coverage",
+          "count": 4,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+          "owner": "",
+          "points": 28.0,
+          "severity": "WARNING",
+          "what": "4 of 5 trips scheduled during the sampling window had no live predictions.",
+          "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+        },
+        {
+          "code": "scorecard_rt_vehicles_off_route",
+          "count": 15,
+          "effort": "A vendor support ticket with the trip ids attached.",
+          "fix": "Ask your AVL vendor to check vehicle-to-trip assignments for the flagged trips.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "15 of 28 sampled vehicle positions were far from their assigned route (worst: 11693 m).",
+          "why": "A transit vehicle shown off its route usually means a wrong trip assignment; riders watch their transit vehicle drive the wrong path."
+        },
+        {
+          "code": "scorecard_rt_predictions_implausible",
+          "count": 301,
+          "effort": "A vendor data-mapping question.",
+          "fix": "Spot-check the flagged predictions against what transit vehicles actually did; raise trip-matching with your AVL vendor.",
+          "owner": "",
+          "points": 0.0,
+          "severity": "WARNING",
+          "what": "Some live predictions disagree with the schedule by more than 30 minutes.",
+          "why": "Differences that large usually mean predictions are keyed to the wrong trips, not that transit vehicles are that late."
+        }
+      ],
+      "name": "realtime",
+      "score": 64.0,
+      "status": "measured",
+      "summary": "Sampled 6 times: 2 of 2 configured feeds healthy; 20.0% of scheduled trips had live predictions; 46.4% of vehicles on their route; predictions ran a median of 4541s behind schedule.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "high",
+    "measured_categories": 4,
+    "notes": [
+      "All four score categories were measured this run.",
+      "Realtime was sampled in one bounded window of 6 snapshots.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 1,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "met": true
+      },
+      {
+        "detail": "Service data runs out in 27 days; renew to qualify.",
+        "key": "current",
+        "met": false
+      },
+      {
+        "detail": "States wheelchair access on 60% of stops and 100% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. Service data runs out in 27 days; renew to qualify. States wheelchair access on 60% of stops and 100% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "No stated data license in the Mobility Database; verify before publishing.",
+    "reachable": true,
+    "sha256": "9f6554cafaa7903fe39ec60aaed448a0d1574c3d8c67fcc3917c40cd7afb6fce",
+    "size_bytes": 20909973,
+    "static_url": "https://www.itsmarta.com/google_transit_feed/google_transit.zip"
+  },
+  "fetch": {
+    "final_url": "https://itsmarta.com/google_transit_feed/google_transit.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-07-25T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -84.6698,
+      33.43237,
+      -84.0834,
+      34.10557
+    ],
+    "lat": 33.74699,
+    "lon": -84.36327,
+    "stop_count": 7057
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": true,
+    "measured": true,
+    "modes": [
+      {
+        "key": "tram",
+        "label": "Tram / light rail",
+        "route_count": 1,
+        "trip_count": 826,
+        "trip_share_pct": 1.6
+      },
+      {
+        "key": "subway",
+        "label": "Subway / metro",
+        "route_count": 4,
+        "trip_count": 4864,
+        "trip_share_pct": 9.3
+      },
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 81,
+        "trip_count": 46711,
+        "trip_share_pct": 89.1
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 86,
+    "trip_count": 52401
+  },
+  "ntd_id_alignment": {
+    "detail": "This feed provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk it on the P-50 form. The value does not need to equal the five-digit NTD ID; we do not have that ID on file, so the optional equality comparison is not checked yet.",
+    "feed_agency_ids": [
+      "MARTA"
+    ],
+    "status": "unknown"
+  },
+  "ntd_readiness": {
+    "pillars": [
+      {
+        "detail": "Published at a public URL.",
+        "key": "published",
+        "status": "ready"
+      },
+      {
+        "detail": "Passes validation with no errors.",
+        "key": "valid",
+        "status": "ready"
+      },
+      {
+        "detail": "Service data runs out in 27 days; renew before you certify.",
+        "key": "current",
+        "status": "at_risk"
+      },
+      {
+        "detail": "agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.",
+        "key": "agency_id",
+        "status": "ready"
+      }
+    ],
+    "status": "at_risk",
+    "summary": "This feed is close to NTD-ready. Service data runs out in 27 days; renew before you certify."
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 48.0,
+    "margin_to_next_band": 12.0,
+    "score": 48.0
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 25,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "25 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (1, 2, 5, 15, 20, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 6790,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "6790 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"HOWELL MILL RD @ KIPLING DR\", \"N MAIN ST @ WINTHROPE PARK DR\", \"N MAIN ST @ 379\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_station_missing_step_free_data",
+      "count": 2,
+      "effort": "Worth it for multi-level or large stations; flat stops don't need it.",
+      "fix": "Add pathways.txt connecting entrances, platforms, and elevators, and levels.txt for each floor, so the step-free route is described.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "This feed models stations or entrances but has no pathways.txt and levels.txt.",
+      "why": "Without pathways and levels, a wheelchair user can't tell whether a step-free route exists inside the station, and trip planners can't route anyone through it."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-06",
+    "feed_fetched_date": "2026-08-05",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 7013,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 52401
+  },
+  "route_map": {
+    "drawn_route_count": 86,
+    "has_shapes": true,
+    "path": "data/artifacts/metropolitan-atlanta-rapid-transit-authority-marta/geometry.geojson",
+    "route_count": 86,
+    "routes": [
+      {
+        "color": "9B3694",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "26903",
+        "label": "1",
+        "long": "Joseph E. Lowery Blvd / 17th St",
+        "short": "1",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB2F26",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "26904",
+        "label": "2",
+        "long": "Donald Lee Hollowell/Ponce de Leon",
+        "short": "2",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26905",
+        "label": "3",
+        "long": "Martin Luther King Jr Drive",
+        "short": "3",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26906",
+        "label": "4",
+        "long": "Moreland Avenue",
+        "short": "4",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9B3694",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "26907",
+        "label": "5",
+        "long": "Piedmont Rd / Sandy Springs",
+        "short": "5",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26908",
+        "label": "7",
+        "long": "Boulevard / McDonough Boulevard",
+        "short": "7",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26909",
+        "label": "10",
+        "long": "AUC / Hollywood Road",
+        "short": "10",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26910",
+        "label": "11",
+        "long": "Defoor Avenue / Virginia Highland",
+        "short": "11",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26911",
+        "label": "12",
+        "long": "Howell Mill Road",
+        "short": "12",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26912",
+        "label": "14",
+        "long": "Blandtown / Hightower Road",
+        "short": "14",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB2F26",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "26913",
+        "label": "15",
+        "long": "Clifton Road / Candler Road",
+        "short": "15",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26914",
+        "label": "17",
+        "long": "Clairmont Rd / North Druid Hills Rd",
+        "short": "17",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB2F26",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "26915",
+        "label": "20",
+        "long": "South DeKalb / Downtown Atlanta",
+        "short": "20",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26916",
+        "label": "21",
+        "long": "Memorial Drive ITP",
+        "short": "21",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26917",
+        "label": "22",
+        "long": "Glenwood",
+        "short": "22",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9B3694",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "26918",
+        "label": "23",
+        "long": "Peachtree Road / Buckhead",
+        "short": "23",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26919",
+        "label": "26",
+        "long": "James Jackson Pkwy / Perry Blvd",
+        "short": "26",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26920",
+        "label": "32",
+        "long": "Bouldercrest Road",
+        "short": "32",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26921",
+        "label": "34",
+        "long": "2nd Avenue / Clifton Springs Road",
+        "short": "34",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB2F26",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "26922",
+        "label": "39",
+        "long": "Buford Highway",
+        "short": "39",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26923",
+        "label": "42",
+        "long": "McDaniel Street / Pryor Road",
+        "short": "42",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26924",
+        "label": "46",
+        "long": "I-85 Access Road / Briarwood",
+        "short": "46",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26925",
+        "label": "48",
+        "long": "I-85 Access Road / North Brookhaven",
+        "short": "48",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9B3694",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "26926",
+        "label": "49",
+        "long": "McDonough Boulevard / Hill Street",
+        "short": "49",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9B3694",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "26927",
+        "label": "51",
+        "long": "Joseph E. Boone / Ralph McGill",
+        "short": "51",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26928",
+        "label": "55",
+        "long": "Jonesboro Road",
+        "short": "55",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26929",
+        "label": "66",
+        "long": "Brownlee Road / Harbin Road",
+        "short": "66",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26930",
+        "label": "67",
+        "long": "Peyton Place",
+        "short": "67",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9B3694",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "26931",
+        "label": "71",
+        "long": "Cascade Road",
+        "short": "71",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB2F26",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "26932",
+        "label": "73",
+        "long": "Fulton Industrial Boulevard",
+        "short": "73",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26933",
+        "label": "74",
+        "long": "Flat Shoals Road",
+        "short": "74",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB2F26",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "26934",
+        "label": "78",
+        "long": "Cleveland Avenue",
+        "short": "78",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26935",
+        "label": "79",
+        "long": "Sylvan Road / Hapeville",
+        "short": "79",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26936",
+        "label": "80",
+        "long": "Headland Drive / Sandtown",
+        "short": "80",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26937",
+        "label": "81",
+        "long": "Venetian Hills",
+        "short": "81",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB2F26",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "26938",
+        "label": "83",
+        "long": "Campbellton Road",
+        "short": "83",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB2F26",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "26939",
+        "label": "84",
+        "long": "Washington/Camp Creek Marketplace",
+        "short": "84",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26940",
+        "label": "85",
+        "long": "Roswell",
+        "short": "85",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26941",
+        "label": "87",
+        "long": "Roswell Road / Dunwoody",
+        "short": "87",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26942",
+        "label": "88",
+        "long": "Dunwoody Village / Georgetown",
+        "short": "88",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB2F26",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "26943",
+        "label": "89",
+        "long": "Old National Highway",
+        "short": "89",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB2F26",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "26944",
+        "label": "95",
+        "long": "Metropolitan Parkway",
+        "short": "95",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9B3694",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "26945",
+        "label": "96",
+        "long": "Dogwood Drive / Virginia Avenue",
+        "short": "96",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26946",
+        "label": "104",
+        "long": "Winters Chapel Road",
+        "short": "104",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26947",
+        "label": "109",
+        "long": "Peachcrest Road / Columbia Drive",
+        "short": "109",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26948",
+        "label": "111",
+        "long": "South Hairston Rd/Wesley Chapel Rd",
+        "short": "111",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26949",
+        "label": "114",
+        "long": "Columbia Dr / Snapfinger Woods Dr",
+        "short": "114",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9B3694",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "26950",
+        "label": "115",
+        "long": "Covington Highway",
+        "short": "115",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26951",
+        "label": "116",
+        "long": "Redan Road",
+        "short": "116",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26952",
+        "label": "117",
+        "long": "Stone Mountain / Panola Road",
+        "short": "117",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26953",
+        "label": "118",
+        "long": "Rockbridge Road",
+        "short": "118",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26954",
+        "label": "119",
+        "long": "Hairston Road",
+        "short": "119",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26955",
+        "label": "120",
+        "long": "East Ponce De Leon Avenue",
+        "short": "120",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB2F26",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "26956",
+        "label": "121",
+        "long": "Memorial Drive OTP / Pleasantdale",
+        "short": "121",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26958",
+        "label": "125",
+        "long": "Clarkston / Embry Hills",
+        "short": "125",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26959",
+        "label": "127",
+        "long": "Winn Way",
+        "short": "127",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26960",
+        "label": "132",
+        "long": "Tilly Mill Road",
+        "short": "132",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9B3694",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "26961",
+        "label": "140",
+        "long": "North Point Parkway",
+        "short": "140",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9B3694",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "26963",
+        "label": "162",
+        "long": "Stanton Road / Alison Court",
+        "short": "162",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26964",
+        "label": "165",
+        "long": "Fairburn Road / Camp Creek Parkway",
+        "short": "165",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26965",
+        "label": "178",
+        "long": "Mount Zion Road",
+        "short": "178",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26966",
+        "label": "180",
+        "long": "Roosevelt Highway",
+        "short": "180",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26967",
+        "label": "182",
+        "long": "South Fulton Parkway",
+        "short": "182",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26968",
+        "label": "184",
+        "long": "Buffington Road",
+        "short": "184",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26969",
+        "label": "185",
+        "long": "Alpharetta",
+        "short": "185",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9B3694",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "26970",
+        "label": "187",
+        "long": "Godby Road / Sullivan Road",
+        "short": "187",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26971",
+        "label": "189",
+        "long": "Scofield Road / Creel Road",
+        "short": "189",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26972",
+        "label": "191",
+        "long": "Riverdale / ATL Intl Terminal",
+        "short": "191",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26973",
+        "label": "192",
+        "long": "Old Dixie / Tara Blvd",
+        "short": "192",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26974",
+        "label": "193",
+        "long": "Morrow / Jonesboro",
+        "short": "193",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26975",
+        "label": "194",
+        "long": "Conley Road / Mount Zion",
+        "short": "194",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26976",
+        "label": "195",
+        "long": "Forest Parkway",
+        "short": "195",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26977",
+        "label": "196",
+        "long": "Upper Riverdale",
+        "short": "196",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26978",
+        "label": "197",
+        "long": "Battle Creek Road",
+        "short": "197",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26979",
+        "label": "198",
+        "long": "Southlake Parkway",
+        "short": "198",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26980",
+        "label": "800",
+        "long": "Lovejoy",
+        "short": "800",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "DB2F26",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "26982",
+        "label": "ATLSC",
+        "long": "Atlanta Streetcar",
+        "short": "ATLSC",
+        "text_color": "000000",
+        "type_label": "Tram / light rail"
+      },
+      {
+        "color": "0075B2",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "26984",
+        "label": "BLUE",
+        "long": "BLUE",
+        "short": "BLUE",
+        "text_color": "000000",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "D4A723",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "26985",
+        "label": "GOLD",
+        "long": "GOLD",
+        "short": "GOLD",
+        "text_color": "000000",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "009D4B",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "26986",
+        "label": "GREEN",
+        "long": "GREEN",
+        "short": "GREEN",
+        "text_color": "000000",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "CE242B",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "26987",
+        "label": "RED",
+        "long": "RED",
+        "short": "RED",
+        "text_color": "000000",
+        "type_label": "Subway / metro"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "27015",
+        "label": "52",
+        "long": "Marietta Road",
+        "short": "52",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "27020",
+        "label": "68",
+        "long": "Donnelly Avenue / Beecher",
+        "short": "68",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "367AA8",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "27027",
+        "label": "75",
+        "long": "Lawrenceville Highway",
+        "short": "75",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "23A463",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "27030",
+        "label": "128",
+        "long": "Valley Brook Road",
+        "short": "128",
+        "text_color": "000000",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0000",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "27457",
+        "label": "A",
+        "long": "Rapid A Line",
+        "short": "A",
+        "text_color": "000000",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 7057,
+    "stop_points_capped": true
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "shapes_readiness": {
+    "detail": "All 52401 trips have a shape in shapes.txt.",
+    "status": "ready",
+    "total_trips": 52401,
+    "trips_with_shape": 52401
+  },
+  "snapshot_date": "2026-08-06",
+  "top_fixes": [
+    {
+      "code": "scorecard_feed_expiring_soon",
+      "count": 1,
+      "effort": "One export setting.",
+      "fix": "Re-export with a validity window that reaches at least 60 days out.",
+      "owner": "Likely your export tool",
+      "points": 65.0,
+      "rank": 1,
+      "severity": "WARNING",
+      "what": "Service data runs out in 15 day(s).",
+      "why": "When the calendar runs out, trip planners stop showing this agency. Fixing it now is calmer than after riders notice."
+    },
+    {
+      "code": "scorecard_rt_trip_coverage",
+      "count": 4,
+      "effort": "A vendor data-mapping question.",
+      "fix": "Check with your AVL vendor that every vehicle assignment flows into TripUpdates, including school-day and tripper runs.",
+      "owner": "",
+      "points": 28.0,
+      "rank": 2,
+      "severity": "WARNING",
+      "what": "4 of 5 trips scheduled during the sampling window had no live predictions.",
+      "why": "Riders on those trips get schedule data dressed up as realtime. Caltrans expects every operating trip in TripUpdates."
+    },
+    {
+      "code": "scorecard_no_fare_data",
+      "count": 1,
+      "effort": "A small file for most flat-fare systems.",
+      "fix": "Add fare_attributes.txt (or Fares v2 files) with your fare structure. If your service is fare-free, ask to have it marked fare-free instead.",
+      "owner": "",
+      "points": 15.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "The feed contains no fare information.",
+      "why": "Riders see 'fare unknown' in trip planners and can't budget their trip; visitors are most affected."
+    }
+  ],
+  "validator_version": "8.0.1"
+}

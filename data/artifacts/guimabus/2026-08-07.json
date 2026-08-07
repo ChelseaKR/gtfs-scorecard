@@ -1,0 +1,1093 @@
+{
+  "agency": {
+    "country": "PT",
+    "id": "guimabus",
+    "name": "Guimabus (Guimar\u00e3es)",
+    "subdivision_code": "PT-03",
+    "subdivision_name": "Braga"
+  },
+  "categories": {
+    "completeness": {
+      "details": {
+        "accessibility": {
+          "measures": "presence_not_usability",
+          "score": 0.0,
+          "stops_marked_accessible_pct": 0.0,
+          "stops_marked_not_accessible_pct": 0.0,
+          "stops_stated_pct": 0.0,
+          "trips_stated_pct": 0.0
+        },
+        "accessibility_measures": "presence_not_usability",
+        "cemv": {
+          "declared": false,
+          "supported": false
+        },
+        "components": {
+          "contact": 7.5,
+          "fares": 15.0,
+          "headsigns": 15.0,
+          "stop_names": 0.1,
+          "wheelchair_stops": 0.0,
+          "wheelchair_trips": 0.0
+        },
+        "fare_free": false,
+        "fares": {
+          "applied": true,
+          "has_leg_rules": false,
+          "has_products": false,
+          "has_transfer_rules": false,
+          "model": "legacy",
+          "product_count": 0
+        },
+        "flex": {
+          "booking_reachable": false,
+          "booking_rule_count": 0,
+          "has_booking_rules": false,
+          "has_flex": false
+        },
+        "has_fares": true,
+        "headsign_applicable_trips": 2213,
+        "headsign_loop_exempt_trips": 0,
+        "headsign_pct": 100.0,
+        "headsign_scored_pct": 100.0,
+        "mixed_case_stop_name_pct": 0.7,
+        "pathways": {
+          "has_entrances": false,
+          "has_levels": false,
+          "has_pathways": false,
+          "has_stations": false,
+          "has_step_free": false,
+          "pathway_count": 0
+        },
+        "stops": 1522,
+        "translations": {
+          "feed_lang": null,
+          "has_translations": false,
+          "languages": [],
+          "translated_tables": [],
+          "translation_count": 0
+        },
+        "trips": 2213,
+        "wheelchair_accessible_pct": 0.0,
+        "wheelchair_boarding_pct": 0.0,
+        "wheelchair_marked_accessible_pct": 0.0,
+        "wheelchair_marked_not_accessible_pct": 0.0
+      },
+      "findings": [
+        {
+          "code": "scorecard_wheelchair_boarding_unknown",
+          "count": 1522,
+          "effort": "A column in stops.txt; your scheduling software likely has it.",
+          "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+          "owner": "Likely your team",
+          "points": 25.0,
+          "severity": "WARNING",
+          "what": "1522 of 1522 stops don't say whether a wheelchair user can board there.",
+          "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+        },
+        {
+          "code": "scorecard_wheelchair_accessible_unknown",
+          "count": 2213,
+          "effort": "A default or per-trip field in your export.",
+          "fix": "Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "2213 of 2213 trips don't say whether the vehicle is wheelchair accessible.",
+          "why": "Even with accessible stops, riders need to know the bus itself can take them."
+        },
+        {
+          "code": "scorecard_stop_names_all_caps",
+          "count": 1512,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Rename stops to mixed case where the language has letter case (for example, 'Central Station').",
+          "owner": "Likely your export tool",
+          "points": 14.9,
+          "severity": "INFO",
+          "what": "About 1512 stop names are written in ALL CAPS.",
+          "why": "Mixed-case names are easier to read in apps and are read more naturally by screen readers."
+        },
+        {
+          "code": "scorecard_no_feed_contact",
+          "count": 1,
+          "effort": "One field.",
+          "fix": "Add feed_contact_email to feed_info.txt.",
+          "owner": "",
+          "points": 7.5,
+          "severity": "INFO",
+          "what": "feed_info.txt has no technical contact (feed_contact_email or feed_contact_url).",
+          "why": "Trip-planning apps and regional data coordinators have nobody to email when they spot a problem with your feed, so problems linger."
+        }
+      ],
+      "name": "completeness",
+      "score": 37.6,
+      "status": "measured",
+      "summary": "0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.",
+      "weight": 0.25
+    },
+    "correctness": {
+      "details": {
+        "distinct_codes": 7,
+        "instances_by_severity": {
+          "ERROR": 285484,
+          "INFO": 37,
+          "WARNING": 82765
+        },
+        "validator_version": "8.0.1"
+      },
+      "findings": [
+        {
+          "code": "duplicate_key",
+          "count": 282208,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'duplicate_key' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Duplicate key (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "invalid_integer",
+          "count": 3276,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'invalid_integer' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 24.0,
+          "severity": "ERROR",
+          "what": "Invalid integer (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "missing_timepoint_value",
+          "count": 81717,
+          "effort": "Varies.",
+          "fix": "Review the rule documentation for 'missing_timepoint_value' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+          "owner": "",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Missing timepoint value (flagged by the MobilityData validator).",
+          "why": "See the linked rule for what this affects."
+        },
+        {
+          "code": "mixed_case_recommended_field",
+          "count": 1047,
+          "effort": "Often a bulk fix in your scheduling software.",
+          "fix": "Use mixed case for stop names and headsigns (e.g. 'Main St & 2nd Ave', not 'MAIN ST & 2ND AVE').",
+          "owner": "Likely your export tool",
+          "points": 8.0,
+          "severity": "WARNING",
+          "what": "Some rider-facing names are in ALL CAPS or all lowercase.",
+          "why": "ALL-CAPS stop and headsign names are harder to read in apps and are read awkwardly by screen readers."
+        },
+        {
+          "code": "missing_recommended_file",
+          "count": 1,
+          "effort": "One small file, set once in export settings.",
+          "fix": "Add feed_info.txt with publisher name, URL, language, and feed_start_date/feed_end_date.",
+          "owner": "Likely your export tool",
+          "points": 4.0,
+          "severity": "WARNING",
+          "what": "A file GTFS asks for (usually feed_info.txt) is missing.",
+          "why": "feed_info.txt tells apps who publishes the feed and when it expires; without it nobody is warned before data goes stale."
+        },
+        {
+          "code": "big_gap_in_service",
+          "count": 32,
+          "effort": "A review of your calendar dates.",
+          "fix": "Check whether the gap is real, like a seasonal break; if not, add the missing dates to the calendar.",
+          "owner": "",
+          "points": 0.8,
+          "severity": "INFO",
+          "what": "The feed has a stretch of two weeks or more with no service running.",
+          "why": "A long gap can mean dates were left out of the calendar. Apps then show no trips on those days."
+        },
+        {
+          "code": "unknown_column",
+          "count": 5,
+          "effort": "A quick look at the flagged files.",
+          "fix": "Check the flagged column names for misspellings of standard GTFS fields; remove them if they are vendor extras.",
+          "owner": "",
+          "points": 0.5,
+          "severity": "INFO",
+          "what": "Some files contain columns that are not part of the GTFS spec.",
+          "why": "Harmless to riders, but apps ignore these columns and they can hide typos in real column names."
+        }
+      ],
+      "name": "correctness",
+      "score": 30.8,
+      "status": "measured",
+      "summary": "The MobilityData validator flagged 7 kinds of issue across 368286 instances (285484 error, 82765 warning, 37 informational).",
+      "weight": 0.35
+    },
+    "freshness": {
+      "details": {
+        "days_until_expiry": 146,
+        "effective_expiry_date": "2026-12-31",
+        "feed_end_date": null,
+        "feed_start_date": null,
+        "feed_version": null,
+        "has_feed_info": false,
+        "last_service_date": "2026-12-31",
+        "seasonal_boundary": false,
+        "service_horizon_review_years": 10,
+        "service_horizon_status": "within_review_threshold",
+        "service_type": "fixed"
+      },
+      "findings": [
+        {
+          "code": "scorecard_missing_feed_info_dates",
+          "count": 1,
+          "effort": "Two fields, set once in export settings.",
+          "fix": "Add feed_info.txt with feed_start_date and feed_end_date to your export.",
+          "owner": "Likely your export tool",
+          "points": 15.0,
+          "severity": "WARNING",
+          "what": "feed_info.txt is missing its start/end dates (the file itself is absent)",
+          "why": "Apps and this scorecard can't warn anyone before the feed goes stale without stated validity dates."
+        }
+      ],
+      "name": "freshness",
+      "score": 85.0,
+      "status": "measured",
+      "summary": "Service data covers the next 146 days.",
+      "weight": 0.2
+    },
+    "realtime": {
+      "name": "realtime",
+      "status": "not_yet_measured",
+      "summary": "Not scored yet. Nothing here counts against the grade.",
+      "weight": 0.2
+    }
+  },
+  "confidence": {
+    "feed_age_days": 0,
+    "fetch_source": "origin",
+    "level": "medium",
+    "measured_categories": 3,
+    "notes": [
+      "Realtime quality was not measured this run. It does not count against the grade.",
+      "The feed was downloaded from the agency's own URL."
+    ],
+    "rt_windows": 0,
+    "total_categories": 4
+  },
+  "conformance": {
+    "awarded": false,
+    "criteria": [
+      {
+        "detail": "2 validator errors to resolve.",
+        "key": "valid",
+        "met": false
+      },
+      {
+        "detail": "Service data covers the next 148 days.",
+        "key": "current",
+        "met": true
+      },
+      {
+        "detail": "States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each.",
+        "key": "accessible",
+        "met": false
+      }
+    ],
+    "status": "not_yet",
+    "summary": "This feed is close to the conformance mark. 2 validator errors to resolve. States wheelchair access on 0% of stops and 0% of trips; the mark needs 90% of each."
+  },
+  "feed": {
+    "license_note": "CC BY through the municipality's mobility open data portal; credit the Munic\u00edpio de Guimar\u00e3es.",
+    "reachable": true,
+    "sha256": "9034208d0fe0a214c2d259fa4480f1f55f63387b7d24209a76761107434c5adb",
+    "size_bytes": 5046550,
+    "static_url": "https://map.mobility.ubiwhere.com/dataset/ee6d46e4-9f19-4f4a-ab93-1a3cd69df349/resource/08f1ee6c-2d3f-4fb3-a861-5d6fb347a6d4/download/gtfs_gui.zip"
+  },
+  "fetch": {
+    "final_url": "https://map.mobility.ubiwhere.com/dataset/ee6d46e4-9f19-4f4a-ab93-1a3cd69df349/resource/08f1ee6c-2d3f-4fb3-a861-5d6fb347a6d4/download/gtfs_gui.zip",
+    "max_attempts": 4,
+    "reader_archive_profile": "raw-v1",
+    "source": "origin",
+    "user_agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
+  },
+  "generated_at": "2026-08-05T00:00:00+00:00",
+  "geo": {
+    "bbox": [
+      -8.42747,
+      41.3653,
+      -8.2283,
+      41.53941
+    ],
+    "lat": 41.44395,
+    "lon": -8.31597,
+    "stop_count": 1522
+  },
+  "mode_profile": {
+    "ferry_only": false,
+    "graded": false,
+    "has_ferry": false,
+    "is_multimodal": false,
+    "measured": true,
+    "modes": [
+      {
+        "key": "bus",
+        "label": "Bus",
+        "route_count": 59,
+        "trip_count": 2213,
+        "trip_share_pct": 100.0
+      }
+    ],
+    "primary_mode": "bus",
+    "primary_mode_label": "Bus",
+    "route_count": 59,
+    "trip_count": 2213
+  },
+  "overall": {
+    "grade": "F",
+    "margin_to_lower_band": 46.5,
+    "margin_to_next_band": 13.5,
+    "score": 46.5
+  },
+  "recommendations": [
+    {
+      "category": "accessibility",
+      "code": "scorecard_route_color_low_contrast",
+      "count": 34,
+      "effort": "A per-route color setting in your scheduling software.",
+      "fix": "Adjust route_color or route_text_color so each pair clears 4.5:1. Often switching the text between black and white is enough.",
+      "owner": "Likely your export tool",
+      "points": 0.0,
+      "severity": "WARNING",
+      "what": "34 route badge(s) pair a color and text color below the WCAG 4.5:1 contrast bar (021, 022, 031, 032, 051, and more).",
+      "why": "Low-contrast route badges are hard to read for riders with low vision and wash out on a phone screen in sunlight at the stop."
+    },
+    {
+      "category": "accessibility",
+      "code": "scorecard_stop_name_needs_tts",
+      "count": 8,
+      "effort": "A short text field per affected stop; start with the busiest.",
+      "fix": "Add tts_stop_name with the spoken form, e.g. 'Main Street and Second Avenue', for the affected stops.",
+      "owner": "",
+      "points": 0.0,
+      "severity": "INFO",
+      "what": "8 stop name(s) use abbreviations or symbols a screen reader may mispronounce, with no spoken form set (\"RIO AVE\", \"ROT. AVE\", \"EB1/JI SILVEIRA\", and more).",
+      "why": "Riders who use a screen reader hear the raw name, so 'Main St & 2nd Ave' can come out as 'Main saint' or drop the ampersand."
+    }
+  ],
+  "recompute": {
+    "as_of": "2026-08-07",
+    "feed_fetched_date": "2026-08-06",
+    "kind": "freshness"
+  },
+  "routability": {
+    "boardable_stops": 1513,
+    "findings": [],
+    "orphan_stops": 0,
+    "single_stop_trips": 0,
+    "trips_total": 2213
+  },
+  "route_map": {
+    "drawn_route_count": 59,
+    "has_shapes": true,
+    "path": "data/artifacts/guimabus/geometry.geojson",
+    "route_count": 59,
+    "routes": [
+      {
+        "color": "339933",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GUI1",
+        "label": "003",
+        "long": "LINHA CIDADE (VIA AZUR\u00c9M E MADRE DEUS)",
+        "short": "003",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6699",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "GUI10",
+        "label": "041",
+        "long": "CIRCULAR SILVARES - PARQUE INDUSTRIAL",
+        "short": "041",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6699",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "GUI11",
+        "label": "042",
+        "long": "CIRCULAR FERMENT\u00d5ES - PARQUE INDUSTRIAL",
+        "short": "042",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993300",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GUI12",
+        "label": "051",
+        "long": "COSTA (S\u00c3O ROQUE)",
+        "short": "051",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "996633",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GUI13",
+        "label": "061",
+        "long": "CIRCULAR PENCELO - SELHO S. LOUREN\u00c7O",
+        "short": "061",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "996633",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GUI14",
+        "label": "062",
+        "long": "CIRCULAR ALD\u00c3O - SELHO S. LOUREN\u00c7O",
+        "short": "062",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "669900",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GUI15",
+        "label": "063",
+        "long": "FERMENT\u00d5ES (VIA GRISEL)",
+        "short": "063",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "336699",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GUI16",
+        "label": "070",
+        "long": "CIRCULAR CASAS NOVAS - PEVID\u00c9M",
+        "short": "070",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "336699",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GUI17",
+        "label": "071",
+        "long": "CIRCULAR COVAS - PEVID\u00c9M",
+        "short": "071",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "660033",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "GUI18",
+        "label": "072",
+        "long": "CIRCULAR SANTIAGO DE CANDOSO - PEDRAL",
+        "short": "072",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "660033",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "GUI19",
+        "label": "073",
+        "long": "CIRCULAR MASCOTELOS - PEDRAL",
+        "short": "073",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009999",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GUI2",
+        "label": "004",
+        "long": "LINHA CIDADE (VIA TOURAL E EB23 JO\u00c3O MEIRA)",
+        "short": "004",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9966CC",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "GUI20",
+        "label": "081",
+        "long": "GONDAR",
+        "short": "081",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "GUI21",
+        "label": "082",
+        "long": "CIRCULAR SILVARES - SELHO S. CRIST\u00d3V\u00c3O",
+        "short": "082",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC3333",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "GUI22",
+        "label": "083",
+        "long": "CIRCULAR CANDOSO S. MARTINHO - SELHO S. CRIST\u00d3V\u00c3O",
+        "short": "083",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "669999",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GUI23",
+        "label": "084",
+        "long": "GONDAR (VIA CANDOSO S. MARTINHO)",
+        "short": "084",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "003300",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "GUI24",
+        "label": "101",
+        "long": "GUIMAR\u00c3ES - LORDELO (VIA PEVID\u00c9M)",
+        "short": "101",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF6699",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "GUI25",
+        "label": "103",
+        "long": "TAIPAS - JOANE (VIA BRITO)",
+        "short": "103",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "996666",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GUI26",
+        "label": "104",
+        "long": "PEVID\u00c9M - TAIPAS (VIA BRITO)",
+        "short": "104",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC6633",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "GUI27",
+        "label": "120",
+        "long": "PTE. SERVES - JOANE (SEC.) (VIA AIR\u00c3O E MTE. ALVAR)",
+        "short": "120",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6600FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "GUI28",
+        "label": "121",
+        "long": "GUIMAR\u00c3ES - AIR\u00c3O (VIA VERMIL)",
+        "short": "121",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "99CC00",
+        "color_name": "yellow",
+        "has_shape": true,
+        "id": "GUI29",
+        "label": "122",
+        "long": "GUIMAR\u00c3ES - JOANE (VIA LEIT\u00d5ES)",
+        "short": "122",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF9900",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "GUI3",
+        "label": "011",
+        "long": "PEREIRINHAS | GANDARELA",
+        "short": "011",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993333",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GUI30",
+        "label": "123",
+        "long": "CIRCULAR BRITO - LEIT\u00d5ES - RONFE (EB23)",
+        "short": "123",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006633",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GUI32",
+        "label": "125",
+        "long": "RONFE (EB23) - BRITO",
+        "short": "125",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "6699FF",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "GUI33",
+        "label": "128",
+        "long": "SANTA LUZIA - RONFE (SOMELOS) (VIA MONTE ALVAR)",
+        "short": "128",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF0066",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "GUI34",
+        "label": "151",
+        "long": "MORREIRA - TAIPAS (VIA LONGOS)",
+        "short": "151",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "669966",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GUI35",
+        "label": "158",
+        "long": "GARFE - TAIPAS (VIA GONDOMAR)",
+        "short": "158",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "0099CC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GUI36",
+        "label": "159",
+        "long": "CORVITE - TAIPAS (VIA SANDE S. CLEMENTE)",
+        "short": "159",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC9966",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GUI37",
+        "label": "160",
+        "long": "CIRCULAR TAIPAS - BRITO - CAMPELOS - TAIPAS",
+        "short": "160",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9999FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "GUI38",
+        "label": "161",
+        "long": "TAIPAS - GUIMAR\u00c3ES (VIA CANEIROS)",
+        "short": "161",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "663300",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GUI39",
+        "label": "162",
+        "long": "TAIPAS - GUIMAR\u00c3ES (VIA BRITO)",
+        "short": "162",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "999933",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GUI4",
+        "label": "012",
+        "long": "CIRCULAR CARVALHOS - ABA\u00c7\u00c3O",
+        "short": "012",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "006666",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GUI40",
+        "label": "163",
+        "long": "GUIMAR\u00c3ES - BRIT. STA. LEOC\u00c1DIA (VIA ESP. GUIMAR\u00c3ES)",
+        "short": "163",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "999900",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GUI41",
+        "label": "164",
+        "long": "GUIMAR\u00c3ES - GARFE (VIA GONDOMAR)",
+        "short": "164",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC00CC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "GUI42",
+        "label": "170",
+        "long": "GUIMAR\u00c3ES - GON\u00c7A (VIA S. TORCATO)",
+        "short": "170",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00CCCC",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GUI43",
+        "label": "171",
+        "long": "QUINT\u00c3ES - GUIMAR\u00c3ES (VIA S. TORCATO E AT\u00c3ES)",
+        "short": "171",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "336600",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GUI44",
+        "label": "172",
+        "long": "GUIMAR\u00c3ES - AT\u00c3ES",
+        "short": "172",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "333399",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "GUI45",
+        "label": "173",
+        "long": "S. TORCATO (EB23) - AT\u00c3ES (VIA GOMINH\u00c3ES)",
+        "short": "173",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "00CCFF",
+        "color_name": "teal",
+        "has_shape": true,
+        "id": "GUI46",
+        "label": "180",
+        "long": "PINHEIRO - GUIMAR\u00c3ES (VIA S. FAUSTINO E COVAS)",
+        "short": "180",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "FF6600",
+        "color_name": "orange",
+        "has_shape": true,
+        "id": "GUI47",
+        "label": "181",
+        "long": "GUIMAR\u00c3ES - S. PAIO DE VIZELA (VIA PENTEEIROS)",
+        "short": "181",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "990033",
+        "color_name": "red",
+        "has_shape": true,
+        "id": "GUI48",
+        "label": "182",
+        "long": "CALVOS - GUIMAR\u00c3ES (VIA PINHEIRO)",
+        "short": "182",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "CC00CC",
+        "color_name": "pink",
+        "has_shape": true,
+        "id": "GUI49",
+        "label": "185",
+        "long": "ABA\u00c7\u00c3O (EB23) - S. FAUSTINO (VIA CALVOS)",
+        "short": "185",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "999933",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GUI5",
+        "label": "014",
+        "long": "CIRCULAR PINHEIRO - ABA\u00c7\u00c3O",
+        "short": "014",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "009933",
+        "color_name": "green",
+        "has_shape": true,
+        "id": "GUI50",
+        "label": "188",
+        "long": "GUIMAR\u00c3ES - S. FAUSTINO",
+        "short": "188",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "666666",
+        "color_name": "gray",
+        "has_shape": true,
+        "id": "GUI51",
+        "label": "189",
+        "long": "CALVOS - GUIMAR\u00c3ES (VIA PENTEEIROS)",
+        "short": "189",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "9966FF",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "GUI52",
+        "label": "192",
+        "long": "SERZEDELO - LORDELO (EST.) (VIA ZI AGRAS)",
+        "short": "192",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "GUI53",
+        "label": "N11",
+        "long": "CIRCULAR NESPEREIRA - CARVALHOS",
+        "short": "N11",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "GUI54",
+        "label": "N21",
+        "long": "CIRCULAR PEDROSO - BELOS ARES",
+        "short": "N21",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "GUI55",
+        "label": "N41",
+        "long": "CIRCULAR SILVARES - PARQUE INDUSTRIAL",
+        "short": "N41",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "GUI56",
+        "label": "N42",
+        "long": "CIRCULAR FERMENT\u00d5ES - PARQUE INDUSTRIAL",
+        "short": "N42",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "GUI57",
+        "label": "N51",
+        "long": "COSTA (S\u00c3O ROQUE)",
+        "short": "N51",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "GUI58",
+        "label": "N71",
+        "long": "SANTO AMARO (VIA SALGUEIRAL)",
+        "short": "N71",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "GUI59",
+        "label": "N82",
+        "long": "CIRCULAR SILVARES - GONDAR",
+        "short": "N82",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "993366",
+        "color_name": "brown",
+        "has_shape": true,
+        "id": "GUI6",
+        "label": "021",
+        "long": "PA\u00c7O VIEIRA",
+        "short": "021",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000000",
+        "color_name": "black",
+        "has_shape": true,
+        "id": "GUI60",
+        "label": "N83",
+        "long": "CIRCULAR S. MARTINHO CANDOSO - GONDAR",
+        "short": "N83",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "000099",
+        "color_name": "blue",
+        "has_shape": true,
+        "id": "GUI7",
+        "label": "022",
+        "long": "PENHA (VIA MATAM\u00c1 E S. ROM\u00c3O)",
+        "short": "022",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "660066",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "GUI8",
+        "label": "031",
+        "long": "CIRCULAR MARGARIDE - PEDROSO",
+        "short": "031",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      },
+      {
+        "color": "660066",
+        "color_name": "purple",
+        "has_shape": true,
+        "id": "GUI9",
+        "label": "032",
+        "long": "CIRCULAR AZUR\u00c9M - PEDROSO",
+        "short": "032",
+        "text_color": "FFFFFF",
+        "type_label": "Bus"
+      }
+    ],
+    "stop_count": 1522,
+    "stop_points_capped": false
+  },
+  "rubric_version": "1.3",
+  "schema_version": "1.17",
+  "scoring_profile": {
+    "id": "gtfs-scorecard-1.3",
+    "provenance": "GTFS Scorecard's project-authored weights, deductions, thresholds, grade bands, and fix ranking, informed by the California Transit Data Guidelines and the MobilityData gtfs-validator. It is not a worldwide standard or a compliance determination.",
+    "rubric_version": "1.3"
+  },
+  "snapshot_date": "2026-08-07",
+  "top_fixes": [
+    {
+      "code": "duplicate_key",
+      "count": 282208,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'duplicate_key' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 24.0,
+      "rank": 1,
+      "severity": "ERROR",
+      "what": "Duplicate key (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "invalid_integer",
+      "count": 3276,
+      "effort": "Varies.",
+      "fix": "Review the rule documentation for 'invalid_integer' at https://gtfs-validator.mobilitydata.org/rules.html and check the flagged rows in your feed.",
+      "owner": "",
+      "points": 24.0,
+      "rank": 2,
+      "severity": "ERROR",
+      "what": "Invalid integer (flagged by the MobilityData validator).",
+      "why": "See the linked rule for what this affects."
+    },
+    {
+      "code": "scorecard_wheelchair_boarding_unknown",
+      "count": 1522,
+      "effort": "A column in stops.txt; your scheduling software likely has it.",
+      "fix": "Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.",
+      "owner": "Likely your team",
+      "points": 25.0,
+      "rank": 3,
+      "severity": "WARNING",
+      "what": "1522 of 1522 stops don't say whether a wheelchair user can board there.",
+      "why": "Riders who use wheelchairs can't plan a trip when accessibility is marked 'unknown'; apps show no information at all."
+    }
+  ],
+  "validator_version": "8.0.1"
+}
