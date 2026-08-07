@@ -9,6 +9,8 @@ rather than passing vacuously.
 from __future__ import annotations
 
 import importlib.util
+import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -134,6 +136,52 @@ def test_sweep_skips_the_dated_record_documents() -> None:
     # the history they exist to hold.
     assert not [rel for rel in swept if rel.startswith("docs/decisions/")]
     assert not [rel for rel in swept if rel.startswith("docs/ideation/")]
+
+
+# --- the frozen denominators ------------------------------------------------
+#
+# `pages` and `scored` are read from data/artifacts/index.json, which automation
+# stopped writing at the S3 cutover. They describe the committed fallback
+# snapshot, not gtfsscorecard.org, and nothing in an offline `make verify` can
+# tell the difference. So the counts are reported with the snapshot's own date
+# beside them, and these tests keep that date attached.
+
+
+def test_published_counts_reports_the_snapshot_date_with_the_counts() -> None:
+    pages, scored, snapshot_date = doc_stats.published_counts()
+    assert pages > 0 and scored > 0
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", snapshot_date), snapshot_date
+
+
+def test_snapshot_date_is_the_newest_scoring_date_in_the_index() -> None:
+    index = json.loads((ROOT / "data" / "artifacts" / "index.json").read_text())
+    newest = max(
+        point["date"]
+        for entry in index["agencies"].values()
+        for point in entry.get("history") or []
+        if point.get("date")
+    )
+    assert doc_stats.published_counts()[2] == newest
+
+
+def test_the_reported_line_says_the_published_counts_are_not_live() -> None:
+    # Both the pass and the fail branch print this one line, so a later edit
+    # cannot drop the caveat from one of them and leave the other honest.
+    line = doc_stats.denominator_line(
+        {
+            "registry": 2185,
+            "pages": 1128,
+            "scored": 1128,
+            "europe_records": 528,
+            "europe_countries": 26,
+        },
+        "2026-07-10",
+    )
+    assert "2026-07-10" in line
+    assert "not the live corpus" in line
+    # The registry figure is read from YAML and does track the real thing, so
+    # the caveat must not be worded as if it covered that one too.
+    assert line.index("registry 2,185") < line.index("not the live corpus")
 
 
 def test_optional_rules_name_only_files_that_may_be_absent() -> None:

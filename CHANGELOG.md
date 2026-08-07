@@ -28,6 +28,38 @@ the declared public surface).
 ## [Unreleased]
 
 ### Fixed
+- **The gate that exists to stop corpus figures going stale was itself reading
+  a frozen number.** `check_doc_stats.py` measures its `pages` and `scored`
+  denominators from `data/artifacts/index.json`, and automation stopped writing
+  that file at the S3 cutover (`docs/follow-ups.md`, "Stop committing generated
+  data and pages"). What git carries is the fallback snapshot taken that day —
+  1,128 pages, newest scoring date 2026-07-10 — while the deployed service kept
+  growing. Every claim gated on those two denominators was therefore a claim
+  about the snapshot, read by everyone as a claim about gtfsscorecard.org. On
+  2026-08-06 the live `/api/v1/stats.json` reported 2,182 scored feed records
+  against the snapshot's 1,128, so the README understated the service by
+  roughly half, and `floor` mode's `quoted + FLOOR_BUCKET` ceiling would have
+  *rejected* the true figure had anyone tried to write it. The mechanism is
+  unchanged and still correct for what it can see: an offline `make verify`
+  cannot read the live corpus. What changed is that it now says so. Both output
+  branches print one shared line naming the snapshot and its date, the module
+  docstring states the blind spot next to the CLAUDE.md failure that motivated
+  the sweep, and the README no longer presents the snapshot count as the
+  service's scale — it points at `/status/` for the live number, which is where
+  the exact count has always actually lived. `registry`, `europe_records`, and
+  `europe_countries` read the registry YAML and were never affected.
+- **The README claimed an MCP registry entry the registry does not have.** The
+  Versioning section listed "an MCP registry entry (`server.json`)" among the
+  releases this repo produces, and the standards table repeated it. `server.json`
+  is written and version-checked, but publishing it needs an interactive
+  operator login that has not been run, and it still carries no `packages[]`
+  entry (removed 2026-07-05 rather than leave a false `registryType: pypi`
+  standing). A search of `registry.modelcontextprotocol.io` on 2026-08-06
+  returns nothing for `gtfs-scorecard` or `io.github.chelseakr`, while
+  `scorecard` returns 17 other servers — so the name does not resolve there.
+  `docs/mcp.md` was already accurate about this; the README was not, and now
+  says the manifest is written but unpublished and links to the install recipe
+  that does work.
 - **Three notice codes had a published fix guide and no plain-language entry**,
   so every scorecard showed the generic "flagged by the MobilityData validator"
   fallback for them while the wording sat finished in `docs/fixes/`:
