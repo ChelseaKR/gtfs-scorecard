@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from scorecard_pipeline import RUBRIC_VERSION
+from scorecard_pipeline import RUBRIC_VERSION, render_site
 from scorecard_pipeline.render_site import (
     _accessibility_depth_signals,
     _accessibility_score,
@@ -5513,3 +5513,165 @@ def test_feeddiff_section_omits_the_export_block_when_absent() -> None:
     prev = _diff_artifact(date="2026-06-11", grade="B", score=82.0)
     cur = _diff_artifact(date="2026-06-12", grade="C", score=74.0, sha256="bbb")
     assert "What changed inside the export" not in _feeddiff_section(prev, cur, "acme")
+
+
+def _reconciliation_rollup(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "directory_source": "https://reports.example.gov/2026/06",
+        "directory_month": "2026-06",
+        "directory_retrieved_on": "2026-08-07",
+        "directory_agencies": 178,
+        "reconciled_records": 10,
+        "unreconciled_records": 0,
+        "matched_records": 7,
+        "uncertain_records": 1,
+        "absent_records": 2,
+        "organizations_matched": 6,
+        "directory_only_agencies": 29,
+    }
+    payload.update(overrides)
+    return {"reconciliation": payload}
+
+
+def test_reconciliation_section_states_the_matched_share_and_its_source() -> None:
+    html = render_site._rollup_reconciliation_section(_reconciliation_rollup())
+    assert "Matched to the state report directory" in html
+    assert "7 of 10" in html
+    assert "June 2026" in html
+    assert "https://reports.example.gov/2026/06" in html
+    assert "Nothing here changes a grade." in html
+
+
+def test_reconciliation_section_reports_uncertain_matches_as_unmatched() -> None:
+    html = render_site._rollup_reconciliation_section(_reconciliation_rollup())
+    assert "1 record has a plausible match" in html
+    assert "left unmatched rather than asserted" in html
+
+
+def test_reconciliation_section_counts_organizations_not_only_feed_records() -> None:
+    html = render_site._rollup_reconciliation_section(_reconciliation_rollup())
+    assert "6 distinct organizations" in html
+    assert "one operator can publish more than one feed" in html
+
+
+def test_reconciliation_section_names_the_directory_only_gap_when_there_is_one() -> None:
+    html = render_site._rollup_reconciliation_section(_reconciliation_rollup())
+    assert "29 agencies in that directory have no feed record here yet" in html
+
+
+def test_reconciliation_section_omits_the_gap_line_when_the_directory_is_covered() -> None:
+    html = render_site._rollup_reconciliation_section(
+        _reconciliation_rollup(directory_only_agencies=0)
+    )
+    assert "have no feed record here yet" not in html
+
+
+def test_a_program_without_a_mapped_directory_renders_no_reconciliation_section() -> None:
+    assert render_site._rollup_reconciliation_section({}) == ""
+    assert render_site._rollup_reconciliation_section({"reconciliation": {}}) == ""
+    assert (
+        render_site._rollup_reconciliation_section(_reconciliation_rollup(reconciled_records=0))
+        == ""
+    )
+
+
+def test_an_unparseable_directory_month_is_shown_as_written() -> None:
+    assert render_site._month_label("2026-13") == "2026-13"
+    assert render_site._month_label("whenever") == "whenever"
+    assert render_site._month_label("2026-01") == "January 2026"
+
+
+def _realtime_rollup(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "configured_feed_records": 5,
+        "monitored_feed_records": 2,
+        "bands": {"reliable": 1, "mostly": 0, "spotty": 1},
+        "median_uptime_pct": 74.5,
+        "median_lag_seconds": 22,
+        "median_coverage_pct": 61.0,
+        "members": [
+            {
+                "id": "spotty-transit",
+                "name": "Spotty Transit",
+                "configured_kinds": ["trip_updates"],
+                "observations": 40,
+                "uptime_pct": 49.0,
+                "band": "spotty",
+                "median_lag_seconds": 44,
+                "median_coverage_pct": 61.0,
+                "first_ts": 1,
+                "last_ts": 2,
+            },
+            {
+                "id": "steady-transit",
+                "name": "Steady Transit",
+                "configured_kinds": ["trip_updates", "vehicle_positions"],
+                "observations": 40,
+                "uptime_pct": 100.0,
+                "band": "reliable",
+                "median_lag_seconds": None,
+                "median_coverage_pct": None,
+                "first_ts": 1,
+                "last_ts": 2,
+            },
+        ],
+    }
+    payload.update(overrides)
+    return {"realtime": payload}
+
+
+def test_realtime_section_reports_reachability_freshness_and_coverage() -> None:
+    html = render_site._rollup_realtime_section(_realtime_rollup())
+    assert "Realtime health" in html
+    assert "answered 49.0% of 40 checks" in html
+    assert "44s behind" in html
+    assert "61.0% of scheduled trips" in html
+
+
+def test_realtime_section_says_a_feed_without_a_timestamp_rather_than_showing_zero() -> None:
+    html = render_site._rollup_realtime_section(_realtime_rollup())
+    assert "no header timestamp" in html
+    assert "Steady Transit" in html
+
+
+def test_realtime_section_names_feeds_awaiting_a_first_sample_as_unmonitored() -> None:
+    html = render_site._rollup_realtime_section(_realtime_rollup())
+    assert "2 of the 5 feed records" in html
+    assert "The other 3 are waiting on their first sample and are not shown as failing." in html
+
+
+def test_realtime_section_omits_the_waiting_line_when_every_feed_is_monitored() -> None:
+    html = render_site._rollup_realtime_section(_realtime_rollup(configured_feed_records=2))
+    assert "waiting on their first sample" not in html
+    assert "All 2 feed records" in html
+
+
+def test_realtime_section_counts_a_single_check_in_the_singular() -> None:
+    rollup = _realtime_rollup()
+    rollup["realtime"]["members"][0]["observations"] = 1  # type: ignore[index]
+    html = render_site._rollup_realtime_section(rollup)
+    assert "of 1 check " in html
+    assert "of 1 checks" not in html
+
+
+def test_realtime_section_states_it_changes_no_grade() -> None:
+    html = render_site._rollup_realtime_section(_realtime_rollup())
+    assert "changes no grade" in html
+
+
+def test_realtime_section_lists_the_least_reliable_feed_first() -> None:
+    html = render_site._rollup_realtime_section(_realtime_rollup())
+    assert html.index("Spotty Transit") < html.index("Steady Transit")
+
+
+def test_a_program_with_no_monitored_realtime_renders_no_realtime_section() -> None:
+    assert render_site._rollup_realtime_section({}) == ""
+    assert render_site._rollup_realtime_section({"realtime": {}}) == ""
+    assert render_site._rollup_realtime_section(_realtime_rollup(members=[])) == ""
+
+
+def test_realtime_section_omits_medians_the_monitor_did_not_record() -> None:
+    html = render_site._rollup_realtime_section(
+        _realtime_rollup(median_uptime_pct=None, median_lag_seconds=None, median_coverage_pct=None)
+    )
+    assert "Across the monitored feeds" not in html

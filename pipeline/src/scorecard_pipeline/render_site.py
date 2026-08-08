@@ -4652,6 +4652,8 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
         else ""
     )
     expired_section = _rollup_expired_section(rollup)
+    reconciliation_section = _rollup_reconciliation_section(rollup)
+    realtime_section = _rollup_realtime_section(rollup)
     shapes_section = _rollup_shapes_section(rollup)
     common_fixes_section = _rollup_common_fixes_section(rollup) if guarded_summary else ""
     if guarded_summary:
@@ -4695,7 +4697,9 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     </div>
     {_route_rule()}
     {dist_section}
+    {reconciliation_section}
     {expired_section}
+    {realtime_section}
     {shapes_section}
     {common_fixes_section}
     <section aria-labelledby="members-h">
@@ -4778,6 +4782,154 @@ def _rollup_expired_section(rollup: dict[str, Any]) -> str:
         '<p class="page-lede">These feeds have run out and dropped from trip planners. '
         "Start the program's outreach here.</p>"
         f"{''.join(groups)}</section>"
+    )
+
+
+def _plural(count: int, singular: str, plural: str) -> str:
+    return singular if count == 1 else plural
+
+
+def _month_label(month: str) -> str:
+    """Turn an ISO year-month into readable prose, or pass it through unchanged.
+
+    Reuses the module's one-indexed ``_MONTH_NAMES`` table, defined below with
+    the authored-Markdown helpers, so month names have a single spelling.
+    """
+    year, _, number = month.partition("-")
+    if not number.isdigit() or not 1 <= int(number) <= 12:
+        return month
+    return f"{_MONTH_NAMES[int(number)]} {year}"
+
+
+def _rollup_reconciliation_section(rollup: dict[str, Any]) -> str:
+    """How this program's feed records line up with a transport authority's own directory.
+
+    The scorecard's registry was assembled from open feed catalogues, so it was
+    never the same list as the roster a state programme keeps. Saying how far
+    the two agree, and where they do not, lets a reader from that programme
+    check this page against something they already trust. Uncertain matches are
+    reported as their own figure and never counted as agreement. Absent when no
+    directory has been mapped for the program.
+    """
+    rec = rollup.get("reconciliation")
+    if not rec or not rec.get("reconciled_records"):
+        return ""
+    matched = rec["matched_records"]
+    reconciled = rec["reconciled_records"]
+    month = esc(_month_label(str(rec.get("directory_month") or "")))
+    source = esc(str(rec.get("directory_source") or ""))
+    uncertain = int(rec["uncertain_records"])
+    absent = int(rec["absent_records"])
+    parts = [
+        f'<p class="page-lede">Of the {reconciled} feed records on this page, '
+        f"{matched} are matched to an agency in the state's own monthly GTFS report "
+        f"directory ({month}). Those reports cover the schedule side; this page adds a "
+        "daily evidence layer on top of them. Nothing here changes a grade.</p>",
+        '<ul class="fineprint">',
+        f"<li>{uncertain} {_plural(uncertain, 'record has', 'records have')} a plausible "
+        "match that the evidence does not settle, so it is left unmatched rather than "
+        "asserted.</li>",
+        f"<li>{absent} {_plural(absent, 'record has', 'records have')} no counterpart in "
+        "that directory. Most are services the state's monthly reports do not carry, such "
+        "as park, campus, and private shuttles.</li>",
+        f"<li>The matched records describe {rec['organizations_matched']} distinct "
+        "organizations, because one operator can publish more than one feed.</li>",
+    ]
+    directory_only = int(rec.get("directory_only_agencies") or 0)
+    if directory_only:
+        parts.append(
+            f"<li>{directory_only} agencies in that directory have no feed record here yet. "
+            "They are the clearest place to grow this registry.</li>"
+        )
+    parts.append("</ul>")
+    parts.append(
+        f'<p class="fineprint">Directory read on {esc(str(rec.get("directory_retrieved_on") or ""))} '
+        f'from <a href="{source}" rel="external">{source}</a>. Method: '
+        '<a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/'
+        'california-reconciliation.md">how the crosswalk is built</a>.</p>'
+    )
+    inner = "".join(parts)
+    return (
+        '<section class="expired-panel" aria-labelledby="rollup-reconcile-h">'
+        '<h2 class="section-title" id="rollup-reconcile-h">Matched to the state report directory '
+        f'<span class="grade-count">{matched} of {reconciled}</span></h2>'
+        f"{inner}</section>"
+    )
+
+
+def _rollup_realtime_section(rollup: dict[str, Any]) -> str:
+    """Realtime reliability across the program, agency by agency.
+
+    A state programme's monthly reports assess the schedule side and check
+    realtime presence at most a couple of times a month. The monitor here
+    samples on a schedule and records whether each feed answered, how far
+    behind its header timestamp was, and how much of the scheduled service
+    showed up in it. This shows that record for the whole cohort at once.
+
+    Least reliable first, because that is the outreach order. Members the
+    monitor has not observed are named as a count, never shown as a zero.
+    Nothing here changes a grade.
+    """
+    rt = rollup.get("realtime")
+    if not rt or not rt.get("members"):
+        return ""
+    rows = []
+    for m in rt["members"]:
+        lag = (
+            f"{m['median_lag_seconds']}s behind"
+            if m.get("median_lag_seconds") is not None
+            else "no header timestamp"
+        )
+        cov = (
+            f", {m['median_coverage_pct']}% of scheduled trips"
+            if m.get("median_coverage_pct") is not None
+            else ""
+        )
+        rows.append(
+            f'<li class="program-row"><a href="/agency/{esc(m["id"])}/">{esc(m["name"])}</a>'
+            f'<span class="fineprint">answered {m["uptime_pct"]}% of {m["observations"]} '
+            f"{_plural(int(m['observations']), 'check', 'checks')} &middot; "
+            f"{esc(lag)}{esc(cov)}</span></li>"
+        )
+    configured = rt["configured_feed_records"]
+    monitored = rt["monitored_feed_records"]
+    unmonitored = max(0, configured - monitored)
+    noun = _plural(configured, "feed record", "feed records")
+    if unmonitored:
+        summary = (
+            f"{monitored} of the {configured} {noun} here with a realtime endpoint "
+            "configured have been sampled by the monitor so far."
+        )
+    else:
+        summary = (
+            f"All {configured} {noun} here with a realtime endpoint configured have been "
+            "sampled by the monitor."
+        )
+    if unmonitored:
+        summary += (
+            f" The other {unmonitored} are waiting on their first sample and are not "
+            "shown as failing."
+        )
+    medians = []
+    if rt.get("median_uptime_pct") is not None:
+        medians.append(f"median uptime {rt['median_uptime_pct']}%")
+    if rt.get("median_lag_seconds") is not None:
+        medians.append(f"median lag {rt['median_lag_seconds']}s")
+    if rt.get("median_coverage_pct") is not None:
+        medians.append(f"median trip coverage {rt['median_coverage_pct']}%")
+    median_line = (
+        f'<p class="fineprint">Across the monitored feeds: {esc(", ".join(medians))}.</p>'
+        if medians
+        else ""
+    )
+    return (
+        '<section class="expired-panel" aria-labelledby="rollup-rt-h">'
+        '<h2 class="section-title" id="rollup-rt-h">Realtime health '
+        f'<span class="grade-count">{monitored} monitored</span></h2>'
+        f'<p class="page-lede">{summary} Least reliable first. Reachability, how far behind '
+        "each feed's own timestamp runs, and how much of the scheduled service appears in "
+        "it. Sampled on a schedule rather than continuously, and it changes no grade.</p>"
+        f'{median_line}<ul class="program-list">{"".join(rows)}</ul></section>'
     )
 
 

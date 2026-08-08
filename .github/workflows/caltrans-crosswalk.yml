@@ -1,0 +1,83 @@
+name: Caltrans crosswalk refresh
+
+# Caltrans and Cal-ITP publish a new month of GTFS quality reports on their own
+# schedule. The committed snapshot in data/caltrans-report-directory.json is
+# what the California reconciliation reads, so it goes stale silently unless
+# something checks. This runs monthly, re-reads their directory, rebuilds the
+# crosswalk, and opens a pull request when anything moved.
+#
+# It never edits main directly: a curator reviews the diff, because a changed
+# match is a claim about somebody else's agency. `make verify` stays offline;
+# this is the only workflow that reaches their site.
+
+on:
+  schedule:
+    - cron: "23 6 5 * *" # the 5th of each month, after their monthly publish
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: caltrans-crosswalk
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+      - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: uv sync --locked
+        working-directory: pipeline
+
+      - name: Is the committed snapshot still their current month?
+        id: freshness
+        run: |
+          if uv run --project pipeline python pipeline/scripts/fetch_caltrans_directory.py --check; then
+            echo "stale=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "stale=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Re-read the directory and rebuild the crosswalk
+        if: steps.freshness.outputs.stale == 'true'
+        run: |
+          uv run --project pipeline python pipeline/scripts/fetch_caltrans_directory.py
+          uv run --project pipeline python pipeline/scripts/build_california_crosswalk.py
+
+      - name: Open a pull request when anything moved
+        if: steps.freshness.outputs.stale == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- data/; then
+            echo "Their directory advanced but nothing in the crosswalk changed."
+            exit 0
+          fi
+          month="$(python3 -c "import json;print(json.load(open('data/caltrans-report-directory.json'))['report_month'])")"
+          branch="chore/caltrans-crosswalk-${month}"
+          git config user.name "scorecard-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add data/
+          git commit -m "chore(crosswalk): refresh the Caltrans report directory to ${month}"
+          git push origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "Refresh the Caltrans report directory to ${month}" \
+            --body "$(cat <<'BODY'
+          Their monthly directory advanced, so the committed snapshot and the
+          California crosswalk were rebuilt from it.
+
+          Review the crosswalk diff before merging. A record moving between
+          matched, uncertain, and absent is a claim about somebody else's
+          agency, and a new curator decision may be needed for records the
+          automatic rules cannot settle. The method is in
+          docs/california-reconciliation.md.
+          BODY
+          )"

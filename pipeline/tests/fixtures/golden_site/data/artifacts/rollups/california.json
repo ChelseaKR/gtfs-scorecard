@@ -1,5 +1,5 @@
 {
-  "agency_count": 135,
+  "agency_count": 133,
   "average_score": 62.3,
   "common_fixes": [
     {
@@ -375,18 +375,6 @@
       "grade": "F",
       "id": "carson-circuit",
       "name": "Carson Circuit",
-      "needs_attention": true,
-      "score": 42.7,
-      "snapshot_date": "2026-07-02",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -853,
-      "expiry_status": "stale",
-      "grade": "F",
-      "id": "stanislaus-regional-transit-authority-stanrta",
-      "name": "Stanislaus Regional Transit Authority (StanRTA)",
       "needs_attention": true,
       "score": 42.7,
       "snapshot_date": "2026-07-02",
@@ -881,18 +869,6 @@
       "name": "Thousand Oaks Transit - Kanan Shuttle",
       "needs_attention": true,
       "score": 56.6,
-      "snapshot_date": "2026-07-02",
-      "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
-    },
-    {
-      "attention_reason": "Service data has expired",
-      "days_until_expiry": -38,
-      "expiry_status": "lapsed",
-      "grade": "F",
-      "id": "redding-area-bus-authority",
-      "name": "Redding Area Bus Authority",
-      "needs_attention": true,
-      "score": 56.9,
       "snapshot_date": "2026-07-02",
       "top_fix": "Re-export the feed with a calendar that reaches further out, and set feed_info feed_end_date past your next service change."
     },
@@ -1774,6 +1750,129 @@
     }
   ],
   "needs_attention": 84,
+  "realtime": {
+    "bands": {
+      "mostly": 0,
+      "reliable": 48,
+      "spotty": 0
+    },
+    "configured_feed_records": 48,
+    "median_coverage_pct": null,
+    "median_lag_seconds": 3,
+    "median_uptime_pct": 100.0,
+    "members": [
+      {
+        "band": "reliable",
+        "configured_kinds": [
+          "service_alerts",
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "first_ts": 1783244429,
+        "id": "commerce-municipal-bus-lines",
+        "last_ts": 1786140836,
+        "median_coverage_pct": null,
+        "median_lag_seconds": 0,
+        "name": "Commerce Municipal Bus Lines",
+        "observations": 200,
+        "uptime_pct": 99.5
+      },
+      {
+        "band": "reliable",
+        "configured_kinds": [
+          "service_alerts",
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "first_ts": 1786163075,
+        "id": "city-of-tracy-tracer",
+        "last_ts": 1786163075,
+        "median_coverage_pct": null,
+        "median_lag_seconds": 33,
+        "name": "City of Tracy (TRACER)",
+        "observations": 1,
+        "uptime_pct": 100.0
+      },
+      {
+        "band": "reliable",
+        "configured_kinds": [
+          "service_alerts",
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "first_ts": 1786163073,
+        "id": "city-of-tracy",
+        "last_ts": 1786163073,
+        "median_coverage_pct": null,
+        "median_lag_seconds": 30,
+        "name": "City of Tracy",
+        "observations": 1,
+        "uptime_pct": 100.0
+      },
+      {
+        "band": "reliable",
+        "configured_kinds": [
+          "service_alerts",
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "first_ts": 1786163125,
+        "id": "golden-empire-transit-district-get",
+        "last_ts": 1786163125,
+        "median_coverage_pct": null,
+        "median_lag_seconds": 26,
+        "name": "Golden Empire Transit District (GET)",
+        "observations": 1,
+        "uptime_pct": 100.0
+      },
+      {
+        "band": "reliable",
+        "configured_kinds": [
+          "service_alerts",
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "first_ts": 1786163151,
+        "id": "move-stanislaus",
+        "last_ts": 1786163151,
+        "median_coverage_pct": null,
+        "median_lag_seconds": 24,
+        "name": "Move Stanislaus",
+        "observations": 1,
+        "uptime_pct": 100.0
+      },
+      {
+        "band": "reliable",
+        "configured_kinds": [
+          "service_alerts",
+          "trip_updates",
+          "vehicle_positions"
+        ],
+        "first_ts": 1786163144,
+        "id": "montebello-bus-lines",
+        "last_ts": 1786163144,
+        "median_coverage_pct": null,
+        "median_lag_seconds": 22,
+        "name": "Montebello Bus Lines",
+        "observations": 1,
+        "uptime_pct": 100.0
+      }
+    ],
+    "monitored_feed_records": 48
+  },
+  "reconciliation": {
+    "absent_records": 18,
+    "directory_agencies": 178,
+    "directory_month": "2026-06",
+    "directory_only_agencies": 29,
+    "directory_retrieved_on": "2026-08-07",
+    "directory_source": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06",
+    "matched_records": 112,
+    "organizations_matched": 108,
+    "reconciled_records": 133,
+    "uncertain_records": 3,
+    "unreconciled_records": 0
+  },
   "rollup": {
     "id": "california",
     "name": "California agencies"
