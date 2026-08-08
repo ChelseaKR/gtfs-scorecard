@@ -3,14 +3,6 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
-  - id: el-dorado-transit-agency
-    name: El Dorado County Transit Authority
-    subdivision_code: US-CO
-    subdivision_name: Colorado
-    static_gtfs_url: https://data.trilliumtransit.com/gtfs/eldoradotransit-ca-us/eldoradotransit-ca-us.zip
-    mdb_id: 75
-    license_note: "License: https://eldoradotransit.com/trip-planner-information/gtfs-data/"
-
   - id: grand-valley-transit
     name: Grand Valley Transit
     subdivision_code: US-CO
@@ -19,6 +11,7 @@ agencies:
     mdb_id: 161
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: roaring-fork-transportation-authority
     name: Roaring Fork Transportation Authority
     subdivision_code: US-CO
@@ -26,6 +19,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/rfta-co-us/rfta-co-us.zip
     mdb_id: 162
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: gunnison-valley-transportation-authority-rta
     name: Gunnison Valley Transportation Authority (RTA)
@@ -36,6 +30,7 @@ agencies:
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: snowmass-village-transportation
     name: Snowmass Village Transportation
     subdivision_code: US-CO
@@ -43,6 +38,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/snowmassvillagetransportation-co-us/snowmassvillagetransportation-co-us.zip
     mdb_id: 164
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: groome-transportation-colorado-springs-shuttle
     name: Groome Transportation - Colorado Springs Shuttle
@@ -52,6 +48,7 @@ agencies:
     mdb_id: 168
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: regional-transportation-district-rtd
     name: Bustang
     subdivision_code: US-CO
@@ -59,6 +56,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/bustang-co-us/bustang-co-us.zip
     mdb_id: 169
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: colorado-mountain-express
     name: Colorado Mountain Express
@@ -68,6 +66,7 @@ agencies:
     mdb_id: 172
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: eco-transit
     name: ECO Transit
     subdivision_code: US-CO
@@ -75,6 +74,7 @@ agencies:
     static_gtfs_url: https://www.eaglecounty.us/web/downloads/ecoTransit/GTFS.zip
     mdb_id: 173
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: vail-transit
     name: Vail Transit
@@ -84,6 +84,7 @@ agencies:
     mdb_id: 174
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: winter-park-transit
     name: Winter Park Transit
     subdivision_code: US-CO
@@ -91,6 +92,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/winterpark-co-us/winterpark-co-us.zip
     mdb_id: 175
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: rocky-mountain-national-park-shuttles
     name: Rocky Mountain National Park Shuttles
@@ -100,6 +102,7 @@ agencies:
     mdb_id: 176
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: town-of-estes-park
     name: Town of Estes Park
     subdivision_code: US-CO
@@ -107,6 +110,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/estestransit-co-us/estestransit-co-us.zip
     mdb_id: 177
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: regional-transportation-district-rtd-178
     ntd_id: "80006"
@@ -121,6 +125,7 @@ agencies:
       service_alerts: https://www.rtd-denver.com/files/gtfs-rt/Alerts.pb
     license_note: "License: https://www.rtd-denver.com/business-center/open-spatial-data/gtfs-license-agreement"
 
+
   - id: transfort-city-of-fort-collins-transfort
     name: Transfort – City of Fort Collins (Transfort)
     subdivision_code: US-CO
@@ -128,6 +133,7 @@ agencies:
     static_gtfs_url: http://www.ridetransfort.com/img/site_specific/uploads/google_transit.zip
     mdb_id: 179
     license_note: "License: http://www.ridetransfort.com/img/site_specific/uploads/Transfort_GTFS_License_Agreement.pdf"
+
 
   - id: via-mobility
     name: Via Mobility
@@ -138,6 +144,7 @@ agencies:
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: university-of-colorado-boulder
     name: University of Colorado Boulder
     subdivision_code: US-CO
@@ -145,6 +152,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/universitycoloradoboulder-co-us/universitycoloradoboulder-co-us.zip
     mdb_id: 181
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: all-points-transit
     name: All Points Transit
@@ -154,6 +162,7 @@ agencies:
     mdb_id: 212
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: avon-transit
     name: Avon Transit
     subdivision_code: US-CO
@@ -161,6 +170,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/avon-co-us/avon-co-us.zip
     mdb_id: 218
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: bent-county-transit
     name: Bent County Transit
@@ -170,6 +180,7 @@ agencies:
     mdb_id: 230
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: blackhawk-and-central-city-tramway
     name: Blackhawk and Central City Tramway
     subdivision_code: US-CO
@@ -177,6 +188,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/blackhawktramway-co-us/blackhawktramway-co-us.zip
     mdb_id: 234
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: breckenridge-free-ride
     name: Breckenridge Free Ride
@@ -186,6 +198,7 @@ agencies:
     mdb_id: 237
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: city-of-fountain-transit
     name: City of Fountain Transit
     subdivision_code: US-CO
@@ -193,6 +206,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityoffountaintransit-co-us/cityoffountaintransit-co-us.zip
     mdb_id: 309
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: clear-creek-county-transit
     name: Clear Creek County Transit
@@ -202,6 +216,7 @@ agencies:
     mdb_id: 313
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: cripple-creek-transportation
     name: Cripple Creek Transportation
     subdivision_code: US-CO
@@ -209,6 +224,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cripplecreek-co-us/cripplecreek-co-us.zip
     mdb_id: 317
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: envida
     name: Envida
@@ -218,6 +234,7 @@ agencies:
     mdb_id: 455
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: durango-transit
     name: Durango Transit
     subdivision_code: US-CO
@@ -225,6 +242,7 @@ agencies:
     static_gtfs_url: https://durangogov.org/DocumentCenter/View/17688/Durango-Transit-GTFS-Data
     mdb_id: 456
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: mountain-express-mtnexp
     name: Mountain Express (MtnExp)
@@ -234,6 +252,7 @@ agencies:
     mdb_id: 581
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: town-of-mountain-village
     name: Town of Mountain Village
     subdivision_code: US-CO
@@ -241,6 +260,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/mountainvillage-co-us/mountainvillage-co-us.zip
     mdb_id: 594
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: town-of-telluride
     name: Town of Telluride
@@ -250,6 +270,7 @@ agencies:
     mdb_id: 603
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: home-james
     name: Home James
     subdivision_code: US-CO
@@ -257,6 +278,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/homejames-co-us/homejames-co-us.zip
     mdb_id: 607
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: groome-transportation-greenride
     name: Groome Transportation (Greenride)
@@ -266,6 +288,7 @@ agencies:
     mdb_id: 614
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: prairie-express-transit
     name: Prairie Express Transit
     subdivision_code: US-CO
@@ -273,6 +296,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/prairieexpress-co-us/prairieexpress-co-us.zip
     mdb_id: 801
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: roadrunnertransit
     name: RoadrunnerTransit
@@ -282,6 +306,7 @@ agencies:
     mdb_id: 805
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: san-miguel-authority-for-regional-transportation-smart
     name: San Miguel Authority for Regional Transportation (SMART)
     subdivision_code: US-CO
@@ -289,6 +314,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sanmiguel-co-us/sanmiguel-co-us.zip
     mdb_id: 811
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: summit-stage
     name: Summit Stage
@@ -298,6 +324,7 @@ agencies:
     mdb_id: 820
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: teller-senior-coalition-transit-tsc-transit
     name: Teller Senior Coalition Transit (TSC Transit)
     subdivision_code: US-CO
@@ -305,6 +332,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/tsctransit-co-us/tsctransit-co-us.zip
     mdb_id: 827
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: garden-of-the-gods
     name: Garden of the Gods
@@ -314,6 +342,7 @@ agencies:
     mdb_id: 879
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: boulder-county
     name: Boulder County
     subdivision_code: US-CO
@@ -321,6 +350,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/bouldercounty-co-us/bouldercounty-co-us.zip
     mdb_id: 880
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: baca-area-transportation
     name: Baca Area Transportation
@@ -330,6 +360,7 @@ agencies:
     mdb_id: 1087
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: dolores-county
     name: Dolores County
     subdivision_code: US-CO
@@ -337,6 +368,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/dolorescounty-co-us/dolorescounty-co-us--flex-v2.zip
     mdb_id: 1141
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: easy-ride-transportation
     name: Easy Ride Transportation
@@ -346,6 +378,7 @@ agencies:
     mdb_id: 1195
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: pueblo-transit
     name: Pueblo Transit Flex
     subdivision_code: US-CO
@@ -353,6 +386,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/pueblo-co-us/pueblo-co-us--flex-v2.zip
     mdb_id: 1232
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: mountain-metropolitan-transit
     name: Mountain Metropolitan Transit
@@ -362,6 +396,7 @@ agencies:
     mdb_id: 1241
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: all-points-transit-2039
     name: All Points Transit Flex
     subdivision_code: US-CO
@@ -369,6 +404,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/allpointstransit-co-us/allpointstransit-co-us--flex-v2.zip
     mdb_id: 2039
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: avon-transit-2040
     name: Avon Transit Flex
@@ -378,6 +414,7 @@ agencies:
     mdb_id: 2040
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: blackhawk-and-central-city-tramway-2041
     name: Blackhawk and Central City Tramway Flex
     subdivision_code: US-CO
@@ -385,6 +422,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/blackhawktramway-co-us/blackhawktramway-co-us--flex-v2.zip
     mdb_id: 2041
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: cripple-creek-transportation-2042
     name: Cripple Creek Transportation Flex
@@ -394,6 +432,7 @@ agencies:
     mdb_id: 2042
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: discover-goodwill
     name: Discover Goodwill Flex
     subdivision_code: US-CO
@@ -401,6 +440,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/discovergoodwill-co-us/discovergoodwill-co-us--flex-v2.zip
     mdb_id: 2043
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: envida-2044
     name: Envida Flex
@@ -410,6 +450,7 @@ agencies:
     mdb_id: 2044
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: eco-transit-2045
     name: ECO Transit Flex
     subdivision_code: US-CO
@@ -417,6 +458,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/ecotransit-co-us/ecotransit-co-us--flex-v2.zip
     mdb_id: 2045
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: el-paso-fountain-valley-senior-citizens-program-inc
     name: El Paso Fountain Valley Senior Citizens Program Inc Flex
@@ -426,6 +468,7 @@ agencies:
     mdb_id: 2046
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: estes-transit-2047
     name: Estes Transit Flex
     subdivision_code: US-CO
@@ -433,6 +476,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/estestransit-co-us/estestransit-co-us--flex-v2.zip
     mdb_id: 2047
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: gunnison-valley-rta
     name: Gunnison Valley RTA Flex
@@ -442,6 +486,7 @@ agencies:
     mdb_id: 2048
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: prowers-area-transit
     name: Prowers Area Transit Flex
     subdivision_code: US-CO
@@ -449,6 +494,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/prowerscounty-co-us/prowerscounty-co-us--flex-v2.zip
     mdb_id: 2049
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: town-of-telluride-2050
     name: Town of Telluride Flex
@@ -458,6 +504,7 @@ agencies:
     mdb_id: 2050
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: steamboat-springs-transit
     name: Steamboat Springs Transit Flex
     subdivision_code: US-CO
@@ -466,6 +513,7 @@ agencies:
     mdb_id: 2051
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: tsc-transit
     name: TSC Transit Flex
     subdivision_code: US-CO
@@ -473,6 +521,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/tsctransit-co-us/tsctransit-co-us--flex-v2.zip
     mdb_id: 2052
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: regional-transportation-district
     ntd_id: "80006"
@@ -483,6 +532,7 @@ agencies:
     mdb_id: 2054
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: eco-transit-2061
     name: ECO Transit
     subdivision_code: US-CO
@@ -490,6 +540,7 @@ agencies:
     static_gtfs_url: https://cms5.revize.com/revize/eagle/zip%20download/GTFS.zip
     mdb_id: 2061
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: greeley-evans-transit-get-2076
     name: Greeley-Evans Transit (GET)
@@ -499,6 +550,7 @@ agencies:
     mdb_id: 2076
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: adams-county
     name: Adams County Flex
     subdivision_code: US-CO
@@ -506,6 +558,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/adamscounty-co-us/adamscounty-co-us--flex-v2.zip
     mdb_id: 2156
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: bent-county-transportation
     name: Bent County Transportation Flex
@@ -515,6 +568,7 @@ agencies:
     mdb_id: 2157
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: city-of-loveland
     name: City of Loveland Flex
     subdivision_code: US-CO
@@ -522,6 +576,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityofloveland-co-us/cityofloveland-co-us--flex-v2.zip
     mdb_id: 2161
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: continuum
     name: Continuum Flex
@@ -531,6 +586,7 @@ agencies:
     mdb_id: 2165
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: kiowa-county-transit
     name: Kiowa County Transit Flex
     subdivision_code: US-CO
@@ -538,6 +594,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/kiowacounty-co-us/kiowacounty-co-us--flex-v2.zip
     mdb_id: 2169
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: la-junta-transit
     name: La Junta Transit Flex
@@ -547,6 +604,7 @@ agencies:
     mdb_id: 2170
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: lakewood-rides
     name: Lakewood Rides Flex
     subdivision_code: US-CO
@@ -554,6 +612,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/lakewoodrides-co-us/lakewoodrides-co-us--flex-v2.zip
     mdb_id: 2171
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: mountain-family-center
     name: Mountain Family Center Flex
@@ -563,6 +622,7 @@ agencies:
     mdb_id: 2173
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: omnibus
     name: Omnibus Flex
     subdivision_code: US-CO
@@ -570,6 +630,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/omnibus-co-us/omnibus-co-us--flex-v2.zip
     mdb_id: 2175
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: routt-county-council-on-aging-rccoca-transportation
     name: Routt County Council on Aging (RCCOCA) Transportation Flex
@@ -579,6 +640,7 @@ agencies:
     mdb_id: 2178
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: roaring-fork-transportation-authority-rfta
     name: Roaring Fork Transportation Authority (RFTA) Flex
     subdivision_code: US-CO
@@ -586,6 +648,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/rfta-co-us/rfta-co-us--flex-v2.zip
     mdb_id: 2179
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: south-central-council-of-governments-sccog
     name: South Central Council of Governments (SCCOG) Flex
@@ -595,6 +658,7 @@ agencies:
     mdb_id: 2181
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: silver-key-senior-services
     name: Silver Key Senior Services Flex
     subdivision_code: US-CO
@@ -602,6 +666,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/silverkey-co-us/silverkey-co-us--flex-v2.zip
     mdb_id: 2182
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: southwest-rides
     name: Southwest Rides Flex
@@ -611,6 +676,7 @@ agencies:
     mdb_id: 2184
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: senior-resource-development-agency
     name: Senior Resource Development Agency Flex
     subdivision_code: US-CO
@@ -618,6 +684,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/srda-co-us/srda-co-us--flex-v2.zip
     mdb_id: 2185
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: upper-arkansas-area-council-of-governments
     name: Upper Arkansas Area Council of Governments Flex
@@ -627,6 +694,7 @@ agencies:
     mdb_id: 2188
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: san-miguel-county
     name: San Miguel County
     subdivision_code: US-CO
@@ -634,6 +702,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sanmiguelcounty-co-us/sanmiguelcounty-co-us.zip
     mdb_id: 2195
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: pueblo-transit-2232
     name: Pueblo Transit
@@ -643,6 +712,7 @@ agencies:
     mdb_id: 2232
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: roaring-fork-transportation-authority-2278
     name: Roaring Fork Transportation Authority
     subdivision_code: US-CO
@@ -650,6 +720,7 @@ agencies:
     static_gtfs_url: https://www.rfta.com/RFTAGTFSExport.zip
     mdb_id: 2278
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: regional-transportation-district-rtd-2280
     name: Bustang
@@ -659,6 +730,7 @@ agencies:
     mdb_id: 2280
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: grand-valley-transit-2288
     name: Grand Valley Transit Flex
     subdivision_code: US-CO
@@ -666,6 +738,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/grandvalleytransit-co-us/grandvalleytransit-co-us--flex-v2.zip
     mdb_id: 2288
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: durango-transit-2290
     name: Durango Transit Flex
@@ -675,6 +748,7 @@ agencies:
     mdb_id: 2290
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: lake-county-senior-center-transportation-program
     name: Lake County Senior Center Transportation Program Flex
     subdivision_code: US-CO
@@ -682,6 +756,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/lakecounty-co-us/lakecounty-co-us--flex-v2.zip
     mdb_id: 2291
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: mountain-metro-transit
     name: Mountain Metro Transit Flex
@@ -691,6 +766,7 @@ agencies:
     mdb_id: 2292
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: transfort
     name: Transfort Flex
     subdivision_code: US-CO
@@ -698,6 +774,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/transfort-co-us/transfort-co-us--flex-v2.zip
     mdb_id: 2293
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: mountain-express
     name: Mountain Express Flex
@@ -707,6 +784,7 @@ agencies:
     mdb_id: 2294
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: outback-express
     name: Outback Express Flex
     subdivision_code: US-CO
@@ -714,6 +792,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/eccog-co-us/eccog-co-us--flex-v2.zip
     mdb_id: 2306
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: bustang-outrider
     name: Bustang Outrider
@@ -723,6 +802,7 @@ agencies:
     mdb_id: 2330
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: mountain-metropolitan-transit-2356
     name: Mountain Metropolitan Transit
     subdivision_code: US-CO
@@ -730,6 +810,7 @@ agencies:
     static_gtfs_url: https://coloradosprings.gov/sites/default/files/google_transit_0.zip
     mdb_id: 2356
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: via-mobility-2395
     name: Via Mobility
@@ -743,6 +824,7 @@ agencies:
       service_alerts: https://passio3.com/viaboulder/passioTransit/gtfs/realtime/serviceAlerts
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+
   - id: colorado-school-of-mines
     name: Colorado School Of Mines
     subdivision_code: US-CO
@@ -750,6 +832,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityofgolden-co-us/cityofgolden-co-us.zip
     mdb_id: 2413
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
 
   - id: avon-transit-2433
     name: Avon Transit
@@ -759,6 +842,7 @@ agencies:
     mdb_id: 2433
     license_note: "License: https://creativecommons.org/licenses/by/4.0/"
 
+
   - id: blue-sky-limo-llc
     name: Blue Sky Limo LLC
     subdivision_code: US-CO
@@ -766,6 +850,7 @@ agencies:
     static_gtfs_url: https://blueskylimovail.com/blueskylimo_gtfs.zip
     mdb_id: 2616
     license_note: "License: https://creativecommons.org/licenses/by/4.0/"
+
 
   - id: rocky-mountain-national-park
     name: Rocky Mountain National Park Shuttles

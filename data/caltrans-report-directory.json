@@ -1,0 +1,3889 @@
+{
+  "agencies": [
+    {
+      "caltrans_id": 4,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=AC"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=AC"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=AC"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=AC"
+        ]
+      },
+      "name": "Alameda-Contra Costa Transit District",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/4/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 6,
+      "feeds": {
+        "schedule": [
+          "https://www.alhambraca.gov/DocumentCenter/View/6743/Alhambra-ACT-Bus-GTFS"
+        ]
+      },
+      "name": "City of Alhambra",
+      "realtime_vendors": [
+        "DoubleMap Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/6/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project",
+        "Microsoft"
+      ]
+    },
+    {
+      "caltrans_id": 10,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=CE"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=CE"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=CE"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=CE"
+        ]
+      },
+      "name": "San Joaquin Regional Rail Commission",
+      "realtime_vendors": [
+        "ETA Transit Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/10/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Metropolitan Transportation Commission"
+      ]
+    },
+    {
+      "caltrans_id": 11,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/amador-ca-us/amador-ca-us.zip"
+        ]
+      },
+      "name": "Amador Regional Transit System",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/11/index.html",
+      "schedule_vendors": [
+        "Trapeze Group",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 13,
+      "feeds": {
+        "schedule": [
+          "https://content.amtrak.com/content/gtfs/GTFS.zip"
+        ]
+      },
+      "name": "Amtrak",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/13/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 16,
+      "feeds": {
+        "schedule": [
+          "https://www.avta.com/userfiles/files/AVTA_GTFS.zip"
+        ],
+        "service_alerts": [
+          "https://track-it.avta.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert"
+        ],
+        "trip_updates": [
+          "https://track-it.avta.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate"
+        ],
+        "vehicle_positions": [
+          "https://track-it.avta.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition"
+        ]
+      },
+      "name": "Antelope Valley Transit Authority",
+      "realtime_vendors": [
+        "Avail Technologies Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/16/index.html",
+      "schedule_vendors": [
+        "Avail Technologies Inc."
+      ]
+    },
+    {
+      "caltrans_id": 17,
+      "feeds": {
+        "schedule": [
+          "https://passio3.com/ArcadiaCity/passioTransit/gtfs/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://passio3.com/ArcadiaCity/passioTransit/gtfs/realtime/serviceAlerts"
+        ],
+        "trip_updates": [
+          "https://passio3.com/ArcadiaCity/passioTransit/gtfs/realtime/tripUpdates"
+        ],
+        "vehicle_positions": [
+          "https://passio3.com/ArcadiaCity/passioTransit/gtfs/realtime/vehiclePositions"
+        ]
+      },
+      "name": "City of Arcadia",
+      "realtime_vendors": [
+        "DoubleMap Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/17/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 18,
+      "feeds": {
+        "schedule": [
+          "https://hta.optibus.co/public_api/v1/feeds/gtfs"
+        ],
+        "service_alerts": [
+          "https://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/humboldtcounty-ca-us/service_alerts.proto"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/redwood/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/redwood/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "City of Arcata",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/18/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 20,
+      "feeds": {
+        "schedule": [
+          "https://gtfs.dds.dot.ca.gov/gtfs_files/ArtesiaGTFS.zip"
+        ]
+      },
+      "name": "City of Artesia",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/20/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project"
+      ]
+    },
+    {
+      "caltrans_id": 21,
+      "feeds": {
+        "schedule": [
+          "https://gtfs.remix.com/arvin.zip"
+        ]
+      },
+      "name": "City of Arvin",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/21/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project",
+        "Via Inc.",
+        "Via / Remix Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 29,
+      "feeds": {
+        "schedule": [
+          "https://passio3.com/baldwinpark/passioTransit/gtfs/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://passio3.com/baldwinpark/passioTransit/gtfs/realtime/serviceAlerts"
+        ],
+        "trip_updates": [
+          "https://passio3.com/baldwinpark/passioTransit/gtfs/realtime/tripUpdates"
+        ],
+        "vehicle_positions": [
+          "https://passio3.com/baldwinpark/passioTransit/gtfs/realtime/vehiclePositions"
+        ]
+      },
+      "name": "City of Baldwin Park",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/29/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project"
+      ]
+    },
+    {
+      "caltrans_id": 34,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/beaumont-ca-us/beaumont-ca-us.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/beaumont/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/beaumont/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/beaumont/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "City of Beaumont",
+      "realtime_vendors": [
+        "DoubleMap Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/34/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 35,
+      "feeds": {
+        "schedule": [
+          "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13119/LaCampanaGTFS-2025-01-17.zip"
+        ]
+      },
+      "name": "City of Bell",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/35/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project"
+      ]
+    },
+    {
+      "caltrans_id": 36,
+      "feeds": {
+        "schedule": [
+          "https://www.ips-systems.com/GTFS/Schedule/21"
+        ]
+      },
+      "name": "City of Bell Gardens",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/36/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project"
+      ]
+    },
+    {
+      "caltrans_id": 37,
+      "feeds": {
+        "schedule": [
+          "https://gtfs.remix.com/CalITP.zip"
+        ]
+      },
+      "name": "City of Bellflower",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/37/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project"
+      ]
+    },
+    {
+      "caltrans_id": 45,
+      "feeds": {
+        "schedule": [
+          "https://rideburbankbus.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://rideburbankbus.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://rideburbankbus.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://rideburbankbus.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "City of Burbank",
+      "realtime_vendors": [
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/45/index.html",
+      "schedule_vendors": [
+        "GMV Syncromatics Inc"
+      ]
+    },
+    {
+      "caltrans_id": 48,
+      "feeds": {
+        "schedule": [
+          "https://planmyride.blinetransit.com/gtfsrealtime/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://planmyride.blinetransit.com/gtfsrealtime/GTFS_ServiceAlerts.pb"
+        ],
+        "trip_updates": [
+          "https://planmyride.blinetransit.com/gtfsrealtime/GTFS_TripUpdates.pb"
+        ],
+        "vehicle_positions": [
+          "https://planmyride.blinetransit.com/gtfsrealtime/GTFS_VehiclePositions.pb"
+        ]
+      },
+      "name": "Butte County Association of Governments",
+      "realtime_vendors": [
+        "DoubleMap Inc.",
+        "Trapeze Group",
+        "TripSpark"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/48/index.html",
+      "schedule_vendors": [
+        "Trapeze Group",
+        "TripSpark"
+      ]
+    },
+    {
+      "caltrans_id": 49,
+      "feeds": {
+        "schedule": [
+          "https://www.cityofcalabasas.com/home/showpublisheddocument/32961/638749699548630000"
+        ]
+      },
+      "name": "City of Calabasas",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/49/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 54,
+      "feeds": {
+        "schedule": [
+          "https://govcbus.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://govcbus.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://govcbus.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://govcbus.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "City of Camarillo",
+      "realtime_vendors": [
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/54/index.html",
+      "schedule_vendors": [
+        "Trillium Inc.",
+        "Karhoo"
+      ]
+    },
+    {
+      "caltrans_id": 56,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=AM"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=AM"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=AM"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=AM"
+        ]
+      },
+      "name": "Capitol Corridor Joint Powers Authority",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/56/index.html",
+      "schedule_vendors": [
+        "Metropolitan Transportation Commission",
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 57,
+      "feeds": {
+        "schedule": [
+          "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11488/CarsonGTFS.zip"
+        ]
+      },
+      "name": "City of Carson",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/57/index.html",
+      "schedule_vendors": []
+    },
+    {
+      "caltrans_id": 61,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=CC"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=CC"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=CC"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=CC"
+        ]
+      },
+      "name": "Central Contra Costa Transit Authority",
+      "realtime_vendors": [
+        "Clever Devices Ltd."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/61/index.html",
+      "schedule_vendors": [
+        "Trapeze Group"
+      ]
+    },
+    {
+      "caltrans_id": 64,
+      "feeds": {
+        "schedule": [
+          "https://gtfs.dds.dot.ca.gov/gtfs_files/HavasuLandingFerryGTFS.zip"
+        ]
+      },
+      "name": "Chemehuevi Indian Tribe",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/64/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project"
+      ]
+    },
+    {
+      "caltrans_id": 70,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=SO"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=SO"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=SO"
+        ]
+      },
+      "name": "Cloverdale Transit",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/70/index.html",
+      "schedule_vendors": []
+    },
+    {
+      "caltrans_id": 71,
+      "feeds": {
+        "schedule": [
+          "https://passio3.com/clovis/passioTransit/gtfs/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://passio3.com/clovis/passioTransit/gtfs/realtime/serviceAlerts"
+        ],
+        "trip_updates": [
+          "https://passio3.com/clovis/passioTransit/gtfs/realtime/tripUpdates"
+        ],
+        "vehicle_positions": [
+          "https://passio3.com/clovis/passioTransit/gtfs/realtime/vehiclePositions"
+        ]
+      },
+      "name": "City of Clovis",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/71/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Passio Technologies"
+      ]
+    },
+    {
+      "caltrans_id": 75,
+      "feeds": {
+        "schedule": [
+          "https://citycommbus.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://citycommbus.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://citycommbus.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://citycommbus.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "City of Commerce",
+      "realtime_vendors": [
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/75/index.html",
+      "schedule_vendors": [
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 76,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=CM"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=CM"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=CM"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=CM"
+        ]
+      },
+      "name": "Commute.org",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/76/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 77,
+      "feeds": {
+        "schedule": [
+          "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/13657/20251205-GTFSDec25adjdate.zip"
+        ]
+      },
+      "name": "City of Compton",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/77/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project"
+      ]
+    },
+    {
+      "caltrans_id": 79,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/corona-ca-us/corona-ca-us.zip"
+        ]
+      },
+      "name": "City of Corona",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/79/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 81,
+      "feeds": {
+        "schedule": [
+          "https://iportal.sacrt.com/gtfs/SCTLink/google_transit.zip"
+        ]
+      },
+      "name": "Sacramento County",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/81/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Via Inc.",
+        "Via / Remix Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 83,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/siskiyou-ca-us/siskiyou-ca-us.zip"
+        ]
+      },
+      "name": "Siskiyou County",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/83/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 85,
+      "feeds": {
+        "schedule": [
+          "https://www.ips-systems.com/GTFS/Schedule/27"
+        ]
+      },
+      "name": "City of Covina",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/85/index.html",
+      "schedule_vendors": []
+    },
+    {
+      "caltrans_id": 86,
+      "feeds": {
+        "schedule": [
+          "https://www.cityofcudahyca.gov/DocumentCenter/View/2511"
+        ]
+      },
+      "name": "City of Cudahy",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/86/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 87,
+      "feeds": {
+        "schedule": [
+          "https://web.culvercity.org/gtfs/gtfsexport.zip"
+        ],
+        "service_alerts": [
+          "https://nextccbus.org/gtfsrt/alerts"
+        ],
+        "trip_updates": [
+          "https://nextccbus.org/gtfsrt/trips"
+        ],
+        "vehicle_positions": [
+          "https://nextccbus.org/gtfsrt/vehicles"
+        ]
+      },
+      "name": "City of Culver City",
+      "realtime_vendors": [
+        "Clever Devices Ltd."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/87/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 91,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/delano-ca-us/delano-ca-us.zip"
+        ]
+      },
+      "name": "City of Delano",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/91/index.html",
+      "schedule_vendors": [
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 95,
+      "feeds": {
+        "service_alerts": [
+          "https://downey.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert",
+          "https://downey.rideralerts.com/infopoint/gtfs-zip.ashx"
+        ],
+        "trip_updates": [
+          "https://downey.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate"
+        ],
+        "vehicle_positions": [
+          "https://downey.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition"
+        ]
+      },
+      "name": "City of Downey",
+      "realtime_vendors": [
+        "Avail Technologies Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/95/index.html",
+      "schedule_vendors": [
+        "CSched"
+      ]
+    },
+    {
+      "caltrans_id": 97,
+      "feeds": {
+        "service_alerts": [
+          "https://foothill3rdparty.rideralerts.com/myStop/gtfs-zip.ashx",
+          "https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=Alerts"
+        ],
+        "trip_updates": [
+          "https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=TripUpdates"
+        ],
+        "vehicle_positions": [
+          "https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=VehiclePositions"
+        ]
+      },
+      "name": "City of Duarte",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/97/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 99,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/easternsierra-ca-us/easternsierra-ca-us.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/esta/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/esta/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/esta/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "Eastern Sierra Transit Authority",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/99/index.html",
+      "schedule_vendors": []
+    },
+    {
+      "caltrans_id": 101,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/eldoradotransit-ca-us/eldoradotransit-ca-us.zip"
+        ]
+      },
+      "name": "El Dorado County Transit Authority",
+      "realtime_vendors": [
+        "Uber Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/101/index.html",
+      "schedule_vendors": [
+        "Uber Inc.",
+        "Trapeze Group",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 102,
+      "feeds": {
+        "schedule": [
+          "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11664/Google_Transit.zip"
+        ]
+      },
+      "name": "City of El Monte",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/102/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 103,
+      "feeds": {
+        "schedule": [
+          "https://github.com/LACMTA/los-angeles-regional-gtfs/raw/main/elsegundo-ca-us/elsegundo-ca-us.zip"
+        ]
+      },
+      "name": "City of El Segundo",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/103/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 105,
+      "feeds": {
+        "schedule": [
+          "https://iportal.sacrt.com/gtfs/eg/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://bustime.sacrt.com/EG_gtfsrt/alerts"
+        ],
+        "trip_updates": [
+          "https://bustime.sacrt.com/EG_gtfsrt/trips"
+        ],
+        "vehicle_positions": [
+          "https://bustime.sacrt.com/EG_gtfsrt/vehicles"
+        ]
+      },
+      "name": "City of Elk Grove",
+      "realtime_vendors": [
+        "Clever Devices Ltd."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/105/index.html",
+      "schedule_vendors": [
+        "Trapeze Group"
+      ]
+    },
+    {
+      "caltrans_id": 107,
+      "feeds": {
+        "schedule": [
+          "https://gtfs.remix.com/escalon_ca.zip"
+        ],
+        "service_alerts": [
+          "https://webservices.umoiq.com/api/gtfs-rt/v1/service-alerts/escalon"
+        ],
+        "trip_updates": [
+          "https://webservices.umoiq.com/api/gtfs-rt/v1/trip-updates/escalon"
+        ],
+        "vehicle_positions": [
+          "https://webservices.umoiq.com/api/gtfs-rt/v1/vehicle-positions/escalon"
+        ]
+      },
+      "name": "City of Escalon",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/107/index.html",
+      "schedule_vendors": [
+        "Via Inc.",
+        "Via / Remix Inc.",
+        "TO CONFIRM",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 108,
+      "feeds": {
+        "schedule": [
+          "https://hta.optibus.co/public_api/v1/feeds/gtfs"
+        ],
+        "service_alerts": [
+          "https://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/humboldtcounty-ca-us/service_alerts.proto"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/redwood/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/redwood/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "City of Eureka",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/108/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 110,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=FS"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=FS"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=FS"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=FS"
+        ]
+      },
+      "name": "City of Fairfield",
+      "realtime_vendors": [
+        "Cubic"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/110/index.html",
+      "schedule_vendors": [
+        "Uber Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 112,
+      "feeds": {
+        "service_alerts": [
+          "https://foothill3rdparty.rideralerts.com/myStop/gtfs-zip.ashx",
+          "https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=Alerts"
+        ],
+        "trip_updates": [
+          "https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=TripUpdates"
+        ],
+        "vehicle_positions": [
+          "https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=VehiclePositions"
+        ]
+      },
+      "name": "Foothill Transit",
+      "realtime_vendors": [
+        "Avail Technologies Inc.",
+        "Cubic"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/112/index.html",
+      "schedule_vendors": [
+        "Giro Inc.",
+        "Via / Remix Inc.",
+        "Via Inc."
+      ]
+    },
+    {
+      "caltrans_id": 116,
+      "feeds": {
+        "schedule": [
+          "https://gis4u.fresno.gov/downloads/zip/fax_gtfs.zip"
+        ],
+        "service_alerts": [
+          "https://gis4u.fresno.gov/TMGTFSRealTimeWebService/Alert/Alerts.pb"
+        ],
+        "trip_updates": [
+          "https://gis4u.fresno.gov/TMGTFSRealTimeWebService/TripUpdate/TripUpdates.pb"
+        ],
+        "vehicle_positions": [
+          "https://gis4u.fresno.gov/TMGTFSRealTimeWebService/Vehicle/VehiclePositions.pb"
+        ]
+      },
+      "name": "City of Fresno",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/116/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 117,
+      "feeds": {
+        "schedule": [
+          "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/7869/google_transit.zip"
+        ]
+      },
+      "name": "Fresno County Rural Transit Agency",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/117/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 118,
+      "feeds": {
+        "schedule": [
+          "https://ridegtrans.com/gtfs.zip"
+        ],
+        "service_alerts": [
+          "https://mygtbus.ridegtrans.com/gtfsrt/alerts"
+        ],
+        "trip_updates": [
+          "https://mygtbus.ridegtrans.com/gtfsrt/trips"
+        ],
+        "vehicle_positions": [
+          "https://mygtbus.ridegtrans.com/gtfsrt/vehicles"
+        ]
+      },
+      "name": "City of Gardena",
+      "realtime_vendors": [
+        "Clever Devices Ltd."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/118/index.html",
+      "schedule_vendors": [
+        "Trapeze Group",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 120,
+      "feeds": {
+        "schedule": [
+          "https://glendaleca.gov/Home/ShowDocument?id=29549"
+        ]
+      },
+      "name": "City of Glendale",
+      "realtime_vendors": [
+        "Cubic"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/120/index.html",
+      "schedule_vendors": [
+        "Microsoft"
+      ]
+    },
+    {
+      "caltrans_id": 121,
+      "feeds": {
+        "schedule": [
+          "https://www.cityofglendora.gov/files/assets/city/v/3/recreation-amp-human-services/transportation/documents/gtfs-6-2025.zip"
+        ]
+      },
+      "name": "City of Glendora",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/121/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project"
+      ]
+    },
+    {
+      "caltrans_id": 122,
+      "feeds": {
+        "schedule": [
+          "https://gtfs.remix.com/glenncounty.zip"
+        ]
+      },
+      "name": "Glenn County",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/122/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project",
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "TO CONFIRM",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 123,
+      "feeds": {
+        "schedule": [
+          "https://govcbus.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://govcbus.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://govcbus.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://govcbus.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "Gold Coast Transit District",
+      "realtime_vendors": [
+        "Cubic",
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/123/index.html",
+      "schedule_vendors": [
+        "INIT SE"
+      ]
+    },
+    {
+      "caltrans_id": 126,
+      "feeds": {
+        "schedule": [
+          "http://eta.getbus.org/rtt/public/utility/gtfs.aspx"
+        ],
+        "service_alerts": [
+          "https://cdn.simplifytransit.com/goldenempiretransit/alerts/service-alerts.pb"
+        ],
+        "trip_updates": [
+          "https://get.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/tripupdate"
+        ],
+        "vehicle_positions": [
+          "https://get.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition"
+        ]
+      },
+      "name": "Golden Empire Transit District",
+      "realtime_vendors": [
+        "Connexionz Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/126/index.html",
+      "schedule_vendors": [
+        "Connexionz Inc.",
+        "Optibus"
+      ]
+    },
+    {
+      "caltrans_id": 127,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=GF",
+          "https://api.511.org/transit/datafeeds?operator_id=GG"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=GF",
+          "https://api.511.org/transit/servicealerts?agency=GG"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=GF",
+          "https://api.511.org/transit/tripupdates?agency=GG"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=GF",
+          "https://api.511.org/transit/vehiclepositions?agency=GG"
+        ]
+      },
+      "name": "Golden Gate Bridge, Highway and Transportation District",
+      "realtime_vendors": [
+        "INIT SE"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/127/index.html",
+      "schedule_vendors": [
+        "Giro Inc."
+      ]
+    },
+    {
+      "caltrans_id": 135,
+      "feeds": {
+        "schedule": [
+          "https://hta.optibus.co/public_api/v1/feeds/gtfs"
+        ],
+        "service_alerts": [
+          "https://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/humboldtcounty-ca-us/service_alerts.proto"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/redwood/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/redwood/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "Humboldt Transit Authority",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/135/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 137,
+      "feeds": {
+        "schedule": [
+          "https://www.hpca.gov/DocumentCenter/View/11702"
+        ]
+      },
+      "name": "City of Huntington Park",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/137/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project",
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 138,
+      "feeds": {
+        "schedule": [
+          "https://schedule.ivtransit.com/gtfs/data.zip"
+        ]
+      },
+      "name": "Imperial County Transportation Commission",
+      "realtime_vendors": [
+        "Uber Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/138/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 139,
+      "feeds": {
+        "schedule": [
+          "https://www.cityofinglewood.org/documentcenter/view/21177"
+        ]
+      },
+      "name": "City of Inglewood",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/139/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project"
+      ]
+    },
+    {
+      "caltrans_id": 146,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/kerncounty-ca-us/kerncounty-ca-us.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/kern-transit/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/kern-transit/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/kern-transit/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "Kern County",
+      "realtime_vendors": [
+        "Bishop Peak Technologies",
+        "Ecolane"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/146/index.html",
+      "schedule_vendors": [
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 148,
+      "feeds": {
+        "schedule": [
+          "https://kart.connexionz.net/rtt/public/utility/gtfs.aspx"
+        ],
+        "service_alerts": [
+          "https://kart.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/alert"
+        ],
+        "trip_updates": [
+          "https://kart.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/tripupdate"
+        ],
+        "vehicle_positions": [
+          "https://kart.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition"
+        ]
+      },
+      "name": "Kings County Area Public Transit Agency",
+      "realtime_vendors": [
+        "Connexionz Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/148/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 152,
+      "feeds": {
+        "schedule": [
+          "https://github.com/LACMTA/los-angeles-regional-gtfs/raw/main/lapuente-ca-us/lapuente-ca-us.zip"
+        ]
+      },
+      "name": "City of La Puente",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/152/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 154,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/lagunabeach-ca-us/lagunabeach-ca-us.zip"
+        ]
+      },
+      "name": "City of Laguna Beach",
+      "realtime_vendors": [
+        "DoubleMap Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/154/index.html",
+      "schedule_vendors": [
+        "DoubleMap Inc."
+      ]
+    },
+    {
+      "caltrans_id": 159,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/laketransit-ca-us/laketransit-ca-us.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/lake-county/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/lake-county/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/lake-county/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "Lake Transit Authority",
+      "realtime_vendors": [
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/159/index.html",
+      "schedule_vendors": [
+        "Via Inc.",
+        "Via / Remix Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 162,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/lassen-ca-us/lassen-ca-us.zip"
+        ]
+      },
+      "name": "Lassen Transit Service Agency",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/162/index.html",
+      "schedule_vendors": [
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 164,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/cityoflawndale-ca-us/cityoflawndale-ca-us.zip"
+        ]
+      },
+      "name": "City of Lawndale",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/164/index.html",
+      "schedule_vendors": [
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 165,
+      "feeds": {
+        "schedule": [
+          "https://laxflyaway.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx",
+          "https://laxtransportation.ridesystems.net/Secure/Admin/Reports/GTFSDownload.aspx"
+        ],
+        "vehicle_positions": [
+          "https://laxflyaway.transloc.com/subscriptions/gtfsrt/vehicles.ashx",
+          "https://laxtransportation.ridesystems.net/subscriptions/gtfsrt/vehicles.ashx"
+        ]
+      },
+      "name": "Los Angeles World Airports",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/165/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 167,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=WH"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=WH"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=WH"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=WH"
+        ]
+      },
+      "name": "Livermore-Amador Valley Transit Authority",
+      "realtime_vendors": [
+        "Trapeze Group"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/167/index.html",
+      "schedule_vendors": [
+        "Trapeze Group"
+      ]
+    },
+    {
+      "caltrans_id": 168,
+      "feeds": {
+        "schedule": [
+          "https://www.lodi.gov/DocumentCenter/View/2453/lodi_gtfs-ZIP"
+        ]
+      },
+      "name": "City of Lodi",
+      "realtime_vendors": [
+        "DoubleMap Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/168/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 169,
+      "feeds": {
+        "schedule": [
+          "https://www.cityoflompoc.com/home/showpublisheddocument/29896"
+        ]
+      },
+      "name": "City of Lompoc",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/169/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 170,
+      "feeds": {
+        "schedule": [
+          "https://drive.google.com/uc?export=download&id=1869EVa1z6m_iD6QmvRXyTHtYiaSUBROl"
+        ],
+        "service_alerts": [
+          "https://gtfs-rt.lbt.vontascloud.com/TMGTFSRealTimeWebService/Alert/Alerts.pb"
+        ],
+        "trip_updates": [
+          "https://gtfs-rt.lbt.vontascloud.com/TMGTFSRealTimeWebService/TripUpdate/TripUpdates.pb"
+        ],
+        "vehicle_positions": [
+          "https://gtfs-rt.lbt.vontascloud.com/TMGTFSRealTimeWebService/Vehicle/VehiclePositions.pb"
+        ]
+      },
+      "name": "Long Beach Transit",
+      "realtime_vendors": [
+        "Trapeze Group"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/170/index.html",
+      "schedule_vendors": [
+        "Giro Inc."
+      ]
+    },
+    {
+      "caltrans_id": 179,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/dpwlacounty-ca-us/dpwlacounty-ca-us.zip"
+        ]
+      },
+      "name": "Los Angeles County",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/179/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 182,
+      "feeds": {
+        "schedule": [
+          "https://gitlab.com/LACMTA/gtfs_bus/raw/master/gtfs_bus.zip",
+          "https://gitlab.com/LACMTA/gtfs_rail/raw/master/gtfs_rail.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/lametro/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/lametro-rail/gtfs-rt-trip-updates",
+          "https://api.goswift.ly/real-time/lametro/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/lametro-rail/gtfs-rt-vehicle-positions",
+          "https://api.goswift.ly/real-time/lametro/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "Los Angeles County Metropolitan Transportation Authority",
+      "realtime_vendors": [
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/182/index.html",
+      "schedule_vendors": [
+        "Giro Inc."
+      ]
+    },
+    {
+      "caltrans_id": 183,
+      "feeds": {
+        "schedule": [
+          "https://ladotbus.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://ladotbus.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://ladotbus.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://ladotbus.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "City of Los Angeles",
+      "realtime_vendors": [
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/183/index.html",
+      "schedule_vendors": [
+        "GMV Syncromatics Inc",
+        "Optibus"
+      ]
+    },
+    {
+      "caltrans_id": 186,
+      "feeds": {
+        "schedule": [
+          "https://www.ips-systems.com/GTFS/Schedule/53"
+        ]
+      },
+      "name": "City of Lynwood",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/186/index.html",
+      "schedule_vendors": [
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 187,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/cityofmadera-ca-us/cityofmadera-ca-us.zip"
+        ]
+      },
+      "name": "City of Madera",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/187/index.html",
+      "schedule_vendors": [
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 188,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/maderactc-ca-us/maderactc-ca-us.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/madera/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/madera/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/madera/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "Madera County",
+      "realtime_vendors": [
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/188/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 192,
+      "feeds": {
+        "schedule": [
+          "https://s3.amazonaws.com/etatransit.gtfs/mantecatransit.etaspot.net/gtfs.zip"
+        ],
+        "service_alerts": [
+          "https://s3.amazonaws.com/etatransit.gtfs/mantecatransit.etaspot.net/alerts.pb"
+        ],
+        "trip_updates": [
+          "https://s3.amazonaws.com/etatransit.gtfs/mantecatransit.etaspot.net/trip_updates.pb"
+        ],
+        "vehicle_positions": [
+          "https://s3.amazonaws.com/etatransit.gtfs/mantecatransit.etaspot.net/position_updates.pb"
+        ]
+      },
+      "name": "City of Manteca",
+      "realtime_vendors": [
+        "Cubic"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/192/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 194,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=MA"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=MA"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=MA"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=MA"
+        ]
+      },
+      "name": "Marin County Transit District",
+      "realtime_vendors": [
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/194/index.html",
+      "schedule_vendors": [
+        "Optibus"
+      ]
+    },
+    {
+      "caltrans_id": 196,
+      "feeds": {
+        "schedule": [
+          "https://gtfs.dds.dot.ca.gov/gtfs_files/MaywoodGTFS.zip"
+        ]
+      },
+      "name": "City of Maywood",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/196/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project"
+      ]
+    },
+    {
+      "caltrans_id": 198,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/mendocino-ca-us/mendocino-ca-us.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/mendocino/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/mendocino/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/mendocino/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "Mendocino Transit Authority",
+      "realtime_vendors": [
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/198/index.html",
+      "schedule_vendors": [
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 202,
+      "feeds": {
+        "schedule": [
+          "https://www.ips-systems.com/GTFS/Schedule/23"
+        ]
+      },
+      "name": "City of San Fernando",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/202/index.html",
+      "schedule_vendors": []
+    },
+    {
+      "caltrans_id": 204,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/sagestage-ca-us/sagestage-ca-us.zip"
+        ]
+      },
+      "name": "Modoc Transportation Agency",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/204/index.html",
+      "schedule_vendors": [
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 206,
+      "feeds": {
+        "service_alerts": [
+          "https://mbl.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert",
+          "https://mbl.rideralerts.com/infopoint/gtfs-zip.ashx"
+        ],
+        "trip_updates": [
+          "https://mbl.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate"
+        ],
+        "vehicle_positions": [
+          "https://mbl.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition"
+        ]
+      },
+      "name": "City of Montebello",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/206/index.html",
+      "schedule_vendors": [
+        "Avail Technologies Inc.",
+        "California Integrated Travel Project"
+      ]
+    },
+    {
+      "caltrans_id": 207,
+      "feeds": {
+        "schedule": [
+          "https://passio3.com/montereyp/passioTransit/gtfs/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://passio3.com/montereyp/passioTransit/gtfs/realtime/serviceAlerts"
+        ],
+        "trip_updates": [
+          "https://passio3.com/montereyp/passioTransit/gtfs/realtime/tripUpdates"
+        ],
+        "vehicle_positions": [
+          "https://passio3.com/montereyp/passioTransit/gtfs/realtime/vehiclePositions"
+        ]
+      },
+      "name": "City of Monterey Park",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/207/index.html",
+      "schedule_vendors": [
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 208,
+      "feeds": {
+        "schedule": [
+          "https://www.mst.org/google/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://gtfs.mst.org/TMGTFSRealTimeWebService/Alert/Alerts.pb"
+        ],
+        "trip_updates": [
+          "https://gtfs.mst.org/TMGTFSRealTimeWebService/TripUpdate/TripUpdates.pb"
+        ],
+        "vehicle_positions": [
+          "https://gtfs.mst.org/TMGTFSRealTimeWebService/Vehicle/VehiclePositions.pb"
+        ]
+      },
+      "name": "Monterey-Salinas Transit",
+      "realtime_vendors": [
+        "Trapeze Group"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/208/index.html",
+      "schedule_vendors": [
+        "Giro Inc."
+      ]
+    },
+    {
+      "caltrans_id": 210,
+      "feeds": {
+        "schedule": [
+          "https://govcbus.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://govcbus.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://govcbus.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://govcbus.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "City of Moorpark",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/210/index.html",
+      "schedule_vendors": [
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 212,
+      "feeds": {
+        "schedule": [
+          "https://ridebasintransit.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://ridebasintransit.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://ridebasintransit.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://ridebasintransit.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "Basin Transit",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/212/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 214,
+      "feeds": {
+        "schedule": [
+          "https://mountaintransit.syncromatics.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://mountaintransit.syncromatics.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://mountaintransit.syncromatics.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://mountaintransit.syncromatics.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "Mountain Area Regional Transit Authority",
+      "realtime_vendors": [
+        "DoubleMap Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/214/index.html",
+      "schedule_vendors": [
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 218,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=VN"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=VN"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=VN"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=VN"
+        ]
+      },
+      "name": "Napa Valley Transportation Authority",
+      "realtime_vendors": [
+        "Equans",
+        "GMV Syncromatics Inc",
+        "Swiftly Inc.",
+        "Trillium Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/218/index.html",
+      "schedule_vendors": [
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 220,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/needles-ca-us/needles-ca-us.zip"
+        ]
+      },
+      "name": "City of Needles",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/220/index.html",
+      "schedule_vendors": [
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 221,
+      "feeds": {
+        "schedule": [
+          "https://gtfs.remix.com/nevada_county_connects.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/gold-country-stage/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/gold-country-stage/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/gold-country-stage/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "Nevada County",
+      "realtime_vendors": [
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/221/index.html",
+      "schedule_vendors": [
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 226,
+      "feeds": {
+        "schedule": [
+          "https://lfportal.nctd.org/staticGTFS/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/nctd/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/nctd/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/nctd/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "North County Transit District",
+      "realtime_vendors": [
+        "Open Transit Software Foundation",
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/226/index.html",
+      "schedule_vendors": [
+        "Giro Inc.",
+        "Via / Remix Inc.",
+        "Via Inc."
+      ]
+    },
+    {
+      "caltrans_id": 228,
+      "feeds": {
+        "service_alerts": [
+          "https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert",
+          "https://nts.rideralerts.com/InfoPoint/GTFS-Zip.ashx"
+        ],
+        "trip_updates": [
+          "https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate"
+        ],
+        "vehicle_positions": [
+          "https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition"
+        ]
+      },
+      "name": "City of Norwalk",
+      "realtime_vendors": [
+        "Avail Technologies Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/228/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 231,
+      "feeds": {
+        "schedule": [
+          "https://govcbus.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://govcbus.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://govcbus.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://govcbus.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "City of Ojai",
+      "realtime_vendors": [
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/231/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 232,
+      "feeds": {
+        "schedule": [
+          "https://www.omnitrans.org/google/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://webservices.umoiq.com/api/gtfs-rt/v1/service-alerts/omnitrans"
+        ],
+        "trip_updates": [
+          "https://webservices.umoiq.com/api/gtfs-rt/v1/trip-updates/omnitrans"
+        ],
+        "vehicle_positions": [
+          "https://webservices.umoiq.com/api/gtfs-rt/v1/vehicle-positions/omnitrans"
+        ]
+      },
+      "name": "OmniTrans",
+      "realtime_vendors": [
+        "Cubic"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/232/index.html",
+      "schedule_vendors": [
+        "In house activity",
+        "Trapeze Group"
+      ]
+    },
+    {
+      "caltrans_id": 235,
+      "feeds": {
+        "schedule": [
+          "https://octa.net/current/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/octa/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/octa/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/octa/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "Orange County Transportation Authority",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/235/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 238,
+      "feeds": {
+        "schedule": [
+          "https://ridepvvta.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://ridepvvta.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://ridepvvta.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://ridepvvta.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "Palo Verde Valley Transit Agency",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/238/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 239,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/pvpta-ca-us/pvpta-ca-us.zip"
+        ]
+      },
+      "name": "Palos Verdes Peninsula Transit Authority",
+      "realtime_vendors": [
+        "Cubic"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/239/index.html",
+      "schedule_vendors": [
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 243,
+      "feeds": {
+        "schedule": [
+          "https://rt.pasadenatransit.net/rtt/public/resource/gtfs.zip"
+        ],
+        "service_alerts": [
+          "https://rt.pasadenatransit.net/rtt/public/utility/gtfsrealtime.aspx/alert"
+        ],
+        "trip_updates": [
+          "https://rt.pasadenatransit.net/rtt/public/utility/gtfsrealtime.aspx/tripupdate"
+        ],
+        "vehicle_positions": [
+          "https://rt.pasadenatransit.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition"
+        ]
+      },
+      "name": "City of Pasadena",
+      "realtime_vendors": [
+        "Connexionz Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/243/index.html",
+      "schedule_vendors": [
+        "Connexionz Inc.",
+        "Microsoft"
+      ]
+    },
+    {
+      "caltrans_id": 246,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=CT"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=CT"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=CT"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=CT"
+        ]
+      },
+      "name": "Peninsula Corridor Joint Powers Board",
+      "realtime_vendors": [
+        "Avail Technologies Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/246/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 247,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=PE"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=PE"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=PE"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=PE"
+        ]
+      },
+      "name": "City of Petaluma",
+      "realtime_vendors": [
+        "Avail Technologies Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/247/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 251,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/placercounty-ca-us/placercounty-ca-us.zip"
+        ]
+      },
+      "name": "Placer County",
+      "realtime_vendors": [
+        "Cubic"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/251/index.html",
+      "schedule_vendors": [
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 257,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=PG"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=PG"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=PG"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=PG"
+        ]
+      },
+      "name": "Presidio Trust",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/257/index.html",
+      "schedule_vendors": []
+    },
+    {
+      "caltrans_id": 259,
+      "feeds": {
+        "schedule": [
+          "https://gtfs.remix.com/redding_area_bus_authority.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/redding/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/redding/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/redding/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "Redding Area Bus Authority",
+      "realtime_vendors": [
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/259/index.html",
+      "schedule_vendors": [
+        "Via Inc.",
+        "Via / Remix Inc."
+      ]
+    },
+    {
+      "caltrans_id": 260,
+      "feeds": {
+        "schedule": [
+          "https://redondobeachbct.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://redondobeachbct.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://redondobeachbct.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://redondobeachbct.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "City of Redondo Beach",
+      "realtime_vendors": [
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/260/index.html",
+      "schedule_vendors": [
+        "GMV Syncromatics Inc"
+      ]
+    },
+    {
+      "caltrans_id": 261,
+      "feeds": {
+        "schedule": [
+          "https://gtfs.remix.com/redwoodcoast.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/redwood-coast-rct/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/redwood-coast-rct/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/redwood-coast-rct/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "Redwood Coast Transit Authority",
+      "realtime_vendors": [
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/261/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Via Inc.",
+        "Via / Remix Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 264,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=RV"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=RV"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=RV"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=RV"
+        ]
+      },
+      "name": "City of Rio Vista",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/264/index.html",
+      "schedule_vendors": [
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 265,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/blossomexpress-ca-us/blossomexpress-ca-us.zip"
+        ]
+      },
+      "name": "City of Ripon",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/265/index.html",
+      "schedule_vendors": [
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 269,
+      "feeds": {
+        "schedule": [
+          "https://www.riversidetransit.com/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://rtabus.com/gtfsrt/alerts"
+        ],
+        "trip_updates": [
+          "https://rtabus.com/gtfsrt/trips"
+        ],
+        "vehicle_positions": [
+          "https://rtabus.com/gtfsrt/vehicles"
+        ]
+      },
+      "name": "Riverside Transit Agency",
+      "realtime_vendors": [
+        "Clever Devices Ltd."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/269/index.html",
+      "schedule_vendors": [
+        "Giro Inc."
+      ]
+    },
+    {
+      "caltrans_id": 271,
+      "feeds": {
+        "schedule": [
+          "https://cityofroseville.tripshot.com/v1/gtfs.zip?regionId=CA558DDC-D7F2-4B48-9CAC-DEEA1134F820"
+        ],
+        "service_alerts": [
+          "https://cityofroseville.tripshot.com/v1/gtfs/realtime/serviceAlert/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820"
+        ],
+        "trip_updates": [
+          "https://cityofroseville.tripshot.com/v1/gtfs/realtime/tripUpdate/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820"
+        ],
+        "vehicle_positions": [
+          "https://cityofroseville.tripshot.com/v1/gtfs/realtime/vehiclePosition/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820"
+        ]
+      },
+      "name": "City of Roseville",
+      "realtime_vendors": [
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/271/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 273,
+      "feeds": {
+        "schedule": [
+          "https://iportal.sacrt.com/gtfs/srtd/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://bustime.sacrt.com/gtfsrt/alerts"
+        ],
+        "trip_updates": [
+          "https://bustime.sacrt.com/gtfsrt/trips"
+        ],
+        "vehicle_positions": [
+          "https://bustime.sacrt.com/gtfsrt/vehicles"
+        ]
+      },
+      "name": "Sacramento Regional Transit District",
+      "realtime_vendors": [
+        "Clever Devices Ltd."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/273/index.html",
+      "schedule_vendors": [
+        "Trapeze Group",
+        "Via / Remix Inc."
+      ]
+    },
+    {
+      "caltrans_id": 274,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/sanbenitocounty-ca-us/sanbenitocounty-ca-us.zip"
+        ]
+      },
+      "name": "San Benito County Local Transportation Authority",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/274/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 275,
+      "feeds": {
+        "schedule": [
+          "https://passio3.com/sctrolley/passioTransit/gtfs/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://passio3.com/sctrolley/passioTransit/gtfs/realtime/serviceAlerts"
+        ],
+        "trip_updates": [
+          "https://passio3.com/sctrolley/passioTransit/gtfs/realtime/tripUpdates"
+        ],
+        "vehicle_positions": [
+          "https://passio3.com/sctrolley/passioTransit/gtfs/realtime/vehiclePositions"
+        ]
+      },
+      "name": "City of San Clemente",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/275/index.html",
+      "schedule_vendors": []
+    },
+    {
+      "caltrans_id": 277,
+      "feeds": {
+        "schedule": [
+          "https://aceshuttles.transloc.com/Secure/Admin/Reports/GTFSDownload.aspx"
+        ],
+        "service_alerts": [
+          "https://app.mecatran.com/utw/ws/gtfsfeed/alerts/sdmts"
+        ],
+        "trip_updates": [
+          "https://realtime.sdmts.com/api/api/gtfs_realtime/trip-updates-for-agency/MTS.pb"
+        ],
+        "vehicle_positions": [
+          "https://realtime.sdmts.com/api/api/gtfs_realtime/vehicle-positions-for-agency/MTS.pb"
+        ]
+      },
+      "name": "San Diego International Airport",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/277/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 278,
+      "feeds": {
+        "schedule": [
+          "https://www.sdmts.com/google_transit_files/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://app.mecatran.com/utw/ws/gtfsfeed/alerts/sdmts"
+        ],
+        "trip_updates": [
+          "https://realtime.sdmts.com/api/api/gtfs_realtime/trip-updates-for-agency/MTS.pb"
+        ],
+        "vehicle_positions": [
+          "https://realtime.sdmts.com/api/api/gtfs_realtime/vehicle-positions-for-agency/MTS.pb"
+        ]
+      },
+      "name": "San Diego Metropolitan Transit System",
+      "realtime_vendors": [
+        "Open Transit Software Foundation"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/278/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 279,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=BA"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=BA"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=BA"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=BA"
+        ]
+      },
+      "name": "San Francisco Bay Area Rapid Transit District",
+      "realtime_vendors": [
+        "In house activity"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/279/index.html",
+      "schedule_vendors": [
+        "Giro Inc."
+      ]
+    },
+    {
+      "caltrans_id": 280,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=SB"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=SB"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=SB"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=SB"
+        ]
+      },
+      "name": "San Francisco Bay Area Water Emergency Transit Authority",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/280/index.html",
+      "schedule_vendors": [
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 282,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=SF"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=SF"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=SF"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=SF"
+        ]
+      },
+      "name": "City and County of San Francisco",
+      "realtime_vendors": [
+        "Cubic"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/282/index.html",
+      "schedule_vendors": [
+        "Trapeze Group"
+      ]
+    },
+    {
+      "caltrans_id": 284,
+      "feeds": {
+        "schedule": [
+          "http://sanjoaquinrtd.com/RTD-GTFS/RTD-GTFS.zip"
+        ],
+        "trip_updates": [
+          "https://rtdgtfs.s3.us-west-1.amazonaws.com/TripUpdates.pb"
+        ],
+        "vehicle_positions": [
+          "https://rtdgtfs.s3.us-west-1.amazonaws.com/VehiclePositions.pb"
+        ]
+      },
+      "name": "San Joaquin Regional Transit District",
+      "realtime_vendors": [
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/284/index.html",
+      "schedule_vendors": [
+        "Trapeze Group"
+      ]
+    },
+    {
+      "caltrans_id": 287,
+      "feeds": {
+        "schedule": [
+          "http://data.peaktransit.com/staticgtfs/1/gtfs.zip",
+          "https://slocity.connexionz.net/rtt/public/resource/gtfs.zip"
+        ],
+        "service_alerts": [
+          "https://slocity.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/alert"
+        ],
+        "trip_updates": [
+          "http://data.peaktransit.com/gtfsrt/1/TripUpdate.pb",
+          "https://slocity.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/tripupdate"
+        ],
+        "vehicle_positions": [
+          "http://data.peaktransit.com/gtfsrt/1/VehiclePosition.pb",
+          "https://slocity.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition"
+        ]
+      },
+      "name": "City of San Luis Obispo",
+      "realtime_vendors": [
+        "Bishop Peak Technologies"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/287/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 289,
+      "feeds": {
+        "schedule": [
+          "https://slo.connexionz.net/rtt/public/utility/gtfs.aspx"
+        ],
+        "service_alerts": [
+          "http://slo.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/alert"
+        ],
+        "trip_updates": [
+          "http://slo.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/tripupdate"
+        ],
+        "vehicle_positions": [
+          "http://slo.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition"
+        ]
+      },
+      "name": "San Luis Obispo Regional Transit Authority",
+      "realtime_vendors": [
+        "Connexionz Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/289/index.html",
+      "schedule_vendors": [
+        "Connexionz Inc."
+      ]
+    },
+    {
+      "caltrans_id": 290,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=SM"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=SM"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=SM"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=SM"
+        ]
+      },
+      "name": "San Mateo County Transit District",
+      "realtime_vendors": [
+        "Conduent Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/290/index.html",
+      "schedule_vendors": [
+        "Giro Inc."
+      ]
+    },
+    {
+      "caltrans_id": 293,
+      "feeds": {
+        "schedule": [
+          "https://sbmtd.gov/google_transit/feed.zip"
+        ],
+        "service_alerts": [
+          "https://bustracker.sbmtd.gov/gtfsrt/alerts"
+        ],
+        "trip_updates": [
+          "https://bustracker.sbmtd.gov/gtfsrt/trips"
+        ],
+        "vehicle_positions": [
+          "https://bustracker.sbmtd.gov/gtfsrt/vehicles"
+        ]
+      },
+      "name": "Santa Barbara Metropolitan Transit District",
+      "realtime_vendors": [
+        "Clever Devices Ltd."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/293/index.html",
+      "schedule_vendors": [
+        "Trapeze Group"
+      ]
+    },
+    {
+      "caltrans_id": 294,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=SC"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=SC"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=SC"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=SC"
+        ]
+      },
+      "name": "Santa Clara Valley Transportation Authority",
+      "realtime_vendors": [
+        "Clever Devices Ltd.",
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/294/index.html",
+      "schedule_vendors": [
+        "Trapeze Group"
+      ]
+    },
+    {
+      "caltrans_id": 295,
+      "feeds": {
+        "schedule": [
+          "https://apps.santaclaritatransit.com/rtt/public/utility/gtfs.aspx"
+        ],
+        "service_alerts": [
+          "https://apps.santaclaritatransit.com/rtt/public/utility/gtfsrealtime.aspx/alert"
+        ],
+        "trip_updates": [
+          "https://apps.santaclaritatransit.com/rtt/public/utility/gtfsrealtime.aspx/tripupdate"
+        ],
+        "vehicle_positions": [
+          "https://apps.santaclaritatransit.com/rtt/public/utility/gtfsrealtime.aspx/vehicleposition"
+        ]
+      },
+      "name": "City of Santa Clarita",
+      "realtime_vendors": [
+        "Connexionz Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/295/index.html",
+      "schedule_vendors": [
+        "Connexionz Inc.",
+        "The Master Scheduler"
+      ]
+    },
+    {
+      "caltrans_id": 296,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=CR"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=CR"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=CR"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=CR"
+        ]
+      },
+      "name": "Santa Cruz Metropolitan Transit District",
+      "realtime_vendors": [
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/296/index.html",
+      "schedule_vendors": [
+        "Clever Devices Ltd.",
+        "Giro Inc.",
+        "In house activity",
+        "Via / Remix Inc."
+      ]
+    },
+    {
+      "caltrans_id": 298,
+      "feeds": {
+        "schedule": [
+          "https://smrt.tripshot.com/v1/gtfs.zip?regionId=CA558DDC-D7F2-4B48-9CAC-DEEA1134F820"
+        ],
+        "service_alerts": [
+          "https://smrt.tripshot.com/v1/gtfs/realtime/serviceAlert/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820"
+        ],
+        "trip_updates": [
+          "https://smrt.tripshot.com/v1/gtfs/realtime/tripUpdate/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820"
+        ],
+        "vehicle_positions": [
+          "https://smrt.tripshot.com/v1/gtfs/realtime/vehiclePosition/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820"
+        ]
+      },
+      "name": "City of Santa Maria",
+      "realtime_vendors": [
+        "Swiftly Inc.",
+        "TripShot Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/298/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "The Master Scheduler",
+        "TripShot Inc."
+      ]
+    },
+    {
+      "caltrans_id": 300,
+      "feeds": {
+        "schedule": [
+          "https://www.bigbluebus.com/gtfs/current.zip"
+        ],
+        "service_alerts": [
+          "https://cleverapi.bigbluebus.com/gtfsrt/alerts"
+        ],
+        "trip_updates": [
+          "https://cleverapi.bigbluebus.com/gtfsrt/trips"
+        ],
+        "vehicle_positions": [
+          "https://cleverapi.bigbluebus.com/gtfsrt/vehicles"
+        ]
+      },
+      "name": "City of Santa Monica",
+      "realtime_vendors": [
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/300/index.html",
+      "schedule_vendors": [
+        "Trapeze Group"
+      ]
+    },
+    {
+      "caltrans_id": 301,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=SR"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=SR"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=SR"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=SR"
+        ]
+      },
+      "name": "City of Santa Rosa",
+      "realtime_vendors": [
+        "Avail Technologies Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/301/index.html",
+      "schedule_vendors": [
+        "Avail Technologies Inc.",
+        "The Master Scheduler"
+      ]
+    },
+    {
+      "caltrans_id": 308,
+      "feeds": {
+        "schedule": [
+          "https://govcbus.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://govcbus.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://govcbus.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://govcbus.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "City of Simi Valley",
+      "realtime_vendors": [
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/308/index.html",
+      "schedule_vendors": [
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 310,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=ST"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=ST"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=ST"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=ST"
+        ]
+      },
+      "name": "Solano County Transit",
+      "realtime_vendors": [
+        "Avail Technologies Inc.",
+        "Connexionz Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/310/index.html",
+      "schedule_vendors": [
+        "The Master Scheduler",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 312,
+      "feeds": {
+        "schedule": [
+          "http://app.mecatran.com/urb/ws/feed/c2l0ZT1zeXZ0O2NsaWVudD1zZWxmO2V4cGlyZT07dHlwZT1ndGZzO2tleT00MjcwNzQ0ZTY4NTAzOTMyMDIxMDdjNzI0MDRkMzYyNTM4MzI0YzI0"
+        ],
+        "vehicle_positions": [
+          "https://lat-long-prototype.wl.r.appspot.com/vehicle-positions.pb?agency=santa-ynez-valley-transit"
+        ]
+      },
+      "name": "City of Solvang",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/312/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Transnnovation Inc"
+      ]
+    },
+    {
+      "caltrans_id": 314,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=SO"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=SO"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=SO"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=SO"
+        ]
+      },
+      "name": "Sonoma County",
+      "realtime_vendors": [
+        "Cubic"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/314/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 315,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=SA"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=SA"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=SA"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=SA"
+        ]
+      },
+      "name": "Sonoma-Marin Area Rail Transit District",
+      "realtime_vendors": [
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/315/index.html",
+      "schedule_vendors": [
+        "Microsoft"
+      ]
+    },
+    {
+      "caltrans_id": 320,
+      "feeds": {
+        "schedule": [
+          "https://www.cityofsouthgate.org/files/sharedassets/public/v/1/city-services/documents/southgategtfs-2026-3-26.zip"
+        ]
+      },
+      "name": "City of South Gate",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/320/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project"
+      ]
+    },
+    {
+      "caltrans_id": 323,
+      "feeds": {
+        "schedule": [
+          "https://www.metrolinktrains.com/globalassets/about/gtfs/gtfs.zip"
+        ],
+        "service_alerts": [
+          "https://cdn.simplifytransit.com/metrolink/alerts/service-alerts.pb"
+        ],
+        "trip_updates": [
+          "https://metrolink-gtfsrt.gbsdigital.us/feed/gtfsrt-trips"
+        ],
+        "vehicle_positions": [
+          "https://metrolink-gtfsrt.gbsdigital.us/feed/gtfsrt-vehicles"
+        ]
+      },
+      "name": "Southern California Regional Rail Authority",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/323/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "SMA and Partners Ltd."
+      ]
+    },
+    {
+      "caltrans_id": 327,
+      "feeds": {
+        "schedule": [
+          "https://infopoint.sunline.org/InfoPoint/GTFS-Zip.ashx"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/sunline/gtfs-rt-alerts/v2"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/sunline/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/sunline/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "SunLine Transit Agency",
+      "realtime_vendors": [
+        "Avail Technologies Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/327/index.html",
+      "schedule_vendors": [
+        "Trapeze Group"
+      ]
+    },
+    {
+      "caltrans_id": 331,
+      "feeds": {
+        "schedule": [
+          "https://tahoe.syncromatics.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://tahoe.syncromatics.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://tahoe.syncromatics.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://tahoe.syncromatics.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "Tahoe Transportation District",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/331/index.html",
+      "schedule_vendors": []
+    },
+    {
+      "caltrans_id": 334,
+      "feeds": {
+        "schedule": [
+          "https://api.sparelabs.com/v1/fixedRoute/public/9f992f53-d237-407a-8608-3190ab250853/gtfs.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/trax-tehama-county/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/trax-tehama-county/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/trax-tehama-county/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "Tehama County",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/334/index.html",
+      "schedule_vendors": [
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 336,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=3D"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=3D"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=3D"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=3D"
+        ]
+      },
+      "name": "Eastern Contra Costa Transit Authority",
+      "realtime_vendors": [
+        "Connexionz Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/336/index.html",
+      "schedule_vendors": [
+        "Connexionz Inc.",
+        "Via / Remix Inc.",
+        "Via Inc."
+      ]
+    },
+    {
+      "caltrans_id": 337,
+      "feeds": {
+        "schedule": [
+          "https://govcbus.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://govcbus.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://govcbus.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://govcbus.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "City of Thousand Oaks",
+      "realtime_vendors": [
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/337/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 339,
+      "feeds": {
+        "schedule": [
+          "https://transit.torranceca.gov/home/showpublisheddocument/16673/638954293991730000"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/torrance/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/torrance/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/torrance/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "City of Torrance",
+      "realtime_vendors": [
+        "Clever Devices Ltd."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/339/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 341,
+      "feeds": {
+        "schedule": [
+          "http://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/gtfs.zip"
+        ],
+        "service_alerts": [
+          "https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/alerts.pb"
+        ],
+        "trip_updates": [
+          "https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/trip_updates.pb"
+        ],
+        "vehicle_positions": [
+          "https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/position_updates.pb"
+        ]
+      },
+      "name": "City of Tracy",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/341/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 343,
+      "feeds": {
+        "schedule": [
+          "https://thebuslive.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://thebuslive.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://thebuslive.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://thebuslive.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "Transit Joint Powers Authority for Merced County",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/343/index.html",
+      "schedule_vendors": [
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "TO CONFIRM",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 344,
+      "feeds": {
+        "schedule": [
+          "https://gtfs.remix.com/trinity_county_ca.zip"
+        ]
+      },
+      "name": "Trinity County",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/344/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 349,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/turlock-ca-us/turlock-ca-us.zip"
+        ],
+        "service_alerts": [
+          "https://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/turlock-ca-us/service_alerts.proto"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/turlock/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/turlock/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "City of Turlock",
+      "realtime_vendors": [
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/349/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 350,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=UC"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=UC"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=UC"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=UC"
+        ]
+      },
+      "name": "City of Union City",
+      "realtime_vendors": [
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/350/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Metropolitan Transportation Commission"
+      ]
+    },
+    {
+      "caltrans_id": 351,
+      "feeds": {
+        "schedule": [
+          "https://unitrans.ucdavis.edu/sites/g/files/dgvnsk13431/files/media/documents/Unitrans_GTFS.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/unitrans/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/unitrans/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/unitrans/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "University of California, Davis",
+      "realtime_vendors": [
+        "Cubic"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/351/index.html",
+      "schedule_vendors": [
+        "Microsoft"
+      ]
+    },
+    {
+      "caltrans_id": 356,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=VC"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=VC"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=VC"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=VC"
+        ]
+      },
+      "name": "City of Vacaville",
+      "realtime_vendors": [
+        "Cubic"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/356/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 360,
+      "feeds": {
+        "schedule": [
+          "https://ontime.vvta.org/gtfs"
+        ],
+        "service_alerts": [
+          "https://ontime.vvta.org/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://ontime.vvta.org/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://ontime.vvta.org/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "Victor Valley Transit Authority",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/360/index.html",
+      "schedule_vendors": [
+        "Optibus",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 361,
+      "feeds": {
+        "schedule": [
+          "https://tc-web.widen.net/content/thmmnlen0j/original/8F5366C7-C947-97A3-22F704DE8660AD72.zip?t.download=true"
+        ],
+        "service_alerts": [
+          "https://visaliatransit.info/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://visaliatransit.info/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://visaliatransit.info/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "City of Visalia",
+      "realtime_vendors": [
+        "Bishop Peak Technologies",
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/361/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Via / Remix Inc.",
+        "Via Inc."
+      ]
+    },
+    {
+      "caltrans_id": 366,
+      "feeds": {
+        "schedule": [
+          "https://www.westcovina.gov/DocumentCenter/View/2039"
+        ]
+      },
+      "name": "City of West Covina",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/366/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project"
+      ]
+    },
+    {
+      "caltrans_id": 367,
+      "feeds": {
+        "schedule": [
+          "https://urldefense.com/v3/__http:/go.weho.org/GTFS__;!!LWi6xHDyrA!8NX22pPnJV8jwvlFMTmOHPe0ayi6IebmZYLq3MQ1W8hwmF698kcCbrAZWTRdK4ZIIIkv6or9nf7t65vch_2H3L8swQ$"
+        ],
+        "service_alerts": [
+          "https://webservices.umoiq.com/api/gtfs-rt/v1/service-alerts/west-hollywood"
+        ],
+        "trip_updates": [
+          "https://webservices.umoiq.com/api/gtfs-rt/v1/trip-updates/west-hollywood"
+        ],
+        "vehicle_positions": [
+          "https://webservices.umoiq.com/api/gtfs-rt/v1/vehicle-positions/west-hollywood"
+        ]
+      },
+      "name": "City of West Hollywood",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/367/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 368,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=WC"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=WC"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=WC"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=WC"
+        ]
+      },
+      "name": "Western Contra Costa Transit Authority",
+      "realtime_vendors": [
+        "Precision Digital"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/368/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 372,
+      "feeds": {
+        "schedule": [
+          "https://avl.yctd.org/realtime/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://avl.yctd.org/RealTime/GTFS_ServiceAlerts.pb"
+        ],
+        "trip_updates": [
+          "https://avl.yctd.org/RealTime/GTFS_TripUpdates.pb"
+        ],
+        "vehicle_positions": [
+          "https://avl.yctd.org/RealTime/GTFS_VehiclePositions.pb"
+        ]
+      },
+      "name": "Yolo County Transportation District",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/372/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 374,
+      "feeds": {
+        "schedule": [
+          "https://www.planeteria.com/gtfs/yosemite-ca-us/yosemite-ca-us-gtfs.zip"
+        ]
+      },
+      "name": "Yosemite Area Regional Transportation System",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/374/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 376,
+      "feeds": {
+        "schedule": [
+          "https://passio3.com/yubasutter/passioTransit/gtfs/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://passio3.com/yubasutter/passioTransit/gtfs/realtime/serviceAlerts"
+        ],
+        "trip_updates": [
+          "https://passio3.com/yubasutter/passioTransit/gtfs/realtime/tripUpdates"
+        ],
+        "vehicle_positions": [
+          "https://passio3.com/yubasutter/passioTransit/gtfs/realtime/vehiclePositions"
+        ]
+      },
+      "name": "Yuba-Sutter Transit Authority",
+      "realtime_vendors": [
+        "DoubleMap Inc.",
+        "Passio Technologies"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/376/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Passio Technologies",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 377,
+      "feeds": {
+        "schedule": [
+          "https://gtfs.dds.dot.ca.gov/gtfs_files/YurokGTFS.zip"
+        ]
+      },
+      "name": "Yurok Tribe",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/377/index.html",
+      "schedule_vendors": [
+        "California Integrated Travel Project"
+      ]
+    },
+    {
+      "caltrans_id": 379,
+      "feeds": {
+        "schedule": [
+          "https://cleanairexpress.com/wp-content/uploads/GTFS.zip"
+        ]
+      },
+      "name": "Santa Barbara County Association of Governments",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/379/index.html",
+      "schedule_vendors": [
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 380,
+      "feeds": {
+        "schedule": [
+          "https://govcbus.com/gtfs"
+        ],
+        "service_alerts": [
+          "https://govcbus.com/gtfs-rt/alerts"
+        ],
+        "trip_updates": [
+          "https://govcbus.com/gtfs-rt/tripupdates"
+        ],
+        "vehicle_positions": [
+          "https://govcbus.com/gtfs-rt/vehiclepositions"
+        ]
+      },
+      "name": "Ventura County Transportation Commission",
+      "realtime_vendors": [
+        "GMV Syncromatics Inc"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/380/index.html",
+      "schedule_vendors": [
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "Trapeze Group",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 381,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=ST"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=ST"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=ST"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=ST"
+        ]
+      },
+      "name": "Solano Transportation Authority",
+      "realtime_vendors": [
+        "Cubic"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/381/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 385,
+      "feeds": {
+        "schedule": [
+          "https://www.metrolinktrains.com/globalassets/about/gtfs/gtfs.zip"
+        ],
+        "service_alerts": [
+          "https://cdn.simplifytransit.com/metrolink/alerts/service-alerts.pb"
+        ]
+      },
+      "name": "San Bernardino County Transportation Authority",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/385/index.html",
+      "schedule_vendors": []
+    },
+    {
+      "caltrans_id": 386,
+      "feeds": {
+        "schedule": [
+          "https://www.ycipta.org/gtfs/google_transit.zip"
+        ]
+      },
+      "name": "Yuma County Intergovernmental Public Transportation Authority",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/386/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 389,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/laketahoe-ca-us/laketahoe-ca-us.zip"
+        ]
+      },
+      "name": "Tahoe Truckee Area Regional Transportation",
+      "realtime_vendors": [
+        "Cubic",
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/389/index.html",
+      "schedule_vendors": [
+        "Via / Remix Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 393,
+      "feeds": {
+        "schedule": [
+          "https://passio3.com/dptrolley/passioTransit/gtfs/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://passio3.com/dptrolley/passioTransit/gtfs/realtime/serviceAlerts"
+        ],
+        "trip_updates": [
+          "https://passio3.com/dptrolley/passioTransit/gtfs/realtime/tripUpdates"
+        ],
+        "vehicle_positions": [
+          "https://passio3.com/dptrolley/passioTransit/gtfs/realtime/vehiclePositions"
+        ]
+      },
+      "name": "City of Dana Point",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/393/index.html",
+      "schedule_vendors": []
+    },
+    {
+      "caltrans_id": 394,
+      "feeds": {
+        "schedule": [
+          "https://passio3.com/scjtrolley/passioTransit/gtfs/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://passio3.com/scjtrolley/passioTransit/gtfs/realtime/serviceAlerts"
+        ],
+        "trip_updates": [
+          "https://passio3.com/scjtrolley/passioTransit/gtfs/realtime/tripUpdates"
+        ],
+        "vehicle_positions": [
+          "https://passio3.com/scjtrolley/passioTransit/gtfs/realtime/vehiclePositions"
+        ]
+      },
+      "name": "City of San Juan Capistrano",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/394/index.html",
+      "schedule_vendors": [
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 412,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=SB"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=SB"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=SB"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=SB"
+        ]
+      },
+      "name": "City of Alameda",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/412/index.html",
+      "schedule_vendors": []
+    },
+    {
+      "caltrans_id": 474,
+      "feeds": {
+        "schedule": [
+          "http://data.peaktransit.com/staticgtfs/120/gtfs.zip"
+        ],
+        "trip_updates": [
+          "http://data.peaktransit.com/gtfsrt/120/TripUpdate.pb"
+        ],
+        "vehicle_positions": [
+          "http://data.peaktransit.com/gtfsrt/120/VehiclePosition.pb"
+        ]
+      },
+      "name": "Tulare County Regional Transit Agency",
+      "realtime_vendors": [
+        "Bishop Peak Technologies",
+        "TripShot Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/474/index.html",
+      "schedule_vendors": [
+        "In house activity",
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "TripShot Inc."
+      ]
+    },
+    {
+      "caltrans_id": 481,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=SS",
+          "https://www.ips-systems.com/GTFS/Schedule/19"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=SS"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=SS"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=SS"
+        ]
+      },
+      "name": "City of South San Francisco",
+      "realtime_vendors": [
+        "Passio Technologies"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/481/index.html",
+      "schedule_vendors": [
+        "Metropolitan Transportation Commission",
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 482,
+      "feeds": {
+        "schedule": [
+          "https://gtfs.remix.com/tuolumne_ca_us.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/tuolumne-county-transit/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/tuolumne-county-transit/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/tuolumne-county-transit/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "Tuolumne County Transit Agency",
+      "realtime_vendors": [
+        "DoubleMap Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/482/index.html",
+      "schedule_vendors": [
+        "Microsoft",
+        "Via / Remix Inc.",
+        "Via Inc."
+      ]
+    },
+    {
+      "caltrans_id": 484,
+      "feeds": {
+        "service_alerts": [
+          "https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert",
+          "https://stanrta.rideralerts.com/InfoPoint/gtfs-zip.ashx"
+        ],
+        "trip_updates": [
+          "https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate"
+        ],
+        "vehicle_positions": [
+          "https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition"
+        ]
+      },
+      "name": "Stanislaus Regional Transit Authority",
+      "realtime_vendors": [
+        "Avail Technologies Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/484/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 487,
+      "feeds": {
+        "schedule": [
+          "https://oregon-gtfs.trilliumtransit.com/gtfs_data/point-or-us/point-or-us.zip"
+        ]
+      },
+      "name": "POINT",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/487/index.html",
+      "schedule_vendors": []
+    },
+    {
+      "caltrans_id": 489,
+      "feeds": {
+        "schedule": [
+          "https://iportal.sacrt.com/gtfs/srtd/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://bustime.sacrt.com/gtfsrt/alerts"
+        ],
+        "trip_updates": [
+          "https://bustime.sacrt.com/gtfsrt/trips"
+        ],
+        "vehicle_positions": [
+          "https://bustime.sacrt.com/gtfsrt/vehicles"
+        ]
+      },
+      "name": "City of Rancho Cordova",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/489/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM"
+      ]
+    },
+    {
+      "caltrans_id": 490,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/calaveras-ca-us/calaveras-ca-us.zip"
+        ]
+      },
+      "name": "Calaveras Transit Agency",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/490/index.html",
+      "schedule_vendors": [
+        "Via / Remix Inc.",
+        "Via Inc.",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 491,
+      "feeds": {
+        "schedule": [
+          "https://api.511.org/transit/datafeeds?operator_id=DE"
+        ],
+        "service_alerts": [
+          "https://api.511.org/transit/servicealerts?agency=DE"
+        ],
+        "trip_updates": [
+          "https://api.511.org/transit/tripupdates?agency=DE"
+        ],
+        "vehicle_positions": [
+          "https://api.511.org/transit/vehiclepositions?agency=DE"
+        ]
+      },
+      "name": "Dumbarton Bridge Regional Operations Consortium",
+      "realtime_vendors": [
+        "Cubic"
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/491/index.html",
+      "schedule_vendors": [
+        "Metropolitan Transportation Commission"
+      ]
+    },
+    {
+      "caltrans_id": 492,
+      "feeds": {
+        "schedule": [
+          "https://data.trilliumtransit.com/gtfs/banning-ca-us/banning-ca-us.zip"
+        ],
+        "service_alerts": [
+          "https://api.goswift.ly/real-time/banning/gtfs-rt-alerts"
+        ],
+        "trip_updates": [
+          "https://api.goswift.ly/real-time/banning/gtfs-rt-trip-updates"
+        ],
+        "vehicle_positions": [
+          "https://api.goswift.ly/real-time/banning/gtfs-rt-vehicle-positions"
+        ]
+      },
+      "name": "City of Banning",
+      "realtime_vendors": [
+        "Swiftly Inc."
+      ],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/492/index.html",
+      "schedule_vendors": [
+        "TO CONFIRM",
+        "Trillium Inc."
+      ]
+    },
+    {
+      "caltrans_id": 493,
+      "feeds": {
+        "schedule": [
+          "https://passio3.com/irvine/passioTransit/gtfs/google_transit.zip"
+        ],
+        "service_alerts": [
+          "https://passio3.com/irvine/passioTransit/gtfs/realtime/serviceAlerts"
+        ],
+        "trip_updates": [
+          "https://passio3.com/irvine/passioTransit/gtfs/realtime/tripUpdates"
+        ],
+        "vehicle_positions": [
+          "https://passio3.com/irvine/passioTransit/gtfs/realtime/vehiclePositions"
+        ]
+      },
+      "name": "City of Irvine",
+      "realtime_vendors": [],
+      "report_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/493/index.html",
+      "schedule_vendors": []
+    }
+  ],
+  "agency_count": 178,
+  "note": "Read once from the published monthly report pages. Each agency's feed URLs come from the Show Source URLs panel of its own report. Republished here so the crosswalk is reproducible offline; the reports themselves stay the authority.",
+  "report_month": "2026-06",
+  "retrieved_on": "2026-08-07",
+  "schema_version": "1.0",
+  "source": "California GTFS Quality Dashboard (Caltrans / Cal-ITP) monthly report directory",
+  "source_url": "https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06"
+}

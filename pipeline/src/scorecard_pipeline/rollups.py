@@ -384,7 +384,7 @@ def build_rollup(
         "total": len(members),
     }
 
-    return {
+    payload: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "rollup": _rollup_identity(rollup),
         "generated_at": generated_at.isoformat(timespec="seconds"),
@@ -398,7 +398,32 @@ def build_rollup(
         "shapes_readiness": shapes_readiness,
         "members": members,
         "common_fixes": common,
+        **_reconciliation_block(member_ids),
     }
+    return payload
+
+
+def _reconciliation_block(member_ids: list[str]) -> dict[str, Any]:
+    """This rollup's standing against an external agency directory, if one applies.
+
+    Only California has a published state directory mapped so far, so this
+    returns an empty mapping for every other program and the page omits the
+    section. The
+    crosswalk is a committed file; nothing here reaches the network.
+
+    A partly reconciled cohort reports nothing at all. A figure covering some of a
+    program's members would read as though it covered all of them, and the
+    nationwide rollup would carry a California statistic.
+    """
+    from .caltrans_crosswalk import load_crosswalk, reconciliation
+
+    crosswalk = load_crosswalk()
+    if crosswalk is None or not member_ids:
+        return {}
+    known = crosswalk.by_id()
+    if any(member not in known for member in member_ids):
+        return {}
+    return {"reconciliation": reconciliation(crosswalk, member_ids)}
 
 
 # Liaison-facing columns: the cohort status a district staffer or statewide
