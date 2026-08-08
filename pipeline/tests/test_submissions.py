@@ -96,7 +96,9 @@ def test_ambiguous_international_location_is_rejected(
 
 
 def test_duplicate_intake_agency_is_rejected() -> None:
-    dup = dict(FORM, name="Amtrak San Joaquins")
+    # An agency still awaiting a verified location, so this exercises the
+    # intake half of the duplicate check rather than the sharded half below.
+    dup = dict(FORM, name="Megabus")
     with pytest.raises(AgencyConfigError, match="already tracked"):
         build_submission(dup, INTAKE_YAML)
 

@@ -47,11 +47,22 @@ It was read once, on the date recorded in the file, and the reports themselves
 remain the authority. Copying it in keeps the crosswalk reproducible offline and
 keeps continuous integration free of network calls.
 
-Re-read it when their monthly directory moves on:
+Two scripts keep it current. The first is the only thing in this repository
+that reaches their site, and no test or daily build runs it:
 
 ```sh
+# re-read their directory into the snapshot (one request per report, spaced)
+uv run --project pipeline python pipeline/scripts/fetch_caltrans_directory.py
+# rebuild the crosswalk from the snapshot, offline
 uv run --project pipeline python pipeline/scripts/build_california_crosswalk.py
 ```
+
+`fetch_caltrans_directory.py --check` asks only whether they have published a
+newer month than the committed snapshot, and changes nothing.
+`.github/workflows/caltrans-crosswalk.yml` runs that check on the 5th of each
+month and, when the answer is yes, rebuilds both files and opens a pull request.
+It never writes to `main`: a record moving between matched, uncertain, and
+absent is a claim about somebody else's agency, so a curator reads the diff.
 
 ## What counts as a match
 
@@ -135,12 +146,12 @@ the nationwide rollup would end up carrying a California statistic.
 
 ## Where this is still incomplete
 
-- Only the page's own cohort is grouped by `organization_id`. Another 35
-  organizations are represented by more than one California registry record
-  outside that cohort, and grouping them is follow-up work.
-- Forty-five records the California page counts are still parked in
-  `registry/intake.yaml` without a location, so the state-level machinery does
-  not see them as Californian even though the page lists them. They are
-  reconciled here; moving them to `registry/us/ca.yaml` is separate work.
-- The crosswalk is pinned to one month of their directory. It does not yet
-  re-check itself when a new month is published.
+- Records matched to an organization that only has one of them carry no
+  `organization_id`. Their operator key falls back to the record id, which is
+  correct for a single feed, so the counts hold; the field is only populated
+  where it does work.
+- Uncertain and absent records are not grouped by operator at all, because
+  there is no confirmed organization to group them under.
+- The crosswalk is pinned to whatever month the committed snapshot holds. The
+  monthly workflow notices when that is no longer their current month, but the
+  curator decisions for newly ambiguous records are still made by hand.

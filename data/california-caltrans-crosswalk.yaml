@@ -11,8 +11,8 @@ schema_version: '1.0'
 directory_source: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06
 directory_month: 2026-06
 directory_retrieved_on: '2026-08-07'
-registry_records: 244
-matched_records: 195
+registry_records: 246
+matched_records: 197
 uncertain_records: 5
 absent_records: 44
 directory_agencies: 178
@@ -1220,6 +1220,13 @@ records:
   evidence: Muni is run by the City and County of San Francisco
   caltrans_id: 282
   caltrans_name: City and County of San Francisco
+- id: san-francisco-municipal-transportation-agency-sfmta-muni-2886
+  name: San Francisco Municipal Transportation Agency (SFMTA - Muni)
+  status: matched
+  method: curated
+  evidence: second feed record for Muni
+  caltrans_id: 282
+  caltrans_name: City and County of San Francisco
 - id: san-joaquin-regional-transit-district
   name: San Joaquin Regional Transit District
   status: matched
@@ -1415,6 +1422,13 @@ records:
   evidence: Stanford University is not in their directory
 - id: stanislaus-regional-transit-authority
   name: Stanislaus Regional Transit Authority
+  status: matched
+  method: org_name
+  evidence: the organization names agree
+  caltrans_id: 484
+  caltrans_name: Stanislaus Regional Transit Authority
+- id: stanislaus-regional-transit-authority-stanrta
+  name: Stanislaus Regional Transit Authority (StanRTA)
   status: matched
   method: org_name
   evidence: the organization names agree
