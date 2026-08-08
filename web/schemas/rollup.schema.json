@@ -23,11 +23,18 @@
     },
     "rollup": {
       "type": "object",
-      "required": ["id", "name"],
+      "required": [
+        "id",
+        "name"
+      ],
       "additionalProperties": false,
       "properties": {
-        "id": { "type": "string" },
-        "name": { "type": "string" },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
         "country_code": {
           "description": "ISO 3166-1 alpha-2 identity carried by country rollups (rollups.py _rollup_identity, shipped with the country program pages) so renderers can state the cohort's scope without keying off id naming conventions. Absent on state and named-cohort rollups.",
           "type": "string",
@@ -47,17 +54,35 @@
       "minimum": 0
     },
     "average_score": {
-      "type": ["number", "null"]
+      "type": [
+        "number",
+        "null"
+      ]
     },
     "grade_distribution": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "A": { "type": "integer", "minimum": 0 },
-        "B": { "type": "integer", "minimum": 0 },
-        "C": { "type": "integer", "minimum": 0 },
-        "D": { "type": "integer", "minimum": 0 },
-        "F": { "type": "integer", "minimum": 0 }
+        "A": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "B": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "C": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "D": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "F": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     },
     "needs_attention": {
@@ -66,24 +91,58 @@
     },
     "expired": {
       "type": "object",
-      "required": ["lapsed", "stale", "total"],
+      "required": [
+        "lapsed",
+        "stale",
+        "total"
+      ],
       "additionalProperties": false,
       "properties": {
-        "lapsed": { "type": "integer", "minimum": 0 },
-        "stale": { "type": "integer", "minimum": 0 },
-        "total": { "type": "integer", "minimum": 0 }
+        "lapsed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "stale": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     },
     "shapes_readiness": {
       "type": "object",
-      "required": ["ready", "at_risk", "not_ready", "not_measured", "total"],
+      "required": [
+        "ready",
+        "at_risk",
+        "not_ready",
+        "not_measured",
+        "total"
+      ],
       "additionalProperties": false,
       "properties": {
-        "ready": { "type": "integer", "minimum": 0 },
-        "at_risk": { "type": "integer", "minimum": 0 },
-        "not_ready": { "type": "integer", "minimum": 0 },
-        "not_measured": { "type": "integer", "minimum": 0 },
-        "total": { "type": "integer", "minimum": 0 }
+        "ready": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "at_risk": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "not_ready": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "not_measured": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "total": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     },
     "members": {
@@ -104,27 +163,79 @@
         ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string" },
-          "name": { "type": "string" },
-          "score": { "type": "number" },
-          "grade": { "enum": ["A", "B", "C", "D", "F"] },
-          "snapshot_date": { "type": "string" },
-          "needs_attention": { "type": "boolean" },
-          "attention_reason": { "type": ["string", "null"] },
-          "days_until_expiry": { "type": ["integer", "null"] },
-          "expiry_status": {
-            "enum": ["current", "expiring_soon", "lapsed", "stale", "unknown"]
+          "id": {
+            "type": "string"
           },
-          "top_fix": { "type": ["string", "null"] },
+          "name": {
+            "type": "string"
+          },
+          "score": {
+            "type": "number"
+          },
+          "grade": {
+            "enum": [
+              "A",
+              "B",
+              "C",
+              "D",
+              "F"
+            ]
+          },
+          "snapshot_date": {
+            "type": "string"
+          },
+          "needs_attention": {
+            "type": "boolean"
+          },
+          "attention_reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "days_until_expiry": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "expiry_status": {
+            "enum": [
+              "current",
+              "expiring_soon",
+              "lapsed",
+              "stale",
+              "unknown"
+            ]
+          },
+          "top_fix": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "top_fix_code": {
-            "type": ["string", "null"],
+            "type": [
+              "string",
+              "null"
+            ],
             "pattern": "^[A-Za-z0-9_-]+$",
             "description": "Finding code for the member's highest-priority fix, used to preserve evidence context when opening its scorecard."
           },
           "shapes_status": {
-            "enum": ["ready", "at_risk", "not_ready", null]
+            "enum": [
+              "ready",
+              "at_risk",
+              "not_ready",
+              null
+            ]
           },
-          "annual_trips": { "type": ["integer", "null"] }
+          "annual_trips": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
         }
       }
     },
@@ -132,12 +243,23 @@
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["code", "fix", "agencies"],
+        "required": [
+          "code",
+          "fix",
+          "agencies"
+        ],
         "additionalProperties": false,
         "properties": {
-          "code": { "type": "string" },
-          "fix": { "type": "string" },
-          "agencies": { "type": "integer", "minimum": 2 }
+          "code": {
+            "type": "string"
+          },
+          "fix": {
+            "type": "string"
+          },
+          "agencies": {
+            "type": "integer",
+            "minimum": 2
+          }
         }
       }
     },
@@ -157,38 +279,259 @@
         "note"
       ],
       "properties": {
-        "eligible_count": {"type": "integer", "minimum": 0},
-        "excluded_count": {"type": "integer", "minimum": 0},
-        "required_rubric_version": {"type": "string"},
-        "required_scoring_profile_id": {"type": "string"},
-        "required_validator_version": {"type": "string"},
-        "required_reader_archive_profile": {"type": "string"},
+        "eligible_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "excluded_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "required_rubric_version": {
+          "type": "string"
+        },
+        "required_scoring_profile_id": {
+          "type": "string"
+        },
+        "required_validator_version": {
+          "type": "string"
+        },
+        "required_reader_archive_profile": {
+          "type": "string"
+        },
         "required_measured_categories": {
           "type": "array",
           "items": {
-            "enum": ["correctness", "freshness", "completeness", "realtime"]
+            "enum": [
+              "correctness",
+              "freshness",
+              "completeness",
+              "realtime"
+            ]
           },
           "uniqueItems": true
         },
         "measured_category_cohorts": {
           "type": "object",
-          "additionalProperties": {"type": "integer", "minimum": 0}
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
         },
         "exclusion_counts": {
           "type": "object",
-          "additionalProperties": {"type": "integer", "minimum": 0}
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 0
+          }
         },
-        "absolute_rankings_published": {"const": false},
-        "individual_percentiles_published": {"const": false},
-        "note": {"type": "string"}
+        "absolute_rankings_published": {
+          "const": false
+        },
+        "individual_percentiles_published": {
+          "const": false
+        },
+        "note": {
+          "type": "string"
+        }
       }
     },
     "state_percentile": {
-      "type": ["integer", "null"],
+      "type": [
+        "integer",
+        "null"
+      ],
       "minimum": 0,
       "maximum": 100,
       "deprecated": true,
       "description": "Deprecated compatibility field. Current payloads publish null; historical 1.x state rollups may contain an integer."
+    },
+    "reconciliation": {
+      "type": "object",
+      "description": "How this program's feed records line up with an external agency directory published by a transport authority. Present only for programs with a mapped directory. Never a grade input.",
+      "required": [
+        "directory_source",
+        "directory_month",
+        "directory_agencies",
+        "reconciled_records",
+        "matched_records",
+        "uncertain_records",
+        "absent_records",
+        "organizations_matched"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "directory_source": {
+          "type": "string",
+          "format": "uri"
+        },
+        "directory_month": {
+          "type": "string"
+        },
+        "directory_retrieved_on": {
+          "type": "string"
+        },
+        "directory_agencies": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reconciled_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "unreconciled_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "matched_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "uncertain_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "absent_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "organizations_matched": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "directory_only_agencies": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "realtime": {
+      "type": "object",
+      "description": "Realtime reliability across this program's members, from the scheduled realtime monitor's record. Members the monitor has not observed are counted as unmonitored, never as a zero. Not a grade input.",
+      "required": [
+        "configured_feed_records",
+        "monitored_feed_records",
+        "bands",
+        "members"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "configured_feed_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "monitored_feed_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bands": {
+          "type": "object",
+          "required": [
+            "reliable",
+            "mostly",
+            "spotty"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "reliable": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "mostly": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "spotty": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "median_uptime_pct": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "median_lag_seconds": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "median_coverage_pct": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "observations",
+              "uptime_pct",
+              "band"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "configured_kinds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "observations": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "uptime_pct": {
+                "type": "number"
+              },
+              "band": {
+                "enum": [
+                  "reliable",
+                  "mostly",
+                  "spotty"
+                ]
+              },
+              "median_lag_seconds": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "median_coverage_pct": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "first_ts": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "last_ts": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   }
 }

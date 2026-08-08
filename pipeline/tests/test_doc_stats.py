@@ -11,6 +11,8 @@ from __future__ import annotations
 import importlib.util
 import json
 import re
+import shutil
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -185,9 +187,23 @@ def test_the_reported_line_says_the_published_counts_are_not_live() -> None:
 
 
 def test_optional_rules_name_only_files_that_may_be_absent() -> None:
-    # AGENTS.md is excluded from the repo, so it cannot be a required rule --
-    # that is the whole reason OPTIONAL_RULES exists. Anything tracked belongs
-    # in RULES, where a missing file is a failure rather than a skip.
+    # OPTIONAL_RULES exists for files that may legitimately be missing from a
+    # checkout. Anything git tracks is always present, so it belongs in RULES,
+    # where a missing file is a failure rather than a skip.
+    #
+    # Ask git, not .git/info/exclude. That file is not version controlled, so
+    # reading it passes on a machine that happens to carry the line and fails
+    # in every fresh clone, including CI.
+    git = shutil.which("git")
+    assert git is not None
     for rel_path, _pattern, _denominator, _mode in doc_stats.OPTIONAL_RULES:
-        exclude = (ROOT / ".git" / "info" / "exclude").read_text()
-        assert f"/{rel_path}" in exclude, f"{rel_path} is tracked; use RULES"
+        tracked = (
+            subprocess.run(  # noqa: S603 - resolved git binary over this checkout
+                [git, "ls-files", "--error-unmatch", rel_path],
+                cwd=ROOT,
+                capture_output=True,
+                check=False,
+            ).returncode
+            == 0
+        )
+        assert not tracked, f"{rel_path} is tracked; use RULES"

@@ -20,6 +20,7 @@ import io
 import json
 from collections import Counter
 from dataclasses import dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -384,7 +385,7 @@ def build_rollup(
         "total": len(members),
     }
 
-    return {
+    payload: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "rollup": _rollup_identity(rollup),
         "generated_at": generated_at.isoformat(timespec="seconds"),
@@ -396,9 +397,125 @@ def build_rollup(
         "needs_attention": sum(1 for m in members if m["needs_attention"]),
         "expired": {"lapsed": lapsed, "stale": stale, "total": lapsed + stale},
         "shapes_readiness": shapes_readiness,
+        "realtime": _realtime_block(members),
         "members": members,
         "common_fixes": common,
+        **_reconciliation_block(member_ids),
     }
+    return payload
+
+
+@lru_cache(maxsize=4)
+def _rt_kinds_for_root(root: str) -> tuple[tuple[str, tuple[str, ...]], ...]:
+    """Which realtime feed kinds each registry record publishes, under one repo root.
+
+    Read from the registry rather than the process-global ``AGENCIES``, which
+    ``read_agencies`` deliberately leaves alone, so this is correct whichever
+    entry point built the rollup. Keyed on the root because tests point the
+    pipeline at a temporary one. A root with no registry at all yields nothing,
+    which is the right answer for a bare fixture repo.
+    """
+    from .agencies import AgencyConfigError, read_agencies
+
+    try:
+        agencies = read_agencies()
+    except AgencyConfigError:
+        return ()
+    return tuple(
+        (agency.id, tuple(sorted(agency.rt_urls))) for agency in agencies if agency.rt_urls
+    )
+
+
+def _configured_rt_kinds() -> dict[str, tuple[str, ...]]:
+    return dict(_rt_kinds_for_root(str(repo_root())))
+
+
+def _realtime_block(members: list[dict[str, Any]]) -> dict[str, Any]:
+    """Realtime reliability across this program's members, agency by agency.
+
+    The monthly reports a state programme publishes assess the schedule side,
+    and check realtime presence at most a couple of times a month. The realtime
+    monitor here already records reachability, header freshness, and trip
+    coverage on a schedule (ADR 0012); this rolls that record up per program so
+    a reader sees the whole cohort at once rather than one agency page at a
+    time.
+
+    Each member gains its own reading, and members the monitor has not observed
+    are counted as unmonitored rather than as a zero. Reliability is the share
+    of monitor runs the feed answered; it is not a grade input and changes no
+    score.
+    """
+    from ._stats import _median
+    from .rt_health import load_observations, summarize
+    from .rt_national import reliability_band
+
+    registry = _configured_rt_kinds()
+    rows: list[dict[str, Any]] = []
+    configured = 0
+    for member in members:
+        kinds: tuple[str, ...] = registry.get(member["id"], ())
+        if kinds:
+            configured += 1
+        observations = load_observations(member["id"])
+        if not observations:
+            continue
+        health = summarize(observations)
+        rows.append(
+            {
+                "id": member["id"],
+                "name": member["name"],
+                "configured_kinds": list(kinds),
+                "observations": health.observations,
+                "uptime_pct": health.uptime_pct,
+                "band": reliability_band(health.uptime_pct),
+                "median_lag_seconds": health.median_lag_seconds,
+                "median_coverage_pct": health.median_coverage_pct,
+                "first_ts": health.first_ts,
+                "last_ts": health.last_ts,
+            }
+        )
+    rows.sort(key=lambda r: (r["uptime_pct"], -(r["median_lag_seconds"] or 0), r["name"]))
+    uptimes = [float(r["uptime_pct"]) for r in rows]
+    lags = [float(r["median_lag_seconds"]) for r in rows if r["median_lag_seconds"] is not None]
+    covs = [float(r["median_coverage_pct"]) for r in rows if r["median_coverage_pct"] is not None]
+    median_uptime = _median(uptimes)
+    median_lag = _median(lags)
+    median_cov = _median(covs)
+    bands = {
+        band: sum(1 for r in rows if r["band"] == band) for band in ("reliable", "mostly", "spotty")
+    }
+    return {
+        "configured_feed_records": configured,
+        "monitored_feed_records": len(rows),
+        "bands": bands,
+        "median_uptime_pct": round(median_uptime, 1) if median_uptime is not None else None,
+        "median_lag_seconds": int(median_lag) if median_lag is not None else None,
+        "median_coverage_pct": round(median_cov, 1) if median_cov is not None else None,
+        "members": rows,
+    }
+
+
+def _reconciliation_block(member_ids: list[str]) -> dict[str, Any]:
+    """This rollup's standing against an external agency directory, if one applies.
+
+    Only California has a published state directory mapped so far, so this
+    returns an empty mapping for every other program and the page omits the
+    section. The
+    crosswalk is a committed file; nothing here reaches the network.
+
+    A partly reconciled cohort reports nothing at all. A figure covering some of a
+    program's members would read as though it covered all of them, and the
+    nationwide rollup would carry a California statistic.
+    """
+    from .caltrans_crosswalk import load_crosswalk, reconciliation
+
+    crosswalk = load_crosswalk()
+    if crosswalk is None or not member_ids:
+        return {}
+    known = crosswalk.by_id()
+    if any(member not in known for member in member_ids):
+        return {}
+    return {"reconciliation": reconciliation(crosswalk, member_ids)}
 
 
 # Liaison-facing columns: the cohort status a district staffer or statewide
