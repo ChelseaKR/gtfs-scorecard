@@ -232,6 +232,7 @@ agencies:
 
   - id: city-of-tracy-tracer
     name: City of Tracy (TRACER)
+    organization_id: city-of-tracy
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/tracy-ca-us/tracy-ca-us.zip
@@ -530,8 +531,20 @@ agencies:
     mdb_id: 48
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  - id: redding-area-bus-authority
+    name: Redding Area Bus Authority
+    subdivision_code: US-CA
+    subdivision_name: California
+    organization_id: redding-area-bus-authority
+    alias_of: redding-area-bus-authority-raba
+    feed_status: deprecated
+    static_gtfs_url: https://rabagtfs.z5.web.core.windows.net/rabagtfs.zip
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: "License: https://rabaride.com/resources/about_raba/index.php#collapselinks-18-50b1"
+
   - id: redding-area-bus-authority-raba
     name: Redding Area Bus Authority (RABA)
+    organization_id: redding-area-bus-authority
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/redding-ca-us/redding-ca-us.zip
@@ -672,6 +685,7 @@ agencies:
 
   - id: stanislaus-regional-transit-start
     name: Stanislaus Regional Transit (StaRT)
+    organization_id: stanislaus-regional-transit-authority
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/stanislaus-ca-us/stanislaus-ca-us.zip
@@ -705,6 +719,7 @@ agencies:
   - id: thousand-oaks-transit
     ntd_id: "90165"
     name: Thousand Oaks Transit
+    organization_id: city-of-thousand-oaks
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/thousandoaks-ca-us/thousandoaks-ca-us.zip
@@ -1318,6 +1333,9 @@ agencies:
 
   - id: redding-area-bus-authority-raba-1972
     name: Redding Area Bus Authority (RABA)
+    organization_id: redding-area-bus-authority
+    alias_of: redding-area-bus-authority-raba
+    feed_status: deprecated
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://hosted-gtfs-feeds.s3.amazonaws.com/RABA/gtfs.zip
@@ -1487,6 +1505,9 @@ agencies:
 
   - id: stanislaus-regional-transit-start-2273
     name: Stanislaus Regional Transit (StaRT)
+    organization_id: stanislaus-regional-transit-authority
+    alias_of: stanislaus-regional-transit-start
+    feed_status: deprecated
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://stanrta.rideralerts.com/InfoPoint/gtfs-zip.ashx
@@ -1556,6 +1577,8 @@ agencies:
 
   - id: redding-area-bus-authority-2853
     name: Redding Area Bus Authority Flex
+    organization_id: redding-area-bus-authority
+    feed_variant: GTFS-Flex
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://rabagtfs.z5.web.core.windows.net/rabagtfs_flex.zip
@@ -1605,6 +1628,7 @@ agencies:
 
   - id: redding-area-bus-authority-3031
     name: Redding Area Bus Authority
+    organization_id: redding-area-bus-authority
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://gtfs.remix.com/redding_area_bus_authority.zip
@@ -1646,6 +1670,9 @@ agencies:
 
   - id: city-of-tracy-tracer-3099
     name: City of Tracy (TRACER)
+    organization_id: city-of-tracy
+    alias_of: city-of-tracy-tracer
+    feed_status: deprecated
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/gtfs.zip

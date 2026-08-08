@@ -35,6 +35,8 @@ agencies:
 
   - id: city-of-tracy
     name: City of Tracy
+    organization_id: city-of-tracy
+    feed_variant: GTFS-Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/tracy-ca-us/tracy-ca-us--flex-v2.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -122,6 +124,8 @@ agencies:
 
   - id: move-stanislaus
     name: Move Stanislaus
+    organization_id: stanislaus-regional-transit-authority
+    feed_variant: GTFS-Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/movestanislaus-ca-us/movestanislaus-ca-us--flex-v2.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
@@ -137,12 +141,6 @@ agencies:
       trip_updates: http://rt.pasadenatransit.net/rtt/public/utility/gtfsrealtime.aspx/tripupdate
       service_alerts: http://rt.pasadenatransit.net/rtt/public/utility/gtfsrealtime.aspx/alert
     license_note: "License: https://www.cityofpasadena.net/pasadena-transit/real-time-applications/"
-
-  - id: redding-area-bus-authority
-    name: Redding Area Bus Authority
-    static_gtfs_url: https://rabagtfs.z5.web.core.windows.net/rabagtfs.zip
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: "License: https://rabaride.com/resources/about_raba/index.php#collapselinks-18-50b1"
 
   - id: relaxsan
     name: reLAXsan
@@ -193,11 +191,16 @@ agencies:
 
   - id: stanislaus-regional-transit-authority
     name: Stanislaus Regional Transit Authority
+    organization_id: stanislaus-regional-transit-authority
+    feed_variant: GTFS-Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/stanrta-ca-us/stanrta-ca-us--flex-v2.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   - id: stanislaus-regional-transit-authority-stanrta
     name: Stanislaus Regional Transit Authority (StanRTA)
+    organization_id: stanislaus-regional-transit-authority
+    alias_of: stanislaus-regional-transit-authority
+    feed_status: deprecated
     static_gtfs_url: https://www.stanrta.org/DocumentCenter/View/609/preview-gtfs.zip
     rt_urls:
       trip_updates: http://max.availtec.com/InfoPoint/GTFS-Realtime.ashx?Type=Tripupdate
@@ -217,6 +220,8 @@ agencies:
 
   - id: thousand-oaks-transit-kanan-shuttle
     name: Thousand Oaks Transit - Kanan Shuttle
+    organization_id: city-of-thousand-oaks
+    feed_variant: Kanan Shuttle
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/kananshuttle-ca-us/kananshuttle-ca-us.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
