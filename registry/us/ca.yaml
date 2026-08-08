@@ -75,6 +75,10 @@ agencies:
     static_gtfs_url: https://www.avta.com/userfiles/files/google_transit.zip
     mdb_id: 214
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://track-it.avta.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
+      vehicle_positions: https://track-it.avta.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
+      service_alerts: https://track-it.avta.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
 
   - id: arcadia-transit
     name: Arcadia Transit
@@ -84,6 +88,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/arcadia-ca-us/arcadia-ca-us.zip
     mdb_id: 215
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://passio3.com/ArcadiaCity/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/ArcadiaCity/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/ArcadiaCity/passioTransit/gtfs/realtime/serviceAlerts
 
   - id: arcadia-transit-2243
     name: Arcadia Transit
@@ -93,6 +101,10 @@ agencies:
     static_gtfs_url: https://passio3.com/ArcadiaCity/passioTransit/gtfs/google_transit.zip
     mdb_id: 2243
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://passio3.com/ArcadiaCity/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/ArcadiaCity/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/ArcadiaCity/passioTransit/gtfs/realtime/serviceAlerts
 
   - id: artesia-transit
     name: Artesia Transit
@@ -152,6 +164,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/baldwinpark-ca-us/baldwinpark-ca-us.zip
     mdb_id: 219
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://passio3.com/baldwinpark/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/baldwinpark/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/baldwinpark/passioTransit/gtfs/realtime/serviceAlerts
 
   - id: bay-area-rapid-transit-bart
     ntd_id: "90003"
@@ -185,6 +201,10 @@ agencies:
     subdivision_name: California
     static_gtfs_url: https://redondobeachbct.com/gtfs
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://redondobeachbct.com/gtfs-rt/tripupdates
+      vehicle_positions: https://redondobeachbct.com/gtfs-rt/vehiclepositions
+      service_alerts: https://redondobeachbct.com/gtfs-rt/alerts
 
   - id: beaumont-transit
     name: Beaumont Transit
@@ -254,6 +274,10 @@ agencies:
     subdivision_name: California
     static_gtfs_url: https://rideburbankbus.com/gtfs
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://rideburbankbus.com/gtfs-rt/tripupdates
+      vehicle_positions: https://rideburbankbus.com/gtfs-rt/vehiclepositions
+      service_alerts: https://rideburbankbus.com/gtfs-rt/alerts
 
   - id: calabasas-transit-system
     name: Calabasas Transit System
@@ -288,6 +312,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/camarillo-ca-us/camarillo-ca-us.zip
     mdb_id: 297
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://govcbus.com/gtfs-rt/tripupdates
+      vehicle_positions: https://govcbus.com/gtfs-rt/vehiclepositions
+      service_alerts: https://govcbus.com/gtfs-rt/alerts
 
   - id: capitol-corridor-joint-powers-authority-capitol-corridor
     name: Capitol Corridor Joint Powers Authority (Capitol Corridor)
@@ -386,6 +414,10 @@ agencies:
     subdivision_name: California
     static_gtfs_url: https://app.mecatran.com/urb/ws/feed/c2l0ZT1zbG90cmFuc2l0O2NsaWVudD1zZWxmO2V4cGlyZT07dHlwZT1ndGZzO2tleT0zZTMwMzM1OTRiMTE2NzA0N2IxNjQwNjA0ZjQwMGMzMzdiM2E1MTQ0
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://slocity.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/tripupdate
+      vehicle_positions: https://slocity.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition
+      service_alerts: https://slocity.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/alert
 
   - id: city-of-tracy
     name: City of Tracy
@@ -395,6 +427,10 @@ agencies:
     feed_variant: GTFS-Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/tracy-ca-us/tracy-ca-us--flex-v2.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/trip_updates.pb
+      vehicle_positions: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/position_updates.pb
+      service_alerts: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/alerts.pb
 
   - id: city-of-tracy-tracer
     name: City of Tracy (TRACER)
@@ -404,6 +440,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/tracy-ca-us/tracy-ca-us.zip
     mdb_id: 877
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/trip_updates.pb
+      vehicle_positions: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/position_updates.pb
+      service_alerts: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/alerts.pb
 
   - id: city-of-tracy-tracer-3099
     name: City of Tracy (TRACER)
@@ -415,6 +455,10 @@ agencies:
     static_gtfs_url: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/gtfs.zip
     mdb_id: 3099
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/trip_updates.pb
+      vehicle_positions: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/position_updates.pb
+      service_alerts: https://s3.amazonaws.com/etatransit.gtfs/tracer.etaspot.net/alerts.pb
 
   - id: city-of-wasco
     name: City of Wasco
@@ -447,6 +491,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/clovistransit-ca-us/clovistransit-ca-us.zip
     mdb_id: 89
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://passio3.com/clovis/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/clovis/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/clovis/passioTransit/gtfs/realtime/serviceAlerts
 
   - id: clovis-transit-2894
     name: Clovis Transit
@@ -528,6 +576,10 @@ agencies:
     subdivision_name: California
     static_gtfs_url: https://www.culvercity.org/files/assets/public/documents/information-technology/maps/gtfsexport.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://nextccbus.org/gtfsrt/trips
+      vehicle_positions: https://nextccbus.org/gtfsrt/vehicles
+      service_alerts: https://nextccbus.org/gtfsrt/alerts
 
   - id: dana-point-trolley
     name: Dana Point Trolley
@@ -536,6 +588,10 @@ agencies:
     static_gtfs_url: https://dptrolley.com/Secure/Admin/Reports/GTFSDownload.aspx
     mdb_id: 2361
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://passio3.com/dptrolley/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/dptrolley/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/dptrolley/passioTransit/gtfs/realtime/serviceAlerts
 
   - id: delano-area-rapid-transit
     name: Delano Area Rapid Transit
@@ -558,6 +614,10 @@ agencies:
     static_gtfs_url: https://raw.githubusercontent.com/LACMTA/los-angeles-regional-gtfs/main/downey-ca-us/downey-ca-us.zip
     mdb_id: 383
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://downey.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
+      vehicle_positions: https://downey.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
+      service_alerts: https://downey.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
 
   - id: duarte-transit
     name: Duarte Transit
@@ -566,6 +626,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/duartetransit-ca-us/duartetransit-ca-us.zip
     mdb_id: 105
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=TripUpdates
+      vehicle_positions: https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=VehiclePositions
+      service_alerts: https://gtfs-rt.myavail.cloud/GtfsProtoBuf?FeedLabel=Foothill&FeedType=Alerts
 
   - id: eastern-sierra-transit
     name: Eastern Sierra Transit
@@ -617,6 +681,10 @@ agencies:
     static_gtfs_url: https://elkgrovetransit.com/gtfs
     mdb_id: 2136
     license_note: "License: https://www.sacrt.com/gtfs/"
+    rt_urls:
+      trip_updates: https://bustime.sacrt.com/EG_gtfsrt/trips
+      vehicle_positions: https://bustime.sacrt.com/EG_gtfsrt/vehicles
+      service_alerts: https://bustime.sacrt.com/EG_gtfsrt/alerts
 
   - id: emery-go-round
     name: Emery Go-Round
@@ -681,6 +749,9 @@ agencies:
     static_gtfs_url: http://gis4u.fresno.gov/downloads/fax_gtfs.zip
     mdb_id: 90
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://gis4u.fresno.gov/TMGTFSRealTimeWebService/TripUpdate/TripUpdates.pb
+      vehicle_positions: https://gis4u.fresno.gov/TMGTFSRealTimeWebService/Vehicle/VehiclePositions.pb
 
   - id: get-around-town-express
     name: Get Around Town Express
@@ -778,6 +849,10 @@ agencies:
     static_gtfs_url: http://www.goldcoasttransit.org/images/GTFS/GTFS.zip
     mdb_id: 32
     license_note: "License: http://www.goldcoasttransit.org/2-uncategorised/250-gtfs-data-download"
+    rt_urls:
+      trip_updates: https://govcbus.com/gtfs-rt/tripupdates
+      vehicle_positions: https://govcbus.com/gtfs-rt/vehiclepositions
+      service_alerts: https://govcbus.com/gtfs-rt/alerts
 
   - id: golden-empire-transit-district-get
     name: Golden Empire Transit District (GET)
@@ -785,6 +860,10 @@ agencies:
     subdivision_name: California
     static_gtfs_url: http://eta.getbus.org/rtt/public/utility/gtfs.aspx
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://get.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/tripupdate
+      vehicle_positions: https://get.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition
+      service_alerts: https://cdn.simplifytransit.com/goldenempiretransit/alerts/service-alerts.pb
 
   - id: golden-gate-national-recreation-area-alcatraz-island
     name: Alcatraz Cruises Ferry
@@ -818,6 +897,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/gtrans-ca-us/gtrans-ca-us.zip
     mdb_id: 616
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://mygtbus.ridegtrans.com/gtfsrt/trips
+      vehicle_positions: https://mygtbus.ridegtrans.com/gtfsrt/vehicles
+      service_alerts: https://mygtbus.ridegtrans.com/gtfsrt/alerts
 
   - id: gtrans-2270
     name: GTrans
@@ -827,6 +910,10 @@ agencies:
     static_gtfs_url: https://ridegtrans.com/gtfs.zip
     mdb_id: 2270
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://mygtbus.ridegtrans.com/gtfsrt/trips
+      vehicle_positions: https://mygtbus.ridegtrans.com/gtfsrt/vehicles
+      service_alerts: https://mygtbus.ridegtrans.com/gtfsrt/alerts
 
   - id: guadalupe-flyer
     name: Guadalupe Flyer
@@ -855,6 +942,8 @@ agencies:
     static_gtfs_url: https://hta.optibus.co/public_api/v1/feeds/gtfs
     mdb_id: 3032
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      service_alerts: https://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/humboldtcounty-ca-us/service_alerts.proto
 
   - id: huntington-park-express
     name: Huntington Park Express
@@ -898,6 +987,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/kcapta-ca-us/kcapta-ca-us.zip
     mdb_id: 42
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://kart.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/tripupdate
+      vehicle_positions: https://kart.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition
+      service_alerts: https://kart.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/alert
 
   - id: kings-area-rural-transit-2204
     name: Kings Area Rural Transit
@@ -907,6 +1000,10 @@ agencies:
     static_gtfs_url: http://kart.connexionz.net/rtt/public/utility/gtfs.aspx
     mdb_id: 2204
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://kart.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/tripupdate
+      vehicle_positions: https://kart.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition
+      service_alerts: https://kart.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/alert
 
   - id: la-puente-link
     name: La Puente LINK
@@ -981,6 +1078,10 @@ agencies:
     static_gtfs_url: https://drive.google.com/uc?export=download&id=1869EVa1z6m_iD6QmvRXyTHtYiaSUBROl
     mdb_id: 1198
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://gtfs-rt.lbt.vontascloud.com/TMGTFSRealTimeWebService/TripUpdate/TripUpdates.pb
+      vehicle_positions: https://gtfs-rt.lbt.vontascloud.com/TMGTFSRealTimeWebService/Vehicle/VehiclePositions.pb
+      service_alerts: https://gtfs-rt.lbt.vontascloud.com/TMGTFSRealTimeWebService/Alert/Alerts.pb
 
   - id: los-angeles-county-department-of-public-works-the-link-and-shuttles
     name: Los Angeles County Department of Public Works (the LINK and shuttles)
@@ -1017,6 +1118,10 @@ agencies:
     subdivision_name: California
     static_gtfs_url: https://ladotbus.com/gtfs
     license_note: "License: https://www.ladottransit.com/dla.html"
+    rt_urls:
+      trip_updates: https://ladotbus.com/gtfs-rt/tripupdates
+      vehicle_positions: https://ladotbus.com/gtfs-rt/vehiclepositions
+      service_alerts: https://ladotbus.com/gtfs-rt/alerts
 
   - id: lynwood-trolley-breeze
     name: Lynwood Trolley / Breeze
@@ -1042,6 +1147,10 @@ agencies:
     subdivision_name: California
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/manteca-ca-us/manteca-ca-us--flex-v2.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://s3.amazonaws.com/etatransit.gtfs/mantecatransit.etaspot.net/trip_updates.pb
+      vehicle_positions: https://s3.amazonaws.com/etatransit.gtfs/mantecatransit.etaspot.net/position_updates.pb
+      service_alerts: https://s3.amazonaws.com/etatransit.gtfs/mantecatransit.etaspot.net/alerts.pb
 
   - id: marin-transit
     ntd_id: "90234"
@@ -1131,6 +1240,10 @@ agencies:
     static_gtfs_url: https://thebuslive.com/gtfs
     mdb_id: 3117
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://thebuslive.com/gtfs-rt/tripupdates
+      vehicle_positions: https://thebuslive.com/gtfs-rt/vehiclepositions
+      service_alerts: https://thebuslive.com/gtfs-rt/alerts
 
   - id: metrolink
     name: Metrolink
@@ -1164,6 +1277,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/montebello-ca-us/montebello-ca-us.zip
     mdb_id: 577
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://mbl.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
+      vehicle_positions: https://mbl.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
+      service_alerts: https://mbl.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
 
   - id: montebello-bus-lines-2201
     name: Montebello Bus Lines
@@ -1199,6 +1316,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/moorparkcitytransit-ca-us/moorparkcitytransit-ca-us.zip
     mdb_id: 578
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://govcbus.com/gtfs-rt/tripupdates
+      vehicle_positions: https://govcbus.com/gtfs-rt/vehiclepositions
+      service_alerts: https://govcbus.com/gtfs-rt/alerts
 
   - id: morongo-basin-transit-authority
     name: Morongo Basin Transit Authority
@@ -1207,6 +1328,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/morongobasin-ca-us/morongobasin-ca-us.zip
     mdb_id: 579
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://ridebasintransit.com/gtfs-rt/tripupdates
+      vehicle_positions: https://ridebasintransit.com/gtfs-rt/vehiclepositions
+      service_alerts: https://ridebasintransit.com/gtfs-rt/alerts
 
   - id: morro-bay-transit
     name: Morro Bay Transit
@@ -1231,6 +1356,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/bigbear-ca-us/bigbear-ca-us.zip
     mdb_id: 107
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://mountaintransit.syncromatics.com/gtfs-rt/tripupdates
+      vehicle_positions: https://mountaintransit.syncromatics.com/gtfs-rt/vehiclepositions
+      service_alerts: https://mountaintransit.syncromatics.com/gtfs-rt/alerts
 
   - id: mountain-view-community-shuttle
     name: Mountain View Community Shuttle
@@ -1279,6 +1408,10 @@ agencies:
     feed_variant: GTFS-Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/movestanislaus-ca-us/movestanislaus-ca-us--flex-v2.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
+      vehicle_positions: https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
+      service_alerts: https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
 
   - id: needles-area-transit
     name: Needles Area Transit
@@ -1324,6 +1457,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/nts-ca-us/nts-ca-us.zip
     mdb_id: 102
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
+      vehicle_positions: https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
+      service_alerts: https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
 
   - id: norwalk-transit-system-nts-2242
     name: Norwalk Transit System (NTS)
@@ -1333,6 +1470,10 @@ agencies:
     static_gtfs_url: https://mystop.norwalktransit.com/InfoPoint/gtfs-zip.ashx
     mdb_id: 2242
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
+      vehicle_positions: https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
+      service_alerts: https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
 
   - id: omnitrans
     name: OmniTrans
@@ -1363,6 +1504,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/paloverde_valley-ca-us/paloverde_valley-ca-us.zip
     mdb_id: 18
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://ridepvvta.com/gtfs-rt/tripupdates
+      vehicle_positions: https://ridepvvta.com/gtfs-rt/vehiclepositions
+      service_alerts: https://ridepvvta.com/gtfs-rt/alerts
 
   - id: palo-verde-valley-transit-agency-2190
     name: Palo Verde Valley Transit Agency
@@ -1371,6 +1516,10 @@ agencies:
     subdivision_name: California
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/paloverde-valley-ca-us/paloverde-valley-ca-us.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://ridepvvta.com/gtfs-rt/tripupdates
+      vehicle_positions: https://ridepvvta.com/gtfs-rt/vehiclepositions
+      service_alerts: https://ridepvvta.com/gtfs-rt/alerts
 
   - id: palos-verdes-peninsula-transit-authority-pvpta
     name: Palos Verdes Peninsula Transit Authority (PVPTA)
@@ -1562,6 +1711,10 @@ agencies:
     subdivision_name: California
     static_gtfs_url: https://iportal.sacrt.com/gtfs/Roseville/google_transit.zip
     license_note: "License: http://www.sacrt.com/gtfs.stm"
+    rt_urls:
+      trip_updates: https://cityofroseville.tripshot.com/v1/gtfs/realtime/tripUpdate/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
+      vehicle_positions: https://cityofroseville.tripshot.com/v1/gtfs/realtime/vehiclePosition/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
+      service_alerts: https://cityofroseville.tripshot.com/v1/gtfs/realtime/serviceAlert/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
 
   - id: sacramento-regional-transit-sacrt
     ntd_id: "90019"
@@ -1572,6 +1725,10 @@ agencies:
     static_gtfs_url: https://iportal.sacrt.com/GTFS/SRTD/google_transit.zip
     mdb_id: 1296
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://bustime.sacrt.com/gtfsrt/trips
+      vehicle_positions: https://bustime.sacrt.com/gtfsrt/vehicles
+      service_alerts: https://bustime.sacrt.com/gtfsrt/alerts
 
   - id: sacramento-regional-transit-sacrt-2137
     ntd_id: "90019"
@@ -1582,6 +1739,10 @@ agencies:
     static_gtfs_url: https://www.sacrt.com/wp-content/uploads/google_transit.zip
     mdb_id: 2137
     license_note: "License: https://www.sacrt.com/gtfs/"
+    rt_urls:
+      trip_updates: https://bustime.sacrt.com/gtfsrt/trips
+      vehicle_positions: https://bustime.sacrt.com/gtfsrt/vehicles
+      service_alerts: https://bustime.sacrt.com/gtfsrt/alerts
 
   - id: sage-stage
     name: Sage Stage
@@ -1616,6 +1777,10 @@ agencies:
     static_gtfs_url: https://sctrolley.com/Secure/Admin/Reports/GTFSDownload.aspx
     mdb_id: 2362
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://passio3.com/sctrolley/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/sctrolley/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/sctrolley/passioTransit/gtfs/realtime/serviceAlerts
 
   - id: san-diego-international-airport-metropolitan-transit-system-mts
     ntd_id: "90026"
@@ -1672,6 +1837,9 @@ agencies:
     subdivision_name: California
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sanjoaquin-ca-us/sanjoaquin-ca-us--flex-v2.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://rtdgtfs.s3.us-west-1.amazonaws.com/TripUpdates.pb
+      vehicle_positions: https://rtdgtfs.s3.us-west-1.amazonaws.com/VehiclePositions.pb
 
   - id: san-joaquin-regional-transit-district-rtd
     name: San Joaquin Regional Transit District (RTD)
@@ -1682,6 +1850,9 @@ agencies:
     mdb_id: 886
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: "License: http://sanjoaquinrtd.com/preview/terms-of-use/"
+    rt_urls:
+      trip_updates: https://rtdgtfs.s3.us-west-1.amazonaws.com/TripUpdates.pb
+      vehicle_positions: https://rtdgtfs.s3.us-west-1.amazonaws.com/VehiclePositions.pb
 
   - id: san-juan-capistrano-free-weekend-trolley
     name: San Juan Capistrano Free Weekend Trolley
@@ -1690,6 +1861,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sanjuancapistrano-ca-us/sanjuancapistrano-ca-us.zip
     mdb_id: 596
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://passio3.com/scjtrolley/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/scjtrolley/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/scjtrolley/passioTransit/gtfs/realtime/serviceAlerts
 
   - id: san-leandro-links
     name: San Leandro Links
@@ -1705,6 +1880,10 @@ agencies:
     subdivision_name: California
     static_gtfs_url: http://slo.connexionz.net/rtt/public/resource/gtfs.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: http://slo.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/tripupdate
+      vehicle_positions: http://slo.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition
+      service_alerts: http://slo.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/alert
 
   - id: san-mateo-county-transit-district-samtrans
     ntd_id: "90009"
@@ -1722,6 +1901,10 @@ agencies:
     subdivision_name: California
     static_gtfs_url: http://sbmtd.gov/google_transit/feed.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://bustracker.sbmtd.gov/gtfsrt/trips
+      vehicle_positions: https://bustracker.sbmtd.gov/gtfsrt/vehicles
+      service_alerts: https://bustracker.sbmtd.gov/gtfsrt/alerts
 
   - id: santa-clara-valley-transportation-authority-vta
     ntd_id: "90013"
@@ -1740,6 +1923,10 @@ agencies:
     subdivision_name: California
     static_gtfs_url: https://gitlab.com/LACMTA/gtfs_lax/-/archive/master/gtfs_lax-master.zip?path=santa_clarita
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://apps.santaclaritatransit.com/rtt/public/utility/gtfsrealtime.aspx/tripupdate
+      vehicle_positions: https://apps.santaclaritatransit.com/rtt/public/utility/gtfsrealtime.aspx/vehicleposition
+      service_alerts: https://apps.santaclaritatransit.com/rtt/public/utility/gtfsrealtime.aspx/alert
 
   - id: santa-cruz-metro-scmtd
     name: Santa Cruz Metro (SCMTD)
@@ -1771,6 +1958,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/smat-ca-us/smat-ca-us.zip
     mdb_id: 26
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://smrt.tripshot.com/v1/gtfs/realtime/tripUpdate/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
+      vehicle_positions: https://smrt.tripshot.com/v1/gtfs/realtime/vehiclePosition/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
+      service_alerts: https://smrt.tripshot.com/v1/gtfs/realtime/serviceAlert/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
 
   - id: santa-maria-area-transit-2272
     name: Santa Maria Area Transit
@@ -1780,6 +1971,10 @@ agencies:
     static_gtfs_url: https://smrt.tripshot.com/v1/gtfs.zip?regionId=CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
     mdb_id: 2272
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://smrt.tripshot.com/v1/gtfs/realtime/tripUpdate/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
+      vehicle_positions: https://smrt.tripshot.com/v1/gtfs/realtime/vehiclePosition/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
+      service_alerts: https://smrt.tripshot.com/v1/gtfs/realtime/serviceAlert/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
 
   - id: santa-rosa-citybus
     ntd_id: "90017"
@@ -1807,6 +2002,8 @@ agencies:
     static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/syvt_google_transit.zip
     mdb_id: 813
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      vehicle_positions: https://lat-long-prototype.wl.r.appspot.com/vehicle-positions.pb?agency=santa-ynez-valley-transit
 
   - id: sierra-madre-gateway-coach
     name: Sierra Madre Gateway Coach
@@ -1832,6 +2029,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/simivalley-ca-us/simivalley-ca-us.zip
     mdb_id: 40
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://govcbus.com/gtfs-rt/tripupdates
+      vehicle_positions: https://govcbus.com/gtfs-rt/vehiclepositions
+      service_alerts: https://govcbus.com/gtfs-rt/alerts
 
   - id: siskiyou-county
     name: Siskiyou County
@@ -1919,6 +2120,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/montereypark-ca-us/montereypark-ca-us.zip
     mdb_id: 39
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://passio3.com/montereyp/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/montereyp/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/montereyp/passioTransit/gtfs/realtime/serviceAlerts
 
   - id: spirit-bus-2202
     name: Spirit Bus
@@ -1949,6 +2154,10 @@ agencies:
     feed_variant: GTFS-Flex
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/stanrta-ca-us/stanrta-ca-us--flex-v2.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
+      vehicle_positions: https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
+      service_alerts: https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
 
   - id: stanislaus-regional-transit-authority-stanrta
     name: Stanislaus Regional Transit Authority (StanRTA)
@@ -1972,6 +2181,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/stanislaus-ca-us/stanislaus-ca-us.zip
     mdb_id: 87
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
+      vehicle_positions: https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
+      service_alerts: https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
 
   - id: stanislaus-regional-transit-start-2273
     name: Stanislaus Regional Transit (StaRT)
@@ -1983,6 +2196,10 @@ agencies:
     static_gtfs_url: https://stanrta.rideralerts.com/InfoPoint/gtfs-zip.ashx
     mdb_id: 2273
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
+      vehicle_positions: https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
+      service_alerts: https://stanrta.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
 
   - id: sunline-transit-agency
     name: SunLine Transit Agency
@@ -2042,6 +2259,10 @@ agencies:
     feed_variant: Kanan Shuttle
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/kananshuttle-ca-us/kananshuttle-ca-us.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://govcbus.com/gtfs-rt/tripupdates
+      vehicle_positions: https://govcbus.com/gtfs-rt/vehiclepositions
+      service_alerts: https://govcbus.com/gtfs-rt/alerts
 
   - id: tideline-water-taxi
     name: Tideline Water Taxi
@@ -2092,6 +2313,9 @@ agencies:
     subdivision_name: California
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/tcrta-ca-us/tcrta-ca-us.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: http://data.peaktransit.com/gtfsrt/120/TripUpdate.pb
+      vehicle_positions: http://data.peaktransit.com/gtfsrt/120/VehiclePosition.pb
 
   - id: turlock-transit
     name: Turlock Transit
@@ -2101,6 +2325,8 @@ agencies:
     mdb_id: 619
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      service_alerts: https://gtfs-realtime.trilliumtransit.com/gtfs-realtime/feed/turlock-ca-us/service_alerts.proto
 
   - id: ucsc-transportation-and-parking-services
     name: UCSC Transportation and Parking Services
@@ -2150,6 +2376,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/vctc-ca-us/vctc-ca-us.zip
     mdb_id: 31
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://govcbus.com/gtfs-rt/tripupdates
+      vehicle_positions: https://govcbus.com/gtfs-rt/vehiclepositions
+      service_alerts: https://govcbus.com/gtfs-rt/alerts
 
   - id: ventura-county-transportation-commission-3096
     ntd_id: "90164"
@@ -2160,6 +2390,10 @@ agencies:
     static_gtfs_url: https://www.goventura.org/wp-content/uploads/2026/02/20260213-GMV_Schedule.zip
     mdb_id: 3096
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://govcbus.com/gtfs-rt/tripupdates
+      vehicle_positions: https://govcbus.com/gtfs-rt/vehiclepositions
+      service_alerts: https://govcbus.com/gtfs-rt/alerts
 
   - id: victor-valley-transit-authority-vvta
     name: Victor Valley Transit Authority (VVTA)
@@ -2168,6 +2402,10 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/victorville-ca-us/victorville-ca-us.zip
     mdb_id: 99
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://ontime.vvta.org/gtfs-rt/tripupdates
+      vehicle_positions: https://ontime.vvta.org/gtfs-rt/vehiclepositions
+      service_alerts: https://ontime.vvta.org/gtfs-rt/alerts
 
   - id: vine-transit
     ntd_id: "90088"
@@ -2274,3 +2512,7 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/yubasutter-ca-us/yubasutter-ca-us.zip
     mdb_id: 79
     license_note: No stated data license in the Mobility Database; verify before relying on.
+    rt_urls:
+      trip_updates: https://passio3.com/yubasutter/passioTransit/gtfs/realtime/tripUpdates
+      vehicle_positions: https://passio3.com/yubasutter/passioTransit/gtfs/realtime/vehiclePositions
+      service_alerts: https://passio3.com/yubasutter/passioTransit/gtfs/realtime/serviceAlerts

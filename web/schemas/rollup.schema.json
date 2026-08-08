@@ -404,6 +404,134 @@
           "minimum": 0
         }
       }
+    },
+    "realtime": {
+      "type": "object",
+      "description": "Realtime reliability across this program's members, from the scheduled realtime monitor's record. Members the monitor has not observed are counted as unmonitored, never as a zero. Not a grade input.",
+      "required": [
+        "configured_feed_records",
+        "monitored_feed_records",
+        "bands",
+        "members"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "configured_feed_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "monitored_feed_records": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "bands": {
+          "type": "object",
+          "required": [
+            "reliable",
+            "mostly",
+            "spotty"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "reliable": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "mostly": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "spotty": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "median_uptime_pct": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "median_lag_seconds": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "median_coverage_pct": {
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "name",
+              "observations",
+              "uptime_pct",
+              "band"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              },
+              "configured_kinds": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "observations": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "uptime_pct": {
+                "type": "number"
+              },
+              "band": {
+                "enum": [
+                  "reliable",
+                  "mostly",
+                  "spotty"
+                ]
+              },
+              "median_lag_seconds": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "median_coverage_pct": {
+                "type": [
+                  "number",
+                  "null"
+                ]
+              },
+              "first_ts": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              },
+              "last_ts": {
+                "type": [
+                  "integer",
+                  "null"
+                ]
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
