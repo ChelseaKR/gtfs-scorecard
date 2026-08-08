@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from typing import Any
 
 import pytest
 
@@ -13,21 +14,44 @@ from playwright.sync_api import Page, Route, expect
 pytestmark = pytest.mark.e2e
 
 
+def _score_text(score: float) -> str:
+    """A score as the page prints it: one decimal, with no trailing ``.0``."""
+    return f"{score:.1f}".removesuffix(".0")
+
+
 def _wait_for_scorecard(page: Page) -> None:
     expect(page.locator("#live-scorecard")).to_have_attribute("aria-busy", "false")
 
 
-def test_landing_starts_with_a_real_unitrans_record(page: Page, base_url: str) -> None:
+def test_landing_starts_with_a_real_unitrans_record(
+    page: Page, base_url: str, agency_by_id: dict[str, dict[str, Any]]
+) -> None:
+    # Grade, score and snapshot date come from directory.json, the file the page
+    # hydrates from. They were literals until Unitrans rescored: B/80.8 became
+    # C/72.6 and this assertion sat red on main for days without saying anything
+    # true. What is worth holding is that the record shown is the record in the
+    # data, which no refresh can invalidate.
+    record = agency_by_id["unitrans"]
     page.goto(f"{base_url}/")
     _wait_for_scorecard(page)
 
     assert page.url == f"{base_url}/"
     expect(page.locator("#scorecard-agency")).to_contain_text("Unitrans")
-    expect(page.locator("#scorecard-grade")).to_have_text("B")
-    expect(page.locator("#scorecard-score")).to_have_text("80.8")
-    expect(page.locator("#scorecard-date")).to_have_attribute("datetime", "2026-07-10")
-    expect(page.locator('[data-category="realtime"] .category-value')).to_have_text("Not measured")
-    expect(page.locator('[data-category-row="realtime"] [role="meter"]')).to_have_count(0)
+    expect(page.locator("#scorecard-grade")).to_have_text(record["grade"])
+    expect(page.locator("#scorecard-score")).to_have_text(_score_text(record["score"]))
+    expect(page.locator("#scorecard-date")).to_have_attribute("datetime", record["snapshot_date"])
+    # Whether realtime is measured is a property of the feed, not of this test.
+    # Assert the rendering that matches the data, so the not-measured path is
+    # still guarded and a feed that gains realtime does not read as a failure.
+    if record["realtime_measured"]:
+        expect(page.locator('[data-category="realtime"] .category-value')).not_to_have_text(
+            "Not measured"
+        )
+    else:
+        expect(page.locator('[data-category="realtime"] .category-value')).to_have_text(
+            "Not measured"
+        )
+        expect(page.locator('[data-category-row="realtime"] [role="meter"]')).to_have_count(0)
     expect(page.locator("#fix-selector button")).to_have_count(3)
     expect(page.locator("#trace-code")).to_have_text("scorecard_wheelchair_boarding_unknown")
 
@@ -122,15 +146,20 @@ def test_landing_keeps_conservative_coverage_fallbacks_when_request_fails(
     expect(page.locator(".coverage-ledger")).to_contain_text("Countries in registry")
 
 
-def test_landing_switches_record_category_and_fix_without_reload(page: Page, base_url: str) -> None:
+def test_landing_switches_record_category_and_fix_without_reload(
+    page: Page, base_url: str, agency_by_id: dict[str, dict[str, Any]]
+) -> None:
+    yolobus = agency_by_id["yolobus"]
     page.goto(f"{base_url}/")
     _wait_for_scorecard(page)
 
     page.get_by_role("button", name="Yolobus").click()
     _wait_for_scorecard(page)
     expect(page.locator("#scorecard-agency")).to_contain_text("Yolobus")
-    expect(page.locator("#scorecard-score")).to_have_text("82.2")
-    expect(page.locator('[data-category="realtime"] .category-value')).to_have_text("92.2")
+    expect(page.locator("#scorecard-score")).to_have_text(_score_text(yolobus["score"]))
+    expect(page.locator('[data-category="realtime"] .category-value')).to_have_text(
+        _score_text(yolobus["realtime_coverage_pct"])
+    )
     expect(page.locator('[data-agency-id="yolobus"]')).to_have_attribute("aria-pressed", "true")
     expect(page.locator("#scope-scorecard-link")).to_have_attribute(
         "href",
