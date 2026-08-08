@@ -5579,3 +5579,99 @@ def test_an_unparseable_directory_month_is_shown_as_written() -> None:
     assert render_site._month_label("2026-13") == "2026-13"
     assert render_site._month_label("whenever") == "whenever"
     assert render_site._month_label("2026-01") == "January 2026"
+
+
+def _realtime_rollup(**overrides: object) -> dict[str, object]:
+    payload: dict[str, object] = {
+        "configured_feed_records": 5,
+        "monitored_feed_records": 2,
+        "bands": {"reliable": 1, "mostly": 0, "spotty": 1},
+        "median_uptime_pct": 74.5,
+        "median_lag_seconds": 22,
+        "median_coverage_pct": 61.0,
+        "members": [
+            {
+                "id": "spotty-transit",
+                "name": "Spotty Transit",
+                "configured_kinds": ["trip_updates"],
+                "observations": 40,
+                "uptime_pct": 49.0,
+                "band": "spotty",
+                "median_lag_seconds": 44,
+                "median_coverage_pct": 61.0,
+                "first_ts": 1,
+                "last_ts": 2,
+            },
+            {
+                "id": "steady-transit",
+                "name": "Steady Transit",
+                "configured_kinds": ["trip_updates", "vehicle_positions"],
+                "observations": 40,
+                "uptime_pct": 100.0,
+                "band": "reliable",
+                "median_lag_seconds": None,
+                "median_coverage_pct": None,
+                "first_ts": 1,
+                "last_ts": 2,
+            },
+        ],
+    }
+    payload.update(overrides)
+    return {"realtime": payload}
+
+
+def test_realtime_section_reports_reachability_freshness_and_coverage() -> None:
+    html = render_site._rollup_realtime_section(_realtime_rollup())
+    assert "Realtime health" in html
+    assert "answered 49.0% of 40 checks" in html
+    assert "44s behind" in html
+    assert "61.0% of scheduled trips" in html
+
+
+def test_realtime_section_says_a_feed_without_a_timestamp_rather_than_showing_zero() -> None:
+    html = render_site._rollup_realtime_section(_realtime_rollup())
+    assert "no header timestamp" in html
+    assert "Steady Transit" in html
+
+
+def test_realtime_section_names_feeds_awaiting_a_first_sample_as_unmonitored() -> None:
+    html = render_site._rollup_realtime_section(_realtime_rollup())
+    assert "2 of the 5 feed records" in html
+    assert "The other 3 are waiting on their first sample and are not shown as failing." in html
+
+
+def test_realtime_section_omits_the_waiting_line_when_every_feed_is_monitored() -> None:
+    html = render_site._rollup_realtime_section(_realtime_rollup(configured_feed_records=2))
+    assert "waiting on their first sample" not in html
+    assert "All 2 feed records" in html
+
+
+def test_realtime_section_counts_a_single_check_in_the_singular() -> None:
+    rollup = _realtime_rollup()
+    rollup["realtime"]["members"][0]["observations"] = 1  # type: ignore[index]
+    html = render_site._rollup_realtime_section(rollup)
+    assert "of 1 check " in html
+    assert "of 1 checks" not in html
+
+
+def test_realtime_section_states_it_changes_no_grade() -> None:
+    html = render_site._rollup_realtime_section(_realtime_rollup())
+    assert "changes no grade" in html
+
+
+def test_realtime_section_lists_the_least_reliable_feed_first() -> None:
+    html = render_site._rollup_realtime_section(_realtime_rollup())
+    assert html.index("Spotty Transit") < html.index("Steady Transit")
+
+
+def test_a_program_with_no_monitored_realtime_renders_no_realtime_section() -> None:
+    assert render_site._rollup_realtime_section({}) == ""
+    assert render_site._rollup_realtime_section({"realtime": {}}) == ""
+    assert render_site._rollup_realtime_section(_realtime_rollup(members=[])) == ""
+
+
+def test_realtime_section_omits_medians_the_monitor_did_not_record() -> None:
+    html = render_site._rollup_realtime_section(
+        _realtime_rollup(median_uptime_pct=None, median_lag_seconds=None, median_coverage_pct=None)
+    )
+    assert "Across the monitored feeds" not in html
