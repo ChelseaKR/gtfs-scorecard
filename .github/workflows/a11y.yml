@@ -29,9 +29,14 @@ jobs:
         run: >-
           uv run python scripts/materialize_current_artifacts.py
           --artifacts-root ../data/artifacts
-      - name: Render the static site
+      - name: Rebuild rollups and render the static site
         working-directory: pipeline
-        run: uv run scorecard render-site
+        run: |
+          # Keep this pre-assembly boundary identical to pages.yml: committed
+          # rollups can predate a registry retirement even when the renderer's
+          # current index filtering is already correct.
+          uv run scorecard rollups
+          uv run scorecard render-site
       - name: Assemble the Pages site (mirrors pages.yml)
         run: |
           mkdir -p _site/data

@@ -3700,6 +3700,55 @@ function ntdSection(artifact) {
   </section>`;
 }
 
+/** Present current conformance guidance even when Pages hydrates a legacy artifact.
+ *  @param {any} mark @param {string} place */
+function presentedConformanceSummary(mark, place = "stop") {
+  if (!mark || typeof mark !== "object") return "";
+  if (
+    Number.isInteger(mark.version) &&
+    mark.version >= 2 &&
+    typeof mark.summary === "string" &&
+    mark.summary.trim()
+  ) {
+    return mark.summary;
+  }
+
+  // Schema 1.17 and earlier embedded "close" for every non-awarded result,
+  // including zero-of-three feeds. Pages can hydrate one of those legacy
+  // latest.json files before the next scoring/reindex run, so derive current
+  // guidance from the criteria instead of repeating stale stored copy.
+  const criteria = Array.isArray(mark.criteria) ? mark.criteria : [];
+  const expectedKeys = ["valid", "current", "accessible"];
+  if (
+    criteria.length !== expectedKeys.length ||
+    expectedKeys.some((key) => !criteria.some((criterion) => criterion?.key === key))
+  ) {
+    return "Conformance progress is shown by the criteria below.";
+  }
+
+  const metCount = criteria.filter((criterion) => criterion?.met === true).length;
+  if (metCount === expectedKeys.length) {
+    return `This feed earns the conformance mark: valid, current, and stating wheelchair access on nearly every ${place} and trip.`;
+  }
+
+  const gaps = criteria
+    .filter((criterion) => criterion?.met !== true)
+    .map((criterion) => String(criterion?.detail || "").trim())
+    .filter(Boolean)
+    .join(" ");
+  let lede;
+  if (metCount === 0) {
+    lede = "This feed does not meet the conformance requirements yet. Here is what the mark needs:";
+  } else {
+    const requirementsLeft = expectedKeys.length - metCount;
+    const count = requirementsLeft === 1 ? "One" : "Two";
+    const plural = requirementsLeft === 1 ? "" : "s";
+    const verb = requirementsLeft === 1 ? "remains" : "remain";
+    lede = `${count} requirement${plural} ${verb} for this feed to earn the conformance mark.`;
+  }
+  return gaps ? `${lede} ${gaps}` : lede;
+}
+
 /** Conformance mark: a pass/not-yet credential over the checks the grade uses.
  *  Reads the stored `conformance` block; "" if absent. Criteria are labelled in
  *  text, never by color alone.
@@ -3731,9 +3780,10 @@ function conformanceSection(artifact, agencyId, agencyName) {
     : "";
   const ferryOnly = modeLanguageKind(artifact) === "ferry";
   const place = ferryOnly ? "terminal" : "stop";
+  const summary = presentedConformanceSummary(mark, place);
   return `<section aria-labelledby="mark-h" class="feed-details reveal">
     <h2 class="section-title" id="mark-h">Conformance mark <span class="ntd-status ${headStatus}">${headLabel}</span></h2>
-    ${mark.summary ? `<p class="page-lede">${esc(String(mark.summary))}</p>` : ""}
+    ${summary ? `<p class="page-lede">${esc(summary)}</p>` : ""}
     ${seal}
     <dl class="standards-list">${rows}</dl>
     <p class="plain-summary"><strong>In plain words:</strong> earn this mark when your feed passes

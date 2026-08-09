@@ -61,6 +61,18 @@ def test_pages_materializes_current_dated_citations_without_full_archive_sync() 
     assert '--include "*/????-??-??.json"' not in workflow
 
 
+def test_pages_rebuilds_current_rollups_before_render_and_public_assembly() -> None:
+    for name in ("a11y.yml", "pages.yml"):
+        workflow = _workflow(name)
+
+        materialize = workflow.index("materialize_current_artifacts.py")
+        rollups = workflow.index("uv run scorecard rollups")
+        render = workflow.index("uv run scorecard render-site")
+        assembly = workflow.index("assemble_public_artifacts.sh")
+
+        assert materialize < rollups < render < assembly, name
+
+
 def test_browser_workflows_block_on_structural_seo_independent_of_perf_gate() -> None:
     upload_artifact = "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f"
     for name, artifact_name in (

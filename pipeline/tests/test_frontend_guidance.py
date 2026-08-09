@@ -133,6 +133,81 @@ process.stdout.write(JSON.stringify(cases.map(lede)));
     return json.loads(completed.stdout)  # type: ignore[no-any-return]
 
 
+def _presented_conformance_summaries(source: str) -> list[str]:
+    criteria = [
+        {"key": "valid", "met": False, "detail": "Validation has not run."},
+        {"key": "current", "met": False, "detail": "No service end date could be read."},
+        {
+            "key": "accessible",
+            "met": False,
+            "detail": "Accessibility completeness has not been measured.",
+        },
+    ]
+    cases = [
+        [{"version": 2, "summary": "Current versioned summary.", "criteria": criteria}, "stop"],
+        [
+            {
+                "summary": "This feed is close to the conformance mark.",
+                "criteria": criteria,
+            },
+            "stop",
+        ],
+        [
+            {
+                "version": 1,
+                "summary": "This feed is close to the conformance mark.",
+                "criteria": [
+                    {**criteria[0], "met": True},
+                    criteria[1],
+                    criteria[2],
+                ],
+            },
+            "stop",
+        ],
+        [
+            {
+                "version": 1,
+                "summary": "This feed is close to the conformance mark.",
+                "criteria": [
+                    {**criteria[0], "met": True},
+                    {**criteria[1], "met": True},
+                    criteria[2],
+                ],
+            },
+            "stop",
+        ],
+        [
+            {
+                "version": 1,
+                "summary": "This feed is close to the conformance mark.",
+                "criteria": [{**criterion, "met": True} for criterion in criteria],
+            },
+            "terminal",
+        ],
+        [{"version": 1, "summary": "This feed is close.", "criteria": []}, "stop"],
+    ]
+    harness = """
+const present = eval("(" + process.argv[1] + ")");
+const cases = JSON.parse(process.argv[2]);
+process.stdout.write(JSON.stringify(cases.map(([mark, place]) => present(mark, place))));
+"""
+    node = shutil.which("node")
+    assert node is not None
+    completed = subprocess.run(  # noqa: S603 - fixed executable and test-owned inputs
+        [
+            node,
+            "-e",
+            harness,
+            _function_source(source, "presentedConformanceSummary"),
+            json.dumps(cases),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return json.loads(completed.stdout)  # type: ignore[no-any-return]
+
+
 def test_spa_ntd_and_guidance_are_country_aware() -> None:
     app = (ROOT / "web" / "src" / "app.js").read_text()
     assert 'artifact.agency?.country || "US"' in app
@@ -195,6 +270,27 @@ def test_spa_feed_source_lede_never_infers_agency_ownership_from_fetch_success()
         "Based on the feed source on file; publisher ownership is not verified",
     ]
     assert "Based on the feed this agency publishes" not in app
+
+
+def test_spa_rederives_legacy_conformance_guidance_from_criteria() -> None:
+    app = (ROOT / "web" / "src" / "app.js").read_text()
+
+    summaries = _presented_conformance_summaries(app)
+
+    assert summaries == [
+        "Current versioned summary.",
+        "This feed does not meet the conformance requirements yet. Here is what the mark needs: "
+        "Validation has not run. No service end date could be read. "
+        "Accessibility completeness has not been measured.",
+        "Two requirements remain for this feed to earn the conformance mark. "
+        "No service end date could be read. Accessibility completeness has not been measured.",
+        "One requirement remains for this feed to earn the conformance mark. "
+        "Accessibility completeness has not been measured.",
+        "This feed earns the conformance mark: valid, current, and stating wheelchair access "
+        "on nearly every terminal and trip.",
+        "Conformance progress is shown by the criteria below.",
+    ]
+    assert all("close" not in summary.casefold() for summary in summaries[1:])
 
 
 def test_generated_compare_reader_archive_profile_resolver_fails_closed() -> None:

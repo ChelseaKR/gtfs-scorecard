@@ -185,6 +185,11 @@ jobs:
         id: assemble
         run: |
           cd pipeline
+          # A code-only deployment may hydrate rollups produced before a
+          # registry alias was retired. Rebuild them against the current
+          # canonical registry boundary before either their JSON or program
+          # pages cross into the deployed site.
+          uv run scorecard rollups
           uv run scorecard render-site
           cd ..
           mkdir -p _site/data
