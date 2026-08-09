@@ -386,6 +386,13 @@ def test_run_canary_writes_report_and_tolerates_failures(
         aid: Agency(id=aid, name=aid, static_gtfs_url=f"https://{aid}.example/gtfs.zip")
         for aid in ("alpha", "beta")
     }
+    agencies["retired"] = Agency(
+        id="retired",
+        name="Retired export",
+        static_gtfs_url="https://retired.example/gtfs.zip",
+        alias_of="alpha",
+        feed_status="deprecated",
+    )
     monkeypatch.setattr(canary, "AGENCIES", agencies)
 
     def fake_shadow(
@@ -402,6 +409,7 @@ def test_run_canary_writes_report_and_tolerates_failures(
     payload = json.loads(json_path.read_text())
     assert payload["agencies_compared"] == 1
     assert payload["skipped_agencies"] == ["beta"]  # one bad feed never sinks the run
+    assert "retired" not in md_path.read_text()
     assert payload["new_version"] == "8.1.0"
     assert "Skipped (fetch or validation failed): beta" in md_path.read_text()
 

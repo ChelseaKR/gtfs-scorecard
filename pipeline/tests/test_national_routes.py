@@ -1,11 +1,16 @@
-"""Tests for the national all-routes aggregation (pure, filesystem-only)."""
+"""Tests for national all-routes aggregation and its standalone build boundary."""
 
 from __future__ import annotations
 
 import json
+import runpy
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
+import pytest
+
+from scorecard_pipeline.config import AGENCIES, Agency
 from scorecard_pipeline.national_routes import (
     build_national_routes,
     feature_collection,
@@ -93,11 +98,14 @@ def test_summary_counts_by_grade_and_type(tmp_path: Path) -> None:
 
 def test_missing_grade_falls_back_to_unknown(tmp_path: Path) -> None:
     art = _artifacts(tmp_path)
-    result = build_national_routes(art, {})  # no catalog grades at all
-    for feature in result.features:
-        assert feature["properties"]["grade"] == "?"
-        # Name falls back to the agency id when the catalog has no entry.
-        assert feature["properties"]["agency_name"] == feature["properties"]["agency"]
+    result = build_national_routes(
+        art,
+        {"alpha": {"name": "Alpha Transit", "grade": "B"}},
+    )
+    beta = [feature for feature in result.features if feature["properties"]["agency"] == "beta"]
+    assert len(beta) == 1
+    assert beta[0]["properties"]["grade"] == "?"
+    assert beta[0]["properties"]["agency_name"] == "beta"
 
 
 def test_deterministic_ordering(tmp_path: Path) -> None:
@@ -108,6 +116,97 @@ def test_deterministic_ordering(tmp_path: Path) -> None:
     # Agencies in id order: all alpha routes precede beta.
     agencies = [f["properties"]["agency"] for f in first]
     assert agencies == sorted(agencies)
+
+
+def test_scoped_catalog_ids_exclude_retained_unlisted_geometry(tmp_path: Path) -> None:
+    art = _artifacts(tmp_path)
+
+    result = build_national_routes(
+        art,
+        {"alpha": {"name": "Alpha Transit", "grade": "B"}},
+        allowed_agency_ids={"alpha"},
+    )
+
+    assert {feature["properties"]["agency"] for feature in result.features} == {"alpha"}
+
+
+def test_retired_alias_geometry_is_not_a_current_national_route(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    art = tmp_path / "artifacts"
+    live = Agency("live", "Live Transit", "https://example.org/live.zip")
+    retired = Agency(
+        "retired",
+        "Retired Transit export",
+        "https://archive.example.org/retired.zip",
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    monkeypatch.setitem(AGENCIES, live.id, live)
+    monkeypatch.setitem(AGENCIES, retired.id, retired)
+    _write_geometry(art / live.id, [_route_feature("live-route", "Live", "Bus")])
+    _write_geometry(art / retired.id, [_route_feature("old-route", "Old", "Bus")])
+
+    result = build_national_routes(
+        art,
+        {
+            live.id: {"name": live.name, "grade": "A"},
+            retired.id: {"name": retired.name, "grade": "F"},
+        },
+    )
+
+    assert [feature["properties"]["agency"] for feature in result.features] == [live.id]
+    assert result.summary["agency_count"] == 1
+    assert (art / retired.id / "geometry.geojson").exists()
+
+
+def test_pmtiles_fallback_catalog_still_uses_canonical_registry(
+    tmp_path: Path,
+    isolated_repo_root: Path,
+) -> None:
+    art = tmp_path / "artifacts"
+    build_dir = tmp_path / "build"
+    (isolated_repo_root / "agencies.yaml").parent.mkdir(parents=True, exist_ok=True)
+    (isolated_repo_root / "agencies.yaml").write_text(
+        """agencies:
+  - id: live
+    name: Live Transit
+    static_gtfs_url: https://example.org/live.zip
+  - id: retired
+    name: Retired Transit export
+    static_gtfs_url: https://archive.example.org/retired.zip
+    alias_of: live
+    feed_status: deprecated
+"""
+    )
+    _write_geometry(art / "live", [_route_feature("live-route", "Live", "Bus")])
+    _write_geometry(art / "retired", [_route_feature("old-route", "Old", "Bus")])
+
+    script_path = Path(__file__).parents[1] / "scripts" / "build_national_pmtiles.py"
+    build_national_pmtiles = cast(
+        Callable[[list[str]], int],
+        runpy.run_path(str(script_path))["main"],
+    )
+    result = build_national_pmtiles(
+        [
+            "--artifacts",
+            str(art),
+            "--catalog",
+            str(tmp_path / "missing-catalog.json"),
+            "--build-dir",
+            str(build_dir),
+            "--geojsonl-only",
+        ]
+    )
+
+    assert result == 0
+    rows = [
+        json.loads(line)
+        for line in (build_dir / "national_routes.geojsonl").read_text().splitlines()
+    ]
+    assert [row["properties"]["agency"] for row in rows] == ["live"]
+    assert rows[0]["properties"]["grade"] == "?"
+    assert (art / "retired" / "geometry.geojson").exists()
 
 
 def test_unreadable_or_missing_geometry_is_skipped(tmp_path: Path) -> None:

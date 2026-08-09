@@ -10507,6 +10507,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     if rt_dir.exists():
         for hf in sorted(rt_dir.glob("*.json")):
             rt_id = hf.stem
+            # Health files are longitudinal evidence and intentionally survive
+            # registry retirement. This page and its raw monitored count describe
+            # only the current published catalog.
+            if rt_id not in published_ids:
+                continue
             health = summarize(load_observations(rt_id))
             if health.observations == 0:
                 continue
@@ -10654,7 +10659,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         c["id"]: {"name": str(c.get("name", c["id"])), "grade": str(c.get("grade", "?"))}
         for c in catalog
     }
-    national_routes = build_national_routes(art, route_grades)
+    national_routes = build_national_routes(
+        art,
+        route_grades,
+        allowed_agency_ids=published_ids,
+    )
     write(
         "routes/index.html",
         _render_routes_page(national_routes.summary),
@@ -10761,7 +10770,9 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         candidate_impact = weighted_impact(
             rid_records,
             rid,
-            quarantined_ntd_ids=duplicate_ntd_reporter_ids(AGENCIES.values()),
+            quarantined_ntd_ids=duplicate_ntd_reporter_ids(
+                agency for agency in AGENCIES.values() if agency.is_canonical_feed
+            ),
         )
         if candidate_impact.get("matched_ntd_reporters", 0) > 0:
             ridership_impact = candidate_impact

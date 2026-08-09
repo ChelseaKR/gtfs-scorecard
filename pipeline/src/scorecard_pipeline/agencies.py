@@ -388,7 +388,9 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             )
     # Resolve chains only after every direct target is known to exist. This
     # keeps A -> B -> missing a configuration error attributed to B instead of
-    # leaking a KeyError while walking A's chain.
+    # leaking a KeyError while walking A's chain. Every retained alias must end
+    # at one active, canonical record; otherwise a syntactically valid chain can
+    # redirect readers and current-corpus jobs to another retired endpoint.
     for agency in agencies:
         seen_aliases = {agency.id}
         target = agency.alias_of
@@ -400,7 +402,17 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                     agency_sources[agency.id],
                 )
             seen_aliases.add(target)
-            target = by_id[target].alias_of
+            target_agency = by_id[target]
+            if not target_agency.alias_of:
+                if not target_agency.is_canonical_feed:
+                    _fail(
+                        f"agency '{agency.id}'",
+                        "alias_of chain must terminate at an active canonical feed; "
+                        f"target {target!r} has feed_status {target_agency.feed_status!r}",
+                        agency_sources[agency.id],
+                    )
+                break
+            target = target_agency.alias_of
     return agencies
 
 

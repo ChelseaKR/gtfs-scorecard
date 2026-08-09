@@ -1106,6 +1106,13 @@ def test_render_retires_stale_f_scorecard_and_redirects_to_live_successor(
     }
     index_path.write_text(json.dumps(index))
 
+    # Longitudinal monitor evidence survives retirement too. It must remain on
+    # disk without inflating the current realtime API's raw monitored count.
+    rt_dir = isolated_repo_root / "data" / "rt-health"
+    retired_health = json.loads((rt_dir / "yolobus.json").read_text())
+    retired_health["agency_id"] = retired_id
+    (rt_dir / f"{retired_id}.json").write_text(json.dumps(retired_health))
+
     stale_page = isolated_repo_root / "web" / "agency" / retired_id
     (stale_page / "brief").mkdir(parents=True)
     (stale_page / "index.html").write_text("stale F scorecard")
@@ -1127,6 +1134,10 @@ def test_render_retires_stale_f_scorecard_and_redirects_to_live_successor(
     # Historical JSON remains available even though it is no longer a current
     # directory row or scorecard page.
     assert (retired_dir / "latest.json").exists()
+    assert (rt_dir / f"{retired_id}.json").exists()
+    realtime = json.loads((isolated_repo_root / "web" / "api" / "v1" / "realtime.json").read_text())
+    assert realtime["raw_monitored_feed_record_count"] == 1
+    assert all(record["id"] != retired_id for record in realtime["most_reliable"])
     sitemap = (isolated_repo_root / "web" / "sitemap.xml").read_text()
     assert f"/agency/{retired_id}/" not in sitemap
 

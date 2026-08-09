@@ -33,7 +33,7 @@ from .artifact_lifecycle import (
 )
 from .badge import render_badge, render_mark
 from .comparisons import reader_archive_profile
-from .config import Agency, artifacts_dir, repo_root
+from .config import Agency, artifacts_dir, current_agency_ids, repo_root
 from .effort_calibration import (
     CALIBRATION_SCHEMA_NOTE,
     agency_episodes,
@@ -562,7 +562,8 @@ def registered_agency_dirs(root: Path, *, log_skipped: bool = False) -> list[Pat
             len(noncanonical),
             ", ".join(noncanonical[:10]) + (", ..." if len(noncanonical) > 10 else ""),
         )
-    return [p for p in dirs if p.name in AGENCIES and AGENCIES[p.name].is_canonical_feed]
+    current_ids = set(current_agency_ids(p.name for p in dirs))
+    return [p for p in dirs if p.name in current_ids]
 
 
 def _dated_reindex_artifacts(

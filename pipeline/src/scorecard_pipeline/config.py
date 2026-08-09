@@ -8,6 +8,7 @@ Feed URLs and licenses are documented in docs/feeds.md.
 from __future__ import annotations
 
 import os
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -126,6 +127,25 @@ class Agency:
 # Endpoints verified against the Mobility Database and transit.land;
 # see docs/feeds.md for sources, licenses, and polling etiquette.
 AGENCIES: dict[str, Agency] = {}
+
+
+def current_agency_ids(agency_ids: Iterable[str]) -> list[str]:
+    """Keep ids that belong to active canonical records in the loaded registry.
+
+    Current-corpus jobs use this boundary so retained alias artifacts stay
+    available for historical reproduction without being counted, monitored, or
+    published beside their live successor. An empty process-global registry is
+    the established library/test compatibility mode: callers may operate on a
+    synthetic artifact tree without first loading repository configuration.
+    """
+    ids = list(agency_ids)
+    if not AGENCIES:
+        return ids
+    return [
+        agency_id
+        for agency_id in ids
+        if (agency := AGENCIES.get(agency_id)) is not None and agency.is_canonical_feed
+    ]
 
 
 def register(agency: Agency) -> None:

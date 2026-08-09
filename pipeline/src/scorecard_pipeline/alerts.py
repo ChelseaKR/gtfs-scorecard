@@ -39,7 +39,7 @@ from urllib.parse import urlencode
 
 from .anomaly import detect_anomalies
 from .comparisons import current_producer_contract_suffix
-from .config import artifacts_dir
+from .config import artifacts_dir, current_agency_ids
 from .instance import BASE_URL as SCORECARD_BASE
 from .lapse_risk import TIER_ELEVATED, TIER_HIGH
 from .lapse_risk import assess as assess_lapse_risk
@@ -356,7 +356,13 @@ def build_digest(  # noqa: C901
     items: list[AlertItem] = []
 
     index = _load_json(root / "index.json") or {"agencies": {}}
-    for agency_id, entry in sorted(index.get("agencies", {}).items()):
+    indexed = index.get("agencies", {})
+    current_ids = set(current_agency_ids(indexed))
+    for agency_id, entry in sorted(indexed.items()):
+        # A stale committed/hydrated index may predate the retirement. Keep its
+        # history on disk, but do not send a new alert for the alias.
+        if agency_id not in current_ids:
+            continue
         history = entry.get("history", [])
         comparable_history = current_producer_contract_suffix(history)
         latest = _load_json(root / agency_id / "latest.json")

@@ -29,12 +29,12 @@ import yaml
 from . import SCHEMA_VERSION
 from .alerts import build_digest
 from .comparisons import build_comparison_cohort, reader_archive_profile
-from .config import artifacts_dir, repo_root
+from .config import artifacts_dir, current_agency_ids, repo_root
 from .identity import resolve_published_agency_name
 from .location import country_name, normalize_country_code
 from .metrics import expiry_status
 from .ntd import assess_shapes_readiness
-from .publish import RESERVED_ARTIFACT_DIRS, _write_json
+from .publish import _write_json, registered_agency_dirs
 from .ridership import annual_trips_for, duplicate_ntd_reporter_ids, normalize_ntd_id
 
 
@@ -50,21 +50,13 @@ class Rollup:
 
 
 def _available_agency_ids() -> list[str]:
-    # Bounded to the registry: an S3-hydrated tree can hold directories for
-    # agencies no registry version lists, and a rollup must not count those.
-    from .config import AGENCIES
-
     root = artifacts_dir()
     if not root.exists():
         return []
-    return sorted(
-        p.name
-        for p in root.iterdir()
-        if p.is_dir()
-        and p.name not in RESERVED_ARTIFACT_DIRS
-        and (p / "latest.json").exists()
-        and (not AGENCIES or p.name in AGENCIES)
-    )
+    # The artifacts store is additive. Retired aliases keep their dated and
+    # latest evidence, but current program views list only the registry's active
+    # canonical records.
+    return [p.name for p in registered_agency_dirs(root) if (p / "latest.json").exists()]
 
 
 def _parse_rollup_country(entry: dict[str, Any]) -> str | None:
@@ -180,12 +172,17 @@ def resolve_member_ids(rollup: Rollup) -> list[str]:
     by the rollup artifact build and the portfolio digest so a cohort means the
     same set of agencies in both."""
     if rollup.member_ids:
-        return list(rollup.member_ids)
-    if rollup.state:
-        return _agency_ids_in_state(rollup.state)
-    if rollup.country:
-        return _agency_ids_in_country(rollup.country)
-    return _available_agency_ids()
+        resolved = list(rollup.member_ids)
+    elif rollup.state:
+        resolved = _agency_ids_in_state(rollup.state)
+    elif rollup.country:
+        resolved = _agency_ids_in_country(rollup.country)
+    else:
+        resolved = _available_agency_ids()
+    # Explicit rollup membership can outlive a registry retirement too. Apply
+    # the same current-corpus boundary after every selector while preserving the
+    # empty-registry compatibility used by library callers and fixtures.
+    return current_agency_ids(resolved)
 
 
 def _shapes_status(latest: dict[str, Any]) -> str | None:
@@ -330,7 +327,9 @@ def build_rollup(
     from .config import AGENCIES
 
     ntd_id_counts = Counter(ntd_id_by_member.values())
-    ambiguous_ntd_ids = duplicate_ntd_reporter_ids(AGENCIES.values())
+    ambiguous_ntd_ids = duplicate_ntd_reporter_ids(
+        agency for agency in AGENCIES.values() if agency.is_canonical_feed
+    )
     ambiguous_ntd_ids.update(
         ntd_id for ntd_id, member_count in ntd_id_counts.items() if member_count > 1
     )
@@ -422,7 +421,9 @@ def _rt_kinds_for_root(root: str) -> tuple[tuple[str, tuple[str, ...]], ...]:
     except AgencyConfigError:
         return ()
     return tuple(
-        (agency.id, tuple(sorted(agency.rt_urls))) for agency in agencies if agency.rt_urls
+        (agency.id, tuple(sorted(agency.rt_urls)))
+        for agency in agencies
+        if agency.is_canonical_feed and agency.rt_urls
     )
 
 

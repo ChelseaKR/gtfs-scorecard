@@ -146,6 +146,61 @@ def test_targeted_activation_rejects_retired_alias(
     assert "retired/noncanonical" in capsys.readouterr().err
 
 
+def test_rt_health_batch_excludes_retired_alias_but_keeps_explicit_reproduction(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import cli, rt_health
+    from scorecard_pipeline.config import AGENCIES, Agency
+
+    rt_urls = {"trip_updates": "https://example.org/trip-updates.pb"}
+    live = Agency(
+        id="live",
+        name="Live Transit",
+        static_gtfs_url="https://example.org/live.zip",
+        rt_urls=rt_urls,
+    )
+    retired = Agency(
+        id="retired",
+        name="Retired Transit export",
+        static_gtfs_url="https://archive.example.org/retired.zip",
+        rt_urls=rt_urls,
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    monkeypatch.setitem(AGENCIES, live.id, live)
+    monkeypatch.setitem(AGENCIES, retired.id, retired)
+
+    sampled: list[str] = []
+    recorded: list[str] = []
+
+    def fake_capture(agency: Agency, *_args: object, **_kwargs: object) -> object:
+        sampled.append(agency.id)
+        return object()
+
+    observation = argparse.Namespace(
+        kinds_reachable=1,
+        kinds_total=1,
+        worst_lag_seconds=5,
+    )
+    monkeypatch.setattr(cli, "capture_window", fake_capture)
+    monkeypatch.setattr(rt_health, "observe", lambda *_args, **_kwargs: observation)
+    monkeypatch.setattr(
+        rt_health,
+        "append_observation",
+        lambda agency_id, _observation: recorded.append(agency_id),
+    )
+    args = argparse.Namespace(agency=None, samples=1, interval=0)
+
+    assert cli._cmd_rt_health(args, argparse.ArgumentParser()) == 0
+    assert sampled == [live.id]
+    assert recorded == [live.id]
+
+    args.agency = retired.id
+    assert cli._cmd_rt_health(args, argparse.ArgumentParser()) == 0
+    assert sampled == [live.id, retired.id]
+    assert recorded == [live.id, retired.id]
+
+
 def test_prune_reports_orphans_without_deleting(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
