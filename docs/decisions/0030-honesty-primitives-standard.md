@@ -31,8 +31,8 @@ scrutiny (`docs/ideation/03-expansions.md`, EXP-17):
   (`CLAUDE.md`, "Writing style").
 
 `docs/ideation/03-expansions.md` (EXP-17) names three sibling repos —
-`tods-validate`, `a private sibling project`, `outcome-receipts` — that face the identical
-"state it, do not certify it" problem: each produces a machine judgment about
+`tods-validate`, a private sibling project, and `outcome-receipts` — that face
+the identical "state it, do not certify it" problem: each produces a machine judgment about
 something (a validator run, an eval score, a receipt) that is easy to
 over-claim as certification rather than a measurement with edges. This repo
 already paid down the hard design cost of that problem. Leaving the pattern
@@ -40,8 +40,7 @@ implicit in `score.py`/`publish.py` means each sibling repo either re-derives
 it from scratch or, worse, ships a differently-shaped and differently-honest
 version of the same idea.
 
-The shared `STANDARDS` repo (`/Users/chelsea/portfolio/STANDARDS`, remote
-`portfolio-standards`) is the portfolio's existing mechanism for exactly this:
+The shared standards project is the portfolio's existing mechanism for exactly this:
 a cross-cutting rigor stated once, referenced by every repo, with per-repo
 values recorded locally (`STANDARDS/README.md`, "reference, don't repeat").
 It is a separate git repository with its own release cadence — repos pin a
