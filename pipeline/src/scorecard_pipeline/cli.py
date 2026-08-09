@@ -2495,16 +2495,22 @@ def _cmd_publish_artifacts(args: argparse.Namespace, parser: argparse.ArgumentPa
             excludes=args.exclude,
             cache_control=args.cache_control,
             workers=args.workers,
+            retirement_manifest=args.retirement_manifest,
+            protected_agency_ids={
+                agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed
+            },
         )
     except PublishError as exc:
         parser.error(str(exc))
     log.info(
-        "Published %d of %d local objects to s3://%s/%s (%d unchanged, %d objects listed).",
+        "Published %d of %d local objects to s3://%s/%s "
+        "(%d unchanged, %d retired pointers, %d objects listed).",
         result.uploaded,
         result.considered,
         args.bucket,
         args.prefix.strip("/"),
         result.skipped,
+        result.retired,
         result.listed,
     )
     return 0
@@ -2516,6 +2522,12 @@ def _cmd_activation_targets(args: argparse.Namespace, parser: argparse.ArgumentP
 
     try:
         targets = parse_activation_targets(args.ids, AGENCIES)
+        noncurrent = [target for target in targets if not AGENCIES[target].is_canonical_feed]
+        if noncurrent:
+            raise ActivationTargetError(
+                "retired/noncanonical agency id(s) cannot be activated as current: "
+                + ", ".join(noncurrent)
+            )
     except ActivationTargetError as exc:
         parser.error(str(exc))
     output = "".join(f"{target}\n" for target in targets)
@@ -3222,6 +3234,14 @@ def main(argv: list[str] | None = None) -> int:
     )
     publish_artifacts.add_argument(
         "--cache-control", help="Cache-Control header to set on every uploaded object"
+    )
+    publish_artifacts.add_argument(
+        "--retirement-manifest",
+        type=Path,
+        help=(
+            "validated local manifest of retired agency ids whose mutable current "
+            "artifacts must be deleted; dated history is never deleted"
+        ),
     )
     publish_artifacts.add_argument(
         "--workers",

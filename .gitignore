@@ -9,6 +9,9 @@ data/raw-archive/
 # corrected feeds the autofix step writes per agency: binary, regenerated each
 # run, and synced to the CDN by the workflow, so they stay out of git history
 data/artifacts/**/corrected.zip
+# Generated control plane for removing retired aliases' mutable S3 pointers.
+data/artifacts/.retired-current-artifacts.json
+data/artifacts/.retired-current-artifacts.json.tmp
 
 # python
 __pycache__/

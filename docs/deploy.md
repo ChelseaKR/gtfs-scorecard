@@ -109,6 +109,16 @@ the same requests but would silently stop publishing a re-score whose length
 did not change, so it is not used anywhere and a test in
 `pipeline/tests/test_workflow_safety.py` keeps it out.
 
+The same command applies the generated
+`data/artifacts/.retired-current-artifacts.json` control manifest. Reindex
+writes only sorted retired agency ids; the publisher expands them into the
+fixed mutable names `latest.json`, `badge.json`, `badge.svg`,
+`conformance.json`, `mark.svg`, and `geometry.geojson`. It rejects a manifest
+that names a current canonical id or conflicts with a local file. This is not a
+general `--delete`: date-shaped score evidence and every other S3 key remain
+outside the deletion surface. Daily, intraday, and targeted activation runs
+all apply the same cleanup while holding the shared artifact-publish lock.
+
 A useful side effect: the bucket's `expire-dated-artifacts` lifecycle rule
 matches objects tagged `artifact-class=dated`, and rewriting an object drops
 its tags and restarts its age. While every dated artifact was rewritten daily,

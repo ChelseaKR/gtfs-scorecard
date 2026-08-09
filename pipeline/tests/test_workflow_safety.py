@@ -205,6 +205,7 @@ def test_daily_publish_compares_content_not_timestamps() -> None:
     assert "scorecard publish-artifacts" in workflow
     assert "--root data/artifacts" in workflow
     assert "--prefix data/artifacts" in workflow
+    assert "--retirement-manifest data/artifacts/.retired-current-artifacts.json" in workflow
     # The mtime-driven upload of the whole public tree is gone.
     assert 'aws s3 sync data/artifacts "s3://' not in workflow
     # The same private files stay out of the published tree.
@@ -243,6 +244,7 @@ def test_intraday_publish_compares_content_not_timestamps() -> None:
     assert "scorecard publish-artifacts" in workflow
     assert '--root "$public_stage"' in workflow
     assert "--prefix data/artifacts" in workflow
+    assert "--retirement-manifest data/artifacts/.retired-current-artifacts.json" in workflow
     # The mtime-driven upload of the staged public tree is gone.
     assert 'aws s3 sync "$public_stage"' not in workflow
     # The same private files stay out of the published tree.

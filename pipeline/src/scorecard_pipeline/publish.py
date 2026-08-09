@@ -25,6 +25,12 @@ from . import (
     SCORING_PROFILE_ID,
     SCORING_PROFILE_PROVENANCE,
 )
+from .artifact_lifecycle import (
+    RESERVED_ARTIFACT_DIRS as _RESERVED_ARTIFACT_DIRS,
+)
+from .artifact_lifecycle import (
+    reconcile_retired_current_artifacts,
+)
 from .badge import render_badge, render_mark
 from .comparisons import reader_archive_profile
 from .config import Agency, artifacts_dir, repo_root
@@ -47,12 +53,8 @@ from .site_shell import CATEGORY_LABELS
 
 log = logging.getLogger(__name__)
 
-# Subdirectories of data/artifacts that hold published aggregates, not agencies.
-# They have no per-agency latest.json/dated artifact shape, so anything walking
-# the artifacts tree as if every dir were an agency must skip them. "run" holds
-# the FIX-11 pipeline run-health summary (run_summary.py), merged there by
-# `scorecard run-summary merge` in the collect job.
-RESERVED_ARTIFACT_DIRS = frozenset({"rollups", "changes", "run"})
+# Backwards-compatible public import used by walkers across the package.
+RESERVED_ARTIFACT_DIRS = _RESERVED_ARTIFACT_DIRS
 
 # Measurement-confidence levels, weakest first (EXP-01). Words, never a letter
 # or a number, so the read cannot be mistaken for a second grade.
@@ -326,16 +328,36 @@ def _with_current_conformance(artifact: dict[str, Any]) -> dict[str, Any]:
 
 
 def publish(artifact: dict[str, Any]) -> Path:
-    """Validate the artifact against the published schema, then write the dated
-    artifact, refresh latest.json, and update the index."""
+    """Write historical evidence and, only for a current feed, current pointers.
+
+    Retired registry aliases remain explicitly scoreable for reproduction, but
+    that operation writes only its date-shaped evidence. It cannot recreate a
+    ``latest.json``, badge, conformance credential, or current geometry after a
+    curator has retired the feed.
+    """
+    from .config import AGENCIES
+
     artifact = _with_current_conformance(artifact)
     validate_artifact(artifact)
     agency_id = str(artifact["agency"]["id"])
     date = str(artifact["snapshot_date"])
     agency_dir = artifacts_dir() / agency_id
+    agency = AGENCIES.get(agency_id)
+
+    if agency is not None and not agency.is_canonical_feed:
+        # Run after geometry generation and before any mutable publication.
+        # This removes the current geometry that run_agency may just have
+        # produced for an explicitly rescored retired alias and emits the exact
+        # S3 cleanup plan. Routine canonical scoring leaves the corpus-wide walk
+        # to reindex instead of repeating it once per feed.
+        reconcile_retired_current_artifacts(artifacts_dir(), AGENCIES)
 
     dated = agency_dir / f"{date}.json"
     _write_json(dated, artifact)
+    if agency is not None and not agency.is_canonical_feed:
+        _update_index(agency_id, artifact)
+        return dated
+
     _write_json(agency_dir / "latest.json", artifact)
     _write_badge(agency_dir, artifact)
     _write_mark(agency_dir, artifact)
@@ -685,6 +707,12 @@ def rebuild_index() -> Path:
     if not root.exists():
         _write_json(root / "index.json", index)
         return root / "index.json"
+
+    # Reindex is the lifecycle reconciliation point for all publish workflows.
+    # It strips locally hydrated current pointers for retired/unregistered ids
+    # and writes an exact deletion manifest for the additive S3 publisher. Dated
+    # evidence remains untouched and may continue to be fetched by date.
+    reconcile_retired_current_artifacts(root, AGENCIES)
 
     # Finding-clearance episodes accumulate across every agency in this one walk,
     # so the corpus-level effort-calibration.json costs no extra artifact reads

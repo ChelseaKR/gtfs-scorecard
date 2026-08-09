@@ -9,6 +9,7 @@ fixed-width timestamp advancing) must still be published.
 from __future__ import annotations
 
 import hashlib
+import json
 import threading
 from pathlib import Path
 from typing import Any
@@ -16,6 +17,7 @@ from typing import Any
 import pytest
 
 from scorecard_pipeline import s3_publish
+from scorecard_pipeline.artifact_lifecycle import MUTABLE_PUBLIC_ARTIFACT_NAMES
 from scorecard_pipeline.s3_publish import (
     LocalFile,
     PublishError,
@@ -66,8 +68,11 @@ class _FakeS3:
     def __init__(self, objects: dict[str, bytes] | None = None) -> None:
         self.objects: dict[str, bytes] = dict(objects or {})
         self.puts: list[tuple[str, bytes, dict[str, Any]]] = []
+        self.deletes: list[list[str]] = []
         self.etag_overrides: dict[str, str] = {}
         self.fail_keys: set[str] = set()
+        self.fail_deletes = False
+        self.delete_errors: list[dict[str, str]] = []
         self.list_calls = 0
         self._lock = threading.Lock()
 
@@ -85,6 +90,18 @@ class _FakeS3:
             self.etag_overrides.pop(key, None)
             self.puts.append((key, body, metadata))
         return {}
+
+    def delete_objects(self, **kwargs: Any) -> dict[str, Any]:
+        assert kwargs["Bucket"] == BUCKET
+        keys = [str(item["Key"]) for item in kwargs["Delete"]["Objects"]]
+        with self._lock:
+            if self.fail_deletes:
+                raise RuntimeError("AccessDenied")
+            self.deletes.append(keys)
+            for key in keys:
+                self.objects.pop(key, None)
+                self.etag_overrides.pop(key, None)
+        return {"Errors": list(self.delete_errors)} if self.delete_errors else {}
 
     def get_paginator(self, operation_name: str) -> _FakePaginator:
         assert operation_name == "list_objects_v2"
@@ -115,6 +132,12 @@ def _minimal_registry(repo: Path) -> None:
         "    name: Unitrans\n"
         "    static_gtfs_url: https://example.org/gtfs.zip\n"
     )
+
+
+def _retirement_manifest(tmp_path: Path, agency_ids: list[str]) -> Path:
+    path = tmp_path / "retirements.json"
+    path.write_text(json.dumps({"schema_version": 1, "agency_ids": agency_ids}))
+    return path
 
 
 def test_a_same_length_content_change_is_still_published(tmp_path: Path) -> None:
@@ -236,7 +259,7 @@ def test_excluded_paths_are_never_published(tmp_path: Path) -> None:
     assert result.considered == 1
 
 
-def test_publishing_is_additive_and_deletes_nothing(tmp_path: Path) -> None:
+def test_publishing_without_a_retirement_plan_is_additive(tmp_path: Path) -> None:
     root = tmp_path / "artifacts"
     retired = f"{PREFIX}/unitrans/2026-01-01.json"
     client = _FakeS3({retired: b'{"snapshot_date": "2026-01-01"}'})
@@ -245,6 +268,117 @@ def test_publishing_is_additive_and_deletes_nothing(tmp_path: Path) -> None:
     _publish(client, root)
 
     assert retired in client.objects
+
+
+def test_retirement_manifest_deletes_only_mutable_current_objects(tmp_path: Path) -> None:
+    root = tmp_path / "artifacts"
+    agency_id = "retired-demo"
+    dated_key = f"{PREFIX}/{agency_id}/2026-01-01.json"
+    unrelated_key = f"{PREFIX}/{agency_id}/future-private.json"
+    current_keys = {f"{PREFIX}/{agency_id}/{name}" for name in MUTABLE_PUBLIC_ARTIFACT_NAMES}
+    objects = {
+        **{key: b"stale current" for key in current_keys},
+        dated_key: b'{"snapshot_date": "2026-01-01"}',
+        unrelated_key: b"not part of retirement",
+    }
+    client = _FakeS3(objects)
+    _write(root, f"{agency_id}/2026-01-01.json", '{"snapshot_date": "2026-01-01"}')
+    manifest = _retirement_manifest(tmp_path, [agency_id])
+
+    result = _publish(client, root, retirement_manifest=manifest)
+
+    assert set(client.deletes[0]) == current_keys
+    assert current_keys.isdisjoint(client.objects)
+    assert dated_key in client.objects
+    assert unrelated_key in client.objects
+    assert result.retired == len(MUTABLE_PUBLIC_ARTIFACT_NAMES)
+
+    # A second pass sees no current version and creates no redundant delete
+    # markers in the versioned bucket.
+    client.deletes.clear()
+    second = _publish(client, root, retirement_manifest=manifest)
+    assert client.deletes == []
+    assert second.retired == 0
+
+
+def test_retirement_rejects_a_local_current_pointer_before_deleting(tmp_path: Path) -> None:
+    root = tmp_path / "artifacts"
+    _write(root, "retired-demo/latest.json", '{"grade": "F"}')
+    client = _FakeS3({f"{PREFIX}/retired-demo/latest.json": b'{"grade": "F"}'})
+    manifest = _retirement_manifest(tmp_path, ["retired-demo"])
+
+    with pytest.raises(PublishError, match="still contains a current artifact"):
+        _publish(client, root, retirement_manifest=manifest)
+
+    assert client.deletes == []
+
+
+def test_retirement_rejects_current_canonical_ids(tmp_path: Path) -> None:
+    root = tmp_path / "artifacts"
+    root.mkdir()
+    client = _FakeS3()
+    manifest = _retirement_manifest(tmp_path, ["unitrans"])
+
+    with pytest.raises(PublishError, match="current canonical agency"):
+        _publish(
+            client,
+            root,
+            retirement_manifest=manifest,
+            protected_agency_ids={"unitrans"},
+        )
+
+    assert client.deletes == []
+
+
+def test_retirement_manifest_cannot_name_an_arbitrary_path(tmp_path: Path) -> None:
+    root = tmp_path / "artifacts"
+    root.mkdir()
+    client = _FakeS3()
+    manifest = _retirement_manifest(tmp_path, ["../unitrans"])
+
+    with pytest.raises(PublishError, match="unsafe agency id"):
+        _publish(client, root, retirement_manifest=manifest)
+
+    assert client.deletes == []
+
+
+def test_retirement_manifest_cannot_target_a_reserved_namespace(tmp_path: Path) -> None:
+    root = tmp_path / "artifacts"
+    root.mkdir()
+    client = _FakeS3()
+    manifest = _retirement_manifest(tmp_path, ["changes"])
+
+    with pytest.raises(PublishError, match="reserved artifact namespace"):
+        _publish(client, root, retirement_manifest=manifest)
+
+    assert client.deletes == []
+
+
+def test_local_retirement_control_manifest_is_never_uploaded(tmp_path: Path) -> None:
+    root = tmp_path / "artifacts"
+    root.mkdir()
+    manifest = root / ".retired-current-artifacts.json"
+    manifest.write_text(json.dumps({"schema_version": 1, "agency_ids": []}))
+    (root / ".retired-current-artifacts.json.tmp").write_text("interrupted write")
+    client = _FakeS3()
+
+    result = _publish(client, root, retirement_manifest=manifest)
+
+    assert result.considered == 0
+    assert client.puts == []
+
+
+def test_a_failed_retirement_fails_before_upload(tmp_path: Path) -> None:
+    root = tmp_path / "artifacts"
+    _write(root, "live/latest.json", '{"grade": "B"}')
+    client = _FakeS3({f"{PREFIX}/retired-demo/latest.json": b'{"grade": "F"}'})
+    client.fail_deletes = True
+    manifest = _retirement_manifest(tmp_path, ["retired-demo"])
+
+    with pytest.raises(PublishError, match="could not retire current artifacts"):
+        _publish(client, root, retirement_manifest=manifest)
+
+    assert client.puts == []
 
 
 def test_uploads_carry_the_cache_control_and_content_type(tmp_path: Path) -> None:
@@ -332,6 +466,9 @@ def test_listing_skips_entries_without_a_key() -> None:
 
         def put_object(self, **kwargs: Any) -> dict[str, Any]:  # pragma: no cover - unused
             raise AssertionError("no upload expected")
+
+        def delete_objects(self, **kwargs: Any) -> dict[str, Any]:  # pragma: no cover - unused
+            raise AssertionError("no deletion expected")
 
     assert s3_publish.remote_objects(_KeylessClient(), BUCKET, PREFIX) == {}
 

@@ -736,6 +736,11 @@ optional; with neither, it just reports.
   `latest.json`, `catalog.json`, and `directory.json` are rewritten when a
   scoring run completes; `/api/v1/status.json` and `/api/v1/run-status.json`
   disclose the observed freshness and latest completed run.
+- When a feed record becomes a retired alias, its unversioned current files
+  (`latest.json`, badges, conformance files, and route geometry) are removed
+  and return not found. Its date-shaped score snapshots remain historical
+  evidence under the normal retention policy. Consumers must use the current
+  index rather than treating an old agency slug as a standing current record.
 - Each row's `retrieved_at` (and a scorecard's `generated_at`) is the authority
   on freshness; read it rather than re-fetching on a loop.
 

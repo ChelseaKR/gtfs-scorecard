@@ -8,6 +8,10 @@ from pathlib import Path
 
 import pytest
 
+from scorecard_pipeline.artifact_lifecycle import (
+    MUTABLE_PUBLIC_ARTIFACT_NAMES,
+    retirement_manifest_path,
+)
 from scorecard_pipeline.config import Agency, artifacts_dir, register
 from scorecard_pipeline.fetch import FetchResult
 from scorecard_pipeline.metrics import CategoryResult
@@ -76,6 +80,11 @@ def test_reindex_skips_directories_absent_from_registry(
     rebuild_index()
     index = json.loads((artifacts_dir() / "index.json").read_text())
     assert set(index["agencies"]) == {"a"}
+    ghost_dir = artifacts_dir() / "ghost"
+    assert (ghost_dir / "2026-06-12.json").exists()
+    assert not (ghost_dir / "latest.json").exists()
+    manifest = json.loads(retirement_manifest_path(artifacts_dir()).read_text())
+    assert manifest["agency_ids"] == ["ghost"]
 
 
 def test_retired_f_alias_is_not_current_alongside_live_successor(
@@ -116,22 +125,28 @@ def test_retired_f_alias_is_not_current_alongside_live_successor(
         ),
     )
 
+    retired_dir = artifacts_dir() / retired_id
+    for name in MUTABLE_PUBLIC_ARTIFACT_NAMES:
+        (retired_dir / name).write_text(f"stale {name}")
+
     rebuild_index()
 
     current = json.loads((artifacts_dir() / "index.json").read_text())
     assert set(current["agencies"]) == {successor_id}
-    # Raw dated and latest artifacts remain available for exact historical
-    # reproduction; only their membership in the current catalog changes.
-    retired_dir = artifacts_dir() / retired_id
+    # Dated evidence remains available, while every mutable current-looking
+    # API/asset pointer is removed locally and named in the S3 cleanup plan.
     assert (retired_dir / "2026-06-12.json").exists()
-    assert (retired_dir / "latest.json").exists()
+    assert all(not (retired_dir / name).exists() for name in MUTABLE_PUBLIC_ARTIFACT_NAMES)
+    manifest = json.loads(retirement_manifest_path(artifacts_dir()).read_text())
+    assert manifest == {"agency_ids": [retired_id], "schema_version": 1}
 
-    # A deliberate single-feed reproduction can refresh the retired evidence,
-    # but incremental publishing must not resurrect it in index.json.
+    # A deliberate single-feed reproduction can add dated evidence, but cannot
+    # resurrect any mutable pointer or its index membership.
     _publish(retired_id, dt.date(2026, 6, 13), 31.2)
     after_reproduction = json.loads((artifacts_dir() / "index.json").read_text())
     assert set(after_reproduction["agencies"]) == {successor_id}
     assert (retired_dir / "2026-06-13.json").exists()
+    assert all(not (retired_dir / name).exists() for name in MUTABLE_PUBLIC_ARTIFACT_NAMES)
 
 
 def test_reindex_indexes_everything_when_no_registry_is_loaded() -> None:

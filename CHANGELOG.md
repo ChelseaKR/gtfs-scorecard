@@ -35,6 +35,16 @@ the declared public surface).
   and reindex migrates mutable `latest.json`/`conformance.json` views without
   rewriting dated historical evidence, so unchanged or unreachable feeds do
   not preserve the old wording indefinitely.
+- **Retiring a feed alias removed it from the catalog but left its mutable
+  artifact URLs live.** Reindex skipped noncanonical directories without
+  removing `latest.json`, badges, conformance credentials, or route geometry;
+  the additive S3 publisher then preserved those objects, and an explicit
+  historical rescore could refresh them. Retirement now keeps only
+  date-shaped score evidence, removes every current-looking file locally, and
+  emits an id-only deletion manifest that all three production publishers
+  apply. The S3 cleanup expands only the fixed public filename allowlist, rejects
+  canonical ids and conflicting local files, and cannot delete dated history.
+  Targeted activation also rejects retired ids before scoring.
 - **Scorecard provenance copy inferred agency ownership from a successful
   configured-URL fetch (#245).** The registry already records `is_official` as
   true, false, or unknown, but artifact publication dropped it and both page

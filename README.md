@@ -91,10 +91,12 @@ uv sync
 uv run scorecard run --all
 ```
 
-This fetches today's snapshot of every configured feed, validates and scores it,
-and writes artifacts to `data/artifacts/<agency>/<date>.json` plus a
-`latest.json` and a cross-agency `index.json`. Re-running a day is
-idempotent. Checks (from the repo root; mirrors the CI gate):
+This fetches today's snapshot of every current configured feed, validates and
+scores it, and writes artifacts to `data/artifacts/<agency>/<date>.json` plus a
+`latest.json` and a cross-agency `index.json`. Retired aliases are excluded
+from the batch; an explicit historical rescore writes a dated record without
+recreating mutable current files. Re-running a day is idempotent. Checks (from
+the repo root; mirrors the CI gate):
 
 ```sh
 make verify

@@ -183,10 +183,13 @@ jobs:
           # own retention. `publish-artifacts` (the same publisher the daily
           # collect job uses, .github/workflows/scorecard.yml) compares the
           # local MD5 against each object's ETag and uploads on any doubt.
-          # Additive, like the sync it replaces: nothing is deleted.
+          # Dated evidence remains additive. Reindex's retirement manifest is
+          # the bounded exception and can delete only fixed mutable filenames
+          # for ids no longer in the current registry catalog.
           uv run --project pipeline --with boto3 scorecard publish-artifacts \
             --root "$public_stage" \
             --bucket "$ARTIFACTS_BUCKET" --prefix data/artifacts \
+            --retirement-manifest data/artifacts/.retired-current-artifacts.json \
             --exclude "*/validator-cache.json" --exclude "*/structure.json" \
             --exclude "*/fixlog.json" --exclude "*/corrected.zip" \
             --cache-control "max-age=300"

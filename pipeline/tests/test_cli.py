@@ -116,6 +116,36 @@ def test_run_all_excludes_retired_alias_but_keeps_explicit_reproduction(
     assert scored == [live.id, retired.id]
 
 
+def test_targeted_activation_rejects_retired_alias(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    from scorecard_pipeline import cli
+    from scorecard_pipeline.config import Agency
+
+    live = Agency(
+        id="annapolis-transit-2285",
+        name="Annapolis Transit",
+        static_gtfs_url="https://annapolis.example/gtfs.zip",
+    )
+    retired = Agency(
+        id="annapolis-transit",
+        name="Annapolis Transit",
+        static_gtfs_url="https://archive.example/annapolis.zip",
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    monkeypatch.setattr(cli, "AGENCIES", {retired.id: retired, live.id: live})
+
+    with pytest.raises(SystemExit) as exc_info:
+        cli._cmd_activation_targets(
+            argparse.Namespace(ids=retired.id, out=None), argparse.ArgumentParser()
+        )
+
+    assert exc_info.value.code == 2
+    assert "retired/noncanonical" in capsys.readouterr().err
+
+
 def test_prune_reports_orphans_without_deleting(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
