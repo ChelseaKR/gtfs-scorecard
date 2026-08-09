@@ -31,7 +31,7 @@ scrutiny (`docs/ideation/03-expansions.md`, EXP-17):
   (`CLAUDE.md`, "Writing style").
 
 `docs/ideation/03-expansions.md` (EXP-17) names three sibling repos —
-`tods-validate`, `govchat-eval`, `outcome-receipts` — that face the identical
+`tods-validate`, `a private sibling project`, `outcome-receipts` — that face the identical
 "state it, do not certify it" problem: each produces a machine judgment about
 something (a validator run, an eval score, a receipt) that is easy to
 over-claim as certification rather than a measurement with edges. This repo
@@ -108,7 +108,7 @@ repo, not just this one.
   — with zero adopters, which is exactly the premature-abstraction risk the
   ideation entry flags.
 - **A shared code package instead of a written standard.** EXP-17 calls this
-  out as optional. Rejected for now: `tods-validate`, `govchat-eval`, and
+  out as optional. Rejected for now: `tods-validate`, `a private sibling project`, and
   `outcome-receipts` are not confirmed to share a language or pipeline shape
   with this repo's Python; a written standard (values and shapes, not an
   importable module) is adoptable regardless of implementation language,
