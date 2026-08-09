@@ -26,6 +26,11 @@ from .metrics import expiry_status, resolve_service_horizon_status
 AWARDED = "awarded"
 NOT_YET = "not_yet"
 
+# Version the machine-readable credential separately from the score/artifact
+# schema. Its criteria may stay identical while public guidance wording changes;
+# current pointers must then be re-derived instead of carrying stale copy.
+CONFORMANCE_VERSION = 2
+
 # A feed earns the mark when it states wheelchair access on at least this share
 # of stops and trips. Presence, not usability: see the module docstring.
 ACCESSIBILITY_FLOOR = 90.0
@@ -46,6 +51,7 @@ class Conformance:
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            "version": CONFORMANCE_VERSION,
             "awarded": self.awarded,
             "status": AWARDED if self.awarded else NOT_YET,
             "summary": self.summary,
@@ -121,14 +127,26 @@ def assess(artifact: dict[str, Any]) -> Conformance:
     """Assess whether a feed earns the conformance mark."""
     criteria = [_valid(artifact), _current(artifact), _accessible(artifact)]
     awarded = all(c.met for c in criteria)
-    return Conformance(awarded, criteria, _summary(awarded, criteria))
+    return Conformance(awarded, criteria, _summary(criteria))
 
 
-def _summary(awarded: bool, criteria: list[Criterion]) -> str:
-    if awarded:
+def _summary(criteria: list[Criterion]) -> str:
+    met_count = sum(criterion.met for criterion in criteria)
+    if met_count == len(criteria):
         return (
             "This feed earns the conformance mark: valid, current, and stating "
             "wheelchair access on nearly every stop and trip."
         )
-    gaps = " ".join(c.detail for c in criteria if not c.met)
-    return f"This feed is close to the conformance mark. {gaps}"
+
+    gaps = " ".join(criterion.detail for criterion in criteria if not criterion.met)
+    if met_count == 0:
+        lede = (
+            "This feed does not meet the conformance requirements yet. Here is what the mark needs:"
+        )
+    else:
+        requirements_left = len(criteria) - met_count
+        count = "One" if requirements_left == 1 else "Two"
+        plural = "" if requirements_left == 1 else "s"
+        verb = "remains" if requirements_left == 1 else "remain"
+        lede = f"{count} requirement{plural} {verb} for this feed to earn the conformance mark."
+    return f"{lede} {gaps}"

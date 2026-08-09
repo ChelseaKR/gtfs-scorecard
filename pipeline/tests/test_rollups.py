@@ -401,6 +401,37 @@ def test_explicit_membership_limits_the_rollup() -> None:
     assert payload["members"][0]["id"] == "x"
 
 
+def test_rollups_exclude_retired_aliases_even_from_explicit_membership() -> None:
+    live = Agency("live", "Live Transit", "https://example.com/live.zip", ntd_id="90001")
+    retired = Agency(
+        "retired",
+        "Retired Transit export",
+        "https://archive.example.com/retired.zip",
+        alias_of=live.id,
+        feed_status="deprecated",
+        ntd_id="90001",
+    )
+    register(live)
+    register(retired)
+    write_latest(live.id, live.name, 91.0, "A", ntd_id="90001")
+    write_latest(retired.id, retired.name, 31.0, "F", ntd_id="90001")
+
+    default_payload = build_rollup(Rollup("all", "All", ()), WHEN)
+    explicit_payload = build_rollup(Rollup("configured", "Configured", (retired.id, live.id)), WHEN)
+
+    assert [member["id"] for member in default_payload["members"]] == [live.id]
+    assert [member["id"] for member in explicit_payload["members"]] == [live.id]
+    weighted = build_rollup(
+        Rollup("weighted", "Weighted", (retired.id, live.id)),
+        WHEN,
+        {live.id: "Feed expires soon"},
+        {"90001": 1_000_000},
+    )
+    assert weighted["members"][0]["annual_trips"] == 1_000_000
+    # The alias's raw artifact is evidence, not current rollup membership.
+    assert (artifacts_dir() / retired.id / "latest.json").exists()
+
+
 def test_publish_rollups_writes_index_and_files() -> None:
     write_latest("a", "A Transit", 70.0, "C")
     paths = publish_rollups(generated_at=WHEN)

@@ -91,10 +91,12 @@ uv sync
 uv run scorecard run --all
 ```
 
-This fetches today's snapshot of every configured feed, validates and scores it,
-and writes artifacts to `data/artifacts/<agency>/<date>.json` plus a
-`latest.json` and a cross-agency `index.json`. Re-running a day is
-idempotent. Checks (from the repo root; mirrors the CI gate):
+This fetches today's snapshot of every current configured feed, validates and
+scores it, and writes artifacts to `data/artifacts/<agency>/<date>.json` plus a
+`latest.json` and a cross-agency `index.json`. Retired aliases are excluded
+from the batch; an explicit historical rescore writes a dated record without
+recreating mutable current files. Re-running a day is idempotent. Checks (from
+the repo root; mirrors the CI gate):
 
 ```sh
 make verify
@@ -296,11 +298,15 @@ declared here; none is silently skipped.
 | [Observability](docs/standards/OBSERVABILITY-STANDARD.md) | Applies — Tier B (frontend) + Tier C (batch pipeline); see [ADR 0031](docs/decisions/0031-observability-tier.md) |
 | [Accessibility](docs/standards/ACCESSIBILITY-STANDARD.md) | Applies fully — civic content, self-declared WCAG 2.2 AAA (see [docs/accessibility.md](docs/accessibility.md), [docs/vpat.md](docs/vpat.md)) |
 | [Internationalization](docs/standards/INTERNATIONALIZATION-STANDARD.md) | Applies — civic transit data, public-facing; exemption path unavailable |
-| AI Evaluation | N/A — no LLM/model component: no model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to APPLIES on first LLM SDK use. |
+| [Performance](docs/standards/PERFORMANCE-STANDARD.md) | Applies — the static frontend has blocking Lighthouse budgets on code changes; the scheduled data-refresh path retains its documented advisory exception |
+| [AI Evaluation](docs/standards/AI-EVALUATION-STANDARD.md) | N/A — no LLM/model component: no model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to APPLIES on first LLM SDK use. |
+| [AI Development Measurement](docs/standards/AI-DEVELOPMENT-MEASUREMENT-STANDARD.md) | Applies — delivery and quality-debt outcomes are measured at repository level; local AI-tool telemetry is never a merge gate |
 | [Quality & Metrics](docs/standards/QUALITY-AND-METRICS-STANDARD.md) | Applies (data-quality/lineage named for this repo explicitly) |
 | [Documentation](docs/standards/DOCUMENTATION-STANDARD.md) | Applies |
 | [Release & Versioning](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.4.0`), monthly dataset releases; the MCP server manifest is written but not published to the registry (see Versioning) |
 | [Responsible-Tech Framework](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies (audits A-F; AI-governance rows N/A — no AI system) |
+| [Incident Response](docs/standards/INCIDENT-RESPONSE-STANDARD.md) | Applies — deployed static site and scheduled pipeline; incidents use the shared severity, label, postmortem, and secret-leak conventions |
+| [Data Governance](docs/standards/DATA-GOVERNANCE-STANDARD.md) | Applies — public civic datasets, feed provenance, licenses, retention, and publication lineage are core product concerns |
 
 Open gaps per standard, as of the most recent conformance audit, are tracked
 in [docs/standards-conformance-gaps.md](docs/standards-conformance-gaps.md)

@@ -4,7 +4,7 @@
 # defaults to it) — some checks (notably Branch-Protection detail) score
 # lower without a PAT with repo-admin read; provisioning that PAT secret is a
 # live write action left to the repo owner, same as the standards-pin gate's
-# STANDARDS_REPO_TOKEN (see audit-2026-07-05/gtfs-scorecard-REMEDIATION.md).
+# STANDARDS_REPO_TOKEN.
 name: OpenSSF Scorecard
 
 on:

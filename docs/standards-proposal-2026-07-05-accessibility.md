@@ -1,8 +1,7 @@
 # Proposed upstream change to ACCESSIBILITY-STANDARD.md (portfolio-standards)
 
 **Status:** Draft — not yet opened as a PR against `ChelseaKR/portfolio-standards`.
-**Author context:** Written 2026-07-05 during gtfs-scorecard remediation (see
-`audit-2026-07-05/gtfs-scorecard-REMEDIATION.md` P0-1). The vendored copy of
+**Author context:** Written 2026-07-05 during gtfs-scorecard remediation. The vendored copy of
 `docs/standards/ACCESSIBILITY-STANDARD.md` in this repo had been edited in-repo
 away from the pinned `v1.0.1` tag instead of upstreaming the change. That was
 wrong regardless of whether the new text was accurate, so the vendored file has

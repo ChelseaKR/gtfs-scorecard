@@ -473,7 +473,7 @@ def _read_index(
 
 
 def _registered_index_ids(index: dict[str, Any], known_ids: Collection[str]) -> list[str]:
-    """Apply the same registry-bounded listing policy as reindex."""
+    """Apply the same current-canonical listing policy as reindex."""
     registered: list[str] = []
     skipped: list[str] = []
     for raw_id in index["agencies"]:
@@ -484,8 +484,8 @@ def _registered_index_ids(index: dict[str, Any], known_ids: Collection[str]) -> 
             registered.append(agency_id)
     if skipped:
         print(
-            f"::warning title=unregistered index entries::skipping {len(skipped)} "
-            "index entries that are not in the registry",
+            f"::warning title=noncurrent/unregistered index entries::skipping {len(skipped)} "
+            "index entries that are not in the current canonical registry set",
             file=sys.stderr,
         )
     return sorted(registered)

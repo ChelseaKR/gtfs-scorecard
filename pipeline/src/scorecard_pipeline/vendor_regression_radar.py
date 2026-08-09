@@ -290,7 +290,7 @@ def load_runs(agency_ids: list[str] | None = None) -> list[AgencyRun]:
     """
     import json
 
-    from .config import AGENCIES, artifacts_dir
+    from .config import artifacts_dir, current_agency_ids
     from .publish import RESERVED_ARTIFACT_DIRS
 
     root = artifacts_dir()
@@ -298,12 +298,15 @@ def load_runs(agency_ids: list[str] | None = None) -> list[AgencyRun]:
         return []
     wanted = set(agency_ids) if agency_ids is not None else None
     runs: list[AgencyRun] = []
-    for agency_dir in sorted(p for p in root.iterdir() if p.is_dir()):
+    agency_dirs = sorted(p for p in root.iterdir() if p.is_dir())
+    current_ids = set(current_agency_ids(agency_dir.name for agency_dir in agency_dirs))
+    for agency_dir in agency_dirs:
         if agency_dir.name in RESERVED_ARTIFACT_DIRS:
             continue
-        # An S3-hydrated tree can hold directories for agencies no registry
-        # version lists; the radar reads only listed agencies.
-        if AGENCIES and agency_dir.name not in AGENCIES:
+        # The radar describes new behavior in the current producer cohort. A
+        # retired alias's dated artifacts remain on disk for historical reports,
+        # but cannot trigger a fresh vendor alert after retirement.
+        if agency_dir.name not in current_ids:
             continue
         if wanted is not None and agency_dir.name not in wanted:
             continue

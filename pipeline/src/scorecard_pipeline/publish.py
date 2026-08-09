@@ -25,13 +25,24 @@ from . import (
     SCORING_PROFILE_ID,
     SCORING_PROFILE_PROVENANCE,
 )
+from .artifact_lifecycle import (
+    RESERVED_ARTIFACT_DIRS as _RESERVED_ARTIFACT_DIRS,
+)
+from .artifact_lifecycle import (
+    reconcile_retired_current_artifacts,
+)
 from .badge import render_badge, render_mark
 from .comparisons import reader_archive_profile
-from .config import Agency, artifacts_dir, repo_root
+from .config import Agency, artifacts_dir, current_agency_ids, repo_root
 from .effort_calibration import (
     CALIBRATION_SCHEMA_NOTE,
     agency_episodes,
     stats_from_episodes,
+)
+from .feed_provenance import (
+    FeedSourceProvenance,
+    classify_feed_source,
+    confidence_source_note,
 )
 from .fetch import FetchResult
 from .fixlog import diff_receipts, load_fixlog_candidates, merge_receipts, reconcile_receipts
@@ -42,12 +53,8 @@ from .site_shell import CATEGORY_LABELS
 
 log = logging.getLogger(__name__)
 
-# Subdirectories of data/artifacts that hold published aggregates, not agencies.
-# They have no per-agency latest.json/dated artifact shape, so anything walking
-# the artifacts tree as if every dir were an agency must skip them. "run" holds
-# the FIX-11 pipeline run-health summary (run_summary.py), merged there by
-# `scorecard run-summary merge` in the collect job.
-RESERVED_ARTIFACT_DIRS = frozenset({"rollups", "changes", "run"})
+# Backwards-compatible public import used by walkers across the package.
+RESERVED_ARTIFACT_DIRS = _RESERVED_ARTIFACT_DIRS
 
 # Measurement-confidence levels, weakest first (EXP-01). Words, never a letter
 # or a number, so the read cannot be mistaken for a second grade.
@@ -68,7 +75,10 @@ def _join_labels(labels: list[str]) -> str:
 
 
 def _confidence(
-    card: dict[str, Any], fetch: FetchResult, generated_at: dt.datetime
+    card: dict[str, Any],
+    fetch: FetchResult,
+    generated_at: dt.datetime,
+    source_provenance: FeedSourceProvenance,
 ) -> dict[str, Any]:
     """How much of this grade the pipeline could actually measure, and from
     what source (EXP-01, docs/ideation/03-expansions.md).
@@ -106,25 +116,9 @@ def _confidence(
         else:
             notes.append("Realtime was sampled in one bounded window.")
 
-    if fetch.source == "mirror":
+    if fetch.source in {"mirror", "unknown"}:
         rank -= 1
-        notes.append(
-            "The agency's own feed URL was unreachable, so the Mobility Database's "
-            "hosted mirror copy was scored instead."
-        )
-    elif fetch.source == "unknown":
-        rank -= 1
-        notes.append(
-            "This snapshot predates fetch-source recording, so where it was "
-            "originally downloaded from is not known."
-        )
-    elif fetch.source == "local":
-        notes.append(
-            "A local feed copy was scored. Its recorded SHA-256 can be compared with the "
-            "source or corrected copy used for this run."
-        )
-    else:
-        notes.append("The feed was downloaded from the agency's own URL.")
+    notes.append(confidence_source_note(source_provenance, fetch.source))
 
     feed_age_days = max(0, (generated_at.date() - fetch.fetched_date).days)
     if feed_age_days:
@@ -151,6 +145,7 @@ def build_artifact(
     generated_at: dt.datetime,
 ) -> dict[str, Any]:
     card = scorecard.to_json()
+    source_provenance = classify_feed_source(agency)
     rt = card["categories"]["realtime"]
     if rt.get("status") == "not_yet_measured" and agency.rt_note:
         rt["summary"] = agency.rt_note
@@ -203,7 +198,7 @@ def build_artifact(
     fetch_block.update(
         {"reader_archive_normalized": True} if fetch.reader_archive_normalized else {}
     )
-    return {
+    artifact: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         # Provenance: which methodology and which validator produced this grade,
         # so a snapshot is citable and a trend can separate a feed change from a
@@ -224,14 +219,21 @@ def build_artifact(
             "size_bytes": fetch.size_bytes,
             "license_note": agency.license_note,
             "reachable": True,
+            # Registry evidence about who publishes the configured URL is
+            # distinct from fetch.source, which only says how this run obtained
+            # the bytes. Unknown stays explicit instead of being inferred from
+            # a successful request.
+            "source_provenance": source_provenance,
         },
         "fetch": fetch_block,
         # The measurement-confidence read (EXP-01): what this run could and
         # could not measure, so a reader can tell a fully-measured grade from
         # a provisional one. Additive; schema 1.5.
-        "confidence": _confidence(card, fetch, generated_at),
+        "confidence": _confidence(card, fetch, generated_at, source_provenance),
         **card,
     }
+    artifact["conformance"] = _current_conformance(artifact)
+    return artifact
 
 
 def _write_atomic(path: Path, text: str) -> None:
@@ -305,16 +307,57 @@ def validate_artifact(artifact: dict[str, Any]) -> None:
     _artifact_validator().validate(artifact)
 
 
+def _current_conformance(artifact: dict[str, Any]) -> dict[str, Any]:
+    """Derive today's versioned credential without trusting embedded copy."""
+
+    from .conformance import assess
+    from .mode_language import adapt_artifact_language
+
+    carrier: dict[str, Any] = {"conformance": assess(artifact).to_dict()}
+    if "mode_profile" in artifact:
+        carrier["mode_profile"] = artifact["mode_profile"]
+    return dict(adapt_artifact_language(carrier)["conformance"])
+
+
+def _with_current_conformance(artifact: dict[str, Any]) -> dict[str, Any]:
+    """Copy an artifact and replace its derived conformance presentation."""
+
+    current = dict(artifact)
+    current["conformance"] = _current_conformance(artifact)
+    return current
+
+
 def publish(artifact: dict[str, Any]) -> Path:
-    """Validate the artifact against the published schema, then write the dated
-    artifact, refresh latest.json, and update the index."""
+    """Write historical evidence and, only for a current feed, current pointers.
+
+    Retired registry aliases remain explicitly scoreable for reproduction, but
+    that operation writes only its date-shaped evidence. It cannot recreate a
+    ``latest.json``, badge, conformance credential, or current geometry after a
+    curator has retired the feed.
+    """
+    from .config import AGENCIES
+
+    artifact = _with_current_conformance(artifact)
     validate_artifact(artifact)
     agency_id = str(artifact["agency"]["id"])
     date = str(artifact["snapshot_date"])
     agency_dir = artifacts_dir() / agency_id
+    agency = AGENCIES.get(agency_id)
+
+    if agency is not None and not agency.is_canonical_feed:
+        # Run after geometry generation and before any mutable publication.
+        # This removes the current geometry that run_agency may just have
+        # produced for an explicitly rescored retired alias and emits the exact
+        # S3 cleanup plan. Routine canonical scoring leaves the corpus-wide walk
+        # to reindex instead of repeating it once per feed.
+        reconcile_retired_current_artifacts(artifacts_dir(), AGENCIES)
 
     dated = agency_dir / f"{date}.json"
     _write_json(dated, artifact)
+    if agency is not None and not agency.is_canonical_feed:
+        _update_index(agency_id, artifact)
+        return dated
+
     _write_json(agency_dir / "latest.json", artifact)
     _write_badge(agency_dir, artifact)
     _write_mark(agency_dir, artifact)
@@ -359,11 +402,10 @@ def _write_mark(agency_dir: Path, artifact: dict[str, Any]) -> None:
     seal is written only when the feed earns the mark, and a stale seal is
     removed when it no longer does, so the presence of the file is the credential.
     """
-    conformance = artifact.get("conformance")
-    if conformance is None:
-        from .conformance import assess
-
-        conformance = assess(artifact).to_dict()
+    # This is derived presentation over scored facts. Recompute even when an
+    # artifact embeds an older result so conformance.json and the seal cannot
+    # preserve stale or misleading guidance indefinitely.
+    conformance = _current_conformance(artifact)
     _write_atomic(agency_dir / "conformance.json", json.dumps(conformance, indent=2) + "\n")
     mark_path = agency_dir / "mark.svg"
     if conformance.get("awarded"):
@@ -485,16 +527,17 @@ def enrich_index_history_provenance(index: dict[str, Any], root: Path | None = N
 
 
 def registered_agency_dirs(root: Path, *, log_skipped: bool = False) -> list[Path]:
-    """Agency directories under ``root``, bounded to the loaded registry.
+    """Current agency directories under ``root``, bounded to the loaded registry.
 
     The S3 artifacts store is additive and outlives registry edits, so a
     hydrated tree can hold directories for agencies that were removed from
-    the registry, or that a since-abandoned run published and no registry
-    version ever listed. The registry is the sole source of what is listed
-    (docs/listing-policy.md), so walkers must not treat those directories as
-    listings; cleanup stays a curator decision (`scorecard prune`). With no
-    registry loaded (library callers, most unit tests) every directory is
-    returned unchanged.
+    the registry, that have since become aliases of a live successor, or that
+    a since-abandoned run published and no registry version ever listed. The
+    registry's active canonical entries are the sole source of what is listed
+    (docs/listing-policy.md), so walkers must not treat the other directories
+    as current listings; cleanup stays a curator decision (`scorecard prune`).
+    With no registry loaded (library callers, most unit tests) every directory
+    is returned unchanged.
     """
     from .config import AGENCIES
 
@@ -509,7 +552,18 @@ def registered_agency_dirs(root: Path, *, log_skipped: bool = False) -> list[Pat
             len(unregistered),
             ", ".join(unregistered[:10]) + (", ..." if len(unregistered) > 10 else ""),
         )
-    return [p for p in dirs if p.name in AGENCIES]
+    noncanonical = [
+        p.name for p in dirs if p.name in AGENCIES and not AGENCIES[p.name].is_canonical_feed
+    ]
+    if noncanonical and log_skipped:
+        log.warning(
+            "skipping %d retired/noncanonical artifact directories"
+            " (history remains available for reproducibility): %s",
+            len(noncanonical),
+            ", ".join(noncanonical[:10]) + (", ..." if len(noncanonical) > 10 else ""),
+        )
+    current_ids = set(current_agency_ids(p.name for p in dirs))
+    return [p for p in dirs if p.name in current_ids]
 
 
 def _dated_reindex_artifacts(
@@ -655,6 +709,12 @@ def rebuild_index() -> Path:
         _write_json(root / "index.json", index)
         return root / "index.json"
 
+    # Reindex is the lifecycle reconciliation point for all publish workflows.
+    # It strips locally hydrated current pointers for retired/unregistered ids
+    # and writes an exact deletion manifest for the additive S3 publisher. Dated
+    # evidence remains untouched and may continue to be fetched by date.
+    reconcile_retired_current_artifacts(root, AGENCIES)
+
     # Finding-clearance episodes accumulate across every agency in this one walk,
     # so the corpus-level effort-calibration.json costs no extra artifact reads
     # (effort_calibration.py). The calibration itself requires a complete,
@@ -705,10 +765,13 @@ def rebuild_index() -> Path:
         # pooled corpus-wide for the calibration stats.
         all_episodes.extend(agency_episodes(agency_artifacts))
         if history and newest is not None:
-            # Re-derive latest.json, badge, and mark so a clobbered copy is repaired.
-            _write_json(agency_dir / "latest.json", newest)
-            _write_badge(agency_dir, newest)
-            _write_mark(agency_dir, newest)
+            # Re-derive mutable current surfaces without rewriting immutable
+            # dated evidence. This also migrates versioned presentation fields
+            # (such as conformance guidance) for unchanged or unreachable feeds.
+            current = _with_current_conformance(newest)
+            _write_json(agency_dir / "latest.json", current)
+            _write_badge(agency_dir, current)
+            _write_mark(agency_dir, current)
             # S3 is the durable dated-history store. A clean CI checkout keeps
             # only the repository's cutover snapshot plus the newest two days,
             # while index.json carries the compact complete trend. Preserve
@@ -758,6 +821,17 @@ def _update_index(agency_id: str, artifact: dict[str, Any]) -> None:
     index: dict[str, Any] = {"schema_version": SCHEMA_VERSION, "agencies": {}}
     if index_path.exists():
         index = json.loads(index_path.read_text())
+
+    # A curator may retain a retired endpoint as an alias so its dated evidence
+    # remains reproducible. A manual single-agency re-score may therefore still
+    # write that evidence, but it must never revive the retired feed as a current
+    # scorecard. Full reindex applies the same policy through
+    # registered_agency_dirs().
+    agency = AGENCIES.get(agency_id)
+    if agency is not None and not agency.is_canonical_feed:
+        index.setdefault("agencies", {}).pop(agency_id, None)
+        _write_json(index_path, index)
+        return
 
     # Reconcile this agency's history from the dated artifacts actually on disk,
     # rather than appending to whatever the index held. This keeps an incremental

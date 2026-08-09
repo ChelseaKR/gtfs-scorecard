@@ -160,6 +160,18 @@ jobs:
             exit 1
           fi
 
+          # Retire exact mutable pointers before publishing the rebuilt current
+          # catalog. The generated manifest contains ids, not arbitrary keys;
+          # the publisher expands only latest/badge/conformance/mark/geometry
+          # names and cannot delete a dated score snapshot.
+          retirement_stage="$RUNNER_TEMP/retirement-cleanup"
+          rm -rf "$retirement_stage"
+          mkdir -p "$retirement_stage"
+          uv run --project pipeline --with boto3 scorecard publish-artifacts \
+            --root "$retirement_stage" \
+            --bucket "$ARTIFACTS_BUCKET" --prefix data/artifacts \
+            --retirement-manifest data/artifacts/.retired-current-artifacts.json
+
           fixlog_stage="$RUNNER_TEMP/private-fixlogs"
           rm -rf "$fixlog_stage"
           mkdir -p "$fixlog_stage"

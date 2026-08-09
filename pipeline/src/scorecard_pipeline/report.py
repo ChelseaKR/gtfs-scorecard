@@ -482,7 +482,7 @@ def render_report(data: dict[str, Any], brand: Brand | None = None) -> str:
     </header>
     <section aria-labelledby="what-h">
       <h2 id="what-h">What this grade measures</h2>
-      <p>The quality of the schedule data this agency publishes for trip-planning
+      <p>The quality of the schedule data in the feed scored here for trip-planning
       apps: whether riders using Google Maps, Apple Maps, or Transit see current,
       correct, and complete information. It measures the data feed, not service
       quality or operations.</p>

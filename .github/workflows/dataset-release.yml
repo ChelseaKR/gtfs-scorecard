@@ -1,20 +1,25 @@
 # Monthly citable dataset release (docs/expansion-ideation-2026-07.md, section C;
 # RESEARCH-ROADMAP.md E7). A researcher citing "the scorecard dataset" needs a
-# pinned, immutable reference, not a URL whose contents change daily. This tags
+# pinned, byte-verifiable reference, not a URL whose contents change daily. This tags
 # the first-of-month state as dataset-YYYY-MM and attaches the flat exports plus
-# the data dictionary, so a citation resolves to exactly the bytes analysed.
+# the data dictionary, so a citation can verify the exact bytes analysed.
 name: Dataset release
 
 on:
   schedule:
-    - cron: "47 6 1 * *" # monthly, after that day's daily run windows
+    # Monthly, after the 13:23 UTC daily scoring window. The 15:23 intraday
+    # deployment may already have replaced the live site, so scheduled cuts
+    # consume the successful Daily run's exact Pages artifact by run id rather
+    # than racing the mutable production URL.
+    - cron: "47 17 1 * *"
   workflow_dispatch: {}
 
 permissions:
   contents: write # create the tag and release
+  actions: read # resolve the successful Daily scorecard run for scheduled cuts
 
 # A second concurrent run (manual dispatch racing the schedule) must not
-# double-create/overlap a release; the tag-exists guard above only checks
+# double-create/overlap a release; the later tag-exists guard only checks
 # after the race, so serialize instead of cancelling (CICD-23).
 concurrency:
   group: dataset-release
@@ -23,63 +28,415 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
+    concurrency:
+      group: artifacts-publish
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
+      - name: Resolve the release source
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::Dataset releases must run from refs/heads/main."
+            exit 1
+          fi
+          git fetch --no-tags origin \
+            "+refs/heads/main:refs/remotes/origin/main"
+          origin_main=$(git rev-parse refs/remotes/origin/main)
+          if [ "$EVENT_NAME" = schedule ]; then
+            cut_date=$(date -u +%Y-%m-%d)
+            if [[ "$cut_date" != ????-??-01 ]]; then
+              echo "::error::The scheduled dataset cut must run on day 1 UTC."
+              exit 1
+            fi
+            runs_json=$(gh api --paginate \
+              "repos/${GITHUB_REPOSITORY}/actions/workflows/scorecard.yml/runs?event=schedule&status=success&branch=main&per_page=100" \
+              --jq '.workflow_runs')
+            source_json=$(jq -s --arg cut_date "$cut_date" '
+              add
+              | map(select(
+                  .event == "schedule"
+                  and .status == "completed"
+                  and .conclusion == "success"
+                  and .head_branch == "main"
+                  and (.run_started_at | startswith($cut_date + "T"))
+                ))
+              | sort_by(.run_started_at, .run_attempt)
+              | last // empty
+            ' <<<"$runs_json")
+            if [ -z "$source_json" ]; then
+              echo "::error::No successful same-day scheduled Daily scorecard run exists."
+              exit 1
+            fi
+            source_mode=scheduled-daily
+            source_run_id=$(jq -r '.id' <<<"$source_json")
+            source_run_attempt=$(jq -r '.run_attempt' <<<"$source_json")
+            source_started_at=$(jq -r '.run_started_at' <<<"$source_json")
+            head_sha=$(jq -r '.head_sha' <<<"$source_json")
+            jq -e --arg repository "$GITHUB_REPOSITORY" '
+              .head_repository.full_name == $repository
+              and (.head_sha | test("^[0-9a-f]{40}$"))
+              and (.id | type == "number")
+              and (.run_attempt | type == "number")
+            ' <<<"$source_json" >/dev/null
+            if ! git merge-base --is-ancestor "$head_sha" "$origin_main"; then
+              echo "::error::The selected Daily source is not reachable from origin/main."
+              exit 1
+            fi
+          else
+            # A manual cut keeps the existing latest-main behavior. It is
+            # deliberately labelled separately rather than claiming day-1
+            # Daily-run provenance it has not established.
+            source_mode=manual-latest
+            source_run_id=0
+            source_run_attempt=0
+            source_started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+            head_sha="$GITHUB_SHA"
+            if [ "$head_sha" != "$origin_main" ]; then
+              echo "::error::Manual dataset releases require the current origin/main commit."
+              exit 1
+            fi
+          fi
+          source_month="${source_started_at:0:7}"
+          {
+            echo "head_sha=$head_sha"
+            echo "source_mode=$source_mode"
+            echo "source_month=$source_month"
+            echo "source_run_id=$source_run_id"
+            echo "source_run_attempt=$source_run_attempt"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "SOURCE_HEAD_SHA=$head_sha"
+            echo "SOURCE_MODE=$source_mode"
+            echo "SOURCE_MONTH=$source_month"
+            echo "SOURCE_RUN_ID=$source_run_id"
+            echo "SOURCE_RUN_ATTEMPT=$source_run_attempt"
+          } >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          ref: ${{ steps.source.outputs.head_sha }}
+          fetch-depth: 0
+
+      - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install the release validator
+        working-directory: pipeline
+        run: uv sync --locked
 
       - name: Assemble the release bundle
         id: bundle
         run: |
-          tag="dataset-$(date -u +%Y-%m)"
+          set -euo pipefail
+          tag="dataset-${SOURCE_MONTH}"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
-          if gh release view "$tag" >/dev/null 2>&1; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "$tag already released; nothing to do."
-            exit 0
-          fi
-          echo "exists=false" >> "$GITHUB_OUTPUT"
-          mkdir -p bundle
-          # A citable release must be complete: a missing file is a failed
-          # release, not a smaller one.
-          for f in web/catalog.json web/catalog.csv web/dataset.json \
-                   web/dataset.csv web/api/v1/agencies.parquet web/ntd.json; do
-            if [ ! -f "$f" ]; then
-              echo "::error::$f is missing; refusing to cut an incomplete dataset release"
+          source="$RUNNER_TEMP/dataset-release-source"
+          site="$source/site"
+          request_id="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p "$site/api/v1" "$site/data/artifacts"
+          if [ "$SOURCE_MODE" = scheduled-daily ]; then
+            # A successful Daily workflow includes this exact Pages artifact,
+            # its deployment, and production smoke. Downloading it by immutable
+            # run id means the 15:23 refresh cannot displace the monthly cut.
+            artifact_dir="$source/pages-artifact"
+            mkdir -p "$artifact_dir"
+            gh run download "$SOURCE_RUN_ID" \
+              --repo "$GITHUB_REPOSITORY" --name github-pages --dir "$artifact_dir"
+            mapfile -t archives < <(find "$artifact_dir" -type f -name artifact.tar)
+            if [ "${#archives[@]}" -ne 1 ]; then
+              echo "::error::The Daily run did not contain exactly one Pages artifact.tar."
               exit 1
             fi
-            cp "$f" bundle/
-          done
-          cp docs/api.md bundle/DATA-DICTIONARY.md
-          cp CITATION.cff bundle/
+            tar -xf "${archives[0]}" -C "$site"
+            cp "$site/deployment.json" "$source/deployment-after.json"
+            cp "$site/release-manifest.json" "$source/release-manifest.json"
+          else
+            # Manual cuts retain latest-production semantics, with a before/after
+            # deployment boundary and unique cache keys around every exact GET.
+            base="https://gtfsscorecard.org"
+            fetch() {
+              curl --connect-timeout 10 --max-time 120 -fsSL \
+                -H 'Cache-Control: no-cache, no-store' -H 'Pragma: no-cache' "$@"
+            }
+            fetch "$base/deployment.json?release=${request_id}-before" \
+              -o "$source/deployment-before.json"
+            fetch "$base/release-manifest.json?release=${request_id}-manifest" \
+              -o "$source/release-manifest.json"
+            for f in catalog.json catalog.csv dataset.json dataset.csv ntd.json; do
+              fetch "$base/$f?release=${request_id}-${f}" -o "$site/$f"
+            done
+            fetch "$base/api/v1/agencies.parquet?release=${request_id}-parquet" \
+              -o "$site/api/v1/agencies.parquet"
+            fetch "$base/data/artifacts/index.json?release=${request_id}-index" \
+              -o "$site/data/artifacts/index.json"
+
+            # The canonical cross-format validator needs every indexed current
+            # latest.json, not only compact index history. Download the exact
+            # bounded set while the before/after deployment marker is stable.
+            jq -er '.agencies | keys[]' "$site/data/artifacts/index.json" \
+              | LC_ALL=C sort > "$source/agency-ids"
+            if ! awk '/^[a-z0-9][a-z0-9-]*$/ { next } { exit 1 }' \
+              "$source/agency-ids"; then
+              echo "::error::The deployed index contains an unsafe agency id."
+              exit 1
+            fi
+            pids=()
+            while IFS= read -r id; do
+              mkdir -p "$site/data/artifacts/$id"
+              fetch "$base/data/artifacts/${id}/latest.json?release=${request_id}-${id}" \
+                -o "$site/data/artifacts/$id/latest.json" &
+              pids+=("$!")
+              if [ "${#pids[@]}" -eq 16 ]; then
+                for pid in "${pids[@]}"; do wait "$pid"; done
+                pids=()
+              fi
+            done < "$source/agency-ids"
+            for pid in "${pids[@]}"; do wait "$pid"; done
+            fetch "$base/deployment.json?release=${request_id}-after" \
+              -o "$source/deployment-after.json"
+            cmp "$source/deployment-before.json" "$source/deployment-after.json"
+          fi
+
+          manifest_sha=$(sha256sum "$source/release-manifest.json" | cut -d ' ' -f 1)
+          if [ "$SOURCE_MODE" = scheduled-daily ]; then
+            jq -e --arg commit "$SOURCE_HEAD_SHA" \
+              --argjson source_run_id "$SOURCE_RUN_ID" \
+              --argjson source_run_attempt "$SOURCE_RUN_ATTEMPT" \
+              --arg manifest_sha "$manifest_sha" \
+              '.schema_version == 3 and .commit == $commit
+               and .source_run_id == $source_run_id
+               and .source_run_attempt == $source_run_attempt
+               and .deployment_id == ($source_run_id | tostring) + "-"
+                 + ($source_run_attempt | tostring)
+               and .release_manifest_sha256 == $manifest_sha' \
+              "$source/deployment-after.json" >/dev/null
+          else
+            jq -e --arg commit "$SOURCE_HEAD_SHA" --arg manifest_sha "$manifest_sha" \
+              '.schema_version == 3 and .commit == $commit
+               and (.source_run_id | type == "number")
+               and (.source_run_attempt | type == "number")
+               and .deployment_id == (.source_run_id | tostring) + "-"
+                 + (.source_run_attempt | tostring)
+               and .release_manifest_sha256 == $manifest_sha' \
+              "$source/deployment-after.json" >/dev/null
+          fi
+          jq -e '.schema_version == 1 and (.files | keys | sort) == [
+              "api/v1/agencies.parquet", "catalog.csv", "catalog.json",
+              "data/artifacts/index.json", "dataset.csv", "dataset.json",
+              "ntd.json"
+            ]' \
+            "$source/release-manifest.json" >/dev/null
+          jq -r '.files | to_entries[] | "\(.value)  \(.key)"' \
+            "$source/release-manifest.json" | (cd "$site" && sha256sum --check -)
+
+          # Both the run-bound Pages artifact and the manually hydrated site
+          # must contain exactly one current latest.json for every indexed id.
+          jq -er '.agencies | keys[]' "$site/data/artifacts/index.json" \
+            | LC_ALL=C sort > "$source/expected-latest-ids"
+          find "$site/data/artifacts" -mindepth 2 -maxdepth 2 -type f \
+            -name latest.json -exec dirname {} \; | sed 's#.*/##' \
+            | LC_ALL=C sort > "$source/actual-latest-ids"
+          cmp "$source/expected-latest-ids" "$source/actual-latest-ids"
+          while IFS= read -r id; do
+            jq -e --arg id "$id" '.agency.id == $id' \
+              "$site/data/artifacts/$id/latest.json" >/dev/null
+          done < "$source/expected-latest-ids"
+
+          # Cross-check JSON, both CSVs, and Parquet against the downloaded
+          # authoritative index and the active canonical registry before the
+          # otherwise-empty bundle receives any file.
+          cd pipeline
+          uv run python -m scorecard_pipeline.dataset_release \
+            --artifacts-root "$site/data/artifacts" \
+            --web-root "$site" \
+            --repo-root .. \
+            --bundle-root ../bundle
+          cd ..
+          jq -n --arg source_mode "$SOURCE_MODE" \
+            --arg head_sha "$SOURCE_HEAD_SHA" \
+            --argjson source_run_id "$SOURCE_RUN_ID" \
+            --argjson source_run_attempt "$SOURCE_RUN_ATTEMPT" \
+            '{schema_version: 1, source_mode: $source_mode, head_sha: $head_sha,
+              source_run_id: $source_run_id,
+              source_run_attempt: $source_run_attempt}' \
+            > bundle/PROVENANCE.json
+          (cd bundle && sha256sum \
+            CITATION.cff DATA-DICTIONARY.md PROVENANCE.json agencies.parquet \
+            catalog.csv catalog.json dataset.csv dataset.json ntd.json \
+            > SHA256SUMS)
           ls -l bundle
         env:
           GH_TOKEN: ${{ github.token }}
 
       - name: Write release notes
-        if: steps.bundle.outputs.exists == 'false'
         run: |
-          agencies=$(python3 -c "import json;print(len(json.load(open('web/catalog.json'))['agencies']))")
-          rubric=$(python3 -c "import json;print(json.load(open('web/catalog.json')).get('rubric_version','unknown'))")
+          agencies=$(python3 -c "import json;print(len(json.load(open('bundle/catalog.json'))['agencies']))")
+          rubric=$(python3 -c "import json;print(json.load(open('bundle/catalog.json')).get('rubric_version','unknown'))")
+          if [ "$SOURCE_MODE" = scheduled-daily ]; then
+            provenance="successful scheduled Daily scorecard run ${SOURCE_RUN_ID}, attempt ${SOURCE_RUN_ATTEMPT}"
+          else
+            provenance="manual/latest deployed-main cut (not scheduled day-1 Daily provenance)"
+          fi
           cat > notes.md <<EOF
           Monthly snapshot of the GTFS Scorecard dataset: per-agency grades,
           category scores, freshness, NTD readiness, and feed provenance for
           $agencies tracked agencies (rubric $rubric), pinned at commit
-          ${GITHUB_SHA}.
+          ${SOURCE_HEAD_SHA}. Source: ${provenance}.
 
           Files: catalog.json / catalog.csv (per-agency records),
           dataset.json / dataset.csv (flat analysis export),
           agencies.parquet (columnar), ntd.json (NTD readiness rollup),
-          DATA-DICTIONARY.md (field reference), CITATION.cff.
+          DATA-DICTIONARY.md (field reference), CITATION.cff,
+          PROVENANCE.json (source run), and SHA256SUMS.
 
           License: data CC BY 4.0, code Apache-2.0. Cite this release tag (or
           its commit) rather than the live site, which changes daily.
           EOF
 
-      - name: Create the release
-        if: steps.bundle.outputs.exists == 'false'
-        run: |
-          tag="${{ steps.bundle.outputs.tag }}"
-          gh release create "$tag" bundle/* \
-            --title "Dataset ${tag#dataset-}" \
-            --notes-file notes.md
+      - name: Resolve the protected dataset tag
+        id: release_tag
         env:
           GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.bundle.outputs.tag }}
+        run: |
+          set -euo pipefail
+          set +e
+          git ls-remote --exit-code --tags origin "refs/tags/${RELEASE_TAG}" \
+            > "$RUNNER_TEMP/dataset-tag.remote"
+          status=$?
+          set -e
+          case "$status" in
+            0)
+              git fetch origin \
+                "refs/tags/${RELEASE_TAG}:refs/tags/${RELEASE_TAG}"
+              echo "exists=true" >> "$GITHUB_OUTPUT"
+              ;;
+            2)
+              echo "exists=false" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::Could not determine whether ${RELEASE_TAG} already exists."
+              exit "$status"
+              ;;
+          esac
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Create the missing SSH-signed annotated dataset tag
+        if: steps.release_tag.outputs.exists == 'false'
+        env:
+          RELEASE_TAG: ${{ steps.release_tag.outputs.tag }}
+          SCHEDULED_WRITER_SSH_KEY: ${{ secrets.SCHEDULED_WRITER_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "$SCHEDULED_WRITER_SSH_KEY" ]; then
+            echo "::error::SCHEDULED_WRITER_SSH_KEY is required to sign a dataset tag."
+            exit 1
+          fi
+          signing_key="$RUNNER_TEMP/dataset-release-signing-key"
+          cleanup() {
+            git config --local --unset user.signingkey >/dev/null 2>&1 || true
+            rm -f "$signing_key"
+          }
+          trap cleanup EXIT
+          umask 077
+          printf '%s\n' "$SCHEDULED_WRITER_SSH_KEY" > "$signing_key"
+          chmod 600 "$signing_key"
+          git config --local user.name "Chelsea Kelly-Reif"
+          git config --local user.email "3114598+ChelseaKR@users.noreply.github.com"
+          git config --local gpg.format ssh
+          git config --local gpg.ssh.allowedSignersFile \
+            "$GITHUB_WORKSPACE/.github/release-signers"
+          git config --local user.signingkey "$signing_key"
+          git tag -s "$RELEASE_TAG" "$SOURCE_HEAD_SHA" \
+            -m "$RELEASE_TAG" \
+            -m "Source ${SOURCE_MODE}; run ${SOURCE_RUN_ID}, attempt ${SOURCE_RUN_ATTEMPT}."
+          git verify-tag -- "$RELEASE_TAG"
+          git push origin "refs/tags/${RELEASE_TAG}:refs/tags/${RELEASE_TAG}"
+
+      - name: Verify the trusted hosted dataset tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.release_tag.outputs.tag }}
+        run: |
+          set -euo pipefail
+          test "$(git cat-file -t "refs/tags/${RELEASE_TAG}")" = tag
+          test "$(git rev-parse "refs/tags/${RELEASE_TAG}^{commit}")" = \
+            "$SOURCE_HEAD_SHA"
+          git config --local gpg.format ssh
+          git config --local gpg.ssh.allowedSignersFile \
+            "$GITHUB_WORKSPACE/.github/release-signers"
+          git verify-tag -- "$RELEASE_TAG"
+
+          local_tag_object=$(git rev-parse "refs/tags/${RELEASE_TAG}")
+          hosted_ref=$(gh api \
+            "repos/${GITHUB_REPOSITORY}/git/ref/tags/${RELEASE_TAG}")
+          jq -e --arg object "$local_tag_object" \
+            '.object.type == "tag" and .object.sha == $object' \
+            <<<"$hosted_ref" >/dev/null
+          hosted_tag=$(gh api \
+            "repos/${GITHUB_REPOSITORY}/git/tags/${local_tag_object}")
+          jq -e --arg tag "$RELEASE_TAG" --arg target "$SOURCE_HEAD_SHA" '
+            .tag == $tag
+            and .object.type == "commit"
+            and .object.sha == $target
+          ' <<<"$hosted_tag" >/dev/null
+
+      - name: Stage and verify the release draft
+        run: |
+          set -euo pipefail
+          tag="${{ steps.bundle.outputs.tag }}"
+          uv run --project pipeline python -m \
+            scorecard_pipeline.dataset_release_promotion \
+            --repository "$GITHUB_REPOSITORY" \
+            --tag "$tag" \
+            --target "$SOURCE_HEAD_SHA" \
+            --title "Dataset ${tag#dataset-}" \
+            --notes notes.md \
+            --bundle bundle \
+            --source-mode "$SOURCE_MODE" \
+            --source-run-id "$SOURCE_RUN_ID" \
+            --source-run-attempt "$SOURCE_RUN_ATTEMPT" \
+            --stage-only
+          mkdir -p promotion
+          cp -R bundle promotion/bundle
+          cp notes.md promotion/notes.md
+          jq -n \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg tag "$tag" \
+            --arg target "$SOURCE_HEAD_SHA" \
+            --arg title "Dataset ${tag#dataset-}" \
+            --arg source_mode "$SOURCE_MODE" \
+            --argjson source_run_id "$SOURCE_RUN_ID" \
+            --argjson source_run_attempt "$SOURCE_RUN_ATTEMPT" \
+            --argjson workflow_run_id "$GITHUB_RUN_ID" \
+            --argjson workflow_run_attempt "$GITHUB_RUN_ATTEMPT" \
+            '{schema_version: 1, repository: $repository, tag: $tag,
+              target: $target, title: $title, source_mode: $source_mode,
+              source_run_id: $source_run_id,
+              source_run_attempt: $source_run_attempt,
+              workflow_run_id: $workflow_run_id,
+              workflow_run_attempt: $workflow_run_attempt}' \
+            > promotion/promotion.json
+          echo "A byte-verified draft is ready. An owner must run" \
+            "pipeline/scripts/promote_dataset_release.sh ${tag} ${GITHUB_RUN_ID} locally" \
+            "with an administration-capable GitHub credential."
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Retain the verified owner-promotion package
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: dataset-release-promotion-${{ steps.bundle.outputs.tag }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: promotion/
+          if-no-files-found: error
+          retention-days: 90

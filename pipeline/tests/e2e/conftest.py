@@ -30,6 +30,7 @@ if TYPE_CHECKING:
 
 # This file is pipeline/tests/e2e/conftest.py, so parents[3] is the repo root.
 REPO_ROOT = Path(__file__).resolve().parents[3]
+GOLDEN_ROOT = REPO_ROOT / "pipeline" / "tests" / "fixtures" / "golden_site"
 
 _EXTERNAL_URL = re.compile(r"^https?://(?!127\.0\.0\.1)")
 
@@ -83,6 +84,45 @@ def base_url(site_root: Path) -> Iterator[str]:
     server = ThreadingHTTPServer(
         ("127.0.0.1", 0),  # port 0: the OS picks a random free port
         partial(_QuietHandler, directory=str(site_root)),
+    )
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    try:
+        yield f"http://127.0.0.1:{server.server_address[1]}"
+    finally:
+        server.shutdown()
+        thread.join(timeout=5)
+        server.server_close()
+
+
+@pytest.fixture(scope="session")
+def parity_root(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """A three-agency site for strict SPA/prerendered parity checks.
+
+    The deployed corpus advances independently from the committed prerendered
+    pages between refreshes.  Parity itself is deterministic, so serve the
+    current application shell with the repository's immutable golden artifacts
+    and their matching prerendered pages.
+    """
+    docroot = tmp_path_factory.mktemp("parity-site")
+    for entry in (REPO_ROOT / "web").iterdir():
+        if entry.name not in {"agency", "data"}:
+            (docroot / entry.name).symlink_to(entry)
+    (docroot / "agency").symlink_to(GOLDEN_ROOT / "web" / "agency")
+    data_dir = docroot / "data"
+    data_dir.mkdir()
+    for entry in (REPO_ROOT / "web" / "data").iterdir():
+        (data_dir / entry.name).symlink_to(entry)
+    (data_dir / "artifacts").symlink_to(GOLDEN_ROOT / "data" / "artifacts")
+    return docroot
+
+
+@pytest.fixture(scope="session")
+def parity_base_url(parity_root: Path) -> Iterator[str]:
+    """Origin for the immutable parity fixture."""
+    server = ThreadingHTTPServer(
+        ("127.0.0.1", 0),
+        partial(_QuietHandler, directory=str(parity_root)),
     )
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()

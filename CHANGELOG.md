@@ -28,6 +28,37 @@ the declared public surface).
 ## [Unreleased]
 
 ### Fixed
+- **Conformance guidance called every non-awarded feed “close,” including feeds
+  meeting none of the three requirements (#246).** Summaries now state progress
+  from the actual 0/1/2/3 criteria met. The machine-readable credential carries
+  an independent version, publication always re-derives it from scored facts,
+  and reindex migrates mutable `latest.json`/`conformance.json` views without
+  rewriting dated historical evidence, so unchanged or unreachable feeds do
+  not preserve the old wording indefinitely.
+- **Retiring a feed alias removed it from the catalog but left its mutable
+  artifact URLs live.** Reindex skipped noncanonical directories without
+  removing `latest.json`, badges, conformance credentials, or route geometry;
+  the additive S3 publisher then preserved those objects, and an explicit
+  historical rescore could refresh them. Retirement now keeps only
+  date-shaped score evidence, removes every current-looking file locally, and
+  emits an id-only deletion manifest that all three production publishers
+  apply. The S3 cleanup expands only the fixed public filename allowlist, rejects
+  canonical ids and conflicting local files, and cannot delete dated history.
+  Targeted activation also rejects retired ids before scoring.
+- **Scorecard provenance copy inferred agency ownership from a successful
+  configured-URL fetch (#245).** The registry already records `is_official` as
+  true, false, or unknown, but artifact publication dropped it and both page
+  renderers said "the agency's own URL" or "the feed this agency publishes"
+  based only on `fetch.source == "origin"`. Schema 1.18 now carries the
+  conservative `feed.source_provenance` classification (`official`, `archive`,
+  `third_party`, or `unverified`). TransitFeeds is recognized as an archive;
+  every other unknown remains unverified. Confidence notes, the static agency
+  page, and the interactive view compose that evidence with the separate
+  origin/mirror/local retrieval record and never claim agency ownership when
+  the registry has not established it. Board and printable-report scope copy
+  now refers to the feed scored here, not data the agency publishes. Legacy
+  artifacts also render with unverified wording until the published corpus is
+  regenerated.
 - **The published rollup schema never learned the country identity fields the
   pipeline has emitted since the country program pages shipped (#121).**
   `rollups.py`'s `_rollup_identity` adds `country_code` and `country_name` to

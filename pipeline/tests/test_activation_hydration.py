@@ -205,7 +205,10 @@ def _hydrate(
     )
 
 
-def test_hydrates_exact_current_corpus_and_only_bounded_prefixes(tmp_path: Path) -> None:
+def test_hydrates_exact_current_corpus_and_only_bounded_prefixes(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     client = FakeS3(_objects())
 
     result = _hydrate(tmp_path, client)
@@ -239,6 +242,7 @@ def test_hydrates_exact_current_corpus_and_only_bounded_prefixes(tmp_path: Path)
     # agency-two fixlog, agency-one's lifecycle-expired dated object, and liveness.
     assert result.optional_misses == 3
     assert result.skipped_unregistered == 1
+    assert "title=noncurrent/unregistered index entries" in capsys.readouterr().err
 
 
 def test_paginator_consumes_every_page_for_selected_and_aggregate_prefixes(

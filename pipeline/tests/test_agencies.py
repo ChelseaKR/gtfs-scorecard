@@ -950,6 +950,25 @@ def test_alias_cycles_are_rejected() -> None:
         parse_agencies(raw)
 
 
+@pytest.mark.parametrize("terminal_status", ["deprecated", "inactive", "development"])
+def test_alias_chain_must_terminate_at_an_active_canonical_feed(
+    terminal_status: str,
+) -> None:
+    raw = {
+        "agencies": [
+            {**VALID_ENTRY, "id": "legacy", "alias_of": "intermediate"},
+            {**VALID_ENTRY, "id": "intermediate", "alias_of": "terminal"},
+            {**VALID_ENTRY, "id": "terminal", "feed_status": terminal_status},
+        ]
+    }
+
+    with pytest.raises(
+        AgencyConfigError,
+        match="alias_of chain must terminate at an active canonical feed",
+    ):
+        parse_agencies(raw)
+
+
 def test_country_typo_fails_against_assigned_iso_codes() -> None:
     import pytest
 

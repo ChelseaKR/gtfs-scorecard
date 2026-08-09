@@ -399,7 +399,11 @@ def run_canary(
     comparison proceeds over the agencies that did score.
     """
     as_of = date or dt.date.today()
-    sample = sample_agencies(sorted(AGENCIES), size=sample_size, seed=seed)
+    sample = sample_agencies(
+        sorted(agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed),
+        size=sample_size,
+        seed=seed,
+    )
     baseline: list[dict[str, Any]] = []
     candidate: list[dict[str, Any]] = []
     skipped: list[str] = []

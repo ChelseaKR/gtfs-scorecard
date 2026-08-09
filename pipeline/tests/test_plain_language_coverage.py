@@ -238,15 +238,19 @@ def _write_latest(agency_id: str, *findings: tuple[str, int]) -> None:
     )
 
 
-def _write_registry() -> None:
+def _write_registry(*agency_ids: str) -> None:
     from scorecard_pipeline.config import repo_root
 
+    ids = agency_ids or ("a-one",)
     repo_root().mkdir(parents=True, exist_ok=True)
     (repo_root() / "agencies.yaml").write_text(
         "agencies:\n"
-        "  - id: a-one\n"
-        "    name: A One\n"
-        "    static_gtfs_url: https://example.org/gtfs.zip\n"
+        + "".join(
+            f"  - id: {agency_id}\n"
+            f"    name: {agency_id}\n"
+            f"    static_gtfs_url: https://example.org/{agency_id}.zip\n"
+            for agency_id in ids
+        )
     )
 
 
@@ -274,6 +278,7 @@ def test_coverage_check_saves_a_baseline_and_warns_on_a_drop(
     }
 
     _write_latest("b-two", ("made_up_notice", 50))
+    _write_registry("a-one", "b-two")
     assert main(["coverage-check", "--date", "2026-07-13"]) == 0
     out = capsys.readouterr().out
     assert out.startswith("COVERAGE DROP")

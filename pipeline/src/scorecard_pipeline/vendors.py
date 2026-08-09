@@ -19,7 +19,7 @@ from statistics import mean, median
 from typing import Any
 from urllib.parse import urlparse
 
-from .config import artifacts_dir
+from .config import artifacts_dir, current_agency_ids
 from .metrics import expiry_status
 
 # A host needs at least this many agencies before its quality numbers carry as a
@@ -69,15 +69,13 @@ def vendor_breakdown(agency_ids: list[str] | None = None) -> list[VendorStat]:
     if agency_ids is None:
         if not root.exists():
             return []
-        # Bounded to the registry: an S3-hydrated tree can hold directories
-        # for agencies no registry version lists.
-        from .config import AGENCIES
-
-        agency_ids = sorted(
-            p.name
-            for p in root.iterdir()
-            if p.is_dir() and (p / "latest.json").exists() and (not AGENCIES or p.name in AGENCIES)
+        agency_ids = current_agency_ids(
+            sorted(p.name for p in root.iterdir() if p.is_dir() and (p / "latest.json").exists())
         )
+    else:
+        # A named program can retain a retired id in old configuration. Current
+        # operator reports still use the active-canonical registry boundary.
+        agency_ids = current_agency_ids(agency_ids)
 
     by_host: dict[str, VendorStat] = {}
     for agency_id in agency_ids:

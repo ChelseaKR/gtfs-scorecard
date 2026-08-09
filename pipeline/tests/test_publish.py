@@ -6,6 +6,8 @@ import datetime as dt
 import json
 from pathlib import Path
 
+import pytest
+
 from scorecard_pipeline import (
     RUBRIC_VERSION,
     SCHEMA_VERSION,
@@ -204,7 +206,78 @@ def test_confidence_high_when_all_measured_from_origin() -> None:
     assert conf["rt_windows"] == 1
     assert conf["feed_age_days"] == 0
     assert any("5 snapshots" in n for n in conf["notes"])
-    assert any("agency's own URL" in n for n in conf["notes"])
+    assert artifact["feed"]["source_provenance"] == "unverified"
+    assert any("Publisher ownership of that URL is not verified" in n for n in conf["notes"])
+    assert all("agency's own" not in n for n in conf["notes"])
+
+
+@pytest.mark.parametrize(
+    ("static_url", "is_official", "fetch_source", "expected_class", "expected_note"),
+    [
+        (
+            "https://agency.example/gtfs.zip",
+            True,
+            "origin",
+            "official",
+            "The feed was downloaded from the official feed URL on file.",
+        ),
+        (
+            "https://transitfeeds.com/p/example/1/latest/download",
+            None,
+            "mirror",
+            "archive",
+            "The archived feed URL on file was unreachable, so the Mobility Database's "
+            "hosted mirror copy was scored instead.",
+        ),
+        (
+            "https://third-party.example/gtfs.zip",
+            False,
+            "origin",
+            "third_party",
+            "The feed was downloaded from a third-party feed URL on file.",
+        ),
+        (
+            "https://github.com/mobilityequity/example/raw/main/gtfs.zip",
+            None,
+            "origin",
+            "unverified",
+            "The feed was downloaded from the configured feed URL. Publisher ownership of that "
+            "URL is not verified.",
+        ),
+    ],
+)
+def test_feed_source_provenance_is_explicit_and_never_inferred_from_fetch_success(
+    static_url: str,
+    is_official: bool | None,
+    fetch_source: str,
+    expected_class: str,
+    expected_note: str,
+) -> None:
+    agency = Agency(
+        id="provenance-demo",
+        name="Provenance Demo",
+        static_gtfs_url=static_url,
+        is_official=is_official,
+    )
+    fetch = FetchResult(
+        agency_id=agency.id,
+        path=Path("/tmp/gtfs.zip"),
+        url=agency.static_gtfs_url,
+        fetched_date=dt.date(2026, 6, 11),
+        sha256=FEED_SHA,
+        size_bytes=1024,
+        reused=False,
+        source=fetch_source,
+    )
+    card = build_scorecard(
+        [CategoryResult(name=name, score=90.0, summary="s") for name in ALL_CATEGORIES]
+    )
+
+    artifact = build_artifact(agency, fetch, card, GENERATED_AT)
+
+    assert artifact["feed"]["source_provenance"] == expected_class
+    assert expected_note in artifact["confidence"]["notes"]
+    assert all("agency's own" not in note for note in artifact["confidence"]["notes"])
 
 
 def test_confidence_provisional_when_realtime_missing_and_mirror_fetched() -> None:
@@ -269,6 +342,28 @@ def test_publish_writes_dated_latest_and_index() -> None:
     assert entry["feed_sha256"] == FEED_SHA
     # History carries per-category scores for trend rendering.
     assert "correctness" in entry["categories"]
+
+
+def test_publish_rederives_embedded_legacy_conformance_copy() -> None:
+    from scorecard_pipeline.conformance import CONFORMANCE_VERSION
+
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    artifact["conformance"] = {
+        "version": CONFORMANCE_VERSION - 1,
+        "awarded": False,
+        "status": "not_yet",
+        "summary": "This feed is close to the conformance mark.",
+        "criteria": [],
+    }
+
+    dated = publish(artifact)
+
+    latest = json.loads((dated.parent / "latest.json").read_text())
+    credential = json.loads((dated.parent / "conformance.json").read_text())
+    persisted = json.loads(dated.read_text())
+    for payload in (persisted["conformance"], latest["conformance"], credential):
+        assert payload["version"] == CONFORMANCE_VERSION
+        assert "close to" not in payload["summary"].lower()
 
 
 def test_enrich_index_history_provenance_backfills_local_dated_artifact() -> None:
@@ -513,6 +608,34 @@ def test_reindex_repairs_clobbered_latest_and_badge_from_newest_dated() -> None:
     index = json.loads((artifacts_dir() / "index.json").read_text())
     dates = [h["date"] for h in index["agencies"]["unitrans"]["history"]]
     assert dates == ["2026-06-16", "2026-06-19"]
+
+
+def test_reindex_migrates_current_conformance_without_rewriting_dated_history() -> None:
+    from scorecard_pipeline.conformance import CONFORMANCE_VERSION
+    from scorecard_pipeline.publish import rebuild_index
+
+    dated = publish(make_artifact(dt.date(2026, 6, 19), score=90.0))
+    legacy = json.loads(dated.read_text())
+    legacy["conformance"] = {
+        "version": CONFORMANCE_VERSION - 1,
+        "awarded": False,
+        "status": "not_yet",
+        "summary": "This feed is close to the conformance mark.",
+        "criteria": [],
+    }
+    legacy_text = json.dumps(legacy, indent=2, sort_keys=True) + "\n"
+    dated.write_text(legacy_text)
+    (dated.parent / "latest.json").write_text(legacy_text)
+
+    rebuild_index()
+
+    # Dated evidence is immutable; only mutable current views are re-derived.
+    assert dated.read_text() == legacy_text
+    latest = json.loads((dated.parent / "latest.json").read_text())
+    credential = json.loads((dated.parent / "conformance.json").read_text())
+    for payload in (latest["conformance"], credential):
+        assert payload["version"] == CONFORMANCE_VERSION
+        assert "close to" not in payload["summary"].lower()
 
 
 def test_reindex_preserves_s3_history_not_present_in_clean_checkout() -> None:
