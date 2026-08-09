@@ -313,6 +313,7 @@ def test_no_workflow_publishes_with_a_size_only_comparison() -> None:
 def test_dataset_release_packages_only_a_validated_canonical_deployment() -> None:
     workflow = _workflow("dataset-release.yml")
     daily = _workflow("scorecard.yml")
+    refresh = _workflow("refresh.yml")
 
     # Checked-in web exports are a bounded development snapshot and must never
     # be the source of a citable release.
@@ -334,6 +335,39 @@ def test_dataset_release_packages_only_a_validated_canonical_deployment() -> Non
     assert "source_mode=manual-latest" in workflow
     assert "not scheduled day-1 Daily provenance" in workflow
     assert "ref: ${{ steps.source.outputs.head_sha }}" in workflow
+    assert "fetch-depth: 0" in workflow
+    assert workflow.count("secrets.SCHEDULED_WRITER_SSH_KEY") == 1
+    assert 'git tag -s "$RELEASE_TAG" "$SOURCE_HEAD_SHA"' in workflow
+    assert 'git verify-tag -- "$RELEASE_TAG"' in workflow
+    assert 'test "$(git cat-file -t "refs/tags/${RELEASE_TAG}")" = tag' in workflow
+    assert '.object.type == "tag" and .object.sha == $object' in workflow
+    assert 'and .object.type == "commit"' in workflow
+    assert "and .object.sha == $target" in workflow
+
+    # The 15:23 intraday deploy normally occurs before the 17:47 monthly cut.
+    # Scheduled releases therefore consume the selected Daily run's exact Pages
+    # artifact instead of expecting that run to remain the mutable live deploy.
+    release_cron = re.search(r'cron: "(\d+) (\d+) 1 \* \*"', workflow)
+    refresh_cron = re.search(r'cron: "(\d+) \*/(\d+) \* \* \*"', refresh)
+    assert release_cron is not None and refresh_cron is not None
+    release_minute = int(release_cron.group(2)) * 60 + int(release_cron.group(1))
+    refresh_minute = int(refresh_cron.group(1))
+    refresh_step = int(refresh_cron.group(2))
+    prior_refreshes = [
+        hour * 60 + refresh_minute
+        for hour in range(0, 24, refresh_step)
+        if hour * 60 + refresh_minute < release_minute
+    ]
+    assert max(prior_refreshes) == 15 * 60 + 23
+    scheduled_source = workflow[
+        workflow.index('if [ "$SOURCE_MODE" = scheduled-daily ]') : workflow.index(
+            "else\n            # Manual cuts retain latest-production semantics"
+        )
+    ]
+    assert 'gh run download "$SOURCE_RUN_ID"' in scheduled_source
+    assert "--name github-pages" in scheduled_source
+    assert 'tar -xf "${archives[0]}" -C "$site"' in scheduled_source
+    assert "gtfsscorecard.org" not in scheduled_source
 
     # A successful Daily workflow includes the reusable Pages deployment and
     # its production smoke, so selecting only a completed/successful Daily run
@@ -343,17 +377,22 @@ def test_dataset_release_packages_only_a_validated_canonical_deployment() -> Non
     assert "needs: collect" in daily[deploy:]
     assert "uses: ./.github/workflows/pages.yml" in daily[deploy:]
 
-    before = workflow.index("deployment-before.json")
-    manifest = workflow.index("release-manifest.json?release=")
-    catalog = workflow.index("for f in catalog.json catalog.csv dataset.json dataset.csv ntd.json")
-    parquet = workflow.index("api/v1/agencies.parquet?release=${request_id}-parquet")
-    index = workflow.index("data/artifacts/index.json?release=${request_id}-index")
-    after = workflow.index("deployment-after.json")
-    compare = workflow.index('cmp "$source/deployment-before.json"')
+    manual = workflow.index("# Manual cuts retain latest-production semantics")
+    before = workflow.index("deployment-before.json", manual)
+    manifest = workflow.index("release-manifest.json?release=", manual)
+    catalog = workflow.index(
+        "for f in catalog.json catalog.csv dataset.json dataset.csv ntd.json", manual
+    )
+    parquet = workflow.index("api/v1/agencies.parquet?release=${request_id}-parquet", manual)
+    index = workflow.index("data/artifacts/index.json?release=${request_id}-index", manual)
+    latest = workflow.index("data/artifacts/${id}/latest.json?release=", manual)
+    after = workflow.index("deployment-after.json", manual)
+    compare = workflow.index('cmp "$source/deployment-before.json"', manual)
     validator = workflow.index("python -m scorecard_pipeline.dataset_release")
-    release = workflow.index('gh release create "$tag"')
+    promotion = workflow.index("scorecard_pipeline.dataset_release_promotion")
 
-    assert before < manifest < catalog < parquet < index < after < compare < validator < release
+    assert before < manifest < catalog < parquet < index < latest < after < compare < validator
+    assert validator < promotion
     assert ".schema_version == 3 and .commit == $commit" in workflow
     assert ".source_run_id == $source_run_id" in workflow
     assert ".source_run_attempt == $source_run_attempt" in workflow
@@ -362,25 +401,52 @@ def test_dataset_release_packages_only_a_validated_canonical_deployment() -> Non
     assert "(.files | keys | sort)" in workflow
     assert "sha256sum --check" in workflow
     assert "Cache-Control: no-cache, no-store" in workflow
-    assert "repos/${GITHUB_REPOSITORY}/releases/tags/${tag}" in workflow
-    assert "([.assets[].name] | sort)" in workflow
-    assert '"SHA256SUMS"' in workflow
-    assert '"PROVENANCE.json"' in workflow
-    assert '.state == "uploaded" and .size > 0' in workflow
-    assert '.digest | test("^sha256:[0-9a-f]{64}$")' in workflow
-    assert 'gh release download "$tag"' in workflow
-    assert "sha256sum --check --strict SHA256SUMS" in workflow
-    assert '.source_mode == "scheduled-daily"' in workflow
-    assert ".source_run_id == $source_run_id" in workflow
-    assert '"$verify_dir/PROVENANCE.json"' in workflow
-    assert 'test "$digest" = "sha256:$byte_sha"' in workflow
-    assert '.object.type == "commit" and .object.sha == $target' in workflow
-    assert "if tag_json=$(gh api" in workflow
     assert '--artifacts-root "$site/data/artifacts"' in workflow
     assert '--web-root "$site"' in workflow
     assert "--bundle-root ../bundle" in workflow
     assert "open('bundle/catalog.json')" in workflow
-    assert '--target "$SOURCE_HEAD_SHA"' in workflow
-    assert workflow.index('gh release create "$tag"') < workflow.rindex(
-        'gh release download "$tag"'
+    assert "jq -er '.agencies | keys[]'" in workflow
+    assert 'find "$site/data/artifacts" -mindepth 2 -maxdepth 2 -type f' in workflow
+    assert "jq -e --arg id \"$id\" '.agency.id == $id'" in workflow
+    assert '--source-mode "$SOURCE_MODE"' in workflow
+    assert "--stage-only" in workflow
+    assert "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f" in workflow
+    assert "dataset-release-promotion-${{ steps.bundle.outputs.tag }}" in workflow
+    assert "pipeline/scripts/promote_dataset_release.sh ${tag} ${GITHUB_RUN_ID}" in workflow
+    assert "gh release create" not in workflow
+
+
+def test_dataset_release_promotion_is_draft_first_and_fail_closed() -> None:
+    promotion = (ROOT / "pipeline/src/scorecard_pipeline/dataset_release_promotion.py").read_text(
+        encoding="utf-8"
+    )
+
+    create = promotion.index('"draft": True')
+    draft_verify = promotion.index("verified_draft = _refresh_until_exact")
+    immutable = promotion.index("client.immutable_releases_enabled()")
+    publish = promotion.index("client.publish(_release_id(verified_draft))")
+    public_verify = promotion.index("_refresh_until_exact(client, desired, local, draft=False)")
+    assert create < draft_verify < immutable < publish < public_verify
+    assert 'release.get("draft") is False' in promotion
+    assert 'return "already-published"' in promotion
+    assert "release contains unexpected asset" in promotion
+    assert "downloaded release bytes differ" in promotion
+    assert 'expected["immutable"] = True' in promotion
+    assert 'f"{self.api}/immutable-releases"' in promotion
+
+
+def test_dataset_release_publication_uses_one_successful_run_bound_package() -> None:
+    script = (ROOT / "pipeline/scripts/promote_dataset_release.sh").read_text(encoding="utf-8")
+
+    assert "git status --porcelain --untracked-files=all" in script
+    assert '"$(git rev-parse HEAD)" != "$(git rev-parse origin/main)"' in script
+    assert 'gh run view "$workflow_run_id"' in script
+    assert '.name == "Dataset release" and .conclusion == "success"' in script
+    assert 'artifact="dataset-release-promotion-${tag}-${workflow_run_id}-' in script
+    assert 'gh run download "$workflow_run_id"' in script
+    assert 'git verify-tag -- "$tag"' in script
+    assert "scorecard_pipeline.dataset_release_promotion" in script
+    assert "--stage-only" not in script
+    assert script.index('gh run download "$workflow_run_id"') < script.index(
+        "scorecard_pipeline.dataset_release_promotion"
     )
