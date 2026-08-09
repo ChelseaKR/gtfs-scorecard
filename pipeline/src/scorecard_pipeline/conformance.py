@@ -26,6 +26,11 @@ from .metrics import expiry_status, resolve_service_horizon_status
 AWARDED = "awarded"
 NOT_YET = "not_yet"
 
+# Version the machine-readable credential separately from the score/artifact
+# schema. Its criteria may stay identical while public guidance wording changes;
+# current pointers must then be re-derived instead of carrying stale copy.
+CONFORMANCE_VERSION = 2
+
 # A feed earns the mark when it states wheelchair access on at least this share
 # of stops and trips. Presence, not usability: see the module docstring.
 ACCESSIBILITY_FLOOR = 90.0
@@ -46,6 +51,7 @@ class Conformance:
 
     def to_dict(self) -> dict[str, Any]:
         return {
+            "version": CONFORMANCE_VERSION,
             "awarded": self.awarded,
             "status": AWARDED if self.awarded else NOT_YET,
             "summary": self.summary,

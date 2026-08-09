@@ -30,6 +30,7 @@ from scorecard_pipeline.cli import (
     _liveness_unchanged,
 )
 from scorecard_pipeline.config import AGENCIES, Agency
+from scorecard_pipeline.conformance import CONFORMANCE_VERSION
 from scorecard_pipeline.liveness import (
     CHANGED,
     UNCHANGED,
@@ -83,6 +84,7 @@ def _write_current_artifact(root: Path, **overrides: object) -> Path:
             "id": SCORING_PROFILE_ID,
             "rubric_version": RUBRIC_VERSION,
         },
+        "conformance": {"version": CONFORMANCE_VERSION},
     }
     artifact.update(overrides)
     path = root / "data" / "artifacts" / _TEST_ID / "latest.json"
@@ -333,6 +335,8 @@ def test_liveness_unchanged_persists_state(one_agency: str, tmp_path: Path) -> N
         {"scoring_profile": "not-an-object"},
         {"scoring_profile": {"id": "old-profile", "rubric_version": RUBRIC_VERSION}},
         {"scoring_profile": {"id": SCORING_PROFILE_ID, "rubric_version": "0.9"}},
+        {"conformance": "not-an-object"},
+        {"conformance": {"version": CONFORMANCE_VERSION - 1}},
     ],
 )
 def test_artifact_contract_rejects_stale_producer_inputs(

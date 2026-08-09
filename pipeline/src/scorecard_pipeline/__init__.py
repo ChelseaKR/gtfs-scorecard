@@ -5,7 +5,8 @@ from .instance import SITE_NAME as _SITE_NAME
 
 # 1.18: additive feed.source_provenance classification, separating registry
 # evidence about an official, third-party, archived, or unverified configured
-# source from fetch.source (how this run obtained the bytes).
+# source from fetch.source (how this run obtained the bytes), plus a versioned
+# conformance credential so derived public guidance can be migrated safely.
 # 1.17: additive headsign applicability details: the published share, scored
 # share, applicable trip count, and narrowly evidenced loop exemptions.
 # 1.16: additive exact reachable_kinds in Realtime details. The feature API

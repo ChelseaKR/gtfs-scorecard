@@ -7,7 +7,12 @@ from typing import Any
 import pytest
 
 from scorecard_pipeline.badge import render_mark
-from scorecard_pipeline.conformance import AWARDED, NOT_YET, assess
+from scorecard_pipeline.conformance import (
+    AWARDED,
+    CONFORMANCE_VERSION,
+    NOT_YET,
+    assess,
+)
 
 
 def _artifact(
@@ -41,6 +46,7 @@ def _artifact(
 def test_clean_feed_earns_the_mark() -> None:
     mark = assess(_artifact())
     assert mark.awarded is True
+    assert mark.to_dict()["version"] == CONFORMANCE_VERSION
     assert mark.to_dict()["status"] == AWARDED
     assert all(c.met for c in mark.criteria)
 

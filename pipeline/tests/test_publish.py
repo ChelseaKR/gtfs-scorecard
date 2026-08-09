@@ -344,6 +344,28 @@ def test_publish_writes_dated_latest_and_index() -> None:
     assert "correctness" in entry["categories"]
 
 
+def test_publish_rederives_embedded_legacy_conformance_copy() -> None:
+    from scorecard_pipeline.conformance import CONFORMANCE_VERSION
+
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    artifact["conformance"] = {
+        "version": CONFORMANCE_VERSION - 1,
+        "awarded": False,
+        "status": "not_yet",
+        "summary": "This feed is close to the conformance mark.",
+        "criteria": [],
+    }
+
+    dated = publish(artifact)
+
+    latest = json.loads((dated.parent / "latest.json").read_text())
+    credential = json.loads((dated.parent / "conformance.json").read_text())
+    persisted = json.loads(dated.read_text())
+    for payload in (persisted["conformance"], latest["conformance"], credential):
+        assert payload["version"] == CONFORMANCE_VERSION
+        assert "close to" not in payload["summary"].lower()
+
+
 def test_enrich_index_history_provenance_backfills_local_dated_artifact() -> None:
     artifact = make_artifact(dt.date(2026, 6, 11))
     agency_dir = artifacts_dir() / "unitrans"
@@ -586,6 +608,34 @@ def test_reindex_repairs_clobbered_latest_and_badge_from_newest_dated() -> None:
     index = json.loads((artifacts_dir() / "index.json").read_text())
     dates = [h["date"] for h in index["agencies"]["unitrans"]["history"]]
     assert dates == ["2026-06-16", "2026-06-19"]
+
+
+def test_reindex_migrates_current_conformance_without_rewriting_dated_history() -> None:
+    from scorecard_pipeline.conformance import CONFORMANCE_VERSION
+    from scorecard_pipeline.publish import rebuild_index
+
+    dated = publish(make_artifact(dt.date(2026, 6, 19), score=90.0))
+    legacy = json.loads(dated.read_text())
+    legacy["conformance"] = {
+        "version": CONFORMANCE_VERSION - 1,
+        "awarded": False,
+        "status": "not_yet",
+        "summary": "This feed is close to the conformance mark.",
+        "criteria": [],
+    }
+    legacy_text = json.dumps(legacy, indent=2, sort_keys=True) + "\n"
+    dated.write_text(legacy_text)
+    (dated.parent / "latest.json").write_text(legacy_text)
+
+    rebuild_index()
+
+    # Dated evidence is immutable; only mutable current views are re-derived.
+    assert dated.read_text() == legacy_text
+    latest = json.loads((dated.parent / "latest.json").read_text())
+    credential = json.loads((dated.parent / "conformance.json").read_text())
+    for payload in (latest["conformance"], credential):
+        assert payload["version"] == CONFORMANCE_VERSION
+        assert "close to" not in payload["summary"].lower()
 
 
 def test_reindex_preserves_s3_history_not_present_in_clean_checkout() -> None:

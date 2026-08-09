@@ -644,10 +644,18 @@ def test_current_artifact_requires_feed_source_provenance() -> None:
         validate_artifact(artifact)
 
 
+def test_current_artifact_requires_versioned_conformance() -> None:
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    del artifact["conformance"]["version"]
+    with pytest.raises(ValidationError, match="version"):
+        validate_artifact(artifact)
+
+
 def test_historical_artifact_before_source_provenance_still_conforms() -> None:
     artifact = make_artifact(dt.date(2026, 6, 11))
     artifact["schema_version"] = "1.17"
     del artifact["feed"]["source_provenance"]
+    del artifact["conformance"]["version"]
     validate_artifact(artifact)
 
 

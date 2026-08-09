@@ -196,7 +196,7 @@ def build_artifact(
     fetch_block.update(
         {"reader_archive_normalized": True} if fetch.reader_archive_normalized else {}
     )
-    return {
+    artifact: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         # Provenance: which methodology and which validator produced this grade,
         # so a snapshot is citable and a trend can separate a feed change from a
@@ -230,6 +230,8 @@ def build_artifact(
         "confidence": _confidence(card, fetch, generated_at, source_provenance),
         **card,
     }
+    artifact["conformance"] = _current_conformance(artifact)
+    return artifact
 
 
 def _write_atomic(path: Path, text: str) -> None:
@@ -303,9 +305,30 @@ def validate_artifact(artifact: dict[str, Any]) -> None:
     _artifact_validator().validate(artifact)
 
 
+def _current_conformance(artifact: dict[str, Any]) -> dict[str, Any]:
+    """Derive today's versioned credential without trusting embedded copy."""
+
+    from .conformance import assess
+    from .mode_language import adapt_artifact_language
+
+    carrier: dict[str, Any] = {"conformance": assess(artifact).to_dict()}
+    if "mode_profile" in artifact:
+        carrier["mode_profile"] = artifact["mode_profile"]
+    return dict(adapt_artifact_language(carrier)["conformance"])
+
+
+def _with_current_conformance(artifact: dict[str, Any]) -> dict[str, Any]:
+    """Copy an artifact and replace its derived conformance presentation."""
+
+    current = dict(artifact)
+    current["conformance"] = _current_conformance(artifact)
+    return current
+
+
 def publish(artifact: dict[str, Any]) -> Path:
     """Validate the artifact against the published schema, then write the dated
     artifact, refresh latest.json, and update the index."""
+    artifact = _with_current_conformance(artifact)
     validate_artifact(artifact)
     agency_id = str(artifact["agency"]["id"])
     date = str(artifact["snapshot_date"])
@@ -357,11 +380,10 @@ def _write_mark(agency_dir: Path, artifact: dict[str, Any]) -> None:
     seal is written only when the feed earns the mark, and a stale seal is
     removed when it no longer does, so the presence of the file is the credential.
     """
-    conformance = artifact.get("conformance")
-    if conformance is None:
-        from .conformance import assess
-
-        conformance = assess(artifact).to_dict()
+    # This is derived presentation over scored facts. Recompute even when an
+    # artifact embeds an older result so conformance.json and the seal cannot
+    # preserve stale or misleading guidance indefinitely.
+    conformance = _current_conformance(artifact)
     _write_atomic(agency_dir / "conformance.json", json.dumps(conformance, indent=2) + "\n")
     mark_path = agency_dir / "mark.svg"
     if conformance.get("awarded"):
@@ -714,10 +736,13 @@ def rebuild_index() -> Path:
         # pooled corpus-wide for the calibration stats.
         all_episodes.extend(agency_episodes(agency_artifacts))
         if history and newest is not None:
-            # Re-derive latest.json, badge, and mark so a clobbered copy is repaired.
-            _write_json(agency_dir / "latest.json", newest)
-            _write_badge(agency_dir, newest)
-            _write_mark(agency_dir, newest)
+            # Re-derive mutable current surfaces without rewriting immutable
+            # dated evidence. This also migrates versioned presentation fields
+            # (such as conformance guidance) for unchanged or unreachable feeds.
+            current = _with_current_conformance(newest)
+            _write_json(agency_dir / "latest.json", current)
+            _write_badge(agency_dir, current)
+            _write_mark(agency_dir, current)
             # S3 is the durable dated-history store. A clean CI checkout keeps
             # only the repository's cutover snapshot plus the newest two days,
             # while index.json carries the compact complete trend. Preserve

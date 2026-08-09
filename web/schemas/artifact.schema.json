@@ -51,6 +51,11 @@
             "required": [
               "source_provenance"
             ]
+          },
+          "conformance": {
+            "required": [
+              "version"
+            ]
           }
         }
       }
@@ -361,7 +366,13 @@
     },
     "conformance": {
       "type": "object",
-      "description": "Conformance-mark credential over the scores (conformance.assess)."
+      "description": "Conformance-mark credential over the scores (conformance.assess). The independent version changes when derived machine-readable guidance must be refreshed.",
+      "properties": {
+        "version": {
+          "type": "integer",
+          "const": 2
+        }
+      }
     },
     "geo": {
       "type": "object",

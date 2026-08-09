@@ -28,6 +28,13 @@ the declared public surface).
 ## [Unreleased]
 
 ### Fixed
+- **Conformance guidance called every non-awarded feed “close,” including feeds
+  meeting none of the three requirements (#246).** Summaries now state progress
+  from the actual 0/1/2/3 criteria met. The machine-readable credential carries
+  an independent version, publication always re-derives it from scored facts,
+  and reindex migrates mutable `latest.json`/`conformance.json` views without
+  rewriting dated historical evidence, so unchanged or unreachable feeds do
+  not preserve the old wording indefinitely.
 - **Scorecard provenance copy inferred agency ownership from a successful
   configured-URL fetch (#245).** The registry already records `is_official` as
   true, false, or unknown, but artifact publication dropped it and both page

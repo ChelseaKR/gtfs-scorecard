@@ -576,6 +576,7 @@ def _artifact_contract_current(agency_id: str) -> bool:
     """
     from . import RUBRIC_VERSION, SCHEMA_VERSION, SCORING_PROFILE_ID
     from .config import artifacts_dir
+    from .conformance import CONFORMANCE_VERSION
     from .validate import VALIDATOR_VERSION
 
     path = artifacts_dir() / agency_id / "latest.json"
@@ -589,12 +590,16 @@ def _artifact_contract_current(agency_id: str) -> bool:
     profile = artifact.get("scoring_profile") or {}
     if not isinstance(profile, dict):
         return False
+    conformance = artifact.get("conformance") or {}
+    if not isinstance(conformance, dict):
+        return False
     return bool(
         str(artifact.get("schema_version") or "") == SCHEMA_VERSION
         and str(artifact.get("rubric_version") or "") == RUBRIC_VERSION
         and str(artifact.get("validator_version") or "") == VALIDATOR_VERSION
         and str(profile.get("id") or "") == SCORING_PROFILE_ID
         and str(profile.get("rubric_version") or "") == RUBRIC_VERSION
+        and conformance.get("version") == CONFORMANCE_VERSION
     )
 
 
