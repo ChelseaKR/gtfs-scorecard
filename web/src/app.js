@@ -3192,6 +3192,27 @@ function peerContext(dirRecord) {
   return place ? `<p class="peer-context">Catalogued in <bdi>${esc(place)}</bdi>.</p>` : "";
 }
 
+/** @param {any} artifact */
+function feedSourceLede(artifact) {
+  const provenance = artifact?.feed?.source_provenance;
+  const fetchSource = artifact?.confidence?.fetch_source || artifact?.fetch?.source || "unknown";
+  if (fetchSource === "unknown") return "Based on a snapshot whose download source was not recorded";
+  if (fetchSource === "local") return "Based on a local feed copy";
+  if (fetchSource === "mirror") {
+    if (provenance === "official")
+      return "Based on a Mobility Database mirror copy of an official feed source";
+    if (provenance === "archive")
+      return "Based on a Mobility Database mirror copy of an archived feed listing";
+    if (provenance === "third_party")
+      return "Based on a Mobility Database mirror copy of a third-party feed source";
+    return "Based on a Mobility Database mirror copy of the feed source on file; publisher ownership is not verified";
+  }
+  if (provenance === "official") return "Based on the official feed source on file";
+  if (provenance === "archive") return "Based on an archived feed source on file";
+  if (provenance === "third_party") return "Based on a third-party feed source on file";
+  return "Based on the feed source on file; publisher ownership is not verified";
+}
+
 /** @param {string} name @param {any} artifact @param {any[]} history @param {any} [dirRecord] */
 function boardHero(name, artifact, history, dirRecord) {
   const o = artifact.overall;
@@ -3200,7 +3221,7 @@ function boardHero(name, artifact, history, dirRecord) {
     <div class="board-inner">
       <p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status · checked ${formatDate(artifact.snapshot_date)}</p>
       <h1 class="board-title"><bdi>${esc(name)}</bdi></h1>
-      <p class="board-sub">Based on the feed this agency publishes</p>
+      <p class="board-sub">${esc(feedSourceLede(artifact))}</p>
       ${mode ? `<p class="board-mode"><span>Service mode</span> ${esc(mode)}</p>` : ""}
       <div class="grade-block">
         ${gradeReel(o.grade)}

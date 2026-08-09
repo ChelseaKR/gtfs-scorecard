@@ -1816,6 +1816,8 @@ def test_board_page_leads_with_progress_and_frames_fixes_as_asks() -> None:
     # The producing tool is named so the board sees who does the work (R5).
     assert "Trillium" in html
     # It says what the grade does and does not measure.
+    assert "schedule data in the feed scored here" in html
+    assert "schedule data this agency publishes" not in html
     assert "not service" in html
     assert '<meta name="robots" content="noindex,follow">' in html
 
@@ -4573,7 +4575,7 @@ def test_press_page_guards_the_no_shaming_line() -> None:
     assert "CC BY 4.0" in html
 
 
-def _confidence_artifact(**overrides: Any) -> dict[str, Any]:
+def _confidence_artifact(source_provenance: str = "official", **overrides: Any) -> dict[str, Any]:
     conf: dict[str, Any] = {
         "level": "medium",
         "measured_categories": 3,
@@ -4583,18 +4585,18 @@ def _confidence_artifact(**overrides: Any) -> dict[str, Any]:
         "feed_age_days": 0,
         "notes": [
             "Realtime quality was not measured this run. It does not count against the grade.",
-            "The feed was downloaded from the agency's own URL.",
+            "The feed was downloaded from the official feed URL on file.",
         ],
     }
     conf.update(overrides)
-    return {"confidence": conf}
+    return {"confidence": conf, "feed": {"source_provenance": source_provenance}}
 
 
 def test_confidence_section_renders_quiet_line_and_breakdown() -> None:
     from scorecard_pipeline.render_site import _confidence_section
 
     html = _confidence_section(_confidence_artifact())
-    assert "Measured 3 of 4 score categories from the agency" in html
+    assert "Measured 3 of 4 score categories from the official feed URL on file" in html
     assert "How we measured this" in html
     assert "Confidence in this measurement: medium." in html
     assert "Realtime quality was not measured this run." in html
@@ -4615,6 +4617,55 @@ def test_confidence_section_names_the_unknown_source() -> None:
 
     html = _confidence_section(_confidence_artifact(fetch_source="unknown"))
     assert "original source was not recorded" in html
+
+
+def test_confidence_section_fails_closed_for_legacy_or_unverified_ownership() -> None:
+    from scorecard_pipeline.render_site import _confidence_section
+
+    artifact = _confidence_artifact(
+        source_provenance="unverified",
+        notes=["The feed was downloaded from the agency's own URL."],
+    )
+    html = _confidence_section(artifact)
+
+    assert "publisher not verified" in html
+    assert "agency's own" not in html
+
+
+@pytest.mark.parametrize(
+    ("source_provenance", "fetch_source", "expected"),
+    [
+        ("official", "origin", "Based on the official feed source on file"),
+        ("archive", "origin", "Based on an archived feed source on file"),
+        (
+            "archive",
+            "mirror",
+            "Based on a Mobility Database mirror copy of an archived feed listing",
+        ),
+        ("third_party", "origin", "Based on a third-party feed source on file"),
+        (
+            "unverified",
+            "origin",
+            "Based on the feed source on file; publisher ownership is not verified",
+        ),
+    ],
+)
+def test_board_hero_names_source_provenance_without_assuming_agency_ownership(
+    source_provenance: str, fetch_source: str, expected: str
+) -> None:
+    artifact = {
+        "overall": {"grade": "B", "score": 85},
+        "snapshot_date": "2026-08-08",
+        "categories": {},
+        "feed": {"source_provenance": source_provenance},
+        "confidence": {"fetch_source": fetch_source},
+    }
+
+    html = _board_hero("Demo Transit", "demo", artifact, [])
+
+    assert expected in html
+    assert "this agency publishes" not in html
+    assert "agency's own" not in html
 
 
 def test_confidence_section_empty_for_pre_1_5_artifacts() -> None:
@@ -4656,7 +4707,9 @@ def test_agency_page_carries_the_confidence_line() -> None:
     )
     artifact = build_artifact(agency, fetch, card, dt.datetime(2026, 6, 11, tzinfo=dt.UTC))
     html = _render_agency(artifact)
-    assert "Measured 2 of 4 score categories from the agency" in html
+    assert "Measured 2 of 4 score categories from the feed URL on file" in html
+    assert "publisher not verified" in html
+    assert "agency's own" not in html
     assert "How we measured this" in html
     title = html.split("<title>", 1)[1].split("</title>", 1)[0]
     description = html.split('<meta name="description" content="', 1)[1].split('">', 1)[0]

@@ -49,6 +49,7 @@ from .config import Agency, artifacts_dir
 from .conformance import assess as conformance_assess
 from .constants_export import GRADE_RANK
 from .directory import build_directory
+from .feed_provenance import feed_source_lede
 from .feeddiff import FeedDiff, diff_artifacts
 from .findings_national import agency_findings, plain_language_coverage
 from .fixlog import load_fixlog
@@ -1177,7 +1178,7 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         '<div class="board-hero" id="report-overview"><div class="board-inner">'
         f'<p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status &middot; checked {esc(artifact["snapshot_date"])}</p>'
         f'<h1 class="board-title"><bdi>{esc(agency_name)}</bdi></h1>'
-        '<p class="board-sub">Based on the feed this agency publishes</p>'
+        f'<p class="board-sub">{esc(feed_source_lede(_artifact_source_provenance(artifact), _artifact_fetch_source(artifact)))}</p>'
         f"{mode_html}"
         f'<div class="grade-block">{reel}'
         f'<div class="score-block"><div><span class="score-big">{o["score"]}</span><span class="score-of"> / 100</span></div>'
@@ -1250,14 +1251,41 @@ def _liveness_note(record: dict[str, Any] | None, now: dt.datetime | None = None
     return f'<p class="monitoring-note">{esc("; ".join(parts))}.</p>'
 
 
-# How the quiet confidence line names the fetch source (EXP-01). Keyed by the
-# artifact's confidence.fetch_source (fetch.py: origin | mirror | unknown); an
-# unrecognized value falls back to no phrase rather than guessing.
-_CONFIDENCE_SOURCE_PHRASES = {
-    "origin": " from the agency's own feed",
-    "mirror": " from the Mobility Database's mirror copy of the feed",
-    "unknown": " from a snapshot whose original source was not recorded",
-}
+def _artifact_source_provenance(artifact: dict[str, Any]) -> object:
+    """Configured-source classification, absent on artifacts before schema 1.18."""
+
+    feed = artifact.get("feed")
+    return feed.get("source_provenance") if isinstance(feed, dict) else None
+
+
+def _artifact_fetch_source(artifact: dict[str, Any]) -> object:
+    """How the bytes were obtained, preferring the confidence contract."""
+
+    confidence = artifact.get("confidence")
+    if isinstance(confidence, dict) and confidence.get("fetch_source"):
+        return confidence["fetch_source"]
+    fetch = artifact.get("fetch")
+    return fetch.get("source") if isinstance(fetch, dict) else "unknown"
+
+
+def _confidence_source_phrase(artifact: dict[str, Any]) -> str:
+    """Quiet-line source wording; legacy/malformed ownership fails closed."""
+
+    provenance = _artifact_source_provenance(artifact)
+    fetch_source = _artifact_fetch_source(artifact)
+    if fetch_source == "mirror":
+        return " from the Mobility Database's mirror copy of the feed"
+    if fetch_source == "unknown":
+        return " from a snapshot whose original source was not recorded"
+    if fetch_source == "local":
+        return " from a local feed copy"
+    if provenance == "official":
+        return " from the official feed URL on file"
+    if provenance == "archive":
+        return " from the archived feed URL on file"
+    if provenance == "third_party":
+        return " from the third-party feed URL on file"
+    return " from the feed URL on file (publisher not verified)"
 
 
 def _confidence_section(artifact: dict[str, Any]) -> str:
@@ -1270,14 +1298,21 @@ def _confidence_section(artifact: dict[str, Any]) -> str:
     conf = artifact.get("confidence")
     if not conf:
         return ""
-    source_phrase = _CONFIDENCE_SOURCE_PHRASES.get(str(conf.get("fetch_source", "")), "")
+    source_phrase = _confidence_source_phrase(artifact)
     line = (
         f"Measured {conf.get('measured_categories', 0)} of "
         f"{conf.get('total_categories', 0)} score categories{source_phrase}."
     )
     level = str(conf.get("level", ""))
     level_html = f"<p>Confidence in this measurement: {esc(level)}.</p>" if level else ""
-    notes = "".join(f"<li>{esc(note)}</li>" for note in conf.get("notes", []))
+    # Old artifacts embedded two claims that equated a successful configured
+    # fetch with agency ownership. A code-only site rebuild must fail closed
+    # before the corpus is regenerated with schema 1.18 provenance.
+    notes = "".join(
+        f"<li>{esc(note)}</li>"
+        for note in conf.get("notes", [])
+        if "agency's own" not in str(note).casefold()
+    )
     notes_html = f"<ul>{notes}</ul>" if notes else ""
     return (
         f'<p class="confidence-note">{esc(line)}</p>\n'
@@ -3279,7 +3314,7 @@ def _render_board_page(
     </header>
     <section aria-labelledby="board-what-h">
       <h2 id="board-what-h">What this grade measures</h2>
-      <p>The quality of the schedule data this agency publishes for trip-planning
+      <p>The quality of the schedule data in the feed scored here for trip-planning
       apps: whether riders using Google Maps, Apple Maps, or Transit see current,
       correct, and complete information. It measures the data feed, not service
       quality or operations.</p>

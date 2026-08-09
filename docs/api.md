@@ -64,7 +64,7 @@ page counts.
 
 ## Versioning
 
-Every artifact carries a `schema_version` (currently `1.17`). The rule for
+Every artifact carries a `schema_version` (currently `1.18`). The rule for
 consumers: tolerate added fields, and treat a change in the major version as a
 breaking change worth pinning against. New fields are additive within a major
 version. When a field's meaning changes or a field is removed, the major
@@ -200,7 +200,7 @@ Changelog:
 
 ```jsonc
 {
-  "schema_version": "1.17",
+  "schema_version": "1.18",
   "rubric_version": "1.3",
   "scoring_profile": {
     "id": "gtfs-scorecard-1.3",
@@ -214,7 +214,8 @@ Changelog:
               "operating_note": "optional curator-verified status; absent if unset" },
   "generated_at": "2026-06-12T13:25:01+00:00",   // when this grade was produced (retrieved_at in the catalog)
   "snapshot_date": "2026-06-12",
-  "feed": { "static_url": "...", "sha256": "...", "size_bytes": 0, "license_note": "..." },
+  "feed": { "static_url": "...", "sha256": "...", "size_bytes": 0, "license_note": "...",
+            "source_provenance": "official" }, // or archive, third_party, unverified
   "mode_profile": {
     "measured": true, "graded": false,
     "primary_mode": "ferry", "primary_mode_label": "Ferry",
@@ -309,6 +310,13 @@ A category is either `"status": "measured"` (has `score`, `summary`,
 `findings`, `details`) or not measured (`"status": "not_yet_measured"` with a
 neutral `summary` and no score). An agency without realtime is never a zero.
 
+`feed.source_provenance` states the registry-backed relationship between the
+configured URL and its publisher: `official`, `third_party`, `archive`, or
+`unverified`. A recognized TransitFeeds URL is classified as an archive;
+otherwise the registry's tri-state `is_official` evidence determines the value,
+and absence stays unverified. A successful request is never ownership evidence.
+This field is required on schema 1.18 artifacts and absent on older snapshots.
+
 The `fetch` block states how the graded bytes were obtained. When an origin
 403s or times out, the pipeline scores the MobilityData hosted mirror instead
 of dropping the agency; `"source": "mirror"` makes that visible, since a mirror
@@ -373,7 +381,7 @@ whole picture in a single request rather than fetching each `latest.json`.
 ```jsonc
 {
   "source": "https://gtfsscorecard.org",
-  "schema_version": "1.17",
+  "schema_version": "1.18",
   "rubric_version": "1.3",
   "license": "CC-BY-4.0",
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
@@ -609,7 +617,7 @@ rather than left for a consumer to discover.
 
 ```jsonc
 {
-  "schema_version": "1.17",
+  "schema_version": "1.18",
   "license": "CC-BY-4.0",
   "generated_at": "2026-06-20T13:25:01+00:00",
   "feed_record_count": 1128,
@@ -635,7 +643,7 @@ rather than left for a consumer to discover.
 
 ```jsonc
 {
-  "schema_version": "1.17",
+  "schema_version": "1.18",
   "rollup": { "id": "california", "name": "California agencies" },
   "agency_count": 2,
   "average_score": 78.2,

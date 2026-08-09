@@ -96,6 +96,43 @@ def _assert_reader_profile_resolver_fails_closed(source: str) -> None:
     ]
 
 
+def _feed_source_ledes(source: str) -> list[str]:
+    cases = [
+        {"feed": {"source_provenance": "official"}, "confidence": {"fetch_source": "origin"}},
+        {"feed": {"source_provenance": "archive"}, "confidence": {"fetch_source": "origin"}},
+        {"feed": {"source_provenance": "archive"}, "confidence": {"fetch_source": "mirror"}},
+        {
+            "feed": {"source_provenance": "third_party"},
+            "confidence": {"fetch_source": "origin"},
+        },
+        {
+            "feed": {"source_provenance": "unverified"},
+            "confidence": {"fetch_source": "origin"},
+        },
+        {"feed": {}, "confidence": {"fetch_source": "origin"}},
+    ]
+    harness = """
+const lede = eval("(" + process.argv[1] + ")");
+const cases = JSON.parse(process.argv[2]);
+process.stdout.write(JSON.stringify(cases.map(lede)));
+"""
+    node = shutil.which("node")
+    assert node is not None
+    completed = subprocess.run(  # noqa: S603 - fixed executable and test-owned inputs
+        [
+            node,
+            "-e",
+            harness,
+            _function_source(source, "feedSourceLede"),
+            json.dumps(cases),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return json.loads(completed.stdout)  # type: ignore[no-any-return]
+
+
 def test_spa_ntd_and_guidance_are_country_aware() -> None:
     app = (ROOT / "web" / "src" / "app.js").read_text()
     assert 'artifact.agency?.country || "US"' in app
@@ -144,6 +181,20 @@ def test_spa_comparisons_disclose_the_full_producer_contract() -> None:
 
 def test_spa_reader_archive_profile_resolver_fails_closed() -> None:
     _assert_reader_profile_resolver_fails_closed((ROOT / "web" / "src" / "app.js").read_text())
+
+
+def test_spa_feed_source_lede_never_infers_agency_ownership_from_fetch_success() -> None:
+    app = (ROOT / "web" / "src" / "app.js").read_text()
+
+    assert _feed_source_ledes(app) == [
+        "Based on the official feed source on file",
+        "Based on an archived feed source on file",
+        "Based on a Mobility Database mirror copy of an archived feed listing",
+        "Based on a third-party feed source on file",
+        "Based on the feed source on file; publisher ownership is not verified",
+        "Based on the feed source on file; publisher ownership is not verified",
+    ]
+    assert "Based on the feed this agency publishes" not in app
 
 
 def test_generated_compare_reader_archive_profile_resolver_fails_closed() -> None:

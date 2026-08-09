@@ -33,6 +33,11 @@ from .effort_calibration import (
     agency_episodes,
     stats_from_episodes,
 )
+from .feed_provenance import (
+    FeedSourceProvenance,
+    classify_feed_source,
+    confidence_source_note,
+)
 from .fetch import FetchResult
 from .fixlog import diff_receipts, load_fixlog_candidates, merge_receipts, reconcile_receipts
 from .identity import resolve_published_agency_name
@@ -68,7 +73,10 @@ def _join_labels(labels: list[str]) -> str:
 
 
 def _confidence(
-    card: dict[str, Any], fetch: FetchResult, generated_at: dt.datetime
+    card: dict[str, Any],
+    fetch: FetchResult,
+    generated_at: dt.datetime,
+    source_provenance: FeedSourceProvenance,
 ) -> dict[str, Any]:
     """How much of this grade the pipeline could actually measure, and from
     what source (EXP-01, docs/ideation/03-expansions.md).
@@ -106,25 +114,9 @@ def _confidence(
         else:
             notes.append("Realtime was sampled in one bounded window.")
 
-    if fetch.source == "mirror":
+    if fetch.source in {"mirror", "unknown"}:
         rank -= 1
-        notes.append(
-            "The agency's own feed URL was unreachable, so the Mobility Database's "
-            "hosted mirror copy was scored instead."
-        )
-    elif fetch.source == "unknown":
-        rank -= 1
-        notes.append(
-            "This snapshot predates fetch-source recording, so where it was "
-            "originally downloaded from is not known."
-        )
-    elif fetch.source == "local":
-        notes.append(
-            "A local feed copy was scored. Its recorded SHA-256 can be compared with the "
-            "source or corrected copy used for this run."
-        )
-    else:
-        notes.append("The feed was downloaded from the agency's own URL.")
+    notes.append(confidence_source_note(source_provenance, fetch.source))
 
     feed_age_days = max(0, (generated_at.date() - fetch.fetched_date).days)
     if feed_age_days:
@@ -151,6 +143,7 @@ def build_artifact(
     generated_at: dt.datetime,
 ) -> dict[str, Any]:
     card = scorecard.to_json()
+    source_provenance = classify_feed_source(agency)
     rt = card["categories"]["realtime"]
     if rt.get("status") == "not_yet_measured" and agency.rt_note:
         rt["summary"] = agency.rt_note
@@ -224,12 +217,17 @@ def build_artifact(
             "size_bytes": fetch.size_bytes,
             "license_note": agency.license_note,
             "reachable": True,
+            # Registry evidence about who publishes the configured URL is
+            # distinct from fetch.source, which only says how this run obtained
+            # the bytes. Unknown stays explicit instead of being inferred from
+            # a successful request.
+            "source_provenance": source_provenance,
         },
         "fetch": fetch_block,
         # The measurement-confidence read (EXP-01): what this run could and
         # could not measure, so a reader can tell a fully-measured grade from
         # a provisional one. Additive; schema 1.5.
-        "confidence": _confidence(card, fetch, generated_at),
+        "confidence": _confidence(card, fetch, generated_at, source_provenance),
         **card,
     }
 

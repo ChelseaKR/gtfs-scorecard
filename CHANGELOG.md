@@ -28,6 +28,20 @@ the declared public surface).
 ## [Unreleased]
 
 ### Fixed
+- **Scorecard provenance copy inferred agency ownership from a successful
+  configured-URL fetch (#245).** The registry already records `is_official` as
+  true, false, or unknown, but artifact publication dropped it and both page
+  renderers said "the agency's own URL" or "the feed this agency publishes"
+  based only on `fetch.source == "origin"`. Schema 1.18 now carries the
+  conservative `feed.source_provenance` classification (`official`, `archive`,
+  `third_party`, or `unverified`). TransitFeeds is recognized as an archive;
+  every other unknown remains unverified. Confidence notes, the static agency
+  page, and the interactive view compose that evidence with the separate
+  origin/mirror/local retrieval record and never claim agency ownership when
+  the registry has not established it. Board and printable-report scope copy
+  now refers to the feed scored here, not data the agency publishes. Legacy
+  artifacts also render with unverified wording until the published corpus is
+  regenerated.
 - **The published rollup schema never learned the country identity fields the
   pipeline has emitted since the country program pages shipped (#121).**
   `rollups.py`'s `_rollup_identity` adds `country_code` and `country_name` to
