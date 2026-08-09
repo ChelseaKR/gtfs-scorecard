@@ -19,7 +19,7 @@ permissions:
   actions: read # resolve the successful Daily scorecard run for scheduled cuts
 
 # A second concurrent run (manual dispatch racing the schedule) must not
-# double-create/overlap a release; the tag-exists guard above only checks
+# double-create/overlap a release; the later tag-exists guard only checks
 # after the race, so serialize instead of cancelling (CICD-23).
 concurrency:
   group: dataset-release
@@ -32,6 +32,11 @@ jobs:
       group: artifacts-publish
       cancel-in-progress: false
     steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+
       - name: Resolve the release source
         id: source
         env:
@@ -39,6 +44,13 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
         run: |
           set -euo pipefail
+          if [ "$GITHUB_REF" != "refs/heads/main" ]; then
+            echo "::error::Dataset releases must run from refs/heads/main."
+            exit 1
+          fi
+          git fetch --no-tags origin \
+            "+refs/heads/main:refs/remotes/origin/main"
+          origin_main=$(git rev-parse refs/remotes/origin/main)
           if [ "$EVENT_NAME" = schedule ]; then
             cut_date=$(date -u +%Y-%m-%d)
             if [[ "$cut_date" != ????-??-01 ]]; then
@@ -75,6 +87,10 @@ jobs:
               and (.id | type == "number")
               and (.run_attempt | type == "number")
             ' <<<"$source_json" >/dev/null
+            if ! git merge-base --is-ancestor "$head_sha" "$origin_main"; then
+              echo "::error::The selected Daily source is not reachable from origin/main."
+              exit 1
+            fi
           else
             # A manual cut keeps the existing latest-main behavior. It is
             # deliberately labelled separately rather than claiming day-1
@@ -84,6 +100,10 @@ jobs:
             source_run_attempt=0
             source_started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
             head_sha="$GITHUB_SHA"
+            if [ "$head_sha" != "$origin_main" ]; then
+              echo "::error::Manual dataset releases require the current origin/main commit."
+              exit 1
+            fi
           fi
           source_month="${source_started_at:0:7}"
           {
@@ -106,93 +126,6 @@ jobs:
           ref: ${{ steps.source.outputs.head_sha }}
           fetch-depth: 0
 
-      - name: Resolve the protected dataset tag
-        id: release_tag
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          tag="dataset-${SOURCE_MONTH}"
-          set +e
-          git ls-remote --exit-code --tags origin "refs/tags/${tag}" \
-            > "$RUNNER_TEMP/dataset-tag.remote"
-          status=$?
-          set -e
-          case "$status" in
-            0)
-              git fetch origin "refs/tags/${tag}:refs/tags/${tag}"
-              echo "exists=true" >> "$GITHUB_OUTPUT"
-              ;;
-            2)
-              echo "exists=false" >> "$GITHUB_OUTPUT"
-              ;;
-            *)
-              echo "::error::Could not determine whether ${tag} already exists."
-              exit "$status"
-              ;;
-          esac
-          echo "tag=$tag" >> "$GITHUB_OUTPUT"
-
-      - name: Create the missing SSH-signed annotated dataset tag
-        if: steps.release_tag.outputs.exists == 'false'
-        env:
-          RELEASE_TAG: ${{ steps.release_tag.outputs.tag }}
-          SCHEDULED_WRITER_SSH_KEY: ${{ secrets.SCHEDULED_WRITER_SSH_KEY }}
-        run: |
-          set -euo pipefail
-          if [ -z "$SCHEDULED_WRITER_SSH_KEY" ]; then
-            echo "::error::SCHEDULED_WRITER_SSH_KEY is required to sign a dataset tag."
-            exit 1
-          fi
-          signing_key="$RUNNER_TEMP/dataset-release-signing-key"
-          cleanup() {
-            git config --local --unset user.signingkey >/dev/null 2>&1 || true
-            rm -f "$signing_key"
-          }
-          trap cleanup EXIT
-          umask 077
-          printf '%s\n' "$SCHEDULED_WRITER_SSH_KEY" > "$signing_key"
-          chmod 600 "$signing_key"
-          git config --local user.name "Chelsea Kelly-Reif"
-          git config --local user.email "3114598+ChelseaKR@users.noreply.github.com"
-          git config --local gpg.format ssh
-          git config --local gpg.ssh.allowedSignersFile \
-            "$GITHUB_WORKSPACE/.github/release-signers"
-          git config --local user.signingkey "$signing_key"
-          git tag -s "$RELEASE_TAG" "$SOURCE_HEAD_SHA" \
-            -m "$RELEASE_TAG" \
-            -m "Source ${SOURCE_MODE}; run ${SOURCE_RUN_ID}, attempt ${SOURCE_RUN_ATTEMPT}."
-          git verify-tag -- "$RELEASE_TAG"
-          git push origin "refs/tags/${RELEASE_TAG}:refs/tags/${RELEASE_TAG}"
-
-      - name: Verify the trusted hosted dataset tag
-        env:
-          GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ steps.release_tag.outputs.tag }}
-        run: |
-          set -euo pipefail
-          test "$(git cat-file -t "refs/tags/${RELEASE_TAG}")" = tag
-          test "$(git rev-parse "refs/tags/${RELEASE_TAG}^{commit}")" = \
-            "$SOURCE_HEAD_SHA"
-          git config --local gpg.format ssh
-          git config --local gpg.ssh.allowedSignersFile \
-            "$GITHUB_WORKSPACE/.github/release-signers"
-          git verify-tag -- "$RELEASE_TAG"
-
-          local_tag_object=$(git rev-parse "refs/tags/${RELEASE_TAG}")
-          hosted_ref=$(gh api \
-            "repos/${GITHUB_REPOSITORY}/git/ref/tags/${RELEASE_TAG}")
-          jq -e --arg object "$local_tag_object" \
-            '.object.type == "tag" and .object.sha == $object' \
-            <<<"$hosted_ref" >/dev/null
-          hosted_tag=$(gh api \
-            "repos/${GITHUB_REPOSITORY}/git/tags/${local_tag_object}")
-          jq -e --arg tag "$RELEASE_TAG" --arg target "$SOURCE_HEAD_SHA" '
-            .tag == $tag
-            and .object.type == "commit"
-            and .object.sha == $target
-          ' <<<"$hosted_tag" >/dev/null
-
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
           python-version: "3.12"
@@ -205,7 +138,7 @@ jobs:
         id: bundle
         run: |
           set -euo pipefail
-          tag="${{ steps.release_tag.outputs.tag }}"
+          tag="dataset-${SOURCE_MONTH}"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           source="$RUNNER_TEMP/dataset-release-source"
           site="$source/site"
@@ -369,6 +302,94 @@ jobs:
           License: data CC BY 4.0, code Apache-2.0. Cite this release tag (or
           its commit) rather than the live site, which changes daily.
           EOF
+
+      - name: Resolve the protected dataset tag
+        id: release_tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.bundle.outputs.tag }}
+        run: |
+          set -euo pipefail
+          set +e
+          git ls-remote --exit-code --tags origin "refs/tags/${RELEASE_TAG}" \
+            > "$RUNNER_TEMP/dataset-tag.remote"
+          status=$?
+          set -e
+          case "$status" in
+            0)
+              git fetch origin \
+                "refs/tags/${RELEASE_TAG}:refs/tags/${RELEASE_TAG}"
+              echo "exists=true" >> "$GITHUB_OUTPUT"
+              ;;
+            2)
+              echo "exists=false" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::Could not determine whether ${RELEASE_TAG} already exists."
+              exit "$status"
+              ;;
+          esac
+          echo "tag=$RELEASE_TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Create the missing SSH-signed annotated dataset tag
+        if: steps.release_tag.outputs.exists == 'false'
+        env:
+          RELEASE_TAG: ${{ steps.release_tag.outputs.tag }}
+          SCHEDULED_WRITER_SSH_KEY: ${{ secrets.SCHEDULED_WRITER_SSH_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -z "$SCHEDULED_WRITER_SSH_KEY" ]; then
+            echo "::error::SCHEDULED_WRITER_SSH_KEY is required to sign a dataset tag."
+            exit 1
+          fi
+          signing_key="$RUNNER_TEMP/dataset-release-signing-key"
+          cleanup() {
+            git config --local --unset user.signingkey >/dev/null 2>&1 || true
+            rm -f "$signing_key"
+          }
+          trap cleanup EXIT
+          umask 077
+          printf '%s\n' "$SCHEDULED_WRITER_SSH_KEY" > "$signing_key"
+          chmod 600 "$signing_key"
+          git config --local user.name "Chelsea Kelly-Reif"
+          git config --local user.email "3114598+ChelseaKR@users.noreply.github.com"
+          git config --local gpg.format ssh
+          git config --local gpg.ssh.allowedSignersFile \
+            "$GITHUB_WORKSPACE/.github/release-signers"
+          git config --local user.signingkey "$signing_key"
+          git tag -s "$RELEASE_TAG" "$SOURCE_HEAD_SHA" \
+            -m "$RELEASE_TAG" \
+            -m "Source ${SOURCE_MODE}; run ${SOURCE_RUN_ID}, attempt ${SOURCE_RUN_ATTEMPT}."
+          git verify-tag -- "$RELEASE_TAG"
+          git push origin "refs/tags/${RELEASE_TAG}:refs/tags/${RELEASE_TAG}"
+
+      - name: Verify the trusted hosted dataset tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ steps.release_tag.outputs.tag }}
+        run: |
+          set -euo pipefail
+          test "$(git cat-file -t "refs/tags/${RELEASE_TAG}")" = tag
+          test "$(git rev-parse "refs/tags/${RELEASE_TAG}^{commit}")" = \
+            "$SOURCE_HEAD_SHA"
+          git config --local gpg.format ssh
+          git config --local gpg.ssh.allowedSignersFile \
+            "$GITHUB_WORKSPACE/.github/release-signers"
+          git verify-tag -- "$RELEASE_TAG"
+
+          local_tag_object=$(git rev-parse "refs/tags/${RELEASE_TAG}")
+          hosted_ref=$(gh api \
+            "repos/${GITHUB_REPOSITORY}/git/ref/tags/${RELEASE_TAG}")
+          jq -e --arg object "$local_tag_object" \
+            '.object.type == "tag" and .object.sha == $object' \
+            <<<"$hosted_ref" >/dev/null
+          hosted_tag=$(gh api \
+            "repos/${GITHUB_REPOSITORY}/git/tags/${local_tag_object}")
+          jq -e --arg tag "$RELEASE_TAG" --arg target "$SOURCE_HEAD_SHA" '
+            .tag == $tag
+            and .object.type == "commit"
+            and .object.sha == $target
+          ' <<<"$hosted_tag" >/dev/null
 
       - name: Stage and verify the release draft
         run: |

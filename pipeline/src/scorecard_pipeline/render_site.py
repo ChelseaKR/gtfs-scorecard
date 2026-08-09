@@ -9899,13 +9899,29 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # Retained aliases keep historical artifacts reproducible and old inbound
     # links useful, but the old URL is now a redirect rather than a second
     # current scorecard. Inactive records without a live successor stay gone.
+    retained_agency_redirects: dict[str, str] = {}
     for agency in sorted(registry_by_id.values(), key=lambda item: item.id):
         target = _published_alias_target(agency, registry_by_id, published_ids)
         if target:
+            source_path = f"/agency/{agency.id}/"
+            target_path = f"/agency/{target}/"
+            retained_agency_redirects[source_path] = target_path
             write(
                 f"agency/{agency.id}/index.html",
-                _redirect_page(f"/agency/{target}/", agency.name),
+                _redirect_page(target_path, agency.name),
             )
+    write(
+        "_meta/retained-agency-redirects.json",
+        json.dumps(
+            {
+                "schema_version": 1,
+                "redirects": retained_agency_redirects,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+    )
     from .publish import enrich_index_history_provenance
 
     index_changed |= enrich_index_history_provenance(index, art)

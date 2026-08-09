@@ -227,7 +227,7 @@ def _read_parquet_rows(
                 )
             fields = tuple(name for name, _type in canonical_contract)
             result = connection.execute(
-                f"SELECT {', '.join(fields)} FROM read_parquet(?)",  # noqa: S608
+                "SELECT * FROM read_parquet(?)",
                 [str(path)],
             ).fetchall()
         finally:

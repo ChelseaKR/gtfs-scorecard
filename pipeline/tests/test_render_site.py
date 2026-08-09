@@ -1131,6 +1131,13 @@ def test_render_retires_stale_f_scorecard_and_redirects_to_live_successor(
     assert f'<a href="/agency/{successor_id}/">' in redirect
     assert "stale F scorecard" not in redirect
     assert not (stale_page / "brief").exists()
+    retained_redirects = json.loads(
+        (isolated_repo_root / "web" / "_meta" / "retained-agency-redirects.json").read_text()
+    )
+    assert retained_redirects == {
+        "schema_version": 1,
+        "redirects": {f"/agency/{retired_id}/": f"/agency/{successor_id}/"},
+    }
     # Historical JSON remains available even though it is no longer a current
     # directory row or scorecard page.
     assert (retired_dir / "latest.json").exists()

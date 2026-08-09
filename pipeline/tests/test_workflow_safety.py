@@ -416,6 +416,53 @@ def test_dataset_release_packages_only_a_validated_canonical_deployment() -> Non
     assert "gh release create" not in workflow
 
 
+def test_dataset_release_mutates_tags_only_after_trusted_main_validation() -> None:
+    workflow = _workflow("dataset-release.yml")
+
+    initial_checkout = workflow.index("ref: ${{ github.sha }}")
+    source_resolution = workflow.index("- name: Resolve the release source")
+    source_checkout = workflow.index("ref: ${{ steps.source.outputs.head_sha }}")
+    assert initial_checkout < source_resolution < source_checkout
+    assert 'if [ "$GITHUB_REF" != "refs/heads/main" ]' in workflow
+    assert '"+refs/heads/main:refs/remotes/origin/main"' in workflow
+    assert "origin_main=$(git rev-parse refs/remotes/origin/main)" in workflow
+    assert 'if [ "$head_sha" != "$origin_main" ]' in workflow
+    assert 'git merge-base --is-ancestor "$head_sha" "$origin_main"' in workflow
+
+    hydration = workflow.index('gh run download "$SOURCE_RUN_ID"')
+    deployment = workflow.index('manifest_sha=$(sha256sum "$source/release-manifest.json"')
+    manifest = workflow.index("sha256sum --check -)")
+    current_latest = workflow.index('cmp "$source/expected-latest-ids" "$source/actual-latest-ids"')
+    canonical = workflow.index("python -m scorecard_pipeline.dataset_release")
+    provenance = workflow.index("> bundle/PROVENANCE.json")
+    checksums = workflow.index("> SHA256SUMS)")
+    notes = workflow.index("- name: Write release notes")
+    resolve_tag = workflow.index("- name: Resolve the protected dataset tag")
+    create_tag = workflow.index("- name: Create the missing SSH-signed annotated dataset tag")
+    push_tag = workflow.index('git push origin "refs/tags/${RELEASE_TAG}')
+    verify_tag = workflow.index("- name: Verify the trusted hosted dataset tag")
+    stage_draft = workflow.index("- name: Stage and verify the release draft")
+
+    assert (
+        hydration
+        < deployment
+        < manifest
+        < current_latest
+        < canonical
+        < provenance
+        < checksums
+        < notes
+        < resolve_tag
+        < create_tag
+        < push_tag
+        < verify_tag
+        < stage_draft
+    )
+    assert 'tag="dataset-${SOURCE_MONTH}"' in workflow
+    assert "RELEASE_TAG: ${{ steps.bundle.outputs.tag }}" in workflow
+    assert 'tag="${{ steps.bundle.outputs.tag }}"' in workflow
+
+
 def test_dataset_release_promotion_is_draft_first_and_fail_closed() -> None:
     promotion = (ROOT / "pipeline/src/scorecard_pipeline/dataset_release_promotion.py").read_text(
         encoding="utf-8"
