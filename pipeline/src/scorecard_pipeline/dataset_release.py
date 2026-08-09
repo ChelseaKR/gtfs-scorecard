@@ -564,7 +564,7 @@ def _canonical_ntd_artifacts(
             )
         try:
             compact = _history_entry(artifact)
-        except (KeyError, TypeError, ValueError) as exc:
+        except (AttributeError, KeyError, TypeError, ValueError) as exc:
             raise DatasetReleaseError(
                 f"canonical current artifact is malformed for {agency_id}: {exc}"
             ) from exc
