@@ -1,17 +1,21 @@
 # Monthly citable dataset release (docs/expansion-ideation-2026-07.md, section C;
 # RESEARCH-ROADMAP.md E7). A researcher citing "the scorecard dataset" needs a
-# pinned, immutable reference, not a URL whose contents change daily. This tags
+# pinned, byte-verifiable reference, not a URL whose contents change daily. This tags
 # the first-of-month state as dataset-YYYY-MM and attaches the flat exports plus
-# the data dictionary, so a citation resolves to exactly the bytes analysed.
+# the data dictionary, so a citation can verify the exact bytes analysed.
 name: Dataset release
 
 on:
   schedule:
-    - cron: "47 6 1 * *" # monthly, after that day's daily run windows
+    # Monthly, after the 13:23 UTC daily scoring window and before the next
+    # 18:23 intraday refresh. A scoring/Pages overrun makes the source gate
+    # refuse the cut; it never falls back to an older or incomplete deployment.
+    - cron: "47 17 1 * *"
   workflow_dispatch: {}
 
 permissions:
   contents: write # create the tag and release
+  actions: read # resolve the successful Daily scorecard run for scheduled cuts
 
 # A second concurrent run (manual dispatch racing the schedule) must not
 # double-create/overlap a release; the tag-exists guard above only checks
@@ -23,33 +27,273 @@ concurrency:
 jobs:
   release:
     runs-on: ubuntu-latest
+    concurrency:
+      group: artifacts-publish
+      cancel-in-progress: false
     steps:
+      - name: Resolve the release source
+        id: source
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = schedule ]; then
+            cut_date=$(date -u +%Y-%m-%d)
+            if [[ "$cut_date" != ????-??-01 ]]; then
+              echo "::error::The scheduled dataset cut must run on day 1 UTC."
+              exit 1
+            fi
+            runs_json=$(gh api --paginate \
+              "repos/${GITHUB_REPOSITORY}/actions/workflows/scorecard.yml/runs?event=schedule&status=success&branch=main&per_page=100" \
+              --jq '.workflow_runs')
+            source_json=$(jq -s --arg cut_date "$cut_date" '
+              add
+              | map(select(
+                  .event == "schedule"
+                  and .status == "completed"
+                  and .conclusion == "success"
+                  and .head_branch == "main"
+                  and (.run_started_at | startswith($cut_date + "T"))
+                ))
+              | sort_by(.run_started_at, .run_attempt)
+              | last // empty
+            ' <<<"$runs_json")
+            if [ -z "$source_json" ]; then
+              echo "::error::No successful same-day scheduled Daily scorecard run exists."
+              exit 1
+            fi
+            source_mode=scheduled-daily
+            source_run_id=$(jq -r '.id' <<<"$source_json")
+            source_run_attempt=$(jq -r '.run_attempt' <<<"$source_json")
+            source_started_at=$(jq -r '.run_started_at' <<<"$source_json")
+            head_sha=$(jq -r '.head_sha' <<<"$source_json")
+            jq -e --arg repository "$GITHUB_REPOSITORY" '
+              .head_repository.full_name == $repository
+              and (.head_sha | test("^[0-9a-f]{40}$"))
+              and (.id | type == "number")
+              and (.run_attempt | type == "number")
+            ' <<<"$source_json" >/dev/null
+          else
+            # A manual cut keeps the existing latest-main behavior. It is
+            # deliberately labelled separately rather than claiming day-1
+            # Daily-run provenance it has not established.
+            source_mode=manual-latest
+            source_run_id=0
+            source_run_attempt=0
+            source_started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+            head_sha="$GITHUB_SHA"
+          fi
+          source_month="${source_started_at:0:7}"
+          {
+            echo "head_sha=$head_sha"
+            echo "source_mode=$source_mode"
+            echo "source_month=$source_month"
+            echo "source_run_id=$source_run_id"
+            echo "source_run_attempt=$source_run_attempt"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "SOURCE_HEAD_SHA=$head_sha"
+            echo "SOURCE_MODE=$source_mode"
+            echo "SOURCE_MONTH=$source_month"
+            echo "SOURCE_RUN_ID=$source_run_id"
+            echo "SOURCE_RUN_ATTEMPT=$source_run_attempt"
+          } >> "$GITHUB_ENV"
+
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          ref: ${{ steps.source.outputs.head_sha }}
+
+      - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install the release validator
+        working-directory: pipeline
+        run: uv sync --locked
 
       - name: Assemble the release bundle
         id: bundle
         run: |
-          tag="dataset-$(date -u +%Y-%m)"
+          set -euo pipefail
+          expected_payload_assets() {
+            printf '%s\n' \
+              CITATION.cff DATA-DICTIONARY.md PROVENANCE.json agencies.parquet \
+              catalog.csv catalog.json dataset.csv dataset.json ntd.json
+          }
+          expected_assets() {
+            expected_payload_assets
+            printf '%s\n' SHA256SUMS
+          }
+          verify_release() {
+            local tag="$1"
+            local release_json target verify_dir expected expected_payload actual
+            local name state size digest byte_sha
+            release_json=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${tag}")
+            jq -e '
+              .draft == false and .prerelease == false
+              and (.target_commitish | test("^[0-9a-f]{40}$"))
+              and ([.assets[].name] | sort) == [
+                "CITATION.cff", "DATA-DICTIONARY.md", "PROVENANCE.json",
+                "SHA256SUMS", "agencies.parquet", "catalog.csv",
+                "catalog.json", "dataset.csv", "dataset.json", "ntd.json"
+              ]
+              and all(.assets[];
+                .state == "uploaded" and .size > 0
+                and (.digest | test("^sha256:[0-9a-f]{64}$")))
+            ' <<<"$release_json" >/dev/null
+            target=$(jq -r '.target_commitish' <<<"$release_json")
+            if [ "$SOURCE_MODE" = scheduled-daily ] && \
+               [ "$target" != "$SOURCE_HEAD_SHA" ]; then
+              echo "::error::$tag does not target its scheduled Daily source."
+              return 1
+            fi
+            tag_json=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${tag}")
+            jq -e --arg target "$target" \
+              '.object.type == "commit" and .object.sha == $target' \
+              <<<"$tag_json" >/dev/null
+
+            verify_dir=$(mktemp -d)
+            gh release download "$tag" --dir "$verify_dir"
+            expected="$verify_dir/.expected-assets"
+            expected_payload="$verify_dir/.expected-payload-assets"
+            actual="$verify_dir/.actual-assets"
+            expected_assets | LC_ALL=C sort > "$expected"
+            expected_payload_assets | LC_ALL=C sort > "$expected_payload"
+            find "$verify_dir" -mindepth 1 -maxdepth 1 -type f \
+              ! -name '.expected-assets' ! -name '.expected-payload-assets' \
+              ! -name '.actual-assets' \
+              -printf '%f\n' | LC_ALL=C sort > "$actual"
+            cmp "$expected" "$actual"
+            awk 'NF != 2 || $1 !~ /^[0-9a-f]{64}$/ { exit 1 }' \
+              "$verify_dir/SHA256SUMS"
+            sed -E 's/^[0-9a-f]{64}  //' "$verify_dir/SHA256SUMS" \
+              | LC_ALL=C sort | cmp "$expected_payload" -
+            (cd "$verify_dir" && sha256sum --check --strict SHA256SUMS)
+            jq -e --arg target "$target" '
+              .schema_version == 1 and .head_sha == $target
+              and (.source_mode == "scheduled-daily"
+                   or .source_mode == "manual-latest")
+              and (.source_run_id | type == "number")
+              and (.source_run_attempt | type == "number")
+            ' "$verify_dir/PROVENANCE.json" >/dev/null
+            if [ "$SOURCE_MODE" = scheduled-daily ]; then
+              jq -e --arg head_sha "$SOURCE_HEAD_SHA" \
+                --argjson source_run_id "$SOURCE_RUN_ID" \
+                --argjson source_run_attempt "$SOURCE_RUN_ATTEMPT" '
+                .source_mode == "scheduled-daily"
+                and .head_sha == $head_sha
+                and .source_run_id == $source_run_id
+                and .source_run_attempt == $source_run_attempt
+              ' "$verify_dir/PROVENANCE.json" >/dev/null
+            fi
+            while IFS=$'\t' read -r name state size digest; do
+              test "$state" = uploaded
+              test "$size" -gt 0
+              byte_sha=$(sha256sum "$verify_dir/$name" | cut -d ' ' -f 1)
+              test "$digest" = "sha256:$byte_sha"
+            done < <(jq -r '.assets[] | [
+              .name, .state, (.size | tostring), .digest
+            ] | @tsv' <<<"$release_json")
+            rm -rf "$verify_dir"
+          }
+
+          tag="dataset-${SOURCE_MONTH}"
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           if gh release view "$tag" >/dev/null 2>&1; then
+            verify_release "$tag"
             echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "$tag already released; nothing to do."
+            echo "$tag is already a complete byte-verified release; nothing to do."
             exit 0
           fi
+          if tag_json=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${tag}" 2>/dev/null); then
+            jq -e --arg target "$SOURCE_HEAD_SHA" \
+              '.object.type == "commit" and .object.sha == $target' \
+              <<<"$tag_json" >/dev/null
+          fi
           echo "exists=false" >> "$GITHUB_OUTPUT"
-          mkdir -p bundle
-          # A citable release must be complete: a missing file is a failed
-          # release, not a smaller one.
-          for f in web/catalog.json web/catalog.csv web/dataset.json \
-                   web/dataset.csv web/api/v1/agencies.parquet web/ntd.json; do
-            if [ ! -f "$f" ]; then
-              echo "::error::$f is missing; refusing to cut an incomplete dataset release"
-              exit 1
-            fi
-            cp "$f" bundle/
+
+          # The deployed Pages artifact is the public projection built from S3
+          # at the current registry/render boundary. Download it into a new
+          # directory instead of trusting bounded generated files in checkout.
+          # A unique deployment id plus a per-deployment SHA-256 manifest makes
+          # a concurrent code or same-commit data deployment fail closed.
+          base="https://gtfsscorecard.org"
+          source="$RUNNER_TEMP/dataset-release-source"
+          site="$source/site"
+          request_id="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p "$site/api/v1" "$site/data/artifacts"
+          fetch() {
+            curl -fsSL -H 'Cache-Control: no-cache, no-store' -H 'Pragma: no-cache' "$@"
+          }
+          fetch "$base/deployment.json?release=${request_id}-before" \
+            -o "$source/deployment-before.json"
+          fetch "$base/release-manifest.json?release=${request_id}-manifest" \
+            -o "$source/release-manifest.json"
+          for f in catalog.json catalog.csv dataset.json dataset.csv ntd.json; do
+            fetch "$base/$f?release=${request_id}-${f}" -o "$site/$f"
           done
-          cp docs/api.md bundle/DATA-DICTIONARY.md
-          cp CITATION.cff bundle/
+          fetch "$base/api/v1/agencies.parquet?release=${request_id}-parquet" \
+            -o "$site/api/v1/agencies.parquet"
+          fetch "$base/data/artifacts/index.json?release=${request_id}-index" \
+            -o "$site/data/artifacts/index.json"
+          fetch "$base/deployment.json?release=${request_id}-after" \
+            -o "$source/deployment-after.json"
+          cmp "$source/deployment-before.json" "$source/deployment-after.json"
+          manifest_sha=$(sha256sum "$source/release-manifest.json" | cut -d ' ' -f 1)
+          if [ "$SOURCE_MODE" = scheduled-daily ]; then
+            jq -e --arg commit "$SOURCE_HEAD_SHA" \
+              --argjson source_run_id "$SOURCE_RUN_ID" \
+              --argjson source_run_attempt "$SOURCE_RUN_ATTEMPT" \
+              --arg manifest_sha "$manifest_sha" \
+              '.schema_version == 3 and .commit == $commit
+               and .source_run_id == $source_run_id
+               and .source_run_attempt == $source_run_attempt
+               and .deployment_id == ($source_run_id | tostring) + "-"
+                 + ($source_run_attempt | tostring)
+               and .release_manifest_sha256 == $manifest_sha' \
+              "$source/deployment-after.json" >/dev/null
+          else
+            jq -e --arg commit "$SOURCE_HEAD_SHA" --arg manifest_sha "$manifest_sha" \
+              '.schema_version == 3 and .commit == $commit
+               and (.source_run_id | type == "number")
+               and (.source_run_attempt | type == "number")
+               and .deployment_id == (.source_run_id | tostring) + "-"
+                 + (.source_run_attempt | tostring)
+               and .release_manifest_sha256 == $manifest_sha' \
+              "$source/deployment-after.json" >/dev/null
+          fi
+          jq -e '.schema_version == 1 and (.files | keys | sort) == [
+              "api/v1/agencies.parquet", "catalog.csv", "catalog.json",
+              "data/artifacts/index.json", "dataset.csv", "dataset.json",
+              "ntd.json"
+            ]' \
+            "$source/release-manifest.json" >/dev/null
+          jq -r '.files | to_entries[] | "\(.value)  \(.key)"' \
+            "$source/release-manifest.json" | (cd "$site" && sha256sum --check -)
+
+          # Cross-check JSON, both CSVs, and Parquet against the downloaded
+          # authoritative index and the active canonical registry before the
+          # otherwise-empty bundle receives any file.
+          cd pipeline
+          uv run python -m scorecard_pipeline.dataset_release \
+            --artifacts-root "$site/data/artifacts" \
+            --web-root "$site" \
+            --repo-root .. \
+            --bundle-root ../bundle
+          cd ..
+          jq -n --arg source_mode "$SOURCE_MODE" \
+            --arg head_sha "$SOURCE_HEAD_SHA" \
+            --argjson source_run_id "$SOURCE_RUN_ID" \
+            --argjson source_run_attempt "$SOURCE_RUN_ATTEMPT" \
+            '{schema_version: 1, source_mode: $source_mode, head_sha: $head_sha,
+              source_run_id: $source_run_id,
+              source_run_attempt: $source_run_attempt}' \
+            > bundle/PROVENANCE.json
+          (cd bundle && sha256sum \
+            CITATION.cff DATA-DICTIONARY.md PROVENANCE.json agencies.parquet \
+            catalog.csv catalog.json dataset.csv dataset.json ntd.json \
+            > SHA256SUMS)
           ls -l bundle
         env:
           GH_TOKEN: ${{ github.token }}
@@ -57,18 +301,24 @@ jobs:
       - name: Write release notes
         if: steps.bundle.outputs.exists == 'false'
         run: |
-          agencies=$(python3 -c "import json;print(len(json.load(open('web/catalog.json'))['agencies']))")
-          rubric=$(python3 -c "import json;print(json.load(open('web/catalog.json')).get('rubric_version','unknown'))")
+          agencies=$(python3 -c "import json;print(len(json.load(open('bundle/catalog.json'))['agencies']))")
+          rubric=$(python3 -c "import json;print(json.load(open('bundle/catalog.json')).get('rubric_version','unknown'))")
+          if [ "$SOURCE_MODE" = scheduled-daily ]; then
+            provenance="successful scheduled Daily scorecard run ${SOURCE_RUN_ID}, attempt ${SOURCE_RUN_ATTEMPT}"
+          else
+            provenance="manual/latest deployed-main cut (not scheduled day-1 Daily provenance)"
+          fi
           cat > notes.md <<EOF
           Monthly snapshot of the GTFS Scorecard dataset: per-agency grades,
           category scores, freshness, NTD readiness, and feed provenance for
           $agencies tracked agencies (rubric $rubric), pinned at commit
-          ${GITHUB_SHA}.
+          ${SOURCE_HEAD_SHA}. Source: ${provenance}.
 
           Files: catalog.json / catalog.csv (per-agency records),
           dataset.json / dataset.csv (flat analysis export),
           agencies.parquet (columnar), ntd.json (NTD readiness rollup),
-          DATA-DICTIONARY.md (field reference), CITATION.cff.
+          DATA-DICTIONARY.md (field reference), CITATION.cff,
+          PROVENANCE.json (source run), and SHA256SUMS.
 
           License: data CC BY 4.0, code Apache-2.0. Cite this release tag (or
           its commit) rather than the live site, which changes daily.
@@ -77,9 +327,83 @@ jobs:
       - name: Create the release
         if: steps.bundle.outputs.exists == 'false'
         run: |
+          set -euo pipefail
           tag="${{ steps.bundle.outputs.tag }}"
           gh release create "$tag" bundle/* \
+            --target "$SOURCE_HEAD_SHA" \
             --title "Dataset ${tag#dataset-}" \
             --notes-file notes.md
+
+          # Release creation is not success until the API reports every exact
+          # asset as uploaded and non-empty, its server digest matches the
+          # downloaded bytes, and the attached checksum verifies the payload.
+          ready=false
+          for attempt in $(seq 1 10); do
+            release_json=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/${tag}")
+            if jq -e --arg target "$SOURCE_HEAD_SHA" '
+              .draft == false and .prerelease == false
+              and .target_commitish == $target
+              and ([.assets[].name] | sort) == [
+                "CITATION.cff", "DATA-DICTIONARY.md", "PROVENANCE.json",
+                "SHA256SUMS", "agencies.parquet", "catalog.csv",
+                "catalog.json", "dataset.csv", "dataset.json", "ntd.json"
+              ]
+              and all(.assets[];
+                .state == "uploaded" and .size > 0
+                and (.digest | test("^sha256:[0-9a-f]{64}$")))
+            ' <<<"$release_json" >/dev/null; then
+              ready=true
+              break
+            fi
+            sleep $((attempt * 2))
+          done
+          if [ "$ready" != true ]; then
+            echo "::error::$tag did not reach a complete verified upload state."
+            exit 1
+          fi
+          tag_json=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${tag}")
+          jq -e --arg target "$SOURCE_HEAD_SHA" \
+            '.object.type == "commit" and .object.sha == $target' \
+            <<<"$tag_json" >/dev/null
+
+          verify_dir=$(mktemp -d)
+          gh release download "$tag" --dir "$verify_dir"
+          printf '%s\n' \
+            CITATION.cff DATA-DICTIONARY.md PROVENANCE.json SHA256SUMS agencies.parquet \
+            catalog.csv catalog.json dataset.csv dataset.json ntd.json \
+            | LC_ALL=C sort > "$verify_dir/.expected-assets"
+          printf '%s\n' \
+            CITATION.cff DATA-DICTIONARY.md PROVENANCE.json agencies.parquet \
+            catalog.csv catalog.json dataset.csv dataset.json ntd.json \
+            | LC_ALL=C sort > "$verify_dir/.expected-payload-assets"
+          find "$verify_dir" -mindepth 1 -maxdepth 1 -type f \
+            ! -name '.expected-assets' ! -name '.expected-payload-assets' \
+            ! -name '.actual-assets' -printf '%f\n' \
+            | LC_ALL=C sort > "$verify_dir/.actual-assets"
+          cmp "$verify_dir/.expected-assets" "$verify_dir/.actual-assets"
+          awk 'NF != 2 || $1 !~ /^[0-9a-f]{64}$/ { exit 1 }' \
+            "$verify_dir/SHA256SUMS"
+          sed -E 's/^[0-9a-f]{64}  //' "$verify_dir/SHA256SUMS" \
+            | LC_ALL=C sort | cmp "$verify_dir/.expected-payload-assets" -
+          (cd "$verify_dir" && sha256sum --check --strict SHA256SUMS)
+          jq -e --arg source_mode "$SOURCE_MODE" \
+            --arg head_sha "$SOURCE_HEAD_SHA" \
+            --argjson source_run_id "$SOURCE_RUN_ID" \
+            --argjson source_run_attempt "$SOURCE_RUN_ATTEMPT" '
+            .schema_version == 1
+            and .source_mode == $source_mode
+            and .head_sha == $head_sha
+            and .source_run_id == $source_run_id
+            and .source_run_attempt == $source_run_attempt
+          ' "$verify_dir/PROVENANCE.json" >/dev/null
+          while IFS=$'\t' read -r name state size digest; do
+            test "$state" = uploaded
+            test "$size" -gt 0
+            byte_sha=$(sha256sum "$verify_dir/$name" | cut -d ' ' -f 1)
+            test "$digest" = "sha256:$byte_sha"
+          done < <(jq -r '.assets[] | [
+            .name, .state, (.size | tostring), .digest
+          ] | @tsv' <<<"$release_json")
+          rm -rf "$verify_dir"
         env:
           GH_TOKEN: ${{ github.token }}

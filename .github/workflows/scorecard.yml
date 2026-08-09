@@ -339,11 +339,16 @@ jobs:
           # also have cut the PUTs, but it would silently stop publishing a
           # re-score that kept the same byte length. Dated evidence stays
           # additive; only the exact mutable keys in the retirement manifest
-          # are deleted.
+          # are deleted. The root index is the aggregate discovery pointer, so
+          # it is excluded here and uploaded only after all public writes and
+          # deletes. Direct mutable latest.json consumers are not atomic with
+          # this sequence; the deployed Pages manifest is the bound snapshot.
+          artifact_uri="s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts"
           uv run --project pipeline --with boto3 scorecard publish-artifacts \
             --root data/artifacts \
             --bucket "${{ vars.ARTIFACTS_BUCKET }}" --prefix data/artifacts \
             --retirement-manifest data/artifacts/.retired-current-artifacts.json \
+            --exclude "index.json" \
             --exclude "*/validator-cache.json" --exclude "*/structure.json" \
             --exclude "*/fixlog.json" --exclude "*/corrected.zip" \
             --cache-control "max-age=300"
@@ -358,6 +363,10 @@ jobs:
           aws s3 sync data/artifacts/changes \
             "s3://${{ vars.ARTIFACTS_BUCKET }}/data/artifacts/changes" \
             --delete --cache-control "max-age=300" --only-show-errors
+          # Advance the aggregate index only after every public artifact write
+          # and bounded deletion above has completed successfully.
+          aws s3 cp data/artifacts/index.json "${artifact_uri}/index.json" \
+            --cache-control "max-age=300" --only-show-errors
           # Advance private comparison memory only after the public publication
           # it describes succeeded.
           aws s3 sync "$fixlog_stage" \

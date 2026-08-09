@@ -57,7 +57,10 @@ jobs:
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
-          ref: main
+          # Bind the rendered deployment to the caller's exact revision. For
+          # Daily scorecard this is the head SHA reported by the completed run;
+          # for push/dispatch it is that event's own immutable revision.
+          ref: ${{ github.sha }}
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
           python-version: "3.12"
@@ -199,8 +202,30 @@ jobs:
           bash pipeline/scripts/assemble_public_artifacts.sh \
             data/artifacts _site/data/artifacts
           deployed_sha=$(git rev-parse HEAD)
+          manifest_entries=$(mktemp)
+          for path in catalog.json catalog.csv dataset.json dataset.csv ntd.json \
+                      api/v1/agencies.parquet data/artifacts/index.json; do
+            test -f "_site/$path"
+            sha=$(sha256sum "_site/$path" | cut -d ' ' -f 1)
+            jq -nc --arg path "$path" --arg sha "$sha" \
+              '{key: $path, value: $sha}' >> "$manifest_entries"
+          done
+          jq -s '{schema_version: 1, files: from_entries}' \
+            "$manifest_entries" > _site/release-manifest.json
+          rm -f "$manifest_entries"
+          manifest_sha=$(sha256sum _site/release-manifest.json | cut -d ' ' -f 1)
+          deployment_id="${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           jq -n --arg commit "$deployed_sha" \
-            '{schema_version: 1, commit: $commit}' > _site/deployment.json
+            --argjson source_run_id "$GITHUB_RUN_ID" \
+            --argjson source_run_attempt "$GITHUB_RUN_ATTEMPT" \
+            --arg deployment_id "$deployment_id" \
+            --arg release_manifest_sha256 "$manifest_sha" \
+            '{schema_version: 3, commit: $commit,
+              source_run_id: $source_run_id,
+              source_run_attempt: $source_run_attempt,
+              deployment_id: $deployment_id,
+              release_manifest_sha256: $release_manifest_sha256}' \
+            > _site/deployment.json
           echo "deployed_sha=$deployed_sha" >> "$GITHUB_OUTPUT"
       - name: Enforce the structural SEO contract
         working-directory: pipeline
@@ -321,25 +346,33 @@ jobs:
         env:
           BASE_URL: https://gtfsscorecard.org
           DEPLOYED_SHA: ${{ needs.lighthouse.outputs.deployed_sha }}
+          DEPLOYMENT_ID: ${{ github.run_id }}-${{ github.run_attempt }}
         run: |
           set -euo pipefail
           smoke_dir=$(mktemp -d)
           trap 'rm -rf "$smoke_dir"' EXIT
           for attempt in $(seq 1 20); do
-            if curl -fsSL "${BASE_URL}/deployment.json?deploy=${DEPLOYED_SHA}" \
+            if curl -fsSL "${BASE_URL}/deployment.json?deploy=${DEPLOYMENT_ID}" \
                 -o "$smoke_dir/deployment.json" \
-              && curl -fsSL "${BASE_URL}/?deploy=${DEPLOYED_SHA}" \
+              && curl -fsSL "${BASE_URL}/?deploy=${DEPLOYMENT_ID}" \
                 -o "$smoke_dir/home.html" \
-              && curl -fsSL "${BASE_URL}/robots.txt?deploy=${DEPLOYED_SHA}" \
+              && curl -fsSL "${BASE_URL}/robots.txt?deploy=${DEPLOYMENT_ID}" \
                 -o "$smoke_dir/robots.txt" \
-              && curl -fsSL "${BASE_URL}/sitemap.xml?deploy=${DEPLOYED_SHA}" \
+              && curl -fsSL "${BASE_URL}/sitemap.xml?deploy=${DEPLOYMENT_ID}" \
                 -o "$smoke_dir/sitemap.xml" \
-              && curl -fsSL "${BASE_URL}/agency/unitrans/?deploy=${DEPLOYED_SHA}" \
+              && curl -fsSL "${BASE_URL}/agency/unitrans/?deploy=${DEPLOYMENT_ID}" \
                 -o "$smoke_dir/unitrans.html" \
-              && curl -fsSL "${BASE_URL}/agency/yolobus/?deploy=${DEPLOYED_SHA}" \
+              && curl -fsSL "${BASE_URL}/agency/yolobus/?deploy=${DEPLOYMENT_ID}" \
                 -o "$smoke_dir/yolobus.html" \
               && jq -e --arg commit "$DEPLOYED_SHA" \
-                '.schema_version == 1 and .commit == $commit' \
+                --arg deployment_id "$DEPLOYMENT_ID" \
+                --argjson source_run_id "$GITHUB_RUN_ID" \
+                --argjson source_run_attempt "$GITHUB_RUN_ATTEMPT" \
+                '.schema_version == 3 and .commit == $commit
+                 and .source_run_id == $source_run_id
+                 and .source_run_attempt == $source_run_attempt
+                 and .deployment_id == $deployment_id
+                 and (.release_manifest_sha256 | test("^[0-9a-f]{64}$"))' \
                 "$smoke_dir/deployment.json" >/dev/null \
               && grep -Fq '<link rel="canonical" href="https://gtfsscorecard.org/">' \
                 "$smoke_dir/home.html" \

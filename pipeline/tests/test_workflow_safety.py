@@ -131,8 +131,16 @@ def test_pages_verifies_the_deployed_crawl_surface() -> None:
     assert "/agency/unitrans/" in workflow
     assert "/agency/yolobus/" in workflow
     assert "_site/deployment.json" in workflow
+    assert "_site/release-manifest.json" in workflow
     assert "needs.lighthouse.outputs.deployed_sha" in workflow
+    assert "deployment_id" in workflow
+    assert "source_run_id" in workflow
+    assert "source_run_attempt" in workflow
+    assert "release_manifest_sha256" in workflow
+    assert "deployment.json?deploy=${DEPLOYMENT_ID}" in workflow
+    assert ".schema_version == 3" in workflow
     assert ".commit == $commit" in workflow
+    assert "ref: ${{ github.sha }}" in workflow
 
 
 def test_watchdog_schedules_isolated_uptime_and_production_lighthouse_jobs() -> None:
@@ -235,6 +243,25 @@ def test_daily_publish_compares_content_not_timestamps() -> None:
     )
 
 
+def test_daily_index_is_the_last_aggregate_discovery_pointer() -> None:
+    workflow = _workflow("scorecard.yml")
+    publish = workflow.index("scorecard publish-artifacts")
+    legacy_cleanup = workflow.index("Remove legacy public-path pipeline state")
+    changes_cleanup = workflow.index("Named-change history is a bounded public claim surface")
+    index_upload = workflow.index(
+        'aws s3 cp data/artifacts/index.json "${artifact_uri}/index.json"'
+    )
+    private_state = workflow.index("Advance private comparison memory")
+
+    # index.json is the aggregate discovery pointer, not another member of the
+    # concurrent tree upload. Every object write and bounded cleanup must finish
+    # before it advances, while direct mutable latest.json consumers remain
+    # non-atomic and private comparison memory advances afterward.
+    publisher_block = workflow[publish:legacy_cleanup]
+    assert '--exclude "index.json"' in publisher_block
+    assert publish < legacy_cleanup < changes_cleanup < index_upload < private_state
+
+
 def test_lifecycle_tagging_retries_transient_s3_failures() -> None:
     for name in ("scorecard.yml", "targeted-score.yml"):
         workflow = _workflow(name)
@@ -281,3 +308,79 @@ def test_no_workflow_publishes_with_a_size_only_comparison() -> None:
         for line in path.read_text(encoding="utf-8").splitlines():
             code = line.split("#", 1)[0]
             assert "--size-only" not in code, f"{path.name}: {line.strip()}"
+
+
+def test_dataset_release_packages_only_a_validated_canonical_deployment() -> None:
+    workflow = _workflow("dataset-release.yml")
+    daily = _workflow("scorecard.yml")
+
+    # Checked-in web exports are a bounded development snapshot and must never
+    # be the source of a citable release.
+    assert "web/catalog.json web/catalog.csv" not in workflow
+    assert 'cp "$f" bundle/' not in workflow
+    assert 'base="https://gtfsscorecard.org"' in workflow
+    assert "/data/artifacts/index.json?release=${request_id}-index" in workflow
+    assert "group: artifacts-publish" in workflow
+    assert 'cron: "47 17 1 * *"' in workflow
+    assert "workflow_run:" not in workflow
+    assert "actions: read" in workflow
+    assert "actions/workflows/scorecard.yml/runs?event=schedule" in workflow
+    assert "status=success&branch=main" in workflow
+    assert '.event == "schedule"' in workflow
+    assert '.conclusion == "success"' in workflow
+    assert 'startswith($cut_date + "T")' in workflow
+    assert "No successful same-day scheduled Daily scorecard run exists" in workflow
+    assert "source_mode=scheduled-daily" in workflow
+    assert "source_mode=manual-latest" in workflow
+    assert "not scheduled day-1 Daily provenance" in workflow
+    assert "ref: ${{ steps.source.outputs.head_sha }}" in workflow
+
+    # A successful Daily workflow includes the reusable Pages deployment and
+    # its production smoke, so selecting only a completed/successful Daily run
+    # establishes both sides of the scheduled publication boundary.
+    deploy = daily.index("  deploy:")
+    assert daily.index("  collect:") < deploy
+    assert "needs: collect" in daily[deploy:]
+    assert "uses: ./.github/workflows/pages.yml" in daily[deploy:]
+
+    before = workflow.index("deployment-before.json")
+    manifest = workflow.index("release-manifest.json?release=")
+    catalog = workflow.index("for f in catalog.json catalog.csv dataset.json dataset.csv ntd.json")
+    parquet = workflow.index("api/v1/agencies.parquet?release=${request_id}-parquet")
+    index = workflow.index("data/artifacts/index.json?release=${request_id}-index")
+    after = workflow.index("deployment-after.json")
+    compare = workflow.index('cmp "$source/deployment-before.json"')
+    validator = workflow.index("python -m scorecard_pipeline.dataset_release")
+    release = workflow.index('gh release create "$tag"')
+
+    assert before < manifest < catalog < parquet < index < after < compare < validator < release
+    assert ".schema_version == 3 and .commit == $commit" in workflow
+    assert ".source_run_id == $source_run_id" in workflow
+    assert ".source_run_attempt == $source_run_attempt" in workflow
+    assert 'SOURCE_MODE" = scheduled-daily' in workflow
+    assert "release_manifest_sha256 == $manifest_sha" in workflow
+    assert "(.files | keys | sort)" in workflow
+    assert "sha256sum --check" in workflow
+    assert "Cache-Control: no-cache, no-store" in workflow
+    assert "repos/${GITHUB_REPOSITORY}/releases/tags/${tag}" in workflow
+    assert "([.assets[].name] | sort)" in workflow
+    assert '"SHA256SUMS"' in workflow
+    assert '"PROVENANCE.json"' in workflow
+    assert '.state == "uploaded" and .size > 0' in workflow
+    assert '.digest | test("^sha256:[0-9a-f]{64}$")' in workflow
+    assert 'gh release download "$tag"' in workflow
+    assert "sha256sum --check --strict SHA256SUMS" in workflow
+    assert '.source_mode == "scheduled-daily"' in workflow
+    assert ".source_run_id == $source_run_id" in workflow
+    assert '"$verify_dir/PROVENANCE.json"' in workflow
+    assert 'test "$digest" = "sha256:$byte_sha"' in workflow
+    assert '.object.type == "commit" and .object.sha == $target' in workflow
+    assert "if tag_json=$(gh api" in workflow
+    assert '--artifacts-root "$site/data/artifacts"' in workflow
+    assert '--web-root "$site"' in workflow
+    assert "--bundle-root ../bundle" in workflow
+    assert "open('bundle/catalog.json')" in workflow
+    assert '--target "$SOURCE_HEAD_SHA"' in workflow
+    assert workflow.index('gh release create "$tag"') < workflow.rindex(
+        'gh release download "$tag"'
+    )

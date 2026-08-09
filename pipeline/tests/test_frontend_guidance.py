@@ -133,63 +133,184 @@ process.stdout.write(JSON.stringify(cases.map(lede)));
     return json.loads(completed.stdout)  # type: ignore[no-any-return]
 
 
-def _presented_conformance_summaries(source: str) -> list[str]:
-    criteria = [
-        {"key": "valid", "met": False, "detail": "Validation has not run."},
-        {"key": "current", "met": False, "detail": "No service end date could be read."},
+def _presented_conformance_payloads(source: str) -> list[dict[str, object]]:
+    catalog = json.loads(
+        (ROOT / "pipeline" / "src" / "scorecard_pipeline" / "locales" / "app.en.json").read_text()
+    )
+
+    def criteria(*, valid: bool, current: bool, accessible: bool) -> list[dict[str, object]]:
+        return [
+            {"key": "valid", "met": valid, "detail": "STORED VALID ENGLISH"},
+            {"key": "current", "met": current, "detail": "STORED CURRENT ENGLISH"},
+            {"key": "accessible", "met": accessible, "detail": "STORED ACCESS ENGLISH"},
+        ]
+
+    cases = [
         {
-            "key": "accessible",
-            "met": False,
-            "detail": "Accessibility completeness has not been measured.",
+            "mark": {
+                "version": 2,
+                "summary": "STORED CURRENT SUMMARY",
+                "criteria": criteria(valid=False, current=False, accessible=False),
+            },
+            "place": "stop",
+            "artifact": {"categories": {"correctness": {"status": "skipped"}}},
+        },
+        {
+            "mark": {
+                "version": 1,
+                "summary": "STORED LEGACY SUMMARY",
+                "criteria": criteria(valid=True, current=False, accessible=False),
+            },
+            "place": "stop",
+            "artifact": {
+                "categories": {
+                    "correctness": {"status": "measured", "findings": []},
+                }
+            },
+        },
+        {
+            "mark": {
+                "summary": "STORED LEGACY SUMMARY",
+                "criteria": criteria(valid=True, current=True, accessible=False),
+            },
+            "place": "terminal",
+            "artifact": {
+                "categories": {
+                    "correctness": {"status": "measured", "findings": []},
+                    "freshness": {"details": {"days_until_expiry": 72}},
+                    "completeness": {
+                        "details": {
+                            "accessibility": {
+                                "stops_stated_pct": 100,
+                                "trips_stated_pct": 0,
+                            }
+                        }
+                    },
+                }
+            },
+        },
+        {
+            "mark": {
+                "version": 2,
+                "summary": "STORED CURRENT SUMMARY",
+                "criteria": criteria(valid=True, current=True, accessible=True),
+            },
+            "place": "terminal",
+            "artifact": {
+                "categories": {
+                    "correctness": {"status": "measured", "findings": []},
+                    "freshness": {"details": {"days_until_expiry": 120}},
+                    "completeness": {
+                        "details": {
+                            "accessibility": {
+                                "stops_stated_pct": 95,
+                                "trips_stated_pct": 96,
+                            }
+                        }
+                    },
+                }
+            },
+        },
+        {
+            "mark": {"version": 2, "summary": "STORED CURRENT SUMMARY", "criteria": []},
+            "place": "stop",
+            "artifact": {},
+        },
+        {
+            "mark": {
+                "version": 2,
+                "summary": "STORED CURRENT SUMMARY",
+                "criteria": criteria(valid=False, current=False, accessible=True),
+            },
+            "place": "stop",
+            "artifact": {
+                "categories": {
+                    "correctness": {
+                        "status": "measured",
+                        "findings": [{"severity": "ERROR"}, {"severity": "error"}],
+                    },
+                    "freshness": {"details": {"days_until_expiry": 10}},
+                    "completeness": {
+                        "details": {
+                            "accessibility": {
+                                "stops_stated_pct": 95,
+                                "trips_stated_pct": 95,
+                            }
+                        }
+                    },
+                }
+            },
+        },
+        {
+            "mark": {
+                "version": 2,
+                "summary": "STORED CURRENT SUMMARY",
+                "criteria": criteria(valid=True, current=False, accessible=True),
+            },
+            "place": "stop",
+            "artifact": {
+                "categories": {
+                    "correctness": {"status": "measured", "findings": []},
+                    "freshness": {"details": {"days_until_expiry": -3}},
+                    "completeness": {
+                        "details": {
+                            "accessibility": {
+                                "stops_stated_pct": 95,
+                                "trips_stated_pct": 95,
+                            }
+                        }
+                    },
+                }
+            },
+        },
+        {
+            "mark": {
+                "version": 2,
+                "summary": "STORED CURRENT SUMMARY",
+                "criteria": criteria(valid=True, current=True, accessible=True),
+            },
+            "place": "stop",
+            "artifact": {
+                "snapshot_date": "2026-07-13",
+                "categories": {
+                    "correctness": {"status": "measured", "findings": []},
+                    "freshness": {
+                        "details": {
+                            "days_until_expiry": 26834,
+                            "service_horizon_status": "unusually_distant",
+                        }
+                    },
+                    "completeness": {
+                        "details": {
+                            "accessibility": {
+                                "stops_stated_pct": 95,
+                                "trips_stated_pct": 95,
+                            }
+                        }
+                    },
+                },
+            },
         },
     ]
-    cases = [
-        [{"version": 2, "summary": "Current versioned summary.", "criteria": criteria}, "stop"],
-        [
-            {
-                "summary": "This feed is close to the conformance mark.",
-                "criteria": criteria,
-            },
-            "stop",
-        ],
-        [
-            {
-                "version": 1,
-                "summary": "This feed is close to the conformance mark.",
-                "criteria": [
-                    {**criteria[0], "met": True},
-                    criteria[1],
-                    criteria[2],
-                ],
-            },
-            "stop",
-        ],
-        [
-            {
-                "version": 1,
-                "summary": "This feed is close to the conformance mark.",
-                "criteria": [
-                    {**criteria[0], "met": True},
-                    {**criteria[1], "met": True},
-                    criteria[2],
-                ],
-            },
-            "stop",
-        ],
-        [
-            {
-                "version": 1,
-                "summary": "This feed is close to the conformance mark.",
-                "criteria": [{**criterion, "met": True} for criterion in criteria],
-            },
-            "terminal",
-        ],
-        [{"version": 1, "summary": "This feed is close.", "criteria": []}, "stop"],
-    ]
-    harness = """
-const present = eval("(" + process.argv[1] + ")");
-const cases = JSON.parse(process.argv[2]);
-process.stdout.write(JSON.stringify(cases.map(([mark, place]) => present(mark, place))));
+    harness = r"""
+const strings = JSON.parse(process.argv[3]);
+const t = (key, params) => strings[key].replace(
+  /\{(\w+)\}/g,
+  (match, name) => params && Object.prototype.hasOwnProperty.call(params, name)
+    ? String(params[name])
+    : match
+);
+const numericValue = eval("(" + process.argv[1] + ")");
+const plainNumber = eval("(" + process.argv[2] + ")");
+const presentedConformanceCriterionDetail = eval("(" + process.argv[4] + ")");
+const presentedConformanceCriteria = eval("(" + process.argv[5] + ")");
+const presentedConformanceSummary = eval("(" + process.argv[6] + ")");
+const effectiveServiceHorizonStatus = (details) => details.service_horizon_status || "unknown";
+const cases = JSON.parse(process.argv[7]);
+process.stdout.write(JSON.stringify(cases.map(({mark, place, artifact}) => ({
+  summary: presentedConformanceSummary(mark, place, artifact),
+  criteria: presentedConformanceCriteria(artifact, mark, place),
+}))));
 """
     node = shutil.which("node")
     assert node is not None
@@ -198,6 +319,11 @@ process.stdout.write(JSON.stringify(cases.map(([mark, place]) => present(mark, p
             node,
             "-e",
             harness,
+            _function_source(source, "numericValue"),
+            _function_source(source, "plainNumber"),
+            json.dumps(catalog),
+            _function_source(source, "presentedConformanceCriterionDetail"),
+            _function_source(source, "presentedConformanceCriteria"),
             _function_source(source, "presentedConformanceSummary"),
             json.dumps(cases),
         ],
@@ -272,25 +398,55 @@ def test_spa_feed_source_lede_never_infers_agency_ownership_from_fetch_success()
     assert "Based on the feed this agency publishes" not in app
 
 
-def test_spa_rederives_legacy_conformance_guidance_from_criteria() -> None:
+def test_spa_localizes_current_and_legacy_conformance_from_semantic_fields() -> None:
     app = (ROOT / "web" / "src" / "app.js").read_text()
 
-    summaries = _presented_conformance_summaries(app)
+    payloads = _presented_conformance_payloads(app)
+    summaries = [str(payload["summary"]) for payload in payloads]
 
     assert summaries == [
-        "Current versioned summary.",
         "This feed does not meet the conformance requirements yet. Here is what the mark needs: "
-        "Validation has not run. No service end date could be read. "
+        "Validation has not run for this feed yet. No service end date could be read. "
         "Accessibility completeness has not been measured.",
         "Two requirements remain for this feed to earn the conformance mark. "
         "No service end date could be read. Accessibility completeness has not been measured.",
         "One requirement remains for this feed to earn the conformance mark. "
-        "Accessibility completeness has not been measured.",
+        "States wheelchair access on 100% of terminals and 0% of trips; "
+        "the mark needs 90% of each.",
         "This feed earns the conformance mark: valid, current, and stating wheelchair access "
         "on nearly every terminal and trip.",
         "Conformance progress is shown by the criteria below.",
+        "Two requirements remain for this feed to earn the conformance mark. "
+        "2 validator errors to resolve. Service data runs out in 10 days; renew to qualify.",
+        "One requirement remains for this feed to earn the conformance mark. "
+        "Service data expired 3 days ago.",
+        "This feed earns the conformance mark: valid, current, and stating wheelchair access "
+        "on nearly every stop and trip.",
     ]
-    assert all("close" not in summary.casefold() for summary in summaries[1:])
+    assert all("stored" not in summary.casefold() for summary in summaries)
+    assert payloads[2]["criteria"] == [
+        {"key": "valid", "met": True, "detail": "Passes validation with no errors."},
+        {"key": "current", "met": True, "detail": "Service data covers the next 72 days."},
+        {
+            "key": "accessible",
+            "met": False,
+            "detail": (
+                "States wheelchair access on 100% of terminals and 0% of trips; "
+                "the mark needs 90% of each."
+            ),
+        },
+    ]
+    distant = payloads[-1]["criteria"]
+    assert isinstance(distant, list)
+    assert distant[1]["detail"] == (
+        "The published window is current, but its service end date is unusually distant; "
+        "confirm that date is intentional."
+    )
+    assert "mark.summary" not in _function_source(app, "presentedConformanceSummary")
+    conformance_section = _function_source(app, "conformanceSection")
+    assert "c.detail ||" not in conformance_section
+    assert "conformance_status_met" in conformance_section
+    assert "conformance_head_awarded" in conformance_section
 
 
 def test_generated_compare_reader_archive_profile_resolver_fails_closed() -> None:

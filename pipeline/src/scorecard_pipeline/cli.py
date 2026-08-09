@@ -2129,6 +2129,20 @@ def _cmd_otp(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     return 0 if qa.all_routable else 1
 
 
+def _current_canonical_index(index: dict[str, Any]) -> dict[str, Any]:
+    """Return an index view bounded to active canonical registry records."""
+    entries = index.get("agencies")
+    if not AGENCIES or not isinstance(entries, dict):
+        return index
+    current_ids = {agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed}
+    return {
+        **index,
+        "agencies": {
+            agency_id: entry for agency_id, entry in entries.items() if agency_id in current_ids
+        },
+    }
+
+
 def _cmd_otp_batch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     if args.select:
         from .config import artifacts_dir
@@ -2136,7 +2150,12 @@ def _cmd_otp_batch(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
 
         index_path = artifacts_dir() / "index.json"
         index = json.loads(index_path.read_text()) if index_path.exists() else {"agencies": {}}
-        feed_urls = {a.id: a.static_gtfs_url for a in AGENCIES.values()}
+        index = _current_canonical_index(index)
+        feed_urls = {
+            agency.id: agency.static_gtfs_url
+            for agency in AGENCIES.values()
+            if agency.is_canonical_feed
+        }
         chosen = select_best_worst(index, feed_urls, count=args.count)
         if not chosen:
             log.error("No scored feeds with a known URL to select from.")
@@ -2190,6 +2209,7 @@ def _cmd_equity(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
 
     index_path = artifacts_dir() / "index.json"
     index = _json.loads(index_path.read_text()) if index_path.exists() else {"agencies": {}}
+    index = _current_canonical_index(index)
     dataset = build_quality_dataset(
         index,
         agencies=AGENCIES.values() if AGENCIES else None,
@@ -2549,10 +2569,13 @@ def _cmd_activation_hydrate(args: argparse.Namespace, parser: argparse.ArgumentP
 
     try:
         targets = args.targets_file.read_text(encoding="utf-8").splitlines()
+        current_ids = {
+            agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed
+        }
         result = hydrate_activation_corpus(
             bucket=args.bucket,
             targets=targets,
-            known_ids=AGENCIES,
+            known_ids=current_ids,
             artifacts_root=artifacts_dir(),
             index_before=args.index_before_out,
             etag_out=args.etag_out,
@@ -2563,7 +2586,7 @@ def _cmd_activation_hydrate(args: argparse.Namespace, parser: argparse.ArgumentP
         parser.error(str(exc))
     log.info(
         "Hydrated %d current agencies and %d S3 objects (%d optional misses, "
-        "%d selected-directory objects, %d unregistered index entries skipped).",
+        "%d selected-directory objects, %d noncurrent/unregistered index entries skipped).",
         result.agencies,
         result.objects,
         result.optional_misses,

@@ -146,6 +146,183 @@ def test_targeted_activation_rejects_retired_alias(
     assert "retired/noncanonical" in capsys.readouterr().err
 
 
+def test_activation_hydration_requires_only_current_canonical_ids(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import activation, cli
+    from scorecard_pipeline.config import Agency
+
+    live = Agency(
+        id="annapolis-transit-2285",
+        name="Annapolis Transit",
+        static_gtfs_url="https://annapolis.example/gtfs.zip",
+    )
+    retired = Agency(
+        id="annapolis-transit",
+        name="Annapolis Transit",
+        static_gtfs_url="https://archive.example/annapolis.zip",
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    monkeypatch.setattr(cli, "AGENCIES", {retired.id: retired, live.id: live})
+    targets = tmp_path / "targets.txt"
+    targets.write_text(f"{live.id}\n")
+    captured: dict[str, object] = {}
+
+    def fake_hydrate(**kwargs: object) -> activation.HydrationResult:
+        captured.update(kwargs)
+        return activation.HydrationResult(
+            agencies=1,
+            objects=1,
+            optional_misses=0,
+            selected_objects=1,
+            skipped_unregistered=1,
+        )
+
+    monkeypatch.setattr(activation, "hydrate_activation_corpus", fake_hydrate)
+    args = argparse.Namespace(
+        bucket="artifacts",
+        targets_file=targets,
+        index_before_out=tmp_path / "index.before.json",
+        etag_out=tmp_path / "index.etag",
+        workers=1,
+    )
+
+    assert cli._cmd_activation_hydrate(args, argparse.ArgumentParser()) == 0
+    assert captured["known_ids"] == {live.id}
+
+
+def test_otp_batch_selection_excludes_retired_alias(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    from scorecard_pipeline import cli, config
+    from scorecard_pipeline.config import Agency
+
+    live = Agency(
+        id="live",
+        name="Live Transit",
+        static_gtfs_url="https://example.org/live.zip",
+    )
+    retired = Agency(
+        id="retired",
+        name="Retired Transit",
+        static_gtfs_url="https://archive.example.org/retired.zip",
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    monkeypatch.setattr(cli, "AGENCIES", {retired.id: retired, live.id: live})
+    artifact_root = tmp_path / "artifacts"
+    artifact_root.mkdir()
+    (artifact_root / "index.json").write_text(
+        json.dumps(
+            {
+                "agencies": {
+                    live.id: {
+                        "history": [
+                            {
+                                "date": "2026-08-08",
+                                "grade": "F",
+                                "score": 10.0,
+                                "days_until_expiry": 30,
+                            }
+                        ]
+                    },
+                    retired.id: {
+                        "history": [
+                            {
+                                "date": "2026-08-08",
+                                "grade": "A",
+                                "score": 100.0,
+                                "days_until_expiry": 30,
+                            }
+                        ]
+                    },
+                }
+            }
+        )
+    )
+    monkeypatch.setattr(config, "artifacts_dir", lambda: artifact_root)
+
+    args = argparse.Namespace(select="best-worst", count=1)
+    assert cli._cmd_otp_batch(args, argparse.ArgumentParser()) == 0
+    assert json.loads(capsys.readouterr().out) == [
+        {
+            "feed_id": live.id,
+            "feed_url": live.static_gtfs_url,
+            "cohort": "best",
+        }
+    ]
+
+
+def test_equity_coverage_excludes_retired_alias(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    from scorecard_pipeline import cli, config, equity
+    from scorecard_pipeline.config import Agency
+
+    live = Agency(
+        id="live",
+        name="Live Transit",
+        static_gtfs_url="https://example.org/live.zip",
+        state="California",
+    )
+    retired = Agency(
+        id="retired",
+        name="Retired Transit",
+        static_gtfs_url="https://archive.example.org/retired.zip",
+        state="California",
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    monkeypatch.setattr(cli, "AGENCIES", {retired.id: retired, live.id: live})
+    artifact_root = tmp_path / "artifacts"
+    artifact_root.mkdir()
+    history = {
+        "date": "2026-08-08",
+        "grade": "B",
+        "score": 80.0,
+        "days_until_expiry": 30,
+        "categories": {"correctness": 80.0, "freshness": 80.0, "completeness": 80.0},
+    }
+    (artifact_root / "index.json").write_text(
+        json.dumps(
+            {
+                "agencies": {
+                    live.id: {"history": [history]},
+                    retired.id: {"history": [history]},
+                }
+            }
+        )
+    )
+    monkeypatch.setattr(config, "artifacts_dir", lambda: artifact_root)
+    monkeypatch.setattr(
+        cli,
+        "_published_states",
+        lambda: {live.id: "California", retired.id: "California"},
+    )
+    monkeypatch.setattr(equity, "fetch_state_indicators", lambda: {})
+    captured_rows: list[dict[str, object]] = []
+
+    def fake_overlay(
+        rows: list[dict[str, object]], *_args: object, **_kwargs: object
+    ) -> dict[str, object]:
+        captured_rows.extend(rows)
+        return {"states": [], "priority": []}
+
+    monkeypatch.setattr(equity, "build_overlay", fake_overlay)
+    monkeypatch.setattr(equity, "render_overlay", lambda _overlay: "")
+
+    args = argparse.Namespace(allow_empty=True, json_out=None, out=None)
+    assert cli._cmd_equity(args, argparse.ArgumentParser()) == 0
+    assert {str(row["id"]) for row in captured_rows} == {live.id}
+    capsys.readouterr()
+
+
 def test_rt_health_batch_excludes_retired_alias_but_keeps_explicit_reproduction(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
