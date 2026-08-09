@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+
 from scorecard_pipeline.badge import render_mark
 from scorecard_pipeline.conformance import AWARDED, NOT_YET, assess
 
@@ -41,6 +43,68 @@ def test_clean_feed_earns_the_mark() -> None:
     assert mark.awarded is True
     assert mark.to_dict()["status"] == AWARDED
     assert all(c.met for c in mark.criteria)
+
+
+@pytest.mark.parametrize(
+    ("expected_met", "errors", "days", "stops_pct", "trips_pct", "expected_lede"),
+    [
+        (
+            0,
+            1,
+            -3,
+            0.0,
+            0.0,
+            "This feed does not meet the conformance requirements yet. "
+            "Here is what the mark needs:",
+        ),
+        (
+            1,
+            0,
+            -3,
+            0.0,
+            0.0,
+            "Two requirements remain for this feed to earn the conformance mark.",
+        ),
+        (
+            2,
+            0,
+            120,
+            0.0,
+            0.0,
+            "One requirement remains for this feed to earn the conformance mark.",
+        ),
+        (
+            3,
+            0,
+            120,
+            95.0,
+            95.0,
+            "This feed earns the conformance mark:",
+        ),
+    ],
+    ids=["0-of-3", "1-of-3", "2-of-3", "3-of-3"],
+)
+def test_summary_matches_number_of_conformance_criteria_met(
+    expected_met: int,
+    errors: int,
+    days: int,
+    stops_pct: float,
+    trips_pct: float,
+    expected_lede: str,
+) -> None:
+    mark = assess(
+        _artifact(
+            errors=errors,
+            days=days,
+            stops_pct=stops_pct,
+            trips_pct=trips_pct,
+        )
+    )
+
+    assert sum(criterion.met for criterion in mark.criteria) == expected_met
+    assert mark.summary.startswith(expected_lede)
+    assert "close to" not in mark.summary.lower()
+    assert all(criterion.detail in mark.summary for criterion in mark.criteria if not criterion.met)
 
 
 def test_legacy_distant_horizon_keeps_mark_status_without_huge_countdown() -> None:

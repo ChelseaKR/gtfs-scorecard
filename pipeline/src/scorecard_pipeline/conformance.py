@@ -121,14 +121,26 @@ def assess(artifact: dict[str, Any]) -> Conformance:
     """Assess whether a feed earns the conformance mark."""
     criteria = [_valid(artifact), _current(artifact), _accessible(artifact)]
     awarded = all(c.met for c in criteria)
-    return Conformance(awarded, criteria, _summary(awarded, criteria))
+    return Conformance(awarded, criteria, _summary(criteria))
 
 
-def _summary(awarded: bool, criteria: list[Criterion]) -> str:
-    if awarded:
+def _summary(criteria: list[Criterion]) -> str:
+    met_count = sum(criterion.met for criterion in criteria)
+    if met_count == len(criteria):
         return (
             "This feed earns the conformance mark: valid, current, and stating "
             "wheelchair access on nearly every stop and trip."
         )
-    gaps = " ".join(c.detail for c in criteria if not c.met)
-    return f"This feed is close to the conformance mark. {gaps}"
+
+    gaps = " ".join(criterion.detail for criterion in criteria if not criterion.met)
+    if met_count == 0:
+        lede = (
+            "This feed does not meet the conformance requirements yet. Here is what the mark needs:"
+        )
+    else:
+        requirements_left = len(criteria) - met_count
+        count = "One" if requirements_left == 1 else "Two"
+        plural = "" if requirements_left == 1 else "s"
+        verb = "remains" if requirements_left == 1 else "remain"
+        lede = f"{count} requirement{plural} {verb} for this feed to earn the conformance mark."
+    return f"{lede} {gaps}"
