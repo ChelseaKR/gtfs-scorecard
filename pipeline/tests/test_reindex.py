@@ -78,6 +78,62 @@ def test_reindex_skips_directories_absent_from_registry(
     assert set(index["agencies"]) == {"a"}
 
 
+def test_retired_f_alias_is_not_current_alongside_live_successor(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Retirement changes publication identity without erasing evidence."""
+    from scorecard_pipeline.config import AGENCIES
+
+    retired_id = "annapolis-transit"
+    successor_id = "annapolis-transit-2285"
+
+    # Reproduce the pre-fix state: both endpoints have public score histories,
+    # and the stale predecessor's F appears beside its live successor's A.
+    _publish(retired_id, dt.date(2026, 6, 12), 31.2)
+    _publish(successor_id, dt.date(2026, 6, 12), 91.1)
+    stale = json.loads((artifacts_dir() / "index.json").read_text())
+    assert stale["agencies"][retired_id]["history"][-1]["grade"] == "F"
+    assert stale["agencies"][successor_id]["history"][-1]["grade"] == "A"
+
+    monkeypatch.setitem(
+        AGENCIES,
+        retired_id,
+        Agency(
+            id=retired_id,
+            name="Annapolis Transit",
+            static_gtfs_url="https://archive.example/annapolis.zip",
+            alias_of=successor_id,
+            feed_status="deprecated",
+        ),
+    )
+    monkeypatch.setitem(
+        AGENCIES,
+        successor_id,
+        Agency(
+            id=successor_id,
+            name="Annapolis Transit",
+            static_gtfs_url="https://annapolis.example/gtfs.zip",
+        ),
+    )
+
+    rebuild_index()
+
+    current = json.loads((artifacts_dir() / "index.json").read_text())
+    assert set(current["agencies"]) == {successor_id}
+    # Raw dated and latest artifacts remain available for exact historical
+    # reproduction; only their membership in the current catalog changes.
+    retired_dir = artifacts_dir() / retired_id
+    assert (retired_dir / "2026-06-12.json").exists()
+    assert (retired_dir / "latest.json").exists()
+
+    # A deliberate single-feed reproduction can refresh the retired evidence,
+    # but incremental publishing must not resurrect it in index.json.
+    _publish(retired_id, dt.date(2026, 6, 13), 31.2)
+    after_reproduction = json.loads((artifacts_dir() / "index.json").read_text())
+    assert set(after_reproduction["agencies"]) == {successor_id}
+    assert (retired_dir / "2026-06-13.json").exists()
+
+
 def test_reindex_indexes_everything_when_no_registry_is_loaded() -> None:
     # Library callers (and most unit tests) run with an empty registry; the
     # bound only applies once agencies.yaml has been loaded.

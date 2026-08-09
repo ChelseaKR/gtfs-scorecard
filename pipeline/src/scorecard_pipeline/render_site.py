@@ -9599,6 +9599,43 @@ def _remove_unlisted_agency_pages(agency_pages: Path, published_ids: set[str]) -
             shutil.rmtree(page_dir)
 
 
+def _scope_index_to_canonical_registry(
+    index: dict[str, Any], registry_by_id: dict[str, Agency]
+) -> int:
+    """Drop stale/unlisted feed records from the current public index in place.
+
+    Reindex normally enforces this boundary first. Rendering enforces it again
+    so a registry retirement cannot leave an old scorecard public merely
+    because deploy started from a previously committed index.
+    """
+    if not registry_by_id:
+        return 0
+    indexed = index.setdefault("agencies", {})
+    removed = [
+        agency_id
+        for agency_id in indexed
+        if agency_id not in registry_by_id or not registry_by_id[agency_id].is_canonical_feed
+    ]
+    for agency_id in removed:
+        indexed.pop(agency_id, None)
+    return len(removed)
+
+
+def _published_alias_target(
+    agency: Agency, registry_by_id: dict[str, Agency], published_ids: set[str]
+) -> str:
+    """Resolve a retained alias to the live scorecard it should redirect to."""
+    target = agency.alias_of
+    seen = {agency.id}
+    while target and target not in seen:
+        if target in published_ids:
+            return target
+        seen.add(target)
+        target_agency = registry_by_id.get(target)
+        target = target_agency.alias_of if target_agency else ""
+    return ""
+
+
 def _remove_stale_agency_index_pages(page_root: Path) -> None:
     """Remove only generated numeric directory pages before rebuilding them."""
     if not page_root.exists():
@@ -9691,6 +9728,16 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     art = artifacts_dir()
     index_file = art / "index.json"
     index = json.loads(index_file.read_text()) if index_file.exists() else {"agencies": {}}
+    from .config import AGENCIES
+
+    # CLI renders have the registry loaded already. Direct library callers use
+    # the same manifest-aware reader without mutating the process-global map.
+    registry_by_id = dict(AGENCIES)
+    if not registry_by_id:
+        from .agencies import read_agencies
+
+        registry_by_id = {agency.id: agency for agency in read_agencies()}
+    index_changed = _scope_index_to_canonical_registry(index, registry_by_id)
     published_ids = {str(agency_id) for agency_id in (index.get("agencies") or {})}
     raw_liveness_state = _load_liveness()
     liveness_state = _scope_liveness_state(raw_liveness_state, published_ids)
@@ -9814,18 +9861,19 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # feed would retain a directly reachable HTML page after disappearing from
     # the directory and sitemap.
     _remove_unlisted_agency_pages(web / "agency", published_ids)
+    # Retained aliases keep historical artifacts reproducible and old inbound
+    # links useful, but the old URL is now a redirect rather than a second
+    # current scorecard. Inactive records without a live successor stay gone.
+    for agency in sorted(registry_by_id.values(), key=lambda item: item.id):
+        target = _published_alias_target(agency, registry_by_id, published_ids)
+        if target:
+            write(
+                f"agency/{agency.id}/index.html",
+                _redirect_page(f"/agency/{target}/", agency.name),
+            )
     from .publish import enrich_index_history_provenance
 
-    index_changed = enrich_index_history_provenance(index, art)
-    from .config import AGENCIES
-
-    # CLI renders have the registry loaded already. Direct library callers use
-    # the same manifest-aware reader without mutating the process-global map.
-    registry_by_id = dict(AGENCIES)
-    if not registry_by_id:
-        from .agencies import read_agencies
-
-        registry_by_id = {agency.id: agency for agency in read_agencies()}
+    index_changed |= enrich_index_history_provenance(index, art)
     index_changed |= _apply_registry_agency_names(index, registry_by_id)
     if index_changed:
         index_file.write_text(json.dumps(index, indent=2, sort_keys=True) + "\n")

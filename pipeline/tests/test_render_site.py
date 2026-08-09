@@ -1058,6 +1058,79 @@ def test_catalog_derives_status_from_legacy_latest_artifact(
     assert global_coverage["status"] == "not_ready"
 
 
+def test_render_retires_stale_f_scorecard_and_redirects_to_live_successor(
+    isolated_repo_root: Path,
+) -> None:
+    from scorecard_pipeline.render_site import render_site
+
+    fixture = Path(__file__).parent / "fixtures" / "golden_site"
+    shutil.copytree(fixture, isolated_repo_root)
+    retired_id = "unitrans-retired"
+    successor_id = "unitrans"
+
+    registry = isolated_repo_root / "agencies.yaml"
+    registry.write_text(
+        registry.read_text()
+        + f"""
+
+  - id: {retired_id}
+    name: Retired Unitrans export
+    static_gtfs_url: https://archive.example/unitrans.zip
+    alias_of: {successor_id}
+    feed_status: deprecated
+"""
+    )
+
+    artifacts = isolated_repo_root / "data" / "artifacts"
+    successor_latest = artifacts / successor_id / "latest.json"
+    live_artifact = json.loads(successor_latest.read_text())
+    live_artifact["overall"]["score"] = 91.1
+    live_artifact["overall"]["grade"] = "A"
+    successor_latest.write_text(json.dumps(live_artifact))
+
+    retired_artifact = json.loads(json.dumps(live_artifact))
+    retired_artifact["agency"]["id"] = retired_id
+    retired_artifact["agency"]["name"] = "Retired Unitrans export"
+    retired_artifact["overall"]["score"] = 31.2
+    retired_artifact["overall"]["grade"] = "F"
+    retired_dir = artifacts / retired_id
+    retired_dir.mkdir()
+    (retired_dir / "latest.json").write_text(json.dumps(retired_artifact))
+
+    index_path = artifacts / "index.json"
+    index = json.loads(index_path.read_text())
+    index["agencies"][successor_id]["history"][-1].update({"score": 91.1, "grade": "A"})
+    index["agencies"][retired_id] = {
+        "name": "Retired Unitrans export",
+        "history": [{"date": "2026-07-02", "score": 31.2, "grade": "F"}],
+    }
+    index_path.write_text(json.dumps(index))
+
+    stale_page = isolated_repo_root / "web" / "agency" / retired_id
+    (stale_page / "brief").mkdir(parents=True)
+    (stale_page / "index.html").write_text("stale F scorecard")
+    (stale_page / "brief" / "index.html").write_text("stale brief")
+
+    render_site(dt.datetime(2026, 7, 13, 12, tzinfo=dt.UTC))
+
+    catalog = json.loads((isolated_repo_root / "web" / "catalog.json").read_text())
+    rows = {row["id"]: row for row in catalog["agencies"]}
+    assert retired_id not in rows
+    assert rows[successor_id]["grade"] == "A"
+    assert retired_id not in json.loads(index_path.read_text())["agencies"]
+
+    redirect = (stale_page / "index.html").read_text()
+    assert f"url=/agency/{successor_id}/" in redirect
+    assert f'<a href="/agency/{successor_id}/">' in redirect
+    assert "stale F scorecard" not in redirect
+    assert not (stale_page / "brief").exists()
+    # Historical JSON remains available even though it is no longer a current
+    # directory row or scorecard page.
+    assert (retired_dir / "latest.json").exists()
+    sitemap = (isolated_repo_root / "web" / "sitemap.xml").read_text()
+    assert f"/agency/{retired_id}/" not in sitemap
+
+
 def test_catalog_top_level_rubric_reports_mixed_row_versions() -> None:
     from scorecard_pipeline.render_site import _write_catalog
 

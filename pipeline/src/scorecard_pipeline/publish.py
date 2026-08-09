@@ -485,16 +485,17 @@ def enrich_index_history_provenance(index: dict[str, Any], root: Path | None = N
 
 
 def registered_agency_dirs(root: Path, *, log_skipped: bool = False) -> list[Path]:
-    """Agency directories under ``root``, bounded to the loaded registry.
+    """Current agency directories under ``root``, bounded to the loaded registry.
 
     The S3 artifacts store is additive and outlives registry edits, so a
     hydrated tree can hold directories for agencies that were removed from
-    the registry, or that a since-abandoned run published and no registry
-    version ever listed. The registry is the sole source of what is listed
-    (docs/listing-policy.md), so walkers must not treat those directories as
-    listings; cleanup stays a curator decision (`scorecard prune`). With no
-    registry loaded (library callers, most unit tests) every directory is
-    returned unchanged.
+    the registry, that have since become aliases of a live successor, or that
+    a since-abandoned run published and no registry version ever listed. The
+    registry's active canonical entries are the sole source of what is listed
+    (docs/listing-policy.md), so walkers must not treat the other directories
+    as current listings; cleanup stays a curator decision (`scorecard prune`).
+    With no registry loaded (library callers, most unit tests) every directory
+    is returned unchanged.
     """
     from .config import AGENCIES
 
@@ -509,7 +510,17 @@ def registered_agency_dirs(root: Path, *, log_skipped: bool = False) -> list[Pat
             len(unregistered),
             ", ".join(unregistered[:10]) + (", ..." if len(unregistered) > 10 else ""),
         )
-    return [p for p in dirs if p.name in AGENCIES]
+    noncanonical = [
+        p.name for p in dirs if p.name in AGENCIES and not AGENCIES[p.name].is_canonical_feed
+    ]
+    if noncanonical and log_skipped:
+        log.warning(
+            "skipping %d retired/noncanonical artifact directories"
+            " (history remains available for reproducibility): %s",
+            len(noncanonical),
+            ", ".join(noncanonical[:10]) + (", ..." if len(noncanonical) > 10 else ""),
+        )
+    return [p for p in dirs if p.name in AGENCIES and AGENCIES[p.name].is_canonical_feed]
 
 
 def _dated_reindex_artifacts(
@@ -758,6 +769,17 @@ def _update_index(agency_id: str, artifact: dict[str, Any]) -> None:
     index: dict[str, Any] = {"schema_version": SCHEMA_VERSION, "agencies": {}}
     if index_path.exists():
         index = json.loads(index_path.read_text())
+
+    # A curator may retain a retired endpoint as an alias so its dated evidence
+    # remains reproducible. A manual single-agency re-score may therefore still
+    # write that evidence, but it must never revive the retired feed as a current
+    # scorecard. Full reindex applies the same policy through
+    # registered_agency_dirs().
+    agency = AGENCIES.get(agency_id)
+    if agency is not None and not agency.is_canonical_feed:
+        index.setdefault("agencies", {}).pop(agency_id, None)
+        _write_json(index_path, index)
+        return
 
     # Reconcile this agency's history from the dated artifacts actually on disk,
     # rather than appending to whatever the index held. This keeps an incremental

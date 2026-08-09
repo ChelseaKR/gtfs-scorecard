@@ -646,7 +646,14 @@ def _log_run_failure(agency_id: str, exc: Exception, *, single: bool) -> None:
 def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     if not args.all and not args.agency:
         parser.error("pass --agency <id> or --all")
-    targets = sorted(AGENCIES) if args.all else [args.agency]
+    # Retired aliases remain addressable one at a time for reproduction, but a
+    # batch run is a refresh of the current public catalog and must not score an
+    # old endpoint alongside its live successor.
+    targets = (
+        sorted(agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed)
+        if args.all
+        else [args.agency]
+    )
     failures = 0
     skipped = 0
     outcome_out = getattr(args, "outcome_out", None)
@@ -2416,6 +2423,8 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         only = {line.strip() for line in Path(args.only).read_text().splitlines() if line.strip()}
 
     for agency_id, agency in sorted(AGENCIES.items()):
+        if not agency.is_canonical_feed:
+            continue
         if only is not None and agency_id not in only:
             continue
         prev = state.get(agency_id)
@@ -2461,7 +2470,10 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
 def _cmd_shards(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .shards import plan_shards
 
-    print(json.dumps(plan_shards(sorted(AGENCIES), args.count)))
+    current_ids = sorted(
+        agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed
+    )
+    print(json.dumps(plan_shards(current_ids, args.count)))
     return 0
 
 
@@ -2889,7 +2901,7 @@ def main(argv: list[str] | None = None) -> int:
 
     run = sub.add_parser("run", help="fetch, validate, score, and publish")
     run.add_argument("--agency", help="one agency id")
-    run.add_argument("--all", action="store_true", help="run every registered agency")
+    run.add_argument("--all", action="store_true", help="run every current registered agency")
     run.add_argument(
         "--date",
         type=dt.date.fromisoformat,
