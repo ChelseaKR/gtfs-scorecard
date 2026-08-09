@@ -11,6 +11,7 @@ index, and no retired or unregistered identifier may enter the bundle.
 from __future__ import annotations
 
 import argparse
+import copy
 import csv
 import datetime as dt
 import json
@@ -31,8 +32,18 @@ from .dataset import COLUMNS, build_quality_dataset, to_csv
 from .instance import BASE_URL
 from .location import resolve_published_location
 from .mobilitydb import canonical_state
-from .ntd import AT_RISK, NOT_READY, READY
-from .ntd import assess as assess_ntd
+from .ntd import (
+    AT_RISK,
+    NOT_READY,
+    READY,
+    PortfolioSummary,
+    one_fix_from_ready,
+    portfolio_summary,
+    shapes_portfolio_summary,
+)
+from .ntd import (
+    assess as assess_ntd,
+)
 from .warehouse import to_parquet
 
 _TEXT_EXPORTS = (
@@ -391,6 +402,7 @@ def _validate_one_fix_rows(
     ntd_doc: Mapping[str, Any],
     catalog: Mapping[str, Mapping[str, Any]],
     expected_ids: set[str],
+    canonical_artifacts: Sequence[dict[str, Any]],
 ) -> None:
     one_fix = _rows_by_id(ntd_doc.get("one_fix_from_ready", []), "ntd.json one-fix rows")
     if not set(one_fix) <= expected_ids:
@@ -422,6 +434,12 @@ def _validate_one_fix_rows(
             if not _values_equal(row.get(field), catalog_row.get(catalog_field)):
                 raise DatasetReleaseError(f"ntd.json one-fix {field} disagrees with catalog.json")
         _validate_one_fix_contract(row, catalog_row)
+
+    expected = one_fix_from_ready(list(canonical_artifacts))
+    if one_fix_total != len(expected) or list(one_fix.values()) != expected[:40]:
+        raise DatasetReleaseError(
+            "ntd.json one-fix rows disagree with the canonical current artifacts"
+        )
 
 
 def _validate_one_fix_contract(row: Mapping[str, Any], catalog_row: Mapping[str, Any]) -> None:
@@ -508,16 +526,91 @@ def _require_ntd_summary_matches(
             raise DatasetReleaseError(f"{label} disagrees with the canonical catalog rollup")
 
 
+def _summary_payload(summary: PortfolioSummary) -> dict[str, Any]:
+    return {
+        "total": summary.total,
+        "ready": summary.ready,
+        "at_risk": summary.at_risk,
+        "not_ready": summary.not_ready,
+        "pct_ready": summary.pct_ready,
+        "by_state": summary.by_state,
+    }
+
+
+def _canonical_ntd_artifacts(
+    *,
+    artifacts_root: Path,
+    current: Mapping[str, Mapping[str, Any]],
+    catalog: Mapping[str, Mapping[str, Any]],
+) -> list[dict[str, Any]]:
+    """Load full indexed-current artifacts and bind them to release rows.
+
+    ``index.json`` intentionally carries only compact trend points. Those points
+    cannot independently establish one-fix eligibility or shapes.txt coverage,
+    so a release must also provide every corresponding full ``latest.json``.
+    """
+    from .publish import _history_entry
+
+    canonical: list[dict[str, Any]] = []
+    for agency_id in sorted(current):
+        artifact = _read_json(
+            artifacts_root / agency_id / "latest.json",
+            f"canonical current artifact {agency_id}",
+        )
+        agency = artifact.get("agency")
+        if not isinstance(agency, dict) or agency.get("id") != agency_id:
+            raise DatasetReleaseError(
+                f"canonical current artifact identity disagrees with the index for {agency_id}"
+            )
+        try:
+            compact = _history_entry(artifact)
+        except (KeyError, TypeError, ValueError) as exc:
+            raise DatasetReleaseError(
+                f"canonical current artifact is malformed for {agency_id}: {exc}"
+            ) from exc
+        if any(compact.get(field) != value for field, value in current[agency_id].items()):
+            raise DatasetReleaseError(
+                f"canonical current artifact disagrees with the index for {agency_id}"
+            )
+
+        catalog_row = catalog[agency_id]
+        feed = artifact.get("feed")
+        if not isinstance(feed, dict) or feed.get("static_url") != catalog_row.get("feed_url"):
+            raise DatasetReleaseError(
+                f"canonical current artifact feed URL disagrees with catalog.json for {agency_id}"
+            )
+
+        normalized = copy.deepcopy(artifact)
+        normalized_agency = normalized["agency"]
+        normalized_agency["name"] = catalog_row.get("name")
+        normalized_agency["state"] = catalog_row.get("state")
+        normalized_agency["country"] = catalog_row.get("country")
+        if normalized_agency["country"] == "US":
+            status = assess_ntd(normalized).status
+            if status != catalog_row.get("ntd_ready"):
+                raise DatasetReleaseError(
+                    "canonical current artifact NTD readiness disagrees with catalog.json"
+                )
+        canonical.append(normalized)
+    return canonical
+
+
 def _validate_ntd_document(
     ntd_doc: Mapping[str, Any],
     catalog: Mapping[str, Mapping[str, Any]],
     expected_ids: set[str],
+    canonical_artifacts: Sequence[dict[str, Any]],
 ) -> None:
     _validate_ntd_summary(ntd_doc, "ntd.json")
     _validate_ntd_summary(ntd_doc.get("shapes"), "ntd.json shapes")
     expected_summary = _expected_ntd_summary(catalog)
     _require_ntd_summary_matches(ntd_doc, expected_summary, "ntd.json")
-    _validate_one_fix_rows(ntd_doc, catalog, expected_ids)
+    canonical_summary = _summary_payload(portfolio_summary(list(canonical_artifacts)))
+    _require_ntd_summary_matches(ntd_doc, canonical_summary, "ntd.json")
+    canonical_shapes = _summary_payload(shapes_portfolio_summary(list(canonical_artifacts)))
+    if ntd_doc.get("shapes") != canonical_shapes:
+        raise DatasetReleaseError("ntd.json shapes disagree with the canonical current artifacts")
+    _validate_one_fix_rows(ntd_doc, catalog, expected_ids, canonical_artifacts)
 
 
 def validate_release_inputs(
@@ -570,7 +663,12 @@ def validate_release_inputs(
         expected_rows=expected_rows,
         current_registry=current_registry,
     )
-    _validate_ntd_document(ntd_doc, catalog, expected_ids)
+    canonical_artifacts = _canonical_ntd_artifacts(
+        artifacts_root=artifacts_root,
+        current=current,
+        catalog=catalog,
+    )
+    _validate_ntd_document(ntd_doc, catalog, expected_ids, canonical_artifacts)
     _require_no_retired_references(web_root, retired_registry_ids)
     rubric = str(catalog_doc.get("rubric_version") or "unknown")
     return ReleaseSummary(agencies=len(expected_ids), rubric_version=rubric)

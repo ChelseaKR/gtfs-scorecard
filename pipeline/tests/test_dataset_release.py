@@ -83,10 +83,21 @@ def _ntd_artifact(*, has_agency_id: bool = True) -> dict[str, object]:
         "feed": {
             "static_url": "https://example.org/current.zip",
             "reachable": True,
+            "sha256": "a" * 64,
         },
+        "overall": {"grade": "B", "score": 88.5},
+        "rubric_version": "1.3",
+        "scoring_profile": {"id": "gtfs-scorecard-1.3", "rubric_version": "1.3"},
+        "validator_version": "8.0.1",
+        "reader_archive_profile": "raw-v1",
         "categories": {
-            "correctness": {"status": "measured", "findings": []},
-            "freshness": {"details": {"days_until_expiry": 60}},
+            "correctness": {"status": "measured", "score": 91.0, "findings": []},
+            "freshness": {
+                "status": "measured",
+                "score": 87.0,
+                "details": {"days_until_expiry": 60},
+            },
+            "completeness": {"status": "measured", "score": 83.0},
         },
         "snapshot_date": "2026-08-01",
         "ntd_id_alignment": {"feed_agency_ids": ["current-agency"] if has_agency_id else []},
@@ -122,6 +133,12 @@ def _write_ntd(web: Path, artifact: dict[str, object]) -> None:
     )
 
 
+def _write_current_artifact(artifacts: Path, artifact: dict[str, object]) -> None:
+    agency_dir = artifacts / "current-agency"
+    agency_dir.mkdir(exist_ok=True)
+    (agency_dir / "latest.json").write_text(json.dumps(artifact), encoding="utf-8")
+
+
 def _set_catalog_ntd_status(web: Path, status: str) -> None:
     catalog = json.loads((web / "catalog.json").read_text(encoding="utf-8"))
     catalog["agencies"][0]["ntd_ready"] = status
@@ -152,7 +169,6 @@ def _release_tree(tmp_path: Path) -> tuple[Path, Path, Path, dict[str, object]]:
             "correctness": 91.0,
             "freshness": 87.0,
             "completeness": 83.0,
-            "realtime": None,
         },
         "days_until_expiry": 60,
         "service_horizon_status": "within_review_threshold",
@@ -200,6 +216,7 @@ def _release_tree(tmp_path: Path) -> tuple[Path, Path, Path, dict[str, object]]:
     _write_csv(web / "catalog.csv", [catalog_row], CATALOG_CSV_FIELDS)
     (web / "dataset.csv").write_text(to_csv(dataset), encoding="utf-8")
     _write_ntd(web, ntd_artifact)
+    _write_current_artifact(artifacts, ntd_artifact)
     to_parquet([dataset_row], str(web / "api" / "v1" / "agencies.parquet"))
     return artifacts, web, repo, current
 
@@ -418,6 +435,7 @@ def test_release_accepts_one_fix_row_generated_by_the_production_assessor(
     artifact = _ntd_artifact(has_agency_id=False)
     _set_catalog_ntd_status(web, assess(artifact).status)
     _write_ntd(web, artifact)
+    _write_current_artifact(artifacts, artifact)
 
     summary = validate_release_inputs(
         artifacts_root=artifacts,
@@ -435,12 +453,74 @@ def test_release_rejects_fabricated_one_fix_pillar_or_fix(tmp_path: Path, pillar
     artifact = _ntd_artifact(has_agency_id=False)
     _set_catalog_ntd_status(web, assess(artifact).status)
     _write_ntd(web, artifact)
+    _write_current_artifact(artifacts, artifact)
     ntd = json.loads((web / "ntd.json").read_text(encoding="utf-8"))
     ntd["one_fix_from_ready"][0]["pillar"] = pillar
     ntd["one_fix_from_ready"][0]["fix"] = "Fabricated remediation text."
     (web / "ntd.json").write_text(json.dumps(ntd), encoding="utf-8")
 
     with pytest.raises(DatasetReleaseError, match="pillar or fix"):
+        validate_release_inputs(
+            artifacts_root=artifacts,
+            web_root=web,
+            current_registry=_registry(),
+            retired_registry_ids={"retired-alias"},
+        )
+
+
+def test_release_rejects_empty_one_fix_when_current_artifact_has_a_near_miss(
+    tmp_path: Path,
+) -> None:
+    artifacts, web, _repo, _current = _release_tree(tmp_path)
+    artifact = _ntd_artifact(has_agency_id=False)
+    _set_catalog_ntd_status(web, assess(artifact).status)
+    _write_ntd(web, artifact)
+    _write_current_artifact(artifacts, artifact)
+    ntd = json.loads((web / "ntd.json").read_text(encoding="utf-8"))
+    ntd["one_fix_from_ready"] = []
+    ntd["one_fix_total"] = 0
+    (web / "ntd.json").write_text(json.dumps(ntd), encoding="utf-8")
+
+    with pytest.raises(DatasetReleaseError, match="canonical current artifacts"):
+        validate_release_inputs(
+            artifacts_root=artifacts,
+            web_root=web,
+            current_registry=_registry(),
+            retired_registry_ids={"retired-alias"},
+        )
+
+
+def test_release_rejects_fabricated_shapes_rollup_that_is_internally_consistent(
+    tmp_path: Path,
+) -> None:
+    artifacts, web, _repo, _current = _release_tree(tmp_path)
+    ntd = json.loads((web / "ntd.json").read_text(encoding="utf-8"))
+    ntd["shapes"] = {
+        "total": 999,
+        "ready": 999,
+        "at_risk": 0,
+        "not_ready": 0,
+        "pct_ready": 100.0,
+        "by_state": {"California": {"total": 999, "ready": 999, "at_risk": 0, "not_ready": 0}},
+    }
+    (web / "ntd.json").write_text(json.dumps(ntd), encoding="utf-8")
+
+    with pytest.raises(DatasetReleaseError, match="canonical current artifacts"):
+        validate_release_inputs(
+            artifacts_root=artifacts,
+            web_root=web,
+            current_registry=_registry(),
+            retired_registry_ids={"retired-alias"},
+        )
+
+
+def test_release_rejects_ntd_sections_without_canonical_current_artifacts(
+    tmp_path: Path,
+) -> None:
+    artifacts, web, _repo, _current = _release_tree(tmp_path)
+    (artifacts / "current-agency" / "latest.json").unlink()
+
+    with pytest.raises(DatasetReleaseError, match="canonical current artifact"):
         validate_release_inputs(
             artifacts_root=artifacts,
             web_root=web,
