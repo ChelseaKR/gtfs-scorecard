@@ -64,6 +64,7 @@ def _config() -> dict[str, Any]:
         "site_origin": ORIGIN,
         "sitemap_path": "sitemap.xml",
         "robots_path": "robots.txt",
+        "retained_redirects_path": "_meta/retained-agency-redirects.json",
         "fragment_exempt_prefixes": ["/app/"],
         "noindex_path_patterns": [
             "/agency/*/board/",
@@ -216,6 +217,11 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path]:
         f"User-agent: *\nAllow: /\nSitemap: {ORIGIN}/sitemap.xml\n",
         encoding="utf-8",
     )
+    _write_text(
+        site,
+        "_meta/retained-agency-redirects.json",
+        json.dumps({"schema_version": 1, "redirects": {}}),
+    )
     config = tmp_path / "site-seo.json"
     config.write_text(json.dumps(_config()), encoding="utf-8")
     return site, config
@@ -254,6 +260,34 @@ def _replace(path: Path, old: str, new: str) -> None:
     path.write_text(content.replace(old, new), encoding="utf-8")
 
 
+def _write_redirect_page(
+    site: Path,
+    relative_path: str,
+    target: str,
+    *,
+    canonical_path: str = "/agency/demo/",
+) -> None:
+    _write_text(
+        site,
+        relative_path,
+        f"""<!doctype html>
+<html lang="en"><head>
+<title>Moved agency</title>
+<meta http-equiv="refresh" content="0; url={target}">
+<link rel="canonical" href="{ORIGIN}{canonical_path}">
+</head><body><h1>Moved</h1><a href="{target}">Continue</a></body></html>
+""",
+    )
+
+
+def _set_retained_redirects(site: Path, redirects: dict[str, str]) -> None:
+    _write_text(
+        site,
+        "_meta/retained-agency-redirects.json",
+        json.dumps({"schema_version": 1, "redirects": redirects}),
+    )
+
+
 def test_valid_site_passes_with_deterministic_report_and_canonical_alias(
     tmp_path: Path,
 ) -> None:
@@ -278,6 +312,202 @@ def test_valid_site_passes_with_deterministic_report_and_canonical_alias(
         "noindex_pages": 2,
         "redirect_aliases": 1,
     }
+
+
+def test_manifest_authorized_agency_redirect_is_excluded_from_sitemap(
+    tmp_path: Path,
+) -> None:
+    site, config = _write_fixture(tmp_path)
+    _write_redirect_page(
+        site,
+        "agency/demo-retired/index.html",
+        "/agency/demo/",
+    )
+    _set_retained_redirects(site, {"/agency/demo-retired/": "/agency/demo/"})
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 0
+    payload = json.loads(report.read_text(encoding="utf-8"))
+    assert payload["summary"] == {
+        "canonical_aliases": 1,
+        "errors": 0,
+        "findings": 0,
+        "html_files": 10,
+        "indexable_pages": 5,
+        "noindex_pages": 2,
+        "redirect_aliases": 2,
+    }
+
+
+def test_current_agency_redirect_without_manifest_authority_fails(tmp_path: Path) -> None:
+    site, config = _write_fixture(tmp_path)
+    _write_text(
+        site,
+        "agency/current/index.html",
+        _page(
+            "/agency/current/",
+            "Current agency",
+            "Current agency description",
+            extra_head=(
+                '<script type="application/ld+json">'
+                '{"@context":"https://schema.org","@type":"Dataset",'
+                f'"url":"{ORIGIN}/agency/current/"'
+                "}</script>"
+            ),
+            body='<a href="/agencies/">Directory</a>',
+        ),
+    )
+    _replace(
+        site / "sitemap.xml",
+        "</urlset>",
+        f"<url><loc>{ORIGIN}/agency/current/</loc></url></urlset>",
+    )
+    _write_redirect_page(
+        site,
+        "agency/demo/index.html",
+        "/agency/current/",
+        canonical_path="/agency/current/",
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "redirect.unconfigured" in _codes(report)
+
+
+@pytest.mark.parametrize(
+    ("relative_path", "target"),
+    [
+        ("retired/index.html", "/agency/demo/"),
+        ("agency/demo-retired/index.html", "https://other.test/agency/demo/"),
+        ("agency/demo-retired/index.html", "/agency/missing/"),
+        ("agency/demo-retired/index.html", "/agency/demo/?from=retired"),
+        ("agency/demo-retired/index.html", "/agency/demo-retired/"),
+    ],
+    ids=["non-agency", "external", "missing-target", "query", "self"],
+)
+def test_untrusted_dynamic_redirects_remain_unconfigured(
+    tmp_path: Path,
+    relative_path: str,
+    target: str,
+) -> None:
+    site, config = _write_fixture(tmp_path)
+    _write_redirect_page(site, relative_path, target)
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "redirect.unconfigured" in _codes(report)
+
+
+def test_manifest_authorized_redirect_target_must_be_indexable(tmp_path: Path) -> None:
+    site, config = _write_fixture(tmp_path)
+    _write_redirect_page(site, "agency/demo-retired/index.html", "/agency/demo/")
+    _set_retained_redirects(site, {"/agency/demo-retired/": "/agency/demo/"})
+    _replace(
+        site / "agency/demo/index.html",
+        "</head>",
+        '<meta name="robots" content="noindex,follow"></head>',
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "alias.target_noindex" in _codes(report)
+
+
+def test_manifest_authorized_redirect_is_rejected_from_sitemap(tmp_path: Path) -> None:
+    site, config = _write_fixture(tmp_path)
+    _write_redirect_page(site, "agency/demo-retired/index.html", "/agency/demo/")
+    _set_retained_redirects(site, {"/agency/demo-retired/": "/agency/demo/"})
+    _replace(
+        site / "sitemap.xml",
+        "</urlset>",
+        f"<url><loc>{ORIGIN}/agency/demo-retired/</loc></url></urlset>",
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "sitemap.unexpected_url" in _codes(report)
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        '{"schema_version":1,"redirects":{},"unknown":true}',
+        '{"schema_version":true,"redirects":{}}',
+        '{"schema_version":1,"redirects":[]}',
+        '{"schema_version":1,"redirects":{"/agency/BAD/":"/agency/demo/"}}',
+        (
+            '{"schema_version":1,"redirects":{'
+            '"/agency/demo-retired/":"/agency/demo/",'
+            '"/agency/demo-retired/":"/agency/demo/"}}'
+        ),
+    ],
+    ids=["unknown-key", "bool-version", "non-object", "unsafe-id", "duplicate-key"],
+)
+def test_retained_redirect_manifest_is_strict_and_fails_closed(
+    tmp_path: Path,
+    payload: str,
+) -> None:
+    site, config = _write_fixture(tmp_path)
+    _write_text(site, "_meta/retained-agency-redirects.json", payload)
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert {"redirect.manifest_invalid", "redirect.manifest_unreadable"} & _codes(report)
+
+
+def test_retained_redirect_manifest_rejects_canonical_alias_overlap(tmp_path: Path) -> None:
+    site, config = _write_fixture(tmp_path)
+    payload = json.loads(config.read_text(encoding="utf-8"))
+    payload["canonical_aliases"]["/agency/demo/"] = "/agencies/"
+    config.write_text(json.dumps(payload), encoding="utf-8")
+    _write_redirect_page(site, "agency/demo-retired/index.html", "/agency/demo/")
+    _set_retained_redirects(site, {"/agency/demo-retired/": "/agency/demo/"})
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "redirect.manifest_invalid" in _codes(report)
+
+
+def test_retained_agency_redirect_target_must_be_terminal(tmp_path: Path) -> None:
+    site, config = _write_fixture(tmp_path)
+    _write_redirect_page(
+        site,
+        "agency/demo-retired/index.html",
+        "/agency/demo-older/",
+        canonical_path="/agency/demo-older/",
+    )
+    _write_redirect_page(
+        site,
+        "agency/demo-older/index.html",
+        "/agency/demo/",
+    )
+    _set_retained_redirects(
+        site,
+        {
+            "/agency/demo-retired/": "/agency/demo-older/",
+            "/agency/demo-older/": "/agency/demo/",
+        },
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert {"redirect.manifest_invalid", "redirect.unconfigured"} <= _codes(report)
 
 
 def test_reports_local_references_fragments_and_duplicate_ids(tmp_path: Path) -> None:
@@ -971,6 +1201,7 @@ def test_repository_config_keeps_aliases_and_exemptions_narrow() -> None:
 
     assert "duplicate_metadata_exempt_prefixes" not in config
     assert config["fragment_exempt_prefixes"] == ["/app/"]
+    assert config["retained_redirects_path"] == "_meta/retained-agency-redirects.json"
     assert config["canonical_aliases"] == {"/app/": "/agencies/"}
     assert config["hreflang_groups"] == [{"en": "/", "es": "/es/"}]
     assert config["required_json_ld_types"] == {"/agency/*/": ["Dataset"]}

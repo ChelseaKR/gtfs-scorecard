@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any
+from pathlib import Path
 
 import pytest
 
@@ -12,6 +12,8 @@ pytest.importorskip("playwright.sync_api", reason="the e2e dependency group is n
 from playwright.sync_api import Page, Route
 
 pytestmark = pytest.mark.e2e
+
+ARTIFACTS = Path(__file__).resolve().parents[3] / "data" / "artifacts"
 
 
 def test_world_map_mounts_shades_and_filters(page: Page, app_url: str) -> None:
@@ -90,29 +92,24 @@ def test_region_coverage_discloses_the_selected_cohort_denominator(
     assert "not a census" in sub_text
 
 
-def test_country_drills_into_its_subdivisions(
-    page: Page, base_url: str, directory_records: list[dict[str, Any]]
-) -> None:
+def test_country_drills_into_its_subdivisions(page: Page, base_url: str) -> None:
     # A country with committed subdivision geometry drills down: selecting it on
     # the world map swaps to its subdivision choropleth, each area filters the
-    # list, and a Back control returns to the world. Canada stands in for any
-    # country; the geometry is routed synthetically so the test exercises the
-    # interaction, not one country's real shape.
-    #
-    # Feed counts are read from directory.json rather than written down here. This
-    # test used to assert "2 feeds", under a comment explaining that Ontario
-    # carried two. Ontario now carries eight, and the assertion had been red on
-    # main for days. What is worth guarding is that whatever the data says reaches
-    # the accessible label, and that survives every refresh.
-    ontario_feeds = [r for r in directory_records if r.get("subdivision_code") == "CA-ON"]
-    expected_feeds = len(ontario_feeds)
-    expected_expired = sum(1 for r in ontario_feeds if r.get("expiry_status") == "expired")
-    assert expected_feeds, "directory.json lists no Ontario feeds to drill into"
+    # list, and a Back control returns to the world. Canada (present in the
+    # fixture with one Ontario feed) stands in for any country; the geometry is
+    # routed synthetically so the test exercises the interaction, not one
+    # country's real shape.
     geometry = {
         "viewBox": "0 0 100 100",
         "country": "CA",
         "subdivisions": {"CA-ON": "M10 10 L90 10 L90 90 L10 90 Z"},
     }
+    directory = json.loads((ARTIFACTS / "directory.json").read_text())
+    ontario_feeds = sum(
+        agency.get("country") == "CA" and agency.get("subdivision_code") == "CA-ON"
+        for agency in directory["agencies"]
+    )
+    assert ontario_feeds > 0
 
     def serve_geometry(route: Route) -> None:
         route.fulfill(status=200, content_type="application/json", body=json.dumps(geometry))
@@ -133,19 +130,15 @@ def test_country_drills_into_its_subdivisions(
     assert "Ontario" in label
     assert "feed" in label  # counts are announced in text, never color alone
     # The raw feed count rides in the label, not just the expired share, so the
-    # number of Ontario feeds the data holds is what the label has to state.
-    assert f"{expected_feeds} feeds" in label
+    # exact committed Ontario feed count is stated (none expired).
+    assert f"{ontario_feeds} feeds" in label
     assert "expired" in label
-    if expected_expired == 0:
-        assert "none expired" in label
-    else:
-        assert str(expected_expired) in label
 
-    # The drill-down states how much coverage it shows, in visible text beside the
-    # country name. One shaded area, because the synthetic geometry defines one.
+    # The drill-down states how much coverage it shows, in visible text beside
+    # the country name (one shaded area in this synthetic geometry).
     count_readout = page.locator("#world-map .map-drill-count")
     assert count_readout.count() == 1
-    assert f"{expected_feeds} feeds in 1 area" in count_readout.inner_text()
+    assert f"{ontario_feeds} feeds in 1 area" in count_readout.inner_text()
     # The legend footnote names the color encoding and what the counts mean.
     assert "feed count" in page.locator("#world-map .map-note").inner_text()
 

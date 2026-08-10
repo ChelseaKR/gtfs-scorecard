@@ -31,6 +31,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+from scorecard_pipeline.agencies import read_agencies
 from scorecard_pipeline.config import artifacts_dir, repo_root
 from scorecard_pipeline.national_routes import (
     build_national_routes,
@@ -100,7 +101,16 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     grades = load_catalog_grades(args.catalog)
-    routes = build_national_routes(args.artifacts, grades)
+    # Catalog grade metadata is optional, but current-corpus membership is not.
+    # Derive the allowlist from the validated registry so a missing or malformed
+    # catalog merely produces neutral ``?`` grades instead of reviving retained
+    # alias/unregistered geometry in the national tiles.
+    canonical_ids = {agency.id for agency in read_agencies() if agency.is_canonical_feed}
+    routes = build_national_routes(
+        args.artifacts,
+        grades,
+        allowed_agency_ids=canonical_ids,
+    )
     geojsonl_path = args.build_dir / "national_routes.geojsonl"
     count = write_geojsonl(routes, geojsonl_path)
 

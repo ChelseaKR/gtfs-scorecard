@@ -29,7 +29,8 @@ When a feed earns the mark, the pipeline writes two files next to its artifacts:
 - `mark.svg` — an embeddable seal, written only when the mark is earned, so the
   file's presence is the credential. A feed that later loses the mark has the
   seal removed.
-- `conformance.json` — the machine-readable result (`awarded`, `status`, the
+- `conformance.json` — the versioned machine-readable result (`version`,
+  `awarded`, `status`, the
   three criteria with `met` and a plain-language detail). Always written.
 
 The agency page shows the mark, its three checks, and a copy-paste embed when

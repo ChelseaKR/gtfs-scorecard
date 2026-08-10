@@ -26,10 +26,12 @@ from __future__ import annotations
 
 import json
 from collections import Counter
-from collections.abc import Iterator
+from collections.abc import Collection, Iterator
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
+from .config import current_agency_ids
 
 # Only the route lines go on the national map. Stops are the accessible
 # equivalent per agency (kept on each scorecard's own table); a national point
@@ -106,6 +108,8 @@ def _read_route_features(geometry_path: Path) -> list[dict[str, Any]]:
 def iter_national_route_features(
     artifacts_root: Path,
     grades: dict[str, dict[str, str]],
+    *,
+    allowed_agency_ids: Collection[str] | None = None,
 ) -> Iterator[dict[str, Any]]:
     """Yield every agency's route lines, enriched for the national map.
 
@@ -114,12 +118,15 @@ def iter_national_route_features(
     id), so the stream is deterministic. Each yielded feature carries only the
     properties the national map uses, keeping the vector tiles small.
     """
-    from .config import AGENCIES
-
-    for agency_dir in sorted(p for p in artifacts_root.iterdir() if p.is_dir()):
-        # An S3-hydrated tree can hold directories for agencies no registry
-        # version lists; the national map draws only listed agencies.
-        if AGENCIES and agency_dir.name not in AGENCIES:
+    agency_dirs = sorted(p for p in artifacts_root.iterdir() if p.is_dir())
+    current_ids = set(current_agency_ids(agency_dir.name for agency_dir in agency_dirs))
+    if allowed_agency_ids is not None:
+        current_ids.intersection_update(allowed_agency_ids)
+    for agency_dir in agency_dirs:
+        # An S3-hydrated tree can retain retired aliases and unlisted artifact
+        # directories. A populated registry is authoritative; direct renderers
+        # can also pass the ids in their already-scoped public catalog.
+        if agency_dir.name not in current_ids:
             continue
         geometry_path = agency_dir / "geometry.geojson"
         if not geometry_path.exists():
@@ -146,9 +153,17 @@ def iter_national_route_features(
 def build_national_routes(
     artifacts_root: Path,
     grades: dict[str, dict[str, str]],
+    *,
+    allowed_agency_ids: Collection[str] | None = None,
 ) -> NationalRoutes:
     """Aggregate all agencies' route lines into one national collection."""
-    features = list(iter_national_route_features(artifacts_root, grades))
+    features = list(
+        iter_national_route_features(
+            artifacts_root,
+            grades,
+            allowed_agency_ids=allowed_agency_ids,
+        )
+    )
     agencies = {f["properties"]["agency"] for f in features}
     grade_counts = Counter(f["properties"]["grade"] for f in features)
     type_counts = Counter(f["properties"]["type"] for f in features)

@@ -515,10 +515,10 @@ calls for: a machine-readable methodology changelog (`score.py`), provenance
 stamping on every artifact (`publish.py`: `rubric_version` / `validator_version` /
 `feed_sha256`), renormalized scoring that never punishes the unmeasured
 (`score.py:build_scorecard`), and no-shaming fix tiers (`score.py:_fix_tier`).
-Sibling repos (`tods-validate`, `govchat-eval`, `outcome-receipts`) face the same
-"state it, do not certify it" problem. Codifying these in the shared `STANDARDS`
-(`/Users/chelsea/portfolio/STANDARDS`) makes the flagship's hardest-won ideas
-portable — which is the portfolio's actual thesis.
+Sibling repos (`tods-validate`, a private sibling project, and
+`outcome-receipts`) face the same "state it, do not certify it" problem.
+Codifying these in the shared standards project makes the flagship's
+hardest-won ideas portable — which is the portfolio's actual thesis.
 
 **Shape.** An ADR here plus a `STANDARDS` contribution codifying the pattern
 (methodology-changelog format, provenance-block shape, renormalization rule,

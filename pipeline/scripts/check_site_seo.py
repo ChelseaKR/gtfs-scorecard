@@ -25,6 +25,7 @@ _CONFIG_KEYS = {
     "site_origin",
     "sitemap_path",
     "robots_path",
+    "retained_redirects_path",
     "fragment_exempt_prefixes",
     "noindex_path_patterns",
     "canonical_aliases",
@@ -50,6 +51,8 @@ _JSON_LD_DATE_KEYS = {
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _DATETIME_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$")
 _REFRESH_RE = re.compile(r"^\s*0(?:\.0+)?\s*;\s*url\s*=\s*(.+?)\s*$", re.IGNORECASE)
+# Mirrors scorecard_pipeline.agencies.ID_PATTERN at the public route boundary.
+_AGENCY_PATH_RE = re.compile(r"^/agency/[a-z0-9][a-z0-9_-]*/$")
 _SITEMAP_NAMESPACE = "http://www.sitemaps.org/schemas/sitemap/0.9"
 _FORBIDDEN_TELEMETRY_HOST_SUFFIXES = (
     "google-analytics.com",
@@ -70,6 +73,7 @@ class Config:
     site_origin: str
     sitemap_path: str
     robots_path: str
+    retained_redirects_path: str
     fragment_exempt_prefixes: tuple[str, ...]
     noindex_path_patterns: tuple[str, ...]
     canonical_aliases: dict[str, str]
@@ -614,6 +618,9 @@ def load_config(path: Path) -> Config:
         site_origin=origin,
         sitemap_path=_safe_file_path(raw["sitemap_path"], "sitemap_path"),
         robots_path=_safe_file_path(raw["robots_path"], "robots_path"),
+        retained_redirects_path=_safe_file_path(
+            raw["retained_redirects_path"], "retained_redirects_path"
+        ),
         fragment_exempt_prefixes=fragment_prefixes,
         noindex_path_patterns=noindex_patterns,
         canonical_aliases=canonical_aliases,
@@ -905,6 +912,78 @@ def _refresh_target(value: str) -> str | None:
     return match.group(1).strip().strip("\"'")
 
 
+def _load_retained_redirects(
+    site_root: Path, config: Config, findings: list[Finding]
+) -> dict[str, str]:
+    """Load the renderer-owned registry alias manifest, failing closed."""
+    relative_path = config.retained_redirects_path
+    path = site_root / relative_path
+    try:
+        payload = json.loads(
+            path.read_text(encoding="utf-8"),
+            object_pairs_hook=_strict_object,
+            parse_constant=_reject_json_constant,
+        )
+    except (OSError, UnicodeError, json.JSONDecodeError, ConfigError) as exc:
+        findings.append(
+            Finding(
+                "redirect.manifest_unreadable",
+                relative_path,
+                f"could not read retained redirect manifest: {exc}",
+            )
+        )
+        return {}
+    if (
+        not isinstance(payload, dict)
+        or set(payload) != {"schema_version", "redirects"}
+        or not isinstance(payload.get("schema_version"), int)
+        or isinstance(payload.get("schema_version"), bool)
+        or payload.get("schema_version") != 1
+        or not isinstance(payload.get("redirects"), dict)
+    ):
+        findings.append(
+            Finding(
+                "redirect.manifest_invalid",
+                relative_path,
+                "manifest must contain only schema_version 1 and a redirects object",
+            )
+        )
+        return {}
+    raw_redirects = payload["redirects"]
+    redirects: dict[str, str] = {}
+    invalid = False
+    for source, target in raw_redirects.items():
+        if (
+            not isinstance(source, str)
+            or not isinstance(target, str)
+            or _AGENCY_PATH_RE.fullmatch(source) is None
+            or _AGENCY_PATH_RE.fullmatch(target) is None
+            or source == target
+        ):
+            invalid = True
+            continue
+        redirects[source] = target
+    alias_sources = (
+        config.canonical_aliases.keys() | config.redirect_aliases.keys() | redirects.keys()
+    )
+    if (
+        invalid
+        or len(redirects) != len(raw_redirects)
+        or any(source in config.canonical_aliases for source in redirects)
+        or any(source in config.redirect_aliases for source in redirects)
+        or any(target in alias_sources for target in redirects.values())
+    ):
+        findings.append(
+            Finding(
+                "redirect.manifest_invalid",
+                relative_path,
+                "retained redirects must be distinct terminal agency paths without alias overlap",
+            )
+        )
+        return {}
+    return redirects
+
+
 def _validate_redirect(
     page: Page,
     expected_target: str,
@@ -1131,7 +1210,10 @@ def _validate_required_json_ld(
 
 
 def _validate_duplicate_metadata(
-    pages: dict[str, Page], config: Config, findings: list[Finding]
+    pages: dict[str, Page],
+    config: Config,
+    redirect_aliases: dict[str, str],
+    findings: list[Finding],
 ) -> None:
     for label, getter in (
         ("title", lambda page: page.titles),
@@ -1140,7 +1222,7 @@ def _validate_duplicate_metadata(
         groups: dict[str, list[Page]] = defaultdict(list)
         for page in pages.values():
             if (
-                page.public_path in config.redirect_aliases
+                page.public_path in redirect_aliases
                 or page.public_path in config.canonical_aliases
                 or _is_noindex_path(page.public_path, config)
             ):
@@ -1162,10 +1244,14 @@ def _validate_duplicate_metadata(
 
 
 def _validate_alias_configuration(
-    pages: dict[str, Page], files: set[str], config: Config, findings: list[Finding]
+    pages: dict[str, Page],
+    files: set[str],
+    config: Config,
+    redirect_aliases: dict[str, str],
+    findings: list[Finding],
 ) -> None:
     pages_by_public = {page.public_path: page for page in pages.values()}
-    for source, target in (*config.canonical_aliases.items(), *config.redirect_aliases.items()):
+    for source, target in (*config.canonical_aliases.items(), *redirect_aliases.items()):
         if source not in pages_by_public:
             findings.append(
                 Finding("alias.missing_source", source, "configured alias page is missing")
@@ -1220,7 +1306,7 @@ def _validate_alias_configuration(
             )
 
     actual_refresh = {page.public_path for page in pages.values() if page.refreshes}
-    configured_refresh = set(config.redirect_aliases)
+    configured_refresh = set(redirect_aliases)
     for source in sorted(actual_refresh - configured_refresh):
         findings.append(
             Finding("redirect.unconfigured", source, "meta-refresh alias is not configured")
@@ -1393,11 +1479,13 @@ def _sitemap_tag(local_name: str) -> str:
     return f"{{{_SITEMAP_NAMESPACE}}}{local_name}"
 
 
-def _expected_sitemap_urls(pages: dict[str, Page], config: Config) -> set[str]:
+def _expected_sitemap_urls(
+    pages: dict[str, Page], config: Config, redirect_aliases: dict[str, str]
+) -> set[str]:
     return {
         _absolute(config, _intended_canonical_path(page, config))
         for page in pages.values()
-        if page.public_path not in config.redirect_aliases
+        if page.public_path not in redirect_aliases
         and not _is_noindex_path(page.public_path, config)
     }
 
@@ -1461,7 +1549,11 @@ def _sitemap_locations(root: Element, relative_path: str, findings: list[Finding
 
 
 def _validate_sitemap(
-    site_root: Path, pages: dict[str, Page], config: Config, findings: list[Finding]
+    site_root: Path,
+    pages: dict[str, Page],
+    config: Config,
+    redirect_aliases: dict[str, str],
+    findings: list[Finding],
 ) -> None:
     relative_path = config.sitemap_path
     root = _parse_sitemap(site_root / relative_path, relative_path, findings)
@@ -1478,7 +1570,7 @@ def _validate_sitemap(
                 )
             )
     actual = set(locations)
-    expected = _expected_sitemap_urls(pages, config)
+    expected = _expected_sitemap_urls(pages, config, redirect_aliases)
     for location in sorted(expected - actual):
         findings.append(
             Finding("sitemap.missing_url", relative_path, f"missing canonical URL: {location}")
@@ -1584,12 +1676,14 @@ def _validate_page(
     pages: dict[str, Page],
     files: set[str],
     config: Config,
+    redirect_aliases: dict[str, str],
     findings: list[Finding],
 ) -> None:
-    if page.public_path in config.redirect_aliases:
+    is_redirect = page.public_path in redirect_aliases
+    if is_redirect:
         _validate_redirect(
             page,
-            config.redirect_aliases[page.public_path],
+            redirect_aliases[page.public_path],
             config,
             pages,
             files,
@@ -1604,7 +1698,8 @@ def _validate_page(
         )
     _validate_noindex(page, config, findings)
     json_ld_nodes = _validate_json_ld(page, findings)
-    _validate_required_json_ld(page, json_ld_nodes, config, findings)
+    if not is_redirect:
+        _validate_required_json_ld(page, json_ld_nodes, config, findings)
     for reference in page.misplaced_seo:
         findings.append(
             Finding(
@@ -1673,26 +1768,30 @@ def audit(site_root: Path, config: Config) -> tuple[list[Finding], dict[str, int
     if not pages:
         findings.append(Finding("site.no_html", ".", "site root contains no HTML files"))
 
-    _validate_alias_configuration(pages, files, config, findings)
+    redirect_aliases = {
+        **config.redirect_aliases,
+        **_load_retained_redirects(site_root, config, findings),
+    }
+    _validate_alias_configuration(pages, files, config, redirect_aliases, findings)
     for page in pages.values():
-        _validate_page(page, pages, files, config, findings)
+        _validate_page(page, pages, files, config, redirect_aliases, findings)
 
     _validate_no_tracking(site_root, pages, files, config, findings)
     _validate_noindex_patterns(pages, config, findings)
     _validate_required_json_ld_patterns(pages, config, findings)
-    _validate_duplicate_metadata(pages, config, findings)
+    _validate_duplicate_metadata(pages, config, redirect_aliases, findings)
     _validate_hreflang(pages, files, config, findings)
-    _validate_sitemap(site_root, pages, config, findings)
+    _validate_sitemap(site_root, pages, config, redirect_aliases, findings)
     _validate_robots(site_root, config, findings)
 
     sorted_findings = sorted(set(findings))
     noindex_pages = sum(_is_noindex_path(page.public_path, config) for page in pages.values())
     canonical_aliases = sum(page.public_path in config.canonical_aliases for page in pages.values())
-    redirect_aliases = sum(page.public_path in config.redirect_aliases for page in pages.values())
+    redirect_alias_count = sum(page.public_path in redirect_aliases for page in pages.values())
     stats = {
         "canonical_aliases": canonical_aliases,
         "html_files": len(pages),
-        "indexable_pages": (len(pages) - noindex_pages - redirect_aliases - canonical_aliases),
+        "indexable_pages": (len(pages) - noindex_pages - redirect_alias_count - canonical_aliases),
         "noindex_pages": noindex_pages,
         "redirect_aliases": sum(bool(page.refreshes) for page in pages.values()),
     }

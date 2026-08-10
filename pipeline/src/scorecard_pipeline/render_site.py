@@ -49,6 +49,7 @@ from .config import Agency, artifacts_dir
 from .conformance import assess as conformance_assess
 from .constants_export import GRADE_RANK
 from .directory import build_directory
+from .feed_provenance import feed_source_lede
 from .feeddiff import FeedDiff, diff_artifacts
 from .findings_national import agency_findings, plain_language_coverage
 from .fixlog import load_fixlog
@@ -1177,7 +1178,7 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         '<div class="board-hero" id="report-overview"><div class="board-inner">'
         f'<p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status &middot; checked {esc(artifact["snapshot_date"])}</p>'
         f'<h1 class="board-title"><bdi>{esc(agency_name)}</bdi></h1>'
-        '<p class="board-sub">Based on the feed this agency publishes</p>'
+        f'<p class="board-sub">{esc(feed_source_lede(_artifact_source_provenance(artifact), _artifact_fetch_source(artifact)))}</p>'
         f"{mode_html}"
         f'<div class="grade-block">{reel}'
         f'<div class="score-block"><div><span class="score-big">{o["score"]}</span><span class="score-of"> / 100</span></div>'
@@ -1250,14 +1251,41 @@ def _liveness_note(record: dict[str, Any] | None, now: dt.datetime | None = None
     return f'<p class="monitoring-note">{esc("; ".join(parts))}.</p>'
 
 
-# How the quiet confidence line names the fetch source (EXP-01). Keyed by the
-# artifact's confidence.fetch_source (fetch.py: origin | mirror | unknown); an
-# unrecognized value falls back to no phrase rather than guessing.
-_CONFIDENCE_SOURCE_PHRASES = {
-    "origin": " from the agency's own feed",
-    "mirror": " from the Mobility Database's mirror copy of the feed",
-    "unknown": " from a snapshot whose original source was not recorded",
-}
+def _artifact_source_provenance(artifact: dict[str, Any]) -> object:
+    """Configured-source classification, absent on artifacts before schema 1.18."""
+
+    feed = artifact.get("feed")
+    return feed.get("source_provenance") if isinstance(feed, dict) else None
+
+
+def _artifact_fetch_source(artifact: dict[str, Any]) -> object:
+    """How the bytes were obtained, preferring the confidence contract."""
+
+    confidence = artifact.get("confidence")
+    if isinstance(confidence, dict) and confidence.get("fetch_source"):
+        return confidence["fetch_source"]
+    fetch = artifact.get("fetch")
+    return fetch.get("source") if isinstance(fetch, dict) else "unknown"
+
+
+def _confidence_source_phrase(artifact: dict[str, Any]) -> str:
+    """Quiet-line source wording; legacy/malformed ownership fails closed."""
+
+    provenance = _artifact_source_provenance(artifact)
+    fetch_source = _artifact_fetch_source(artifact)
+    if fetch_source == "mirror":
+        return " from the Mobility Database's mirror copy of the feed"
+    if fetch_source == "unknown":
+        return " from a snapshot whose original source was not recorded"
+    if fetch_source == "local":
+        return " from a local feed copy"
+    if provenance == "official":
+        return " from the official feed URL on file"
+    if provenance == "archive":
+        return " from the archived feed URL on file"
+    if provenance == "third_party":
+        return " from the third-party feed URL on file"
+    return " from the feed URL on file (publisher not verified)"
 
 
 def _confidence_section(artifact: dict[str, Any]) -> str:
@@ -1270,14 +1298,21 @@ def _confidence_section(artifact: dict[str, Any]) -> str:
     conf = artifact.get("confidence")
     if not conf:
         return ""
-    source_phrase = _CONFIDENCE_SOURCE_PHRASES.get(str(conf.get("fetch_source", "")), "")
+    source_phrase = _confidence_source_phrase(artifact)
     line = (
         f"Measured {conf.get('measured_categories', 0)} of "
         f"{conf.get('total_categories', 0)} score categories{source_phrase}."
     )
     level = str(conf.get("level", ""))
     level_html = f"<p>Confidence in this measurement: {esc(level)}.</p>" if level else ""
-    notes = "".join(f"<li>{esc(note)}</li>" for note in conf.get("notes", []))
+    # Old artifacts embedded two claims that equated a successful configured
+    # fetch with agency ownership. A code-only site rebuild must fail closed
+    # before the corpus is regenerated with schema 1.18 provenance.
+    notes = "".join(
+        f"<li>{esc(note)}</li>"
+        for note in conf.get("notes", [])
+        if "agency's own" not in str(note).casefold()
+    )
     notes_html = f"<ul>{notes}</ul>" if notes else ""
     return (
         f'<p class="confidence-note">{esc(line)}</p>\n'
@@ -3279,7 +3314,7 @@ def _render_board_page(
     </header>
     <section aria-labelledby="board-what-h">
       <h2 id="board-what-h">What this grade measures</h2>
-      <p>The quality of the schedule data this agency publishes for trip-planning
+      <p>The quality of the schedule data in the feed scored here for trip-planning
       apps: whether riders using Google Maps, Apple Maps, or Transit see current,
       correct, and complete information. It measures the data feed, not service
       quality or operations.</p>
@@ -9702,6 +9737,43 @@ def _remove_unlisted_agency_pages(agency_pages: Path, published_ids: set[str]) -
             shutil.rmtree(page_dir)
 
 
+def _scope_index_to_canonical_registry(
+    index: dict[str, Any], registry_by_id: dict[str, Agency]
+) -> int:
+    """Drop stale/unlisted feed records from the current public index in place.
+
+    Reindex normally enforces this boundary first. Rendering enforces it again
+    so a registry retirement cannot leave an old scorecard public merely
+    because deploy started from a previously committed index.
+    """
+    if not registry_by_id:
+        return 0
+    indexed = index.setdefault("agencies", {})
+    removed = [
+        agency_id
+        for agency_id in indexed
+        if agency_id not in registry_by_id or not registry_by_id[agency_id].is_canonical_feed
+    ]
+    for agency_id in removed:
+        indexed.pop(agency_id, None)
+    return len(removed)
+
+
+def _published_alias_target(
+    agency: Agency, registry_by_id: dict[str, Agency], published_ids: set[str]
+) -> str:
+    """Resolve a retained alias to the live scorecard it should redirect to."""
+    target = agency.alias_of
+    seen = {agency.id}
+    while target and target not in seen:
+        if target in published_ids:
+            return target
+        seen.add(target)
+        target_agency = registry_by_id.get(target)
+        target = target_agency.alias_of if target_agency else ""
+    return ""
+
+
 def _remove_stale_agency_index_pages(page_root: Path) -> None:
     """Remove only generated numeric directory pages before rebuilding them."""
     if not page_root.exists():
@@ -9794,6 +9866,16 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     art = artifacts_dir()
     index_file = art / "index.json"
     index = json.loads(index_file.read_text()) if index_file.exists() else {"agencies": {}}
+    from .config import AGENCIES
+
+    # CLI renders have the registry loaded already. Direct library callers use
+    # the same manifest-aware reader without mutating the process-global map.
+    registry_by_id = dict(AGENCIES)
+    if not registry_by_id:
+        from .agencies import read_agencies
+
+        registry_by_id = {agency.id: agency for agency in read_agencies()}
+    index_changed = _scope_index_to_canonical_registry(index, registry_by_id)
     published_ids = {str(agency_id) for agency_id in (index.get("agencies") or {})}
     raw_liveness_state = _load_liveness()
     liveness_state = _scope_liveness_state(raw_liveness_state, published_ids)
@@ -9917,18 +9999,35 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # feed would retain a directly reachable HTML page after disappearing from
     # the directory and sitemap.
     _remove_unlisted_agency_pages(web / "agency", published_ids)
+    # Retained aliases keep historical artifacts reproducible and old inbound
+    # links useful, but the old URL is now a redirect rather than a second
+    # current scorecard. Inactive records without a live successor stay gone.
+    retained_agency_redirects: dict[str, str] = {}
+    for agency in sorted(registry_by_id.values(), key=lambda item: item.id):
+        target = _published_alias_target(agency, registry_by_id, published_ids)
+        if target:
+            source_path = f"/agency/{agency.id}/"
+            target_path = f"/agency/{target}/"
+            retained_agency_redirects[source_path] = target_path
+            write(
+                f"agency/{agency.id}/index.html",
+                _redirect_page(target_path, agency.name),
+            )
+    write(
+        "_meta/retained-agency-redirects.json",
+        json.dumps(
+            {
+                "schema_version": 1,
+                "redirects": retained_agency_redirects,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+    )
     from .publish import enrich_index_history_provenance
 
-    index_changed = enrich_index_history_provenance(index, art)
-    from .config import AGENCIES
-
-    # CLI renders have the registry loaded already. Direct library callers use
-    # the same manifest-aware reader without mutating the process-global map.
-    registry_by_id = dict(AGENCIES)
-    if not registry_by_id:
-        from .agencies import read_agencies
-
-        registry_by_id = {agency.id: agency for agency in read_agencies()}
+    index_changed |= enrich_index_history_provenance(index, art)
     index_changed |= _apply_registry_agency_names(index, registry_by_id)
     if index_changed:
         index_file.write_text(json.dumps(index, indent=2, sort_keys=True) + "\n")
@@ -10535,6 +10634,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     if rt_dir.exists():
         for hf in sorted(rt_dir.glob("*.json")):
             rt_id = hf.stem
+            # Health files are longitudinal evidence and intentionally survive
+            # registry retirement. This page and its raw monitored count describe
+            # only the current published catalog.
+            if rt_id not in published_ids:
+                continue
             health = summarize(load_observations(rt_id))
             if health.observations == 0:
                 continue
@@ -10682,7 +10786,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         c["id"]: {"name": str(c.get("name", c["id"])), "grade": str(c.get("grade", "?"))}
         for c in catalog
     }
-    national_routes = build_national_routes(art, route_grades)
+    national_routes = build_national_routes(
+        art,
+        route_grades,
+        allowed_agency_ids=published_ids,
+    )
     write(
         "routes/index.html",
         _render_routes_page(national_routes.summary),
@@ -10789,7 +10897,9 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         candidate_impact = weighted_impact(
             rid_records,
             rid,
-            quarantined_ntd_ids=duplicate_ntd_reporter_ids(AGENCIES.values()),
+            quarantined_ntd_ids=duplicate_ntd_reporter_ids(
+                agency for agency in AGENCIES.values() if agency.is_canonical_feed
+            ),
         )
         if candidate_impact.get("matched_ntd_reporters", 0) > 0:
             ridership_impact = candidate_impact

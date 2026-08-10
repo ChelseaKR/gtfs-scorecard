@@ -38,16 +38,6 @@ def _portable_directory() -> dict[str, Any]:
         "barrie-transit": ("CA-ON", "Ontario"),
         "london-transit-commission": ("CA-ON", "Ontario"),
     }
-    # Clear Ontario from every agency this helper does not place there itself.
-    # Without this the fixture was not actually fixed: it pinned two agencies to
-    # CA-ON but let any other CA-ON agency already in the live directory count
-    # too, so as real Ontario coverage grew from two feeds to eight the "2 of"
-    # assertions below quietly became wrong. Normalizing in both directions is
-    # what makes this a fixture rather than a snapshot of a moving dataset.
-    for agency in directory["agencies"]:
-        if agency["id"] not in canadian and agency.get("subdivision_code") == "CA-ON":
-            agency["subdivision_code"] = None
-            agency["subdivision_name"] = ""
     california_count = 0
     for agency in directory["agencies"]:
         if agency["id"] in canadian:
@@ -95,27 +85,10 @@ def _portable_directory() -> dict[str, Any]:
         {
             "country_code": "CA",
             "country_name": "Canada",
-            # Counted from the agencies above rather than written down, so the
-            # chip totals and the list they filter can never disagree. These were
-            # the literals 3 / 2 / 1, describing a directory that had two Canadian
-            # feeds; it now has dozens.
-            "agencies": sum(a.get("country") == "CA" for a in directory["agencies"]),
+            "agencies": 3,
             "subdivisions": [
-                {
-                    "subdivision_code": "CA-ON",
-                    "subdivision_name": "Ontario",
-                    "agencies": sum(
-                        a.get("subdivision_code") == "CA-ON" for a in directory["agencies"]
-                    ),
-                },
-                {
-                    "subdivision_code": None,
-                    "subdivision_name": "Unlocated",
-                    "agencies": sum(
-                        a.get("country") == "CA" and not a.get("subdivision_code")
-                        for a in directory["agencies"]
-                    ),
-                },
+                {"subdivision_code": "CA-ON", "subdivision_name": "Ontario", "agencies": 2},
+                {"subdivision_code": None, "subdivision_name": "Unlocated", "agencies": 1},
             ],
         },
         {
@@ -543,7 +516,12 @@ def test_empty_directory_state_recovers_to_search(page: Page, app_url: str) -> N
 
 
 def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> None:
-    _serve_directory(page, _portable_directory())
+    directory = _portable_directory()
+    expected = sum(
+        agency.get("country") == "CA" and agency.get("subdivision_code") == "CA-ON"
+        for agency in directory["agencies"]
+    )
+    _serve_directory(page, directory)
     page.goto(f"{app_url}#/?country=us&subdivision=ca-on")
 
     # The valid subdivision is authoritative even when the supplied country is
@@ -554,7 +532,7 @@ def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> 
     expect(page.locator('.location-subdivision[data-subdivision="CA-ON"]').first).to_have_attribute(
         "aria-pressed", "true"
     )
-    expect(page.locator(".agency-count")).to_contain_text("2 of")
+    expect(page.locator(".agency-count")).to_contain_text(f"{expected} of")
     assert page.evaluate("() => location.hash") == "#/?country=us&subdivision=ca-on"
 
     # Any user change writes the canonical, upper-case portable keys while
@@ -566,9 +544,9 @@ def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> 
     page.locator('.location-subdivision[data-subdivision="CA-ON"]').first.click()
     page.locator('.location-country[data-country="CA"]').first.click()
     page.locator("#agency-search").fill("CA-ON")
-    expect(page.locator(".agency-count")).to_contain_text("2 of")
+    expect(page.locator(".agency-count")).to_contain_text(f"{expected} of")
     page.locator("#agency-search").fill("Ontario")
-    expect(page.locator(".agency-count")).to_contain_text("2 of")
+    expect(page.locator(".agency-count")).to_contain_text(f"{expected} of")
 
     # Quotes and angle brackets from the directory stay text; they cannot add
     # event-handler attributes to location controls.
@@ -1481,14 +1459,10 @@ def test_legacy_state_bookmark_maps_without_eager_rewrite(page: Page, app_url: s
 def test_unlocated_subdivision_is_scoped_by_country_and_preserves_legacy_url(
     page: Page, app_url: str
 ) -> None:
-    # Counted off the fixture this test serves, not written down. _portable_directory
-    # normalizes a live directory, so how many Canadian agencies end up unlocated
-    # depends on the live data it started from; a literal here silently decays.
     directory = _portable_directory()
-    unlocated_ca = sum(
-        1
+    expected = sum(
+        agency.get("country") == "CA" and not agency.get("subdivision_code")
         for agency in directory["agencies"]
-        if agency.get("country") == "CA" and not agency.get("subdivision_code")
     )
     _serve_directory(page, directory)
     page.goto(f"{app_url}#/?state=Unlocated")
@@ -1512,7 +1486,7 @@ def test_unlocated_subdivision_is_scoped_by_country_and_preserves_legacy_url(
     expect(us).to_have_count(0)
     expect(ca).to_have_attribute("aria-pressed", "true")
     assert _hash_params(page) == {"country": "CA", "subdivision": "UNLOCATED"}
-    expect(page.locator(".agency-count")).to_contain_text(f"{unlocated_ca} of")
+    expect(page.locator(".agency-count")).to_contain_text(f"{expected} of")
 
 
 def test_old_directory_keeps_state_and_canada_behavior(page: Page, app_url: str) -> None:
@@ -1521,14 +1495,14 @@ def test_old_directory_keeps_state_and_canada_behavior(page: Page, app_url: str)
     for agency in directory["agencies"]:
         agency.pop("subdivision_code", None)
         agency.pop("subdivision_name", None)
-    canadian = sum(1 for agency in directory["agencies"] if agency.get("country") == "CA")
+    expected = sum(agency.get("country") == "CA" for agency in directory["agencies"])
     _serve_directory(page, directory)
     page.goto(f"{app_url}#/?state=Canada")
 
     expect(page.locator('.legacy-location[data-state="Canada"]')).to_have_attribute(
         "aria-pressed", "true"
     )
-    expect(page.locator(".agency-count")).to_contain_text(f"{canadian} of")
+    expect(page.locator(".agency-count")).to_contain_text(f"{expected} of")
     expect(page.locator("#us-map")).to_be_visible()
     assert page.evaluate("() => location.hash") == "#/?state=Canada"
     page.locator("#agency-search").fill("Barrie")

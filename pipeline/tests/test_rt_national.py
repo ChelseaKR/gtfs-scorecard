@@ -72,6 +72,26 @@ def test_unmonitored_agencies_dropped() -> None:
     assert nat["bands"]["reliable"] == 1
 
 
+def test_retired_alias_health_is_not_counted_as_current(
+    monkeypatch: Any,
+) -> None:
+    live = Agency("live", "Live Transit", "https://example.org/live.zip")
+    retired = Agency(
+        "retired",
+        "Retired Transit export",
+        "https://archive.example.org/retired.zip",
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    monkeypatch.setitem(AGENCIES, live.id, live)
+    monkeypatch.setitem(AGENCIES, retired.id, retired)
+
+    nat = national_rt([_summary(retired.id, uptime=10.0), _summary(live.id, uptime=100.0)])
+
+    assert nat["monitored_feed_record_count"] == 1
+    assert [record["id"] for record in nat["most_reliable"]] == [live.id]
+
+
 def test_ranking_requires_minimum_observations() -> None:
     # A one-sample 100% feed must not outrank a well-observed feed.
     summaries = [

@@ -19,6 +19,7 @@ from playwright.sync_api import Page, expect
 pytestmark = pytest.mark.e2e
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
+FIXTURE_ROOT = REPO_ROOT / "pipeline" / "tests" / "fixtures" / "golden_site"
 
 # Shared extraction over the DOM both renderers emit: the grade reel's
 # aria-label, each platform row's name and score, and the top-3 alert titles
@@ -50,8 +51,8 @@ _EXTRACT = """
 def _snapshot_date_matches(agency_id: str) -> bool:
     """True when the committed prerendered page and latest.json come from the
     same snapshot, so parity is meaningful even if a deploy half-landed."""
-    html_path = REPO_ROOT / "web" / "agency" / agency_id / "index.html"
-    artifact_path = REPO_ROOT / "data" / "artifacts" / agency_id / "latest.json"
+    html_path = FIXTURE_ROOT / "web" / "agency" / agency_id / "index.html"
+    artifact_path = FIXTURE_ROOT / "data" / "artifacts" / agency_id / "latest.json"
     if not html_path.is_file() or not artifact_path.is_file():
         return False
     checked = re.search(r"checked (\d{4}-\d{2}-\d{2})", html_path.read_text())
@@ -66,18 +67,19 @@ def parity_ids() -> list[str]:
     """Three agency ids rendered in both forms from the same snapshot: the
     first, middle, and last of the shared set, so the picks are deterministic
     and spread across the directory."""
-    prerendered = {p.name for p in (REPO_ROOT / "web" / "agency").iterdir() if p.is_dir()}
-    scored = {p.name for p in (REPO_ROOT / "data" / "artifacts").iterdir() if p.is_dir()}
+    prerendered = {p.name for p in (FIXTURE_ROOT / "web" / "agency").iterdir() if p.is_dir()}
+    scored = {p.name for p in (FIXTURE_ROOT / "data" / "artifacts").iterdir() if p.is_dir()}
     shared = sorted(aid for aid in prerendered & scored if _snapshot_date_matches(aid))
     assert len(shared) >= 3, "expected at least three agencies rendered in both forms"
     return [shared[0], shared[len(shared) // 2], shared[-1]]
 
 
 def test_prerendered_page_matches_spa(
-    page: Page, base_url: str, app_url: str, parity_ids: list[str]
+    page: Page, parity_base_url: str, parity_ids: list[str]
 ) -> None:
+    app_url = f"{parity_base_url}/app/"
     for agency_id in parity_ids:
-        page.goto(f"{base_url}/agency/{agency_id}/")
+        page.goto(f"{parity_base_url}/agency/{agency_id}/")
         expect(page.locator("h1.board-title")).to_be_visible()
         expect(page.locator(".platforms .platform")).to_have_count(4)
         static_view = page.evaluate(_EXTRACT)

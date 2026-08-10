@@ -128,8 +128,11 @@ agencies:
     mdb_id: 490
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-491 is deprecated and redirects to active mdb-2285.
   - id: annapolis-transit
     name: Annapolis Transit
+    alias_of: annapolis-transit-2285
+    feed_status: deprecated
     subdivision_code: US-MD
     subdivision_name: Maryland
     static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Annapolis_GTFS.zip

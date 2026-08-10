@@ -1058,6 +1058,97 @@ def test_catalog_derives_status_from_legacy_latest_artifact(
     assert global_coverage["status"] == "not_ready"
 
 
+def test_render_retires_stale_f_scorecard_and_redirects_to_live_successor(
+    isolated_repo_root: Path,
+) -> None:
+    from scorecard_pipeline.render_site import render_site
+
+    fixture = Path(__file__).parent / "fixtures" / "golden_site"
+    shutil.copytree(fixture, isolated_repo_root)
+    retired_id = "unitrans-retired"
+    successor_id = "unitrans"
+
+    registry = isolated_repo_root / "agencies.yaml"
+    registry.write_text(
+        registry.read_text()
+        + f"""
+
+  - id: {retired_id}
+    name: Retired Unitrans export
+    static_gtfs_url: https://archive.example/unitrans.zip
+    alias_of: {successor_id}
+    feed_status: deprecated
+"""
+    )
+
+    artifacts = isolated_repo_root / "data" / "artifacts"
+    successor_latest = artifacts / successor_id / "latest.json"
+    live_artifact = json.loads(successor_latest.read_text())
+    live_artifact["overall"]["score"] = 91.1
+    live_artifact["overall"]["grade"] = "A"
+    successor_latest.write_text(json.dumps(live_artifact))
+
+    retired_artifact = json.loads(json.dumps(live_artifact))
+    retired_artifact["agency"]["id"] = retired_id
+    retired_artifact["agency"]["name"] = "Retired Unitrans export"
+    retired_artifact["overall"]["score"] = 31.2
+    retired_artifact["overall"]["grade"] = "F"
+    retired_dir = artifacts / retired_id
+    retired_dir.mkdir()
+    (retired_dir / "latest.json").write_text(json.dumps(retired_artifact))
+
+    index_path = artifacts / "index.json"
+    index = json.loads(index_path.read_text())
+    index["agencies"][successor_id]["history"][-1].update({"score": 91.1, "grade": "A"})
+    index["agencies"][retired_id] = {
+        "name": "Retired Unitrans export",
+        "history": [{"date": "2026-07-02", "score": 31.2, "grade": "F"}],
+    }
+    index_path.write_text(json.dumps(index))
+
+    # Longitudinal monitor evidence survives retirement too. It must remain on
+    # disk without inflating the current realtime API's raw monitored count.
+    rt_dir = isolated_repo_root / "data" / "rt-health"
+    retired_health = json.loads((rt_dir / "yolobus.json").read_text())
+    retired_health["agency_id"] = retired_id
+    (rt_dir / f"{retired_id}.json").write_text(json.dumps(retired_health))
+
+    stale_page = isolated_repo_root / "web" / "agency" / retired_id
+    (stale_page / "brief").mkdir(parents=True)
+    (stale_page / "index.html").write_text("stale F scorecard")
+    (stale_page / "brief" / "index.html").write_text("stale brief")
+
+    render_site(dt.datetime(2026, 7, 13, 12, tzinfo=dt.UTC))
+
+    catalog = json.loads((isolated_repo_root / "web" / "catalog.json").read_text())
+    rows = {row["id"]: row for row in catalog["agencies"]}
+    assert retired_id not in rows
+    assert rows[successor_id]["grade"] == "A"
+    assert retired_id not in json.loads(index_path.read_text())["agencies"]
+
+    redirect = (stale_page / "index.html").read_text()
+    assert f"url=/agency/{successor_id}/" in redirect
+    assert f'<a href="/agency/{successor_id}/">' in redirect
+    assert "stale F scorecard" not in redirect
+    assert not (stale_page / "brief").exists()
+    retained_redirects = json.loads(
+        (isolated_repo_root / "web" / "_meta" / "retained-agency-redirects.json").read_text()
+    )
+    assert retained_redirects == {
+        "schema_version": 1,
+        "redirects": {f"/agency/{retired_id}/": f"/agency/{successor_id}/"},
+    }
+    # Historical JSON remains available even though it is no longer a current
+    # directory row or scorecard page.
+    assert (retired_dir / "latest.json").exists()
+    assert (rt_dir / f"{retired_id}.json").exists()
+    realtime = json.loads((isolated_repo_root / "web" / "api" / "v1" / "realtime.json").read_text())
+    assert realtime["raw_monitored_feed_record_count"] == 1
+    assert all(record["id"] != retired_id for record in realtime["most_reliable"])
+    sitemap = (isolated_repo_root / "web" / "sitemap.xml").read_text()
+    assert f"/agency/{retired_id}/" not in sitemap
+
+
 def test_catalog_top_level_rubric_reports_mixed_row_versions() -> None:
     from scorecard_pipeline.render_site import _write_catalog
 
@@ -1743,6 +1834,8 @@ def test_board_page_leads_with_progress_and_frames_fixes_as_asks() -> None:
     # The producing tool is named so the board sees who does the work (R5).
     assert "Trillium" in html
     # It says what the grade does and does not measure.
+    assert "schedule data in the feed scored here" in html
+    assert "schedule data this agency publishes" not in html
     assert "not service" in html
     assert '<meta name="robots" content="noindex,follow">' in html
 
@@ -4541,7 +4634,7 @@ def test_press_page_guards_the_no_shaming_line() -> None:
     assert "CC BY 4.0" in html
 
 
-def _confidence_artifact(**overrides: Any) -> dict[str, Any]:
+def _confidence_artifact(source_provenance: str = "official", **overrides: Any) -> dict[str, Any]:
     conf: dict[str, Any] = {
         "level": "medium",
         "measured_categories": 3,
@@ -4551,18 +4644,18 @@ def _confidence_artifact(**overrides: Any) -> dict[str, Any]:
         "feed_age_days": 0,
         "notes": [
             "Realtime quality was not measured this run. It does not count against the grade.",
-            "The feed was downloaded from the agency's own URL.",
+            "The feed was downloaded from the official feed URL on file.",
         ],
     }
     conf.update(overrides)
-    return {"confidence": conf}
+    return {"confidence": conf, "feed": {"source_provenance": source_provenance}}
 
 
 def test_confidence_section_renders_quiet_line_and_breakdown() -> None:
     from scorecard_pipeline.render_site import _confidence_section
 
     html = _confidence_section(_confidence_artifact())
-    assert "Measured 3 of 4 score categories from the agency" in html
+    assert "Measured 3 of 4 score categories from the official feed URL on file" in html
     assert "How we measured this" in html
     assert "Confidence in this measurement: medium." in html
     assert "Realtime quality was not measured this run." in html
@@ -4583,6 +4676,55 @@ def test_confidence_section_names_the_unknown_source() -> None:
 
     html = _confidence_section(_confidence_artifact(fetch_source="unknown"))
     assert "original source was not recorded" in html
+
+
+def test_confidence_section_fails_closed_for_legacy_or_unverified_ownership() -> None:
+    from scorecard_pipeline.render_site import _confidence_section
+
+    artifact = _confidence_artifact(
+        source_provenance="unverified",
+        notes=["The feed was downloaded from the agency's own URL."],
+    )
+    html = _confidence_section(artifact)
+
+    assert "publisher not verified" in html
+    assert "agency's own" not in html
+
+
+@pytest.mark.parametrize(
+    ("source_provenance", "fetch_source", "expected"),
+    [
+        ("official", "origin", "Based on the official feed source on file"),
+        ("archive", "origin", "Based on an archived feed source on file"),
+        (
+            "archive",
+            "mirror",
+            "Based on a Mobility Database mirror copy of an archived feed listing",
+        ),
+        ("third_party", "origin", "Based on a third-party feed source on file"),
+        (
+            "unverified",
+            "origin",
+            "Based on the feed source on file; publisher ownership is not verified",
+        ),
+    ],
+)
+def test_board_hero_names_source_provenance_without_assuming_agency_ownership(
+    source_provenance: str, fetch_source: str, expected: str
+) -> None:
+    artifact = {
+        "overall": {"grade": "B", "score": 85},
+        "snapshot_date": "2026-08-08",
+        "categories": {},
+        "feed": {"source_provenance": source_provenance},
+        "confidence": {"fetch_source": fetch_source},
+    }
+
+    html = _board_hero("Demo Transit", "demo", artifact, [])
+
+    assert expected in html
+    assert "this agency publishes" not in html
+    assert "agency's own" not in html
 
 
 def test_confidence_section_empty_for_pre_1_5_artifacts() -> None:
@@ -4624,7 +4766,9 @@ def test_agency_page_carries_the_confidence_line() -> None:
     )
     artifact = build_artifact(agency, fetch, card, dt.datetime(2026, 6, 11, tzinfo=dt.UTC))
     html = _render_agency(artifact)
-    assert "Measured 2 of 4 score categories from the agency" in html
+    assert "Measured 2 of 4 score categories from the feed URL on file" in html
+    assert "publisher not verified" in html
+    assert "agency's own" not in html
     assert "How we measured this" in html
     title = html.split("<title>", 1)[1].split("</title>", 1)[0]
     description = html.split('<meta name="description" content="', 1)[1].split('">', 1)[0]

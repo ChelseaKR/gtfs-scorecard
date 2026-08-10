@@ -4,7 +4,7 @@
 > (`docs/standards-contribution/HONESTY-AS-A-FEATURE.md`) as the concrete
 > "STANDARDS contribution" named in `docs/ideation/03-expansions.md` (EXP-17)
 > and `docs/decisions/0030-honesty-primitives-standard.md`. It is **not** yet
-> part of `portfolio-standards` (`/Users/chelsea/portfolio/STANDARDS`). Landing
+> part of the shared standards project. Landing
 > it there — as a new document or a section folded into an existing one — is a
 > portfolio-owner decision gated on a second repo being ready to adopt the
 > pattern (EXP-17's stated excellence bar), because that repo pins a
@@ -29,7 +29,7 @@ repo's code.
 |---|---|---|
 | Scores, grades, or rates a subject on a rubric | **Yes — mandatory** | `gtfs-scorecard` |
 | Validates or certifies conformance to a spec | **Yes — mandatory** | `tods-validate` |
-| Runs an automated eval and reports a result | **Yes — mandatory** | `govchat-eval` |
+| Runs an automated eval and reports a result | **Yes — mandatory** | private sibling project |
 | Issues a receipt or attestation about an outcome | **Yes — mandatory** | `outcome-receipts` |
 | Pure internal tool, no judgment surfaced to a reader | `N/A (not a judgment-producing repo)` with that reason in the README | rare |
 

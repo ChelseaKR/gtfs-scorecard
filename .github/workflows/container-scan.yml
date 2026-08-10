@@ -6,8 +6,7 @@ name: container-scan
 # behind the fan-out/instant-score infra, see infra/README.md) and scans
 # them with Trivy. A fixable HIGH or CRITICAL OS/library vulnerability fails
 # the job; no `|| true`, no continue-on-error. Matches the container-scan.yml
-# pattern already used in davis-bike-hazard-map / trans-docs-navigator /
-# habitable / queer-the-stacks.
+# pattern already used in several sibling projects.
 #
 # Both images COPY in the MobilityData gtfs-validator CLI jar from
 # data/cache/, which is gitignored (not committed — it's a 38MB binary this

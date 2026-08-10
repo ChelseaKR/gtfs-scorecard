@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 
 from scorecard_pipeline.cli import main
-from scorecard_pipeline.config import artifacts_dir
+from scorecard_pipeline.config import Agency, artifacts_dir, register
 from scorecard_pipeline.vendors import (
     MIN_AGENCIES_FOR_BENCHMARK,
     _feed_host,
@@ -73,6 +73,25 @@ def test_scoped_breakdown_respects_agency_ids() -> None:
     write_latest("b", "B", "https://avl.example.org/g.zip", -10)
     stats = vendor_breakdown(["b"])
     assert [s.host for s in stats] == ["avl.example.org"]
+
+
+def test_vendor_breakdown_excludes_retired_alias_by_default_and_scope() -> None:
+    live = Agency("live", "Live Transit", "https://live.example.org/feed.zip")
+    retired = Agency(
+        "retired",
+        "Retired Transit export",
+        "https://retired.example.org/feed.zip",
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    register(live)
+    register(retired)
+    write_latest(live.id, live.name, live.static_gtfs_url, 120)
+    write_latest(retired.id, retired.name, retired.static_gtfs_url, -1_000)
+
+    assert [stat.host for stat in vendor_breakdown()] == ["live.example.org"]
+    assert [stat.host for stat in vendor_breakdown([retired.id, live.id])] == ["live.example.org"]
+    assert (artifacts_dir() / retired.id / "latest.json").exists()
 
 
 # --- vendor-report command and markdown/CSV render tests ---

@@ -109,6 +109,16 @@ the same requests but would silently stop publishing a re-score whose length
 did not change, so it is not used anywhere and a test in
 `pipeline/tests/test_workflow_safety.py` keeps it out.
 
+The same command applies the generated
+`data/artifacts/.retired-current-artifacts.json` control manifest. Reindex
+writes only sorted retired agency ids; the publisher expands them into the
+fixed mutable names `latest.json`, `badge.json`, `badge.svg`,
+`conformance.json`, `mark.svg`, and `geometry.geojson`. It rejects a manifest
+that names a current canonical id or conflicts with a local file. This is not a
+general `--delete`: date-shaped score evidence and every other S3 key remain
+outside the deletion surface. Daily, intraday, and targeted activation runs
+all apply the same cleanup while holding the shared artifact-publish lock.
+
 A useful side effect: the bucket's `expire-dated-artifacts` lifecycle rule
 matches objects tagged `artifact-class=dated`, and rewriting an object drops
 its tags and restarts its age. While every dated artifact was rewritten daily,
@@ -236,6 +246,31 @@ Actions; this is the inventory an operator should know exists:
 | `tiles.yml` | manual | Rebuilds the national PMTiles route archive (needs tippecanoe). |
 | `mutation.yml` | weekly | Advisory mutation testing of the scoring math. |
 | `ci.yml`, `a11y.yml`, `e2e.yml`, `security.yml`, `pages.yml` | push/PR | The merge and deploy gates. |
+
+The monthly dataset release has two hosting prerequisites: repository-level
+immutable releases must remain enabled, and `SCHEDULED_WRITER_SSH_KEY` must
+match the trusted public key in `.github/release-signers`. The signing secret is
+available only to the tag-creation step and is removed from the runner before
+bundle assembly. The workflow creates an SSH-signed annotated `dataset-YYYY-MM`
+tag, verifies the local signature and hosted tag object, and then consumes the
+selected successful Daily run's exact `github-pages` artifact. An intraday
+deployment cannot replace that run-bound source.
+
+Actions deliberately stops at a byte-verified draft because its repository
+token cannot read the administration-only immutable-release setting. After a
+successful run, an owner with an administration-capable `gh` credential checks
+out clean, current `main` and runs the exact command printed in the job summary:
+
+```sh
+pipeline/scripts/promote_dataset_release.sh dataset-YYYY-MM WORKFLOW_RUN_ID
+```
+
+The command downloads that successful run's retained promotion package,
+re-verifies its trusted tag, exact assets, checksums, provenance, server
+digests, downloaded bytes, and immutable-release setting, and only then makes
+the draft public. It safely resumes an interrupted exact draft; conflicting
+drafts and partial public releases fail without publication. The administrative
+credential never enters Actions.
 
 `pages.yml` also runs as the deploy job of the daily, intraday, and targeted
 data workflows. Its own push trigger ignores `data/rt-health/**`, so the

@@ -8,6 +8,10 @@ from pathlib import Path
 
 import pytest
 
+from scorecard_pipeline.artifact_lifecycle import (
+    MUTABLE_PUBLIC_ARTIFACT_NAMES,
+    retirement_manifest_path,
+)
 from scorecard_pipeline.config import Agency, artifacts_dir, register
 from scorecard_pipeline.fetch import FetchResult
 from scorecard_pipeline.metrics import CategoryResult
@@ -76,6 +80,73 @@ def test_reindex_skips_directories_absent_from_registry(
     rebuild_index()
     index = json.loads((artifacts_dir() / "index.json").read_text())
     assert set(index["agencies"]) == {"a"}
+    ghost_dir = artifacts_dir() / "ghost"
+    assert (ghost_dir / "2026-06-12.json").exists()
+    assert not (ghost_dir / "latest.json").exists()
+    manifest = json.loads(retirement_manifest_path(artifacts_dir()).read_text())
+    assert manifest["agency_ids"] == ["ghost"]
+
+
+def test_retired_f_alias_is_not_current_alongside_live_successor(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Retirement changes publication identity without erasing evidence."""
+    from scorecard_pipeline.config import AGENCIES
+
+    retired_id = "annapolis-transit"
+    successor_id = "annapolis-transit-2285"
+
+    # Reproduce the pre-fix state: both endpoints have public score histories,
+    # and the stale predecessor's F appears beside its live successor's A.
+    _publish(retired_id, dt.date(2026, 6, 12), 31.2)
+    _publish(successor_id, dt.date(2026, 6, 12), 91.1)
+    stale = json.loads((artifacts_dir() / "index.json").read_text())
+    assert stale["agencies"][retired_id]["history"][-1]["grade"] == "F"
+    assert stale["agencies"][successor_id]["history"][-1]["grade"] == "A"
+
+    monkeypatch.setitem(
+        AGENCIES,
+        retired_id,
+        Agency(
+            id=retired_id,
+            name="Annapolis Transit",
+            static_gtfs_url="https://archive.example/annapolis.zip",
+            alias_of=successor_id,
+            feed_status="deprecated",
+        ),
+    )
+    monkeypatch.setitem(
+        AGENCIES,
+        successor_id,
+        Agency(
+            id=successor_id,
+            name="Annapolis Transit",
+            static_gtfs_url="https://annapolis.example/gtfs.zip",
+        ),
+    )
+
+    retired_dir = artifacts_dir() / retired_id
+    for name in MUTABLE_PUBLIC_ARTIFACT_NAMES:
+        (retired_dir / name).write_text(f"stale {name}")
+
+    rebuild_index()
+
+    current = json.loads((artifacts_dir() / "index.json").read_text())
+    assert set(current["agencies"]) == {successor_id}
+    # Dated evidence remains available, while every mutable current-looking
+    # API/asset pointer is removed locally and named in the S3 cleanup plan.
+    assert (retired_dir / "2026-06-12.json").exists()
+    assert all(not (retired_dir / name).exists() for name in MUTABLE_PUBLIC_ARTIFACT_NAMES)
+    manifest = json.loads(retirement_manifest_path(artifacts_dir()).read_text())
+    assert manifest == {"agency_ids": [retired_id], "schema_version": 1}
+
+    # A deliberate single-feed reproduction can add dated evidence, but cannot
+    # resurrect any mutable pointer or its index membership.
+    _publish(retired_id, dt.date(2026, 6, 13), 31.2)
+    after_reproduction = json.loads((artifacts_dir() / "index.json").read_text())
+    assert set(after_reproduction["agencies"]) == {successor_id}
+    assert (retired_dir / "2026-06-13.json").exists()
+    assert all(not (retired_dir / name).exists() for name in MUTABLE_PUBLIC_ARTIFACT_NAMES)
 
 
 def test_reindex_indexes_everything_when_no_registry_is_loaded() -> None:

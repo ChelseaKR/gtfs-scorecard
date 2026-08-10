@@ -5,12 +5,23 @@
 # Java validator via scorecard_pipeline.cli.run_adhoc.
 FROM public.ecr.aws/lambda/python:3.12
 
-# Apply Amazon Linux security fixes from a reviewed repository snapshot, then
-# add Java 17 for the validator jar. AL2023 base images stay locked to their
-# original repository snapshot unless --releasever is explicit.
-RUN dnf upgrade -y --releasever=2023.12.20260720 \
-    && dnf install -y --releasever=2023.12.20260720 java-17-amazon-corretto-headless \
-    && dnf clean all
+# Apply Amazon Linux security fixes from a reviewed, content-addressed
+# repository snapshot, then add Java 17 for the validator jar. The immutable
+# GUID avoids both the stale base-image snapshot and a mutable `latest` build.
+ARG AL2023_REPO_GUID=734118c8c7ea0750e3f184363d93c6ad06b86a9eae3b1f1b6f3b98b21128bee2
+RUN mkdir -p /tmp/al2023-pinned \
+    && printf '%s\n' \
+        '[amazonlinux]' \
+        'name=Amazon Linux 2023 pinned security snapshot' \
+        "baseurl=https://cdn.amazonlinux.com/al2023/core/guids/${AL2023_REPO_GUID}/\$basearch/" \
+        'enabled=1' \
+        'gpgcheck=1' \
+        'gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-amazon-linux-2023' \
+        > /tmp/al2023-pinned/amazonlinux.repo \
+    && dnf upgrade -y --setopt=reposdir=/tmp/al2023-pinned \
+    && dnf install -y --setopt=reposdir=/tmp/al2023-pinned java-17-amazon-corretto-headless \
+    && dnf clean all \
+    && rm -rf /tmp/al2023-pinned
 
 # The pipeline package (this handler imports scorecard_pipeline.cli.run_adhoc).
 COPY pipeline /opt/pipeline
