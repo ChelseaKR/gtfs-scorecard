@@ -104,3 +104,32 @@ The remaining improvement is:
 Until streaming ships, these aggregates are scored but do not claim the two
 router-free checks over `stop_times.txt`. Verkehrsverbund Rhein-Neckar, whose
 largest table fits the cap, continues to receive those checks.
+
+## Reduce `/compare/`, then tighten its Lighthouse aggregation
+
+**Status: open, opened 2026-08-10.** [ADR 0045](decisions/0045-lighthouse-lcp-budget-and-warmup-run.md)
+left `lighthouserc.routes.json` untouched rather than lowering its performance
+floor to 0.75 to make a real regression pass. `/compare/` slowed measurably on 2026-08-07: median LCP
+went from 3077 ms to 3454 ms and median performance from 0.895 to 0.850, between
+runs 31139147660 and 31139709133. About a fifth of `/compare/` runs now land near
+4053 ms, a mode absent before that date. The old floor kept passing only because
+`aggregationMethod: "median-run"` silently asserts category scores as best-of-N;
+switching the routes floor to a true median would fail 5 of 50 recent jobs until
+the page is reduced. Both configs run in the same required `axe` job, so
+tightening before fixing would block every merge rather than flag one page.
+
+Steps:
+
+1. Diff what `/compare/` loads across those two commits. The step coincides with
+   the artifacts snapshot refresh to the live corpus, so the first suspect is
+   payload growth in the data the page carries, not the page's own code. The
+   page currently ships about 94 KB of HTML against the home page's 8 KB, and
+   that payload grows with the registry, so the number will keep moving.
+2. Reduce the payload, then confirm median `/compare/` performance clears 0.80
+   over several `a11y.yml` jobs.
+3. Only then switch the routes config to `aggregationMethod: "median"`, keeping
+   the floor at 0.80, and update ADR 0045 and the
+   [conformance gaps](standards-conformance-gaps.md) entry.
+
+The floor stays at 0.80 throughout. What is deferred is the tightening, not the
+standard.
