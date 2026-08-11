@@ -137,6 +137,34 @@ def test_classify_graph_build_names_the_unparseable_table() -> None:
     assert "\n" not in result.detail
 
 
+def test_classify_graph_build_ignores_dockers_routine_pull_notice() -> None:
+    """Docker's "Unable to find image ... locally" is normal, not a failure.
+
+    It prints whenever the image is not already cached, so it is present in
+    every clean-runner build. Matching it as an infrastructure marker classified
+    a genuinely unparseable feed as a harness error and failed the run, which is
+    what happened to rlv-riom on 2026-08-11 after the first fix shipped.
+    """
+    log = (
+        "Unable to find image 'opentripplanner/opentripplanner@sha256:472509f' locally\n"
+        + MALFORMED_SHAPES_LOG
+    )
+    result = classify_graph_build(255, log)
+    assert result.status == "feed-unbuildable"
+    assert result.feed_unbuildable
+    assert "shapes.txt" in result.detail
+
+
+def test_classify_graph_build_still_catches_a_genuinely_failed_pull() -> None:
+    """The routine notice precedes a real pull failure; the failure still wins."""
+    log = (
+        "Unable to find image 'opentripplanner/opentripplanner@sha256:472509f' locally\n"
+        "docker: Error response from daemon: pull access denied for opentripplanner.\n"
+    )
+    result = classify_graph_build(125, log)
+    assert result.status == "harness-error"
+
+
 def test_classify_graph_build_treats_a_bad_zip_as_the_feed() -> None:
     result = classify_graph_build(
         255, "java.util.zip.ZipException: zip END header not found\n\tat java.base/..."

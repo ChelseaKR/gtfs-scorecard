@@ -135,13 +135,27 @@ jobs:
           docker logs otp
           exit 1
       - name: Plan sample trips through OTP
+        id: plan
         if: steps.build.outputs.built == 'true'
         working-directory: pipeline
         env:
           PAIRS: ${{ github.event.inputs.pairs || '5' }}
+          FEED_ID: ${{ matrix.feed.feed_id }}
         run: |
+          set -o pipefail
+          # A feed with no service on today's date cannot answer a routing
+          # question. `scorecard otp` records that and exits 0, so note it here
+          # instead of letting the step read as a clean routing pass.
           uv run scorecard otp --base http://127.0.0.1:8080 --allow-loopback \
-            --feed ../otp-work/feed.gtfs.zip --pairs "$PAIRS"
+            --feed ../otp-work/feed.gtfs.zip --pairs "$PAIRS" 2>&1 | tee otp-plan.log
+          if grep -q "Routing QA not testable" otp-plan.log; then
+            {
+              echo "### ${FEED_ID}: no service to sample today"
+              echo
+              echo "The feed published no active trips with distinct endpoints on this run's date,"
+              echo "so routing was not exercised. Calendar coverage is reported on the scorecard."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
       - name: OTP logs on failure
         if: failure()
         run: |
