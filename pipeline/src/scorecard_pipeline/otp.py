@@ -181,12 +181,19 @@ FEED_BUILD_MARKERS: tuple[str, ...] = (
 
 # Resource and container problems can also crash a build inside the GTFS reader.
 # They win over the feed markers: the feed is not what needs fixing.
+#
+# Every marker here must appear only when the run actually broke. Docker prints
+# "Unable to find image '<ref>' locally" before it pulls an image that is not
+# cached, which is ordinary output on a clean runner, so matching it classified
+# every first-pull build as a harness error and masked the feed error underneath.
+# Match the messages a failed pull emits instead.
 HARNESS_BUILD_MARKERS: tuple[str, ...] = (
     "outofmemoryerror",
     "no space left on device",
     "cannot allocate memory",
-    "unable to find image",
     "manifest unknown",
+    "pull access denied",
+    "repository does not exist",
     "toomanyrequests",
     "connection refused",
 )
