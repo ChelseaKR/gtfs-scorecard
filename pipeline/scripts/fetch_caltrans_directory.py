@@ -115,7 +115,9 @@ def harvest(month: str, *, delay: float = 0.7) -> dict[str, Any]:
         ),
         "source_url": f"{BASE}/gtfs_schedule/{month}",
         "report_month": month.replace("/", "-"),
-        "retrieved_on": dt.date.today().isoformat(),
+        # UTC, not the machine's zone: this date is committed with the data file,
+        # so two curators on different continents must stamp the same day.
+        "retrieved_on": dt.datetime.now(dt.UTC).date().isoformat(),
         "note": (
             "Read once from the published monthly report pages. Each agency's feed URLs come "
             "from the Show Source URLs panel of its own report. Republished here so the "

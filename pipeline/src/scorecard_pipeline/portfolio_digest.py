@@ -25,7 +25,7 @@ from typing import Any
 from . import SCHEMA_VERSION
 from .alerts import GRADE_ORDER, REGRESSION_POINTS
 from .comparisons import producer_contract, same_producer_contract
-from .config import artifacts_dir
+from .config import artifacts_dir, utc_today
 from .metrics import expiry_status
 from .rollups import Rollup, _load_latest, resolve_member_ids
 
@@ -263,7 +263,7 @@ def build_portfolio_digest(
     and is never diffed. The returned digest carries the fresh snapshot for the
     caller to persist.
     """
-    as_of = today or dt.date.today()
+    as_of = today or utc_today()
     previous = previous_snapshot or {}
     first_run = not previous
 

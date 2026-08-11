@@ -13,7 +13,6 @@ the index after the queue drains, exactly as the sharded CI workflow does.
 
 from __future__ import annotations
 
-import datetime as dt
 import json
 import os
 import re
@@ -23,7 +22,7 @@ from typing import Any
 import boto3
 
 from scorecard_pipeline.agencies import load_agencies
-from scorecard_pipeline.config import AGENCIES, artifacts_dir
+from scorecard_pipeline.config import AGENCIES, artifacts_dir, utc_today
 
 BUCKET = os.environ["ARTIFACTS_BUCKET"]
 ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
@@ -37,7 +36,9 @@ def _score(agency_id: str) -> None:
         raise ValueError(f"unknown or invalid agency id: {agency_id!r}")
     # Use the CLI so the worker and the local/CI path run identical code.
     subprocess.run(
-        ["scorecard", "run", "--agency", agency_id, "--date", dt.date.today().isoformat()],
+        # UTC, not the container's zone: this becomes the artifact's
+        # snapshot_date, which the Actions matrix stamps in UTC.
+        ["scorecard", "run", "--agency", agency_id, "--date", utc_today().isoformat()],
         check=True,
     )
 
