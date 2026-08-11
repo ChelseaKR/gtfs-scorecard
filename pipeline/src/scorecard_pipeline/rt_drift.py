@@ -80,6 +80,19 @@ def _schedule_lookup(
     return by_seq, by_stop, tz
 
 
+def _service_day_origin(service_date: dt.date, tz: zoneinfo.ZoneInfo) -> int:
+    """Unix seconds that GTFS ``HH:MM:SS`` on ``service_date`` counts from.
+
+    The spec measures stop times from "noon minus 12 hours" of the service day,
+    not from local midnight. On the 363 ordinary days a year the two are the
+    same instant. On the two DST transition days they differ by the offset
+    change, so anchoring on midnight would report every punctual bus as an hour
+    early or an hour late for that whole service day.
+    """
+    noon = dt.datetime.combine(service_date, dt.time(12), tz)
+    return int(noon.timestamp()) - 12 * 3600
+
+
 def compute_drift(samples: list[RtSample], gtfs_zip_path: str) -> DriftStats | None:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Compare sampled TripUpdates predictions against the static schedule.
 
@@ -114,12 +127,11 @@ def compute_drift(samples: list[RtSample], gtfs_zip_path: str) -> DriftStats | N
                 sched = by_stop.get((ev.trip_id, ev.stop_id))
             if sched is None:
                 continue
-            candidates = []
-            for offset in (0, -1):
-                midnight = dt.datetime.combine(
-                    local_date + dt.timedelta(days=offset), dt.time(), tz
-                )
-                candidates.append(ev.predicted_time - (int(midnight.timestamp()) + sched))
+            candidates = [
+                ev.predicted_time
+                - (_service_day_origin(local_date + dt.timedelta(days=o), tz) + sched)
+                for o in (0, -1)
+            ]
             best = min(candidates, key=abs)
             if abs(best) <= SANITY_BOUND_SECONDS:
                 deltas[key] = best
