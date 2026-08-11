@@ -2097,8 +2097,17 @@ def _cmd_otp(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         count=args.pairs,
     )
     if not pairs:
-        log.error("No active trips with distinct endpoint stops to sample on %s.", args.date)
-        return 1
+        # A feed with no service on the sampled date cannot answer a routing
+        # question, and no router regression is visible either way. Seasonal and
+        # limited-service operators hit this on any ordinary date: the Fort
+        # Matanzas ferry sampled clean on 2026-08-10 and had no active trips on
+        # 2026-08-11. Record it and leave the run green. A calendar that no
+        # longer covers today is already a freshness finding on the agency's
+        # scorecard, which is where a rider-facing gap belongs.
+        detail = f"No active trips with distinct endpoint stops to sample on {args.date}."
+        log.warning("Routing QA is not testable for this feed. %s", detail)
+        print(f"::warning title=Routing QA not testable::{detail}", file=sys.stderr)
+        return 0
     results = []
     for origin, destination, departure_time in pairs:
         try:
