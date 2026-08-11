@@ -79,6 +79,7 @@ from .ntd import presented_readiness as presented_ntd_readiness
 from .pages_tools import (
     _render_check_page,
     _render_compare_page,
+    _render_compare_picker_data,
     _render_query_page,
     _render_tools_page,
 )
@@ -10731,7 +10732,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
 
     # Side-by-side compare: one static page over the artifacts that already
     # exist; the two pickers come from the same catalog the directory uses.
+    # That list is published beside the page and fetched on demand rather than
+    # inlined twice, so the document does not grow with the registry.
     write("compare/index.html", _render_compare_page(catalog), f"{BASE_URL}/compare/")
+    write("compare/agencies.json", _render_compare_picker_data(catalog))
 
     # In-browser SQL over the published parquet: the static-first principle
     # applied to analytics (no backend, nothing sent to a server).
