@@ -24,6 +24,46 @@ problem was assigned, changed in newly published feed bytes, and independently
 rechecked, or that a specific recommendation was challenged, tested against the
 feed's actual structure, and corrected without weakening unrelated cases.
 
+## The category: valid but wrong
+
+A validator answers one question: does this file match the specification? That
+question is answered well by several projects, and answering it again is not a
+position. The question this project can own is different:
+
+> The validator checks the file against the spec. The scorecard checks the feed
+> against reality.
+
+Most of what the service already measures is invisible to a rule engine. Each
+check below passes validation and still fails riders:
+
+| Check | What it catches | What it needs beyond the file |
+|---|---|---|
+| Google and Apple Maps gate | Under four weeks of forward service, so the agency drops off the map riders actually use | A downstream consumer's published acceptance rule |
+| Routing QA | A graph builds, or does not, and sampled trips fail to plan | A routing engine and real origin and destination pairs |
+| Realtime drift | Predictions disagree with where vehicles are | Live vehicle data sampled over time |
+| Moved feed discovery | The URL a trip planner fetches now returns something else | A catalogue and yesterday's configured source |
+| Vendor regression radar | Agencies behind one export tool acquire the same finding on the same day | The rest of the corpus, scored daily |
+
+None of these can be produced by reading one file once. Each needs a consumer's
+rules, a second system, live observation, or the corpus over time. That is the
+durable asymmetry, and it does not depend on rule count or feed count.
+
+Two consequences follow.
+
+Public copy should lead with the rider consequence rather than the grade. A
+grade is a triage affordance. "Will riders find your service?" names the job;
+"GTFS quality score" invites comparison against tools that compute a score
+faster.
+
+Findings should carry what they cost, not only what is wrong. A notice count
+describes a file. The same finding expressed as affected routes, affected
+boardings, and served-area need describes a decision an agency or a program can
+act on. The measured-consequence layer is the work; see
+[`product-roadmap.md`](product-roadmap.md#how-coverage-is-chosen).
+
+Naming a category is not a moat by itself. It decides which work compounds:
+consequence and outcome evidence compound, additional rules do not.
+
 ## Where the work overlaps
 
 This is a cooperative landscape, not a replacement market. Each project below
