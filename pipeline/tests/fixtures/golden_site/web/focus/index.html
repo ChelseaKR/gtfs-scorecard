@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Focus areas — GTFS Scorecard</title>
-  <meta name="description" content="Worldwide GTFS quality lenses, plus clearly scoped regional policy views for jurisdictions where local source data applies.">
+  <meta name="description" content="GTFS checks that run past the canonical validator, plus clearly scoped regional policy views for jurisdictions where local source data applies.">
   <link rel="canonical" href="https://gtfsscorecard.org/focus/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Focus areas — GTFS Scorecard">
-  <meta property="og:description" content="Worldwide GTFS quality lenses, plus clearly scoped regional policy views for jurisdictions where local source data applies.">
+  <meta property="og:description" content="GTFS checks that run past the canonical validator, plus clearly scoped regional policy views for jurisdictions where local source data applies.">
   <meta property="og:url" content="https://gtfsscorecard.org/focus/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -46,16 +46,23 @@
     <nav class="breadcrumb" aria-label="Breadcrumb"><ol itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><a itemprop="item" href="/"><span itemprop="name">Home</span></a><meta itemprop="position" content="1"></li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem"><span itemprop="name" aria-current="page">Focus areas</span><meta itemprop="position" content="2"></li></ol></nav>
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Focus areas.</h1>
-    <p class="page-lede">Open one lens per question. Realtime reliability and GTFS
-    feature adoption apply across the covered corpus. Regional policy views are
-    separated below and only apply where their source data and rules do.</p>
-    <h2 class="section-title">Across current coverage</h2>
-    <ul class="findings"><li class="finding"><p class="what"><a href="/realtime/">Realtime reliability</a> <span class="count">0 realtime feeds monitored</span></p><p class="why">Uptime and freshness for the agencies that publish GTFS-Realtime.</p></li><li class="finding"><p class="what"><a href="/adoption/">What feeds publish</a> <span class="count">Flex, fares, pathways, translations, and accessibility data</span></p><p class="why">Adoption of optional parts of GTFS, and how complete wheelchair-access data is.</p></li></ul>
+    <p class="page-lede">Open one lens per question. The first two groups apply
+    across the covered corpus. Regional policy views are separated below and only
+    apply where their source data and rules do.</p>
+    <h2 class="section-title" id="beyond-the-validator">Checks a validator does not run</h2>
+    <p class="page-lede">MobilityData's canonical validator answers whether a feed
+    follows the specification. A feed can answer yes and still strand a rider.
+    These lenses ask the second question, about the places riders actually reach
+    an agency through.</p>
+    <ul class="findings"><li class="finding"><p class="what"><a href="/agencies/">Four weeks of service ahead</a> <span class="count">3 of 3 published feed records clear the bar</span></p><p class="why">Google and Apple want at least four weeks of upcoming service before they will show an agency. A feed can stay valid, slip under that line, and stop reaching the apps riders already have open. Every scorecard states where its feed sits, and the directory groups the calendars that have run out.</p></li><li class="finding"><p class="what">A rider can complete the trip <span class="count">Reported on each scorecard</span></p><p class="why">Trips with no rideable leg, and stops that no trip serves. The file parses and the journey still does not work.</p></li><li class="finding"><p class="what"><a href="/realtime/">Realtime that is actually up</a> <span class="count">0 realtime feeds monitored</span></p><p class="why">Whether a monitored realtime feed answered when we checked, and how far behind real time its data was. An agency that publishes no realtime feed is not counted here.</p></li><li class="finding"><p class="what"><a href="/status/">The feed URL still answers</a> <span class="count">Liveness recorded between full runs</span></p><p class="why">A trip planner keeps fetching the address it already has. The status page records which configured URLs responded and which have gone quiet, so a feed that moved reads as something to confirm rather than a silent gap.</p></li></ul>
+    <h2 class="section-title">Optional GTFS features</h2>
+    <ul class="findings"><li class="finding"><p class="what"><a href="/adoption/">What feeds publish</a> <span class="count">Flex, fares, pathways, translations, and accessibility data</span></p><p class="why">Adoption of optional parts of GTFS, and how complete wheelchair-access data is.</p></li></ul>
     <h2 class="section-title">United States</h2>
     <ul class="findings"><li class="finding"><p class="what"><a href="/ntd/">NTD GTFS readiness</a> <span class="count">100.0% of assessed U.S. feeds look ready to certify</span></p><p class="why">Which U.S. feeds are published, valid, current, and identified with agency_id against the FTA requirement, with a state breakdown.</p></li><li class="finding"><p class="what"><a href="/equity/">U.S. equity overlay</a> <span class="count">Where weak data meets high need</span></p><p class="why">A U.S.-specific view using domestic demographic sources and state geography.</p></li></ul>
     <p class="fineprint">Every lens measures published data, never a compliance
     determination or on-the-ground service quality, and none of them changes a
-    grade.</p>
+    grade. The first group is reported next to the rubric rather than folded into
+    it.</p>
   </main>
   <footer class="site-footer">
     <div class="wrap">
