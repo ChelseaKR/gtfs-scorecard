@@ -13,7 +13,9 @@ from google.transit import gtfs_realtime_pb2
 
 from scorecard_pipeline import rt
 from scorecard_pipeline.rt import (
+    FRESH_FULL_SECONDS,
     FRESH_ZERO_SECONDS,
+    RT_LAPSED_SECONDS,
     RtSample,
     RtWindow,
     _active_service_ids,
@@ -66,6 +68,17 @@ def healthy_window(trips: frozenset[str] = frozenset({"T1", "T2"})) -> RtWindow:
             sample("trip_updates", trip_ids=trips),
             sample("vehicle_positions"),
             sample("service_alerts"),
+        ]
+    )
+
+
+def window_at_lag(lag: int, trips: frozenset[str] = frozenset({"T1", "T2"})) -> RtWindow:
+    """All three feeds up, every one of them `lag` seconds behind."""
+    return RtWindow(
+        samples=[
+            sample("trip_updates", lag=lag, trip_ids=trips),
+            sample("vehicle_positions", lag=lag),
+            sample("service_alerts", lag=lag),
         ]
     )
 
@@ -310,6 +323,9 @@ class TestScoring:
         assert "2 hours" in lapsed.what
         # Freshness zeroes out but reachable + coverage keep it off the floor.
         assert result.score == pytest.approx(70.6, abs=0.05)
+        # The lapsed card is worth the whole freshness component it replaces,
+        # the same promise the gentler stale card makes.
+        assert lapsed.deduction == pytest.approx(100.0 - result.score)
 
     def test_mildly_stale_feed_still_uses_the_gentle_finding(self) -> None:
         window = RtWindow(
@@ -427,6 +443,211 @@ class TestScoring:
         window = RtWindow(samples=[sample("trip_updates", lag=5), sample("trip_updates", lag=90)])
         assert window.worst_lag("trip_updates") == 90
 
+    # ---- thresholds the rubric states, sampled exactly on the line ----------
+
+    def test_a_sixty_second_lag_still_reads_as_fresh(self) -> None:
+        # FRESH_FULL_SECONDS is the inclusive top of full credit: a feed exactly
+        # 60s behind keeps every freshness point and is not labelled stale.
+        at_line = realtime(window_at_lag(FRESH_FULL_SECONDS), {"T1", "T2"})
+        assert at_line.score == 100.0
+        assert at_line.details["rt_freshness"] == "fresh"
+        assert at_line.findings == []
+        past_line = realtime(window_at_lag(FRESH_FULL_SECONDS + 1), {"T1", "T2"})
+        assert past_line.details["rt_freshness"] == "stale"
+        assert {f.code for f in past_line.findings} == {"scorecard_rt_stale"}
+
+    def test_an_hour_old_header_is_already_lapsed(self) -> None:
+        # An hour behind is where "running late" becomes "stopped publishing".
+        # The line is inclusive, and the two states never both fire.
+        at_line = realtime(window_at_lag(RT_LAPSED_SECONDS), {"T1", "T2"})
+        assert {f.code for f in at_line.findings} == {"scorecard_rt_feed_lapsed"}
+        assert at_line.details["rt_freshness"] == "lapsed"
+        under = realtime(window_at_lag(RT_LAPSED_SECONDS - 1), {"T1", "T2"})
+        assert {f.code for f in under.findings} == {"scorecard_rt_stale"}
+        assert under.details["rt_freshness"] == "stale"
+
+    def test_ninety_percent_of_vehicles_on_route_clears_the_flag(self) -> None:
+        # Below 90% on their assigned route the fleet is flagged; at 90% it is
+        # not. The plausibility points scale either way.
+        at_line = realtime(
+            healthy_window(),
+            {"T1", "T2"},
+            plausibility=PlausibilityStats(
+                vehicles_checked=10, plausible_share=0.9, worst_meters=500
+            ),
+        )
+        assert "scorecard_rt_vehicles_off_route" not in {f.code for f in at_line.findings}
+        below = realtime(
+            healthy_window(),
+            {"T1", "T2"},
+            plausibility=PlausibilityStats(
+                vehicles_checked=10, plausible_share=0.89, worst_meters=500
+            ),
+        )
+        off = next(f for f in below.findings if f.code == "scorecard_rt_vehicles_off_route")
+        assert off.count == 2
+
+    def test_drift_is_flagged_only_past_thirty_minutes_and_never_scored(self) -> None:
+        # Predictions are called implausible when they disagree with the
+        # schedule by more than half an hour, not at half an hour. Either way
+        # the finding informs: it costs no points and cannot become a top fix,
+        # because weighting drift would be a governed methodology change.
+        from scorecard_pipeline.score import build_scorecard
+
+        at_line = realtime(
+            healthy_window(),
+            {"T1", "T2"},
+            drift=DriftStats(
+                observations=9, median_seconds=30, p90_abs_seconds=1800, on_time_share=0.5
+            ),
+        )
+        assert "scorecard_rt_predictions_implausible" not in {f.code for f in at_line.findings}
+        past = realtime(
+            healthy_window(),
+            {"T1", "T2"},
+            drift=DriftStats(
+                observations=9, median_seconds=30, p90_abs_seconds=1801, on_time_share=0.5
+            ),
+        )
+        flagged = next(f for f in past.findings if f.code == "scorecard_rt_predictions_implausible")
+        assert flagged.deduction == 0.0
+        assert past.score == at_line.score == 100.0
+        assert build_scorecard([past]).top_fixes == []
+
+    def test_a_legacy_window_assesses_only_the_kinds_it_sampled(self) -> None:
+        # Callers predating configured_kinds fall back to the feed kinds present
+        # in the window, so an agency that publishes TripUpdates alone is not
+        # marked down for two feeds it never had.
+        window = RtWindow(samples=[sample("trip_updates", trip_ids=frozenset({"T1"}))])
+
+        result = realtime(window, {"T1"})
+
+        assert result.details["configured_kinds"] == ["trip_updates"]
+        assert result.score == 100.0
+        assert result.findings == []
+
+    def test_a_small_shortfall_still_uses_the_category_denominator(self) -> None:
+        # The rescaling applies to every scored shortfall, including one worth
+        # less than a point before rescaling.
+        scheduled = {f"T{i}" for i in range(36)}
+        seen = frozenset(f"T{i}" for i in range(35))
+        result = realtime(
+            RtWindow(samples=[sample("trip_updates", trip_ids=seen)]),
+            scheduled,
+            configured_kinds={"trip_updates"},
+        )
+
+        finding = next(f for f in result.findings if f.code == "scorecard_rt_trip_coverage")
+        assert finding.count == 1
+        assert finding.deduction == pytest.approx(100.0 - result.score)
+
+    def test_details_publish_the_numbers_the_summary_quotes(self) -> None:
+        # The category summary reads "N% of scheduled trips had live
+        # predictions; M% of vehicles on their route", and the details carry the
+        # counts behind those percentages so a reader can check the arithmetic.
+        # Percentages are published to one decimal, like the score.
+        result = realtime(
+            healthy_window(frozenset({"T1", "T2"})),
+            {"T1", "T2", "T3"},
+            plausibility=PlausibilityStats(
+                vehicles_checked=12, plausible_share=11 / 12, worst_meters=40
+            ),
+            drift=DriftStats(
+                observations=9, median_seconds=20, p90_abs_seconds=300, on_time_share=2 / 3
+            ),
+        )
+
+        assert result.details["scheduled_trips_in_window"] == 3
+        assert result.details["covered_trips"] == 2
+        assert result.details["coverage_pct"] == 66.7
+        assert result.details["vehicles_checked"] == 12
+        assert result.details["vehicles_on_route_pct"] == 91.7
+        assert result.details["drift"]["on_time_share_pct"] == 66.7
+        assert "66.7% of scheduled trips had live predictions" in result.summary
+        assert "91.7% of vehicles on their route" in result.summary
+
+    def test_every_finding_the_category_can_emit_is_publishable(self) -> None:
+        # Same contract as the freshness findings: the artifact schema requires
+        # a severity from the published set plus the four plain-language fields,
+        # and severity decides the fix tier. One case per finding code.
+        # A finding about the whole feed carries one instance, because the site
+        # prints the count on the card and "2 instances" of one outage is wrong.
+        feed_level = {
+            "scorecard_rt_trip_updates_unreachable",
+            "scorecard_rt_vehicle_positions_unreachable",
+            "scorecard_rt_service_alerts_unreachable",
+            "scorecard_rt_feed_lapsed",
+            "scorecard_rt_stale",
+            "scorecard_rt_no_timestamp",
+        }
+        expected_severity = {
+            "scorecard_rt_trip_updates_unreachable": "ERROR",
+            "scorecard_rt_vehicle_positions_unreachable": "ERROR",
+            "scorecard_rt_service_alerts_unreachable": "ERROR",
+            "scorecard_rt_feed_lapsed": "ERROR",
+            "scorecard_rt_stale": "WARNING",
+            "scorecard_rt_no_timestamp": "INFO",
+            "scorecard_rt_trip_coverage": "WARNING",
+            "scorecard_rt_vehicles_off_route": "WARNING",
+            "scorecard_rt_predictions_implausible": "WARNING",
+            "scorecard_rt_alerts_ended": "WARNING",
+            "scorecard_rt_alerts_missing_text": "INFO",
+        }
+        no_timestamps = RtWindow(
+            samples=[
+                RtSample(kind=kind, fetched_at=NOW, ok=True, header_timestamp=None)
+                for kind in ("trip_updates", "vehicle_positions", "service_alerts")
+            ]
+        )
+        all_down = RtWindow(
+            samples=[
+                sample("trip_updates", ok=False),
+                sample("vehicle_positions", ok=False),
+                sample("service_alerts", ok=False),
+            ]
+        )
+        messy_alerts = RtWindow(
+            samples=[
+                sample("trip_updates", trip_ids=frozenset({"T1", "T2"})),
+                sample("vehicle_positions"),
+                alerts_sample((_alert(end=NOW - rt.ALERT_STALE_SECONDS - 1), _alert(header=""))),
+            ]
+        )
+        results = [
+            realtime(all_down, {"T1"}),
+            realtime(window_at_lag(RT_LAPSED_SECONDS), {"T1", "T2"}),
+            realtime(window_at_lag(300), {"T1", "T2"}),
+            realtime(no_timestamps, {"T1"}),
+            realtime(healthy_window(frozenset({"T1"})), {"T1", "T2"}),
+            realtime(
+                healthy_window(),
+                {"T1", "T2"},
+                plausibility=PlausibilityStats(
+                    vehicles_checked=4, plausible_share=0.5, worst_meters=900
+                ),
+                drift=DriftStats(
+                    observations=12, median_seconds=2400, p90_abs_seconds=3600, on_time_share=0.1
+                ),
+            ),
+            realtime(messy_alerts, {"T1", "T2"}),
+        ]
+        seen: set[str] = set()
+        for result in results:
+            assert result.summary.strip()
+            for f in result.findings:
+                seen.add(f.code)
+                assert f.severity == expected_severity[f.code]
+                assert f.what.strip()
+                assert f.why.strip()
+                assert f.fix.strip()
+                assert f.effort.strip()
+                if f.code in feed_level:
+                    assert f.count == 1
+                else:
+                    assert f.count >= 1
+                assert f.deduction >= 0.0
+        assert seen == set(expected_severity)
+
 
 class TestScheduleLookup:
     def make_feed(self, make_gtfs_zip: Callable[..., Path]) -> Path:
@@ -469,6 +690,65 @@ class TestScheduleLookup:
         # 00:45 on Jun 11 = 24:45 on the Jun 10 NIGHT service
         assert scheduled_trip_ids_at(str(feed), self.moment(0, 45)) == {"OWL"}
 
+    def test_trip_is_in_service_at_its_exact_departure_second(
+        self, make_gtfs_zip: Callable[..., Path]
+    ) -> None:
+        # The scheduled set is the denominator of realtime trip coverage, so its
+        # edges matter: a trip counts from the second it is due to leave, and
+        # not one second before. Deliberately an off-the-minute departure, so
+        # every part of the local clock has to be converted correctly.
+        feed = make_gtfs_zip(
+            {
+                "agency.txt": (
+                    "agency_name,agency_url,agency_timezone\n"
+                    "Test,https://example.org,America/Los_Angeles\n"
+                ),
+                "calendar_dates.txt": "service_id,date,exception_type\nSVC,20260611,1\n",
+                "trips.txt": "route_id,service_id,trip_id\nR1,SVC,SOLO\n",
+                "stop_times.txt": (
+                    "trip_id,arrival_time,departure_time,stop_id,stop_sequence\n"
+                    "SOLO,10:01:30,10:01:30,S1,1\n"
+                ),
+            }
+        )
+        tz = zoneinfo.ZoneInfo("America/Los_Angeles")
+        departure = dt.datetime(2026, 6, 11, 10, 1, 30, tzinfo=tz)
+        assert scheduled_trip_ids_at(str(feed), departure) == {"SOLO"}
+        assert scheduled_trip_ids_at(str(feed), departure - dt.timedelta(seconds=1)) == set()
+
+    def test_after_midnight_trip_runs_through_its_last_arrival(
+        self, make_gtfs_zip: Callable[..., Path]
+    ) -> None:
+        # OWL is scheduled 24:30 to 25:30 on the previous service day. It is
+        # still in service at 01:30 local, its last arrival, and finished a
+        # minute later.
+        feed = self.make_feed(make_gtfs_zip)
+        assert scheduled_trip_ids_at(str(feed), self.moment(1, 30)) == {"OWL"}
+        assert scheduled_trip_ids_at(str(feed), self.moment(1, 31)) == set()
+
+    def test_a_feed_without_an_agency_timezone_is_read_as_utc(
+        self, make_gtfs_zip: Callable[..., Path]
+    ) -> None:
+        # agency_timezone is required by the spec but feeds arrive without it.
+        # Reading those in UTC keeps the sampling window computable instead of
+        # failing the whole realtime category.
+        tables = {
+            "calendar_dates.txt": "service_id,date,exception_type\nSVC,20260611,1\n",
+            "trips.txt": "route_id,service_id,trip_id\nR1,SVC,SOLO\n",
+            "stop_times.txt": (
+                "trip_id,arrival_time,departure_time,stop_id,stop_sequence\n"
+                "SOLO,10:00:00,10:00:00,S1,1\n"
+            ),
+        }
+        no_agency_file = make_gtfs_zip(tables, name="no-agency.zip")
+        no_timezone_column = make_gtfs_zip(
+            {**tables, "agency.txt": "agency_name,agency_url\nTest,https://example.org\n"},
+            name="no-tz.zip",
+        )
+        ten_utc = dt.datetime(2026, 6, 11, 10, 0, tzinfo=dt.UTC)
+        for feed in (no_agency_file, no_timezone_column):
+            assert scheduled_trip_ids_at(str(feed), ten_utc) == {"SOLO"}
+
     def test_inactive_service_excluded(self, make_gtfs_zip: Callable[..., Path]) -> None:
         feed = self.make_feed(make_gtfs_zip)
         active = scheduled_trip_ids_at(str(feed), self.moment(10, 30))
@@ -498,6 +778,53 @@ class TestScheduleLookup:
         assert "NOTIME" not in spans
         assert "" not in spans
 
+    def test_span_prefers_departure_and_falls_back_to_arrival(
+        self, make_gtfs_zip: Callable[..., Path]
+    ) -> None:
+        # A trip is in service from when it leaves, so a stop with dwell time
+        # contributes its departure. Arrival is only the fallback, for rows that
+        # give no departure at all. A row with neither is skipped without
+        # abandoning the rows after it.
+        feed = make_gtfs_zip(
+            {
+                "stop_times.txt": (
+                    "trip_id,arrival_time,departure_time,stop_id,stop_sequence\n"
+                    "DWELL,10:00:00,10:05:00,S1,1\n"
+                    "DWELL,10:30:00,10:35:00,S2,2\n"
+                    "ARRIVALONLY,08:00:00,,S1,1\n"
+                    "NOTIME,,,S1,1\n"
+                    "AFTERWARDS,09:00:00,09:00:00,S1,1\n"
+                ),
+            }
+        )
+        spans = _trip_time_spans(str(feed))
+        assert spans["DWELL"] == (10 * 3600 + 5 * 60, 10 * 3600 + 35 * 60)
+        assert spans["ARRIVALONLY"] == (8 * 3600, 8 * 3600)
+        assert "NOTIME" not in spans
+        assert "AFTERWARDS" in spans
+
+    def test_a_stop_times_table_missing_a_time_column_still_reads(
+        self, make_gtfs_zip: Callable[..., Path]
+    ) -> None:
+        # Either time column on its own is enough to place a trip in the day,
+        # including when the other column is absent from the export entirely.
+        departures_only = make_gtfs_zip(
+            {
+                "stop_times.txt": (
+                    "trip_id,departure_time,stop_id,stop_sequence\nT,07:15:00,S1,1\n"
+                ),
+            },
+            name="departures-only.zip",
+        )
+        arrivals_only = make_gtfs_zip(
+            {
+                "stop_times.txt": "trip_id,arrival_time,stop_id,stop_sequence\nT,07:15:00,S1,1\n",
+            },
+            name="arrivals-only.zip",
+        )
+        for feed in (departures_only, arrivals_only):
+            assert _trip_time_spans(str(feed)) == {"T": (7 * 3600 + 15 * 60, 7 * 3600 + 15 * 60)}
+
 
 class TestActiveServiceIds:
     THURSDAY = dt.date(2026, 6, 11)
@@ -525,6 +852,29 @@ class TestActiveServiceIds:
         }
         assert _active_service_ids(tables, self.THURSDAY) == {"WK"}
 
+    def test_each_weekday_column_drives_its_own_day(self) -> None:
+        # A service that runs on one weekday is active on that weekday and no
+        # other. Seven separate columns in calendar.txt, so all seven are
+        # checked: getting one wrong would drop a whole day of trips out of the
+        # realtime coverage denominator.
+        week = (
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday",
+        )
+        monday = dt.date(2026, 6, 8)  # the Monday of the week THURSDAY sits in
+        tables = {
+            "calendar.txt": [self._calendar_row(day.upper(), **{day: "1"}) for day in week],
+            "calendar_dates.txt": [],
+        }
+        for offset, day in enumerate(week):
+            date = monday + dt.timedelta(days=offset)
+            assert _active_service_ids(tables, date) == {day.upper()}
+
     def test_wrong_weekday_is_inactive(self) -> None:
         tables = {
             "calendar.txt": [self._calendar_row("WKND", saturday="1", sunday="1")],
@@ -547,6 +897,40 @@ class TestActiveServiceIds:
             ],
         }
         assert _active_service_ids(tables, self.THURSDAY) == {"SPECIAL"}
+
+    def test_a_calendar_missing_columns_reads_as_no_service(self) -> None:
+        # Real exports arrive with columns left out. The lookup treats an
+        # unreadable row as no service on that date instead of raising, so one
+        # malformed table cannot take down an agency's realtime scoring.
+        for row in (
+            {"service_id": "WK", "start_date": "20260101", "end_date": "20261231"},  # no weekdays
+            {"service_id": "WK", "thursday": "1"},  # no date range
+        ):
+            assert (
+                _active_service_ids(
+                    {"calendar.txt": [row], "calendar_dates.txt": []}, self.THURSDAY
+                )
+                == set()
+            )
+        for exception in (
+            {"service_id": "SP", "exception_type": "1"},  # no date
+            {"service_id": "SP", "date": "20260611"},  # no exception type
+        ):
+            assert (
+                _active_service_ids(
+                    {"calendar.txt": [], "calendar_dates.txt": [exception]}, self.THURSDAY
+                )
+                == set()
+            )
+
+    def test_calendar_range_includes_its_own_start_and_end_dates(self) -> None:
+        # GTFS calendar windows are inclusive at both ends, so a service running
+        # for a single day is active on that day.
+        row = self._calendar_row("ONEDAY", thursday="1")
+        row["start_date"] = "20260611"
+        row["end_date"] = "20260611"
+        tables = {"calendar.txt": [row], "calendar_dates.txt": []}
+        assert _active_service_ids(tables, self.THURSDAY) == {"ONEDAY"}
 
     def test_calendar_dates_exception_removes_service(self) -> None:
         # exception_type 2 removes a service the weekly calendar would otherwise run.
@@ -578,6 +962,12 @@ class TestGtfsTimeToSeconds:
 
     def test_midnight_is_zero_not_none(self) -> None:
         assert _gtfs_time_to_seconds("00:00:00") == 0
+
+    def test_the_seconds_field_counts(self) -> None:
+        # Off-the-minute departures are ordinary in a GTFS export, and the
+        # seconds decide whether a trip is inside the sampled window.
+        assert _gtfs_time_to_seconds("00:00:45") == 45
+        assert _gtfs_time_to_seconds("01:02:03") == 3723
 
     def test_wrong_shape_is_none(self) -> None:
         assert _gtfs_time_to_seconds("10:00") is None
@@ -618,7 +1008,9 @@ class TestFetchSample:
         s = fetch_sample("trip_updates", "https://example.org/tu")
 
         assert s.ok and s.error is None
+        assert s.kind == "trip_updates"
         assert s.trip_ids == frozenset({"T1"})
+        assert {e.trip_id for e in s.stop_time_events} == {"T1"}
         assert s.header_timestamp == NOW - 5
         # fetched_at is the real wall clock, so lag is just non-negative here.
         assert s.lag_seconds is not None and s.lag_seconds >= 0
@@ -649,7 +1041,46 @@ class TestFetchSample:
 
         assert len(s.vehicles) == 1
         assert s.vehicles[0].trip_id == "T1"
+        # Both coordinates are needed to judge whether a bus is on its route.
         assert s.vehicles[0].lat == pytest.approx(38.55)
+        assert s.vehicles[0].lon == pytest.approx(-121.74)
+
+    def test_trip_update_without_a_trip_id_is_not_counted(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # A TripUpdate that names no trip cannot cover a scheduled trip, so it
+        # must not enter the coverage numerator. It also must not stop the scan:
+        # the usable updates behind it still count.
+        msg = _feed_message(NOW)
+        blank = msg.entity.add()
+        blank.id = "blank"
+        blank.trip_update.trip.route_id = "5"  # a trip descriptor with no trip_id
+        blank.trip_update.stop_time_update.add().stop_id = "S9"
+        good = msg.entity.add()
+        good.id = "good"
+        good.trip_update.trip.trip_id = "T1"
+        good.trip_update.stop_time_update.add().stop_id = "S1"
+
+        self._serve(monkeypatch, msg.SerializeToString())
+        s = fetch_sample("trip_updates", "https://example.org/tu")
+
+        assert s.trip_ids == frozenset({"T1"})
+        assert [e.trip_id for e in s.stop_time_events] == ["T1"]
+
+    def test_service_alerts_sample_carries_its_alert_observations(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        # Alert content is read from the alerts feed and from nowhere else.
+        msg = _feed_message(NOW)
+        msg.entity.add(id="a1").alert.header_text.translation.add(text="Detour on Route 5")
+        self._serve(monkeypatch, msg.SerializeToString())
+
+        alerts = fetch_sample("service_alerts", "https://example.org/sa")
+        assert len(alerts.alerts) == 1
+        assert alerts.alerts[0].has_header_text
+
+        other_kind = fetch_sample("trip_updates", "https://example.org/tu")
+        assert other_kind.alerts == ()
 
     def test_missing_header_timestamp_yields_no_lag(self, monkeypatch: pytest.MonkeyPatch) -> None:
         self._serve(monkeypatch, _feed_message(None).SerializeToString())
@@ -665,6 +1096,9 @@ class TestFetchSample:
         monkeypatch.setattr(rt, "safe_get", boom)
         s = fetch_sample("trip_updates", "https://example.org/tu")
         assert not s.ok
+        # The failure record still names the endpoint that failed, which is how
+        # the window attributes an outage to a feed kind.
+        assert s.kind == "trip_updates"
         assert s.error is not None and "connection reset" in s.error
 
     def test_archives_the_raw_protobuf(
@@ -818,6 +1252,15 @@ class TestParseAlerts:
         msg.entity.add(id="t1").trip_update.trip.trip_id = "T1"
         assert rt.parse_alerts(msg) == ()
 
+    def test_a_non_alert_entity_does_not_end_the_scan(self) -> None:
+        # Feeds mix entity types. An alert behind a non-alert entity is still
+        # read, or the alert counts would silently under-report.
+        msg = self._message()
+        msg.entity.add(id="t1").trip_update.trip.trip_id = "T1"
+        msg.entity.add(id="a1").alert.header_text.translation.add(text="Detour")
+        (obs,) = rt.parse_alerts(msg)
+        assert obs.has_header_text
+
 
 class TestAlertsContent:
     def test_no_successful_sample_reports_nothing(self) -> None:
@@ -850,6 +1293,23 @@ class TestAlertsContent:
         alerts = (_alert(end=NOW - 86400), _alert(end=None))
         summary = rt.alerts_content(RtWindow(samples=[alerts_sample(alerts)]))
         assert summary is not None and summary["ended_over_30_days_ago"] == 0
+
+    def test_an_alert_that_ended_exactly_thirty_days_ago_is_not_yet_stale(self) -> None:
+        # The flag is for alerts that ended *more* than 30 days before the
+        # sample, so the day itself still counts as within the window.
+        at_line = _alert(end=NOW - rt.ALERT_STALE_SECONDS)
+        past_line = _alert(end=NOW - rt.ALERT_STALE_SECONDS - 1)
+        summary = rt.alerts_content(RtWindow(samples=[alerts_sample((at_line, past_line))]))
+        assert summary is not None and summary["ended_over_30_days_ago"] == 1
+
+    def test_cause_and_effect_are_counted_only_together(self) -> None:
+        # "with_cause_and_effect" reports alerts that state both, since one
+        # without the other leaves a rider unable to act on the notice.
+        alerts = (_alert(cause=True, effect=False), _alert(cause=False, effect=True))
+        summary = rt.alerts_content(RtWindow(samples=[alerts_sample(alerts)]))
+        assert summary is not None
+        assert summary["with_cause_and_effect"] == 0
+        assert summary["alerts"] == 2
 
 
 class TestAlertsInScoring:

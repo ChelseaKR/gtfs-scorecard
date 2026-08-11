@@ -264,6 +264,24 @@ def test_grade_margins_at_the_band_edges() -> None:
     assert grade_margins(12) == (48.0, 12.0)
 
 
+def test_grade_margins_are_published_to_one_decimal() -> None:
+    # Margins are rounded like the published score, so a card never shows more
+    # precision than the number it sits next to.
+    from scorecard_pipeline.score import grade_margins
+
+    assert grade_margins(84.26) == (5.7, 4.3)
+
+
+def test_grade_margins_below_every_band_degrade_to_the_f_band() -> None:
+    # A negative score can't come out of the rubric, but grade_margins must
+    # degrade the same way letter_grade does rather than fall off the ladder:
+    # measure up to the D floor above F, and down to F's own floor.
+    from scorecard_pipeline.score import grade_margins
+
+    assert letter_grade(-5.25) == "F"
+    assert grade_margins(-5.25) == (65.2, -5.2)
+
+
 def test_to_json_carries_grade_margins() -> None:
     # A single measured category renormalizes to its own score, so 89.9 overall.
     overall = build_scorecard([category("correctness", 89.9)]).to_json()["overall"]
