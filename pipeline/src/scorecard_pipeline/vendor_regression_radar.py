@@ -135,10 +135,15 @@ def _regression_codes(artifact: dict[str, Any]) -> dict[str, str]:
 def _cohorts(runs: list[AgencyRun]) -> dict[str, tuple[ToolProfile, list[AgencyRun]]]:
     """Group runs by detected producing tool.
 
-    Hosts that match no documented tool profile (generic hosting, an agency's
-    own website) carry no producing-tool signal and are excluded on purpose:
-    the same-day shape there says nothing about a shared export tool, and
-    could not be routed to a vendor contact if it did.
+    Feeds with no identified producing tool are excluded on purpose: the
+    same-day shape there says nothing about a shared export tool, and could not
+    be routed to a vendor contact if it did.
+
+    Cohort membership follows `tool_profiles.detect_tool`, which reads each
+    feed's own publisher declaration rather than the host serving the zip (ADR
+    0045). That matters here more than on an agency page: a cohort that mixed
+    feeds a vendor built with feeds it merely hosts would report a shared export
+    change where there is none.
     """
     grouped: dict[str, tuple[ToolProfile, list[AgencyRun]]] = {}
     for run in runs:
