@@ -34,6 +34,14 @@ EXPIRY_REGRESSION_POINTS = 10
 # after score at least this many points higher: a one-day hole that recovered.
 TRANSIENT_DIP_POINTS = 20.0
 
+# History rows are not always consecutive days: a feed on the standard cadence,
+# a paused pipeline, or a newly added agency all leave gaps, and roughly one
+# published step in twelve spans more than a day. A dip is only "transient" if
+# the neighbouring rows sit that close in time; across a longer gap the low
+# score stood for however long the gap lasted, which is a regression to alert on
+# rather than a glitch to suppress. Two days allows one missed daily run.
+TRANSIENT_DIP_MAX_STEP_DAYS = 2
+
 
 @dataclass(frozen=True)
 class Anomaly:
@@ -125,6 +133,16 @@ def _transient_dip(
     prev_score, curr_score, next_score = _score(prev), _score(curr), _score(nxt)
     if prev_score is None or curr_score is None or next_score is None:
         return None
+    # Only a dip bracketed by nearby checks is evidence of a glitch. Unreadable
+    # or distant dates mean the low score may have stood for weeks, so stay
+    # quiet: a suppressed alert about a real regression costs the agency more
+    # than an extra alert about a glitch.
+    before = _days_between(str(prev.get("date")), str(curr.get("date")))
+    after = _days_between(str(curr.get("date")), str(nxt.get("date")))
+    if before is None or after is None:
+        return None
+    if not (0 < before <= TRANSIENT_DIP_MAX_STEP_DAYS and 0 < after <= TRANSIENT_DIP_MAX_STEP_DAYS):
+        return None
     if (
         prev_score - curr_score >= TRANSIENT_DIP_POINTS
         and next_score - curr_score >= TRANSIENT_DIP_POINTS
@@ -133,10 +151,11 @@ def _transient_dip(
             date=str(curr.get("date", "")),
             kind="transient_dip",
             detail=(
-                f"The score dropped to {curr_score:.0f} on {curr.get('date')} and "
-                f"recovered the next day (it was {prev_score:.0f} before and "
-                f"{next_score:.0f} after). A single bad day that bounced back is "
-                "usually a stale export served briefly, not a real change in the feed."
+                f"The score dropped to {curr_score:.0f} on {curr.get('date')} and was "
+                f"back to {next_score:.0f} at the next check on {nxt.get('date')} "
+                f"(it was {prev_score:.0f} on {prev.get('date')}). A dip that bounced "
+                "straight back is usually a stale export served briefly, not a real "
+                "change in the feed."
             ),
         )
     return None

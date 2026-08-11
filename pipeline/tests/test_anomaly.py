@@ -99,6 +99,53 @@ def test_transient_one_day_dip_then_recovery() -> None:
     assert latest_anomaly(history) is not None
 
 
+def test_drop_that_stood_for_weeks_is_not_a_transient_dip() -> None:
+    # 8% of published history steps are not consecutive days (1,114 of them are
+    # 27-day gaps), so neighbouring rows are not neighbouring days. A feed that
+    # scored 40 on 06-11 and was next seen at 90 on 07-08 was broken for nearly
+    # a month; calling that a one-day glitch both misstates the evidence and,
+    # via alerts._anomaly_alert_items, suppresses the alert the agency needs.
+    history = [
+        entry("2026-06-10", 85.0, "B", days_until_expiry=120),
+        entry("2026-06-11", 40.0, "F", days_until_expiry=119),
+        entry("2026-07-08", 84.0, "B", days_until_expiry=92),
+    ]
+    assert [a for a in detect_anomalies(history) if a.kind == "transient_dip"] == []
+
+
+def test_dip_survives_one_missed_run() -> None:
+    # A skipped daily run (a 2-day step, 857 of those published) still leaves a
+    # genuinely transient dip detectable.
+    history = [
+        entry("2026-06-10", 85.0, "B", days_until_expiry=120),
+        entry("2026-06-11", 40.0, "F", days_until_expiry=119),
+        entry("2026-06-13", 84.0, "B", days_until_expiry=117),
+    ]
+    dips = [a for a in detect_anomalies(history) if a.kind == "transient_dip"]
+    assert len(dips) == 1
+
+
+def test_transient_dip_copy_does_not_promise_a_next_day_recovery() -> None:
+    history = [
+        entry("2026-06-10", 85.0, "B"),
+        entry("2026-06-11", 40.0, "F"),
+        entry("2026-06-13", 84.0, "B"),
+    ]
+    dip = next(a for a in detect_anomalies(history) if a.kind == "transient_dip")
+    assert "the next day" not in dip.detail
+
+
+def test_undated_history_rows_are_not_called_transient() -> None:
+    # No dates means no way to know how long the dip lasted. Stay quiet about
+    # transience rather than suppress a possible real regression.
+    history: list[dict[str, Any]] = [
+        {"score": 85.0, "grade": "B"},
+        {"score": 40.0, "grade": "F"},
+        {"score": 84.0, "grade": "B"},
+    ]
+    assert [a for a in detect_anomalies(history) if a.kind == "transient_dip"] == []
+
+
 def test_sustained_drop_is_not_a_transient_dip() -> None:
     # Drops and stays down: a real regression, not a one-day glitch.
     history = [

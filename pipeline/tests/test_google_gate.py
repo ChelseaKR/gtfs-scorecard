@@ -143,3 +143,83 @@ def test_from_artifact_unparsable_date_fails() -> None:
     gate = from_artifact(_artifact("not-a-date"), TODAY)
     assert gate.status == "fail"
     assert gate.days_forward is None
+
+
+def test_expired_feed_info_window_fails_even_when_calendars_run_for_years() -> None:
+    # Real shape, simi-valley-transit at snapshot 2026-08-07: feed_info stopped
+    # being valid in 2023 while calendar.txt still lists service to 2030. The
+    # freshness card on the same page reads "Service data ended 1163 day(s)
+    # ago", so the gate must not read the calendar tail and call it a pass.
+    artifact = {
+        "snapshot_date": "2026-08-07",
+        "categories": {
+            "freshness": {
+                "details": {
+                    "feed_start_date": "2022-11-02",
+                    "feed_end_date": "2023-06-01",
+                    "last_service_date": "2030-12-31",
+                    "effective_expiry_date": "2023-06-01",
+                    "days_until_expiry": -1163,
+                }
+            }
+        },
+    }
+    gate = from_artifact(artifact, dt.date(2026, 8, 7))
+    assert gate.status == "fail"
+    assert gate.days_forward is not None and gate.days_forward < 0
+
+
+def test_short_feed_info_window_is_at_risk_even_when_calendars_run_longer() -> None:
+    # pid-prague's shape: feed_info valid 12 more days, calendars to December.
+    artifact = {
+        "snapshot_date": TODAY.isoformat(),
+        "categories": {
+            "freshness": {
+                "details": {
+                    "feed_end_date": (TODAY + dt.timedelta(days=12)).isoformat(),
+                    "last_service_date": (TODAY + dt.timedelta(days=175)).isoformat(),
+                    "effective_expiry_date": (TODAY + dt.timedelta(days=12)).isoformat(),
+                }
+            }
+        },
+    }
+    gate = from_artifact(artifact, TODAY)
+    assert gate.status == "at_risk"
+    assert gate.days_forward == 12
+
+
+def test_legacy_artifact_without_effective_expiry_uses_the_earlier_date() -> None:
+    # Schema 1.4/1.7 artifacts (331 of them are still the published latest.json)
+    # carry both dates but no effective_expiry_date. Derive the same rule.
+    artifact = {
+        "snapshot_date": TODAY.isoformat(),
+        "categories": {
+            "freshness": {
+                "details": {
+                    "feed_end_date": "2025-12-31",
+                    "last_service_date": "2027-12-31",
+                    "days_until_expiry": -171,
+                }
+            }
+        },
+    }
+    gate = from_artifact(artifact, TODAY)
+    assert gate.status == "fail"
+
+
+def test_calendars_ending_before_feed_info_still_drive_the_gate() -> None:
+    # The other direction: feed_info is optimistic, the calendars run out first.
+    artifact = {
+        "snapshot_date": TODAY.isoformat(),
+        "categories": {
+            "freshness": {
+                "details": {
+                    "feed_end_date": (TODAY + dt.timedelta(days=200)).isoformat(),
+                    "last_service_date": (TODAY + dt.timedelta(days=9)).isoformat(),
+                }
+            }
+        },
+    }
+    gate = from_artifact(artifact, TODAY)
+    assert gate.status == "at_risk"
+    assert gate.days_forward == 9
