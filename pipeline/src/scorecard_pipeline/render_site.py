@@ -1548,7 +1548,7 @@ def _vendor_request(artifact: dict[str, Any], canonical: str) -> str | None:
 
 def _vendor_section(artifact: dict[str, Any], canonical: str) -> str:
     """The 'Send your vendor a fix request' block: the forwardable artifact a
-    manager who does not control the export needs. When the feed host identifies
+    manager who does not control the export needs. When the evidence identifies
     the producing tool, the heading and lede name it and say how the fix lands
     there (RESEARCH-ROADMAP R5); otherwise the copy stays generic."""
     note = _vendor_request(artifact, canonical)
@@ -1999,7 +1999,8 @@ def _guided_fix_flow(artifact: dict[str, Any], agency_id: str, has_fixlog: bool)
     """The closed-loop guided fix flow (EXP-11): one compact three-step loop per
     top fix, stitching the pieces that already exist into a single per-finding
     path — (1) the plain-language finding with its /fix/<code>/ guide, (2) "Make
-    the change", naming the producing tool detected from the feed host, and (3)
+    the change", naming the producing tool where the feed's evidence identifies
+    one, and (3)
     "Check the result", explaining that the next comparable run checks whether
     the finding is still reported.
 
@@ -2673,7 +2674,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             '<p class="all-clear">Nothing urgent. This feed passed every check we '
             "translate into fixes.</p>"
         )
-    # Who makes these changes: when the feed host identifies the producing tool,
+    # Who makes these changes: when the evidence identifies the producing tool,
     # name the actual path a fix takes (RESEARCH-ROADMAP R5). Shown with the fix
     # list, and for an archive-served feed even without one, because "publish
     # from a live URL" precedes any single fix.

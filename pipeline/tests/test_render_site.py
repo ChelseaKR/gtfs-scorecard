@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from scorecard_pipeline import RUBRIC_VERSION, render_site
+from scorecard_pipeline import RUBRIC_VERSION, render_site, tool_profiles
 from scorecard_pipeline.render_site import (
     _accessibility_depth_signals,
     _accessibility_score,
@@ -1556,20 +1556,38 @@ def _fixable_artifact(static_url: str) -> dict:  # type: ignore[type-arg]
     }
 
 
-def test_vendor_section_names_hosted_tool() -> None:
-    # A Trillium-hosted feed: the heading and lede name Trillium, so the manager
-    # knows the request goes to the service that produces the feed (R5).
-    art = _fixable_artifact("https://data.trilliumtransit.com/gtfs/demo.zip")
+# Producing-tool attribution reads each feed's own publisher declaration rather
+# than the host serving the zip (ADR 0045), so a test that expects a named tool
+# supplies the declaration the committed snapshot would carry for that feed.
+def _declares(
+    monkeypatch: pytest.MonkeyPatch, url: str, name: str, publisher_url: str = ""
+) -> None:
+    monkeypatch.setattr(tool_profiles, "_recorded_declaration", {url: (name, publisher_url)}.get)
+
+
+_TRILLIUM_DEMO_FEED = "https://data.trilliumtransit.com/gtfs/demo.zip"
+
+
+def test_vendor_section_names_hosted_tool(monkeypatch: pytest.MonkeyPatch) -> None:
+    # A feed whose own feed_info declares Trillium: the heading and lede name
+    # Trillium, so the manager knows the request goes to the service that
+    # produces the feed (R5).
+    _declares(monkeypatch, _TRILLIUM_DEMO_FEED, "Trillium Solutions, Inc.")
+    art = _fixable_artifact(_TRILLIUM_DEMO_FEED)
     html = _vendor_section(art, CANONICAL)
     assert "Send Trillium a fix request" in html
     assert "produced and hosted by Trillium" in html
     assert "whoever runs your scheduling software export" not in html
 
 
-def test_vendor_section_self_edit_tool_keeps_generic_heading() -> None:
+def test_vendor_section_self_edit_tool_keeps_generic_heading(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     # GTFS Builder agencies usually make the change themselves; the heading stays
     # generic but the lede names the tool and the free help desk path.
-    html = _vendor_section(_fixable_artifact("https://rapid.nationalrtap.org/file?id=1"), CANONICAL)
+    url = "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/1/gtfs.zip"
+    _declares(monkeypatch, url, "National RTAP")
+    html = _vendor_section(_fixable_artifact(url), CANONICAL)
     assert "Send your vendor a fix request" in html
     assert "GTFS Builder" in html
 
@@ -1578,6 +1596,15 @@ def test_vendor_section_unknown_host_stays_generic() -> None:
     html = _vendor_section(_fixable_artifact("https://s3.amazonaws.com/bucket/gtfs.zip"), CANONICAL)
     assert "Send your vendor a fix request" in html
     assert "whoever runs your scheduling software export" in html
+
+
+def test_vendor_section_hosting_service_alone_stays_generic() -> None:
+    # trilliumtransit.com serves feeds Trillium did not build, so with no
+    # declaration behind it the copy must not address anyone by name (ADR 0045).
+    html = _vendor_section(_fixable_artifact(_TRILLIUM_DEMO_FEED), CANONICAL)
+    assert "Send your vendor a fix request" in html
+    assert "whoever runs your scheduling software export" in html
+    assert "Trillium" not in html
 
 
 CANONICAL = "https://gtfsscorecard.org/agency/demo/"
@@ -1826,7 +1853,7 @@ def _board_artifact() -> dict:  # type: ignore[type-arg]
         "rubric_version": "1.4",
         "validator_version": "7.0.0",
         "scoring_profile": {"id": "gtfs-scorecard-1.4", "rubric_version": "1.4"},
-        "feed": {"static_url": "https://data.trilliumtransit.com/gtfs/demo.zip"},
+        "feed": {"static_url": _TRILLIUM_DEMO_FEED},
         "top_fixes": [
             {
                 "code": "scorecard_wheelchair_boarding_unknown",
@@ -1840,7 +1867,10 @@ def _board_artifact() -> dict:  # type: ignore[type-arg]
     }
 
 
-def test_board_page_leads_with_progress_and_frames_fixes_as_asks() -> None:
+def test_board_page_leads_with_progress_and_frames_fixes_as_asks(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _declares(monkeypatch, _TRILLIUM_DEMO_FEED, "Trillium Solutions, Inc.")
     prev = {
         "rubric_version": "1.4",
         "validator_version": "7.0.0",
@@ -2221,7 +2251,7 @@ def test_non_us_fixlog_prefers_current_directory_country_over_a_stale_artifact()
     assert 'href="/agencies/"' in html and 'href="/check/"' in html
 
 
-def test_outreach_note_names_hosted_tool() -> None:
+def test_outreach_note_names_hosted_tool(monkeypatch: pytest.MonkeyPatch) -> None:
     art = _artifact(
         {
             "code": "scorecard_feed_expired",
@@ -2230,7 +2260,8 @@ def test_outreach_note_names_hosted_tool() -> None:
             "fix": "Re-export with a longer calendar.",
         }
     )
-    art["feed"] = {"static_url": "https://data.trilliumtransit.com/gtfs/demo.zip"}
+    art["feed"] = {"static_url": _TRILLIUM_DEMO_FEED}
+    _declares(monkeypatch, _TRILLIUM_DEMO_FEED, "Trillium Solutions, Inc.")
     note = _outreach_note(art, CANONICAL)
     assert note is not None
     assert "Your feed is produced by Trillium" in note
@@ -5069,7 +5100,7 @@ def test_sitemap_deduplicates_urls_and_adds_known_lastmod() -> None:
 def _guided_flow_artifact() -> dict[str, Any]:
     return {
         "agency": {"id": "demo", "name": "Demo Transit"},
-        "feed": {"static_url": "https://data.trilliumtransit.com/gtfs/demo.zip"},
+        "feed": {"static_url": _TRILLIUM_DEMO_FEED},
         "top_fixes": [
             {"code": "expired_calendar", "fix": "Re-export with a longer calendar."},
             {"code": "autofix_trim_whitespace", "fix": "Trim whitespace in stop names."},
@@ -5084,10 +5115,11 @@ def _guided_flow_artifact() -> dict[str, Any]:
     }
 
 
-def test_guided_fix_flow_stitches_three_steps_and_links() -> None:
+def test_guided_fix_flow_stitches_three_steps_and_links(monkeypatch: pytest.MonkeyPatch) -> None:
     from scorecard_pipeline import render_site
     from scorecard_pipeline.render_site import _guided_fix_flow
 
+    _declares(monkeypatch, _TRILLIUM_DEMO_FEED, "Trillium Solutions, Inc.")
     # The /fix/<code>/ guide link only shows for codes that have a generated page;
     # register one so the step-1 guide link is deterministic in isolation.
     render_site.FIX_CODES_WITH_PAGES.add("expired_calendar")

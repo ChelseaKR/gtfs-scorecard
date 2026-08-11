@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from typing import Any
 
+import pytest
+
+from scorecard_pipeline import tool_profiles
 from scorecard_pipeline.vendor_regression_radar import (
     AgencyRun,
     detect_regressions,
@@ -12,8 +15,26 @@ from scorecard_pipeline.vendor_regression_radar import (
 )
 
 TRILLIUM_URL = "https://oregon-gtfs.trilliumtransit.com/feed.zip"
+# Same host, a feed Trillium serves but did not build: its own feed_info names
+# another producer. It must never join the Trillium cohort (ADR 0045).
+TRILLIUM_HOSTED_ONLY_URL = "https://oregon-gtfs.trilliumtransit.com/hosted-only.zip"
 REMIX_URL = "https://gtfs.remix.com/feed.zip"
 GENERIC_URL = "https://smallagency.example.org/gtfs.zip"
+
+_DECLARATIONS = {
+    TRILLIUM_URL: ("Trillium Solutions, Inc.", "https://trilliumtransit.com"),
+    TRILLIUM_HOSTED_ONLY_URL: ("GMV Syncromatics", "https://gmvsyncromatics.com"),
+}
+
+
+@pytest.fixture(autouse=True)
+def _publisher_declarations(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Cohorts follow the feeds' own publisher declarations, not the host.
+
+    Stubbed here so these tests describe the cohorts they mean rather than
+    whatever the committed snapshot happens to say about a look-alike URL.
+    """
+    monkeypatch.setattr(tool_profiles, "_recorded_declaration", _DECLARATIONS.get)
 
 
 def _artifact(date: str, *codes: str, category: str = "correctness") -> dict[str, Any]:
@@ -63,6 +84,23 @@ def test_shared_new_code_across_cohort_is_flagged() -> None:
     assert reg.new_agencies == 3
     assert reg.cohort_size == 4
     assert reg.affected_names == ("Agency A", "Agency B", "Agency C")
+
+
+def test_a_merely_hosted_feed_does_not_join_the_hosts_cohort() -> None:
+    # Three Trillium-built feeds acquire a code today; a fourth feed on the same
+    # host was built by someone else and shares neither the cohort nor the blame.
+    runs = [
+        _run("agency-a", TRILLIUM_URL, ("fares_missing",)),
+        _run("agency-b", TRILLIUM_URL, ("fares_missing",)),
+        _run("agency-c", TRILLIUM_URL, ("fares_missing",)),
+        _run("agency-d", TRILLIUM_URL, ()),
+        _run("hosted-only", TRILLIUM_HOSTED_ONLY_URL, ("fares_missing",)),
+    ]
+    regressions = detect_regressions(runs)
+    assert len(regressions) == 1
+    assert regressions[0].tool_key == "trillium"
+    assert regressions[0].cohort_size == 4
+    assert "Hosted Only" not in regressions[0].affected_names
 
 
 def test_below_absolute_floor_is_not_flagged() -> None:
