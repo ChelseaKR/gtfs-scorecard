@@ -16,8 +16,8 @@ from scorecard_pipeline.activation import (
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Validate index/latest parity and materialize any missing current dated "
-            "record as a byte-identical local copy of latest.json."
+            "Validate index/latest parity and materialize any missing or stale current "
+            "dated record as a byte-identical local copy of latest.json."
         )
     )
     parser.add_argument(

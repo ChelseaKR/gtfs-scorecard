@@ -528,11 +528,23 @@ def _validate_and_materialize_current(
     agency_ids: Collection[str],
     targets: Collection[str],
     current_dates: dict[str, str],
-) -> None:
-    """Verify latest against the captured index and supply reindex's local dated input."""
+    restore_divergent_dated: bool = False,
+) -> int:
+    """Verify latest against the captured index and supply reindex's local dated input.
+
+    ``restore_divergent_dated`` selects the policy for a dated record that is
+    present but disagrees with ``latest.json``. When both files were just pulled
+    from the same authoritative store, disagreement means the store contradicts
+    itself, so the default aborts. When the dated record can instead be an
+    unrefreshed leftover in the checkout, rewriting it from the authoritative
+    bytes is the correct repair; see materialize_local_current_artifacts.
+
+    Returns the number of dated records written.
+    """
     from .publish import _history_entry
 
     target_set = set(targets)
+    written = 0
     for agency_id in agency_ids:
         latest_path = artifacts_root / agency_id / "latest.json"
         try:
@@ -568,25 +580,48 @@ def _validate_and_materialize_current(
         latest_bytes = latest_path.read_bytes()
         if dated_path.exists():
             if dated_path.read_bytes() != latest_bytes:
-                raise ActivationHydrationError(
-                    f"authoritative latest/dated payload mismatch for {agency_id}"
+                if not restore_divergent_dated:
+                    raise ActivationHydrationError(
+                        f"authoritative latest/dated payload mismatch for {agency_id}"
+                    )
+                print(
+                    f"::warning title=stale dated artifact::rewrote {agency_id}/"
+                    f"{snapshot_date}.json from the authoritative latest.json",
+                    file=sys.stderr,
                 )
+                _atomic_write(dated_path, latest_bytes)
+                written += 1
         else:
             # Lifecycle retention may remove the immutable dated object while
             # latest.json remains current. Reconstruct only the local reindex
             # input; publication never uploads non-selected agency paths.
             _atomic_write(dated_path, latest_bytes)
+            written += 1
+    return written
 
 
 def materialize_local_current_artifacts(*, artifacts_root: Path) -> int:
-    """Validate the local current corpus and restore missing dated records.
+    """Validate the local current corpus and restore missing or stale dated records.
 
     Pages intentionally hydrates a bounded artifact set instead of the full
     retained archive. A feed that did not score today can therefore have a
     valid ``latest.json`` without its current ``<snapshot_date>.json`` in the
     ephemeral checkout. Validate the index/latest identity and summary contract
-    used by activation hydration, then recreate only that byte-identical current
-    dated record. Existing dated records must already match.
+    used by activation hydration, then recreate that byte-identical current
+    dated record.
+
+    A dated record that is present but disagrees with ``latest.json`` is
+    rewritten rather than treated as corruption. ``snapshot_date`` names the
+    feed's snapshot, not the run, so an agency whose feed has not changed keeps
+    the same dated filename while later runs refresh the artifact's contents.
+    The bounded sync only pulls today's and yesterday's dated objects, so an
+    older one is served from the git checkout and can lag the authoritative
+    ``latest.json`` by any number of refreshes. That is expected, not a
+    corrupted store, and it used to abort the whole daily publish.
+
+    The checks that do prove corruption still fail closed, because they compare
+    ``latest.json`` against ``index.json``, which the sync always refreshes:
+    agency identity, the current snapshot date, and the history summary.
 
     Returns the number of dated records materialized.
     """
@@ -610,18 +645,14 @@ def materialize_local_current_artifacts(*, artifacts_root: Path) -> int:
     agency_ids.sort()
 
     current_dates = _indexed_current_dates(index, agency_ids)
-    missing = sum(
-        not (artifacts_root / agency_id / f"{current_dates[agency_id]}.json").is_file()
-        for agency_id in agency_ids
-    )
-    _validate_and_materialize_current(
+    return _validate_and_materialize_current(
         artifacts_root,
         index,
         agency_ids,
         targets=(),
         current_dates=current_dates,
+        restore_divergent_dated=True,
     )
-    return missing
 
 
 def hydrate_activation_corpus(
