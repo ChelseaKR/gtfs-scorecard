@@ -475,3 +475,29 @@ def test_reader_profile_change_does_not_fabricate_lapse_risk() -> None:
     digest = build_digest(today=dt.date(2026, 6, 12))
 
     assert [item for item in digest.items if item.kind == "lapse_risk"] == []
+
+
+def test_month_long_regression_is_not_suppressed_as_a_glitch() -> None:
+    # Published history steps are not always consecutive days. A feed that
+    # scored 40 on 06-11 and was next checked on 07-08 was broken for four
+    # weeks; the transient-dip suppression must not swallow that alert.
+    from scorecard_pipeline.alerts import _anomaly_alert_items
+
+    history = [
+        {"date": "2026-06-10", "score": 85.0, "grade": "B", "days_until_expiry": 120},
+        {"date": "2026-06-11", "score": 40.0, "grade": "F", "days_until_expiry": 119},
+        {"date": "2026-07-08", "score": 84.0, "grade": "B", "days_until_expiry": 92},
+    ]
+    items = _anomaly_alert_items(history, "gap", "Gap Transit")
+    assert items, "a four-week regression produced no alert"
+
+
+def test_one_day_glitch_is_still_suppressed() -> None:
+    from scorecard_pipeline.alerts import _anomaly_alert_items
+
+    history = [
+        {"date": "2026-06-10", "score": 85.0, "grade": "B", "days_until_expiry": 120},
+        {"date": "2026-06-11", "score": 40.0, "grade": "F", "days_until_expiry": 119},
+        {"date": "2026-06-12", "score": 84.0, "grade": "B", "days_until_expiry": 118},
+    ]
+    assert _anomaly_alert_items(history, "blip", "Blip Transit") == []
