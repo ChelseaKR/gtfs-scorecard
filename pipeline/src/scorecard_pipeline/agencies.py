@@ -14,7 +14,7 @@ from typing import NoReturn
 
 import yaml
 
-from .config import AGENCIES, Agency, ReuseEvidence, repo_root
+from .config import AGENCIES, Agency, ReuseEvidence, repo_root, utc_today
 from .location import SUPPORTED_COUNTRY_CODES, normalize_location
 
 ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
@@ -43,8 +43,13 @@ class AgencyConfigError(ValueError):
 
 
 def _today() -> dt.date:
-    """Current local date, split out so date-bound validation is deterministic in tests."""
-    return dt.date.today()
+    """Current UTC date, split out so date-bound validation is deterministic in tests.
+
+    UTC rather than the machine's zone: `reviewed_on` is compared against this
+    to reject a review dated in the future, and a checkout on a machine behind
+    UTC would otherwise reject an entry a curator legitimately reviewed today.
+    """
+    return utc_today()
 
 
 def _fail(entry_label: str, message: str, source: str = "agencies.yaml") -> NoReturn:

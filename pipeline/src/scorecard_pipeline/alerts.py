@@ -39,7 +39,7 @@ from urllib.parse import urlencode
 
 from .anomaly import detect_anomalies
 from .comparisons import current_producer_contract_suffix
-from .config import artifacts_dir, current_agency_ids
+from .config import artifacts_dir, current_agency_ids, utc_today
 from .instance import BASE_URL as SCORECARD_BASE
 from .lapse_risk import TIER_ELEVATED, TIER_HIGH
 from .lapse_risk import assess as assess_lapse_risk
@@ -351,7 +351,7 @@ def build_digest(  # noqa: C901
     most urgent first (expired feeds, then soonest-to-expire, then
     regressions, then structural export changes, then anomalies).
     """
-    as_of = today or dt.date.today()
+    as_of = today or utc_today()
     root = artifacts_dir()
     items: list[AlertItem] = []
 

@@ -51,7 +51,7 @@ import requests
 
 from .agencies import AgencyConfigError, load_agencies
 from .completeness import completeness
-from .config import AGENCIES, Agency, current_agency_ids, raw_dir, repo_root
+from .config import AGENCIES, Agency, current_agency_ids, raw_dir, repo_root, utc_today
 from .constants_export import GRADE_RANK
 from .fetch import FetchResult, fetch_static, prepare_reader_archive
 from .gtfs import read_feed_dates
@@ -1338,7 +1338,7 @@ def _cmd_discover(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         return 0
 
     matches = find_replacements(feeds, registry, mdb_ids)
-    report = render_replacements_md(matches, today=dt.date.today().isoformat())
+    report = render_replacements_md(matches, today=utc_today().isoformat())
     if args.out:
         Path(args.out).write_text(report)
         log.info("Wrote feed-discovery report for %d agencies to %s", len(registry), args.out)
@@ -1828,7 +1828,7 @@ def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser
     if args.fetch:
         # Latest complete report year first, then the one before: FTA publishes
         # annual products with a lag, so early in a year the prior one is it.
-        year = dt.date.today().year
+        year = utc_today().year
         for candidate in (year - 1, year - 2):
             try:
                 text = fetch_ridership_csv(candidate)
@@ -2030,7 +2030,7 @@ def _cmd_rt_health(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
         monitored += 1
         try:
             window = capture_window(
-                agency, dt.date.today(), samples=args.samples, interval_seconds=args.interval
+                agency, utc_today(), samples=args.samples, interval_seconds=args.interval
             )
         except Exception:
             log.exception("%s: realtime sampling failed", agency_id)
@@ -2983,8 +2983,8 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument(
         "--date",
         type=dt.date.fromisoformat,
-        default=dt.date.today(),
-        help="snapshot date (default: today)",
+        default=utc_today(),
+        help="snapshot date (default: today in UTC)",
     )
     run.add_argument("--force-fetch", action="store_true", help="re-download and re-validate")
     run.add_argument("--rt-samples", type=int, default=3, help="realtime samples per endpoint")
@@ -3016,8 +3016,8 @@ def main(argv: list[str] | None = None) -> int:
     adhoc.add_argument(
         "--date",
         type=dt.date.fromisoformat,
-        default=dt.date.today(),
-        help="snapshot date (default: today)",
+        default=utc_today(),
+        help="snapshot date (default: today in UTC)",
     )
     adhoc.add_argument("--html", help="also write a standalone HTML scorecard to this path")
     adhoc.add_argument(
@@ -3099,7 +3099,9 @@ def main(argv: list[str] | None = None) -> int:
         help="allow the OTP base to be localhost (only for a trusted local QA server)",
     )
     otp.add_argument(
-        "--date", default=dt.date.today().isoformat(), help="service date (YYYY-MM-DD)"
+        "--date",
+        default=utc_today().isoformat(),
+        help="service date (YYYY-MM-DD, default: today in UTC)",
     )
     otp.add_argument("--time", default="08:00", help="departure time (HH:MM)")
 
@@ -3117,7 +3119,9 @@ def main(argv: list[str] | None = None) -> int:
     otp_batch.add_argument("--feed", help="GTFS zip to sample origin/destination stops from")
     otp_batch.add_argument("--pairs", type=int, default=5, help="how many O/D pairs to test")
     otp_batch.add_argument(
-        "--date", default=dt.date.today().isoformat(), help="service date (YYYY-MM-DD)"
+        "--date",
+        default=utc_today().isoformat(),
+        help="service date (YYYY-MM-DD, default: today in UTC)",
     )
     otp_batch.add_argument("--time", default="08:00", help="departure time (HH:MM)")
 
@@ -3396,7 +3400,7 @@ def main(argv: list[str] | None = None) -> int:
 
     alerts = sub.add_parser("alerts", help="build the expiry/regression alert digest")
     alerts.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="as-of date (UTC)"
     )
     alerts.add_argument("--expiry-days", type=int, default=60, help="warn within this many days")
     alerts.add_argument("--out", help="write the digest here instead of stdout")
@@ -3409,7 +3413,7 @@ def main(argv: list[str] | None = None) -> int:
         "(or set SUBSCRIPTIONS_TABLE); the private opt-in store",
     )
     notify.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="as-of date (UTC)"
     )
     notify.add_argument("--expiry-days", type=int, default=60, help="warn within this many days")
     notify.add_argument(
@@ -3422,7 +3426,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     portfolio.add_argument("--rollup", help="scope to one rollup id (default: every rollup)")
     portfolio.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="as-of date (UTC)"
     )
     portfolio.add_argument("--out", help="write the digest here instead of stdout")
     portfolio.add_argument(
@@ -3437,7 +3441,7 @@ def main(argv: list[str] | None = None) -> int:
         help="weekly advisory: warn if plain-language coverage dropped (FIX-08)",
     )
     coverage.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="as-of date (UTC)"
     )
     coverage.add_argument(
         "--save",
@@ -3463,7 +3467,7 @@ def main(argv: list[str] | None = None) -> int:
         help="output format (default: json)",
     )
     campaign.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="baseline date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="baseline date (UTC)"
     )
     campaign.add_argument("--out", help="write the campaign here instead of stdout")
     sub.add_parser("reindex", help="rebuild index.json from artifacts on disk")
@@ -3516,7 +3520,7 @@ def main(argv: list[str] | None = None) -> int:
         help="recompute freshness/expiry from the last score without re-fetching",
     )
     sweep.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="sweep as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="sweep as-of date (UTC)"
     )
     sweep.add_argument(
         "--apply", action="store_true", help="publish refreshed artifacts (default: report only)"
@@ -3609,8 +3613,8 @@ def main(argv: list[str] | None = None) -> int:
     canary.add_argument(
         "--date",
         type=dt.date.fromisoformat,
-        default=dt.date.today(),
-        help="snapshot date to fetch/score (default: today)",
+        default=utc_today(),
+        help="snapshot date to fetch/score (default: today in UTC)",
     )
 
     reproduce = sub.add_parser(
