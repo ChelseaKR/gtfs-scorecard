@@ -5848,3 +5848,67 @@ def test_realtime_section_omits_medians_the_monitor_did_not_record() -> None:
         _realtime_rollup(median_uptime_pct=None, median_lag_seconds=None, median_coverage_pct=None)
     )
     assert "Across the monitored feeds" not in html
+
+
+def _focus_catalog(*gates: str) -> list[dict[str, Any]]:
+    """Catalog rows carrying only the field the focus hub reads."""
+    return [{"id": f"a{i}", "google_gate": gate} for i, gate in enumerate(gates)]
+
+
+def test_focus_page_groups_the_checks_that_run_past_the_validator() -> None:
+    """The four non-rubric checks reach a reader as one named group.
+
+    Each already renders somewhere (the Maps coverage line and routability
+    findings on an agency page, uptime on /realtime/, feed URL liveness on
+    /status/). This asserts the hub states the shared idea and keeps every
+    destination resolvable, so the grouping cannot decay back into four
+    unrelated mentions.
+    """
+    html = render_site._render_focus_page(
+        {"pct_ready": 50.0}, {"monitored_count": 4}, _focus_catalog("pass", "fail")
+    )
+
+    # The body prose is wrapped in the source template, so compare on a
+    # whitespace-normalized copy rather than pinning the line breaks.
+    flat = " ".join(html.split())
+
+    assert '<h2 class="section-title" id="beyond-the-validator">' in html
+    assert "Checks a validator does not run" in html
+    assert "A feed can answer yes and still strand a rider." in flat
+    for name in (
+        "Four weeks of service ahead",
+        "A rider can complete the trip",
+        "Realtime that is actually up",
+        "The feed URL still answers",
+    ):
+        assert name in html, name
+    for href in ('href="/agencies/"', 'href="/realtime/"', 'href="/status/"'):
+        assert href in html, href
+    # Grouping is presentation: the page still says these sit beside the rubric.
+    assert "none of them changes a grade" in flat
+    assert "reported next to the rubric rather than folded into it" in flat
+    # An agency without realtime is described neutrally, never as a shortfall.
+    assert "publishes no realtime feed is not counted here" in flat
+
+
+def test_focus_page_leaves_the_scorecard_only_check_unlinked() -> None:
+    """Trip completion has no hub page, so its name renders as plain text
+    instead of pointing a reader at a destination that does not show it."""
+    html = render_site._render_focus_page({}, {}, _focus_catalog("pass"))
+    assert '<p class="what">A rider can complete the trip ' in html
+
+
+def test_focus_maps_bar_counts_only_rows_with_a_measured_gate() -> None:
+    """The headline reads an existing per-feed status. A row without one is
+    left out of both sides of the ratio rather than counted as a shortfall."""
+    stat = render_site._beyond_validator_stat(
+        [*_focus_catalog("pass", "pass", "at_risk", "fail"), {"id": "x"}, {"id": "y"}]
+    )
+    assert stat == "2 of 4 published feed records clear the bar"
+
+
+def test_focus_maps_bar_uses_the_singular_and_survives_an_empty_corpus() -> None:
+    assert render_site._beyond_validator_stat(_focus_catalog("fail")) == (
+        "0 of 1 published feed record clears the bar"
+    )
+    assert render_site._beyond_validator_stat([]) == "Stated on each scorecard"
