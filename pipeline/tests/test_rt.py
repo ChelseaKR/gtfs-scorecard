@@ -29,6 +29,20 @@ from scorecard_pipeline.rt_drift import DriftStats, PlausibilityStats
 NOW = 1_770_000_000  # arbitrary unix time used consistently below
 
 
+def repo_root() -> Path:
+    """Find the repository root by marker, not by a fixed parent depth.
+
+    `make mutation` copies pipeline/tests to pipeline/mutants/tests and runs
+    pytest from pipeline/mutants, so counting parents from __file__ lands on
+    pipeline/ and the registry read fails. Walking up to the directory that
+    holds registry/index.yaml gives the same answer from either tree.
+    """
+    for candidate in Path(__file__).resolve().parents:
+        if (candidate / "registry" / "index.yaml").is_file():
+            return candidate
+    raise AssertionError(f"no registry/index.yaml above {Path(__file__).resolve()}")
+
+
 def sample(
     kind: str,
     ok: bool = True,
@@ -160,7 +174,7 @@ class TestScoring:
     def test_global_basmy_kangar_registry_entry_is_scored_as_vp_only(self) -> None:
         from scorecard_pipeline.agencies import _load_manifest
 
-        root = Path(__file__).resolve().parents[2]
+        root = repo_root()
         registry = _load_manifest(root, root / "registry" / "index.yaml")
         kangar = next(agency for agency in registry if agency.id == "basmy-kangar")
         assert kangar.country == "MY"

@@ -55,7 +55,8 @@ jobs:
     strategy:
       # One fetched feed failing to route is exactly the signal this batch
       # exists to catch; it must not cancel the other feeds' runs. A feed that
-      # cannot be downloaded is reported as an upstream skip instead.
+      # cannot be downloaded, or that OTP cannot parse into a graph, is reported
+      # as an upstream result instead: warning, step summary, no red run.
       fail-fast: false
       matrix:
         feed: ${{ fromJSON(needs.select.outputs.feeds) }}
@@ -82,11 +83,44 @@ jobs:
             echo "The upstream GTFS URL was unavailable during this run." >> "$GITHUB_STEP_SUMMARY"
           fi
       - name: Build the OTP graph
+        id: build
         if: steps.fetch.outputs.available == 'true'
         run: |
-          docker run --rm -v "$PWD/otp-work:/var/opentripplanner" "$OTP_IMAGE" --build --save
+          set -o pipefail
+          status=0
+          # The log goes beside the work directory, not inside it: OTP loads
+          # every file it finds under /var/opentripplanner.
+          docker run --rm -v "$PWD/otp-work:/var/opentripplanner" "$OTP_IMAGE" \
+            --build --save 2>&1 | tee otp-build.log || status=$?
+          if [ "$status" -eq 0 ]; then
+            echo "built=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "built=false" >> "$GITHUB_OUTPUT"
+          # OTP refuses to start on a feed whose tables it cannot parse, which is
+          # a result about the feed, not a broken run. otp-build-check reads the
+          # log and exits non-zero for anything else (image pull, memory, disk,
+          # an OTP crash with no GTFS parsing error), so those still fail here.
+          ( cd pipeline && uv run scorecard otp-build-check \
+              --log "$GITHUB_WORKSPACE/otp-build.log" --exit-code "$status" ) \
+            >> "$GITHUB_OUTPUT"
+      - name: Record a feed OTP could not load
+        if: steps.build.outputs.outcome == 'feed-unbuildable'
+        env:
+          FEED_ID: ${{ matrix.feed.feed_id }}
+          DETAIL: ${{ steps.build.outputs.detail }}
+        run: |
+          echo "::warning title=OTP could not build a graph::${FEED_ID}: ${DETAIL}"
+          {
+            echo "### ${FEED_ID}: OTP could not build a graph"
+            echo
+            echo "${DETAIL}"
+            echo
+            echo "Routing QA is recorded as not testable for this feed this week."
+            echo "The same parsing problem is on the agency's scorecard, where the fix belongs."
+          } >> "$GITHUB_STEP_SUMMARY"
       - name: Serve the graph
-        if: steps.fetch.outputs.available == 'true'
+        if: steps.build.outputs.built == 'true'
         run: |
           docker run -d --name otp -p 8080:8080 \
             -v "$PWD/otp-work:/var/opentripplanner" "$OTP_IMAGE" --load --serve
@@ -101,7 +135,7 @@ jobs:
           docker logs otp
           exit 1
       - name: Plan sample trips through OTP
-        if: steps.fetch.outputs.available == 'true'
+        if: steps.build.outputs.built == 'true'
         working-directory: pipeline
         env:
           PAIRS: ${{ github.event.inputs.pairs || '5' }}
@@ -110,4 +144,10 @@ jobs:
             --feed ../otp-work/feed.gtfs.zip --pairs "$PAIRS"
       - name: OTP logs on failure
         if: failure()
-        run: docker logs otp || true
+        run: |
+          if docker container inspect otp >/dev/null 2>&1; then
+            docker logs otp
+          else
+            echo "The OTP server container never started, so it has no logs."
+            echo "Look at the graph build step above for what stopped this run."
+          fi

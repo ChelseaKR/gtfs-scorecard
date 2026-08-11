@@ -2129,6 +2129,34 @@ def _cmd_otp(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     return 0 if qa.all_routable else 1
 
 
+def _cmd_otp_build_check(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Classify a failed OTP graph build: the feed's problem, or the run's?
+
+    Prints `outcome=` and `detail=` lines a CI step can append to $GITHUB_OUTPUT,
+    and exits non-zero only when the build failed for a reason outside the feed,
+    so a feed OTP cannot parse is reported instead of taking the workflow down.
+    """
+    from .otp import classify_graph_build
+
+    log_path = Path(args.log)
+    if not log_path.exists():
+        log.error("No OTP build log at %s, so this run cannot be classified.", log_path)
+        print("outcome=harness-error")
+        print("detail=The OTP graph build wrote no log.")
+        return 1
+    result = classify_graph_build(args.exit_code, log_path.read_text(errors="replace"))
+    detail = " ".join(result.detail.split())[:400]
+    print(f"outcome={result.status}")
+    print(f"detail={detail}")
+    if result.built:
+        return 0
+    if result.feed_unbuildable:
+        log.warning("OTP could not build a graph from this feed. %s", detail)
+        return 0
+    log.error("The OTP graph build failed for a reason outside the feed. %s", detail)
+    return 1
+
+
 def _current_canonical_index(index: dict[str, Any]) -> dict[str, Any]:
     """Return an index view bounded to active canonical registry records."""
     entries = index.get("agencies")
@@ -3084,6 +3112,18 @@ def main(argv: list[str] | None = None) -> int:
     )
     otp_batch.add_argument("--time", default="08:00", help="departure time (HH:MM)")
 
+    otp_build_check = sub.add_parser(
+        "otp-build-check",
+        help="classify a failed OTP graph build: unparseable feed, or a broken run",
+    )
+    otp_build_check.add_argument("--log", required=True, help="path to the captured build log")
+    otp_build_check.add_argument(
+        "--exit-code",
+        type=int,
+        required=True,
+        help="the exit code the OTP build container returned",
+    )
+
     sync = sub.add_parser("sync", help="propose registry entries from a feed catalog")
     sync.add_argument(
         "--source",
@@ -3607,8 +3647,12 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
-    """Load the registry (except for the registry-free `try`) and run the subcommand."""
-    if args.command != "try":
+    """Load the registry (except for the registry-free commands) and run the subcommand.
+
+    `try` scores one supplied URL and `otp-build-check` reads one log file;
+    neither looks an agency up, so neither pays for the registry.
+    """
+    if args.command not in {"try", "otp-build-check"}:
         load_agencies()
         agency_id = getattr(args, "agency", None)
         if agency_id and agency_id not in AGENCIES:
@@ -3661,6 +3705,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "query": _cmd_query,
         "otp": _cmd_otp,
         "otp-batch": _cmd_otp_batch,
+        "otp-build-check": _cmd_otp_build_check,
         "rt-health": _cmd_rt_health,
         "rt-archive": _cmd_rt_archive,
         "reproduce": _cmd_reproduce,

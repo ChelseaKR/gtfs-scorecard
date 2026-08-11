@@ -19,7 +19,7 @@ unit-tested; the CLI and workflow own all IO.
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from .dataset import build_quality_dataset
@@ -88,6 +88,7 @@ class BatchVerdict:
     feeds_tested: int
     feeds_routable: int
     failures: list[str]
+    not_testable: list[str] = field(default_factory=list)
 
     @property
     def all_routable(self) -> bool:
@@ -98,13 +99,23 @@ class BatchVerdict:
         return self.feeds_routable / self.feeds_tested if self.feeds_tested else 0.0
 
 
-def assess_batch(results: Sequence[tuple[str, RoutingQA]]) -> BatchVerdict:
+def assess_batch(
+    results: Sequence[tuple[str, RoutingQA]],
+    *,
+    not_testable: Sequence[tuple[str, str]] = (),
+) -> BatchVerdict:
     """Aggregate per-feed routing verdicts into one batch verdict.
 
     A feed passes only when all of its sampled pairs routed (the same gate the
     single-feed CLI exits on). Failures carry the feed id with each pair-level
     message, so the weekly digest can say which feed broke and how; a feed that
     tested no pairs at all is a failure too, not a silent pass.
+
+    `not_testable` holds feeds OTP could not build a graph from, as
+    (feed_id, reason). They are recorded, not counted: no router behavior was
+    observed, so calling them unroutable would say something the batch never
+    measured, and the feed's own parsing problem already reaches the agency
+    through its scorecard.
     """
     routable = sum(1 for _, qa in results if qa.all_routable)
     failures = [
@@ -113,4 +124,9 @@ def assess_batch(results: Sequence[tuple[str, RoutingQA]]) -> BatchVerdict:
         if not qa.all_routable
         for message in (qa.failures or ["no origin/destination pairs tested"])
     ]
-    return BatchVerdict(feeds_tested=len(results), feeds_routable=routable, failures=failures)
+    return BatchVerdict(
+        feeds_tested=len(results),
+        feeds_routable=routable,
+        failures=failures,
+        not_testable=[f"{feed_id}: {reason}" for feed_id, reason in not_testable],
+    )

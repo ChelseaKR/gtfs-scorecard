@@ -2,17 +2,31 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from scorecard_pipeline.otp import (
     PlanResult,
     assess_routing,
+    classify_graph_build,
     fetch_plan,
     parse_plan,
     plan_url,
     sample_od_pairs,
     sample_scheduled_stop_pairs,
 )
+
+# The real log from the 2026-08-10 batch: OTP 2.5.0 on a feed whose shapes.txt
+# has no shape_id column.
+MALFORMED_SHAPES_LOG = """\
+15:07:26.904 ERROR [main]  (OTPMain.java:60) An uncaught error occurred inside OTP: \
+io error: entityType=org.onebusaway.gtfs.model.ShapePoint path=shapes.txt lineNumber=2
+org.onebusaway.csv_entities.exceptions.CsvEntityIOException: io error: \
+entityType=org.onebusaway.gtfs.model.ShapePoint path=shapes.txt lineNumber=2
+Caused by: org.onebusaway.csv_entities.exceptions.MissingRequiredFieldException: \
+missing required field: shape_id
+"""
 
 
 def test_sample_od_pairs_spans_the_area_deterministically() -> None:
@@ -104,6 +118,87 @@ def test_assess_routing_all_pass() -> None:
     qa = assess_routing([PlanResult(routable=True, itinerary_count=1)])
     assert qa.all_routable is True
     assert qa.failures == []
+
+
+def test_classify_graph_build_reads_a_clean_build() -> None:
+    result = classify_graph_build(0, "Graph saved to /var/opentripplanner/graph.obj")
+    assert result.status == "built"
+    assert result.built is True
+    assert result.feed_unbuildable is False
+
+
+def test_classify_graph_build_names_the_unparseable_table() -> None:
+    result = classify_graph_build(255, MALFORMED_SHAPES_LOG)
+    assert result.status == "feed-unbuildable"
+    assert result.feed_unbuildable is True
+    assert "shapes.txt" in result.detail
+    assert "shape_id" in result.detail
+    assert "line 2" in result.detail
+    assert "\n" not in result.detail
+
+
+def test_classify_graph_build_treats_a_bad_zip_as_the_feed() -> None:
+    result = classify_graph_build(
+        255, "java.util.zip.ZipException: zip END header not found\n\tat java.base/..."
+    )
+    assert result.feed_unbuildable is True
+
+
+def test_classify_graph_build_keeps_infrastructure_failures_loud() -> None:
+    pull = classify_graph_build(125, "docker: Error response from daemon: manifest unknown.")
+    assert pull.status == "harness-error"
+    # An unrecognized crash is the harness's until proven otherwise.
+    silent = classify_graph_build(137, "the container went away")
+    assert silent.status == "harness-error"
+    assert "137" in silent.detail
+
+
+def test_classify_graph_build_blames_memory_not_the_feed() -> None:
+    # The stack sits in the GTFS reader, but the runner ran out of heap.
+    result = classify_graph_build(
+        1,
+        "java.lang.OutOfMemoryError: Java heap space\n"
+        "\tat org.onebusaway.gtfs.serialization.GtfsReader.read",
+    )
+    assert result.status == "harness-error"
+    assert "outofmemoryerror" in result.detail
+
+
+def test_otp_build_check_cli_keeps_an_unparseable_feed_green(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    from scorecard_pipeline import cli
+
+    log_path = tmp_path / "build.log"
+    log_path.write_text(MALFORMED_SHAPES_LOG)
+    code = cli.main(["otp-build-check", "--log", str(log_path), "--exit-code", "255"])
+    out = capsys.readouterr().out
+    assert code == 0  # the workflow keeps going and records the feed
+    assert "outcome=feed-unbuildable" in out
+    assert "shapes.txt" in out
+    # One line per key, so the CI step can append it straight to $GITHUB_OUTPUT.
+    assert len([line for line in out.splitlines() if line]) == 2
+
+
+def test_otp_build_check_cli_fails_on_a_broken_run(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    from scorecard_pipeline import cli
+
+    log_path = tmp_path / "build.log"
+    log_path.write_text("docker: Error response from daemon: manifest unknown.")
+    assert cli.main(["otp-build-check", "--log", str(log_path), "--exit-code", "125"]) == 1
+    assert "outcome=harness-error" in capsys.readouterr().out
+
+
+def test_otp_build_check_cli_fails_when_no_log_was_written(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    from scorecard_pipeline import cli
+
+    missing = str(tmp_path / "missing.log")
+    assert cli.main(["otp-build-check", "--log", missing, "--exit-code", "1"]) == 1
+    assert "outcome=harness-error" in capsys.readouterr().out
 
 
 def test_fetch_plan_allows_only_explicit_loopback(monkeypatch: pytest.MonkeyPatch) -> None:

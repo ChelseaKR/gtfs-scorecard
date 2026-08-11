@@ -10036,7 +10036,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             # the directory filter and national rollup never count them.
             "ntd_ready": (ntd_assess(artifact).status if location.country_code == "US" else None),
             # Whether the feed clears Google/Apple Maps' four-week coverage bar.
-            "google_gate": google_from_artifact(artifact, dt.date.today()).status,
+            # Measured against render_site's frozen UTC instant, the same one
+            # _google_gate_line uses for the on-page prose. dt.date.today() would
+            # read the runner's local zone, so a machine behind UTC could publish
+            # a different gate than the page it sits next to.
+            "google_gate": google_from_artifact(artifact, now.date()).status,
             "feed_url": feed.get("static_url"),
             "top_fix": fixes[0]["fix"] if fixes else None,
             "scorecard_url": f"{BASE_URL}/agency/{agency_id}/",

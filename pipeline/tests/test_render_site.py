@@ -1022,6 +1022,35 @@ def test_agency_page_allowlists_hostile_artifact_severity() -> None:
     assert 'onmouseover="window.__pwned=1' not in html
 
 
+def test_catalog_google_gate_follows_the_frozen_instant_not_the_local_clock(
+    isolated_repo_root: Path,
+) -> None:
+    """catalog.json's google_gate must be measured against render_site's ``now``.
+
+    It read dt.date.today() once, which is the runner's *local* zone: a machine
+    behind UTC published a different gate than the agency page rendered beside
+    it, and the golden suite went red for hours a day. Rendering the same
+    fixture at two instants either side of the four-week bar pins the field to
+    ``now``, so a wall-clock read cannot come back unnoticed.
+    """
+    from scorecard_pipeline.render_site import render_site
+
+    fixture = Path(__file__).parent / "fixtures" / "golden_site"
+    shutil.copytree(fixture, isolated_repo_root)
+    # yolobus' last service date is 2026-09-07, so the 28-day Maps window puts
+    # the pass/at_risk boundary at 2026-08-10.
+    catalog_path = isolated_repo_root / "web" / "catalog.json"
+
+    def gate_at(now: dt.datetime) -> str:
+        render_site(now)
+        catalog = json.loads(catalog_path.read_text())
+        row = next(row for row in catalog["agencies"] if row["id"] == "yolobus")
+        return str(row["google_gate"])
+
+    assert gate_at(dt.datetime(2026, 8, 10, 12, tzinfo=dt.UTC)) == "pass"
+    assert gate_at(dt.datetime(2026, 8, 11, 12, tzinfo=dt.UTC)) == "at_risk"
+
+
 def test_catalog_derives_status_from_legacy_latest_artifact(
     isolated_repo_root: Path,
 ) -> None:
