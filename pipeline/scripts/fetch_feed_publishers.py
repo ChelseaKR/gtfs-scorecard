@@ -29,7 +29,6 @@ from __future__ import annotations
 
 import argparse
 import csv
-import datetime as dt
 import io
 import json
 import sys
@@ -47,7 +46,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "pipeline" / "src"))
 
 from scorecard_pipeline.agencies import load_agencies  # noqa: E402
-from scorecard_pipeline.config import AGENCIES  # noqa: E402
+from scorecard_pipeline.config import AGENCIES, utc_today  # noqa: E402
 from scorecard_pipeline.fetch import FEED_HEADERS  # noqa: E402
 
 OUT = REPO_ROOT / "data" / "feed-publishers.json"
@@ -157,7 +156,7 @@ def _read_declaration(url: str) -> dict[str, str]:
 def _write(feeds: dict[str, Any]) -> None:
     payload = {
         "schema_version": SCHEMA_VERSION,
-        "retrieved_on": dt.date.today().isoformat(),
+        "retrieved_on": utc_today().isoformat(),
         "note": (
             "Each feed's own feed_info.txt publisher declaration, read once from the feed "
             "URL recorded with it. Producer attribution reads this instead of inferring a "
