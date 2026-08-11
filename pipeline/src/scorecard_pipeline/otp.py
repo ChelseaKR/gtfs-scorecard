@@ -8,12 +8,15 @@ gated step, not on every feed; this module is the pure glue around it.
 
 It picks origin/destination stop pairs that span the service area, builds OTP plan
 requests, parses the responses, and decides pass or fail: did the sampled trips
-route. The selection, request building, parsing, and the verdict are pure and
-unit-tested; talking to a live OTP instance is a thin call.
+route. It also reads the graph-build log, because OTP refuses to start on a feed
+whose tables it cannot parse, and that is a result about the feed rather than a
+broken harness. The selection, request building, parsing, and the verdicts are
+pure and unit-tested; talking to a live OTP instance is a thin call.
 """
 
 from __future__ import annotations
 
+import re
 import urllib.parse
 from dataclasses import dataclass
 from typing import Any
@@ -162,6 +165,100 @@ def assess_routing(results: list[PlanResult]) -> RoutingQA:
     routable = sum(1 for r in results if r.routable)
     failures = [r.error or "no itinerary returned" for r in results if not r.routable]
     return RoutingQA(pairs_tested=len(results), pairs_routable=routable, failures=failures)
+
+
+# OTP loads GTFS through OneBusAway's CSV reader, so a table it cannot parse
+# surfaces as one of these markers and the JVM exits before the graph is saved.
+# Anything else in a failed build log is treated as the harness's problem.
+FEED_BUILD_MARKERS: tuple[str, ...] = (
+    "org.onebusaway.csv_entities.exceptions",
+    "org.onebusaway.gtfs",
+    "io error: entitytype=",
+    "missing required field",
+    "java.util.zip.zipexception",
+    "gtfsmodule",
+)
+
+# Resource and container problems can also crash a build inside the GTFS reader.
+# They win over the feed markers: the feed is not what needs fixing.
+HARNESS_BUILD_MARKERS: tuple[str, ...] = (
+    "outofmemoryerror",
+    "no space left on device",
+    "cannot allocate memory",
+    "unable to find image",
+    "manifest unknown",
+    "toomanyrequests",
+    "connection refused",
+)
+
+_ENTITY_PATH = re.compile(r"path=(?P<path>[\w./-]+)")
+_ENTITY_LINE = re.compile(r"lineNumber=(?P<line>\d+)")
+_MISSING_FIELD = re.compile(r"missing required field: (?P<field>[\w.-]+)")
+
+
+@dataclass(frozen=True)
+class GraphBuildResult:
+    """Whether OTP built a graph, and if it did not, where the fix belongs.
+
+    ``status`` is ``built``, ``feed-unbuildable`` (OTP could not parse the
+    published feed), or ``harness-error`` (anything else: image pull, memory,
+    disk, an OTP crash unrelated to the feed's tables). ``detail`` is one line of
+    plain language a CI annotation can carry.
+    """
+
+    status: str
+    detail: str
+
+    @property
+    def built(self) -> bool:
+        return self.status == "built"
+
+    @property
+    def feed_unbuildable(self) -> bool:
+        return self.status == "feed-unbuildable"
+
+
+def describe_build_failure(log_text: str) -> str:
+    """Say, in one line, which table stopped OTP from loading the feed."""
+    path = _ENTITY_PATH.search(log_text)
+    field = _MISSING_FIELD.search(log_text)
+    line = _ENTITY_LINE.search(log_text)
+    if path and field:
+        where = f" at line {line.group('line')}" if line else ""
+        return (
+            f"OpenTripPlanner stopped reading {path.group('path')}{where}: "
+            f"no {field.group('field')} value. Adding that column to the export fixes it."
+        )
+    if path:
+        return f"OpenTripPlanner could not read {path.group('path')} in this feed."
+    if field:
+        return f"OpenTripPlanner found no {field.group('field')} value in this feed."
+    return "OpenTripPlanner could not parse this feed's tables."
+
+
+def classify_graph_build(exit_code: int, log_text: str) -> GraphBuildResult:
+    """Read a finished graph build and decide whether the feed or the run broke.
+
+    A feed OTP cannot parse is the kind of breakage this project exists to
+    measure, so the batch records it and keeps going. Everything else stays loud:
+    an unrecognized crash is assumed to be the harness's, because silently
+    passing a broken run would hide real router regressions.
+    """
+    if exit_code == 0:
+        return GraphBuildResult(status="built", detail="OTP built and saved the graph.")
+    haystack = log_text.lower()
+    harness_hit = next((m for m in HARNESS_BUILD_MARKERS if m in haystack), None)
+    if harness_hit:
+        return GraphBuildResult(
+            status="harness-error",
+            detail=f"The OTP graph build failed on the runner ({harness_hit}).",
+        )
+    if any(marker in haystack for marker in FEED_BUILD_MARKERS):
+        return GraphBuildResult(status="feed-unbuildable", detail=describe_build_failure(log_text))
+    return GraphBuildResult(
+        status="harness-error",
+        detail=f"The OTP graph build exited {exit_code} with no GTFS parsing error in its log.",
+    )
 
 
 def fetch_plan(

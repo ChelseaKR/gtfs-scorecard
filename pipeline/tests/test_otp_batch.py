@@ -126,6 +126,23 @@ def test_assess_batch_feed_with_no_pairs_is_a_failure_not_a_pass() -> None:
     assert verdict.failures == ["empty: no origin/destination pairs tested"]
 
 
+def test_assess_batch_records_feeds_otp_could_not_build() -> None:
+    verdict = assess_batch(
+        [("good", RoutingQA(pairs_tested=2, pairs_routable=2, failures=[]))],
+        not_testable=[("rlv-riom", "OpenTripPlanner stopped reading shapes.txt")],
+    )
+    # The unbuildable feed is reported, not counted as a routing failure.
+    assert verdict.feeds_tested == 1
+    assert verdict.all_routable is True
+    assert verdict.failures == []
+    assert verdict.not_testable == ["rlv-riom: OpenTripPlanner stopped reading shapes.txt"]
+
+
+def test_assess_batch_defaults_to_nothing_not_testable() -> None:
+    verdict = assess_batch([("good", RoutingQA(pairs_tested=1, pairs_routable=1, failures=[]))])
+    assert verdict.not_testable == []
+
+
 def test_assess_batch_empty_is_not_routable() -> None:
     verdict = assess_batch([])
     assert verdict.all_routable is False
