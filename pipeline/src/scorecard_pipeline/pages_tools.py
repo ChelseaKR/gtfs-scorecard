@@ -15,6 +15,47 @@ from typing import Any
 
 from .site_shell import BASE_URL, CATEGORY_LABELS, CATEGORY_ORDER, _breadcrumb, _page, esc
 
+# Where the compare page reads the rest of its picker list from, and how many
+# agencies its two <select>s carry in the document itself.
+#
+# Both pickers used to inline the whole catalog, so the document carried every
+# agency twice and grew by about 190 bytes with each one added: at 2,100
+# records that is a ~430 KB HTML document whose parse cost showed up directly
+# in the page's largest contentful paint. The list is data, not chrome, so it
+# is published once as JSON and fetched the first time someone reaches for a
+# picker, which is the same shape /map/ uses for its complete list. The
+# document now weighs the same at 2,000 agencies as at 20.
+_COMPARE_PICKER_URL = "/compare/agencies.json"
+_COMPARE_PICKER_INITIAL_OPTIONS = 50
+
+
+def _compare_picker_order(catalog: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """The catalog in the order both compare pickers list it: by name."""
+    return sorted(catalog, key=lambda r: str(r["name"]).lower())
+
+
+def _render_compare_picker_data(catalog: list[dict[str, Any]]) -> str:
+    """The compare page's picker list, published as its own small JSON.
+
+    One row per feed record, already in the order the pickers show it, holding
+    only what an option needs: the id it submits, the name it reads, and the
+    state that disambiguates the many agencies sharing a name. Positional rows
+    keyed by ``fields`` rather than repeated object keys, because this file is
+    fetched by a picker rather than read by a person; the public dataset with
+    every column stays at /api/v1/agencies.json and /catalog.json."""
+    rows = [
+        [str(r["id"]), str(r["name"]), str(r.get("state") or "")]
+        for r in _compare_picker_order(catalog)
+    ]
+    return (
+        json.dumps(
+            {"schema_version": 1, "fields": ["id", "name", "state"], "agencies": rows},
+            ensure_ascii=False,
+            separators=(",", ":"),
+        )
+        + "\n"
+    )
+
 
 def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
     """The side-by-side compare page (/compare/?a=<id>&b=<id>).
@@ -23,16 +64,43 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
     accessible table only when rubric, scoring profile, validator, and measured
     category set match and the feed hashes are distinct. Otherwise the page explains why the grades are kept separate
     and links to both scorecards. The pickers are
-    plain selects submitted as a GET form, so choosing agencies works with
-    JavaScript off and every comparison has a shareable URL; only the result
-    table itself needs JS, and the noscript path says so. An unmeasured
+    plain selects submitted as a GET form, so every comparison has a shareable
+    URL; only the result table itself needs JS, and the noscript path says so.
+    The pickers start with the first
+    ``_COMPARE_PICKER_INITIAL_OPTIONS`` agencies and take the rest from
+    _render_compare_picker_data on first contact with the form or on request,
+    announced in a status region and recoverable with a retry button, so the
+    document stops growing with the registry. An unmeasured
     realtime category renders as "Not yet published", never as a zero
     (docs/SIDE_BY_SIDE_COMPARE_DESIGN.md)."""
+    ordered = _compare_picker_order(catalog)
+    total = len(ordered)
+    initial = ordered[:_COMPARE_PICKER_INITIAL_OPTIONS]
+    shown = len(initial)
+    needs_load = total > shown
     options = "".join(
         f'<option value="{esc(r["id"])}">{esc(r["name"])}'
         + (f" &mdash; {esc(r['state'])}" if r.get("state") else "")
         + "</option>"
-        for r in sorted(catalog, key=lambda r: str(r["name"]).lower())
+        for r in initial
+    )
+    picker_status = (
+        f"Both lists start with {shown} of {total} agencies. The rest arrive when you "
+        "reach for a picker, or load them now."
+        if needs_load
+        else f"Both lists hold all {total} agencies."
+    )
+    load_button_hidden = "" if needs_load else " hidden"
+    loaded_initial = str(not needs_load).lower()
+    noscript = (
+        f"""Building the comparison table needs JavaScript, and so does the rest of the
+    agency list: without it the pickers hold the first {shown} of {total} agencies. Every
+    scorecard is listed in the <a href="/agencies/">agency directory</a>, and each
+    scorecard has a Compare link that fills in the first agency for you."""
+        if needs_load
+        else """Building the comparison table needs JavaScript. The pickers above still
+    work: choose two agencies to get a shareable link, or open each scorecard from the
+    <a href="/agencies/">agency directory</a>."""
     )
     labels = json.dumps(
         [[key, CATEGORY_LABELS[key]] for key in CATEGORY_ORDER], separators=(",", ":")
@@ -44,22 +112,24 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
     scoring profile, validator, and measured category set, and come from distinct feed bytes.
     Like-for-like results can appear in one table; otherwise the page keeps the grades
     separate and links to both full scorecards.</p>
-    <form class="map-filters" action="/compare/" method="get" aria-label="Choose two agencies to compare">
+    <form id="compare-form" class="map-filters" action="/compare/" method="get" aria-label="Choose two agencies to compare">
       <div class="map-filter-row">
         <label for="compare-a-filter">First agency</label>
         <input id="compare-a-filter" class="agency-search compare-filter" type="search"
-          autocomplete="off" aria-controls="compare-a" placeholder="Type a name to filter">
+          autocomplete="off" aria-controls="compare-a" aria-describedby="compare-picker-status"
+          placeholder="Type a name to filter">
         <label class="visually-hidden" for="compare-a">Choose the first agency from the matches</label>
-        <select id="compare-a" name="a" required>
+        <select id="compare-a" name="a" aria-describedby="compare-picker-status" required>
           <option value="">Choose an agency</option>{options}
         </select>
       </div>
       <div class="map-filter-row">
         <label for="compare-b-filter">Second agency</label>
         <input id="compare-b-filter" class="agency-search compare-filter" type="search"
-          autocomplete="off" aria-controls="compare-b" placeholder="Type a name to filter">
+          autocomplete="off" aria-controls="compare-b" aria-describedby="compare-picker-status"
+          placeholder="Type a name to filter">
         <label class="visually-hidden" for="compare-b">Choose the second agency from the matches</label>
-        <select id="compare-b" name="b" required>
+        <select id="compare-b" name="b" aria-describedby="compare-picker-status" required>
           <option value="">Choose an agency</option>{options}
         </select>
       </div>
@@ -67,56 +137,145 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
         <button type="submit" class="copy-btn">Compare</button>
       </div>
     </form>
+    <div class="map-load-panel">
+      <button type="button" class="button button-secondary" id="compare-load"{load_button_hidden}>
+        Load every agency
+      </button>
+      <p id="compare-picker-status" class="fineprint" role="status">{esc(picker_status)}
+        <a href="/agencies/">Browse the paginated agency directory.</a></p>
+    </div>
     <p id="compare-status" role="status"></p>
     <div id="compare-result"></div>
-    <noscript><p>Building the comparison table needs JavaScript. The pickers above still
-    work: choose two agencies to get a shareable link, or open each scorecard from the
-    <a href="/agencies/">agency directory</a>.</p></noscript>
+    <noscript><p>{noscript}</p></noscript>
     <p class="fineprint">Category scores measure published data quality, not service
     quality, and a missing realtime feed is shown as not yet published, never as a
     failure. <a href="/how-to-read/">How to read a scorecard.</a></p>
     <script>
       (function () {{
         var CATS = {labels};
+        var PICKER_URL = "{_COMPARE_PICKER_URL}";
+        var SHOWN = {shown};
         var selA = document.getElementById("compare-a");
         var selB = document.getElementById("compare-b");
+        var formEl = document.getElementById("compare-form");
+        var loadEl = document.getElementById("compare-load");
+        var pickerStatusEl = document.getElementById("compare-picker-status");
         var statusEl = document.getElementById("compare-status");
         var result = document.getElementById("compare-result");
+        var pickers = [];
+        // Fill one picker from its current choices and its filter box, keeping
+        // the chosen agency selected when it survives the filter.
+        function refresh(picker) {{
+          var query = picker.input.value.trim().toLocaleLowerCase();
+          var selected = picker.select.value;
+          var matches = query
+            ? picker.choices.filter(function (choice) {{
+                return (choice.text + " " + choice.value).toLocaleLowerCase().includes(query);
+              }}).slice(0, 100)
+            : picker.choices;
+          var batch = document.createDocumentFragment();
+          batch.appendChild(new Option(
+            query && !matches.length ? "No matching agencies" : "Choose an agency", ""
+          ));
+          matches.forEach(function (choice) {{
+            batch.appendChild(new Option(choice.text, choice.value));
+          }});
+          picker.select.textContent = "";
+          picker.select.appendChild(batch);
+          if (matches.some(function (choice) {{ return choice.value === selected; }}))
+            picker.select.value = selected;
+        }}
         function installFilter(inputId, select) {{
-          var input = document.getElementById(inputId);
-          var choices = Array.from(select.options).slice(1).map(function (option) {{
-            return {{ value: option.value, text: option.textContent || option.value }};
-          }});
-          input.addEventListener("input", function () {{
-            var query = input.value.trim().toLocaleLowerCase();
-            var selected = select.value;
-            var matches = query
-              ? choices.filter(function (choice) {{
-                  return (choice.text + " " + choice.value).toLocaleLowerCase().includes(query);
-                }}).slice(0, 100)
-              : choices;
-            select.textContent = "";
-            select.appendChild(new Option(
-              query && !matches.length ? "No matching agencies" : "Choose an agency", ""
-            ));
-            matches.forEach(function (choice) {{
-              select.appendChild(new Option(choice.text, choice.value));
-            }});
-            if (matches.some(function (choice) {{ return choice.value === selected; }}))
-              select.value = selected;
-          }});
+          var picker = {{
+            input: document.getElementById(inputId),
+            select: select,
+            choices: Array.from(select.options).slice(1).map(function (option) {{
+              return {{ value: option.value, text: option.textContent || option.value }};
+            }})
+          }};
+          picker.input.addEventListener("input", function () {{ refresh(picker); }});
+          pickers.push(picker);
         }}
         installFilter("compare-a-filter", selA);
         installFilter("compare-b-filter", selB);
+
+        // The rest of the agency list is one published JSON, fetched the first
+        // time someone reaches for a picker (or asks for it outright) rather
+        // than shipped inside this document. Both states are announced, and a
+        // failed fetch leaves the opening options and a retry in place.
+        var listLoaded = {loaded_initial};
+        var listLoading = false;
+        var listPromise = null;
+        function hydratePickers(requested) {{
+          if (listLoaded || listLoading) return;
+          listLoading = true;
+          if (loadEl) {{
+            loadEl.setAttribute("aria-disabled", "true");
+            loadEl.textContent = "Loading every agency\\u2026";
+          }}
+          pickerStatusEl.textContent = "Loading the complete agency list.";
+          if (!listPromise) {{
+            listPromise = fetch(PICKER_URL).then(function (r) {{
+              if (!r.ok) throw new Error("agency list");
+              return r.json();
+            }});
+          }}
+          listPromise.then(function (data) {{
+            var rows = (data && data.agencies) || [];
+            var choices = rows.map(function (row) {{
+              return {{
+                value: row[0],
+                text: row[1] + (row[2] ? " \\u2014 " + row[2] : "")
+              }};
+            }});
+            pickers.forEach(function (picker) {{
+              picker.choices = choices;
+              refresh(picker);
+            }});
+            listLoaded = true;
+            listLoading = false;
+            // The load control has done its job and goes away. Focus follows it
+            // to the first picker whenever it was the thing being used, whether
+            // that is the click that asked or a keyboard already resting on it
+            // while a load started from the form. Focus is never moved out from
+            // under someone working elsewhere on the page.
+            var held = loadEl && (requested || document.activeElement === loadEl);
+            if (loadEl) loadEl.hidden = true;
+            pickerStatusEl.textContent =
+              "Both lists now hold all " + rows.length + " agencies.";
+            if (held && pickers.length) pickers[0].input.focus();
+          }}).catch(function () {{
+            listLoading = false;
+            listPromise = null;
+            if (loadEl) {{
+              loadEl.hidden = false;
+              loadEl.removeAttribute("aria-disabled");
+              loadEl.textContent = "Try loading every agency again";
+            }}
+            pickerStatusEl.textContent = "The complete agency list could not load. Both " +
+              "pickers still hold the first " + SHOWN + " agencies, and the agency " +
+              "directory links every scorecard.";
+          }});
+        }}
+        if (loadEl) loadEl.addEventListener("click", function () {{
+          if (loadEl.getAttribute("aria-disabled") !== "true") hydratePickers(true);
+        }});
+        ["focusin", "pointerenter"].forEach(function (name) {{
+          formEl.addEventListener(name, function () {{ hydratePickers(false); }});
+        }});
+
+        // Show the agency a shared link asked for even before the full list is
+        // in, so the pickers always read back what the page is comparing.
+        function showChoice(select, id, name) {{
+          var known = Array.prototype.some.call(select.options, function (option) {{
+            return option.value === id;
+          }});
+          if (!known) select.add(new Option(name, id), select.options[1] || null);
+          select.value = id;
+        }}
         var params = new URLSearchParams(window.location.search);
         var a = params.get("a"), b = params.get("b");
         if (!a || !b) return;
-        selA.value = a; selB.value = b;
-        if (selA.value !== a || selB.value !== b) {{
-          statusEl.textContent = "We don't track a scorecard for \\"" +
-            (selA.value !== a ? a : b) + "\\". Pick two agencies from the lists above.";
-          return;
-        }}
         if (a === b) {{
           statusEl.textContent = "Pick two different agencies to compare.";
           return;
@@ -208,6 +367,8 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
         Promise.all([fetchArtifact(a), fetchArtifact(b)]).then(function (arts) {{
           var artA = arts[0], artB = arts[1];
           var nameA = artA.agency.name, nameB = artB.agency.name;
+          showChoice(selA, a, nameA);
+          showChoice(selB, b, nameB);
           var contractA = comparisonContract(artA), contractB = comparisonContract(artB);
           var likeForLike = contractA.rubric && contractA.profile && contractA.validator &&
             contractA.readerArchive && contractB.readerArchive &&

@@ -3556,6 +3556,88 @@ def test_render_compare_page_form_is_shareable_and_neutral() -> None:
     assert "distinct feed bytes" in html and "measured category set" in html
 
 
+def _picker_catalog(count: int) -> list[dict[str, str]]:
+    return [
+        {"id": f"agency-{i:04d}", "name": f"Agency {i:04d}", "state": "Iowa"} for i in range(count)
+    ]
+
+
+def test_compare_page_document_does_not_grow_with_the_registry() -> None:
+    """The pickers hold a fixed window, so the page weighs the same at any size.
+
+    Both selects used to inline the whole catalog, which put roughly 190 bytes
+    of document on every agency added and showed up as a slower largest
+    contentful paint as coverage grew.
+    """
+    from scorecard_pipeline.pages_tools import (
+        _COMPARE_PICKER_INITIAL_OPTIONS,
+        _render_compare_page,
+    )
+
+    small = _render_compare_page(_picker_catalog(_COMPARE_PICKER_INITIAL_OPTIONS + 1))
+    large = _render_compare_page(_picker_catalog(3000))
+    # Only the counts named in the copy differ, never the option list itself.
+    assert abs(len(large) - len(small)) < 200
+    assert large.count('<option value="agency-') == 2 * _COMPARE_PICKER_INITIAL_OPTIONS
+    # The window is the start of the same name order the full list uses.
+    assert '<option value="agency-0000">Agency 0000 &mdash; Iowa</option>' in large
+    assert "agency-2999" not in large
+
+
+def test_compare_page_defers_the_rest_of_the_list_accessibly() -> None:
+    from scorecard_pipeline.pages_tools import _render_compare_page
+
+    html = _render_compare_page(_picker_catalog(3000))
+    # The rest of the list is fetched from the published JSON beside the page,
+    # same origin, no new dependency.
+    assert 'var PICKER_URL = "/compare/agencies.json"' in html
+    assert html.count("fetch(PICKER_URL)") == 1
+    # Reaching for the form is enough; an explicit button is there as well.
+    assert '"focusin", "pointerenter"' in html
+    assert 'id="compare-load"' in html and "Load every agency" in html
+    # Both states are announced, and both pickers point at the announcement.
+    assert 'id="compare-picker-status" class="fineprint" role="status"' in html
+    assert html.count('aria-describedby="compare-picker-status"') == 4
+    assert "Loading the complete agency list." in html
+    assert "Both lists now hold all " in html
+    # A failed fetch keeps the opening options, says so, and offers a retry.
+    assert "The complete agency list could not load." in html
+    assert "Try loading every agency again" in html
+    # Honest about what a reader without JavaScript gets.
+    assert "the pickers hold the first 50 of 3000 agencies" in html
+
+
+def test_compare_page_keeps_every_agency_when_the_catalog_is_small() -> None:
+    from scorecard_pipeline.pages_tools import _render_compare_page
+
+    html = _render_compare_page(_picker_catalog(3))
+    assert html.count('<option value="agency-') == 6
+    assert "Both lists hold all 3 agencies." in html
+    # Nothing left to fetch, so the load control stays out of the tab order.
+    assert 'id="compare-load" hidden' in html
+    assert "var listLoaded = true;" in html
+
+
+def test_compare_picker_data_carries_only_what_an_option_needs() -> None:
+    import json as _json
+
+    from scorecard_pipeline.pages_tools import _render_compare_picker_data
+
+    catalog: list[dict[str, Any]] = [
+        {"id": "bravo-transit", "name": "Bravo Transit", "state": "Ohio"},
+        {"id": "alpha-transit", "name": "Alpha Transit", "state": None},
+    ]
+    payload = _json.loads(_render_compare_picker_data(catalog))
+    assert payload["schema_version"] == 1
+    assert payload["fields"] == ["id", "name", "state"]
+    # Sorted by name, like the options, and a missing state is an empty string
+    # rather than a null the picker would have to special-case.
+    assert payload["agencies"] == [
+        ["alpha-transit", "Alpha Transit", ""],
+        ["bravo-transit", "Bravo Transit", "Ohio"],
+    ]
+
+
 def test_citation_carries_the_reader_archive_profile() -> None:
     from scorecard_pipeline.render_site import _citation_bibtex, _citation_reference
 
