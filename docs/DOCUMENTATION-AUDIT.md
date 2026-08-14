@@ -198,6 +198,7 @@ Full hand-authored doc inventory checked by this pass:
 - `docs/expansion.md`
 - `docs/feature-roadmap.md`
 - `docs/feed-discovery.md`
+- `docs/feed-supersessions.md`
 - `docs/feeds.md`
 - `docs/fixes/README.md`
 - `docs/fixes/expired_calendar.md`

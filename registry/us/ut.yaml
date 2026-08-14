@@ -19,8 +19,11 @@ agencies:
     mdb_id: 170
     license_note: "License: http://developer.rideuta.com/TermsOfUse.aspx"
 
+  # Mobility Database mdb-1171 is deprecated and redirects to mdb-170.
   - id: uta
     name: UTA
+    alias_of: utah-transit-authority-uta
+    feed_status: deprecated
     subdivision_code: US-UT
     subdivision_name: Utah
     static_gtfs_url: https://transitfeeds.com/p/utah-transportation-authority/59/latest/download
@@ -43,8 +46,11 @@ agencies:
     mdb_id: ntd-80028
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-2349 is deprecated and redirects to mdb-170.
   - id: uta-2349
     name: UTA
+    alias_of: utah-transit-authority-uta
+    feed_status: deprecated
     subdivision_code: US-UT
     subdivision_name: Utah
     static_gtfs_url: https://gtfsfeed.rideuta.com/gtfs.zip

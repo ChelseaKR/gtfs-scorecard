@@ -27,8 +27,11 @@ agencies:
     mdb_id: 233
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-239 is deprecated and redirects to mdb-2079.
   - id: broome-county-transit-b-c-transit
     name: Broome County Transit (B.C. Transit)
+    alias_of: broome-county-transit-b-c-transit-2079
+    feed_status: deprecated
     subdivision_code: US-NY
     subdivision_name: New York
     static_gtfs_url: https://www.gobroomecounty.com/sites/default/files/dept/transit/BCT_GTFS_012222.zip
@@ -201,8 +204,11 @@ agencies:
       service_alerts: https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/camsys%2Fmnr-alerts
     license_note: "License: http://web.mta.info/developers/developer-data-terms.html"
 
+  # Mobility Database mdb-525 is deprecated and redirects to mdb-3192.
   - id: ny-waterway
     name: NY Waterway
+    alias_of: ny-waterway-3192
+    feed_status: deprecated
     subdivision_code: US-NY
     subdivision_name: New York
     static_gtfs_url: https://s3.amazonaws.com/data.bytemark.co/nywaterway/nywaterway.zip
@@ -217,8 +223,11 @@ agencies:
     mdb_id: 526
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-527 is deprecated and redirects to mdb-2353.
   - id: westchester-county-bee-line-system-wcdot
     name: Westchester County Bee-Line System (WCDOT)
+    alias_of: westchester-county-bee-line-system-wcdot-2353
+    feed_status: deprecated
     subdivision_code: US-NY
     subdivision_name: New York
     static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Westchester_County_Bee-Line_System.zip
@@ -300,8 +309,11 @@ agencies:
       service_alerts: https://www.cdta.org/gtfsrealtime/ServiceAlerts
     license_note: "License: https://www.cdta.org/developer-license-agreement/169"
 
+  # Mobility Database mdb-540 is deprecated and redirects to mdb-2650.
   - id: gloversville-transit-services
     name: Gloversville Transit Services
+    alias_of: gloversville-transit-system
+    feed_status: deprecated
     subdivision_code: US-NY
     subdivision_name: New York
     static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Gloversville_Transit_Services.zip
@@ -316,8 +328,11 @@ agencies:
     mdb_id: 541
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-542 is deprecated and redirects to mdb-538.
   - id: greater-glens-falls-transit
     name: Greater Glens Falls Transit
+    alias_of: capital-district-transportation-authority-cdta
+    feed_status: deprecated
     subdivision_code: US-NY
     subdivision_name: New York
     static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Greater_Glens_Falls_Transit_System.zip
@@ -348,8 +363,11 @@ agencies:
     mdb_id: 546
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-548 is deprecated and redirects to mdb-3115.
   - id: suffolk-county-transit
     name: Suffolk County Transit
+    alias_of: suffolk-county-transit-3115
+    feed_status: deprecated
     subdivision_code: US-NY
     subdivision_name: New York
     static_gtfs_url: https://www.suffolkcountyny.gov/Portals/0/formsdocs/publicworks/Zip/google_transit.zip
@@ -375,8 +393,11 @@ agencies:
     mdb_id: 573
     license_note: "License: https://data.ny.gov/download/77gx-ii52/application/pdf"
 
+  # Mobility Database mdb-584 is deprecated and redirects to mdb-910.
   - id: newburgh-beacon-shuttle-leprechaun-lines
     name: Newburgh Beacon Shuttle (Leprechaun Lines)
+    alias_of: leprechaun-lines
+    feed_status: deprecated
     subdivision_code: US-NY
     subdivision_name: New York
     static_gtfs_url: https://s3.amazonaws.com/datatools-511ny/public/Newburgh_Beacon_Shuttle.zip
@@ -663,9 +684,12 @@ agencies:
     mdb_id: 2881
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-3110 is deprecated and redirects to mdb-524.
   - id: mta
     ntd_id: "20078"
     name: Metro-North Railroad
+    alias_of: metro-north-railroad
+    feed_status: deprecated
     subdivision_code: US-NY
     subdivision_name: New York
     static_gtfs_url: https://rrgtfsfeeds.s3.amazonaws.com/gtfsmnr.zip

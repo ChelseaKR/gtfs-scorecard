@@ -54,6 +54,17 @@ available for reproducibility and its former scorecard URL redirects to the
 successor. Do not infer this relationship from similar names; record it only
 from a reviewed catalog redirect or provider evidence.
 
+`scorecard supersessions` reads that catalog redirect for you. The Mobility
+Database marks a replaced feed record `deprecated` and names its successor in
+`redirect.id`; the command pairs the two, writes `alias_of` and
+`feed_status: deprecated` on the retired record with a comment naming the
+catalog ids, and lists what it could not resolve in
+`docs/feed-supersessions.md`. It reports on its own and only edits with
+`--apply`, and the weekly `discover` workflow runs it into a review pull
+request. A retirement whose successor publishes under a different agency name
+is called out separately in that report: the catalog is usually right about it,
+and it is still the case to read before merging.
+
 ### Reviewed reuse evidence
 
 `reuse_evidence` is an optional, curator-approved record used by bounded

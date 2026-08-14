@@ -3,8 +3,11 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-428 is deprecated and redirects to mdb-2194.
   - id: the-current
     name: The Current
+    alias_of: rockingham-moover
+    feed_status: deprecated
     subdivision_code: US-VT
     subdivision_name: Vermont
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/crtransit-vt-us/crtransit-vt-us.zip

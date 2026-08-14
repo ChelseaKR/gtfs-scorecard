@@ -3,8 +3,11 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-529 is deprecated and redirects to mdb-2242.
   - id: norwalk-transit-district
     name: Norwalk Transit District
+    alias_of: norwalk-transit-system-nts-2242
+    feed_status: deprecated
     subdivision_code: US-CT
     subdivision_name: Connecticut
     static_gtfs_url: https://www.norwalktransit.com/s/GTFS_Data.zip
@@ -35,8 +38,11 @@ agencies:
     mdb_id: 551
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-552 is deprecated and redirects to mdb-2240.
   - id: southeast-area-transit-district
     name: Southeast Area Transit District
+    alias_of: southeast-area-transit-district-2240
+    feed_status: deprecated
     subdivision_code: US-CT
     subdivision_name: Connecticut
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/seatbus-ct-us/seatbus-ct-us.zip
@@ -56,16 +62,22 @@ agencies:
       service_alerts: https://cttprdtmgtfs.ctttrpcloud.com/TMGTFSRealTimeWebService/Alert/Alerts.pb
     license_note: "License: https://www.cttransit.com/about/developers/terms-of-use"
 
+  # Mobility Database mdb-576 is deprecated and redirects to mdb-551.
   - id: middletown-area-transit
     name: Middletown Area Transit
+    alias_of: middletown-area-transit-mat
+    feed_status: deprecated
     subdivision_code: US-CT
     subdivision_name: Connecticut
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/middletown-ct-us/middletown-ct-us.zip
     mdb_id: 576
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-597 is deprecated and redirects to mdb-2840.
   - id: connecticut-transit-597
     name: Hartford Line - Rail
+    alias_of: connecticut-transit-2840
+    feed_status: deprecated
     subdivision_code: US-CT
     subdivision_name: Connecticut
     static_gtfs_url: http://www.hartfordline.com/files/gtfs/gtfs.zip

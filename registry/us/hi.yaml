@@ -3,8 +3,11 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-10 is deprecated and redirects to mdb-2350.
   - id: thebus
     name: TheBus
+    alias_of: thebus-2350
+    feed_status: deprecated
     subdivision_code: US-HI
     subdivision_name: Hawaii
     static_gtfs_url: http://webapps.thebus.org/transitdata/Production/google_transit.zip

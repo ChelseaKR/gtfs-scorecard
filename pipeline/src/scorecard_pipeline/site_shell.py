@@ -272,16 +272,22 @@ FOOTER_HTML_ES = """<footer class="site-footer">
   </footer>"""
 
 
-def _redirect_page(target: str, title: str) -> str:
+def _redirect_page(target: str, title: str, link_label: str | None = None) -> str:
     """A tiny static redirect for a retired URL: meta refresh plus a canonical
     link and a plain fallback link, so old bookmarks, papers, and crawlers all
-    land on the page that absorbed this one. Written with no sitemap entry."""
+    land on the page that absorbed this one. Written with no sitemap entry.
+
+    ``link_label`` names the destination when it is not this page under a new
+    URL. A superseded feed record often belongs to an agency the catalog now
+    lists under a different name, and telling a reader to continue to the name
+    they just left would be wrong about where they are going."""
     has_ascii_control = any(ord(char) < 0x20 or ord(char) == 0x7F for char in target)
     if not target.startswith("/") or target.startswith("//") or "\\" in target or has_ascii_control:
         raise ValueError("redirect target must be a safe root-relative path")
     canonical_target = f"{BASE_URL}{target.partition('#')[0]}"
     escaped_target = esc(target)
     escaped_canonical = esc(canonical_target)
+    escaped_label = esc(link_label or title)
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -296,7 +302,7 @@ def _redirect_page(target: str, title: str) -> str:
   <a class="skip-link" href="#main">Skip to main content</a>
   <main id="main" class="wrap" tabindex="-1">
     <h1 class="page-title">{esc(title)} moved.</h1>
-    <p class="page-lede">Continue to <a href="{escaped_target}">{esc(title)}</a>.</p>
+    <p class="page-lede">Continue to <a href="{escaped_target}">{escaped_label}</a>.</p>
   </main>
 </body>
 </html>

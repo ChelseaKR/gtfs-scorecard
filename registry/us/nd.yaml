@@ -3,8 +3,11 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-1247 is deprecated and redirects to mdb-2199.
   - id: cities-area-transit
     name: Cities Area Transit
+    alias_of: cities-area-transit-2199
+    feed_status: deprecated
     subdivision_code: US-ND
     subdivision_name: North Dakota
     static_gtfs_url: https://transitfeeds.com/p/cities-area-transit/834/latest/download

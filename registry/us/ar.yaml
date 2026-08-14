@@ -11,8 +11,11 @@ agencies:
     mdb_id: 186
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-1190 is deprecated and redirects to mdb-2264.
   - id: rock-region-metro
     name: Rock Region Metro
+    alias_of: rock-region-metro-2264
+    feed_status: deprecated
     subdivision_code: US-AR
     subdivision_name: Arkansas
     static_gtfs_url: https://transitfeeds.com/p/central-arkansas-transit-authority/334/latest/download

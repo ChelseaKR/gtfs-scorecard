@@ -80,8 +80,11 @@ agencies:
       vehicle_positions: https://track-it.avta.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
       service_alerts: https://track-it.avta.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
 
+  # Mobility Database mdb-215 is deprecated and redirects to mdb-2243.
   - id: arcadia-transit
     name: Arcadia Transit
+    alias_of: arcadia-transit-2243
+    feed_status: deprecated
     organization_id: city-of-arcadia
     subdivision_code: US-CA
     subdivision_name: California
@@ -132,8 +135,11 @@ agencies:
     mdb_id: 216
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-217 is deprecated and redirects to mdb-2275.
   - id: auburn-transit
     name: Auburn Transit
+    alias_of: auburn-transit-2275
+    feed_status: deprecated
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/auburntransit-ca-us/auburntransit-ca-us.zip
@@ -365,8 +371,11 @@ agencies:
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-562 is deprecated and redirects to mdb-2249.
   - id: city-of-bell-la-campana
     name: City of Bell (La Campana)
+    alias_of: city-of-bell-la-campana-2249
+    feed_status: deprecated
     organization_id: city-of-bell
     subdivision_code: US-CA
     subdivision_name: California
@@ -483,8 +492,11 @@ agencies:
     mdb_id: 1872
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-89 is deprecated and redirects to mdb-2894.
   - id: clovis-transit
     name: Clovis Transit
+    alias_of: clovis-transit-2894
+    feed_status: deprecated
     organization_id: city-of-clovis
     subdivision_code: US-CA
     subdivision_name: California
@@ -543,17 +555,23 @@ agencies:
     mdb_id: 104
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-1243 is deprecated and redirects to mdb-2421.
   - id: county-connection-cccta
     ntd_id: "90078"
     name: County Connection (CCCTA)
+    alias_of: county-connection-cccta-2421
+    feed_status: deprecated
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://transitfeeds.com/p/county-connection/222/latest/download
     mdb_id: 1243
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-318 is deprecated and redirects to mdb-2248.
   - id: cudahy-area-rapid-transit
     name: Cudahy Area Rapid Transit
+    alias_of: cudahy-area-rapid-transit-2248
+    feed_status: deprecated
     organization_id: city-of-cudahy
     subdivision_code: US-CA
     subdivision_name: California
@@ -619,8 +637,11 @@ agencies:
       vehicle_positions: https://downey.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
       service_alerts: https://downey.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
 
+  # Mobility Database mdb-105 is deprecated and redirects to mdb-101.
   - id: duarte-transit
     name: Duarte Transit
+    alias_of: foothill-transit
+    feed_status: deprecated
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/duartetransit-ca-us/duartetransit-ca-us.zip
@@ -656,8 +677,11 @@ agencies:
     mdb_id: 103
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-458 is deprecated and redirects to mdb-2210.
   - id: el-segundo-transportation
     name: El Segundo Transportation
+    alias_of: el-segundo-transportation-2210
+    feed_status: deprecated
     organization_id: city-of-el-segundo
     subdivision_code: US-CA
     subdivision_name: California
@@ -686,8 +710,11 @@ agencies:
       vehicle_positions: https://bustime.sacrt.com/EG_gtfsrt/vehicles
       service_alerts: https://bustime.sacrt.com/EG_gtfsrt/alerts
 
+  # Mobility Database mdb-63 is deprecated and redirects to mdb-2224.
   - id: emery-go-round
     name: Emery Go-Round
+    alias_of: emery-go-round-2224
+    feed_status: deprecated
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/emerygoround-ca-us/emerygoround-ca-us.zip
@@ -806,8 +833,11 @@ agencies:
     static_gtfs_url: https://www.cityofglendora.gov/files/assets/city/v/3/recreation-amp-human-services/transportation/documents/gtfs-6-2025.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-835 is deprecated and redirects to mdb-3094.
   - id: glenn-transit-service
     name: Glenn Transit Service
+    alias_of: glenn-transit-service-3094
+    feed_status: deprecated
     organization_id: glenn-county
     subdivision_code: US-CA
     subdivision_name: California
@@ -815,8 +845,11 @@ agencies:
     mdb_id: 835
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-2207 is deprecated and redirects to mdb-3094.
   - id: glenn-transit-service-2207
     name: Glenn Transit Service
+    alias_of: glenn-transit-service-3094
+    feed_status: deprecated
     organization_id: glenn-county
     subdivision_code: US-CA
     subdivision_name: California
@@ -889,8 +922,11 @@ agencies:
     static_gtfs_url: https://www.lodi.gov/DocumentCenter/View/2453/lodi_gtfs-ZIP
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-616 is deprecated and redirects to mdb-2270.
   - id: gtrans
     name: GTrans
+    alias_of: gtrans-2270
+    feed_status: deprecated
     organization_id: city-of-gardena
     subdivision_code: US-CA
     subdivision_name: California
@@ -923,8 +959,11 @@ agencies:
     mdb_id: 617
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-19 is deprecated and redirects to mdb-3032.
   - id: humboldt-transit-authority
     name: Humboldt Transit Authority
+    alias_of: humboldt-transit-authority-3032
+    feed_status: deprecated
     organization_id: humboldt-transit-authority
     subdivision_code: US-CA
     subdivision_name: California
@@ -979,8 +1018,11 @@ agencies:
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-42 is deprecated and redirects to mdb-2204.
   - id: kings-area-rural-transit
     name: Kings Area Rural Transit
+    alias_of: kings-area-rural-transit-2204
+    feed_status: deprecated
     organization_id: kings-county-area-public-transit-agency
     subdivision_code: US-CA
     subdivision_name: California
@@ -1005,8 +1047,11 @@ agencies:
       vehicle_positions: https://kart.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition
       service_alerts: https://kart.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/alert
 
+  # Mobility Database mdb-563 is deprecated and redirects to mdb-2250.
   - id: la-puente-link
     name: La Puente LINK
+    alias_of: la-puente-link-2250
+    feed_status: deprecated
     organization_id: city-of-la-puente
     subdivision_code: US-CA
     subdivision_name: California
@@ -1220,8 +1265,11 @@ agencies:
     mdb_id: 69
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-86 is deprecated and redirects to mdb-3117.
   - id: merced-county-transit-the-bus
     name: Merced County Transit (The Bus)
+    alias_of: merced-county-transit-the-bus-3117
+    feed_status: deprecated
     organization_id: transit-joint-powers-authority-for-merced-county
     subdivision_code: US-CA
     subdivision_name: California
@@ -1269,8 +1317,11 @@ agencies:
     static_gtfs_url: https://www.modestoareaexpress.com/preview-gtfs.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-577 is deprecated and redirects to mdb-2201.
   - id: montebello-bus-lines
     name: Montebello Bus Lines
+    alias_of: montebello-bus-lines-2201
+    feed_status: deprecated
     organization_id: city-of-montebello
     subdivision_code: US-CA
     subdivision_name: California
@@ -1333,8 +1384,11 @@ agencies:
       vehicle_positions: https://ridebasintransit.com/gtfs-rt/vehiclepositions
       service_alerts: https://ridebasintransit.com/gtfs-rt/alerts
 
+  # Mobility Database mdb-45 is deprecated and redirects to mdb-2059.
   - id: morro-bay-transit
     name: Morro Bay Transit
+    alias_of: morro-bay-transit-2059
+    feed_status: deprecated
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/morrobay_google_transit.zip
@@ -1368,8 +1422,11 @@ agencies:
     static_gtfs_url: https://gtfs.mvcommunityshuttle.com/gtfs.zip
     license_note: "License: https://opendatacommons.org/licenses/by/summary/"
 
+  # Mobility Database mdb-60 is deprecated and redirects to mdb-2880.
   - id: mountain-view-transportation-management-association-mvgo
     name: Mountain View Transportation Management Association (MVgo)
+    alias_of: mountain-view-transportation-management-association-mvgo-2880
+    feed_status: deprecated
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/mountainview-ca-us/mountainview-ca-us.zip
@@ -1380,8 +1437,11 @@ agencies:
       service_alerts: https://ridemvgo.org/gtfs-rt/alerts
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-2025 is deprecated and redirects to mdb-2880.
   - id: mountain-view-transportation-management-association-mvgo-2025
     name: Mountain View Transportation Management Association (MVgo)
+    alias_of: mountain-view-transportation-management-association-mvgo-2880
+    feed_status: deprecated
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://mvgo.org/data/gtfs.zip
@@ -1430,8 +1490,11 @@ agencies:
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: "License: http://creativecommons.org/licenses/by/4.0/"
 
+  # Mobility Database mdb-14 is deprecated and redirects to mdb-3093.
   - id: north-county-transit-district-nctd
     name: North County Transit District (NCTD)
+    alias_of: north-county-transit-district-nctd-3093
+    feed_status: deprecated
     organization_id: north-county-transit-district
     subdivision_code: US-CA
     subdivision_name: California
@@ -1449,8 +1512,11 @@ agencies:
     mdb_id: 3093
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-102 is deprecated and redirects to mdb-2242.
   - id: norwalk-transit-system-nts
     name: Norwalk Transit System (NTS)
+    alias_of: norwalk-transit-system-nts-2242
+    feed_status: deprecated
     organization_id: city-of-norwalk
     subdivision_code: US-CA
     subdivision_name: California
@@ -1610,8 +1676,11 @@ agencies:
     mdb_id: 3031
     license_note: "License: https://rabaride.com/resources/about_raba/index.php#collapselinks-18-50b1"
 
+  # Mobility Database mdb-114 is deprecated and redirects to mdb-3031.
   - id: redding-area-bus-authority-raba
     name: Redding Area Bus Authority (RABA)
+    alias_of: redding-area-bus-authority-3031
+    feed_status: deprecated
     organization_id: redding-area-bus-authority
     subdivision_code: US-CA
     subdivision_name: California
@@ -1638,8 +1707,11 @@ agencies:
     mdb_id: 20
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-110 is deprecated and redirects to mdb-2351.
   - id: regional-transportation-commission-of-southern-nevada-rtc
     name: Regional Transportation Commission of Southern Nevada (RTC)
+    alias_of: regional-transportation-commission-of-southern-nevada-rtc-2351
+    feed_status: deprecated
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: http://rtcws.rtcsnv.com/g/google_transit.zip
@@ -1716,9 +1788,12 @@ agencies:
       vehicle_positions: https://cityofroseville.tripshot.com/v1/gtfs/realtime/vehiclePosition/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
       service_alerts: https://cityofroseville.tripshot.com/v1/gtfs/realtime/serviceAlert/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
 
+  # Mobility Database mdb-1296 is deprecated and redirects to mdb-2137.
   - id: sacramento-regional-transit-sacrt
     ntd_id: "90019"
     name: Sacramento Regional Transit (SacRT)
+    alias_of: sacramento-regional-transit-sacrt-2137
+    feed_status: deprecated
     organization_id: sacramento-regional-transit-district
     subdivision_code: US-CA
     subdivision_name: California
@@ -1791,8 +1866,11 @@ agencies:
     mdb_id: 13
     license_note: "License: https://www.sdmts.com/business-center-developers/terms-and-conditions"
 
+  # Mobility Database mdb-62 is deprecated and redirects to mdb-3143.
   - id: san-francisco-bay-area-water-emergency-transportation-authority-weta
     name: San Francisco Bay Area Water Emergency Transportation Authority (WETA)
+    alias_of: san-francisco-bay-area-water-emergency-transportation-authority-weta-3143
+    feed_status: deprecated
     organization_id: san-francisco-bay-area-water-emergency-transit-authority
     subdivision_code: US-CA
     subdivision_name: California
@@ -1809,9 +1887,12 @@ agencies:
     mdb_id: 3143
     license_note: "License: https://opendatacommons.org/licenses/by/summary/"
 
+  # Mobility Database mdb-50 is deprecated and redirects to mdb-2886.
   - id: san-francisco-municipal-transportation-agency-sfmta-muni
     ntd_id: "90015"
     name: San Francisco Municipal Transportation Agency (SFMTA - Muni)
+    alias_of: san-francisco-municipal-transportation-agency-sfmta-muni-2886
+    feed_status: deprecated
     organization_id: city-and-county-of-san-francisco
     subdivision_code: US-CA
     subdivision_name: California
@@ -1885,9 +1966,12 @@ agencies:
       vehicle_positions: http://slo.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition
       service_alerts: http://slo.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/alert
 
+  # Mobility Database mdb-49 is deprecated and redirects to mdb-2708.
   - id: san-mateo-county-transit-district-samtrans
     ntd_id: "90009"
     name: San Mateo County Transit District (samTrans)
+    alias_of: samtrans
+    feed_status: deprecated
     organization_id: san-mateo-county-transit-district
     subdivision_code: US-CA
     subdivision_name: California
@@ -1928,8 +2012,11 @@ agencies:
       vehicle_positions: https://apps.santaclaritatransit.com/rtt/public/utility/gtfsrealtime.aspx/vehicleposition
       service_alerts: https://apps.santaclaritatransit.com/rtt/public/utility/gtfsrealtime.aspx/alert
 
+  # Mobility Database mdb-1211 is deprecated and redirects to mdb-2425.
   - id: santa-cruz-metro-scmtd
     name: Santa Cruz Metro (SCMTD)
+    alias_of: santa-cruz-metro-scmtd-2425
+    feed_status: deprecated
     organization_id: santa-cruz-metropolitan-transit-district
     subdivision_code: US-CA
     subdivision_name: California
@@ -1950,8 +2037,11 @@ agencies:
       service_alerts: https://rt.scmetro.org/gtfsrt/alerts
     license_note: "License: https://developer.scmetro.org/"
 
+  # Mobility Database mdb-26 is deprecated and redirects to mdb-2272.
   - id: santa-maria-area-transit
     name: Santa Maria Area Transit
+    alias_of: santa-maria-area-transit-2272
+    feed_status: deprecated
     organization_id: city-of-santa-maria
     subdivision_code: US-CA
     subdivision_name: California
@@ -2005,8 +2095,11 @@ agencies:
     rt_urls:
       vehicle_positions: https://lat-long-prototype.wl.r.appspot.com/vehicle-positions.pb?agency=santa-ynez-valley-transit
 
+  # Mobility Database mdb-829 is deprecated and redirects to mdb-2251.
   - id: sierra-madre-gateway-coach
     name: Sierra Madre Gateway Coach
+    alias_of: sierra-madre-gateway-coach-2251
+    feed_status: deprecated
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sierramadre-ca-us/sierramadre-ca-us.zip
@@ -2077,8 +2170,11 @@ agencies:
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-817 is deprecated and redirects to mdb-2203.
   - id: south-county-transit-link
     name: South County Transit Link
+    alias_of: south-county-transit-link-2203
+    feed_status: deprecated
     organization_id: sacramento-county
     subdivision_code: US-CA
     subdivision_name: California
@@ -2112,8 +2208,11 @@ agencies:
   # zip was downloaded and confirmed to carry a current service calendar before
   # the reuse_evidence block was written; see docs/feeds.md.
 
+  # Mobility Database mdb-39 is deprecated and redirects to mdb-2202.
   - id: spirit-bus
     name: Spirit Bus
+    alias_of: spirit-bus-2202
+    feed_status: deprecated
     organization_id: city-of-monterey-park
     subdivision_code: US-CA
     subdivision_name: California
@@ -2289,8 +2388,11 @@ agencies:
     mdb_id: 1323
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-115 is deprecated and redirects to mdb-2709.
   - id: trinity-transit
     name: Trinity Transit
+    alias_of: trinity-transit-2709
+    feed_status: deprecated
     organization_id: trinity-county
     subdivision_code: US-CA
     subdivision_name: California
@@ -2367,9 +2469,12 @@ agencies:
     mdb_id: 226
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-31 is deprecated and redirects to mdb-3096.
   - id: ventura-county-transportation-commission
     ntd_id: "90164"
     name: Ventura County Transportation Commission
+    alias_of: ventura-county-transportation-commission-3096
+    feed_status: deprecated
     organization_id: ventura-county-transportation-commission
     subdivision_code: US-CA
     subdivision_name: California
@@ -2469,8 +2574,11 @@ agencies:
   # They give the program rollup views a real worst-first cohort beyond the two
   # pilots. License terms were unstated in the catalog; verify before relying on.
 
+  # Mobility Database mdb-88 is deprecated and redirects to mdb-2394.
   - id: yosemite-area-regional-transportation-system-yarts
     name: Yosemite Area Regional Transportation System (YARTS)
+    alias_of: yosemite-area-regional-transportation-system-yarts-2394
+    feed_status: deprecated
     organization_id: yosemite-area-regional-transportation-system
     subdivision_code: US-CA
     subdivision_name: California

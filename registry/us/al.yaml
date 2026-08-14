@@ -11,24 +11,33 @@ agencies:
     mdb_id: 338
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-339 is deprecated and redirects to mdb-2263.
   - id: birmingham-jefferson-county-transit-authority
     name: Birmingham Jefferson County Transit Authority
+    alias_of: birmingham-jefferson-county-transit-authority-max-2263
+    feed_status: deprecated
     subdivision_code: US-AL
     subdivision_name: Alabama
     static_gtfs_url: https://maxtransit.org/wp-content/uploads/2020/12/BJCTA-Working-GTFS-File.zip
     mdb_id: 339
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-353 is deprecated and redirects to mdb-2081.
   - id: huntsville-shuttle
     name: Huntsville Shuttle
+    alias_of: huntsville-shuttle-2081
+    feed_status: deprecated
     subdivision_code: US-AL
     subdivision_name: Alabama
     static_gtfs_url: http://maps.hsvcity.com/GoogleTransit/google_transit.zip
     mdb_id: 353
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-1248 is deprecated and redirects to mdb-2263.
   - id: birmingham-jefferson-county-transit-authority-max
     name: Birmingham Jefferson County Transit Authority (MAX)
+    alias_of: birmingham-jefferson-county-transit-authority-max-2263
+    feed_status: deprecated
     subdivision_code: US-AL
     subdivision_name: Alabama
     static_gtfs_url: https://transitfeeds.com/p/birmingham-jefferson-county-transit-authority/683/latest/download

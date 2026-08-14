@@ -11,8 +11,11 @@ agencies:
     mdb_id: 362
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-364 is deprecated and redirects to mdb-2662.
   - id: transit-authority-of-river-city-tarc
     name: Transit Authority of River City (TARC)
+    alias_of: transit-authority-of-river-city-tarc-2662
+    feed_status: deprecated
     subdivision_code: US-KY
     subdivision_name: Kentucky
     static_gtfs_url: http://googletransit.ridetarc.org/feed/google_transit.zip
@@ -23,16 +26,22 @@ agencies:
       service_alerts: http://gtfsrealtime.ridetarc.org/realtime/Alert/Alerts.pb
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-365 is deprecated and redirects to mdb-2067.
   - id: lextran
     name: Lextran
+    alias_of: lextran-2067
+    feed_status: deprecated
     subdivision_code: US-KY
     subdivision_name: Kentucky
     static_gtfs_url: https://lextran.com/wp-content/uploads/2021/05/GTFS.zip
     mdb_id: 365
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-367 is deprecated and redirects to mdb-2068.
   - id: transit-authority-of-northern-kentucky-tank
     name: Transit Authority of Northern Kentucky (TANK)
+    alias_of: transit-authority-of-northern-kentucky-tank-2068
+    feed_status: deprecated
     subdivision_code: US-KY
     subdivision_name: Kentucky
     static_gtfs_url: https://www.tankbus.org/Portals/tankbus/gtfs/tank-google-transit.zip

@@ -1159,6 +1159,14 @@ def test_render_retires_stale_f_scorecard_and_redirects_to_live_successor(
     assert f"url=/agency/{successor_id}/" in redirect
     assert f'<a href="/agency/{successor_id}/">' in redirect
     assert "stale F scorecard" not in redirect
+    # The successor often publishes under a different name. Naming the retired
+    # record as the destination would tell a reader they are going somewhere
+    # they are not.
+    assert (
+        f'Continue to <a href="/agency/{successor_id}/">Unitrans (ASUCD / City of Davis)</a>'
+        in redirect
+    )
+    assert "Retired Unitrans export</a>" not in redirect
     assert not (stale_page / "brief").exists()
     retained_redirects = json.loads(
         (isolated_repo_root / "web" / "_meta" / "retained-agency-redirects.json").read_text()

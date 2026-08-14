@@ -3,8 +3,11 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-223 is deprecated and redirects to mdb-2254.
   - id: bay-area-transportation-authority
     name: Bay Area Transportation Authority
+    alias_of: bay-area-transportation-authority-2254
+    feed_status: deprecated
     subdivision_code: US-MI
     subdivision_name: Michigan
     static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/5109/BATA_GTFS.zip
@@ -27,8 +30,11 @@ agencies:
     mdb_id: 400
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-401 is deprecated and redirects to mdb-2070.
   - id: kalamazoo-metro-transit
     name: Kalamazoo Metro Transit
+    alias_of: kalamazoo-metro-transit-2070
+    feed_status: deprecated
     subdivision_code: US-MI
     subdivision_name: Michigan
     static_gtfs_url: https://www.kmetro.com/sites/default/files/public/gtfs.zip
@@ -73,16 +79,22 @@ agencies:
     mdb_id: 415
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-416 is deprecated and redirects to mdb-2072.
   - id: university-of-michigan-transit-services
     name: University of Michigan Transit Services
+    alias_of: university-of-michigan-transit-services-2072
+    feed_status: deprecated
     subdivision_code: US-MI
     subdivision_name: Michigan
     static_gtfs_url: http://ltp.umich.edu/gtfs/google_transit.zip
     mdb_id: 416
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-417 is deprecated and redirects to mdb-2281.
   - id: detroit-people-mover
     name: Detroit People Mover
+    alias_of: detroit-people-mover-2281
+    feed_status: deprecated
     subdivision_code: US-MI
     subdivision_name: Michigan
     static_gtfs_url: https://www.detroitmi.gov/Portals/0/docs/deptoftransportation/pdfs/PeopleMoverGTFS.zip
@@ -106,8 +118,11 @@ agencies:
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-926 is deprecated and redirects to mdb-2287.
   - id: mass-transportation-authority-flint
     name: Mass Transportation Authority Flint
+    alias_of: mass-transportation-authority-flint-2287
+    feed_status: deprecated
     subdivision_code: US-MI
     subdivision_name: Michigan
     static_gtfs_url: https://www.mtaflint.org/wp-content/media/stops.zip

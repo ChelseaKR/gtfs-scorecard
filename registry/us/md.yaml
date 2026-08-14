@@ -155,8 +155,11 @@ agencies:
     mdb_id: 493
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-494 is deprecated and redirects to mdb-3149.
   - id: shore-transit
     name: Shore Transit
+    alias_of: shore-transit-3149
+    feed_status: deprecated
     subdivision_code: US-MD
     subdivision_name: Maryland
     static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Shore_GTFS.zip
@@ -171,17 +174,23 @@ agencies:
     mdb_id: 495
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-497 is deprecated and redirects to mdb-2286.
   - id: washington-county-transit
     ntd_id: "30030"
     name: Washington County Transit
+    alias_of: washington-county-transit-2286
+    feed_status: deprecated
     subdivision_code: US-MD
     subdivision_name: Maryland
     static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/WC_GTFS.zip
     mdb_id: 497
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-498 is deprecated and redirects to mdb-2432.
   - id: frederick-county-transit
     name: Frederick County TransIT
+    alias_of: frederick-county-transit-2432
+    feed_status: deprecated
     subdivision_code: US-MD
     subdivision_name: Maryland
     static_gtfs_url: https://maps.frederickcountymd.gov/google/google_transit.zip
@@ -204,8 +213,11 @@ agencies:
     mdb_id: 501
     license_note: "License: http://mdtrip.org/About/DeveloperResources.aspx"
 
+  # Mobility Database mdb-504 is deprecated and redirects to mdb-3178.
   - id: cecil-transit
     name: Cecil Transit
+    alias_of: cecil-transit-3178
+    feed_status: deprecated
     subdivision_code: US-MD
     subdivision_name: Maryland
     static_gtfs_url: https://github.com/mobilityequity/maryland-local-gtfs/raw/master/Cecil_GTFS.zip
@@ -220,8 +232,11 @@ agencies:
     mdb_id: 618
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-1203 is deprecated and redirects to mdb-2268.
   - id: saint-mary-s-transit-system
     name: Saint Maryʼs Transit System
+    alias_of: saint-mary-s-transit-system-2268
+    feed_status: deprecated
     subdivision_code: US-MD
     subdivision_name: Maryland
     static_gtfs_url: https://transitfeeds.com/p/saint-marys-transit-system/1147/latest/download
@@ -276,8 +291,11 @@ agencies:
       vehicle_positions: https://passio3.com/frederick/passioTransit/gtfs/realtime/vehiclePositions
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-3034 is deprecated and redirects to mdb-3178.
   - id: cecil-transit-3034
     name: Cecil Transit
+    alias_of: cecil-transit-3178
+    feed_status: deprecated
     subdivision_code: US-MD
     subdivision_name: Maryland
     static_gtfs_url: https://passio3.com/cecil/passioTransit/gtfs/google_transit.zip

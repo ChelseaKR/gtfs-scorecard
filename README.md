@@ -49,8 +49,13 @@ snapshot that moves only when it is deliberately re-materialized from the live
 corpus (last refreshed 2026-08-07),
 with more than 2,100 numeric scorecards published. CI can only gate the
 snapshot figure, because `make verify` runs offline. A feed record is not
-always a distinct transit agency: regional feeds, modal variants, and retired
-aliases are counted separately while the identity registry is reconciled.
+always a distinct transit agency: regional feeds and modal variants are counted
+separately while the identity registry is reconciled. A record the Mobility
+Database has retired in favour of another is no longer one of them: it keeps
+its dated artifacts and redirects its old URL, and only its successor publishes
+a current grade, so one agency does not carry two
+(`docs/feed-supersessions.md`). That leaves the published count lower than it
+was, and right.
 
 **Live:** [gtfsscorecard.org](https://gtfsscorecard.org/) — with the latest
 completed-run evidence at [gtfsscorecard.org/status](https://gtfsscorecard.org/status/).

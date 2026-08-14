@@ -21,8 +21,11 @@ agencies:
     mdb_id: 798
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-1197 is deprecated and redirects to mdb-2209.
   - id: the-comet
     name: The Comet
+    alias_of: the-comet-2209
+    feed_status: deprecated
     subdivision_code: US-SC
     subdivision_name: South Carolina
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/thecomet-sc-us/thecomet-sc-us.zip

@@ -91,9 +91,12 @@ agencies:
     mdb_id: 885
     license_note: "License: https://ridetrinitymetro.org/gtfs-data/"
 
+  # Mobility Database mdb-1242 is deprecated and redirects to mdb-2348.
   - id: via-metropolitan-transit-via
     ntd_id: "60011"
     name: VIA Metropolitan Transit (VIA)
+    alias_of: via-metropolitan-transit-via-2348
+    feed_status: deprecated
     subdivision_code: US-TX
     subdivision_name: Texas
     static_gtfs_url: https://transitfeeds.com/p/via-metropolitan-transit/62/latest/download
