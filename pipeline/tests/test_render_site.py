@@ -4260,6 +4260,62 @@ def test_nav_is_six_hubs_and_sections_light_their_hub() -> None:
     assert _nav_active("/agency/unitrans/") == "/agencies/"
 
 
+@pytest.mark.parametrize(
+    ("path", "expected_href", "expected_value"),
+    [
+        # The stop is the page itself.
+        ("/agencies/", "/agencies/", "page"),
+        ("/pulse/", "/pulse/", "page"),
+        ("/tools/", "/tools/", "page"),
+        ("/how-to-read/", "/how-to-read/", "page"),
+        ("/about/", "/about/", "page"),
+        # The stop is the section this page sits in. Every one of these
+        # announced "current page" on a link that navigates elsewhere.
+        ("/agency/unitrans/", "/agencies/", "true"),
+        ("/map/", "/agencies/", "true"),
+        ("/routes/", "/agencies/", "true"),
+        ("/problems/", "/pulse/", "true"),
+        ("/ntd/", "/pulse/", "true"),
+        ("/realtime/", "/pulse/", "true"),
+        ("/equity/", "/pulse/", "true"),
+        ("/focus/", "/pulse/", "true"),
+        ("/check/", "/tools/", "true"),
+        ("/compare/", "/tools/", "true"),
+        ("/query/", "/tools/", "true"),
+        ("/procurement/", "/tools/", "true"),
+        ("/accessibility/", "/how-to-read/", "true"),
+        ("/status/", "/how-to-read/", "true"),
+        ("/press/", "/how-to-read/", "true"),
+        ("/support/", "/about/", "true"),
+        ("/adoption/", "/app/#/?view=features", "true"),
+    ],
+)
+def test_nav_announces_the_current_page_only_on_the_current_page(
+    path: str, expected_href: str, expected_value: str
+) -> None:
+    """ARIA 1.2 separates "the current page" from "the current item".
+
+    A hub stop is filled on every page inside its section, and calling that
+    the current page tells a screen-reader user they are somewhere they are
+    not, on a link that still navigates. docs/vpat.md claims 4.1.2 Name, Role,
+    Value as Supports, so the state conveyed here has to be the true one.
+    """
+    from scorecard_pipeline.site_shell import _nav_html
+
+    nav = _nav_html(f"https://gtfsscorecard.org{path}")
+
+    assert f'href="{expected_href}" aria-current="{expected_value}"' in nav
+    assert nav.count("aria-current=") == 1
+    if expected_value == "true":
+        assert 'aria-current="page"' not in nav
+
+
+def test_nav_marks_nothing_current_on_a_page_outside_every_section() -> None:
+    from scorecard_pipeline.site_shell import _nav_html
+
+    assert "aria-current" not in _nav_html("https://gtfsscorecard.org/")
+
+
 def test_footer_is_single_sourced_in_page_shell() -> None:
     from scorecard_pipeline.site_shell import FOOTER_HTML, _page
 

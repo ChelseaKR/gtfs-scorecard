@@ -684,12 +684,16 @@ function setAppNav(featureMode) {
   const agencyNav = /** @type {HTMLAnchorElement | null} */ (
     document.querySelector('.nav-stop[href="/agencies/"]')
   );
+  // The value is true, not page: both stops are views of this one page, and
+  // the stop that is not showing still navigates. Marking it as the current
+  // page tells a screen-reader user they are already on the link being
+  // offered to them.
   if (featureMode) {
     agencyNav?.removeAttribute("aria-current");
-    featureNav?.setAttribute("aria-current", "page");
+    featureNav?.setAttribute("aria-current", "true");
   } else {
     featureNav?.removeAttribute("aria-current");
-    agencyNav?.setAttribute("aria-current", "page");
+    agencyNav?.setAttribute("aria-current", "true");
   }
 }
 

@@ -380,8 +380,8 @@ a:hover { color: var(--green-bright); }
 /* ---------- header / footer ---------- */
 
 /* Primary navigation: a transit wayfinding bar. Each section is a stop on a
-   route line, and the current page is the filled "you are here" stop
-   (aria-current). A pine band in every theme so the chrome reads consistently;
+   route line, and the stop you are at is filled (aria-current: "page" on the
+   page itself, "true" on the hub of the section you are inside). A pine band in every theme so the chrome reads consistently;
    cream text clears AAA (verified in pipeline/scripts/check_contrast.py). */
 .site-header {
   position: relative;
@@ -494,10 +494,14 @@ a:hover { color: var(--green-bright); }
 .nav-stop:hover .pip {
   background: rgba(111, 200, 160, 0.4);
 }
-.nav-stop[aria-current="page"] {
+/* Filled for both aria-current values: "page" when this stop is the page you
+   are on, "true" when it is the section you are inside. The two states look
+   the same on screen and read differently to a screen reader, which is the
+   point: only one of them is a claim about which page you are on. */
+.nav-stop[aria-current] {
   color: #f4f6f0;
 }
-.nav-stop[aria-current="page"] .pip {
+.nav-stop[aria-current] .pip {
   background: #6fc8a0;
   box-shadow: 0 0 0 4px #102a20, 0 0 9px rgba(111, 200, 160, 0.6);
 }

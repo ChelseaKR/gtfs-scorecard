@@ -15,6 +15,7 @@ from scorecard_pipeline.site_shell import (
     _NAV_STOPS_RE,
     STATIC_NAV_PAGES,
     _nav_stops_html,
+    static_page_path,
 )
 
 # The real repo (not the per-test tmp root that conftest points artifacts_dir at):
@@ -28,9 +29,26 @@ def test_static_pages_nav_matches_canonical() -> None:
         html = (web / rel).read_text()
         match = _NAV_STOPS_RE.search(html)
         assert match is not None, f"{rel}: no nav-stops block found"
-        assert match.group(0) == _nav_stops_html(active), (
+        assert match.group(0) == _nav_stops_html(active, path=static_page_path(rel)), (
             f"{rel}: primary nav drifted from _NAV_ITEMS; run `make sync-static-nav`"
         )
+
+
+def test_a_section_hub_is_never_announced_as_the_current_page() -> None:
+    """A filled stop that is not this page is the current item, not the page.
+
+    ARIA 1.2 reserves ``page`` for the current page within a set of pages.
+    ``/support/`` fills the About stop because it sits in that section, and
+    announcing that link as the current page tells a screen-reader user they
+    are already on a link that navigates somewhere else.
+    """
+    for rel, active in STATIC_NAV_PAGES.items():
+        if active is None or active == static_page_path(rel):
+            continue
+        nav = _NAV_STOPS_RE.search((_REPO / "web" / rel).read_text())
+        assert nav is not None, rel
+        assert 'aria-current="page"' not in nav.group(0), rel
+        assert f'href="{active}" aria-current="true"' in nav.group(0), rel
 
 
 def test_active_section_targets_a_real_nav_item() -> None:
