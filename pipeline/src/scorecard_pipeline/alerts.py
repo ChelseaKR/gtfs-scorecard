@@ -340,7 +340,7 @@ def _anomaly_alert_items(
     return items
 
 
-def build_digest(  # noqa: C901
+def build_digest(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     today: dt.date | None = None,
     expiry_days: int = DEFAULT_EXPIRY_DAYS,
 ) -> Digest:
