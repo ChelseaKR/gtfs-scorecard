@@ -8268,6 +8268,109 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
     )
 
 
+def _render_disappeared_page() -> str:
+    """The symptom-first explainer (/guide/disappeared-from-trip-planners/): why an
+    agency's service vanishes from Google Maps, Apple Maps, and Transit, and the
+    order to check the causes.
+
+    Riders and managers search the symptom ("bus route not showing in google
+    maps"), not a notice code, so this page meets that query in plain language
+    and funnels to the fix library, the agency's own scorecard page, and the
+    pre-publish check. Static content: no rollup payload, so the page stands
+    whether or not any pipeline has run. Like every page here, it explains and
+    never shames; the premise is that the buses are still running and the data
+    stopped saying so.
+    """
+    canonical = f"{BASE_URL}/guide/disappeared-from-trip-planners/"
+    body = f"""    {_breadcrumb([("Home", "/"), ("Why agencies disappear from trip planners", None)])}
+    <h1 class="page-title">Why did my agency disappear from Google Maps?</h1>
+    <p class="page-lede">The buses are still running, but riders opening Google Maps,
+    Apple Maps, or the Transit app can no longer find them. When that happens, the
+    service did not stop; the data did. Trip planners read your published GTFS feed on
+    their own schedule, and they drop service silently when the feed goes stale, breaks,
+    or moves. These are the causes, in the order worth checking.</p>
+
+    <section class="feed-details"><h2 class="section-title">1. The feed expired</h2>
+    <p>The most common cause. Every GTFS feed carries service calendars, and many carry
+    an explicit end date in feed_info.txt. The day the last calendar runs out, planners
+    stop showing your trips, without warning riders first. The fix is usually a same-day
+    re-export; the durable fix is publishing on a schedule so expiry never gets close.</p>
+    <p>Start with <a href="/fix/scorecard_feed_expired/">the feed has already expired</a>,
+    and the early warnings for a feed expiring
+    <a href="/fix/feed_expiration_date7_days/">within 7 days</a> or
+    <a href="/fix/feed_expiration_date30_days/">within 30 days</a>.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">2. The feed URL stopped
+    working</h2>
+    <p>Planners fetch your feed from a fixed URL. A website redesign that moves the zip
+    file, a lapsed TLS certificate, or a host outage all look the same from the outside:
+    the fetch fails, and after enough failed fetches your service ages out of the apps.
+    This is easy to miss because the website itself may look fine to a person.</p>
+    <p>Your agency's scorecard page shows when this site last fetched your feed
+    successfully; a long-failing fetch there usually means the planners are failing
+    too. (Details on how this site fetches feeds are on the
+    <a href="/fetcher/">fetcher page</a>.)</p></section>
+
+    <section class="feed-details"><h2 class="section-title">3. The calendar has a gap or
+    lives too far in the future</h2>
+    <p>A feed can be current and still describe no service for the next few weeks, for
+    example when an export carries next quarter's calendars but drops the current
+    one. Riders see nothing during the gap. See
+    <a href="/fix/big_gap_in_service/">a big gap in service</a> and
+    <a href="/fix/expired_calendar/">expired service calendars</a>.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">4. The feed moved and the
+    aggregators were not told</h2>
+    <p>Publishing a feed at a new URL is not enough; the places planners discover feeds
+    have to learn the new address too. That usually means updating your entry in the
+    <a href="https://mobilitydatabase.org/">Mobility Database</a>, your listing with any
+    state or regional data program, and your feed configuration in
+    <a href="https://support.google.com/transitpartners/">Google's transit partner
+    tools</a> if your agency manages one. If this site tracks your feed at an old
+    address, <a href="/submit.html">tell us the new one</a>.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">5. An export change broke the
+    feed</h2>
+    <p>Less common, but a scheduling-software upgrade or a settings change can produce a
+    feed with errors severe enough that a planner rejects the whole file. The free
+    <a href="/check/">pre-publish check</a> runs the canonical validator in your browser
+    before the feed goes out the door, so a broken export never reaches riders.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">Check your feed right now</h2>
+    <p>Find your agency on <a href="/agencies/">the agency list</a> for its current
+    grade, refresh status, and expiry outlook, or run
+    <a href="/try.html">an instant score</a> on any feed URL. If you maintain a feed,
+    <a href="/subscribe.html">subscribe to feed-health alerts</a> and the expiration
+    warning arrives before the silence does.</p></section>
+
+    <p class="fineprint">Each trip planner ingests feeds on its own rules and timetable,
+    so this page describes the common causes, not any planner's official policy. The
+    durable protection is the same in every case: publish on a schedule, and watch the
+    feed the way riders depend on it.</p>"""
+    jsonld = _tech_article_jsonld(
+        headline="Why did my agency disappear from Google Maps?",
+        description=(
+            "The five reasons a transit agency's service vanishes from Google Maps, Apple "
+            "Maps, and Transit, in the order to check them: expired feeds, broken feed "
+            "URLs, calendar gaps, unannounced feed moves, and broken exports."
+        ),
+        canonical=canonical,
+        about={"@type": "Thing", "name": "GTFS feed troubleshooting"},
+    )
+    return _page(
+        title="Why did my agency disappear from Google Maps? — GTFS Scorecard",
+        description=(
+            "The buses are still running but riders can't find them: the five GTFS feed "
+            "problems that make a transit agency vanish from trip planners, in the order "
+            "to check them, with plain-language fixes."
+        ),
+        canonical=canonical,
+        wide=True,
+        body=body,
+        jsonld=jsonld,
+    )
+
+
 _ACCESS_BAND_LABELS = {
     "most": "Nearly every stop marked",
     "some": "Some stops marked",
@@ -10538,6 +10641,14 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         "ntd/shapes/index.html",
         _render_shapes_page(shapes_payload),
         f"{BASE_URL}/ntd/shapes/",
+    )
+    # The symptom-first troubleshooting guide: why service vanishes from trip
+    # planners, for the manager who searches the symptom rather than a notice
+    # code. Static content; funnels into the fix library and the pre-publish check.
+    write(
+        "guide/disappeared-from-trip-planners/index.html",
+        _render_disappeared_page(),
+        f"{BASE_URL}/guide/disappeared-from-trip-planners/",
     )
 
     # National accessibility-data coverage (how many feeds let a wheelchair user
