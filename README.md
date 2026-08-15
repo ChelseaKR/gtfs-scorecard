@@ -16,6 +16,45 @@ dated grades, prioritized fixes, history, program views, practitioner tools,
 and open data. It does not implement a competing GTFS validator. Correctness
 findings come from MobilityData's canonical validator.
 
+## Quickstart
+
+Requires Python 3.12+, [uv](https://docs.astral.sh/uv/), and Java 17+
+(the validator jar is downloaded automatically on first run).
+
+```sh
+cd pipeline
+uv sync
+uv run scorecard run --all
+```
+
+This fetches today's snapshot of every current configured feed, validates and
+scores it, and writes artifacts to `data/artifacts/<agency>/<date>.json` plus a
+`latest.json` and a cross-agency `index.json`. Retired aliases are excluded
+from the batch; an explicit historical rescore writes a dated record without
+recreating mutable current files. Re-running a day is idempotent. Checks (from
+the repo root; mirrors the CI gate):
+
+```sh
+make verify
+```
+
+### Run the web app locally
+
+The frontend reads the JSON artifacts over HTTP. Serve the repo root and open
+the page through `http://`, not by double-clicking the file:
+
+```sh
+cd ..            # repo root, so data/artifacts/ is reachable
+python3 -m http.server 8000
+# then open http://localhost:8000/web/index.html
+```
+
+Opening `web/index.html` as a `file://` URL leaves the page stuck on
+"Loading scorecards…": browsers block ES module loading and `fetch` over
+`file://`, so the app never runs. Any static server works; the only requirement
+is that `data/artifacts/` sits one level above `web/`, which the
+`../data/artifacts` fallback in `web/src/app.js` expects.
+
 ## Where it fits
 
 GTFS Scorecard is the evidence and triage layer:
@@ -79,45 +118,6 @@ be added through `registry/intake.yaml`.
   [bounded open issue](https://github.com/ChelseaKR/gtfs-scorecard/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
   or read [CONTRIBUTING.md](CONTRIBUTING.md). Feed corrections, accessibility
   review, and practitioner feedback are useful without changing scoring code.
-
-## Quickstart
-
-Requires Python 3.12+, [uv](https://docs.astral.sh/uv/), and Java 17+
-(the validator jar is downloaded automatically on first run).
-
-```sh
-cd pipeline
-uv sync
-uv run scorecard run --all
-```
-
-This fetches today's snapshot of every current configured feed, validates and
-scores it, and writes artifacts to `data/artifacts/<agency>/<date>.json` plus a
-`latest.json` and a cross-agency `index.json`. Retired aliases are excluded
-from the batch; an explicit historical rescore writes a dated record without
-recreating mutable current files. Re-running a day is idempotent. Checks (from
-the repo root; mirrors the CI gate):
-
-```sh
-make verify
-```
-
-### Run the web app locally
-
-The frontend reads the JSON artifacts over HTTP. Serve the repo root and open
-the page through `http://`, not by double-clicking the file:
-
-```sh
-cd ..            # repo root, so data/artifacts/ is reachable
-python3 -m http.server 8000
-# then open http://localhost:8000/web/index.html
-```
-
-Opening `web/index.html` as a `file://` URL leaves the page stuck on
-"Loading scorecards…": browsers block ES module loading and `fetch` over
-`file://`, so the app never runs. Any static server works; the only requirement
-is that `data/artifacts/` sits one level above `web/`, which the
-`../data/artifacts` fallback in `web/src/app.js` expects.
 
 ## What an agency gets
 
@@ -290,23 +290,23 @@ see the integrity note in that directory's history). Per
 `docs/standards/README.md`'s conformance rule, every applicable standard is
 declared here; none is silently skipped.
 
-| Standard | Applies? |
-|---|---|
-| [Code Quality](docs/standards/CODE-QUALITY-STANDARD.md) | Applies (Python; TS/Node N/A — `web/` is no-build vanilla JS) |
-| [Security & Supply-Chain](docs/standards/SECURITY-AND-SUPPLY-CHAIN-STANDARD.md) | Applies (ASVS L1 shape: no auth, no PII store) |
-| [CI/CD](docs/standards/CI-CD-STANDARD.md) | Applies |
-| [Observability](docs/standards/OBSERVABILITY-STANDARD.md) | Applies — Tier B (frontend) + Tier C (batch pipeline); see [ADR 0031](docs/decisions/0031-observability-tier.md) |
-| [Accessibility](docs/standards/ACCESSIBILITY-STANDARD.md) | Applies fully — civic content, self-declared WCAG 2.2 AAA (see [docs/accessibility.md](docs/accessibility.md), [docs/vpat.md](docs/vpat.md)) |
-| [Internationalization](docs/standards/INTERNATIONALIZATION-STANDARD.md) | Applies — civic transit data, public-facing; exemption path unavailable |
-| [Performance](docs/standards/PERFORMANCE-STANDARD.md) | Applies — the static frontend has blocking Lighthouse budgets on code changes; the scheduled data-refresh path retains its documented advisory exception |
-| [AI Evaluation](docs/standards/AI-EVALUATION-STANDARD.md) | N/A — no LLM/model component: no model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to APPLIES on first LLM SDK use. |
-| [AI Development Measurement](docs/standards/AI-DEVELOPMENT-MEASUREMENT-STANDARD.md) | Applies — delivery and quality-debt outcomes are measured at repository level; local AI-tool telemetry is never a merge gate |
-| [Quality & Metrics](docs/standards/QUALITY-AND-METRICS-STANDARD.md) | Applies (data-quality/lineage named for this repo explicitly) |
-| [Documentation](docs/standards/DOCUMENTATION-STANDARD.md) | Applies |
-| [Release & Versioning](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.4.0`), monthly dataset releases; the MCP server manifest is written but not published to the registry (see Versioning) |
-| [Responsible-Tech Framework](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies (audits A-F; AI-governance rows N/A — no AI system) |
-| [Incident Response](docs/standards/INCIDENT-RESPONSE-STANDARD.md) | Applies — deployed static site and scheduled pipeline; incidents use the shared severity, label, postmortem, and secret-leak conventions |
-| [Data Governance](docs/standards/DATA-GOVERNANCE-STANDARD.md) | Applies — public civic datasets, feed provenance, licenses, retention, and publication lineage are core product concerns |
+| Standard | Applies? | Current state |
+|---|---|---|
+| Code Quality | Applies | Python; TS/Node N/A — `web/` is no-build vanilla JS. [Standard](docs/standards/CODE-QUALITY-STANDARD.md) |
+| Security & Supply-Chain | Applies | ASVS L1 shape: no auth, no PII store. [Standard](docs/standards/SECURITY-AND-SUPPLY-CHAIN-STANDARD.md) |
+| CI/CD | Applies | [Standard](docs/standards/CI-CD-STANDARD.md) |
+| Observability | Applies | Tier B (frontend) plus Tier C (batch pipeline); see [ADR 0031](docs/decisions/0031-observability-tier.md). [Standard](docs/standards/OBSERVABILITY-STANDARD.md) |
+| Accessibility | Applies fully | Civic content, self-declared WCAG 2.2 AAA (see [docs/accessibility.md](docs/accessibility.md), [docs/vpat.md](docs/vpat.md)). [Standard](docs/standards/ACCESSIBILITY-STANDARD.md) |
+| Internationalization | Applies | Civic transit data, public-facing; exemption path unavailable. [Standard](docs/standards/INTERNATIONALIZATION-STANDARD.md) |
+| Performance | Applies | The static frontend has blocking Lighthouse budgets on code changes; the scheduled data-refresh path retains its documented advisory exception. [Standard](docs/standards/PERFORMANCE-STANDARD.md) |
+| AI Evaluation | N/A — no LLM/model component | No model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to Applies on first LLM SDK use. [Standard](docs/standards/AI-EVALUATION-STANDARD.md) |
+| AI Development Measurement | Applies | Delivery and quality-debt outcomes are measured at repository level; local AI-tool telemetry is never a merge gate. [Standard](docs/standards/AI-DEVELOPMENT-MEASUREMENT-STANDARD.md) |
+| Quality & Metrics | Applies | Data-quality and lineage are named for this repo explicitly. [Standard](docs/standards/QUALITY-AND-METRICS-STANDARD.md) |
+| Documentation | Applies | One declared divergence, recorded in the gaps file. [Standard](docs/standards/DOCUMENTATION-STANDARD.md) |
+| Release & Versioning | Applies | Reusable Action tags (`v1`/`v1.4.0`), monthly dataset releases; the MCP server manifest is written but not published to the registry (see Versioning). The v2.0.0 release-hardening gate is not met; see the gaps file. [Standard](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) |
+| Responsible-Tech Framework | Applies | Audits A-F; AI-governance rows are N/A — no AI system. [Standard](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) |
+| Incident Response | Applies | Deployed static site and scheduled pipeline; incidents use the shared severity, label, postmortem, and secret-leak conventions. [Standard](docs/standards/INCIDENT-RESPONSE-STANDARD.md) |
+| Data Governance | Applies | Public civic datasets, feed provenance, licenses, retention, and publication lineage are core product concerns. [Standard](docs/standards/DATA-GOVERNANCE-STANDARD.md) |
 
 Open gaps per standard, as of the most recent conformance audit, are tracked
 in [docs/standards-conformance-gaps.md](docs/standards-conformance-gaps.md)
