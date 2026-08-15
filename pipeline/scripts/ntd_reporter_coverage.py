@@ -13,12 +13,19 @@ Sources, all public domain or openly licensed:
   Agency Information (the roster)   data.transportation.gov dataset ccvf-fykn
   Service (by Mode)                 data.transportation.gov dataset 4fir-qbim
   Transitland Atlas                 github.com/transitland/transitland-atlas
-  Mobility Database catalog         files.mobilitydatabase.org/feeds_v2.csv
+  Mobility Database catalog         storage.googleapis.com mdb-csv/sources.csv
 
 The two FTA tables are Socrata mirrors of the annual-database products on
 transit.dot.gov, which is behind an edge filter that refuses non-browser
 clients. The mirror is the same product and is machine-readable, so it is what
 this pins.
+
+The Mobility Database leg deliberately reads the storage.googleapis.com catalog
+that `scorecard discover` already reads weekly, not `feeds_v2.csv`. The v2
+catalog is larger and better, and its host `files.mobilitydatabase.org` serves
+`User-agent: * / Disallow: /` (checked 2026-08-15). Adding a new automated
+reader of a host that asks not to be read is not a trade worth making for a
+wider join, so this takes the smaller catalog and says so in the write-up.
 """
 
 from __future__ import annotations
@@ -54,7 +61,7 @@ from scorecard_pipeline.ntd_coverage import (  # noqa: E402
 ROSTER_URL = "https://data.transportation.gov/api/views/ccvf-fykn/rows.csv?accessType=DOWNLOAD"
 MODE_URL = "https://data.transportation.gov/api/views/4fir-qbim/rows.csv?accessType=DOWNLOAD"
 ATLAS_URL = "https://codeload.github.com/transitland/transitland-atlas/tar.gz/refs/heads/main"
-CATALOG_URL = "https://files.mobilitydatabase.org/feeds_v2.csv"
+CATALOG_URL = "https://storage.googleapis.com/storage/v1/b/mdb-csv/o/sources.csv?alt=media"
 REPORT_YEAR = "2024"
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -141,7 +148,7 @@ def catalog_records(rows: list[dict[str, str]]) -> list[FeedRecord]:
         subdivision = (row.get("location.subdivision_name") or "").strip().lower()
         out.append(
             FeedRecord(
-                key=row.get("id", ""),
+                key="mdb-" + row.get("mdb_source_id", ""),
                 state=_STATE_BY_NAME.get(subdivision, ""),
                 name=(row.get("provider") or row.get("name") or "").strip(),
                 urls=((row.get("urls.direct_download") or "").strip(),),
@@ -254,7 +261,7 @@ def main() -> int:
              "license": "Public domain (US Government work); attribution: Federal Transit Administration"},
             {"name": "Transitland Atlas", "url": ATLAS_URL, "sha256": atlas_raw.sha256,
              "license": "CC-BY 4.0, Interline Technologies and contributors"},
-            {"name": "Mobility Database catalog", "url": CATALOG_URL,
+            {"name": "Mobility Database catalog (storage.googleapis.com copy)", "url": CATALOG_URL,
              "sha256": catalog_raw.sha256,
              "license": "See mobilitydatabase.org terms; per-feed licences vary"},
         ],

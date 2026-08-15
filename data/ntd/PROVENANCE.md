@@ -23,7 +23,14 @@ write-up.
 | FTA NTD Annual Database, Agency Information (Socrata dataset `ccvf-fykn`) | 2026-08-15 | Public domain, US Government work. Attribution: Federal Transit Administration. |
 | FTA NTD Annual Data View, Service by Mode (Socrata dataset `4fir-qbim`) | 2026-08-15 | Public domain, US Government work. Attribution: Federal Transit Administration. |
 | Transitland Atlas, `main` branch tarball | 2026-08-15 | CC-BY 4.0, Interline Technologies and contributors. |
-| Mobility Database catalog, `feeds_v2.csv` | 2026-08-15 | mobilitydatabase.org terms; per-feed licences vary. |
+| Mobility Database catalog, `storage.googleapis.com` copy of `sources.csv` | 2026-08-15 | mobilitydatabase.org terms; per-feed licences vary. |
+
+The Mobility Database leg reads the `storage.googleapis.com` catalog that
+`scorecard discover` already reads on a weekly schedule. It does not read
+`files.mobilitydatabase.org/feeds_v2.csv`, whose host serves
+`User-agent: * / Disallow: /` (checked 2026-08-15). The v2 catalog is the better
+data and would widen the join; the write-up records how much by, and PR #276 is
+where that access decision belongs.
 
 The two FTA tables are the Socrata mirrors of the annual-database products on
 transit.dot.gov. That host sits behind an edge filter that returns HTTP 403 to
