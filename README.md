@@ -278,9 +278,10 @@ for human review before publication.
 ## Support
 
 The public scorecards, data, API, local pre-publish check, and request-backed
-one-off scoring remain free. The [support page](https://gtfsscorecard.org/support/)
-explains the project's infrastructure needs and accepts sponsorship inquiries;
-it does not advertise a payment rail that is not ready.
+one-off scoring remain free, and stay free. This is independent, unpaid work;
+if it has been useful, [Ko-fi](https://ko-fi.com/T6T6GMYTU) is open. The
+[support page](https://gtfsscorecard.org/support/) explains the project's
+infrastructure needs and takes sponsorship inquiries.
 
 ## Standards conformance
 
@@ -382,8 +383,3 @@ Built and maintained by [Chelsea Kelly-Reif](https://chelseakr.com), starting
 from the transit systems in Davis, California. Contributions and corrections are
 welcome; agencies can ask to be added or removed under the
 [listing and removal policy](docs/listing-policy.md).
-
-## Support
-
-This is independent, unpaid work. If it has been useful to you, you can
-<a href='https://ko-fi.com/T6T6GMYTU' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
