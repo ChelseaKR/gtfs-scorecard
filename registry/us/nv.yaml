@@ -44,6 +44,21 @@ agencies:
     mdb_id: 2328
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-110 is deprecated and redirects to mdb-2351. Filed
+  # under California in registry/us/ca.yaml until now, but its stops span
+  # 35.96-36.31N, 115.33-114.83W, which is the Las Vegas valley, and its
+  # successor is this shard's mdb-2351. Recorded as Nevada.
+  - id: regional-transportation-commission-of-southern-nevada-rtc
+    name: Regional Transportation Commission of Southern Nevada (RTC)
+    alias_of: regional-transportation-commission-of-southern-nevada-rtc-2351
+    feed_status: deprecated
+    subdivision_code: US-NV
+    subdivision_name: Nevada
+    static_gtfs_url: http://rtcws.rtcsnv.com/g/google_transit.zip
+    mdb_id: 110
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
+    license_note: "License: https://www.rtcsnv.com/ways-to-travel/transit-services/for-developers/"
+
   - id: regional-transportation-commission-of-southern-nevada-rtc-2351
     name: Regional Transportation Commission of Southern Nevada (RTC)
     subdivision_code: US-NV

@@ -26,7 +26,7 @@ import csv
 import hashlib
 import io
 import re
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 
 from .config import Agency
@@ -34,6 +34,14 @@ from .identity import normalized_mdb_id
 from .lint import is_feed_descriptor
 from .location import normalize_location
 from .net import safe_get
+from .supersession_review import (
+    FLAG_REASONS,
+    ReviewedRetirement,
+    approved,
+    blocking,
+    review_entry_yaml,
+    review_flags,
+)
 
 # https://mobilitydatabase.org — V2 is the current proposal corpus. The legacy
 # export remains the default for existing consumers that depend on its mirror
@@ -1260,7 +1268,13 @@ def apply_replacements(yaml_text: str, matches: list[FeedMatch]) -> tuple[str, l
 
 @dataclass(frozen=True)
 class Supersession:
-    """A tracked record the catalog has replaced, and the record that replaced it."""
+    """A tracked record the catalog has replaced, and the record that replaced it.
+
+    ``review_flags`` names the ways the two records look like different agencies
+    rather than one agency renamed (see ``supersession_review``). A flagged
+    retirement is reported and held for a decision instead of being applied, so
+    a redirect that crosses a state line cannot be recorded silently.
+    """
 
     agency_id: str
     agency_name: str
@@ -1268,6 +1282,7 @@ class Supersession:
     successor_agency_id: str
     successor_agency_name: str
     successor_mdb_id: str
+    review_flags: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -1430,6 +1445,7 @@ def find_supersessions(
                 successor.id,
                 successor.name,
                 successor.mdb_id,
+                review_flags(agency, successor),
             )
         )
     looped = _looping_retirements({s.agency_id: s.successor_agency_id for s in resolved})
@@ -1445,6 +1461,26 @@ def find_supersessions(
         if s.agency_id in looped
     )
     return [s for s in resolved if s.agency_id not in looped], unresolved
+
+
+def hold_for_review(
+    superseded: Sequence[Supersession], reviewed: Mapping[str, ReviewedRetirement]
+) -> tuple[list[Supersession], list[Supersession]]:
+    """Split retirements into the ones a recorded decision covers, and the rest.
+
+    A retirement with no review flags needs no decision and applies as before.
+    A flagged one applies only when ``supersession-review.yaml`` approves that
+    exact pairing for those exact reasons, so a redirect that crosses a state
+    line, or that renames an agency into an unrelated one, waits for a person
+    instead of being written into the registry by the weekly job.
+    """
+    ready: list[Supersession] = []
+    held: list[Supersession] = []
+    for item in superseded:
+        entry = reviewed.get(item.agency_id)
+        target = ready if approved(entry, item.successor_agency_id, item.review_flags) else held
+        target.append(item)
+    return ready, held
 
 
 def apply_supersessions(yaml_text: str, supersessions: list[Supersession]) -> tuple[str, list[str]]:
@@ -1513,6 +1549,7 @@ def render_supersessions_md(
     unresolved: list[UnresolvedSupersession],
     *,
     today: str,
+    held: Sequence[Supersession] = (),
 ) -> str:
     """A reviewable Markdown report of catalog-recorded feed retirements."""
     out: list[str] = [
@@ -1531,6 +1568,14 @@ def render_supersessions_md(
         f"- **{len(unresolved)}** retired records do not, and keep their own page.",
         "",
     ]
+    if held:
+        out += [
+            f"- **{len(held)}** of those retirements are **held for review**: the "
+            "successor is in a different state, or carries a name that does not read "
+            "as this agency renamed. They are not recorded until a decision for each "
+            "is in `supersession-review.yaml`.",
+            "",
+        ]
     if superseded:
         out += [
             "## Retired, with the successor we publish",
@@ -1545,6 +1590,33 @@ def render_supersessions_md(
                 f"(`{s.successor_agency_id}`) | {redirect} |"
             )
         out.append("")
+    if held:
+        out += [
+            "## Held for review",
+            "",
+            "Each of these is a retirement the catalog asks for where the two records "
+            "do not look like one agency. Read the pair, then record the decision in "
+            "`supersession-review.yaml` at the repository root: `retire` if it is the "
+            "same agency or a real merger, `keep_separate` if it is not. Until then "
+            "the retirement is not written, and the build fails if one is written "
+            "without a decision.",
+            "",
+        ]
+        for s in sorted(held, key=lambda item: item.agency_name.lower()):
+            reasons = "; ".join(FLAG_REASONS[flag] for flag in blocking(s.review_flags))
+            out += [
+                f"### {s.agency_name} (`{s.agency_id}`) to {s.successor_agency_name} "
+                f"(`{s.successor_agency_id}`)",
+                "",
+                f"- Catalog redirect: {normalized_mdb_id(s.mdb_id)} to "
+                f"{normalized_mdb_id(s.successor_mdb_id)}",
+                f"- Held because {reasons}.",
+                "",
+                "```yaml",
+                review_entry_yaml(s.agency_id, s.successor_agency_id, s.review_flags).rstrip("\n"),
+                "```",
+                "",
+            ]
     renamed = [s for s in superseded if s.agency_name.strip() != s.successor_agency_name.strip()]
     if renamed:
         out += [

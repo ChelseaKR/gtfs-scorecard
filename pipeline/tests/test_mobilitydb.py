@@ -25,6 +25,7 @@ from scorecard_pipeline.mobilitydb import (
     fetch_catalog_bytes,
     find_replacements,
     find_supersessions,
+    hold_for_review,
     parse_catalog,
     parse_catalog_records,
     proposal_catalog_schema,
@@ -37,6 +38,7 @@ from scorecard_pipeline.mobilitydb import (
     resolve_states,
     slugify,
 )
+from scorecard_pipeline.supersession_review import ReviewedRetirement
 
 V2_FIXTURE = Path(__file__).parent / "fixtures" / "mobilitydb_feeds_v2_trimmed.csv"
 V2_HEADER = (
@@ -1390,3 +1392,99 @@ def test_supersession_report_flags_a_successor_with_a_different_name() -> None:
     # Same name on both sides: nothing to check by hand.
     assert "Athens Public Transit (`athens-public-transit`) to" not in report
     assert "the catalog lists more than one successor record" in report
+
+
+# One agency name, two states: the catalog redirects a Connecticut record into a
+# California one. This is the shape that would have shipped a Connecticut agency
+# as Californian, and the shape the catalog alone cannot rule out.
+CROSS_STATE_CATALOG = (
+    "id,data_type,entity_type,provider,is_official,urls.direct_download,"
+    "urls.authentication_type,status,static_reference,redirect.id\n"
+    "mdb-529,gtfs,,Norwalk Transit District,true,https://ct.example/gtfs.zip,0,"
+    "deprecated,,mdb-2242\n"
+    "mdb-2242,gtfs,,Norwalk Transit System,true,https://ca.example/gtfs.zip,0,active,,\n"
+)
+
+
+def _cross_state_registry() -> list[Agency]:
+    return parse_agencies(
+        {
+            "agencies": [
+                {
+                    "id": "norwalk-transit-district",
+                    "name": "Norwalk Transit District",
+                    "static_gtfs_url": "https://ct.example/gtfs.zip",
+                    "mdb_id": "529",
+                    "subdivision_code": "US-CT",
+                },
+                {
+                    "id": "norwalk-transit-system",
+                    "name": "Norwalk Transit System",
+                    "static_gtfs_url": "https://ca.example/gtfs.zip",
+                    "mdb_id": "2242",
+                    "subdivision_code": "US-CA",
+                },
+            ]
+        }
+    )
+
+
+def test_a_retirement_across_a_state_line_is_flagged_and_held() -> None:
+    superseded, _ = find_supersessions(parse_catalog(CROSS_STATE_CATALOG), _cross_state_registry())
+    ready, held = hold_for_review(superseded, {})
+
+    assert superseded[0].review_flags == ("different_subdivision",)
+    assert ready == []
+    assert [s.agency_id for s in held] == ["norwalk-transit-district"]
+
+
+def test_a_held_retirement_is_not_written_into_the_registry() -> None:
+    """The point of holding one: the registry is unchanged until a person decides."""
+    yaml_text = (
+        "agencies:\n"
+        "  - id: norwalk-transit-district\n"
+        "    name: Norwalk Transit District\n"
+        "    subdivision_code: US-CT\n"
+        "    static_gtfs_url: https://ct.example/gtfs.zip\n"
+        "    mdb_id: '529'\n"
+    )
+    superseded, _ = find_supersessions(parse_catalog(CROSS_STATE_CATALOG), _cross_state_registry())
+    ready, _ = hold_for_review(superseded, {})
+
+    updated, changed = apply_supersessions(yaml_text, ready)
+
+    assert changed == []
+    assert updated == yaml_text
+
+
+def test_a_recorded_decision_releases_the_retirement_it_covers() -> None:
+    superseded, _ = find_supersessions(parse_catalog(CROSS_STATE_CATALOG), _cross_state_registry())
+    reviewed = {
+        "norwalk-transit-district": ReviewedRetirement(
+            agency_id="norwalk-transit-district",
+            successor_id="norwalk-transit-system",
+            flags=("different_subdivision",),
+            decision="retire",
+            evidence="checked the feed: one agency, two catalog records",
+        )
+    }
+
+    ready, held = hold_for_review(superseded, reviewed)
+
+    assert [s.agency_id for s in ready] == ["norwalk-transit-district"]
+    assert held == []
+
+
+def test_the_report_names_why_a_retirement_is_held_and_how_to_decide_it() -> None:
+    superseded, unresolved = find_supersessions(
+        parse_catalog(CROSS_STATE_CATALOG), _cross_state_registry()
+    )
+    ready, held = hold_for_review(superseded, {})
+
+    report = render_supersessions_md(ready, unresolved, today="2026-08-14", held=held)
+
+    assert "Held for review" in report
+    assert "the successor is in a different state or province" in report
+    assert "agency_id: norwalk-transit-district" in report
+    assert "flags: [different_subdivision]" in report
+    assert "Catalog redirect: mdb-529 to mdb-2242" in report

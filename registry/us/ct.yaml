@@ -100,6 +100,29 @@ agencies:
     mdb_id: 2240
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Filed under California by the Mobility Database (provider "Norwalk Transit
+  # System (NTS)"), but the feed itself is this Connecticut district's: its stops
+  # span 41.02-41.24N, 73.63-73.03W and its routes are Norwalk Community College,
+  # SoNo Station, and Wal*Mart, matching mdb-529's own service area. Recorded
+  # here as Connecticut so mdb-529's retirement does not send a Connecticut
+  # reader to a page labelled California. The California record of the same name
+  # (mdb-102, Norwalk in Los Angeles County) is a different agency and keeps its
+  # own page; see supersession-review.yaml. The realtime endpoints below are
+  # carried unchanged and are also listed on mdb-102: nothing in the catalog or
+  # in a fetched feed says which of the two Norwalks owns them, so that stays an
+  # open question rather than a guess.
+  - id: norwalk-transit-system-nts-2242
+    name: Norwalk Transit District
+    subdivision_code: US-CT
+    subdivision_name: Connecticut
+    static_gtfs_url: https://mystop.norwalktransit.com/InfoPoint/gtfs-zip.ashx
+    mdb_id: 2242
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+    rt_urls:
+      trip_updates: https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
+      vehicle_positions: https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
+      service_alerts: https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
+
   - id: connecticut-transit-2840
     ntd_id: "10048"
     name: Hartford Line - Rail

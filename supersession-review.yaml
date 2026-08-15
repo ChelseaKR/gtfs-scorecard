@@ -1,0 +1,174 @@
+# Decisions on feed retirements that could not be recorded automatically.
+#
+# A retirement (`alias_of` plus `feed_status: deprecated`) stops one record
+# publishing a current grade and sends its readers to another record's page.
+# Most of them come from the Mobility Database's own `redirect.id`. The catalog
+# is usually right, but it cannot tell "this agency renamed itself" from "these
+# two records look alike", and when it is wrong the site publishes one agency's
+# grade under another agency's name.
+#
+# So a retirement whose successor sits in a different state or country, or
+# carries a name that does not read as a rename of the record retiring into it,
+# is held for a person. `scorecard supersessions` refuses to write it, and
+# `pipeline/scripts/check_supersession_review.py` fails the build if one is
+# written without an entry here. Both re-derive the flags from the registry, so
+# the file cannot drift from the data it describes.
+#
+# Each entry records:
+#   agency_id     the record being retired
+#   successor_id  the record its readers are sent to
+#   flags         why it was held, exactly as the check computes them
+#   decision      retire        - one agency, or a real merger; the retirement stands
+#                 keep_separate - not the same agency; the record keeps its own page,
+#                                 and the weekly sync must not re-apply the redirect
+#   evidence      what the decision rests on, in the reviewer's words
+#
+# The evidence is the point. An entry with a decision and no reason is not
+# reviewable by the next person, so the check rejects it. Entries arrive by pull
+# request, which this repository's ruleset requires a code owner to review, and
+# the check fails again if the pairing or the reasons later change.
+#
+# Feed contents cited below come from this repository's own committed artifacts
+# (`data/artifacts/<id>/latest.json`): the stop bounding box and the route names
+# the fetched feed actually carried. The Mobility Database's CSV export is not
+# re-fetched here; `files.mobilitydatabase.org/robots.txt` returns
+# `User-agent: * / Disallow: /`.
+
+reviewed:
+  - agency_id: norwalk-transit-system-nts
+    successor_id: norwalk-transit-system-nts-2242
+    flags: [different_subdivision]
+    decision: keep_separate
+    evidence: >-
+      Two different cities named Norwalk. This record's feed covers Norwalk in
+      Los Angeles County (stops within 33.87-34.07N, 118.13-117.96W; routes to
+      Cerritos College, Rio Hondo and 166th Street). The record the catalog
+      redirects it to carries the Connecticut Norwalk's feed (stops within
+      41.02-41.24N, 73.63-73.03W; routes to Norwalk Community College, SoNo
+      Station and Norwalk Hospital), which is why that record is now filed in
+      registry/us/ct.yaml. Following the redirect would grade a Connecticut feed
+      on a Los Angeles County agency's page, so it is not followed: this record
+      keeps its own page, on the same terms as the other retired records whose
+      successor cannot be identified.
+
+  - agency_id: city-of-milton-freewater-public-transportation
+    successor_id: city-of-milton-freewater-public-transportation-2189
+    flags: [name_not_a_rename]
+    decision: retire
+    evidence: >-
+      A city's record retiring into a tribal provider's, which is a change of
+      publisher and not a rename. The successor's feed is the Confederated
+      Tribes of the Umatilla Indian Reservation's (path ctuir-or-us; routes
+      Mission Metro, Walla Walla Whistler, Hermiston Hopper and the Nixyaawii
+      Community Shuttle), and it carries a Milton - Freewater route, so the
+      service this record's readers are looking for is in the successor's feed.
+      The successor is named for the tribal provider that publishes it rather
+      than for the city, so the retirement no longer presents a tribal nation's
+      feed under a city's name. The city's own feed is a separate 48-stop export
+      whose service data has expired.
+
+  - agency_id: the-current
+    successor_id: rockingham-moover
+    flags: [name_not_a_rename]
+    decision: retire
+    evidence: >-
+      The successor's feed (path sevt-vt-us) carries this record's entire route
+      set - Springfield In-Town, Bellows Falls In-Town, the Brattleboro Red,
+      Blue and White lines, the Dartmouth and VA runs - together with the
+      MOOver's Wilmington, Mount Snow and Readsboro routes, so it is the whole
+      Southeast Vermont operation rather than either brand alone. It is named
+      for that operation rather than for the Rockingham MOOver, so the
+      retirement does not land a reader on a page named for a brand that is only
+      part of what the feed covers. The MOOver's own record (mdb-434) is still
+      current in the catalog and keeps its page, though its nine routes all
+      appear in the successor's feed too; that is a separate curator call.
+
+  - agency_id: duarte-transit
+    successor_id: foothill-transit
+    flags: [name_not_a_rename]
+    decision: retire
+    evidence: >-
+      A city shuttle retiring into a regional operator's record, which is a
+      merger rather than a rename. Duarte's 93 stops sit inside the successor's
+      service area (34.13-34.15N, 117.99-117.93W, within 33.92-34.15N,
+      118.27-117.69W). Nothing in this repository confirms the absorption
+      itself; the catalog's redirect is the evidence, and the successor's feed
+      is the one that is still maintained.
+
+  - agency_id: greater-glens-falls-transit
+    successor_id: capital-district-transportation-authority-cdta
+    flags: [name_not_a_rename]
+    decision: retire
+    evidence: >-
+      A local system retiring into a regional authority's record, so readers
+      searching for Glens Falls will land on CDTA's page. The retired feed's
+      stops (43.24-43.56N, 73.72-73.58W) fall inside the successor's
+      (42.47-43.56N, 74.22-73.45W), and the retired feed's service data has
+      expired while the successor's is current.
+
+  - agency_id: town-of-telluride
+    successor_id: san-miguel-county
+    flags: [name_not_a_rename]
+    decision: retire
+    evidence: >-
+      A town service retiring into its county's record. The successor's feed
+      carries the retired record's own Galloping Goose route alongside Lawson
+      Hill, Down Valley, Norwood and Rico, and both feeds sit on the same host
+      under their own slugs (telluride-co-us, sanmiguelcounty-co-us).
+
+  - agency_id: sarasota-county-area-transit
+    successor_id: breeze-transit
+    flags: [name_not_a_rename]
+    decision: retire
+    evidence: >-
+      A rebrand, not a different agency: the two feeds carry the same route
+      names (Downtown/Fruitville/Cattlemen, Downtown/SRQ/UTC Mall,
+      Beneva/Sarasota Square Mall) over the same service area (27.04-27.49N,
+      82.59-82.21W). Both hosts changed at once, so the catalog's redirect is
+      what links the records, and the feed contents agree with it.
+
+  - agency_id: cobb-community-transit-cct
+    successor_id: cobblinc
+    flags: [name_not_a_rename]
+    decision: retire
+    evidence: >-
+      Cobb County's CCT rebranded as CobbLinc. The two feeds share route names
+      (CTC - MTC via Windy Hill, the MARTA Arts Center to Marietta Transfer
+      Center run) over overlapping stops (33.75-34.08N, 84.66-84.38W), and the
+      successor's host still names the county.
+
+  - agency_id: the-jo
+    successor_id: johnson-county-transit
+    flags: [name_not_a_rename]
+    decision: retire
+    evidence: >-
+      A brand retiring into its agency's legal name. The retired record is a
+      transitfeeds.com mirror carrying one route (the K10 Connector) and five
+      stops; the successor is Johnson County's own current feed, and the retired
+      record's stops fall inside it (38.90-38.96N, 95.26-94.73W, within
+      38.88-39.30N, 95.27-94.57W).
+
+  - agency_id: hut-airport-shuttle
+    successor_id: oregon-express-shuttle
+    flags: [name_not_a_rename]
+    decision: retire
+    evidence: >-
+      Recorded on the catalog's word, with the limits stated. The retired feed
+      is no longer fetchable, so there are no stops or routes to compare; what
+      can be checked is that both records sit on the same Oregon statewide host
+      under their own slugs (hut-or-us, oregonexpressshuttle-or-us) and that the
+      successor's feed serves the airport runs this brand ran. The successor is
+      the older record, so this consolidates onto an existing page rather than
+      creating one.
+
+  - agency_id: high-desert-point
+    successor_id: pacific-crest-bus-lines
+    flags: [name_not_a_rename]
+    decision: retire
+    evidence: >-
+      Recorded on the catalog's word, with the limits stated. The retired feed
+      is no longer fetchable. Both records sit on the same Oregon statewide host
+      under their own slugs (highdesertpoint-or-us, pacificcrest-or-us), and the
+      successor's feed carries the Bend to Eugene and Highway 97 intercity runs
+      this route brand is named for. Nothing in this repository confirms the
+      operator relationship on its own.
