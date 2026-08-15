@@ -3922,6 +3922,47 @@ def test_shapes_page_explains_the_phase_in_and_carries_the_numbers() -> None:
     assert "dateModified" not in articles[0]
 
 
+def test_disappeared_guide_names_the_causes_in_check_order_and_funnels_to_fixes() -> None:
+    from scorecard_pipeline.render_site import _render_disappeared_page
+
+    html = _render_disappeared_page()
+    # The title meets the symptom query and the lede sets the no-shame premise.
+    assert "Why did my agency disappear from Google Maps?" in html
+    assert "the service did not stop; the data did" in html.replace("\n    ", " ")
+    # All five causes appear, expiry first (the most common), export breakage last.
+    assert html.index("The feed expired") < html.index("The feed URL stopped")
+    assert html.index("calendar has a gap") < html.index("aggregators were not told")
+    assert html.index("aggregators were not told") < html.index("export change broke")
+    # Every referenced fix page and self-serve surface is linked.
+    for href in (
+        "/fix/scorecard_feed_expired/",
+        "/fix/feed_expiration_date7_days/",
+        "/fix/feed_expiration_date30_days/",
+        "/fix/big_gap_in_service/",
+        "/fix/expired_calendar/",
+        "/fetcher/",
+        "/check/",
+        "/agencies/",
+        "/try.html",
+        "/subscribe.html",
+        "/submit.html",
+    ):
+        assert f'href="{href}"' in html, href
+    # No per-agency links and no compliance framing: symptom help, not a verdict.
+    assert 'href="/agency/' not in html
+    assert "not any planner's official policy" in html
+    articles = _jsonld_documents(html)
+    assert len(articles) == 1
+    _assert_tech_article_identity(
+        articles[0],
+        "https://gtfsscorecard.org/guide/disappeared-from-trip-planners/",
+    )
+    assert articles[0]["about"] == {
+        "@type": "Thing",
+        "name": "GTFS feed troubleshooting",
+    }
+
+
 def test_shapes_page_without_data_keeps_the_explainer() -> None:
     from scorecard_pipeline.render_site import _render_shapes_page
 

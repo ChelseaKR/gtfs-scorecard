@@ -34,5 +34,19 @@ jobs:
       - run: uv sync --locked --group e2e
       - name: Install the Playwright chromium
         run: uv run playwright install --with-deps chromium
+      # Render before testing, the way a11y.yml and pages.yml do. web/agency/**
+      # is generated output that happens to be committed, and the daily scoring
+      # run refreshes data/artifacts without regenerating it, so the checked-in
+      # pages drift behind the data they were rendered from. Serving them
+      # unrendered meant these tests asserted against a month-old build: ABQ RIDE
+      # read D/61.5 in committed HTML while its artifact said F/48.1, and the
+      # test that compared the two was right to fail. Deploy regenerates, so this
+      # makes the suite exercise what production actually serves.
+      - name: Materialize validated current dated records
+        run: >-
+          uv run python scripts/materialize_current_artifacts.py
+          --artifacts-root ../data/artifacts
+      - name: Render the static site
+        run: uv run scorecard render-site
       # The explicit -m e2e overrides the default deselection in addopts.
       - run: uv run pytest tests/e2e -m e2e

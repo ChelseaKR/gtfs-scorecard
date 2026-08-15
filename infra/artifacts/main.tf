@@ -132,6 +132,36 @@ resource "aws_s3_bucket_lifecycle_configuration" "artifacts" {
       days = 7
     }
   }
+
+  # feeds/ must never expire: it is the reproducibility record (archive.py), and
+  # `scorecard reproduce <agency> <date>` fetches the exact scored zip back by
+  # content hash however long after the fact. What it can do is get cheaper. The
+  # objects are written once and read almost never, only when a grade is
+  # disputed, a validator-upgrade study runs, or a backfill needs the original
+  # bytes, so Standard is the wrong class for anything but the recent tail.
+  # Glacier Instant Retrieval keeps millisecond GETs, so reproduce.py is
+  # unchanged, at roughly a sixth of the storage price. 30 days holds the window
+  # where a fresh grade is most likely to be questioned in Standard, and the
+  # bucket-level TransitionDefaultMinimumObjectSize of 128 KB already skips the
+  # small feeds where a transition costs more than it saves.
+  #
+  # This matters because the prefix is unbounded by design: content addressing
+  # means a new publication from any agency adds a zip and never replaces one.
+  # It was 59.5 GB across 9,272 objects on 2026-08-07 and grows about 2.3 GB a
+  # day, so it is the one storage line here that compounds rather than plateaus.
+  rule {
+    id     = "archive-feeds-to-glacier-ir"
+    status = "Enabled"
+
+    filter {
+      prefix = "feeds/"
+    }
+
+    transition {
+      days          = 30
+      storage_class = "GLACIER_IR"
+    }
+  }
 }
 
 resource "aws_cloudfront_origin_access_control" "artifacts" {
