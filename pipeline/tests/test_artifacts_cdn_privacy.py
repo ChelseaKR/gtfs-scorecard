@@ -3,9 +3,12 @@
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 from pathlib import Path
+
+from scorecard_pipeline.artifact_lifecycle import MUTABLE_PUBLIC_ARTIFACT_NAMES
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -26,6 +29,25 @@ def test_viewer_request_function_is_an_allowlist() -> None:
     assert "statusCode: 404" in code
 
 
+def test_retirement_names_match_the_pages_and_origin_allowlists() -> None:
+    assembly = (ROOT / "pipeline" / "scripts" / "assemble_public_artifacts.sh").read_text()
+    matched = re.search(
+        r"^\s+(latest\.json\|badge\.json\|badge\.svg\|conformance\.json\|mark\.svg"
+        r"\|geometry\.geojson)\)$",
+        assembly,
+        flags=re.MULTILINE,
+    )
+    assert matched is not None
+    assert set(matched.group(1).split("|")) == set(MUTABLE_PUBLIC_ARTIFACT_NAMES)
+
+    origin_policy = (ROOT / "infra" / "artifacts" / "main.tf").read_text()
+    for name in MUTABLE_PUBLIC_ARTIFACT_NAMES:
+        assert f"/data/artifacts/*/{name}" in origin_policy
+    assert not any(
+        re.fullmatch(r"\d{4}-\d{2}-\d{2}\.json", name) for name in MUTABLE_PUBLIC_ARTIFACT_NAMES
+    )
+
+
 def test_viewer_request_function_behavior() -> None:
     function_path = ROOT / "infra" / "artifacts" / "public-artifacts-only.js"
     public = [
@@ -37,6 +59,11 @@ def test_viewer_request_function_behavior() -> None:
         "/data/artifacts/demo/badge.svg",
         "/data/liveness.json",
     ]
+    public.extend(
+        f"/data/artifacts/demo/{name}"
+        for name in MUTABLE_PUBLIC_ARTIFACT_NAMES
+        if f"/data/artifacts/demo/{name}" not in public
+    )
     private = [
         "/data/artifacts/run/latest.json",
         "/data/artifacts/changes/badge.svg",
@@ -124,6 +151,8 @@ def test_publishers_retire_legacy_validator_cache_objects() -> None:
     assert 'include "*/corrected.zip"' not in pages
     assert '--include "canada-equity.json"' in pages
     assert '--include "*/conformance.json" --include "*/mark.svg"' in pages
+    for workflow in (daily, refresh, targeted):
+        assert "--retirement-manifest data/artifacts/.retired-current-artifacts.json" in workflow
 
 
 def test_terraform_exports_no_unsafe_whole_tree_sync_command() -> None:
@@ -153,9 +182,11 @@ def test_public_artifact_assembly_is_a_positive_allowlist(tmp_path: Path) -> Non
     source = tmp_path / "source"
     destination = tmp_path / "public"
     agency = source / "demo"
+    retired = source / "retired-demo"
     changes = source / "changes"
     rollups = source / "rollups"
     agency.mkdir(parents=True)
+    retired.mkdir()
     changes.mkdir()
     rollups.mkdir()
     (source / "index.json").write_text(json.dumps({"agencies": {"demo": {}}}))
@@ -177,6 +208,8 @@ def test_public_artifact_assembly_is_a_positive_allowlist(tmp_path: Path) -> Non
     (rollups / "california.json").write_text("{}")
     (rollups / "california.state.json").write_text("private")
     (rollups / "digest.md").write_text("private")
+    for name in (*MUTABLE_PUBLIC_ARTIFACT_NAMES, "2026-07-13.json"):
+        (retired / name).write_text("retired history")
 
     bash = shutil.which("bash")
     assert bash is not None
@@ -204,3 +237,5 @@ def test_public_artifact_assembly_is_a_positive_allowlist(tmp_path: Path) -> Non
         "index.json",
         "rollups/california.json",
     }
+    assert (retired / "2026-07-13.json").exists()
+    assert not (destination / "retired-demo").exists()

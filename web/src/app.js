@@ -3192,6 +3192,27 @@ function peerContext(dirRecord) {
   return place ? `<p class="peer-context">Catalogued in <bdi>${esc(place)}</bdi>.</p>` : "";
 }
 
+/** @param {any} artifact */
+function feedSourceLede(artifact) {
+  const provenance = artifact?.feed?.source_provenance;
+  const fetchSource = artifact?.confidence?.fetch_source || artifact?.fetch?.source || "unknown";
+  if (fetchSource === "unknown") return "Based on a snapshot whose download source was not recorded";
+  if (fetchSource === "local") return "Based on a local feed copy";
+  if (fetchSource === "mirror") {
+    if (provenance === "official")
+      return "Based on a Mobility Database mirror copy of an official feed source";
+    if (provenance === "archive")
+      return "Based on a Mobility Database mirror copy of an archived feed listing";
+    if (provenance === "third_party")
+      return "Based on a Mobility Database mirror copy of a third-party feed source";
+    return "Based on a Mobility Database mirror copy of the feed source on file; publisher ownership is not verified";
+  }
+  if (provenance === "official") return "Based on the official feed source on file";
+  if (provenance === "archive") return "Based on an archived feed source on file";
+  if (provenance === "third_party") return "Based on a third-party feed source on file";
+  return "Based on the feed source on file; publisher ownership is not verified";
+}
+
 /** @param {string} name @param {any} artifact @param {any[]} history @param {any} [dirRecord] */
 function boardHero(name, artifact, history, dirRecord) {
   const o = artifact.overall;
@@ -3200,7 +3221,7 @@ function boardHero(name, artifact, history, dirRecord) {
     <div class="board-inner">
       <p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status · checked ${formatDate(artifact.snapshot_date)}</p>
       <h1 class="board-title"><bdi>${esc(name)}</bdi></h1>
-      <p class="board-sub">Based on the feed this agency publishes</p>
+      <p class="board-sub">${esc(feedSourceLede(artifact))}</p>
       ${mode ? `<p class="board-mode"><span>Service mode</span> ${esc(mode)}</p>` : ""}
       <div class="grade-block">
         ${gradeReel(o.grade)}
@@ -3521,7 +3542,11 @@ const NTD_ALIGN_CLASSES = {
   missing: "ntd-unknown",
   unknown: "ntd-unknown",
 };
-const CONFORMANCE_NAMES = { valid: "Valid", current: "Current", accessible: "Accessible" };
+const CONFORMANCE_NAME_KEYS = {
+  valid: "conformance_criterion_valid",
+  current: "conformance_criterion_current",
+  accessible: "conformance_criterion_accessible",
+};
 
 /** Recompute agency_id presence from the alignment block stored in older artifacts.
  *  Presence and the P-50 crosswalk are required for RY2026; equality to the
@@ -3679,6 +3704,113 @@ function ntdSection(artifact) {
   </section>`;
 }
 
+/** Localized conformance detail derived from artifact facts, never stored prose.
+ *  The credential keeps owning each criterion's pass/not-yet outcome; this
+ *  presenter owns only human wording and therefore remains locale-switchable.
+ *  @param {any} artifact @param {any} criterion @param {string} place */
+function presentedConformanceCriterionDetail(artifact, criterion, place = "stop") {
+  const categories = artifact?.categories || {};
+  if (criterion?.key === "valid") {
+    const correctness = categories.correctness || {};
+    if (correctness.status !== "measured") return t("conformance_valid_not_measured");
+    const errors = (Array.isArray(correctness.findings) ? correctness.findings : []).filter(
+      (finding) => String(finding?.severity || "").toUpperCase() === "ERROR"
+    ).length;
+    if (errors === 1) return t("conformance_valid_error_one");
+    if (errors > 1) return t("conformance_valid_errors", { count: errors });
+    return t("conformance_valid_pass");
+  }
+
+  if (criterion?.key === "current") {
+    const details = categories.freshness?.details || {};
+    const days = numericValue(details.days_until_expiry);
+    if (
+      criterion.met === true &&
+      effectiveServiceHorizonStatus(details, artifact?.snapshot_date) === "unusually_distant"
+    )
+      return t("conformance_current_distant");
+    if (days === null) return t("conformance_current_unknown");
+    if (criterion.met === true)
+      return t("conformance_current_covers", { days: plainNumber(days) });
+    if (days > 0) return t("conformance_current_expires", { days: plainNumber(days) });
+    return t("conformance_current_expired", { days: plainNumber(Math.abs(days)) });
+  }
+
+  if (criterion?.key === "accessible") {
+    const access = categories.completeness?.details?.accessibility || {};
+    const stops = numericValue(access.stops_stated_pct);
+    const trips = numericValue(access.trips_stated_pct);
+    if (stops === null || trips === null) return t("conformance_accessible_not_measured");
+    const places = t(
+      place === "terminal" ? "conformance_place_terminals" : "conformance_place_stops"
+    );
+    return t(
+      criterion.met === true
+        ? "conformance_accessible_stated"
+        : "conformance_accessible_stated_below",
+      { stops: Math.round(stops), trips: Math.round(trips), places }
+    );
+  }
+  return "";
+}
+
+/** Canonical criterion order with localized, artifact-derived details.
+ *  @param {any} artifact @param {any} mark @param {string} place */
+function presentedConformanceCriteria(artifact, mark, place = "stop") {
+  const source = Array.isArray(mark?.criteria) ? mark.criteria : [];
+  const expectedKeys = ["valid", "current", "accessible"];
+  if (
+    source.length !== expectedKeys.length ||
+    expectedKeys.some(
+      (key) => source.filter((criterion) => criterion?.key === key).length !== 1
+    )
+  )
+    return [];
+  return expectedKeys.map((key) => {
+    const criterion = source.find((candidate) => candidate?.key === key);
+    return {
+      key,
+      met: criterion?.met === true,
+      detail: presentedConformanceCriterionDetail(artifact, criterion, place),
+    };
+  });
+}
+
+/** Present localized conformance guidance for both current and legacy artifacts.
+ *  Stored summaries/details are English presentation snapshots, so neither is
+ *  reused even when its schema version is current.
+ *  @param {any} mark @param {string} place @param {any} artifact */
+function presentedConformanceSummary(mark, place = "stop", artifact = null) {
+  if (!mark || typeof mark !== "object") return "";
+  const criteria = presentedConformanceCriteria(artifact, mark, place);
+  const expectedKeys = ["valid", "current", "accessible"];
+  if (criteria.length !== expectedKeys.length) return t("conformance_progress_below");
+
+  const metCount = criteria.filter((criterion) => criterion?.met === true).length;
+  if (metCount === expectedKeys.length) {
+    const placeName = t(place === "terminal" ? "conformance_place_terminal" : "conformance_place_stop");
+    return t("conformance_earned_summary", { place: placeName });
+  }
+
+  const gaps = criteria
+    .filter((criterion) => criterion?.met !== true)
+    .map((criterion) => criterion.detail)
+    .filter(Boolean)
+    .join(" ");
+  let lede;
+  if (metCount === 0) {
+    lede = t("conformance_not_met_summary");
+  } else {
+    const requirementsLeft = expectedKeys.length - metCount;
+    lede = t(
+      requirementsLeft === 1
+        ? "conformance_one_requirement_left"
+        : "conformance_two_requirements_left"
+    );
+  }
+  return gaps ? `${lede} ${gaps}` : lede;
+}
+
 /** Conformance mark: a pass/not-yet credential over the checks the grade uses.
  *  Reads the stored `conformance` block; "" if absent. Criteria are labelled in
  *  text, never by color alone.
@@ -3686,42 +3818,35 @@ function ntdSection(artifact) {
 function conformanceSection(artifact, agencyId, agencyName) {
   const mark = artifact.conformance;
   if (!mark) return "";
-  const rows = (mark.criteria || [])
+  const ferryOnly = modeLanguageKind(artifact) === "ferry";
+  const place = ferryOnly ? "terminal" : "stop";
+  const criteria = presentedConformanceCriteria(artifact, mark, place);
+  const rows = criteria
     .map((c) => {
-      const name = CONFORMANCE_NAMES[c.key] || c.key;
+      const name = t(CONFORMANCE_NAME_KEYS[c.key]);
       const status = c.met ? "ntd-ready" : "ntd-not_ready";
-      const label = c.met ? "Met" : "Not yet";
-      const distant =
-        c.key === "current" &&
-        effectiveServiceHorizonStatus(
-          artifact.categories?.freshness?.details || {},
-          artifact.snapshot_date,
-        ) === "unusually_distant";
-      const detail = distant
-        ? "The published window is current, but its service end date is unusually distant; confirm that date is intentional."
-        : String(c.detail || "");
-      return `<dt>${esc(name)} <span class="ntd-status ${status}">${label}</span></dt><dd>${esc(detail)}</dd>`;
+      const label = t(c.met ? "conformance_status_met" : "conformance_status_not_yet");
+      return `<dt>${esc(name)} <span class="ntd-status ${status}">${esc(label)}</span></dt><dd>${esc(c.detail)}</dd>`;
     })
     .join("");
   const headStatus = mark.awarded ? "ntd-ready" : "ntd-not_ready";
-  const headLabel = mark.awarded ? "Awarded" : "Not yet";
+  const headLabel = t(mark.awarded ? "conformance_head_awarded" : "conformance_head_not_yet");
   const seal = mark.awarded
-    ? `<p><img src="${escAttr(safeUrl(`/data/artifacts/${agencyId}/mark.svg`))}" alt="GTFS conformance mark for ${escAttr(agencyName)}"></p>`
+    ? `<p><img src="${escAttr(safeUrl(`/data/artifacts/${agencyId}/mark.svg`))}" alt="${escAttr(t("conformance_mark_alt", { agency: agencyName }))}"></p>`
     : "";
-  const ferryOnly = modeLanguageKind(artifact) === "ferry";
-  const place = ferryOnly ? "terminal" : "stop";
+  const placeName = t(
+    place === "terminal" ? "conformance_place_terminal" : "conformance_place_stop"
+  );
+  const summary = presentedConformanceSummary(mark, place, artifact);
   return `<section aria-labelledby="mark-h" class="feed-details reveal">
-    <h2 class="section-title" id="mark-h">Conformance mark <span class="ntd-status ${headStatus}">${headLabel}</span></h2>
-    ${mark.summary ? `<p class="page-lede">${esc(String(mark.summary))}</p>` : ""}
+    <h2 class="section-title" id="mark-h">${esc(t("conformance_heading"))} <span class="ntd-status ${headStatus}">${esc(headLabel)}</span></h2>
+    ${summary ? `<p class="page-lede">${esc(summary)}</p>` : ""}
     ${seal}
     <dl class="standards-list">${rows}</dl>
-    <p class="plain-summary"><strong>In plain words:</strong> earn this mark when your feed passes
-      validation, has not expired, and says whether nearly every ${place} and trip is wheelchair
-      accessible.</p>
-    <p class="fineprint">A pass credential for a feed that is valid, current, and states
-      wheelchair access on nearly every ${place} and trip. Accessibility here measures what the
-      feed publishes, not whether a ${place} is physically usable.
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/conformance.md">How the conformance mark works.</a></p>
+    <p class="plain-summary"><strong>${esc(t("conformance_plain_label"))}</strong>
+      ${esc(t("conformance_plain_body", { place: placeName }))}</p>
+    <p class="fineprint">${esc(t("conformance_fineprint", { place: placeName }))}
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/conformance.md">${esc(t("conformance_learn_more"))}</a></p>
   </section>`;
 }
 

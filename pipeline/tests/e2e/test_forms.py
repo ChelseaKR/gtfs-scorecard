@@ -35,6 +35,106 @@ def test_static_compare_search_filters_large_pickers(page: Page, base_url: str) 
         expect(page.locator(".compare-static-table")).to_be_visible()
 
 
+def test_compare_pickers_fill_in_from_the_published_list(page: Page, base_url: str) -> None:
+    """The document ships an opening window; reaching for the form brings the rest.
+
+    Both selects used to inline every agency, so the page grew with the
+    registry. The full list now arrives from /compare/agencies.json on first
+    contact with the form, which has to leave the pickers usable and say so.
+    """
+    page.goto(f"{base_url}/compare/")
+
+    # The document itself carries only the window, not the whole catalog.
+    inlined = page.evaluate("() => document.querySelectorAll('#compare-a option').length")
+    assert inlined <= 51, f"the document still inlines {inlined} options"
+
+    # Touching the form is the trigger; no click on the load button needed.
+    page.locator("#compare-a-filter").click()
+    expect(page.locator("#compare-picker-status")).to_contain_text(
+        re.compile(r"Both lists now hold all \d+ agencies")
+    )
+    hydrated = page.evaluate("() => document.querySelectorAll('#compare-a option').length")
+    assert hydrated > inlined
+    # An agency well past the opening window is now selectable.
+    page.locator("#compare-a-filter").fill("unitrans")
+    expect(page.locator("#compare-a option")).to_have_count(2)
+
+
+def test_compare_load_button_fills_the_lists_and_moves_focus(page: Page, base_url: str) -> None:
+    page.goto(f"{base_url}/compare/")
+    load = page.get_by_role("button", name="Load every agency")
+    expect(load).to_be_visible()
+    load.click()
+
+    expect(page.locator("#compare-picker-status")).to_contain_text(
+        re.compile(r"Both lists now hold all \d+ agencies")
+    )
+    # The button it came from is gone, so focus lands on the first picker
+    # instead of falling back to the document.
+    expect(load).to_be_hidden()
+    assert page.evaluate("() => document.activeElement.id") == "compare-a-filter"
+
+
+def test_compare_load_button_never_strands_keyboard_focus(page: Page, base_url: str) -> None:
+    """The load control hides once the list is in, so focus has to follow it.
+
+    Reaching for a picker starts the load, which means a keyboard can already
+    be resting on the button when it disappears. Focus moves to the first
+    picker instead of falling back to the document.
+    """
+
+    def slow(route: Route) -> None:
+        page.wait_for_timeout(600)
+        route.continue_()
+
+    page.route("**/compare/agencies.json", slow)
+    page.goto(f"{base_url}/compare/")
+
+    # Tab in from the top of the form; the load control is still there because
+    # the list it would fetch has not arrived yet.
+    page.locator("#compare-a-filter").focus()
+    for _ in range(5):
+        page.keyboard.press("Tab")
+        if page.evaluate("() => document.activeElement.id") == "compare-load":
+            break
+    assert page.evaluate("() => document.activeElement.id") == "compare-load"
+
+    expect(page.locator("#compare-picker-status")).to_contain_text(
+        re.compile(r"Both lists now hold all \d+ agencies")
+    )
+    expect(page.get_by_role("button", name="Load every agency")).to_be_hidden()
+    assert page.evaluate("() => document.activeElement.id") == "compare-a-filter"
+
+
+def test_compare_says_so_and_offers_a_retry_when_the_list_fails(page: Page, base_url: str) -> None:
+    page.route("**/compare/agencies.json", lambda route: route.abort())
+    page.goto(f"{base_url}/compare/")
+
+    page.get_by_role("button", name="Load every agency").click()
+    expect(page.locator("#compare-picker-status")).to_contain_text(
+        "The complete agency list could not load."
+    )
+    # The opening options and a keyboard-reachable retry both survive.
+    retry = page.get_by_role("button", name="Try loading every agency again")
+    expect(retry).to_be_visible()
+    assert page.evaluate("() => document.querySelectorAll('#compare-a option').length") > 1
+
+
+def test_compare_shared_link_reads_back_without_the_full_list(page: Page, base_url: str) -> None:
+    """A shared comparison renders and names both agencies in the pickers,
+    without pulling the picker list it does not need."""
+    requested: list[str] = []
+    page.on("request", lambda request: requested.append(request.url))
+    page.goto(f"{base_url}/compare/?a=unitrans&b=yolobus")
+
+    expect(page.locator("#compare-status")).to_contain_text(
+        re.compile(r"Comparing|Scorecards kept separate")
+    )
+    assert page.locator("#compare-a").input_value() == "unitrans"
+    assert page.locator("#compare-b").input_value() == "yolobus"
+    assert not [url for url in requested if url.endswith("/compare/agencies.json")]
+
+
 def test_alert_form_identifies_and_focuses_invalid_fields(page: Page, base_url: str) -> None:
     page.goto(f"{base_url}/subscribe.html")
     page.get_by_role("button", name="Email me alerts").click()

@@ -82,13 +82,15 @@ def test_targeted_publish_is_path_bounded_and_preserves_daily_status() -> None:
     assert "data/artifacts/run" not in text
     assert "perf_gate: advisory" in text
 
-    # No command may upload the entire artifact tree. Deletes are scoped to the
-    # private fixlog cache and bounded named-change namespace, so reconciliation
-    # can retire stale claims without touching score history.
+    # No command may upload the entire artifact tree. General sync deletes are
+    # scoped to private fixlog state and bounded named changes. Retired current
+    # pointers use a separate id-only manifest whose fixed expansion cannot
+    # touch score history.
     assert 'aws s3 sync data/artifacts "' not in text
     assert text.count("\n            --delete ") == 2
     assert '"s3://${ARTIFACTS_BUCKET}/cache/fixlog"' in text
     assert '"${artifact_uri}/changes"' in text
+    assert "--retirement-manifest data/artifacts/.retired-current-artifacts.json" in text
 
 
 def test_artifact_publishers_regenerate_and_prune_named_change_claims() -> None:

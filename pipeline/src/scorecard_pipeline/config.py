@@ -7,9 +7,30 @@ Feed URLs and licenses are documented in docs/feeds.md.
 
 from __future__ import annotations
 
+import datetime as dt
 import os
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
+
+
+def utc_today() -> dt.date:
+    """Today's date in UTC, never the runner's local zone.
+
+    Every date this pipeline stores or grades against is a UTC date: the
+    scheduled build runs on UTC runners, so `snapshot_date`, the dated artifact
+    filename, and the "today" that freshness and expiry are measured against
+    are all UTC. `dt.date.today()` reads whatever zone the *machine* is in, so
+    the same corpus scored from a laptop in America/Los_Angeles after 17:00 PDT
+    would be stamped a day behind CI and graded against the wrong day. That
+    exact split already shipped once (render_site's Google gate read
+    `dt.date.today()` while the rest of the render used a frozen UTC instant),
+    so the clock read lives in one place now.
+
+    Callers that already accept an explicit date keep doing so; this is only
+    the default when nobody said which day they meant.
+    """
+    return dt.datetime.now(dt.UTC).date()
 
 
 @dataclass(frozen=True)
@@ -126,6 +147,25 @@ class Agency:
 # Endpoints verified against the Mobility Database and transit.land;
 # see docs/feeds.md for sources, licenses, and polling etiquette.
 AGENCIES: dict[str, Agency] = {}
+
+
+def current_agency_ids(agency_ids: Iterable[str]) -> list[str]:
+    """Keep ids that belong to active canonical records in the loaded registry.
+
+    Current-corpus jobs use this boundary so retained alias artifacts stay
+    available for historical reproduction without being counted, monitored, or
+    published beside their live successor. An empty process-global registry is
+    the established library/test compatibility mode: callers may operate on a
+    synthetic artifact tree without first loading repository configuration.
+    """
+    ids = list(agency_ids)
+    if not AGENCIES:
+        return ids
+    return [
+        agency_id
+        for agency_id in ids
+        if (agency := AGENCIES.get(agency_id)) is not None and agency.is_canonical_feed
+    ]
 
 
 def register(agency: Agency) -> None:

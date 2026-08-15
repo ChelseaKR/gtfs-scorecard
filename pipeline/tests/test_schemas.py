@@ -439,7 +439,7 @@ def _country_contract_documents(country_code: str) -> dict[str, dict[str, Any]]:
 
 def test_country_contract_accepts_a_forward_compatible_iso_alpha_2_code() -> None:
     """Public schemas describe the portable shape, not the deployment allowlist."""
-    assert SCHEMA_VERSION == "1.17"
+    assert SCHEMA_VERSION == "1.18"
     for schema_name, document in _country_contract_documents("GB").items():
         _validator(schema_name).validate(document)
 
@@ -634,6 +634,28 @@ def test_historical_artifact_before_scoring_profile_still_conforms() -> None:
     artifact = make_artifact(dt.date(2026, 6, 11))
     artifact["schema_version"] = "1.7"
     del artifact["scoring_profile"]
+    validate_artifact(artifact)
+
+
+def test_current_artifact_requires_feed_source_provenance() -> None:
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    del artifact["feed"]["source_provenance"]
+    with pytest.raises(ValidationError, match="source_provenance"):
+        validate_artifact(artifact)
+
+
+def test_current_artifact_requires_versioned_conformance() -> None:
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    del artifact["conformance"]["version"]
+    with pytest.raises(ValidationError, match="version"):
+        validate_artifact(artifact)
+
+
+def test_historical_artifact_before_source_provenance_still_conforms() -> None:
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    artifact["schema_version"] = "1.17"
+    del artifact["feed"]["source_provenance"]
+    del artifact["conformance"]["version"]
     validate_artifact(artifact)
 
 

@@ -26,6 +26,7 @@ from __future__ import annotations
 from typing import Any
 
 from ._stats import _median
+from .config import current_agency_ids
 from .location_rollups import portable_location_fields, portable_location_rollups
 
 # Reliability bands by uptime (share of monitor runs the feed responded to). The
@@ -103,10 +104,11 @@ def national_rt(summaries: list[dict[str, Any]], *, top: int = 10) -> dict[str, 
     requiring a minimum number of observations). Pure and deterministic, safe
     to re-run. ``top`` caps the highlight list so the artifact stays light.
     """
+    current_ids = set(current_agency_ids(str(summary.get("id") or "") for summary in summaries))
     monitored = [
         _with_portable_location(summary)
         for summary in summaries
-        if int(summary.get("observations", 0)) > 0
+        if str(summary.get("id") or "") in current_ids and int(summary.get("observations", 0)) > 0
     ]
     bands = {"reliable": 0, "mostly": 0, "spotty": 0}
     uptimes: list[float] = []

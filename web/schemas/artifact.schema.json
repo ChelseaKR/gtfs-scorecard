@@ -33,6 +33,32 @@
           "scoring_profile"
         ]
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "schema_version": {
+            "pattern": "^1\\.(?:1[89]|[2-9][0-9]|[1-9][0-9]{2,})$"
+          }
+        },
+        "required": [
+          "schema_version"
+        ]
+      },
+      "then": {
+        "properties": {
+          "feed": {
+            "required": [
+              "source_provenance"
+            ]
+          },
+          "conformance": {
+            "required": [
+              "version"
+            ]
+          }
+        }
+      }
     }
   ],
   "properties": {
@@ -148,6 +174,16 @@
         },
         "reachable": {
           "type": "boolean"
+        },
+        "source_provenance": {
+          "type": "string",
+          "enum": [
+            "official",
+            "archive",
+            "third_party",
+            "unverified"
+          ],
+          "description": "Registry-backed relationship of the configured feed URL to its publisher. This is independent from fetch.source, which records how this run obtained the bytes. A recognized TransitFeeds URL is archive; otherwise is_official true/false maps to official/third_party and absence stays unverified."
         }
       },
       "additionalProperties": false
@@ -330,7 +366,13 @@
     },
     "conformance": {
       "type": "object",
-      "description": "Conformance-mark credential over the scores (conformance.assess)."
+      "description": "Conformance-mark credential over the scores (conformance.assess). The independent version changes when derived machine-readable guidance must be refreshed.",
+      "properties": {
+        "version": {
+          "type": "integer",
+          "const": 2
+        }
+      }
     },
     "geo": {
       "type": "object",

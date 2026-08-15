@@ -8,7 +8,7 @@ from typing import Any
 
 from scorecard_pipeline import RUBRIC_VERSION, SCORING_PROFILE_ID
 from scorecard_pipeline.alerts import build_digest, render_digest
-from scorecard_pipeline.config import artifacts_dir
+from scorecard_pipeline.config import Agency, artifacts_dir, register
 from scorecard_pipeline.validate import VALIDATOR_VERSION
 
 
@@ -99,6 +99,38 @@ def test_healthy_feed_produces_no_items() -> None:
     digest = build_digest(today=dt.date(2026, 6, 12))
     assert digest.items == []
     assert "No feeds need attention" in render_digest(digest)
+
+
+def test_retired_alias_history_does_not_send_a_current_alert() -> None:
+    live = Agency("live", "Live Transit", "https://example.org/live.zip")
+    retired = Agency(
+        "retired",
+        "Retired Transit export",
+        "https://archive.example.org/retired.zip",
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    register(live)
+    register(retired)
+    write_latest(live.id, live.name, 90.0, "A", days_until_expiry=120)
+    write_latest(retired.id, retired.name, 30.0, "F", days_until_expiry=-1_000)
+    write_index(
+        {
+            live.id: {
+                "name": live.name,
+                "history": [comparable_history_point("2026-06-12", 90.0, "A")],
+            },
+            retired.id: {
+                "name": retired.name,
+                "history": [comparable_history_point("2026-06-12", 30.0, "F")],
+            },
+        }
+    )
+
+    digest = build_digest(today=dt.date(2026, 6, 12))
+
+    assert all(item.agency_id != retired.id for item in digest.items)
+    assert (artifacts_dir() / retired.id / "latest.json").exists()
 
 
 def test_grade_drop_is_a_regression() -> None:
@@ -443,3 +475,29 @@ def test_reader_profile_change_does_not_fabricate_lapse_risk() -> None:
     digest = build_digest(today=dt.date(2026, 6, 12))
 
     assert [item for item in digest.items if item.kind == "lapse_risk"] == []
+
+
+def test_month_long_regression_is_not_suppressed_as_a_glitch() -> None:
+    # Published history steps are not always consecutive days. A feed that
+    # scored 40 on 06-11 and was next checked on 07-08 was broken for four
+    # weeks; the transient-dip suppression must not swallow that alert.
+    from scorecard_pipeline.alerts import _anomaly_alert_items
+
+    history = [
+        {"date": "2026-06-10", "score": 85.0, "grade": "B", "days_until_expiry": 120},
+        {"date": "2026-06-11", "score": 40.0, "grade": "F", "days_until_expiry": 119},
+        {"date": "2026-07-08", "score": 84.0, "grade": "B", "days_until_expiry": 92},
+    ]
+    items = _anomaly_alert_items(history, "gap", "Gap Transit")
+    assert items, "a four-week regression produced no alert"
+
+
+def test_one_day_glitch_is_still_suppressed() -> None:
+    from scorecard_pipeline.alerts import _anomaly_alert_items
+
+    history = [
+        {"date": "2026-06-10", "score": 85.0, "grade": "B", "days_until_expiry": 120},
+        {"date": "2026-06-11", "score": 40.0, "grade": "F", "days_until_expiry": 119},
+        {"date": "2026-06-12", "score": 84.0, "grade": "B", "days_until_expiry": 118},
+    ]
+    assert _anomaly_alert_items(history, "blip", "Blip Transit") == []

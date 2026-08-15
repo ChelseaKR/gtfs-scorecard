@@ -45,6 +45,377 @@ def test_gate_combines_thresholds() -> None:
     assert _try_gate(_artifact("A", 5), _args(min_grade="B", min_days=30)) == 1
 
 
+def test_shard_plan_excludes_retired_alias(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    from scorecard_pipeline import cli
+    from scorecard_pipeline.config import Agency
+
+    live = Agency(
+        id="annapolis-transit-2285",
+        name="Annapolis Transit",
+        static_gtfs_url="https://annapolis.example/gtfs.zip",
+    )
+    retired = Agency(
+        id="annapolis-transit",
+        name="Annapolis Transit",
+        static_gtfs_url="https://archive.example/annapolis.zip",
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    monkeypatch.setattr(cli, "AGENCIES", {retired.id: retired, live.id: live})
+
+    assert cli._cmd_shards(argparse.Namespace(count=1), argparse.ArgumentParser()) == 0
+    assert json.loads(capsys.readouterr().out) == [[live.id]]
+
+
+def test_run_all_excludes_retired_alias_but_keeps_explicit_reproduction(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import cli
+    from scorecard_pipeline.config import Agency
+
+    live = Agency(
+        id="annapolis-transit-2285",
+        name="Annapolis Transit",
+        static_gtfs_url="https://annapolis.example/gtfs.zip",
+    )
+    retired = Agency(
+        id="annapolis-transit",
+        name="Annapolis Transit",
+        static_gtfs_url="https://archive.example/annapolis.zip",
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    monkeypatch.setattr(cli, "AGENCIES", {retired.id: retired, live.id: live})
+    scored: list[str] = []
+
+    def fake_run(agency_id: str, *_args: object, **_kwargs: object) -> cli.RunOutcome:
+        scored.append(agency_id)
+        return cli.RunOutcome(path=f"{agency_id}.json", mirrored=False, cache_hit=False)
+
+    monkeypatch.setattr(cli, "run_agency", fake_run)
+    args = argparse.Namespace(
+        all=True,
+        agency=None,
+        date=None,
+        force_fetch=True,
+        rt_samples=1,
+        rt_interval=0,
+        skip_rt=True,
+        skip_unchanged=False,
+        outcome_out=None,
+    )
+    assert cli._cmd_run(args, argparse.ArgumentParser()) == 0
+    assert scored == [live.id]
+
+    args.all = False
+    args.agency = retired.id
+    assert cli._cmd_run(args, argparse.ArgumentParser()) == 0
+    assert scored == [live.id, retired.id]
+
+
+def test_targeted_activation_rejects_retired_alias(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    from scorecard_pipeline import cli
+    from scorecard_pipeline.config import Agency
+
+    live = Agency(
+        id="annapolis-transit-2285",
+        name="Annapolis Transit",
+        static_gtfs_url="https://annapolis.example/gtfs.zip",
+    )
+    retired = Agency(
+        id="annapolis-transit",
+        name="Annapolis Transit",
+        static_gtfs_url="https://archive.example/annapolis.zip",
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    monkeypatch.setattr(cli, "AGENCIES", {retired.id: retired, live.id: live})
+
+    with pytest.raises(SystemExit) as exc_info:
+        cli._cmd_activation_targets(
+            argparse.Namespace(ids=retired.id, out=None), argparse.ArgumentParser()
+        )
+
+    assert exc_info.value.code == 2
+    assert "retired/noncanonical" in capsys.readouterr().err
+
+
+def test_activation_hydration_requires_only_current_canonical_ids(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import activation, cli
+    from scorecard_pipeline.config import Agency
+
+    live = Agency(
+        id="annapolis-transit-2285",
+        name="Annapolis Transit",
+        static_gtfs_url="https://annapolis.example/gtfs.zip",
+    )
+    retired = Agency(
+        id="annapolis-transit",
+        name="Annapolis Transit",
+        static_gtfs_url="https://archive.example/annapolis.zip",
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    monkeypatch.setattr(cli, "AGENCIES", {retired.id: retired, live.id: live})
+    targets = tmp_path / "targets.txt"
+    targets.write_text(f"{live.id}\n")
+    captured: dict[str, object] = {}
+
+    def fake_hydrate(**kwargs: object) -> activation.HydrationResult:
+        captured.update(kwargs)
+        return activation.HydrationResult(
+            agencies=1,
+            objects=1,
+            optional_misses=0,
+            selected_objects=1,
+            skipped_unregistered=1,
+        )
+
+    monkeypatch.setattr(activation, "hydrate_activation_corpus", fake_hydrate)
+    args = argparse.Namespace(
+        bucket="artifacts",
+        targets_file=targets,
+        index_before_out=tmp_path / "index.before.json",
+        etag_out=tmp_path / "index.etag",
+        workers=1,
+    )
+
+    assert cli._cmd_activation_hydrate(args, argparse.ArgumentParser()) == 0
+    assert captured["known_ids"] == {live.id}
+
+
+def test_otp_batch_selection_excludes_retired_alias(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    from scorecard_pipeline import cli, config
+    from scorecard_pipeline.config import Agency
+
+    live = Agency(
+        id="live",
+        name="Live Transit",
+        static_gtfs_url="https://example.org/live.zip",
+    )
+    retired = Agency(
+        id="retired",
+        name="Retired Transit",
+        static_gtfs_url="https://archive.example.org/retired.zip",
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    monkeypatch.setattr(cli, "AGENCIES", {retired.id: retired, live.id: live})
+    artifact_root = tmp_path / "artifacts"
+    artifact_root.mkdir()
+    (artifact_root / "index.json").write_text(
+        json.dumps(
+            {
+                "agencies": {
+                    live.id: {
+                        "history": [
+                            {
+                                "date": "2026-08-08",
+                                "grade": "F",
+                                "score": 10.0,
+                                "days_until_expiry": 30,
+                            }
+                        ]
+                    },
+                    retired.id: {
+                        "history": [
+                            {
+                                "date": "2026-08-08",
+                                "grade": "A",
+                                "score": 100.0,
+                                "days_until_expiry": 30,
+                            }
+                        ]
+                    },
+                }
+            }
+        )
+    )
+    monkeypatch.setattr(config, "artifacts_dir", lambda: artifact_root)
+
+    args = argparse.Namespace(select="best-worst", count=1)
+    assert cli._cmd_otp_batch(args, argparse.ArgumentParser()) == 0
+    assert json.loads(capsys.readouterr().out) == [
+        {
+            "feed_id": live.id,
+            "feed_url": live.static_gtfs_url,
+            "cohort": "best",
+        }
+    ]
+
+
+def test_otp_records_a_feed_with_no_service_on_the_sampled_date(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """No active trips on the date is not testable, and not a red run.
+
+    Seasonal and limited-service operators have ordinary dates with no service.
+    Failing the batch on one of them says a router regressed when nothing was
+    measured. The missing calendar coverage is already a freshness finding on
+    the agency's own scorecard.
+    """
+    from scorecard_pipeline import cli
+
+    monkeypatch.setattr(cli, "read_tables", lambda *a, **k: {}, raising=False)
+    monkeypatch.setattr(
+        "scorecard_pipeline.gtfs.read_tables",
+        lambda *a, **k: {
+            "calendar.txt": [],
+            "calendar_dates.txt": [],
+            "trips.txt": [],
+            "stop_times.txt": [],
+        },
+    )
+    monkeypatch.setattr("scorecard_pipeline.otp.sample_scheduled_stop_pairs", lambda *a, **k: [])
+
+    args = argparse.Namespace(
+        feed="feed.zip",
+        date="2026-08-11",
+        pairs=5,
+        base="http://127.0.0.1:8080",
+        allow_loopback=True,
+    )
+    assert cli._cmd_otp(args, argparse.ArgumentParser()) == 0
+    err = capsys.readouterr().err
+    assert "::warning title=Routing QA not testable::" in err
+    assert "2026-08-11" in err
+
+
+def test_equity_coverage_excludes_retired_alias(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    from scorecard_pipeline import cli, config, equity
+    from scorecard_pipeline.config import Agency
+
+    live = Agency(
+        id="live",
+        name="Live Transit",
+        static_gtfs_url="https://example.org/live.zip",
+        state="California",
+    )
+    retired = Agency(
+        id="retired",
+        name="Retired Transit",
+        static_gtfs_url="https://archive.example.org/retired.zip",
+        state="California",
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    monkeypatch.setattr(cli, "AGENCIES", {retired.id: retired, live.id: live})
+    artifact_root = tmp_path / "artifacts"
+    artifact_root.mkdir()
+    history = {
+        "date": "2026-08-08",
+        "grade": "B",
+        "score": 80.0,
+        "days_until_expiry": 30,
+        "categories": {"correctness": 80.0, "freshness": 80.0, "completeness": 80.0},
+    }
+    (artifact_root / "index.json").write_text(
+        json.dumps(
+            {
+                "agencies": {
+                    live.id: {"history": [history]},
+                    retired.id: {"history": [history]},
+                }
+            }
+        )
+    )
+    monkeypatch.setattr(config, "artifacts_dir", lambda: artifact_root)
+    monkeypatch.setattr(
+        cli,
+        "_published_states",
+        lambda: {live.id: "California", retired.id: "California"},
+    )
+    monkeypatch.setattr(equity, "fetch_state_indicators", lambda: {})
+    captured_rows: list[dict[str, object]] = []
+
+    def fake_overlay(
+        rows: list[dict[str, object]], *_args: object, **_kwargs: object
+    ) -> dict[str, object]:
+        captured_rows.extend(rows)
+        return {"states": [], "priority": []}
+
+    monkeypatch.setattr(equity, "build_overlay", fake_overlay)
+    monkeypatch.setattr(equity, "render_overlay", lambda _overlay: "")
+
+    args = argparse.Namespace(allow_empty=True, json_out=None, out=None)
+    assert cli._cmd_equity(args, argparse.ArgumentParser()) == 0
+    assert {str(row["id"]) for row in captured_rows} == {live.id}
+    capsys.readouterr()
+
+
+def test_rt_health_batch_excludes_retired_alias_but_keeps_explicit_reproduction(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from scorecard_pipeline import cli, rt_health
+    from scorecard_pipeline.config import AGENCIES, Agency
+
+    rt_urls = {"trip_updates": "https://example.org/trip-updates.pb"}
+    live = Agency(
+        id="live",
+        name="Live Transit",
+        static_gtfs_url="https://example.org/live.zip",
+        rt_urls=rt_urls,
+    )
+    retired = Agency(
+        id="retired",
+        name="Retired Transit export",
+        static_gtfs_url="https://archive.example.org/retired.zip",
+        rt_urls=rt_urls,
+        alias_of=live.id,
+        feed_status="deprecated",
+    )
+    monkeypatch.setitem(AGENCIES, live.id, live)
+    monkeypatch.setitem(AGENCIES, retired.id, retired)
+
+    sampled: list[str] = []
+    recorded: list[str] = []
+
+    def fake_capture(agency: Agency, *_args: object, **_kwargs: object) -> object:
+        sampled.append(agency.id)
+        return object()
+
+    observation = argparse.Namespace(
+        kinds_reachable=1,
+        kinds_total=1,
+        worst_lag_seconds=5,
+    )
+    monkeypatch.setattr(cli, "capture_window", fake_capture)
+    monkeypatch.setattr(rt_health, "observe", lambda *_args, **_kwargs: observation)
+    monkeypatch.setattr(
+        rt_health,
+        "append_observation",
+        lambda agency_id, _observation: recorded.append(agency_id),
+    )
+    args = argparse.Namespace(agency=None, samples=1, interval=0)
+
+    assert cli._cmd_rt_health(args, argparse.ArgumentParser()) == 0
+    assert sampled == [live.id]
+    assert recorded == [live.id]
+
+    args.agency = retired.id
+    assert cli._cmd_rt_health(args, argparse.ArgumentParser()) == 0
+    assert sampled == [live.id, retired.id]
+    assert recorded == [live.id, retired.id]
+
+
 def test_prune_reports_orphans_without_deleting(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

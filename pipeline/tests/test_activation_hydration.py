@@ -205,7 +205,10 @@ def _hydrate(
     )
 
 
-def test_hydrates_exact_current_corpus_and_only_bounded_prefixes(tmp_path: Path) -> None:
+def test_hydrates_exact_current_corpus_and_only_bounded_prefixes(
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
     client = FakeS3(_objects())
 
     result = _hydrate(tmp_path, client)
@@ -239,6 +242,7 @@ def test_hydrates_exact_current_corpus_and_only_bounded_prefixes(tmp_path: Path)
     # agency-two fixlog, agency-one's lifecycle-expired dated object, and liveness.
     assert result.optional_misses == 3
     assert result.skipped_unregistered == 1
+    assert "title=noncurrent/unregistered index entries" in capsys.readouterr().err
 
 
 def test_paginator_consumes_every_page_for_selected_and_aggregate_prefixes(
@@ -495,7 +499,14 @@ def test_local_current_materializer_restores_lifecycle_expired_dated_record(
     assert materialize_local_current_artifacts(artifacts_root=root) == 0
 
 
-def test_local_current_materializer_rejects_divergent_dated_record(tmp_path: Path) -> None:
+def test_local_current_materializer_rewrites_stale_dated_record(tmp_path: Path) -> None:
+    """A checkout's dated record lagging latest.json is repaired, not fatal.
+
+    snapshot_date names the feed's snapshot, so an agency whose feed has not
+    changed keeps one dated filename across many refreshes of its artifact. The
+    bounded sync only pulls today's and yesterday's dated objects, so that file
+    comes from git and can lag. Aborting here took the daily publish down.
+    """
     root = tmp_path / "artifacts"
     agency = root / "agency-one"
     agency.mkdir(parents=True)
@@ -507,10 +518,37 @@ def test_local_current_materializer_rejects_divergent_dated_record(tmp_path: Pat
         }
     }
     (root / "index.json").write_text(json.dumps(index), encoding="utf-8")
+    latest = _artifact("agency-one", "2026-07-10")
+    (agency / "latest.json").write_bytes(latest)
+    (agency / "2026-07-10.json").write_text("{}\n", encoding="utf-8")
+
+    assert materialize_local_current_artifacts(artifacts_root=root) == 1
+    assert (agency / "2026-07-10.json").read_bytes() == latest
+    # Idempotent: a second pass has nothing left to repair.
+    assert materialize_local_current_artifacts(artifacts_root=root) == 0
+
+
+def test_local_current_materializer_still_rejects_index_disagreement(tmp_path: Path) -> None:
+    """Repairing a stale dated record must not soften the real corruption gate.
+
+    index.json is refreshed by every sync, so latest.json disagreeing with it
+    means the authoritative store is inconsistent. That still fails closed.
+    """
+    root = tmp_path / "artifacts"
+    agency = root / "agency-one"
+    agency.mkdir(parents=True)
+    index = {
+        "agencies": {
+            "agency-one": {
+                "history": [{"date": "2026-07-11", "score": 80, "grade": "B"}],
+            }
+        }
+    }
+    (root / "index.json").write_text(json.dumps(index), encoding="utf-8")
     (agency / "latest.json").write_bytes(_artifact("agency-one", "2026-07-10"))
     (agency / "2026-07-10.json").write_text("{}\n", encoding="utf-8")
 
-    with pytest.raises(ActivationHydrationError, match="latest/dated payload mismatch"):
+    with pytest.raises(ActivationHydrationError, match="latest/index date mismatch"):
         materialize_local_current_artifacts(artifacts_root=root)
 
 

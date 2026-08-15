@@ -48,7 +48,12 @@ HARDCODED_STRING_BASELINE = {
     # template literals, not because the copy is exempt from localization. The
     # feature-use-case selector adds one HTML option template, raising 378 to
     # 379; its labels and surrounding copy live in the reviewed app catalog.
-    "app.js": 379,
+    # The conformance presenter adds catalog key lookups but no inline English
+    # copy. Externalizing its summary, criteria, statuses, heading, alt text,
+    # plain-language explanation, and fine print adds enough quote pairs to
+    # expose four more matches in this deliberately simple whole-file heuristic,
+    # so record 392 while the presenter copy remains pseudolocalizable.
+    "app.js": 392,
     "config.js": 1,
     "es.js": 2,
     "i18n.js": 0,

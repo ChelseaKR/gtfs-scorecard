@@ -49,6 +49,7 @@ from .config import Agency, artifacts_dir
 from .conformance import assess as conformance_assess
 from .constants_export import GRADE_RANK
 from .directory import build_directory
+from .feed_provenance import feed_source_lede
 from .feeddiff import FeedDiff, diff_artifacts
 from .findings_national import agency_findings, plain_language_coverage
 from .fixlog import load_fixlog
@@ -78,6 +79,7 @@ from .ntd import presented_readiness as presented_ntd_readiness
 from .pages_tools import (
     _render_check_page,
     _render_compare_page,
+    _render_compare_picker_data,
     _render_query_page,
     _render_tools_page,
 )
@@ -1177,7 +1179,7 @@ def _board_hero(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         '<div class="board-hero" id="report-overview"><div class="board-inner">'
         f'<p class="board-kicker"><span class="blip" aria-hidden="true"></span>Feed status &middot; checked {esc(artifact["snapshot_date"])}</p>'
         f'<h1 class="board-title"><bdi>{esc(agency_name)}</bdi></h1>'
-        '<p class="board-sub">Based on the feed this agency publishes</p>'
+        f'<p class="board-sub">{esc(feed_source_lede(_artifact_source_provenance(artifact), _artifact_fetch_source(artifact)))}</p>'
         f"{mode_html}"
         f'<div class="grade-block">{reel}'
         f'<div class="score-block"><div><span class="score-big">{o["score"]}</span><span class="score-of"> / 100</span></div>'
@@ -1250,14 +1252,41 @@ def _liveness_note(record: dict[str, Any] | None, now: dt.datetime | None = None
     return f'<p class="monitoring-note">{esc("; ".join(parts))}.</p>'
 
 
-# How the quiet confidence line names the fetch source (EXP-01). Keyed by the
-# artifact's confidence.fetch_source (fetch.py: origin | mirror | unknown); an
-# unrecognized value falls back to no phrase rather than guessing.
-_CONFIDENCE_SOURCE_PHRASES = {
-    "origin": " from the agency's own feed",
-    "mirror": " from the Mobility Database's mirror copy of the feed",
-    "unknown": " from a snapshot whose original source was not recorded",
-}
+def _artifact_source_provenance(artifact: dict[str, Any]) -> object:
+    """Configured-source classification, absent on artifacts before schema 1.18."""
+
+    feed = artifact.get("feed")
+    return feed.get("source_provenance") if isinstance(feed, dict) else None
+
+
+def _artifact_fetch_source(artifact: dict[str, Any]) -> object:
+    """How the bytes were obtained, preferring the confidence contract."""
+
+    confidence = artifact.get("confidence")
+    if isinstance(confidence, dict) and confidence.get("fetch_source"):
+        return confidence["fetch_source"]
+    fetch = artifact.get("fetch")
+    return fetch.get("source") if isinstance(fetch, dict) else "unknown"
+
+
+def _confidence_source_phrase(artifact: dict[str, Any]) -> str:
+    """Quiet-line source wording; legacy/malformed ownership fails closed."""
+
+    provenance = _artifact_source_provenance(artifact)
+    fetch_source = _artifact_fetch_source(artifact)
+    if fetch_source == "mirror":
+        return " from the Mobility Database's mirror copy of the feed"
+    if fetch_source == "unknown":
+        return " from a snapshot whose original source was not recorded"
+    if fetch_source == "local":
+        return " from a local feed copy"
+    if provenance == "official":
+        return " from the official feed URL on file"
+    if provenance == "archive":
+        return " from the archived feed URL on file"
+    if provenance == "third_party":
+        return " from the third-party feed URL on file"
+    return " from the feed URL on file (publisher not verified)"
 
 
 def _confidence_section(artifact: dict[str, Any]) -> str:
@@ -1270,14 +1299,21 @@ def _confidence_section(artifact: dict[str, Any]) -> str:
     conf = artifact.get("confidence")
     if not conf:
         return ""
-    source_phrase = _CONFIDENCE_SOURCE_PHRASES.get(str(conf.get("fetch_source", "")), "")
+    source_phrase = _confidence_source_phrase(artifact)
     line = (
         f"Measured {conf.get('measured_categories', 0)} of "
         f"{conf.get('total_categories', 0)} score categories{source_phrase}."
     )
     level = str(conf.get("level", ""))
     level_html = f"<p>Confidence in this measurement: {esc(level)}.</p>" if level else ""
-    notes = "".join(f"<li>{esc(note)}</li>" for note in conf.get("notes", []))
+    # Old artifacts embedded two claims that equated a successful configured
+    # fetch with agency ownership. A code-only site rebuild must fail closed
+    # before the corpus is regenerated with schema 1.18 provenance.
+    notes = "".join(
+        f"<li>{esc(note)}</li>"
+        for note in conf.get("notes", [])
+        if "agency's own" not in str(note).casefold()
+    )
     notes_html = f"<ul>{notes}</ul>" if notes else ""
     return (
         f'<p class="confidence-note">{esc(line)}</p>\n'
@@ -1512,7 +1548,7 @@ def _vendor_request(artifact: dict[str, Any], canonical: str) -> str | None:
 
 def _vendor_section(artifact: dict[str, Any], canonical: str) -> str:
     """The 'Send your vendor a fix request' block: the forwardable artifact a
-    manager who does not control the export needs. When the feed host identifies
+    manager who does not control the export needs. When the evidence identifies
     the producing tool, the heading and lede name it and say how the fix lands
     there (RESEARCH-ROADMAP R5); otherwise the copy stays generic."""
     note = _vendor_request(artifact, canonical)
@@ -1963,7 +1999,8 @@ def _guided_fix_flow(artifact: dict[str, Any], agency_id: str, has_fixlog: bool)
     """The closed-loop guided fix flow (EXP-11): one compact three-step loop per
     top fix, stitching the pieces that already exist into a single per-finding
     path — (1) the plain-language finding with its /fix/<code>/ guide, (2) "Make
-    the change", naming the producing tool detected from the feed host, and (3)
+    the change", naming the producing tool where the feed's evidence identifies
+    one, and (3)
     "Check the result", explaining that the next comparable run checks whether
     the finding is still reported.
 
@@ -2637,7 +2674,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             '<p class="all-clear">Nothing urgent. This feed passed every check we '
             "translate into fixes.</p>"
         )
-    # Who makes these changes: when the feed host identifies the producing tool,
+    # Who makes these changes: when the evidence identifies the producing tool,
     # name the actual path a fix takes (RESEARCH-ROADMAP R5). Shown with the fix
     # list, and for an archive-served feed even without one, because "publish
     # from a live URL" precedes any single fix.
@@ -3279,7 +3316,7 @@ def _render_board_page(
     </header>
     <section aria-labelledby="board-what-h">
       <h2 id="board-what-h">What this grade measures</h2>
-      <p>The quality of the schedule data this agency publishes for trip-planning
+      <p>The quality of the schedule data in the feed scored here for trip-planning
       apps: whether riders using Google Maps, Apple Maps, or Transit see current,
       correct, and complete information. It measures the data feed, not service
       quality or operations.</p>
@@ -5980,7 +6017,11 @@ def _render_guide() -> str:
     (are accessibility, fares, and destinations filled in), and <strong>Realtime quality</strong>
     (if you publish live arrivals, sometimes called
     <abbr title="GTFS Realtime">GTFS-RT</abbr>). If you do not publish realtime, that is fine and
-    does not count against you.</p></section>
+    does not count against you.</p>
+    <p>Some checks sit outside that grade. Whether your feed keeps four weeks of service ahead
+    for Google and Apple Maps, and whether a rider could actually complete a trip, are reported
+    next to the score without changing it.
+    <a href="/focus/#beyond-the-validator">See the checks a validator does not run</a>.</p></section>
 
     {_route_rule()}
     <section><h2 class="section-title">What the grades mean</h2>
@@ -6411,22 +6452,80 @@ def _render_pulse_page(
     )
 
 
-def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -> str:
+def _beyond_validator_stat(catalog: list[dict[str, Any]]) -> str:
+    """How many published feed records currently clear the Google/Apple Maps
+    four-week bar, read straight off the ``google_gate`` status each catalog row
+    already carries (render_site.py builds it from ``google_gate.from_artifact``).
+    This counts an existing per-feed status for display; it computes no new
+    metric and changes no score. Rows without a usable status are left out of
+    both sides of the ratio, and an empty corpus falls back to naming where the
+    check is reported instead of publishing a hollow "0 of 0"."""
+    rated = [row for row in catalog if row.get("google_gate") in {"pass", "at_risk", "fail"}]
+    if not rated:
+        return "Stated on each scorecard"
+    clearing = sum(1 for row in rated if row.get("google_gate") == "pass")
+    noun, verb = ("feed record", "clears") if len(rated) == 1 else ("feed records", "clear")
+    return f"{clearing} of {len(rated)} published {noun} {verb} the bar"
+
+
+def _render_focus_page(
+    ntd_payload: dict[str, Any],
+    rt_rollup: dict[str, Any],
+    catalog: list[dict[str, Any]] | None = None,
+) -> str:
     """The focus-areas hub (/focus/): one screen naming the dimensional lenses
     (NTD readiness, realtime reliability, equity, what feeds publish), each with
     its headline number and a one-line reason to open it. These pages share a
     skeleton but serve different audiences, so they stay separate destinations;
     this hub remains a coverage subpage even though feature discovery now has a
-    direct primary-nav entry."""
+    direct primary-nav entry.
+
+    The first group collects the checks that run past the canonical validator.
+    Each of them already renders somewhere (the Maps coverage line and the
+    routability findings on an agency page, realtime uptime on /realtime/, feed
+    URL liveness on /status/), but a visitor met them one at a time and had no
+    way to see that they answer a different question from validator output.
+    Grouping them here is presentation only: no rule, weight, or score moves,
+    and every item in this group is reported beside the grade rather than
+    inside it.
+    """
     pct_ready = ntd_payload.get("pct_ready", 0)
     monitored = rt_rollup.get("monitored_count", 0)
-    universal_areas = [
+    beyond_areas = [
+        (
+            "/agencies/",
+            "Four weeks of service ahead",
+            _beyond_validator_stat(catalog or []),
+            "Google and Apple want at least four weeks of upcoming service before they will "
+            "show an agency. A feed can stay valid, slip under that line, and stop reaching "
+            "the apps riders already have open. Every scorecard states where its feed sits, "
+            "and the directory groups the calendars that have run out.",
+        ),
+        (
+            "",
+            "A rider can complete the trip",
+            "Reported on each scorecard",
+            "Trips with no rideable leg, and stops that no trip serves. The file parses and "
+            "the journey still does not work.",
+        ),
         (
             "/realtime/",
-            "Realtime reliability",
+            "Realtime that is actually up",
             f"{monitored} realtime feeds monitored",
-            "Uptime and freshness for the agencies that publish GTFS-Realtime.",
+            "Whether a monitored realtime feed answered when we checked, and how far behind "
+            "real time its data was. An agency that publishes no realtime feed is not counted "
+            "here.",
         ),
+        (
+            "/status/",
+            "The feed URL still answers",
+            "Liveness recorded between full runs",
+            "A trip planner keeps fetching the address it already has. The status page records "
+            "which configured URLs responded and which have gone quiet, so a feed that moved "
+            "reads as something to confirm rather than a silent gap.",
+        ),
+    ]
+    universal_areas = [
         (
             "/adoption/",
             "What feeds publish",
@@ -6450,9 +6549,17 @@ def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -
         ),
     ]
 
+    def area_label(href: str, name: str) -> str:
+        # An empty href renders the name as plain text. That check is reported on
+        # each agency scorecard and has no hub page of its own; inventing a
+        # destination would send a reader somewhere that does not show it.
+        if not href:
+            return esc(name)
+        return f'<a href="{esc(href)}">{esc(name)}</a>'
+
     def area_items(areas: list[tuple[str, str, str, str]]) -> str:
         return "".join(
-            f'<li class="finding"><p class="what"><a href="{esc(href)}">{esc(name)}</a> '
+            f'<li class="finding"><p class="what">{area_label(href, name)} '
             f'<span class="count">{esc(stat)}</span></p>'
             f'<p class="why">{esc(what)}</p></li>'
             for href, name, stat, what in areas
@@ -6461,21 +6568,28 @@ def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -
     body = f"""    {_breadcrumb([("Home", "/"), ("Focus areas", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Focus areas.</h1>
-    <p class="page-lede">Open one lens per question. Realtime reliability and GTFS
-    feature adoption apply across the covered corpus. Regional policy views are
-    separated below and only apply where their source data and rules do.</p>
-    <h2 class="section-title">Across current coverage</h2>
+    <p class="page-lede">Open one lens per question. The first two groups apply
+    across the covered corpus. Regional policy views are separated below and only
+    apply where their source data and rules do.</p>
+    <h2 class="section-title" id="beyond-the-validator">Checks a validator does not run</h2>
+    <p class="page-lede">MobilityData's canonical validator answers whether a feed
+    follows the specification. A feed can answer yes and still strand a rider.
+    These lenses ask the second question, about the places riders actually reach
+    an agency through.</p>
+    <ul class="findings">{area_items(beyond_areas)}</ul>
+    <h2 class="section-title">Optional GTFS features</h2>
     <ul class="findings">{area_items(universal_areas)}</ul>
     <h2 class="section-title">United States</h2>
     <ul class="findings">{area_items(us_areas)}</ul>
     <p class="fineprint">Every lens measures published data, never a compliance
     determination or on-the-ground service quality, and none of them changes a
-    grade.</p>"""
+    grade. The first group is reported next to the rubric rather than folded into
+    it.</p>"""
     return _page(
         title="Focus areas — GTFS Scorecard",
         description=(
-            "Worldwide GTFS quality lenses, plus clearly scoped regional policy views "
-            "for jurisdictions where local source data applies."
+            "GTFS checks that run past the canonical validator, plus clearly scoped "
+            "regional policy views for jurisdictions where local source data applies."
         ),
         canonical=f"{BASE_URL}/focus/",
         body=body,
@@ -8154,6 +8268,109 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
     )
 
 
+def _render_disappeared_page() -> str:
+    """The symptom-first explainer (/guide/disappeared-from-trip-planners/): why an
+    agency's service vanishes from Google Maps, Apple Maps, and Transit, and the
+    order to check the causes.
+
+    Riders and managers search the symptom ("bus route not showing in google
+    maps"), not a notice code, so this page meets that query in plain language
+    and funnels to the fix library, the agency's own scorecard page, and the
+    pre-publish check. Static content: no rollup payload, so the page stands
+    whether or not any pipeline has run. Like every page here, it explains and
+    never shames; the premise is that the buses are still running and the data
+    stopped saying so.
+    """
+    canonical = f"{BASE_URL}/guide/disappeared-from-trip-planners/"
+    body = f"""    {_breadcrumb([("Home", "/"), ("Why agencies disappear from trip planners", None)])}
+    <h1 class="page-title">Why did my agency disappear from Google Maps?</h1>
+    <p class="page-lede">The buses are still running, but riders opening Google Maps,
+    Apple Maps, or the Transit app can no longer find them. When that happens, the
+    service did not stop; the data did. Trip planners read your published GTFS feed on
+    their own schedule, and they drop service silently when the feed goes stale, breaks,
+    or moves. These are the causes, in the order worth checking.</p>
+
+    <section class="feed-details"><h2 class="section-title">1. The feed expired</h2>
+    <p>The most common cause. Every GTFS feed carries service calendars, and many carry
+    an explicit end date in feed_info.txt. The day the last calendar runs out, planners
+    stop showing your trips, without warning riders first. The fix is usually a same-day
+    re-export; the durable fix is publishing on a schedule so expiry never gets close.</p>
+    <p>Start with <a href="/fix/scorecard_feed_expired/">the feed has already expired</a>,
+    and the early warnings for a feed expiring
+    <a href="/fix/feed_expiration_date7_days/">within 7 days</a> or
+    <a href="/fix/feed_expiration_date30_days/">within 30 days</a>.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">2. The feed URL stopped
+    working</h2>
+    <p>Planners fetch your feed from a fixed URL. A website redesign that moves the zip
+    file, a lapsed TLS certificate, or a host outage all look the same from the outside:
+    the fetch fails, and after enough failed fetches your service ages out of the apps.
+    This is easy to miss because the website itself may look fine to a person.</p>
+    <p>Your agency's scorecard page shows when this site last fetched your feed
+    successfully; a long-failing fetch there usually means the planners are failing
+    too. (Details on how this site fetches feeds are on the
+    <a href="/fetcher/">fetcher page</a>.)</p></section>
+
+    <section class="feed-details"><h2 class="section-title">3. The calendar has a gap or
+    lives too far in the future</h2>
+    <p>A feed can be current and still describe no service for the next few weeks, for
+    example when an export carries next quarter's calendars but drops the current
+    one. Riders see nothing during the gap. See
+    <a href="/fix/big_gap_in_service/">a big gap in service</a> and
+    <a href="/fix/expired_calendar/">expired service calendars</a>.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">4. The feed moved and the
+    aggregators were not told</h2>
+    <p>Publishing a feed at a new URL is not enough; the places planners discover feeds
+    have to learn the new address too. That usually means updating your entry in the
+    <a href="https://mobilitydatabase.org/">Mobility Database</a>, your listing with any
+    state or regional data program, and your feed configuration in
+    <a href="https://support.google.com/transitpartners/">Google's transit partner
+    tools</a> if your agency manages one. If this site tracks your feed at an old
+    address, <a href="/submit.html">tell us the new one</a>.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">5. An export change broke the
+    feed</h2>
+    <p>Less common, but a scheduling-software upgrade or a settings change can produce a
+    feed with errors severe enough that a planner rejects the whole file. The free
+    <a href="/check/">pre-publish check</a> runs the canonical validator in your browser
+    before the feed goes out the door, so a broken export never reaches riders.</p></section>
+
+    <section class="feed-details"><h2 class="section-title">Check your feed right now</h2>
+    <p>Find your agency on <a href="/agencies/">the agency list</a> for its current
+    grade, refresh status, and expiry outlook, or run
+    <a href="/try.html">an instant score</a> on any feed URL. If you maintain a feed,
+    <a href="/subscribe.html">subscribe to feed-health alerts</a> and the expiration
+    warning arrives before the silence does.</p></section>
+
+    <p class="fineprint">Each trip planner ingests feeds on its own rules and timetable,
+    so this page describes the common causes, not any planner's official policy. The
+    durable protection is the same in every case: publish on a schedule, and watch the
+    feed the way riders depend on it.</p>"""
+    jsonld = _tech_article_jsonld(
+        headline="Why did my agency disappear from Google Maps?",
+        description=(
+            "The five reasons a transit agency's service vanishes from Google Maps, Apple "
+            "Maps, and Transit, in the order to check them: expired feeds, broken feed "
+            "URLs, calendar gaps, unannounced feed moves, and broken exports."
+        ),
+        canonical=canonical,
+        about={"@type": "Thing", "name": "GTFS feed troubleshooting"},
+    )
+    return _page(
+        title="Why did my agency disappear from Google Maps? — GTFS Scorecard",
+        description=(
+            "The buses are still running but riders can't find them: the five GTFS feed "
+            "problems that make a transit agency vanish from trip planners, in the order "
+            "to check them, with plain-language fixes."
+        ),
+        canonical=canonical,
+        wide=True,
+        body=body,
+        jsonld=jsonld,
+    )
+
+
 _ACCESS_BAND_LABELS = {
     "most": "Nearly every stop marked",
     "some": "Some stops marked",
@@ -9599,6 +9816,43 @@ def _remove_unlisted_agency_pages(agency_pages: Path, published_ids: set[str]) -
             shutil.rmtree(page_dir)
 
 
+def _scope_index_to_canonical_registry(
+    index: dict[str, Any], registry_by_id: dict[str, Agency]
+) -> int:
+    """Drop stale/unlisted feed records from the current public index in place.
+
+    Reindex normally enforces this boundary first. Rendering enforces it again
+    so a registry retirement cannot leave an old scorecard public merely
+    because deploy started from a previously committed index.
+    """
+    if not registry_by_id:
+        return 0
+    indexed = index.setdefault("agencies", {})
+    removed = [
+        agency_id
+        for agency_id in indexed
+        if agency_id not in registry_by_id or not registry_by_id[agency_id].is_canonical_feed
+    ]
+    for agency_id in removed:
+        indexed.pop(agency_id, None)
+    return len(removed)
+
+
+def _published_alias_target(
+    agency: Agency, registry_by_id: dict[str, Agency], published_ids: set[str]
+) -> str:
+    """Resolve a retained alias to the live scorecard it should redirect to."""
+    target = agency.alias_of
+    seen = {agency.id}
+    while target and target not in seen:
+        if target in published_ids:
+            return target
+        seen.add(target)
+        target_agency = registry_by_id.get(target)
+        target = target_agency.alias_of if target_agency else ""
+    return ""
+
+
 def _remove_stale_agency_index_pages(page_root: Path) -> None:
     """Remove only generated numeric directory pages before rebuilding them."""
     if not page_root.exists():
@@ -9691,6 +9945,16 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     art = artifacts_dir()
     index_file = art / "index.json"
     index = json.loads(index_file.read_text()) if index_file.exists() else {"agencies": {}}
+    from .config import AGENCIES
+
+    # CLI renders have the registry loaded already. Direct library callers use
+    # the same manifest-aware reader without mutating the process-global map.
+    registry_by_id = dict(AGENCIES)
+    if not registry_by_id:
+        from .agencies import read_agencies
+
+        registry_by_id = {agency.id: agency for agency in read_agencies()}
+    index_changed = _scope_index_to_canonical_registry(index, registry_by_id)
     published_ids = {str(agency_id) for agency_id in (index.get("agencies") or {})}
     raw_liveness_state = _load_liveness()
     liveness_state = _scope_liveness_state(raw_liveness_state, published_ids)
@@ -9814,18 +10078,35 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # feed would retain a directly reachable HTML page after disappearing from
     # the directory and sitemap.
     _remove_unlisted_agency_pages(web / "agency", published_ids)
+    # Retained aliases keep historical artifacts reproducible and old inbound
+    # links useful, but the old URL is now a redirect rather than a second
+    # current scorecard. Inactive records without a live successor stay gone.
+    retained_agency_redirects: dict[str, str] = {}
+    for agency in sorted(registry_by_id.values(), key=lambda item: item.id):
+        target = _published_alias_target(agency, registry_by_id, published_ids)
+        if target:
+            source_path = f"/agency/{agency.id}/"
+            target_path = f"/agency/{target}/"
+            retained_agency_redirects[source_path] = target_path
+            write(
+                f"agency/{agency.id}/index.html",
+                _redirect_page(target_path, agency.name),
+            )
+    write(
+        "_meta/retained-agency-redirects.json",
+        json.dumps(
+            {
+                "schema_version": 1,
+                "redirects": retained_agency_redirects,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+    )
     from .publish import enrich_index_history_provenance
 
-    index_changed = enrich_index_history_provenance(index, art)
-    from .config import AGENCIES
-
-    # CLI renders have the registry loaded already. Direct library callers use
-    # the same manifest-aware reader without mutating the process-global map.
-    registry_by_id = dict(AGENCIES)
-    if not registry_by_id:
-        from .agencies import read_agencies
-
-        registry_by_id = {agency.id: agency for agency in read_agencies()}
+    index_changed |= enrich_index_history_provenance(index, art)
     index_changed |= _apply_registry_agency_names(index, registry_by_id)
     if index_changed:
         index_file.write_text(json.dumps(index, indent=2, sort_keys=True) + "\n")
@@ -9937,7 +10218,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             # the directory filter and national rollup never count them.
             "ntd_ready": (ntd_assess(artifact).status if location.country_code == "US" else None),
             # Whether the feed clears Google/Apple Maps' four-week coverage bar.
-            "google_gate": google_from_artifact(artifact, dt.date.today()).status,
+            # Measured against render_site's frozen UTC instant, the same one
+            # _google_gate_line uses for the on-page prose. dt.date.today() would
+            # read the runner's local zone, so a machine behind UTC could publish
+            # a different gate than the page it sits next to.
+            "google_gate": google_from_artifact(artifact, now.date()).status,
             "feed_url": feed.get("static_url"),
             "top_fix": fixes[0]["fix"] if fixes else None,
             "scorecard_url": f"{BASE_URL}/agency/{agency_id}/",
@@ -10357,6 +10642,14 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         _render_shapes_page(shapes_payload),
         f"{BASE_URL}/ntd/shapes/",
     )
+    # The symptom-first troubleshooting guide: why service vanishes from trip
+    # planners, for the manager who searches the symptom rather than a notice
+    # code. Static content; funnels into the fix library and the pre-publish check.
+    write(
+        "guide/disappeared-from-trip-planners/index.html",
+        _render_disappeared_page(),
+        f"{BASE_URL}/guide/disappeared-from-trip-planners/",
+    )
 
     # National accessibility-data coverage (how many feeds let a wheelchair user
     # plan a trip at all), for advocates and the programs that support them. Built
@@ -10424,6 +10717,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     if rt_dir.exists():
         for hf in sorted(rt_dir.glob("*.json")):
             rt_id = hf.stem
+            # Health files are longitudinal evidence and intentionally survive
+            # registry retirement. This page and its raw monitored count describe
+            # only the current published catalog.
+            if rt_id not in published_ids:
+                continue
             health = summarize(load_observations(rt_id))
             if health.observations == 0:
                 continue
@@ -10546,7 +10844,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
 
     # Side-by-side compare: one static page over the artifacts that already
     # exist; the two pickers come from the same catalog the directory uses.
+    # That list is published beside the page and fetched on demand rather than
+    # inlined twice, so the document does not grow with the registry.
     write("compare/index.html", _render_compare_page(catalog), f"{BASE_URL}/compare/")
+    write("compare/agencies.json", _render_compare_picker_data(catalog))
 
     # In-browser SQL over the published parquet: the static-first principle
     # applied to analytics (no backend, nothing sent to a server).
@@ -10571,7 +10872,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         c["id"]: {"name": str(c.get("name", c["id"])), "grade": str(c.get("grade", "?"))}
         for c in catalog
     }
-    national_routes = build_national_routes(art, route_grades)
+    national_routes = build_national_routes(
+        art,
+        route_grades,
+        allowed_agency_ids=published_ids,
+    )
     write(
         "routes/index.html",
         _render_routes_page(national_routes.summary),
@@ -10678,7 +10983,9 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         candidate_impact = weighted_impact(
             rid_records,
             rid,
-            quarantined_ntd_ids=duplicate_ntd_reporter_ids(AGENCIES.values()),
+            quarantined_ntd_ids=duplicate_ntd_reporter_ids(
+                agency for agency in AGENCIES.values() if agency.is_canonical_feed
+            ),
         )
         if candidate_impact.get("matched_ntd_reporters", 0) > 0:
             ridership_impact = candidate_impact
@@ -10721,7 +11028,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # The focus-areas hub the primary nav points at.
     write(
         "focus/index.html",
-        _render_focus_page(ntd_payload, rt_rollup),
+        _render_focus_page(ntd_payload, rt_rollup, catalog),
         f"{BASE_URL}/focus/",
     )
     # The same national table as Parquet, so a DuckDB or Athena consumer can query

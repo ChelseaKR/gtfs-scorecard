@@ -65,7 +65,8 @@ class ApiFeed:
 
     feed_id: str
     provider: str
-    producer_url: str  # the agency's own GTFS download URL
+    # Upstream calls this producer_url; that name alone is not ownership evidence.
+    producer_url: str
     data_type: str
     status: str = ""
     country: str = ""

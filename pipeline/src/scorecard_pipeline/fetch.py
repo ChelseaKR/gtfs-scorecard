@@ -23,8 +23,8 @@ log = logging.getLogger(__name__)
 
 # Many agencies serve their public GTFS from behind a WAF or CDN that rejects
 # non-browser User-Agents with a 403 (the same way it would a scraper), which
-# blocked legitimate fetches of feeds the agency publishes for exactly this kind
-# of consumption. Present as a current browser, the way Google's and Apple's
+# blocked legitimate public-feed fetches used for exactly this kind of
+# consumption. Present as a current browser, the way Google's and Apple's
 # transit fetchers and ordinary trip planners do, with the Accept headers a
 # browser sends. We still fetch once a day and honour polling etiquette.
 USER_AGENT = (
@@ -115,7 +115,7 @@ def limits_for(large_feed: bool) -> ArchiveLimits | None:
 class FetchProvenance:
     """How a feed's bytes were actually obtained.
 
-    ``source`` is "origin" (the agency's configured URL) or "mirror" (the
+    ``source`` is "origin" (the registry's configured URL) or "mirror" (the
     Mobility Database hosted copy). ``final_url`` is the URL that served the
     bytes. ``max_attempts`` is the configured attempt ceiling for that fetch
     (retries + 1), not an observed count — safe_get does not report how many

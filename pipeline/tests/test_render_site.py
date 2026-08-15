@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from scorecard_pipeline import RUBRIC_VERSION, render_site
+from scorecard_pipeline import RUBRIC_VERSION, render_site, tool_profiles
 from scorecard_pipeline.render_site import (
     _accessibility_depth_signals,
     _accessibility_score,
@@ -1022,6 +1022,35 @@ def test_agency_page_allowlists_hostile_artifact_severity() -> None:
     assert 'onmouseover="window.__pwned=1' not in html
 
 
+def test_catalog_google_gate_follows_the_frozen_instant_not_the_local_clock(
+    isolated_repo_root: Path,
+) -> None:
+    """catalog.json's google_gate must be measured against render_site's ``now``.
+
+    It read dt.date.today() once, which is the runner's *local* zone: a machine
+    behind UTC published a different gate than the agency page rendered beside
+    it, and the golden suite went red for hours a day. Rendering the same
+    fixture at two instants either side of the four-week bar pins the field to
+    ``now``, so a wall-clock read cannot come back unnoticed.
+    """
+    from scorecard_pipeline.render_site import render_site
+
+    fixture = Path(__file__).parent / "fixtures" / "golden_site"
+    shutil.copytree(fixture, isolated_repo_root)
+    # yolobus' last service date is 2026-09-07, so the 28-day Maps window puts
+    # the pass/at_risk boundary at 2026-08-10.
+    catalog_path = isolated_repo_root / "web" / "catalog.json"
+
+    def gate_at(now: dt.datetime) -> str:
+        render_site(now)
+        catalog = json.loads(catalog_path.read_text())
+        row = next(row for row in catalog["agencies"] if row["id"] == "yolobus")
+        return str(row["google_gate"])
+
+    assert gate_at(dt.datetime(2026, 8, 10, 12, tzinfo=dt.UTC)) == "pass"
+    assert gate_at(dt.datetime(2026, 8, 11, 12, tzinfo=dt.UTC)) == "at_risk"
+
+
 def test_catalog_derives_status_from_legacy_latest_artifact(
     isolated_repo_root: Path,
 ) -> None:
@@ -1056,6 +1085,97 @@ def test_catalog_derives_status_from_legacy_latest_artifact(
     )
     assert global_coverage["scope"]["name"] == "Bounded European GTFS Schedule beta"
     assert global_coverage["status"] == "not_ready"
+
+
+def test_render_retires_stale_f_scorecard_and_redirects_to_live_successor(
+    isolated_repo_root: Path,
+) -> None:
+    from scorecard_pipeline.render_site import render_site
+
+    fixture = Path(__file__).parent / "fixtures" / "golden_site"
+    shutil.copytree(fixture, isolated_repo_root)
+    retired_id = "unitrans-retired"
+    successor_id = "unitrans"
+
+    registry = isolated_repo_root / "agencies.yaml"
+    registry.write_text(
+        registry.read_text()
+        + f"""
+
+  - id: {retired_id}
+    name: Retired Unitrans export
+    static_gtfs_url: https://archive.example/unitrans.zip
+    alias_of: {successor_id}
+    feed_status: deprecated
+"""
+    )
+
+    artifacts = isolated_repo_root / "data" / "artifacts"
+    successor_latest = artifacts / successor_id / "latest.json"
+    live_artifact = json.loads(successor_latest.read_text())
+    live_artifact["overall"]["score"] = 91.1
+    live_artifact["overall"]["grade"] = "A"
+    successor_latest.write_text(json.dumps(live_artifact))
+
+    retired_artifact = json.loads(json.dumps(live_artifact))
+    retired_artifact["agency"]["id"] = retired_id
+    retired_artifact["agency"]["name"] = "Retired Unitrans export"
+    retired_artifact["overall"]["score"] = 31.2
+    retired_artifact["overall"]["grade"] = "F"
+    retired_dir = artifacts / retired_id
+    retired_dir.mkdir()
+    (retired_dir / "latest.json").write_text(json.dumps(retired_artifact))
+
+    index_path = artifacts / "index.json"
+    index = json.loads(index_path.read_text())
+    index["agencies"][successor_id]["history"][-1].update({"score": 91.1, "grade": "A"})
+    index["agencies"][retired_id] = {
+        "name": "Retired Unitrans export",
+        "history": [{"date": "2026-07-02", "score": 31.2, "grade": "F"}],
+    }
+    index_path.write_text(json.dumps(index))
+
+    # Longitudinal monitor evidence survives retirement too. It must remain on
+    # disk without inflating the current realtime API's raw monitored count.
+    rt_dir = isolated_repo_root / "data" / "rt-health"
+    retired_health = json.loads((rt_dir / "yolobus.json").read_text())
+    retired_health["agency_id"] = retired_id
+    (rt_dir / f"{retired_id}.json").write_text(json.dumps(retired_health))
+
+    stale_page = isolated_repo_root / "web" / "agency" / retired_id
+    (stale_page / "brief").mkdir(parents=True)
+    (stale_page / "index.html").write_text("stale F scorecard")
+    (stale_page / "brief" / "index.html").write_text("stale brief")
+
+    render_site(dt.datetime(2026, 7, 13, 12, tzinfo=dt.UTC))
+
+    catalog = json.loads((isolated_repo_root / "web" / "catalog.json").read_text())
+    rows = {row["id"]: row for row in catalog["agencies"]}
+    assert retired_id not in rows
+    assert rows[successor_id]["grade"] == "A"
+    assert retired_id not in json.loads(index_path.read_text())["agencies"]
+
+    redirect = (stale_page / "index.html").read_text()
+    assert f"url=/agency/{successor_id}/" in redirect
+    assert f'<a href="/agency/{successor_id}/">' in redirect
+    assert "stale F scorecard" not in redirect
+    assert not (stale_page / "brief").exists()
+    retained_redirects = json.loads(
+        (isolated_repo_root / "web" / "_meta" / "retained-agency-redirects.json").read_text()
+    )
+    assert retained_redirects == {
+        "schema_version": 1,
+        "redirects": {f"/agency/{retired_id}/": f"/agency/{successor_id}/"},
+    }
+    # Historical JSON remains available even though it is no longer a current
+    # directory row or scorecard page.
+    assert (retired_dir / "latest.json").exists()
+    assert (rt_dir / f"{retired_id}.json").exists()
+    realtime = json.loads((isolated_repo_root / "web" / "api" / "v1" / "realtime.json").read_text())
+    assert realtime["raw_monitored_feed_record_count"] == 1
+    assert all(record["id"] != retired_id for record in realtime["most_reliable"])
+    sitemap = (isolated_repo_root / "web" / "sitemap.xml").read_text()
+    assert f"/agency/{retired_id}/" not in sitemap
 
 
 def test_catalog_top_level_rubric_reports_mixed_row_versions() -> None:
@@ -1436,20 +1556,38 @@ def _fixable_artifact(static_url: str) -> dict:  # type: ignore[type-arg]
     }
 
 
-def test_vendor_section_names_hosted_tool() -> None:
-    # A Trillium-hosted feed: the heading and lede name Trillium, so the manager
-    # knows the request goes to the service that produces the feed (R5).
-    art = _fixable_artifact("https://data.trilliumtransit.com/gtfs/demo.zip")
+# Producing-tool attribution reads each feed's own publisher declaration rather
+# than the host serving the zip (ADR 0045), so a test that expects a named tool
+# supplies the declaration the committed snapshot would carry for that feed.
+def _declares(
+    monkeypatch: pytest.MonkeyPatch, url: str, name: str, publisher_url: str = ""
+) -> None:
+    monkeypatch.setattr(tool_profiles, "_recorded_declaration", {url: (name, publisher_url)}.get)
+
+
+_TRILLIUM_DEMO_FEED = "https://data.trilliumtransit.com/gtfs/demo.zip"
+
+
+def test_vendor_section_names_hosted_tool(monkeypatch: pytest.MonkeyPatch) -> None:
+    # A feed whose own feed_info declares Trillium: the heading and lede name
+    # Trillium, so the manager knows the request goes to the service that
+    # produces the feed (R5).
+    _declares(monkeypatch, _TRILLIUM_DEMO_FEED, "Trillium Solutions, Inc.")
+    art = _fixable_artifact(_TRILLIUM_DEMO_FEED)
     html = _vendor_section(art, CANONICAL)
     assert "Send Trillium a fix request" in html
     assert "produced and hosted by Trillium" in html
     assert "whoever runs your scheduling software export" not in html
 
 
-def test_vendor_section_self_edit_tool_keeps_generic_heading() -> None:
+def test_vendor_section_self_edit_tool_keeps_generic_heading(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     # GTFS Builder agencies usually make the change themselves; the heading stays
     # generic but the lede names the tool and the free help desk path.
-    html = _vendor_section(_fixable_artifact("https://rapid.nationalrtap.org/file?id=1"), CANONICAL)
+    url = "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/1/gtfs.zip"
+    _declares(monkeypatch, url, "National RTAP")
+    html = _vendor_section(_fixable_artifact(url), CANONICAL)
     assert "Send your vendor a fix request" in html
     assert "GTFS Builder" in html
 
@@ -1458,6 +1596,15 @@ def test_vendor_section_unknown_host_stays_generic() -> None:
     html = _vendor_section(_fixable_artifact("https://s3.amazonaws.com/bucket/gtfs.zip"), CANONICAL)
     assert "Send your vendor a fix request" in html
     assert "whoever runs your scheduling software export" in html
+
+
+def test_vendor_section_hosting_service_alone_stays_generic() -> None:
+    # trilliumtransit.com serves feeds Trillium did not build, so with no
+    # declaration behind it the copy must not address anyone by name (ADR 0045).
+    html = _vendor_section(_fixable_artifact(_TRILLIUM_DEMO_FEED), CANONICAL)
+    assert "Send your vendor a fix request" in html
+    assert "whoever runs your scheduling software export" in html
+    assert "Trillium" not in html
 
 
 CANONICAL = "https://gtfsscorecard.org/agency/demo/"
@@ -1706,7 +1853,7 @@ def _board_artifact() -> dict:  # type: ignore[type-arg]
         "rubric_version": "1.4",
         "validator_version": "7.0.0",
         "scoring_profile": {"id": "gtfs-scorecard-1.4", "rubric_version": "1.4"},
-        "feed": {"static_url": "https://data.trilliumtransit.com/gtfs/demo.zip"},
+        "feed": {"static_url": _TRILLIUM_DEMO_FEED},
         "top_fixes": [
             {
                 "code": "scorecard_wheelchair_boarding_unknown",
@@ -1720,7 +1867,10 @@ def _board_artifact() -> dict:  # type: ignore[type-arg]
     }
 
 
-def test_board_page_leads_with_progress_and_frames_fixes_as_asks() -> None:
+def test_board_page_leads_with_progress_and_frames_fixes_as_asks(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _declares(monkeypatch, _TRILLIUM_DEMO_FEED, "Trillium Solutions, Inc.")
     prev = {
         "rubric_version": "1.4",
         "validator_version": "7.0.0",
@@ -1743,6 +1893,8 @@ def test_board_page_leads_with_progress_and_frames_fixes_as_asks() -> None:
     # The producing tool is named so the board sees who does the work (R5).
     assert "Trillium" in html
     # It says what the grade does and does not measure.
+    assert "schedule data in the feed scored here" in html
+    assert "schedule data this agency publishes" not in html
     assert "not service" in html
     assert '<meta name="robots" content="noindex,follow">' in html
 
@@ -2099,7 +2251,7 @@ def test_non_us_fixlog_prefers_current_directory_country_over_a_stale_artifact()
     assert 'href="/agencies/"' in html and 'href="/check/"' in html
 
 
-def test_outreach_note_names_hosted_tool() -> None:
+def test_outreach_note_names_hosted_tool(monkeypatch: pytest.MonkeyPatch) -> None:
     art = _artifact(
         {
             "code": "scorecard_feed_expired",
@@ -2108,7 +2260,8 @@ def test_outreach_note_names_hosted_tool() -> None:
             "fix": "Re-export with a longer calendar.",
         }
     )
-    art["feed"] = {"static_url": "https://data.trilliumtransit.com/gtfs/demo.zip"}
+    art["feed"] = {"static_url": _TRILLIUM_DEMO_FEED}
+    _declares(monkeypatch, _TRILLIUM_DEMO_FEED, "Trillium Solutions, Inc.")
     note = _outreach_note(art, CANONICAL)
     assert note is not None
     assert "Your feed is produced by Trillium" in note
@@ -3434,6 +3587,88 @@ def test_render_compare_page_form_is_shareable_and_neutral() -> None:
     assert "distinct feed bytes" in html and "measured category set" in html
 
 
+def _picker_catalog(count: int) -> list[dict[str, str]]:
+    return [
+        {"id": f"agency-{i:04d}", "name": f"Agency {i:04d}", "state": "Iowa"} for i in range(count)
+    ]
+
+
+def test_compare_page_document_does_not_grow_with_the_registry() -> None:
+    """The pickers hold a fixed window, so the page weighs the same at any size.
+
+    Both selects used to inline the whole catalog, which put roughly 190 bytes
+    of document on every agency added and showed up as a slower largest
+    contentful paint as coverage grew.
+    """
+    from scorecard_pipeline.pages_tools import (
+        _COMPARE_PICKER_INITIAL_OPTIONS,
+        _render_compare_page,
+    )
+
+    small = _render_compare_page(_picker_catalog(_COMPARE_PICKER_INITIAL_OPTIONS + 1))
+    large = _render_compare_page(_picker_catalog(3000))
+    # Only the counts named in the copy differ, never the option list itself.
+    assert abs(len(large) - len(small)) < 200
+    assert large.count('<option value="agency-') == 2 * _COMPARE_PICKER_INITIAL_OPTIONS
+    # The window is the start of the same name order the full list uses.
+    assert '<option value="agency-0000">Agency 0000 &mdash; Iowa</option>' in large
+    assert "agency-2999" not in large
+
+
+def test_compare_page_defers_the_rest_of_the_list_accessibly() -> None:
+    from scorecard_pipeline.pages_tools import _render_compare_page
+
+    html = _render_compare_page(_picker_catalog(3000))
+    # The rest of the list is fetched from the published JSON beside the page,
+    # same origin, no new dependency.
+    assert 'var PICKER_URL = "/compare/agencies.json"' in html
+    assert html.count("fetch(PICKER_URL)") == 1
+    # Reaching for the form is enough; an explicit button is there as well.
+    assert '"focusin", "pointerenter"' in html
+    assert 'id="compare-load"' in html and "Load every agency" in html
+    # Both states are announced, and both pickers point at the announcement.
+    assert 'id="compare-picker-status" class="fineprint" role="status"' in html
+    assert html.count('aria-describedby="compare-picker-status"') == 4
+    assert "Loading the complete agency list." in html
+    assert "Both lists now hold all " in html
+    # A failed fetch keeps the opening options, says so, and offers a retry.
+    assert "The complete agency list could not load." in html
+    assert "Try loading every agency again" in html
+    # Honest about what a reader without JavaScript gets.
+    assert "the pickers hold the first 50 of 3000 agencies" in html
+
+
+def test_compare_page_keeps_every_agency_when_the_catalog_is_small() -> None:
+    from scorecard_pipeline.pages_tools import _render_compare_page
+
+    html = _render_compare_page(_picker_catalog(3))
+    assert html.count('<option value="agency-') == 6
+    assert "Both lists hold all 3 agencies." in html
+    # Nothing left to fetch, so the load control stays out of the tab order.
+    assert 'id="compare-load" hidden' in html
+    assert "var listLoaded = true;" in html
+
+
+def test_compare_picker_data_carries_only_what_an_option_needs() -> None:
+    import json as _json
+
+    from scorecard_pipeline.pages_tools import _render_compare_picker_data
+
+    catalog: list[dict[str, Any]] = [
+        {"id": "bravo-transit", "name": "Bravo Transit", "state": "Ohio"},
+        {"id": "alpha-transit", "name": "Alpha Transit", "state": None},
+    ]
+    payload = _json.loads(_render_compare_picker_data(catalog))
+    assert payload["schema_version"] == 1
+    assert payload["fields"] == ["id", "name", "state"]
+    # Sorted by name, like the options, and a missing state is an empty string
+    # rather than a null the picker would have to special-case.
+    assert payload["agencies"] == [
+        ["alpha-transit", "Alpha Transit", ""],
+        ["bravo-transit", "Bravo Transit", "Ohio"],
+    ]
+
+
 def test_citation_carries_the_reader_archive_profile() -> None:
     from scorecard_pipeline.render_site import _citation_bibtex, _citation_reference
 
@@ -3685,6 +3920,47 @@ def test_shapes_page_explains_the_phase_in_and_carries_the_numbers() -> None:
     }
     assert "datePublished" not in articles[0]
     assert "dateModified" not in articles[0]
+
+
+def test_disappeared_guide_names_the_causes_in_check_order_and_funnels_to_fixes() -> None:
+    from scorecard_pipeline.render_site import _render_disappeared_page
+
+    html = _render_disappeared_page()
+    # The title meets the symptom query and the lede sets the no-shame premise.
+    assert "Why did my agency disappear from Google Maps?" in html
+    assert "the service did not stop; the data did" in html.replace("\n    ", " ")
+    # All five causes appear, expiry first (the most common), export breakage last.
+    assert html.index("The feed expired") < html.index("The feed URL stopped")
+    assert html.index("calendar has a gap") < html.index("aggregators were not told")
+    assert html.index("aggregators were not told") < html.index("export change broke")
+    # Every referenced fix page and self-serve surface is linked.
+    for href in (
+        "/fix/scorecard_feed_expired/",
+        "/fix/feed_expiration_date7_days/",
+        "/fix/feed_expiration_date30_days/",
+        "/fix/big_gap_in_service/",
+        "/fix/expired_calendar/",
+        "/fetcher/",
+        "/check/",
+        "/agencies/",
+        "/try.html",
+        "/subscribe.html",
+        "/submit.html",
+    ):
+        assert f'href="{href}"' in html, href
+    # No per-agency links and no compliance framing: symptom help, not a verdict.
+    assert 'href="/agency/' not in html
+    assert "not any planner's official policy" in html
+    articles = _jsonld_documents(html)
+    assert len(articles) == 1
+    _assert_tech_article_identity(
+        articles[0],
+        "https://gtfsscorecard.org/guide/disappeared-from-trip-planners/",
+    )
+    assert articles[0]["about"] == {
+        "@type": "Thing",
+        "name": "GTFS feed troubleshooting",
+    }
 
 
 def test_shapes_page_without_data_keeps_the_explainer() -> None:
@@ -4500,7 +4776,7 @@ def test_press_page_guards_the_no_shaming_line() -> None:
     assert "CC BY 4.0" in html
 
 
-def _confidence_artifact(**overrides: Any) -> dict[str, Any]:
+def _confidence_artifact(source_provenance: str = "official", **overrides: Any) -> dict[str, Any]:
     conf: dict[str, Any] = {
         "level": "medium",
         "measured_categories": 3,
@@ -4510,18 +4786,18 @@ def _confidence_artifact(**overrides: Any) -> dict[str, Any]:
         "feed_age_days": 0,
         "notes": [
             "Realtime quality was not measured this run. It does not count against the grade.",
-            "The feed was downloaded from the agency's own URL.",
+            "The feed was downloaded from the official feed URL on file.",
         ],
     }
     conf.update(overrides)
-    return {"confidence": conf}
+    return {"confidence": conf, "feed": {"source_provenance": source_provenance}}
 
 
 def test_confidence_section_renders_quiet_line_and_breakdown() -> None:
     from scorecard_pipeline.render_site import _confidence_section
 
     html = _confidence_section(_confidence_artifact())
-    assert "Measured 3 of 4 score categories from the agency" in html
+    assert "Measured 3 of 4 score categories from the official feed URL on file" in html
     assert "How we measured this" in html
     assert "Confidence in this measurement: medium." in html
     assert "Realtime quality was not measured this run." in html
@@ -4542,6 +4818,55 @@ def test_confidence_section_names_the_unknown_source() -> None:
 
     html = _confidence_section(_confidence_artifact(fetch_source="unknown"))
     assert "original source was not recorded" in html
+
+
+def test_confidence_section_fails_closed_for_legacy_or_unverified_ownership() -> None:
+    from scorecard_pipeline.render_site import _confidence_section
+
+    artifact = _confidence_artifact(
+        source_provenance="unverified",
+        notes=["The feed was downloaded from the agency's own URL."],
+    )
+    html = _confidence_section(artifact)
+
+    assert "publisher not verified" in html
+    assert "agency's own" not in html
+
+
+@pytest.mark.parametrize(
+    ("source_provenance", "fetch_source", "expected"),
+    [
+        ("official", "origin", "Based on the official feed source on file"),
+        ("archive", "origin", "Based on an archived feed source on file"),
+        (
+            "archive",
+            "mirror",
+            "Based on a Mobility Database mirror copy of an archived feed listing",
+        ),
+        ("third_party", "origin", "Based on a third-party feed source on file"),
+        (
+            "unverified",
+            "origin",
+            "Based on the feed source on file; publisher ownership is not verified",
+        ),
+    ],
+)
+def test_board_hero_names_source_provenance_without_assuming_agency_ownership(
+    source_provenance: str, fetch_source: str, expected: str
+) -> None:
+    artifact = {
+        "overall": {"grade": "B", "score": 85},
+        "snapshot_date": "2026-08-08",
+        "categories": {},
+        "feed": {"source_provenance": source_provenance},
+        "confidence": {"fetch_source": fetch_source},
+    }
+
+    html = _board_hero("Demo Transit", "demo", artifact, [])
+
+    assert expected in html
+    assert "this agency publishes" not in html
+    assert "agency's own" not in html
 
 
 def test_confidence_section_empty_for_pre_1_5_artifacts() -> None:
@@ -4583,7 +4908,9 @@ def test_agency_page_carries_the_confidence_line() -> None:
     )
     artifact = build_artifact(agency, fetch, card, dt.datetime(2026, 6, 11, tzinfo=dt.UTC))
     html = _render_agency(artifact)
-    assert "Measured 2 of 4 score categories from the agency" in html
+    assert "Measured 2 of 4 score categories from the feed URL on file" in html
+    assert "publisher not verified" in html
+    assert "agency's own" not in html
     assert "How we measured this" in html
     title = html.split("<title>", 1)[1].split("</title>", 1)[0]
     description = html.split('<meta name="description" content="', 1)[1].split('">', 1)[0]
@@ -4814,7 +5141,7 @@ def test_sitemap_deduplicates_urls_and_adds_known_lastmod() -> None:
 def _guided_flow_artifact() -> dict[str, Any]:
     return {
         "agency": {"id": "demo", "name": "Demo Transit"},
-        "feed": {"static_url": "https://data.trilliumtransit.com/gtfs/demo.zip"},
+        "feed": {"static_url": _TRILLIUM_DEMO_FEED},
         "top_fixes": [
             {"code": "expired_calendar", "fix": "Re-export with a longer calendar."},
             {"code": "autofix_trim_whitespace", "fix": "Trim whitespace in stop names."},
@@ -4829,10 +5156,11 @@ def _guided_flow_artifact() -> dict[str, Any]:
     }
 
 
-def test_guided_fix_flow_stitches_three_steps_and_links() -> None:
+def test_guided_fix_flow_stitches_three_steps_and_links(monkeypatch: pytest.MonkeyPatch) -> None:
     from scorecard_pipeline import render_site
     from scorecard_pipeline.render_site import _guided_fix_flow
 
+    _declares(monkeypatch, _TRILLIUM_DEMO_FEED, "Trillium Solutions, Inc.")
     # The /fix/<code>/ guide link only shows for codes that have a generated page;
     # register one so the step-1 guide link is deterministic in isolation.
     render_site.FIX_CODES_WITH_PAGES.add("expired_calendar")
@@ -5675,3 +6003,67 @@ def test_realtime_section_omits_medians_the_monitor_did_not_record() -> None:
         _realtime_rollup(median_uptime_pct=None, median_lag_seconds=None, median_coverage_pct=None)
     )
     assert "Across the monitored feeds" not in html
+
+
+def _focus_catalog(*gates: str) -> list[dict[str, Any]]:
+    """Catalog rows carrying only the field the focus hub reads."""
+    return [{"id": f"a{i}", "google_gate": gate} for i, gate in enumerate(gates)]
+
+
+def test_focus_page_groups_the_checks_that_run_past_the_validator() -> None:
+    """The four non-rubric checks reach a reader as one named group.
+
+    Each already renders somewhere (the Maps coverage line and routability
+    findings on an agency page, uptime on /realtime/, feed URL liveness on
+    /status/). This asserts the hub states the shared idea and keeps every
+    destination resolvable, so the grouping cannot decay back into four
+    unrelated mentions.
+    """
+    html = render_site._render_focus_page(
+        {"pct_ready": 50.0}, {"monitored_count": 4}, _focus_catalog("pass", "fail")
+    )
+
+    # The body prose is wrapped in the source template, so compare on a
+    # whitespace-normalized copy rather than pinning the line breaks.
+    flat = " ".join(html.split())
+
+    assert '<h2 class="section-title" id="beyond-the-validator">' in html
+    assert "Checks a validator does not run" in html
+    assert "A feed can answer yes and still strand a rider." in flat
+    for name in (
+        "Four weeks of service ahead",
+        "A rider can complete the trip",
+        "Realtime that is actually up",
+        "The feed URL still answers",
+    ):
+        assert name in html, name
+    for href in ('href="/agencies/"', 'href="/realtime/"', 'href="/status/"'):
+        assert href in html, href
+    # Grouping is presentation: the page still says these sit beside the rubric.
+    assert "none of them changes a grade" in flat
+    assert "reported next to the rubric rather than folded into it" in flat
+    # An agency without realtime is described neutrally, never as a shortfall.
+    assert "publishes no realtime feed is not counted here" in flat
+
+
+def test_focus_page_leaves_the_scorecard_only_check_unlinked() -> None:
+    """Trip completion has no hub page, so its name renders as plain text
+    instead of pointing a reader at a destination that does not show it."""
+    html = render_site._render_focus_page({}, {}, _focus_catalog("pass"))
+    assert '<p class="what">A rider can complete the trip ' in html
+
+
+def test_focus_maps_bar_counts_only_rows_with_a_measured_gate() -> None:
+    """The headline reads an existing per-feed status. A row without one is
+    left out of both sides of the ratio rather than counted as a shortfall."""
+    stat = render_site._beyond_validator_stat(
+        [*_focus_catalog("pass", "pass", "at_risk", "fail"), {"id": "x"}, {"id": "y"}]
+    )
+    assert stat == "2 of 4 published feed records clear the bar"
+
+
+def test_focus_maps_bar_uses_the_singular_and_survives_an_empty_corpus() -> None:
+    assert render_site._beyond_validator_stat(_focus_catalog("fail")) == (
+        "0 of 1 published feed record clears the bar"
+    )
+    assert render_site._beyond_validator_stat([]) == "Stated on each scorecard"

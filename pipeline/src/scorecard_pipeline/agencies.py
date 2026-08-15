@@ -14,7 +14,7 @@ from typing import NoReturn
 
 import yaml
 
-from .config import AGENCIES, Agency, ReuseEvidence, repo_root
+from .config import AGENCIES, Agency, ReuseEvidence, repo_root, utc_today
 from .location import SUPPORTED_COUNTRY_CODES, normalize_location
 
 ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
@@ -43,8 +43,13 @@ class AgencyConfigError(ValueError):
 
 
 def _today() -> dt.date:
-    """Current local date, split out so date-bound validation is deterministic in tests."""
-    return dt.date.today()
+    """Current UTC date, split out so date-bound validation is deterministic in tests.
+
+    UTC rather than the machine's zone: `reviewed_on` is compared against this
+    to reject a review dated in the future, and a checkout on a machine behind
+    UTC would otherwise reject an entry a curator legitimately reviewed today.
+    """
+    return utc_today()
 
 
 def _fail(entry_label: str, message: str, source: str = "agencies.yaml") -> NoReturn:
@@ -388,7 +393,9 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             )
     # Resolve chains only after every direct target is known to exist. This
     # keeps A -> B -> missing a configuration error attributed to B instead of
-    # leaking a KeyError while walking A's chain.
+    # leaking a KeyError while walking A's chain. Every retained alias must end
+    # at one active, canonical record; otherwise a syntactically valid chain can
+    # redirect readers and current-corpus jobs to another retired endpoint.
     for agency in agencies:
         seen_aliases = {agency.id}
         target = agency.alias_of
@@ -400,7 +407,17 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                     agency_sources[agency.id],
                 )
             seen_aliases.add(target)
-            target = by_id[target].alias_of
+            target_agency = by_id[target]
+            if not target_agency.alias_of:
+                if not target_agency.is_canonical_feed:
+                    _fail(
+                        f"agency '{agency.id}'",
+                        "alias_of chain must terminate at an active canonical feed; "
+                        f"target {target!r} has feed_status {target_agency.feed_status!r}",
+                        agency_sources[agency.id],
+                    )
+                break
+            target = target_agency.alias_of
     return agencies
 
 

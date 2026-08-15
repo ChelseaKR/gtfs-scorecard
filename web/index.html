@@ -889,9 +889,12 @@
     .topbar-controls { left: 1rem; right: 1rem; }
     .brand { font-size: 1rem; }
     .bulletin-meta .runline { display: grid; }
-    .coverage-ledger { grid-template-columns: 1fr; gap: 0; }
-    .coverage-ledger div + div,
-    .coverage-ledger div:nth-child(n + 3) { border-top: 1px solid var(--line-ink); border-left: 0; margin-top: 0.75rem; padding-left: 0; }
+    /* The ledger stays two columns here. A single-column rule used to sit in
+       this block, but a later unconditional rule always won, so its
+       companion border rules drew a top rule above only the right half of
+       the first row. Row two keeps its own rule and spacing. */
+    .coverage-ledger { gap: 0; }
+    .coverage-ledger div:nth-child(n + 3) { border-top: 1px solid var(--line-ink); margin-top: 0.75rem; }
     .desk-intro h1 { max-width: 13ch; font-size: clamp(3rem, 10vw, 4.4rem); }
     .record-head { grid-template-columns: minmax(0, 1fr) auto; gap: 1rem; }
     .score-group { grid-column: 1 / -1; display: flex; align-items: baseline; gap: 0.7rem; text-align: left; }
@@ -1117,20 +1120,27 @@
     margin: 0;
     border-top: 0;
   }
-  .coverage-ledger div,
-  .coverage-ledger div:nth-child(n + 3) {
+  /* The ledger computes to two columns at every width, so the dividers are
+     column-aware: the left cell of each row starts flush and the right cell
+     carries the rule between them. An earlier version of this block was
+     written for a single row of four and gave every cell but the first a left
+     divider, which indented "Countries in registry" by 17px against "Curated
+     feed records" directly above it on every viewport wider than 620px. */
+  .coverage-ledger div {
     margin: 0;
     padding: 0.65rem 1rem 0.65rem 0;
     border-top: 0;
   }
-  .coverage-ledger div + div,
-  .coverage-ledger div:nth-child(odd) {
+  .coverage-ledger div:nth-child(even) {
     padding-left: 1rem;
     border-left: 1px solid var(--line-ink);
   }
-  .coverage-ledger div:first-child {
+  .coverage-ledger div:nth-child(odd) {
     padding-left: 0;
     border-left: 0;
+  }
+  .coverage-ledger div:nth-child(n + 3) {
+    border-top: 1px solid var(--line-ink);
   }
   .coverage-ledger dt {
     font-family: var(--body);
@@ -1646,7 +1656,7 @@
             </li>
             <li class="workflow-step">
               <span class="workflow-node" aria-hidden="true">2</span>
-              <div><h3>Check the published data</h3><p>Run canonical validation plus freshness, rider-information, and optional realtime checks.</p></div>
+              <div><h3>Check the published data</h3><p>Run canonical validation plus freshness, rider-information, and optional realtime checks. A feed can follow the specification and still strand a rider, so <a href="/focus/#beyond-the-validator">some checks run past the validator</a>.</p></div>
               <span class="workflow-state state-live">Live</span>
             </li>
             <li class="workflow-step">

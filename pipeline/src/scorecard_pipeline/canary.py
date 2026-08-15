@@ -30,7 +30,7 @@ from pathlib import Path
 from typing import Any
 
 from .completeness import completeness
-from .config import AGENCIES, Agency, raw_dir, repo_root
+from .config import AGENCIES, Agency, raw_dir, repo_root, utc_today
 from .fetch import FetchResult, fetch_static
 from .gtfs import read_feed_dates
 from .metrics import correctness, freshness
@@ -398,8 +398,12 @@ def run_canary(
     canary: failures are logged, listed in the report as skipped, and the
     comparison proceeds over the agencies that did score.
     """
-    as_of = date or dt.date.today()
-    sample = sample_agencies(sorted(AGENCIES), size=sample_size, seed=seed)
+    as_of = date or utc_today()
+    sample = sample_agencies(
+        sorted(agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed),
+        size=sample_size,
+        seed=seed,
+    )
     baseline: list[dict[str, Any]] = []
     candidate: list[dict[str, Any]] = []
     skipped: list[str] = []

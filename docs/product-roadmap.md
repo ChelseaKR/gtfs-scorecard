@@ -98,6 +98,50 @@ the site.
 The European GTFS evidence and beta gate are in
 [`global-expansion.md`](global-expansion.md).
 
+## How coverage is chosen
+
+Adding feed records is the most validator-shaped move available. A rule engine
+is defined by running against arbitrary feeds, so growth in record count reads
+as the same job done at larger scale. `roadmap.md` already cuts coverage growth
+as a success measure. This section says what replaces it.
+
+**Complete a cohort; do not scatter.** A cohort is a set of feeds that share
+something a claim can be made about: one detected export tool, one support
+program, one state or province, one mode. Completing a cohort unlocks a
+statement that was previously unavailable, such as which export defect recurs
+across a tool's customers, or how a program's feeds moved after an intervention.
+The same number of records spread across unrelated regions raises a count and
+unlocks nothing. Curation effort should be spent where it closes a cohort.
+
+This rule sits alongside the existing steward gate rather than replacing it. A
+cohort usually arrives with a steward attached, because the person who can
+verify sources and licensing regionally is generally the person who defines the
+cohort.
+
+Three coverage axes are worth work. Record breadth is not one of them.
+
+- **Consequence.** What a finding costs: affected routes, affected boardings
+  where a reporter match is unambiguous, and served-area need. Today a finding
+  states what is wrong; it should also state what it costs. Ridership is a
+  United States federal concept and the equity overlays are North American, so
+  this layer must degrade to an honest absence elsewhere rather than a zero.
+  That constraint argues for completing North American cohorts first.
+- **Corpus over time.** Patterns that require the whole corpus scored daily, of
+  which same-day vendor regression is the shipped example. Public reporting here
+  stays gated on cohort comparability and the non-ranking rule below.
+- **Outcome.** Findings that reached a verified closure, with observed time to
+  close and playbooks ordered by evidence.
+
+The public headline number should follow. Reporting record count as the
+top-line figure states the validator-shaped measure while this document argues
+the opposite. Outcome coverage is the honest headline once the pilot produces
+enough closures to report one.
+
+Nothing here relaxes the existing guardrails. Vendor and program evidence stays
+aggregate and non-ranking, small samples do not support claims about a named
+organization, and no cohort statement is published while the measurement
+contract across its members is not comparable.
+
 ## Now: prove the alert-to-closure workflow
 
 Run a 90-day concierge pilot with one support-program liaison and two feed

@@ -343,6 +343,12 @@ def test_render_report_is_self_contained() -> None:
     assert '<link rel="stylesheet"' not in html_text
 
 
+def test_render_report_scope_does_not_assume_agency_ownership() -> None:
+    html_text = _render()
+    assert "schedule data in the feed scored here" in html_text
+    assert "schedule data this agency publishes" not in html_text
+
+
 def test_render_report_escapes_agency_name() -> None:
     artifact = _artifact(agency={"id": "x", "name": "Ride<script>alert(1)</script>"})
     html_text = _render(artifact)

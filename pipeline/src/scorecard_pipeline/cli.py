@@ -51,7 +51,7 @@ import requests
 
 from .agencies import AgencyConfigError, load_agencies
 from .completeness import completeness
-from .config import AGENCIES, Agency, raw_dir, repo_root
+from .config import AGENCIES, Agency, current_agency_ids, raw_dir, repo_root, utc_today
 from .constants_export import GRADE_RANK
 from .fetch import FetchResult, fetch_static, prepare_reader_archive
 from .gtfs import read_feed_dates
@@ -576,6 +576,7 @@ def _artifact_contract_current(agency_id: str) -> bool:
     """
     from . import RUBRIC_VERSION, SCHEMA_VERSION, SCORING_PROFILE_ID
     from .config import artifacts_dir
+    from .conformance import CONFORMANCE_VERSION
     from .validate import VALIDATOR_VERSION
 
     path = artifacts_dir() / agency_id / "latest.json"
@@ -589,12 +590,16 @@ def _artifact_contract_current(agency_id: str) -> bool:
     profile = artifact.get("scoring_profile") or {}
     if not isinstance(profile, dict):
         return False
+    conformance = artifact.get("conformance") or {}
+    if not isinstance(conformance, dict):
+        return False
     return bool(
         str(artifact.get("schema_version") or "") == SCHEMA_VERSION
         and str(artifact.get("rubric_version") or "") == RUBRIC_VERSION
         and str(artifact.get("validator_version") or "") == VALIDATOR_VERSION
         and str(profile.get("id") or "") == SCORING_PROFILE_ID
         and str(profile.get("rubric_version") or "") == RUBRIC_VERSION
+        and conformance.get("version") == CONFORMANCE_VERSION
     )
 
 
@@ -646,7 +651,14 @@ def _log_run_failure(agency_id: str, exc: Exception, *, single: bool) -> None:
 def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     if not args.all and not args.agency:
         parser.error("pass --agency <id> or --all")
-    targets = sorted(AGENCIES) if args.all else [args.agency]
+    # Retired aliases remain addressable one at a time for reproduction, but a
+    # batch run is a refresh of the current public catalog and must not score an
+    # old endpoint alongside its live successor.
+    targets = (
+        sorted(agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed)
+        if args.all
+        else [args.agency]
+    )
     failures = 0
     skipped = 0
     outcome_out = getattr(args, "outcome_out", None)
@@ -1313,7 +1325,7 @@ def _cmd_discover(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
     )
     registry: list[tuple[str, str, str]] = []
     mdb_ids: dict[str, str] = {}
-    for agency_id in sorted(AGENCIES):
+    for agency_id in current_agency_ids(sorted(AGENCIES)):
         if wanted_statuses and _expiry_status_for(agency_id) not in wanted_statuses:
             continue
         a = AGENCIES[agency_id]
@@ -1326,7 +1338,7 @@ def _cmd_discover(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         return 0
 
     matches = find_replacements(feeds, registry, mdb_ids)
-    report = render_replacements_md(matches, today=dt.date.today().isoformat())
+    report = render_replacements_md(matches, today=utc_today().isoformat())
     if args.out:
         Path(args.out).write_text(report)
         log.info("Wrote feed-discovery report for %d agencies to %s", len(registry), args.out)
@@ -1449,6 +1461,8 @@ def _cmd_fix_outcomes(args: argparse.Namespace, parser: argparse.ArgumentParser)
     histories: dict[str, list[dict[str, Any]]] = {}
     root = artifacts_dir()
     if root.exists():
+        # Deliberately retain retired aliases here: this command reconstructs
+        # historical finding-resolution evidence rather than a current corpus.
         for agency_dir in sorted(path for path in root.iterdir() if path.is_dir()):
             if agency_dir.name in RESERVED_ARTIFACT_DIRS:
                 continue
@@ -1557,16 +1571,14 @@ def _latest_records(agency_ids: list[str] | None = None) -> list[dict[str, Any]]
     import json as _json
 
     from .config import artifacts_dir
-    from .publish import RESERVED_ARTIFACT_DIRS
+    from .publish import registered_agency_dirs
 
     root = artifacts_dir()
     if not root.exists():
         return []
     wanted = set(agency_ids) if agency_ids is not None else None
     records: list[dict[str, Any]] = []
-    for agency_dir in sorted(p for p in root.iterdir() if p.is_dir()):
-        if agency_dir.name in RESERVED_ARTIFACT_DIRS:
-            continue
+    for agency_dir in registered_agency_dirs(root):
         if wanted is not None and agency_dir.name not in wanted:
             continue
         latest = agency_dir / "latest.json"
@@ -1816,7 +1828,7 @@ def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser
     if args.fetch:
         # Latest complete report year first, then the one before: FTA publishes
         # annual products with a lag, so early in a year the prior one is it.
-        year = dt.date.today().year
+        year = utc_today().year
         for candidate in (year - 1, year - 2):
             try:
                 text = fetch_ridership_csv(candidate)
@@ -1899,7 +1911,9 @@ def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser
     impact = weighted_impact(
         records,
         ridership,
-        quarantined_ntd_ids=duplicate_ntd_reporter_ids(AGENCIES.values()),
+        quarantined_ntd_ids=duplicate_ntd_reporter_ids(
+            agency for agency in AGENCIES.values() if agency.is_canonical_feed
+        ),
     )
     print(json.dumps(impact, indent=2, sort_keys=True))
     log.info(
@@ -1954,14 +1968,12 @@ def _cmd_cadence(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
 
     from .cadence import cadence_tier, due_now
     from .config import artifacts_dir
-    from .publish import RESERVED_ARTIFACT_DIRS
+    from .publish import registered_agency_dirs
 
     root = artifacts_dir()
     tiers: dict[str, str] = {}
     if root.exists():
-        for agency_dir in sorted(p for p in root.iterdir() if p.is_dir()):
-            if agency_dir.name in RESERVED_ARTIFACT_DIRS:
-                continue
+        for agency_dir in registered_agency_dirs(root):
             latest = agency_dir / "latest.json"
             if not latest.exists():
                 continue
@@ -2006,7 +2018,10 @@ def _cmd_rt_archive(args: argparse.Namespace, parser: argparse.ArgumentParser) -
 def _cmd_rt_health(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .rt_health import append_observation, observe
 
-    targets = [args.agency] if args.agency else sorted(AGENCIES)
+    # One explicit id remains available for historical reproduction. The batch
+    # monitor is a current-corpus job and must not keep polling a retired alias
+    # beside its live successor.
+    targets = [args.agency] if args.agency else current_agency_ids(sorted(AGENCIES))
     monitored = 0
     for agency_id in targets:
         agency = AGENCIES[agency_id]
@@ -2015,7 +2030,7 @@ def _cmd_rt_health(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
         monitored += 1
         try:
             window = capture_window(
-                agency, dt.date.today(), samples=args.samples, interval_seconds=args.interval
+                agency, utc_today(), samples=args.samples, interval_seconds=args.interval
             )
         except Exception:
             log.exception("%s: realtime sampling failed", agency_id)
@@ -2082,8 +2097,17 @@ def _cmd_otp(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         count=args.pairs,
     )
     if not pairs:
-        log.error("No active trips with distinct endpoint stops to sample on %s.", args.date)
-        return 1
+        # A feed with no service on the sampled date cannot answer a routing
+        # question, and no router regression is visible either way. Seasonal and
+        # limited-service operators hit this on any ordinary date: the Fort
+        # Matanzas ferry sampled clean on 2026-08-10 and had no active trips on
+        # 2026-08-11. Record it and leave the run green. A calendar that no
+        # longer covers today is already a freshness finding on the agency's
+        # scorecard, which is where a rider-facing gap belongs.
+        detail = f"No active trips with distinct endpoint stops to sample on {args.date}."
+        log.warning("Routing QA is not testable for this feed. %s", detail)
+        print(f"::warning title=Routing QA not testable::{detail}", file=sys.stderr)
+        return 0
     results = []
     for origin, destination, departure_time in pairs:
         try:
@@ -2114,6 +2138,48 @@ def _cmd_otp(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     return 0 if qa.all_routable else 1
 
 
+def _cmd_otp_build_check(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Classify a failed OTP graph build: the feed's problem, or the run's?
+
+    Prints `outcome=` and `detail=` lines a CI step can append to $GITHUB_OUTPUT,
+    and exits non-zero only when the build failed for a reason outside the feed,
+    so a feed OTP cannot parse is reported instead of taking the workflow down.
+    """
+    from .otp import classify_graph_build
+
+    log_path = Path(args.log)
+    if not log_path.exists():
+        log.error("No OTP build log at %s, so this run cannot be classified.", log_path)
+        print("outcome=harness-error")
+        print("detail=The OTP graph build wrote no log.")
+        return 1
+    result = classify_graph_build(args.exit_code, log_path.read_text(errors="replace"))
+    detail = " ".join(result.detail.split())[:400]
+    print(f"outcome={result.status}")
+    print(f"detail={detail}")
+    if result.built:
+        return 0
+    if result.feed_unbuildable:
+        log.warning("OTP could not build a graph from this feed. %s", detail)
+        return 0
+    log.error("The OTP graph build failed for a reason outside the feed. %s", detail)
+    return 1
+
+
+def _current_canonical_index(index: dict[str, Any]) -> dict[str, Any]:
+    """Return an index view bounded to active canonical registry records."""
+    entries = index.get("agencies")
+    if not AGENCIES or not isinstance(entries, dict):
+        return index
+    current_ids = {agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed}
+    return {
+        **index,
+        "agencies": {
+            agency_id: entry for agency_id, entry in entries.items() if agency_id in current_ids
+        },
+    }
+
+
 def _cmd_otp_batch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     if args.select:
         from .config import artifacts_dir
@@ -2121,7 +2187,12 @@ def _cmd_otp_batch(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
 
         index_path = artifacts_dir() / "index.json"
         index = json.loads(index_path.read_text()) if index_path.exists() else {"agencies": {}}
-        feed_urls = {a.id: a.static_gtfs_url for a in AGENCIES.values()}
+        index = _current_canonical_index(index)
+        feed_urls = {
+            agency.id: agency.static_gtfs_url
+            for agency in AGENCIES.values()
+            if agency.is_canonical_feed
+        }
         chosen = select_best_worst(index, feed_urls, count=args.count)
         if not chosen:
             log.error("No scored feeds with a known URL to select from.")
@@ -2175,6 +2246,7 @@ def _cmd_equity(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
 
     index_path = artifacts_dir() / "index.json"
     index = _json.loads(index_path.read_text()) if index_path.exists() else {"agencies": {}}
+    index = _current_canonical_index(index)
     dataset = build_quality_dataset(
         index,
         agencies=AGENCIES.values() if AGENCIES else None,
@@ -2235,7 +2307,7 @@ def _cmd_canada_equity(args: argparse.Namespace, parser: argparse.ArgumentParser
     from .tract_data import stops_from_geometry
 
     load_agencies()
-    agencies = [a for a in AGENCIES.values() if a.country == "CA"]
+    agencies = [a for a in AGENCIES.values() if a.is_canonical_feed and a.country == "CA"]
     if not agencies:
         log.warning("canada-equity: no Canadian agencies in the registry; nothing to do.")
     results: dict[str, Any] = {}
@@ -2416,6 +2488,8 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         only = {line.strip() for line in Path(args.only).read_text().splitlines() if line.strip()}
 
     for agency_id, agency in sorted(AGENCIES.items()):
+        if not agency.is_canonical_feed:
+            continue
         if only is not None and agency_id not in only:
             continue
         prev = state.get(agency_id)
@@ -2461,7 +2535,10 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
 def _cmd_shards(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .shards import plan_shards
 
-    print(json.dumps(plan_shards(sorted(AGENCIES), args.count)))
+    current_ids = sorted(
+        agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed
+    )
+    print(json.dumps(plan_shards(current_ids, args.count)))
     return 0
 
 
@@ -2478,16 +2555,22 @@ def _cmd_publish_artifacts(args: argparse.Namespace, parser: argparse.ArgumentPa
             excludes=args.exclude,
             cache_control=args.cache_control,
             workers=args.workers,
+            retirement_manifest=args.retirement_manifest,
+            protected_agency_ids={
+                agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed
+            },
         )
     except PublishError as exc:
         parser.error(str(exc))
     log.info(
-        "Published %d of %d local objects to s3://%s/%s (%d unchanged, %d objects listed).",
+        "Published %d of %d local objects to s3://%s/%s "
+        "(%d unchanged, %d retired pointers, %d objects listed).",
         result.uploaded,
         result.considered,
         args.bucket,
         args.prefix.strip("/"),
         result.skipped,
+        result.retired,
         result.listed,
     )
     return 0
@@ -2499,6 +2582,12 @@ def _cmd_activation_targets(args: argparse.Namespace, parser: argparse.ArgumentP
 
     try:
         targets = parse_activation_targets(args.ids, AGENCIES)
+        noncurrent = [target for target in targets if not AGENCIES[target].is_canonical_feed]
+        if noncurrent:
+            raise ActivationTargetError(
+                "retired/noncanonical agency id(s) cannot be activated as current: "
+                + ", ".join(noncurrent)
+            )
     except ActivationTargetError as exc:
         parser.error(str(exc))
     output = "".join(f"{target}\n" for target in targets)
@@ -2517,10 +2606,13 @@ def _cmd_activation_hydrate(args: argparse.Namespace, parser: argparse.ArgumentP
 
     try:
         targets = args.targets_file.read_text(encoding="utf-8").splitlines()
+        current_ids = {
+            agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed
+        }
         result = hydrate_activation_corpus(
             bucket=args.bucket,
             targets=targets,
-            known_ids=AGENCIES,
+            known_ids=current_ids,
             artifacts_root=artifacts_dir(),
             index_before=args.index_before_out,
             etag_out=args.etag_out,
@@ -2531,7 +2623,7 @@ def _cmd_activation_hydrate(args: argparse.Namespace, parser: argparse.ArgumentP
         parser.error(str(exc))
     log.info(
         "Hydrated %d current agencies and %d S3 objects (%d optional misses, "
-        "%d selected-directory objects, %d unregistered index entries skipped).",
+        "%d selected-directory objects, %d noncurrent/unregistered index entries skipped).",
         result.agencies,
         result.objects,
         result.optional_misses,
@@ -2704,15 +2796,13 @@ def _cmd_coverage_check(args: argparse.Namespace, parser: argparse.ArgumentParse
         national_problems,
         plain_language_coverage,
     )
-    from .publish import RESERVED_ARTIFACT_DIRS
+    from .publish import registered_agency_dirs
 
     root = artifacts_dir()
     per_agency: list[list[dict[str, Any]]] = []
     scored = 0
     if root.exists():
-        for agency_dir in sorted(p for p in root.iterdir() if p.is_dir()):
-            if agency_dir.name in RESERVED_ARTIFACT_DIRS:
-                continue
+        for agency_dir in registered_agency_dirs(root):
             latest = agency_dir / "latest.json"
             if not latest.exists():
                 continue
@@ -2889,12 +2979,12 @@ def main(argv: list[str] | None = None) -> int:
 
     run = sub.add_parser("run", help="fetch, validate, score, and publish")
     run.add_argument("--agency", help="one agency id")
-    run.add_argument("--all", action="store_true", help="run every registered agency")
+    run.add_argument("--all", action="store_true", help="run every current registered agency")
     run.add_argument(
         "--date",
         type=dt.date.fromisoformat,
-        default=dt.date.today(),
-        help="snapshot date (default: today)",
+        default=utc_today(),
+        help="snapshot date (default: today in UTC)",
     )
     run.add_argument("--force-fetch", action="store_true", help="re-download and re-validate")
     run.add_argument("--rt-samples", type=int, default=3, help="realtime samples per endpoint")
@@ -2926,8 +3016,8 @@ def main(argv: list[str] | None = None) -> int:
     adhoc.add_argument(
         "--date",
         type=dt.date.fromisoformat,
-        default=dt.date.today(),
-        help="snapshot date (default: today)",
+        default=utc_today(),
+        help="snapshot date (default: today in UTC)",
     )
     adhoc.add_argument("--html", help="also write a standalone HTML scorecard to this path")
     adhoc.add_argument(
@@ -3009,7 +3099,9 @@ def main(argv: list[str] | None = None) -> int:
         help="allow the OTP base to be localhost (only for a trusted local QA server)",
     )
     otp.add_argument(
-        "--date", default=dt.date.today().isoformat(), help="service date (YYYY-MM-DD)"
+        "--date",
+        default=utc_today().isoformat(),
+        help="service date (YYYY-MM-DD, default: today in UTC)",
     )
     otp.add_argument("--time", default="08:00", help="departure time (HH:MM)")
 
@@ -3027,9 +3119,23 @@ def main(argv: list[str] | None = None) -> int:
     otp_batch.add_argument("--feed", help="GTFS zip to sample origin/destination stops from")
     otp_batch.add_argument("--pairs", type=int, default=5, help="how many O/D pairs to test")
     otp_batch.add_argument(
-        "--date", default=dt.date.today().isoformat(), help="service date (YYYY-MM-DD)"
+        "--date",
+        default=utc_today().isoformat(),
+        help="service date (YYYY-MM-DD, default: today in UTC)",
     )
     otp_batch.add_argument("--time", default="08:00", help="departure time (HH:MM)")
+
+    otp_build_check = sub.add_parser(
+        "otp-build-check",
+        help="classify a failed OTP graph build: unparseable feed, or a broken run",
+    )
+    otp_build_check.add_argument("--log", required=True, help="path to the captured build log")
+    otp_build_check.add_argument(
+        "--exit-code",
+        type=int,
+        required=True,
+        help="the exit code the OTP build container returned",
+    )
 
     sync = sub.add_parser("sync", help="propose registry entries from a feed catalog")
     sync.add_argument(
@@ -3207,6 +3313,14 @@ def main(argv: list[str] | None = None) -> int:
         "--cache-control", help="Cache-Control header to set on every uploaded object"
     )
     publish_artifacts.add_argument(
+        "--retirement-manifest",
+        type=Path,
+        help=(
+            "validated local manifest of retired agency ids whose mutable current "
+            "artifacts must be deleted; dated history is never deleted"
+        ),
+    )
+    publish_artifacts.add_argument(
         "--workers",
         type=int,
         default=DEFAULT_PUBLISH_WORKERS,
@@ -3286,7 +3400,7 @@ def main(argv: list[str] | None = None) -> int:
 
     alerts = sub.add_parser("alerts", help="build the expiry/regression alert digest")
     alerts.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="as-of date (UTC)"
     )
     alerts.add_argument("--expiry-days", type=int, default=60, help="warn within this many days")
     alerts.add_argument("--out", help="write the digest here instead of stdout")
@@ -3299,7 +3413,7 @@ def main(argv: list[str] | None = None) -> int:
         "(or set SUBSCRIPTIONS_TABLE); the private opt-in store",
     )
     notify.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="as-of date (UTC)"
     )
     notify.add_argument("--expiry-days", type=int, default=60, help="warn within this many days")
     notify.add_argument(
@@ -3312,7 +3426,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     portfolio.add_argument("--rollup", help="scope to one rollup id (default: every rollup)")
     portfolio.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="as-of date (UTC)"
     )
     portfolio.add_argument("--out", help="write the digest here instead of stdout")
     portfolio.add_argument(
@@ -3327,7 +3441,7 @@ def main(argv: list[str] | None = None) -> int:
         help="weekly advisory: warn if plain-language coverage dropped (FIX-08)",
     )
     coverage.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="as-of date (UTC)"
     )
     coverage.add_argument(
         "--save",
@@ -3353,7 +3467,7 @@ def main(argv: list[str] | None = None) -> int:
         help="output format (default: json)",
     )
     campaign.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="baseline date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="baseline date (UTC)"
     )
     campaign.add_argument("--out", help="write the campaign here instead of stdout")
     sub.add_parser("reindex", help="rebuild index.json from artifacts on disk")
@@ -3406,7 +3520,7 @@ def main(argv: list[str] | None = None) -> int:
         help="recompute freshness/expiry from the last score without re-fetching",
     )
     sweep.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="sweep as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="sweep as-of date (UTC)"
     )
     sweep.add_argument(
         "--apply", action="store_true", help="publish refreshed artifacts (default: report only)"
@@ -3499,8 +3613,8 @@ def main(argv: list[str] | None = None) -> int:
     canary.add_argument(
         "--date",
         type=dt.date.fromisoformat,
-        default=dt.date.today(),
-        help="snapshot date to fetch/score (default: today)",
+        default=utc_today(),
+        help="snapshot date to fetch/score (default: today in UTC)",
     )
 
     reproduce = sub.add_parser(
@@ -3546,8 +3660,12 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
-    """Load the registry (except for the registry-free `try`) and run the subcommand."""
-    if args.command != "try":
+    """Load the registry (except for the registry-free commands) and run the subcommand.
+
+    `try` scores one supplied URL and `otp-build-check` reads one log file;
+    neither looks an agency up, so neither pays for the registry.
+    """
+    if args.command not in {"try", "otp-build-check"}:
         load_agencies()
         agency_id = getattr(args, "agency", None)
         if agency_id and agency_id not in AGENCIES:
@@ -3600,6 +3718,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "query": _cmd_query,
         "otp": _cmd_otp,
         "otp-batch": _cmd_otp_batch,
+        "otp-build-check": _cmd_otp_build_check,
         "rt-health": _cmd_rt_health,
         "rt-archive": _cmd_rt_archive,
         "reproduce": _cmd_reproduce,

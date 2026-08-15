@@ -44,3 +44,8 @@ export should stop carrying forward.
 
 Often a same-day fix: one export with the calendar reaching further out. The
 lasting fix is the export schedule so this never recurs.
+
+If riders are already reporting that your agency vanished from their apps, the
+wider walkthrough is
+[why agencies disappear from trip planners](https://gtfsscorecard.org/guide/disappeared-from-trip-planners/):
+expiry is the most common cause, but not the only one.

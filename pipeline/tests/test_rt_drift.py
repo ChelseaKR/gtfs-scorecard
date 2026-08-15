@@ -114,6 +114,34 @@ class TestDrift:
     def test_no_trip_updates_returns_none(self, make_gtfs_zip: Callable[..., Path]) -> None:
         assert compute_drift([vp_sample([])], str(feed(make_gtfs_zip))) is None
 
+    # GTFS times are measured from "noon minus 12 hours" of the service day, not
+    # from local midnight. The two are the same on 363 days a year and an hour
+    # apart on the two DST transition days, so a midnight reference reports every
+    # on-time bus as an hour off on exactly those days.
+    @pytest.mark.parametrize(
+        ("service_date", "label"),
+        [(dt.date(2026, 11, 1), "fall back"), (dt.date(2026, 3, 8), "spring forward")],
+    )
+    def test_on_time_bus_reads_as_on_time_across_dst(
+        self, make_gtfs_zip: Callable[..., Path], service_date: dt.date, label: str
+    ) -> None:
+        # A bus arriving at exactly its scheduled 10:00 local, sampled at 10:00
+        # local on a DST transition day.
+        moment = int(dt.datetime.combine(service_date, dt.time(10), TZ).timestamp())
+        sample = RtSample(
+            kind="trip_updates",
+            fetched_at=moment,
+            ok=True,
+            header_timestamp=moment,
+            stop_time_events=(
+                StopTimeEvent("T1", "S1", 1, delay_seconds=None, predicted_time=moment),
+            ),
+        )
+        stats = compute_drift([sample], str(feed(make_gtfs_zip)))
+        assert stats is not None
+        assert stats.median_seconds == 0, f"{label}: on-time bus reported as drifting"
+        assert stats.on_time_share == 1.0
+
 
 class TestPlausibility:
     def test_vehicle_on_route_is_plausible(self, make_gtfs_zip: Callable[..., Path]) -> None:

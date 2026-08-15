@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -11,6 +12,8 @@ pytest.importorskip("playwright.sync_api", reason="the e2e dependency group is n
 from playwright.sync_api import Page, Route
 
 pytestmark = pytest.mark.e2e
+
+ARTIFACTS = Path(__file__).resolve().parents[3] / "data" / "artifacts"
 
 
 def test_world_map_mounts_shades_and_filters(page: Page, app_url: str) -> None:
@@ -101,6 +104,12 @@ def test_country_drills_into_its_subdivisions(page: Page, base_url: str) -> None
         "country": "CA",
         "subdivisions": {"CA-ON": "M10 10 L90 10 L90 90 L10 90 Z"},
     }
+    directory = json.loads((ARTIFACTS / "directory.json").read_text())
+    ontario_feeds = sum(
+        agency.get("country") == "CA" and agency.get("subdivision_code") == "CA-ON"
+        for agency in directory["agencies"]
+    )
+    assert ontario_feeds > 0
 
     def serve_geometry(route: Route) -> None:
         route.fulfill(status=200, content_type="application/json", body=json.dumps(geometry))
@@ -121,15 +130,15 @@ def test_country_drills_into_its_subdivisions(page: Page, base_url: str) -> None
     assert "Ontario" in label
     assert "feed" in label  # counts are announced in text, never color alone
     # The raw feed count rides in the label, not just the expired share, so the
-    # fixture's two Ontario feeds are stated (Ontario carries two, none expired).
-    assert "2 feeds" in label
+    # exact committed Ontario feed count is stated (none expired).
+    assert f"{ontario_feeds} feeds" in label
     assert "expired" in label
 
     # The drill-down states how much coverage it shows, in visible text beside
-    # the country name (one shaded area with two feeds in this synthetic geometry).
+    # the country name (one shaded area in this synthetic geometry).
     count_readout = page.locator("#world-map .map-drill-count")
     assert count_readout.count() == 1
-    assert "2 feeds in 1 area" in count_readout.inner_text()
+    assert f"{ontario_feeds} feeds in 1 area" in count_readout.inner_text()
     # The legend footnote names the color encoding and what the counts mean.
     assert "feed count" in page.locator("#world-map .map-note").inner_text()
 

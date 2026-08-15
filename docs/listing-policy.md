@@ -76,9 +76,11 @@ and we tell them apart by hand rather than by the grade:
   service still operates. The scorecard and directory then show the verified note,
   so the feed reads as recoverable rather than defunct.
 - **The service genuinely ended.** When an agency has stopped operating, the entry
-  is retired: it is removed from the registry and excluded from future runs, the
-  same as any removal request. We do not leave a permanent failing grade on an
-  agency that no longer exists.
+  is retired or retained only as a noncurrent alias, and is excluded from
+  future catalog runs. Its current scorecard, badge, conformance files, and map
+  are removed. Date-stamped score records may remain as historical evidence;
+  they are not presented as the agency's current condition. We do not leave a
+  permanent failing grade on an agency that no longer exists.
 
 The registry is curated, so every entry can be reviewed, corrected, or removed
 by a person. If something here is wrong or unwelcome, that is a bug, and we want

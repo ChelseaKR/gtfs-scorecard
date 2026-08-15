@@ -47,6 +47,13 @@ must not be guessed merely to choose a shard.
 - `service_type`: `fixed` (default), `seasonal`, or `demand_response`.
 - `fare_free`: `true` only when fare-free operation is a verified policy.
 
+A replaced endpoint may remain in the registry as `feed_status: deprecated`
+with `alias_of` pointing to its active successor. It is then excluded from
+batch scoring and the current catalog, while its dated artifacts remain
+available for reproducibility and its former scorecard URL redirects to the
+successor. Do not infer this relationship from similar names; record it only
+from a reviewed catalog redirect or provider evidence.
+
 ### Reviewed reuse evidence
 
 `reuse_evidence` is an optional, curator-approved record used by bounded

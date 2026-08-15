@@ -516,7 +516,12 @@ def test_empty_directory_state_recovers_to_search(page: Page, app_url: str) -> N
 
 
 def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> None:
-    _serve_directory(page, _portable_directory())
+    directory = _portable_directory()
+    expected = sum(
+        agency.get("country") == "CA" and agency.get("subdivision_code") == "CA-ON"
+        for agency in directory["agencies"]
+    )
+    _serve_directory(page, directory)
     page.goto(f"{app_url}#/?country=us&subdivision=ca-on")
 
     # The valid subdivision is authoritative even when the supplied country is
@@ -527,7 +532,7 @@ def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> 
     expect(page.locator('.location-subdivision[data-subdivision="CA-ON"]').first).to_have_attribute(
         "aria-pressed", "true"
     )
-    expect(page.locator(".agency-count")).to_contain_text("2 of")
+    expect(page.locator(".agency-count")).to_contain_text(f"{expected} of")
     assert page.evaluate("() => location.hash") == "#/?country=us&subdivision=ca-on"
 
     # Any user change writes the canonical, upper-case portable keys while
@@ -539,9 +544,9 @@ def test_portable_location_filters_urls_and_search(page: Page, app_url: str) -> 
     page.locator('.location-subdivision[data-subdivision="CA-ON"]').first.click()
     page.locator('.location-country[data-country="CA"]').first.click()
     page.locator("#agency-search").fill("CA-ON")
-    expect(page.locator(".agency-count")).to_contain_text("2 of")
+    expect(page.locator(".agency-count")).to_contain_text(f"{expected} of")
     page.locator("#agency-search").fill("Ontario")
-    expect(page.locator(".agency-count")).to_contain_text("2 of")
+    expect(page.locator(".agency-count")).to_contain_text(f"{expected} of")
 
     # Quotes and angle brackets from the directory stay text; they cannot add
     # event-handler attributes to location controls.
@@ -1454,7 +1459,12 @@ def test_legacy_state_bookmark_maps_without_eager_rewrite(page: Page, app_url: s
 def test_unlocated_subdivision_is_scoped_by_country_and_preserves_legacy_url(
     page: Page, app_url: str
 ) -> None:
-    _serve_directory(page, _portable_directory())
+    directory = _portable_directory()
+    expected = sum(
+        agency.get("country") == "CA" and not agency.get("subdivision_code")
+        for agency in directory["agencies"]
+    )
+    _serve_directory(page, directory)
     page.goto(f"{app_url}#/?state=Unlocated")
 
     us = page.locator(
@@ -1476,7 +1486,7 @@ def test_unlocated_subdivision_is_scoped_by_country_and_preserves_legacy_url(
     expect(us).to_have_count(0)
     expect(ca).to_have_attribute("aria-pressed", "true")
     assert _hash_params(page) == {"country": "CA", "subdivision": "UNLOCATED"}
-    expect(page.locator(".agency-count")).to_contain_text("1 of")
+    expect(page.locator(".agency-count")).to_contain_text(f"{expected} of")
 
 
 def test_old_directory_keeps_state_and_canada_behavior(page: Page, app_url: str) -> None:
@@ -1485,13 +1495,14 @@ def test_old_directory_keeps_state_and_canada_behavior(page: Page, app_url: str)
     for agency in directory["agencies"]:
         agency.pop("subdivision_code", None)
         agency.pop("subdivision_name", None)
+    expected = sum(agency.get("country") == "CA" for agency in directory["agencies"])
     _serve_directory(page, directory)
     page.goto(f"{app_url}#/?state=Canada")
 
     expect(page.locator('.legacy-location[data-state="Canada"]')).to_have_attribute(
         "aria-pressed", "true"
     )
-    expect(page.locator(".agency-count")).to_contain_text("3 of")
+    expect(page.locator(".agency-count")).to_contain_text(f"{expected} of")
     expect(page.locator("#us-map")).to_be_visible()
     assert page.evaluate("() => location.hash") == "#/?state=Canada"
     page.locator("#agency-search").fill("Barrie")

@@ -135,10 +135,15 @@ def _regression_codes(artifact: dict[str, Any]) -> dict[str, str]:
 def _cohorts(runs: list[AgencyRun]) -> dict[str, tuple[ToolProfile, list[AgencyRun]]]:
     """Group runs by detected producing tool.
 
-    Hosts that match no documented tool profile (generic hosting, an agency's
-    own website) carry no producing-tool signal and are excluded on purpose:
-    the same-day shape there says nothing about a shared export tool, and
-    could not be routed to a vendor contact if it did.
+    Feeds with no identified producing tool are excluded on purpose: the
+    same-day shape there says nothing about a shared export tool, and could not
+    be routed to a vendor contact if it did.
+
+    Cohort membership follows `tool_profiles.detect_tool`, which reads each
+    feed's own publisher declaration rather than the host serving the zip (ADR
+    0045). That matters here more than on an agency page: a cohort that mixed
+    feeds a vendor built with feeds it merely hosts would report a shared export
+    change where there is none.
     """
     grouped: dict[str, tuple[ToolProfile, list[AgencyRun]]] = {}
     for run in runs:
@@ -290,7 +295,7 @@ def load_runs(agency_ids: list[str] | None = None) -> list[AgencyRun]:
     """
     import json
 
-    from .config import AGENCIES, artifacts_dir
+    from .config import artifacts_dir, current_agency_ids
     from .publish import RESERVED_ARTIFACT_DIRS
 
     root = artifacts_dir()
@@ -298,12 +303,15 @@ def load_runs(agency_ids: list[str] | None = None) -> list[AgencyRun]:
         return []
     wanted = set(agency_ids) if agency_ids is not None else None
     runs: list[AgencyRun] = []
-    for agency_dir in sorted(p for p in root.iterdir() if p.is_dir()):
+    agency_dirs = sorted(p for p in root.iterdir() if p.is_dir())
+    current_ids = set(current_agency_ids(agency_dir.name for agency_dir in agency_dirs))
+    for agency_dir in agency_dirs:
         if agency_dir.name in RESERVED_ARTIFACT_DIRS:
             continue
-        # An S3-hydrated tree can hold directories for agencies no registry
-        # version lists; the radar reads only listed agencies.
-        if AGENCIES and agency_dir.name not in AGENCIES:
+        # The radar describes new behavior in the current producer cohort. A
+        # retired alias's dated artifacts remain on disk for historical reports,
+        # but cannot trigger a fresh vendor alert after retirement.
+        if agency_dir.name not in current_ids:
             continue
         if wanted is not None and agency_dir.name not in wanted:
             continue

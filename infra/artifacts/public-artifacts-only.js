@@ -5,6 +5,9 @@ function handler(event) {
   // This distribution fronts a mixed-use bucket. Public access is a positive
   // filename contract, not a broad prefix: any new pipeline-state filename is
   // private until it is deliberately added here and to the origin policy.
+  // Active registry membership is enforced by the serialized publisher: when
+  // an id retires, its exact mutable names below are deleted while date-shaped
+  // historical evidence remains available.
   var isRootArtifact = /^\/data\/artifacts\/(directory|index|scoring|sensitivity|canada-equity)\.json$/.test(uri);
   var isChangeArtifact = /^\/data\/artifacts\/changes\/(latest|[0-9]{4}-[0-9]{2}-[0-9]{2})\.json$/.test(uri);
   var isRollupArtifact = /^\/data\/artifacts\/rollups\/(index|[a-z0-9-]+)\.(json|csv)$/.test(uri);
