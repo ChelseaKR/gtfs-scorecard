@@ -70,6 +70,13 @@ jobs:
         if: steps.changes.outputs.moved == 'true'
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
+          # The default GITHUB_TOKEN can only open a pull request when the repo
+          # has "Allow GitHub Actions to create and approve pull requests"
+          # enabled; without it the API returns "GitHub Actions is not permitted
+          # to create or approve pull requests". Set the DISCOVERY_PR_TOKEN
+          # secret (a fine-grained PAT or GitHub App token with pull-requests:
+          # write and contents: write) to open the PR as that identity instead.
+          token: ${{ secrets.DISCOVERY_PR_TOKEN || github.token }}
           branch: chore/feed-discovery
           title: "chore(data): update feed URLs that moved in the Mobility Database"
           commit-message: "chore(data): update feed URLs that moved in the Mobility Database"
@@ -82,3 +89,18 @@ jobs:
           add-paths: |
             registry/
             docs/feed-discovery.md
+
+      # The action pushes the branch before it calls the pull request API, so a
+      # permissions failure leaves the registry edits on the branch with no
+      # pointer to them. Say where they are.
+      - name: Point at the branch when the pull request could not be opened
+        if: failure() && steps.changes.outputs.moved == 'true'
+        env:
+          COMPARE_URL: ${{ github.server_url }}/${{ github.repository }}/compare/main...chore/feed-discovery?expand=1
+        run: |
+          {
+            echo "## Feed moves are waiting on a pull request"
+            echo ""
+            echo "The registry edits are on the \`chore/feed-discovery\` branch."
+            echo "Open the review pull request by hand: $COMPARE_URL"
+          } >> "$GITHUB_STEP_SUMMARY"

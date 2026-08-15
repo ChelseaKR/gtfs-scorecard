@@ -33,7 +33,7 @@ from .artifact_lifecycle import (
 )
 from .badge import render_badge, render_mark
 from .comparisons import reader_archive_profile
-from .config import Agency, artifacts_dir, current_agency_ids, repo_root
+from .config import Agency, artifacts_dir, current_agency_ids, repo_root, utc_today
 from .effort_calibration import (
     CALIBRATION_SCHEMA_NOTE,
     agency_episodes,
@@ -801,11 +801,12 @@ def _write_calibration(stats: dict[str, Any]) -> None:
     Written under data/ (a sibling of the artifacts tree) because it is a
     cross-agency aggregate, not a per-agency file. Ordering is deterministic
     (sort_keys) so re-running collect over unchanged history is a no-op; the
-    generated date is the only field that moves day to day.
+    generated date is the only field that moves day to day, and it moves in UTC
+    so a local re-run does not rewrite the file to a different day than CI.
     """
     payload = {
         "schema_note": CALIBRATION_SCHEMA_NOTE,
-        "generated": dt.date.today().isoformat(),
+        "generated": utc_today().isoformat(),
         "codes": stats,
     }
     _write_json(repo_root() / "data" / "effort-calibration.json", payload)

@@ -34,9 +34,16 @@ left implicit.
 Declare, for the deployed system as it exists today:
 
 - **Tier B (frontend)** for `web/`: the Core Web Vitals lab-gate half of
-  `OBSERVABILITY-STANDARD.md` §8 applies. As of 2026-07-29,
-  `lighthouserc.json` gates performance ≥90, accessibility ≥95, LCP ≤2.5s,
-  CLS ≤0.1, and TBT ≤200ms as the lab responsiveness proxy. Every freshly
+  `OBSERVABILITY-STANDARD.md` §8 applies. As of 2026-08-10,
+  `lighthouserc.json` gates performance ≥90, accessibility ≥95, FCP ≤2.0s,
+  LCP ≤2.75s, CLS ≤0.1, and TBT ≤200ms as the lab responsiveness proxy. The
+  LCP figure was ≤2.5s until 2026-08-10, when measurement showed the old
+  budget was mostly reading a per-job Chrome warmup rather than the site. The
+  FCP gate arrived in the same change and is the tighter tripwire of the two,
+  because FCP varies far less here than LCP does.
+  See [ADR 0045](0045-lighthouse-lcp-budget-and-warmup-run.md), and
+  `../standards-conformance-gaps.md` for the [OBS-23] divergence this
+  declares. Every freshly
   assembled site also passes the blocking `check_site_seo.py` structural gate
   before its page budgets run. Those SEO reports are retained for 14 days.
   A separate weekly synthetic run checks four representative production routes

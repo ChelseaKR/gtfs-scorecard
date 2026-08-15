@@ -23,7 +23,23 @@ jobs:
       # The action's own composite script already passes --fail unconditionally
       # and picks BASE/HEAD for this trigger type (both empty on schedule/
       # workflow_dispatch, which scans the full default-branch history).
+      #
+      # One detector is excluded, and only one. TruffleHog's Lob detector keys
+      # on `\b((live|test)_[a-zA-Z0-9_]{35})\b`, so it matches any pytest
+      # function named `test_` plus exactly 35 more word characters. This repo
+      # has dozens of those under pipeline/tests. Its verifier then reads an
+      # HTTP 403 from api.lob.com as proof of a live key, so those function
+      # names come back `Verified: true` and fail the job. Run 31359367918
+      # (2026-08-10) reported 94 verified secrets, all of them from this
+      # detector. Reproduced locally with trufflehog 3.96.0: every raw match
+      # was a Python test identifier such as
+      # `test_distinct_grades_get_distinct_colors`, and none was a credential.
+      # Rationale and the check that other detectors stay live:
+      # docs/decisions/0044-trufflehog-lob-detector-exclusion.md.
+      #
+      # Keep the scan blocking. Do not widen this to path exclusions, do not
+      # relax --results, and do not add `|| true`.
       - name: TruffleHog (verified only, full history)
         uses: trufflesecurity/trufflehog@00155c9dc586f34d189adc83d3ac2698c2ec551f # v3.95.8
         with:
-          extra_args: --results=verified
+          extra_args: --results=verified --exclude-detectors=Lob

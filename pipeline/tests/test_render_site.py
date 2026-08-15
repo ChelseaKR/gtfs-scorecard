@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from scorecard_pipeline import RUBRIC_VERSION, render_site
+from scorecard_pipeline import RUBRIC_VERSION, render_site, tool_profiles
 from scorecard_pipeline.render_site import (
     _accessibility_depth_signals,
     _accessibility_score,
@@ -1022,6 +1022,35 @@ def test_agency_page_allowlists_hostile_artifact_severity() -> None:
     assert 'onmouseover="window.__pwned=1' not in html
 
 
+def test_catalog_google_gate_follows_the_frozen_instant_not_the_local_clock(
+    isolated_repo_root: Path,
+) -> None:
+    """catalog.json's google_gate must be measured against render_site's ``now``.
+
+    It read dt.date.today() once, which is the runner's *local* zone: a machine
+    behind UTC published a different gate than the agency page rendered beside
+    it, and the golden suite went red for hours a day. Rendering the same
+    fixture at two instants either side of the four-week bar pins the field to
+    ``now``, so a wall-clock read cannot come back unnoticed.
+    """
+    from scorecard_pipeline.render_site import render_site
+
+    fixture = Path(__file__).parent / "fixtures" / "golden_site"
+    shutil.copytree(fixture, isolated_repo_root)
+    # yolobus' last service date is 2026-09-07, so the 28-day Maps window puts
+    # the pass/at_risk boundary at 2026-08-10.
+    catalog_path = isolated_repo_root / "web" / "catalog.json"
+
+    def gate_at(now: dt.datetime) -> str:
+        render_site(now)
+        catalog = json.loads(catalog_path.read_text())
+        row = next(row for row in catalog["agencies"] if row["id"] == "yolobus")
+        return str(row["google_gate"])
+
+    assert gate_at(dt.datetime(2026, 8, 10, 12, tzinfo=dt.UTC)) == "pass"
+    assert gate_at(dt.datetime(2026, 8, 11, 12, tzinfo=dt.UTC)) == "at_risk"
+
+
 def test_catalog_derives_status_from_legacy_latest_artifact(
     isolated_repo_root: Path,
 ) -> None:
@@ -1527,20 +1556,38 @@ def _fixable_artifact(static_url: str) -> dict:  # type: ignore[type-arg]
     }
 
 
-def test_vendor_section_names_hosted_tool() -> None:
-    # A Trillium-hosted feed: the heading and lede name Trillium, so the manager
-    # knows the request goes to the service that produces the feed (R5).
-    art = _fixable_artifact("https://data.trilliumtransit.com/gtfs/demo.zip")
+# Producing-tool attribution reads each feed's own publisher declaration rather
+# than the host serving the zip (ADR 0045), so a test that expects a named tool
+# supplies the declaration the committed snapshot would carry for that feed.
+def _declares(
+    monkeypatch: pytest.MonkeyPatch, url: str, name: str, publisher_url: str = ""
+) -> None:
+    monkeypatch.setattr(tool_profiles, "_recorded_declaration", {url: (name, publisher_url)}.get)
+
+
+_TRILLIUM_DEMO_FEED = "https://data.trilliumtransit.com/gtfs/demo.zip"
+
+
+def test_vendor_section_names_hosted_tool(monkeypatch: pytest.MonkeyPatch) -> None:
+    # A feed whose own feed_info declares Trillium: the heading and lede name
+    # Trillium, so the manager knows the request goes to the service that
+    # produces the feed (R5).
+    _declares(monkeypatch, _TRILLIUM_DEMO_FEED, "Trillium Solutions, Inc.")
+    art = _fixable_artifact(_TRILLIUM_DEMO_FEED)
     html = _vendor_section(art, CANONICAL)
     assert "Send Trillium a fix request" in html
     assert "produced and hosted by Trillium" in html
     assert "whoever runs your scheduling software export" not in html
 
 
-def test_vendor_section_self_edit_tool_keeps_generic_heading() -> None:
+def test_vendor_section_self_edit_tool_keeps_generic_heading(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     # GTFS Builder agencies usually make the change themselves; the heading stays
     # generic but the lede names the tool and the free help desk path.
-    html = _vendor_section(_fixable_artifact("https://rapid.nationalrtap.org/file?id=1"), CANONICAL)
+    url = "https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/1/gtfs.zip"
+    _declares(monkeypatch, url, "National RTAP")
+    html = _vendor_section(_fixable_artifact(url), CANONICAL)
     assert "Send your vendor a fix request" in html
     assert "GTFS Builder" in html
 
@@ -1549,6 +1596,15 @@ def test_vendor_section_unknown_host_stays_generic() -> None:
     html = _vendor_section(_fixable_artifact("https://s3.amazonaws.com/bucket/gtfs.zip"), CANONICAL)
     assert "Send your vendor a fix request" in html
     assert "whoever runs your scheduling software export" in html
+
+
+def test_vendor_section_hosting_service_alone_stays_generic() -> None:
+    # trilliumtransit.com serves feeds Trillium did not build, so with no
+    # declaration behind it the copy must not address anyone by name (ADR 0045).
+    html = _vendor_section(_fixable_artifact(_TRILLIUM_DEMO_FEED), CANONICAL)
+    assert "Send your vendor a fix request" in html
+    assert "whoever runs your scheduling software export" in html
+    assert "Trillium" not in html
 
 
 CANONICAL = "https://gtfsscorecard.org/agency/demo/"
@@ -1797,7 +1853,7 @@ def _board_artifact() -> dict:  # type: ignore[type-arg]
         "rubric_version": "1.4",
         "validator_version": "7.0.0",
         "scoring_profile": {"id": "gtfs-scorecard-1.4", "rubric_version": "1.4"},
-        "feed": {"static_url": "https://data.trilliumtransit.com/gtfs/demo.zip"},
+        "feed": {"static_url": _TRILLIUM_DEMO_FEED},
         "top_fixes": [
             {
                 "code": "scorecard_wheelchair_boarding_unknown",
@@ -1811,7 +1867,10 @@ def _board_artifact() -> dict:  # type: ignore[type-arg]
     }
 
 
-def test_board_page_leads_with_progress_and_frames_fixes_as_asks() -> None:
+def test_board_page_leads_with_progress_and_frames_fixes_as_asks(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _declares(monkeypatch, _TRILLIUM_DEMO_FEED, "Trillium Solutions, Inc.")
     prev = {
         "rubric_version": "1.4",
         "validator_version": "7.0.0",
@@ -2192,7 +2251,7 @@ def test_non_us_fixlog_prefers_current_directory_country_over_a_stale_artifact()
     assert 'href="/agencies/"' in html and 'href="/check/"' in html
 
 
-def test_outreach_note_names_hosted_tool() -> None:
+def test_outreach_note_names_hosted_tool(monkeypatch: pytest.MonkeyPatch) -> None:
     art = _artifact(
         {
             "code": "scorecard_feed_expired",
@@ -2201,7 +2260,8 @@ def test_outreach_note_names_hosted_tool() -> None:
             "fix": "Re-export with a longer calendar.",
         }
     )
-    art["feed"] = {"static_url": "https://data.trilliumtransit.com/gtfs/demo.zip"}
+    art["feed"] = {"static_url": _TRILLIUM_DEMO_FEED}
+    _declares(monkeypatch, _TRILLIUM_DEMO_FEED, "Trillium Solutions, Inc.")
     note = _outreach_note(art, CANONICAL)
     assert note is not None
     assert "Your feed is produced by Trillium" in note
@@ -3525,6 +3585,88 @@ def test_render_compare_page_form_is_shareable_and_neutral() -> None:
     assert "hasOwnProperty.call(owner" in html
     assert "contractA.readerArchive === contractB.readerArchive" in html
     assert "distinct feed bytes" in html and "measured category set" in html
+
+
+def _picker_catalog(count: int) -> list[dict[str, str]]:
+    return [
+        {"id": f"agency-{i:04d}", "name": f"Agency {i:04d}", "state": "Iowa"} for i in range(count)
+    ]
+
+
+def test_compare_page_document_does_not_grow_with_the_registry() -> None:
+    """The pickers hold a fixed window, so the page weighs the same at any size.
+
+    Both selects used to inline the whole catalog, which put roughly 190 bytes
+    of document on every agency added and showed up as a slower largest
+    contentful paint as coverage grew.
+    """
+    from scorecard_pipeline.pages_tools import (
+        _COMPARE_PICKER_INITIAL_OPTIONS,
+        _render_compare_page,
+    )
+
+    small = _render_compare_page(_picker_catalog(_COMPARE_PICKER_INITIAL_OPTIONS + 1))
+    large = _render_compare_page(_picker_catalog(3000))
+    # Only the counts named in the copy differ, never the option list itself.
+    assert abs(len(large) - len(small)) < 200
+    assert large.count('<option value="agency-') == 2 * _COMPARE_PICKER_INITIAL_OPTIONS
+    # The window is the start of the same name order the full list uses.
+    assert '<option value="agency-0000">Agency 0000 &mdash; Iowa</option>' in large
+    assert "agency-2999" not in large
+
+
+def test_compare_page_defers_the_rest_of_the_list_accessibly() -> None:
+    from scorecard_pipeline.pages_tools import _render_compare_page
+
+    html = _render_compare_page(_picker_catalog(3000))
+    # The rest of the list is fetched from the published JSON beside the page,
+    # same origin, no new dependency.
+    assert 'var PICKER_URL = "/compare/agencies.json"' in html
+    assert html.count("fetch(PICKER_URL)") == 1
+    # Reaching for the form is enough; an explicit button is there as well.
+    assert '"focusin", "pointerenter"' in html
+    assert 'id="compare-load"' in html and "Load every agency" in html
+    # Both states are announced, and both pickers point at the announcement.
+    assert 'id="compare-picker-status" class="fineprint" role="status"' in html
+    assert html.count('aria-describedby="compare-picker-status"') == 4
+    assert "Loading the complete agency list." in html
+    assert "Both lists now hold all " in html
+    # A failed fetch keeps the opening options, says so, and offers a retry.
+    assert "The complete agency list could not load." in html
+    assert "Try loading every agency again" in html
+    # Honest about what a reader without JavaScript gets.
+    assert "the pickers hold the first 50 of 3000 agencies" in html
+
+
+def test_compare_page_keeps_every_agency_when_the_catalog_is_small() -> None:
+    from scorecard_pipeline.pages_tools import _render_compare_page
+
+    html = _render_compare_page(_picker_catalog(3))
+    assert html.count('<option value="agency-') == 6
+    assert "Both lists hold all 3 agencies." in html
+    # Nothing left to fetch, so the load control stays out of the tab order.
+    assert 'id="compare-load" hidden' in html
+    assert "var listLoaded = true;" in html
+
+
+def test_compare_picker_data_carries_only_what_an_option_needs() -> None:
+    import json as _json
+
+    from scorecard_pipeline.pages_tools import _render_compare_picker_data
+
+    catalog: list[dict[str, Any]] = [
+        {"id": "bravo-transit", "name": "Bravo Transit", "state": "Ohio"},
+        {"id": "alpha-transit", "name": "Alpha Transit", "state": None},
+    ]
+    payload = _json.loads(_render_compare_picker_data(catalog))
+    assert payload["schema_version"] == 1
+    assert payload["fields"] == ["id", "name", "state"]
+    # Sorted by name, like the options, and a missing state is an empty string
+    # rather than a null the picker would have to special-case.
+    assert payload["agencies"] == [
+        ["alpha-transit", "Alpha Transit", ""],
+        ["bravo-transit", "Bravo Transit", "Ohio"],
+    ]
 
 
 def test_citation_carries_the_reader_archive_profile() -> None:
@@ -4999,7 +5141,7 @@ def test_sitemap_deduplicates_urls_and_adds_known_lastmod() -> None:
 def _guided_flow_artifact() -> dict[str, Any]:
     return {
         "agency": {"id": "demo", "name": "Demo Transit"},
-        "feed": {"static_url": "https://data.trilliumtransit.com/gtfs/demo.zip"},
+        "feed": {"static_url": _TRILLIUM_DEMO_FEED},
         "top_fixes": [
             {"code": "expired_calendar", "fix": "Re-export with a longer calendar."},
             {"code": "autofix_trim_whitespace", "fix": "Trim whitespace in stop names."},
@@ -5014,10 +5156,11 @@ def _guided_flow_artifact() -> dict[str, Any]:
     }
 
 
-def test_guided_fix_flow_stitches_three_steps_and_links() -> None:
+def test_guided_fix_flow_stitches_three_steps_and_links(monkeypatch: pytest.MonkeyPatch) -> None:
     from scorecard_pipeline import render_site
     from scorecard_pipeline.render_site import _guided_fix_flow
 
+    _declares(monkeypatch, _TRILLIUM_DEMO_FEED, "Trillium Solutions, Inc.")
     # The /fix/<code>/ guide link only shows for codes that have a generated page;
     # register one so the step-1 guide link is deterministic in isolation.
     render_site.FIX_CODES_WITH_PAGES.add("expired_calendar")
@@ -5860,3 +6003,67 @@ def test_realtime_section_omits_medians_the_monitor_did_not_record() -> None:
         _realtime_rollup(median_uptime_pct=None, median_lag_seconds=None, median_coverage_pct=None)
     )
     assert "Across the monitored feeds" not in html
+
+
+def _focus_catalog(*gates: str) -> list[dict[str, Any]]:
+    """Catalog rows carrying only the field the focus hub reads."""
+    return [{"id": f"a{i}", "google_gate": gate} for i, gate in enumerate(gates)]
+
+
+def test_focus_page_groups_the_checks_that_run_past_the_validator() -> None:
+    """The four non-rubric checks reach a reader as one named group.
+
+    Each already renders somewhere (the Maps coverage line and routability
+    findings on an agency page, uptime on /realtime/, feed URL liveness on
+    /status/). This asserts the hub states the shared idea and keeps every
+    destination resolvable, so the grouping cannot decay back into four
+    unrelated mentions.
+    """
+    html = render_site._render_focus_page(
+        {"pct_ready": 50.0}, {"monitored_count": 4}, _focus_catalog("pass", "fail")
+    )
+
+    # The body prose is wrapped in the source template, so compare on a
+    # whitespace-normalized copy rather than pinning the line breaks.
+    flat = " ".join(html.split())
+
+    assert '<h2 class="section-title" id="beyond-the-validator">' in html
+    assert "Checks a validator does not run" in html
+    assert "A feed can answer yes and still strand a rider." in flat
+    for name in (
+        "Four weeks of service ahead",
+        "A rider can complete the trip",
+        "Realtime that is actually up",
+        "The feed URL still answers",
+    ):
+        assert name in html, name
+    for href in ('href="/agencies/"', 'href="/realtime/"', 'href="/status/"'):
+        assert href in html, href
+    # Grouping is presentation: the page still says these sit beside the rubric.
+    assert "none of them changes a grade" in flat
+    assert "reported next to the rubric rather than folded into it" in flat
+    # An agency without realtime is described neutrally, never as a shortfall.
+    assert "publishes no realtime feed is not counted here" in flat
+
+
+def test_focus_page_leaves_the_scorecard_only_check_unlinked() -> None:
+    """Trip completion has no hub page, so its name renders as plain text
+    instead of pointing a reader at a destination that does not show it."""
+    html = render_site._render_focus_page({}, {}, _focus_catalog("pass"))
+    assert '<p class="what">A rider can complete the trip ' in html
+
+
+def test_focus_maps_bar_counts_only_rows_with_a_measured_gate() -> None:
+    """The headline reads an existing per-feed status. A row without one is
+    left out of both sides of the ratio rather than counted as a shortfall."""
+    stat = render_site._beyond_validator_stat(
+        [*_focus_catalog("pass", "pass", "at_risk", "fail"), {"id": "x"}, {"id": "y"}]
+    )
+    assert stat == "2 of 4 published feed records clear the bar"
+
+
+def test_focus_maps_bar_uses_the_singular_and_survives_an_empty_corpus() -> None:
+    assert render_site._beyond_validator_stat(_focus_catalog("fail")) == (
+        "0 of 1 published feed record clears the bar"
+    )
+    assert render_site._beyond_validator_stat([]) == "Stated on each scorecard"

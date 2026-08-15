@@ -39,7 +39,6 @@ Environment:
 
 from __future__ import annotations
 
-import datetime as dt
 import json
 import os
 import re
@@ -268,9 +267,10 @@ def _run_scoring_job(job_id: str, url: str, name: str, country: str = "US") -> N
     always gets a terminal status rather than hanging forever."""
     _prepare_runtime()
     from scorecard_pipeline.cli import run_adhoc
+    from scorecard_pipeline.config import utc_today  # noqa: PLC0415 - after env is set
 
     try:
-        artifact = run_adhoc(url, name or None, dt.date.today(), country=country)
+        artifact = run_adhoc(url, name or None, utc_today(), country=country)
     except Exception as exc:  # noqa: BLE001 - any failure becomes a job error, never a crash
         # Safe, generic message: the exception text can include a raw path or
         # subprocess output that should not reach an untrusted requester.

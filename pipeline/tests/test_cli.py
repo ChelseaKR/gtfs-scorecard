@@ -257,6 +257,44 @@ def test_otp_batch_selection_excludes_retired_alias(
     ]
 
 
+def test_otp_records_a_feed_with_no_service_on_the_sampled_date(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """No active trips on the date is not testable, and not a red run.
+
+    Seasonal and limited-service operators have ordinary dates with no service.
+    Failing the batch on one of them says a router regressed when nothing was
+    measured. The missing calendar coverage is already a freshness finding on
+    the agency's own scorecard.
+    """
+    from scorecard_pipeline import cli
+
+    monkeypatch.setattr(cli, "read_tables", lambda *a, **k: {}, raising=False)
+    monkeypatch.setattr(
+        "scorecard_pipeline.gtfs.read_tables",
+        lambda *a, **k: {
+            "calendar.txt": [],
+            "calendar_dates.txt": [],
+            "trips.txt": [],
+            "stop_times.txt": [],
+        },
+    )
+    monkeypatch.setattr("scorecard_pipeline.otp.sample_scheduled_stop_pairs", lambda *a, **k: [])
+
+    args = argparse.Namespace(
+        feed="feed.zip",
+        date="2026-08-11",
+        pairs=5,
+        base="http://127.0.0.1:8080",
+        allow_loopback=True,
+    )
+    assert cli._cmd_otp(args, argparse.ArgumentParser()) == 0
+    err = capsys.readouterr().err
+    assert "::warning title=Routing QA not testable::" in err
+    assert "2026-08-11" in err
+
+
 def test_equity_coverage_excludes_retired_alias(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

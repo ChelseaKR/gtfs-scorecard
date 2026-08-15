@@ -50,22 +50,24 @@
     scoring profile, validator, and measured category set, and come from distinct feed bytes.
     Like-for-like results can appear in one table; otherwise the page keeps the grades
     separate and links to both full scorecards.</p>
-    <form class="map-filters" action="/compare/" method="get" aria-label="Choose two agencies to compare">
+    <form id="compare-form" class="map-filters" action="/compare/" method="get" aria-label="Choose two agencies to compare">
       <div class="map-filter-row">
         <label for="compare-a-filter">First agency</label>
         <input id="compare-a-filter" class="agency-search compare-filter" type="search"
-          autocomplete="off" aria-controls="compare-a" placeholder="Type a name to filter">
+          autocomplete="off" aria-controls="compare-a" aria-describedby="compare-picker-status"
+          placeholder="Type a name to filter">
         <label class="visually-hidden" for="compare-a">Choose the first agency from the matches</label>
-        <select id="compare-a" name="a" required>
+        <select id="compare-a" name="a" aria-describedby="compare-picker-status" required>
           <option value="">Choose an agency</option><option value="barrie-transit">Barrie Transit (Ontario)</option><option value="unitrans">Unitrans (ASUCD / City of Davis)</option><option value="yolobus">Yolobus (Yolo County Transportation District)</option>
         </select>
       </div>
       <div class="map-filter-row">
         <label for="compare-b-filter">Second agency</label>
         <input id="compare-b-filter" class="agency-search compare-filter" type="search"
-          autocomplete="off" aria-controls="compare-b" placeholder="Type a name to filter">
+          autocomplete="off" aria-controls="compare-b" aria-describedby="compare-picker-status"
+          placeholder="Type a name to filter">
         <label class="visually-hidden" for="compare-b">Choose the second agency from the matches</label>
-        <select id="compare-b" name="b" required>
+        <select id="compare-b" name="b" aria-describedby="compare-picker-status" required>
           <option value="">Choose an agency</option><option value="barrie-transit">Barrie Transit (Ontario)</option><option value="unitrans">Unitrans (ASUCD / City of Davis)</option><option value="yolobus">Yolobus (Yolo County Transportation District)</option>
         </select>
       </div>
@@ -73,6 +75,13 @@
         <button type="submit" class="copy-btn">Compare</button>
       </div>
     </form>
+    <div class="map-load-panel">
+      <button type="button" class="button button-secondary" id="compare-load" hidden>
+        Load every agency
+      </button>
+      <p id="compare-picker-status" class="fineprint" role="status">Both lists hold all 3 agencies.
+        <a href="/agencies/">Browse the paginated agency directory.</a></p>
+    </div>
     <p id="compare-status" role="status"></p>
     <div id="compare-result"></div>
     <noscript><p>Building the comparison table needs JavaScript. The pickers above still
@@ -84,45 +93,129 @@
     <script>
       (function () {
         var CATS = [["correctness","Correctness"],["freshness","Freshness"],["completeness","Rider experience"],["realtime","Realtime quality"]];
+        var PICKER_URL = "/compare/agencies.json";
+        var SHOWN = 3;
         var selA = document.getElementById("compare-a");
         var selB = document.getElementById("compare-b");
+        var formEl = document.getElementById("compare-form");
+        var loadEl = document.getElementById("compare-load");
+        var pickerStatusEl = document.getElementById("compare-picker-status");
         var statusEl = document.getElementById("compare-status");
         var result = document.getElementById("compare-result");
+        var pickers = [];
+        // Fill one picker from its current choices and its filter box, keeping
+        // the chosen agency selected when it survives the filter.
+        function refresh(picker) {
+          var query = picker.input.value.trim().toLocaleLowerCase();
+          var selected = picker.select.value;
+          var matches = query
+            ? picker.choices.filter(function (choice) {
+                return (choice.text + " " + choice.value).toLocaleLowerCase().includes(query);
+              }).slice(0, 100)
+            : picker.choices;
+          var batch = document.createDocumentFragment();
+          batch.appendChild(new Option(
+            query && !matches.length ? "No matching agencies" : "Choose an agency", ""
+          ));
+          matches.forEach(function (choice) {
+            batch.appendChild(new Option(choice.text, choice.value));
+          });
+          picker.select.textContent = "";
+          picker.select.appendChild(batch);
+          if (matches.some(function (choice) { return choice.value === selected; }))
+            picker.select.value = selected;
+        }
         function installFilter(inputId, select) {
-          var input = document.getElementById(inputId);
-          var choices = Array.from(select.options).slice(1).map(function (option) {
-            return { value: option.value, text: option.textContent || option.value };
-          });
-          input.addEventListener("input", function () {
-            var query = input.value.trim().toLocaleLowerCase();
-            var selected = select.value;
-            var matches = query
-              ? choices.filter(function (choice) {
-                  return (choice.text + " " + choice.value).toLocaleLowerCase().includes(query);
-                }).slice(0, 100)
-              : choices;
-            select.textContent = "";
-            select.appendChild(new Option(
-              query && !matches.length ? "No matching agencies" : "Choose an agency", ""
-            ));
-            matches.forEach(function (choice) {
-              select.appendChild(new Option(choice.text, choice.value));
-            });
-            if (matches.some(function (choice) { return choice.value === selected; }))
-              select.value = selected;
-          });
+          var picker = {
+            input: document.getElementById(inputId),
+            select: select,
+            choices: Array.from(select.options).slice(1).map(function (option) {
+              return { value: option.value, text: option.textContent || option.value };
+            })
+          };
+          picker.input.addEventListener("input", function () { refresh(picker); });
+          pickers.push(picker);
         }
         installFilter("compare-a-filter", selA);
         installFilter("compare-b-filter", selB);
+
+        // The rest of the agency list is one published JSON, fetched the first
+        // time someone reaches for a picker (or asks for it outright) rather
+        // than shipped inside this document. Both states are announced, and a
+        // failed fetch leaves the opening options and a retry in place.
+        var listLoaded = true;
+        var listLoading = false;
+        var listPromise = null;
+        function hydratePickers(requested) {
+          if (listLoaded || listLoading) return;
+          listLoading = true;
+          if (loadEl) {
+            loadEl.setAttribute("aria-disabled", "true");
+            loadEl.textContent = "Loading every agency\u2026";
+          }
+          pickerStatusEl.textContent = "Loading the complete agency list.";
+          if (!listPromise) {
+            listPromise = fetch(PICKER_URL).then(function (r) {
+              if (!r.ok) throw new Error("agency list");
+              return r.json();
+            });
+          }
+          listPromise.then(function (data) {
+            var rows = (data && data.agencies) || [];
+            var choices = rows.map(function (row) {
+              return {
+                value: row[0],
+                text: row[1] + (row[2] ? " \u2014 " + row[2] : "")
+              };
+            });
+            pickers.forEach(function (picker) {
+              picker.choices = choices;
+              refresh(picker);
+            });
+            listLoaded = true;
+            listLoading = false;
+            // The load control has done its job and goes away. Focus follows it
+            // to the first picker whenever it was the thing being used, whether
+            // that is the click that asked or a keyboard already resting on it
+            // while a load started from the form. Focus is never moved out from
+            // under someone working elsewhere on the page.
+            var held = loadEl && (requested || document.activeElement === loadEl);
+            if (loadEl) loadEl.hidden = true;
+            pickerStatusEl.textContent =
+              "Both lists now hold all " + rows.length + " agencies.";
+            if (held && pickers.length) pickers[0].input.focus();
+          }).catch(function () {
+            listLoading = false;
+            listPromise = null;
+            if (loadEl) {
+              loadEl.hidden = false;
+              loadEl.removeAttribute("aria-disabled");
+              loadEl.textContent = "Try loading every agency again";
+            }
+            pickerStatusEl.textContent = "The complete agency list could not load. Both " +
+              "pickers still hold the first " + SHOWN + " agencies, and the agency " +
+              "directory links every scorecard.";
+          });
+        }
+        if (loadEl) loadEl.addEventListener("click", function () {
+          if (loadEl.getAttribute("aria-disabled") !== "true") hydratePickers(true);
+        });
+        ["focusin", "pointerenter"].forEach(function (name) {
+          formEl.addEventListener(name, function () { hydratePickers(false); });
+        });
+
+        // Show the agency a shared link asked for even before the full list is
+        // in, so the pickers always read back what the page is comparing.
+        function showChoice(select, id, name) {
+          var known = Array.prototype.some.call(select.options, function (option) {
+            return option.value === id;
+          });
+          if (!known) select.add(new Option(name, id), select.options[1] || null);
+          select.value = id;
+        }
         var params = new URLSearchParams(window.location.search);
         var a = params.get("a"), b = params.get("b");
         if (!a || !b) return;
-        selA.value = a; selB.value = b;
-        if (selA.value !== a || selB.value !== b) {
-          statusEl.textContent = "We don't track a scorecard for \"" +
-            (selA.value !== a ? a : b) + "\". Pick two agencies from the lists above.";
-          return;
-        }
         if (a === b) {
           statusEl.textContent = "Pick two different agencies to compare.";
           return;
@@ -214,6 +307,8 @@
         Promise.all([fetchArtifact(a), fetchArtifact(b)]).then(function (arts) {
           var artA = arts[0], artB = arts[1];
           var nameA = artA.agency.name, nameB = artB.agency.name;
+          showChoice(selA, a, nameA);
+          showChoice(selB, b, nameB);
           var contractA = comparisonContract(artA), contractB = comparisonContract(artB);
           var likeForLike = contractA.rubric && contractA.profile && contractA.validator &&
             contractA.readerArchive && contractB.readerArchive &&

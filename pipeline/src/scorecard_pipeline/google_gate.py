@@ -108,31 +108,50 @@ def google_acceptance(
     )
 
 
-def from_artifact(artifact: dict[str, Any], today: dt.date) -> GoogleGate:
-    """Read the last service date from a published artifact and check the gate.
+def _iso_date(raw: Any) -> dt.date | None:
+    """Parse an ISO date from artifact JSON; anything else is no date."""
+    if not isinstance(raw, str):
+        return None
+    try:
+        return dt.date.fromisoformat(raw)
+    except ValueError:
+        return None
 
-    Looks for an ISO date string (or ``None``) at
-    ``artifact["categories"]["freshness"]["details"]["last_service_date"]``. A
-    missing or unparsable value is treated as no end date.
+
+def _artifact_expiry(details: dict[str, Any]) -> dt.date | None:
+    """The date this feed stops being usable, matching gtfs.FeedDates.effective_expiry.
+
+    A feed drops out of Maps at the earlier of the validity window feed_info
+    declares and the last date its calendars actually run. Reading only the
+    calendar tail would call a feed whose feed_info expired in 2023 a pass
+    because calendar.txt still lists dates in 2030, contradicting the freshness
+    card on the same page. Artifacts from schema 1.4 and 1.7 predate the
+    published ``effective_expiry_date`` and are still the latest snapshot for
+    some feeds, so derive the same minimum from the two dates they do carry.
     """
-    raw = (
-        artifact.get("categories", {})
-        .get("freshness", {})
-        .get("details", {})
-        .get("last_service_date")
-    )
+    published = _iso_date(details.get("effective_expiry_date"))
+    if published is not None:
+        return published
+    declared = _iso_date(details.get("feed_end_date"))
+    scheduled = _iso_date(details.get("last_service_date"))
+    candidates = [d for d in (declared, scheduled) if d is not None]
+    return min(candidates) if candidates else None
 
-    last_service_date: dt.date | None
-    if isinstance(raw, str):
-        try:
-            last_service_date = dt.date.fromisoformat(raw)
-        except ValueError:
-            last_service_date = None
-    else:
-        last_service_date = None
 
-    gate = google_acceptance(last_service_date, today)
+def from_artifact(artifact: dict[str, Any], today: dt.date) -> GoogleGate:
+    """Read a published artifact's service end date and check the gate.
+
+    Prefers ``effective_expiry_date`` under
+    ``artifact["categories"]["freshness"]["details"]``, falling back to the
+    earlier of ``feed_end_date`` and ``last_service_date`` for artifacts written
+    before that field existed. Missing or unparsable values are treated as no
+    end date.
+    """
     details = artifact.get("categories", {}).get("freshness", {}).get("details", {})
+    if not isinstance(details, dict):
+        details = {}
+
+    gate = google_acceptance(_artifact_expiry(details), today)
     if (
         gate.status == "pass"
         and resolve_service_horizon_status(details, artifact.get("snapshot_date"))

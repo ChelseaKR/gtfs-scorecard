@@ -79,6 +79,7 @@ from .ntd import presented_readiness as presented_ntd_readiness
 from .pages_tools import (
     _render_check_page,
     _render_compare_page,
+    _render_compare_picker_data,
     _render_query_page,
     _render_tools_page,
 )
@@ -1547,7 +1548,7 @@ def _vendor_request(artifact: dict[str, Any], canonical: str) -> str | None:
 
 def _vendor_section(artifact: dict[str, Any], canonical: str) -> str:
     """The 'Send your vendor a fix request' block: the forwardable artifact a
-    manager who does not control the export needs. When the feed host identifies
+    manager who does not control the export needs. When the evidence identifies
     the producing tool, the heading and lede name it and say how the fix lands
     there (RESEARCH-ROADMAP R5); otherwise the copy stays generic."""
     note = _vendor_request(artifact, canonical)
@@ -1998,7 +1999,8 @@ def _guided_fix_flow(artifact: dict[str, Any], agency_id: str, has_fixlog: bool)
     """The closed-loop guided fix flow (EXP-11): one compact three-step loop per
     top fix, stitching the pieces that already exist into a single per-finding
     path — (1) the plain-language finding with its /fix/<code>/ guide, (2) "Make
-    the change", naming the producing tool detected from the feed host, and (3)
+    the change", naming the producing tool where the feed's evidence identifies
+    one, and (3)
     "Check the result", explaining that the next comparable run checks whether
     the finding is still reported.
 
@@ -2672,7 +2674,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             '<p class="all-clear">Nothing urgent. This feed passed every check we '
             "translate into fixes.</p>"
         )
-    # Who makes these changes: when the feed host identifies the producing tool,
+    # Who makes these changes: when the evidence identifies the producing tool,
     # name the actual path a fix takes (RESEARCH-ROADMAP R5). Shown with the fix
     # list, and for an archive-served feed even without one, because "publish
     # from a live URL" precedes any single fix.
@@ -6015,7 +6017,11 @@ def _render_guide() -> str:
     (are accessibility, fares, and destinations filled in), and <strong>Realtime quality</strong>
     (if you publish live arrivals, sometimes called
     <abbr title="GTFS Realtime">GTFS-RT</abbr>). If you do not publish realtime, that is fine and
-    does not count against you.</p></section>
+    does not count against you.</p>
+    <p>Some checks sit outside that grade. Whether your feed keeps four weeks of service ahead
+    for Google and Apple Maps, and whether a rider could actually complete a trip, are reported
+    next to the score without changing it.
+    <a href="/focus/#beyond-the-validator">See the checks a validator does not run</a>.</p></section>
 
     {_route_rule()}
     <section><h2 class="section-title">What the grades mean</h2>
@@ -6446,22 +6452,80 @@ def _render_pulse_page(
     )
 
 
-def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -> str:
+def _beyond_validator_stat(catalog: list[dict[str, Any]]) -> str:
+    """How many published feed records currently clear the Google/Apple Maps
+    four-week bar, read straight off the ``google_gate`` status each catalog row
+    already carries (render_site.py builds it from ``google_gate.from_artifact``).
+    This counts an existing per-feed status for display; it computes no new
+    metric and changes no score. Rows without a usable status are left out of
+    both sides of the ratio, and an empty corpus falls back to naming where the
+    check is reported instead of publishing a hollow "0 of 0"."""
+    rated = [row for row in catalog if row.get("google_gate") in {"pass", "at_risk", "fail"}]
+    if not rated:
+        return "Stated on each scorecard"
+    clearing = sum(1 for row in rated if row.get("google_gate") == "pass")
+    noun, verb = ("feed record", "clears") if len(rated) == 1 else ("feed records", "clear")
+    return f"{clearing} of {len(rated)} published {noun} {verb} the bar"
+
+
+def _render_focus_page(
+    ntd_payload: dict[str, Any],
+    rt_rollup: dict[str, Any],
+    catalog: list[dict[str, Any]] | None = None,
+) -> str:
     """The focus-areas hub (/focus/): one screen naming the dimensional lenses
     (NTD readiness, realtime reliability, equity, what feeds publish), each with
     its headline number and a one-line reason to open it. These pages share a
     skeleton but serve different audiences, so they stay separate destinations;
     this hub remains a coverage subpage even though feature discovery now has a
-    direct primary-nav entry."""
+    direct primary-nav entry.
+
+    The first group collects the checks that run past the canonical validator.
+    Each of them already renders somewhere (the Maps coverage line and the
+    routability findings on an agency page, realtime uptime on /realtime/, feed
+    URL liveness on /status/), but a visitor met them one at a time and had no
+    way to see that they answer a different question from validator output.
+    Grouping them here is presentation only: no rule, weight, or score moves,
+    and every item in this group is reported beside the grade rather than
+    inside it.
+    """
     pct_ready = ntd_payload.get("pct_ready", 0)
     monitored = rt_rollup.get("monitored_count", 0)
-    universal_areas = [
+    beyond_areas = [
+        (
+            "/agencies/",
+            "Four weeks of service ahead",
+            _beyond_validator_stat(catalog or []),
+            "Google and Apple want at least four weeks of upcoming service before they will "
+            "show an agency. A feed can stay valid, slip under that line, and stop reaching "
+            "the apps riders already have open. Every scorecard states where its feed sits, "
+            "and the directory groups the calendars that have run out.",
+        ),
+        (
+            "",
+            "A rider can complete the trip",
+            "Reported on each scorecard",
+            "Trips with no rideable leg, and stops that no trip serves. The file parses and "
+            "the journey still does not work.",
+        ),
         (
             "/realtime/",
-            "Realtime reliability",
+            "Realtime that is actually up",
             f"{monitored} realtime feeds monitored",
-            "Uptime and freshness for the agencies that publish GTFS-Realtime.",
+            "Whether a monitored realtime feed answered when we checked, and how far behind "
+            "real time its data was. An agency that publishes no realtime feed is not counted "
+            "here.",
         ),
+        (
+            "/status/",
+            "The feed URL still answers",
+            "Liveness recorded between full runs",
+            "A trip planner keeps fetching the address it already has. The status page records "
+            "which configured URLs responded and which have gone quiet, so a feed that moved "
+            "reads as something to confirm rather than a silent gap.",
+        ),
+    ]
+    universal_areas = [
         (
             "/adoption/",
             "What feeds publish",
@@ -6485,9 +6549,17 @@ def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -
         ),
     ]
 
+    def area_label(href: str, name: str) -> str:
+        # An empty href renders the name as plain text. That check is reported on
+        # each agency scorecard and has no hub page of its own; inventing a
+        # destination would send a reader somewhere that does not show it.
+        if not href:
+            return esc(name)
+        return f'<a href="{esc(href)}">{esc(name)}</a>'
+
     def area_items(areas: list[tuple[str, str, str, str]]) -> str:
         return "".join(
-            f'<li class="finding"><p class="what"><a href="{esc(href)}">{esc(name)}</a> '
+            f'<li class="finding"><p class="what">{area_label(href, name)} '
             f'<span class="count">{esc(stat)}</span></p>'
             f'<p class="why">{esc(what)}</p></li>'
             for href, name, stat, what in areas
@@ -6496,21 +6568,28 @@ def _render_focus_page(ntd_payload: dict[str, Any], rt_rollup: dict[str, Any]) -
     body = f"""    {_breadcrumb([("Home", "/"), ("Focus areas", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Focus areas.</h1>
-    <p class="page-lede">Open one lens per question. Realtime reliability and GTFS
-    feature adoption apply across the covered corpus. Regional policy views are
-    separated below and only apply where their source data and rules do.</p>
-    <h2 class="section-title">Across current coverage</h2>
+    <p class="page-lede">Open one lens per question. The first two groups apply
+    across the covered corpus. Regional policy views are separated below and only
+    apply where their source data and rules do.</p>
+    <h2 class="section-title" id="beyond-the-validator">Checks a validator does not run</h2>
+    <p class="page-lede">MobilityData's canonical validator answers whether a feed
+    follows the specification. A feed can answer yes and still strand a rider.
+    These lenses ask the second question, about the places riders actually reach
+    an agency through.</p>
+    <ul class="findings">{area_items(beyond_areas)}</ul>
+    <h2 class="section-title">Optional GTFS features</h2>
     <ul class="findings">{area_items(universal_areas)}</ul>
     <h2 class="section-title">United States</h2>
     <ul class="findings">{area_items(us_areas)}</ul>
     <p class="fineprint">Every lens measures published data, never a compliance
     determination or on-the-ground service quality, and none of them changes a
-    grade.</p>"""
+    grade. The first group is reported next to the rubric rather than folded into
+    it.</p>"""
     return _page(
         title="Focus areas — GTFS Scorecard",
         description=(
-            "Worldwide GTFS quality lenses, plus clearly scoped regional policy views "
-            "for jurisdictions where local source data applies."
+            "GTFS checks that run past the canonical validator, plus clearly scoped "
+            "regional policy views for jurisdictions where local source data applies."
         ),
         canonical=f"{BASE_URL}/focus/",
         body=body,
@@ -10139,7 +10218,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             # the directory filter and national rollup never count them.
             "ntd_ready": (ntd_assess(artifact).status if location.country_code == "US" else None),
             # Whether the feed clears Google/Apple Maps' four-week coverage bar.
-            "google_gate": google_from_artifact(artifact, dt.date.today()).status,
+            # Measured against render_site's frozen UTC instant, the same one
+            # _google_gate_line uses for the on-page prose. dt.date.today() would
+            # read the runner's local zone, so a machine behind UTC could publish
+            # a different gate than the page it sits next to.
+            "google_gate": google_from_artifact(artifact, now.date()).status,
             "feed_url": feed.get("static_url"),
             "top_fix": fixes[0]["fix"] if fixes else None,
             "scorecard_url": f"{BASE_URL}/agency/{agency_id}/",
@@ -10761,7 +10844,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
 
     # Side-by-side compare: one static page over the artifacts that already
     # exist; the two pickers come from the same catalog the directory uses.
+    # That list is published beside the page and fetched on demand rather than
+    # inlined twice, so the document does not grow with the registry.
     write("compare/index.html", _render_compare_page(catalog), f"{BASE_URL}/compare/")
+    write("compare/agencies.json", _render_compare_picker_data(catalog))
 
     # In-browser SQL over the published parquet: the static-first principle
     # applied to analytics (no backend, nothing sent to a server).
@@ -10942,7 +11028,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # The focus-areas hub the primary nav points at.
     write(
         "focus/index.html",
-        _render_focus_page(ntd_payload, rt_rollup),
+        _render_focus_page(ntd_payload, rt_rollup, catalog),
         f"{BASE_URL}/focus/",
     )
     # The same national table as Parquet, so a DuckDB or Athena consumer can query

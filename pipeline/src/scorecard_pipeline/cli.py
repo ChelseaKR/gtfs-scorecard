@@ -51,7 +51,7 @@ import requests
 
 from .agencies import AgencyConfigError, load_agencies
 from .completeness import completeness
-from .config import AGENCIES, Agency, current_agency_ids, raw_dir, repo_root
+from .config import AGENCIES, Agency, current_agency_ids, raw_dir, repo_root, utc_today
 from .constants_export import GRADE_RANK
 from .fetch import FetchResult, fetch_static, prepare_reader_archive
 from .gtfs import read_feed_dates
@@ -1338,7 +1338,7 @@ def _cmd_discover(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         return 0
 
     matches = find_replacements(feeds, registry, mdb_ids)
-    report = render_replacements_md(matches, today=dt.date.today().isoformat())
+    report = render_replacements_md(matches, today=utc_today().isoformat())
     if args.out:
         Path(args.out).write_text(report)
         log.info("Wrote feed-discovery report for %d agencies to %s", len(registry), args.out)
@@ -1828,7 +1828,7 @@ def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser
     if args.fetch:
         # Latest complete report year first, then the one before: FTA publishes
         # annual products with a lag, so early in a year the prior one is it.
-        year = dt.date.today().year
+        year = utc_today().year
         for candidate in (year - 1, year - 2):
             try:
                 text = fetch_ridership_csv(candidate)
@@ -2030,7 +2030,7 @@ def _cmd_rt_health(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
         monitored += 1
         try:
             window = capture_window(
-                agency, dt.date.today(), samples=args.samples, interval_seconds=args.interval
+                agency, utc_today(), samples=args.samples, interval_seconds=args.interval
             )
         except Exception:
             log.exception("%s: realtime sampling failed", agency_id)
@@ -2097,8 +2097,17 @@ def _cmd_otp(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         count=args.pairs,
     )
     if not pairs:
-        log.error("No active trips with distinct endpoint stops to sample on %s.", args.date)
-        return 1
+        # A feed with no service on the sampled date cannot answer a routing
+        # question, and no router regression is visible either way. Seasonal and
+        # limited-service operators hit this on any ordinary date: the Fort
+        # Matanzas ferry sampled clean on 2026-08-10 and had no active trips on
+        # 2026-08-11. Record it and leave the run green. A calendar that no
+        # longer covers today is already a freshness finding on the agency's
+        # scorecard, which is where a rider-facing gap belongs.
+        detail = f"No active trips with distinct endpoint stops to sample on {args.date}."
+        log.warning("Routing QA is not testable for this feed. %s", detail)
+        print(f"::warning title=Routing QA not testable::{detail}", file=sys.stderr)
+        return 0
     results = []
     for origin, destination, departure_time in pairs:
         try:
@@ -2127,6 +2136,34 @@ def _cmd_otp(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     for failure in qa.failures:
         print(f"unroutable\t{failure}")
     return 0 if qa.all_routable else 1
+
+
+def _cmd_otp_build_check(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Classify a failed OTP graph build: the feed's problem, or the run's?
+
+    Prints `outcome=` and `detail=` lines a CI step can append to $GITHUB_OUTPUT,
+    and exits non-zero only when the build failed for a reason outside the feed,
+    so a feed OTP cannot parse is reported instead of taking the workflow down.
+    """
+    from .otp import classify_graph_build
+
+    log_path = Path(args.log)
+    if not log_path.exists():
+        log.error("No OTP build log at %s, so this run cannot be classified.", log_path)
+        print("outcome=harness-error")
+        print("detail=The OTP graph build wrote no log.")
+        return 1
+    result = classify_graph_build(args.exit_code, log_path.read_text(errors="replace"))
+    detail = " ".join(result.detail.split())[:400]
+    print(f"outcome={result.status}")
+    print(f"detail={detail}")
+    if result.built:
+        return 0
+    if result.feed_unbuildable:
+        log.warning("OTP could not build a graph from this feed. %s", detail)
+        return 0
+    log.error("The OTP graph build failed for a reason outside the feed. %s", detail)
+    return 1
 
 
 def _current_canonical_index(index: dict[str, Any]) -> dict[str, Any]:
@@ -2946,8 +2983,8 @@ def main(argv: list[str] | None = None) -> int:
     run.add_argument(
         "--date",
         type=dt.date.fromisoformat,
-        default=dt.date.today(),
-        help="snapshot date (default: today)",
+        default=utc_today(),
+        help="snapshot date (default: today in UTC)",
     )
     run.add_argument("--force-fetch", action="store_true", help="re-download and re-validate")
     run.add_argument("--rt-samples", type=int, default=3, help="realtime samples per endpoint")
@@ -2979,8 +3016,8 @@ def main(argv: list[str] | None = None) -> int:
     adhoc.add_argument(
         "--date",
         type=dt.date.fromisoformat,
-        default=dt.date.today(),
-        help="snapshot date (default: today)",
+        default=utc_today(),
+        help="snapshot date (default: today in UTC)",
     )
     adhoc.add_argument("--html", help="also write a standalone HTML scorecard to this path")
     adhoc.add_argument(
@@ -3062,7 +3099,9 @@ def main(argv: list[str] | None = None) -> int:
         help="allow the OTP base to be localhost (only for a trusted local QA server)",
     )
     otp.add_argument(
-        "--date", default=dt.date.today().isoformat(), help="service date (YYYY-MM-DD)"
+        "--date",
+        default=utc_today().isoformat(),
+        help="service date (YYYY-MM-DD, default: today in UTC)",
     )
     otp.add_argument("--time", default="08:00", help="departure time (HH:MM)")
 
@@ -3080,9 +3119,23 @@ def main(argv: list[str] | None = None) -> int:
     otp_batch.add_argument("--feed", help="GTFS zip to sample origin/destination stops from")
     otp_batch.add_argument("--pairs", type=int, default=5, help="how many O/D pairs to test")
     otp_batch.add_argument(
-        "--date", default=dt.date.today().isoformat(), help="service date (YYYY-MM-DD)"
+        "--date",
+        default=utc_today().isoformat(),
+        help="service date (YYYY-MM-DD, default: today in UTC)",
     )
     otp_batch.add_argument("--time", default="08:00", help="departure time (HH:MM)")
+
+    otp_build_check = sub.add_parser(
+        "otp-build-check",
+        help="classify a failed OTP graph build: unparseable feed, or a broken run",
+    )
+    otp_build_check.add_argument("--log", required=True, help="path to the captured build log")
+    otp_build_check.add_argument(
+        "--exit-code",
+        type=int,
+        required=True,
+        help="the exit code the OTP build container returned",
+    )
 
     sync = sub.add_parser("sync", help="propose registry entries from a feed catalog")
     sync.add_argument(
@@ -3347,7 +3400,7 @@ def main(argv: list[str] | None = None) -> int:
 
     alerts = sub.add_parser("alerts", help="build the expiry/regression alert digest")
     alerts.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="as-of date (UTC)"
     )
     alerts.add_argument("--expiry-days", type=int, default=60, help="warn within this many days")
     alerts.add_argument("--out", help="write the digest here instead of stdout")
@@ -3360,7 +3413,7 @@ def main(argv: list[str] | None = None) -> int:
         "(or set SUBSCRIPTIONS_TABLE); the private opt-in store",
     )
     notify.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="as-of date (UTC)"
     )
     notify.add_argument("--expiry-days", type=int, default=60, help="warn within this many days")
     notify.add_argument(
@@ -3373,7 +3426,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     portfolio.add_argument("--rollup", help="scope to one rollup id (default: every rollup)")
     portfolio.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="as-of date (UTC)"
     )
     portfolio.add_argument("--out", help="write the digest here instead of stdout")
     portfolio.add_argument(
@@ -3388,7 +3441,7 @@ def main(argv: list[str] | None = None) -> int:
         help="weekly advisory: warn if plain-language coverage dropped (FIX-08)",
     )
     coverage.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="as-of date (UTC)"
     )
     coverage.add_argument(
         "--save",
@@ -3414,7 +3467,7 @@ def main(argv: list[str] | None = None) -> int:
         help="output format (default: json)",
     )
     campaign.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="baseline date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="baseline date (UTC)"
     )
     campaign.add_argument("--out", help="write the campaign here instead of stdout")
     sub.add_parser("reindex", help="rebuild index.json from artifacts on disk")
@@ -3467,7 +3520,7 @@ def main(argv: list[str] | None = None) -> int:
         help="recompute freshness/expiry from the last score without re-fetching",
     )
     sweep.add_argument(
-        "--date", type=dt.date.fromisoformat, default=dt.date.today(), help="sweep as-of date"
+        "--date", type=dt.date.fromisoformat, default=utc_today(), help="sweep as-of date (UTC)"
     )
     sweep.add_argument(
         "--apply", action="store_true", help="publish refreshed artifacts (default: report only)"
@@ -3560,8 +3613,8 @@ def main(argv: list[str] | None = None) -> int:
     canary.add_argument(
         "--date",
         type=dt.date.fromisoformat,
-        default=dt.date.today(),
-        help="snapshot date to fetch/score (default: today)",
+        default=utc_today(),
+        help="snapshot date to fetch/score (default: today in UTC)",
     )
 
     reproduce = sub.add_parser(
@@ -3607,8 +3660,12 @@ def main(argv: list[str] | None = None) -> int:
 
 
 def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
-    """Load the registry (except for the registry-free `try`) and run the subcommand."""
-    if args.command != "try":
+    """Load the registry (except for the registry-free commands) and run the subcommand.
+
+    `try` scores one supplied URL and `otp-build-check` reads one log file;
+    neither looks an agency up, so neither pays for the registry.
+    """
+    if args.command not in {"try", "otp-build-check"}:
         load_agencies()
         agency_id = getattr(args, "agency", None)
         if agency_id and agency_id not in AGENCIES:
@@ -3661,6 +3718,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "query": _cmd_query,
         "otp": _cmd_otp,
         "otp-batch": _cmd_otp_batch,
+        "otp-build-check": _cmd_otp_build_check,
         "rt-health": _cmd_rt_health,
         "rt-archive": _cmd_rt_archive,
         "reproduce": _cmd_reproduce,

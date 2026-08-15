@@ -28,6 +28,20 @@ the declared public surface).
 ## [Unreleased]
 
 ### Fixed
+- **Fix requests named the company hosting a feed rather than the one that built
+  it.** Producing-tool detection read the host out of the feed URL, so a feed
+  served from a vendor's delivery host was credited to that vendor. Every
+  `rapid.nationalrtap.org` feed URL is a file-upload path, and
+  `data.trilliumtransit.com` carries feeds whose own `feed_info.txt` names GMV
+  Syncromatics or Optibus as publisher. Attribution now reads each feed's own
+  publisher declaration, kept in `data/feed-publishers.json`, and falls back to
+  the host only where the URL is a tool's own generated export. Where the
+  producer cannot be established the copy stays generic instead of naming
+  anyone. 70 of 2,515 published scorecards change tool: 57 stop naming a vendor
+  the evidence does not support and 13 gain one the host could not see. Vendor
+  regression cohorts follow the same evidence, so a host's cohort no longer
+  mixes feeds it built with feeds it only serves. No score, grade, or metric
+  reads this. See [ADR 0045](docs/decisions/0046-producer-attribution-from-the-feed.md).
 - **Conformance guidance called every non-awarded feed “close,” including feeds
   meeting none of the three requirements (#246).** Summaries now state progress
   from the actual 0/1/2/3 criteria met. The machine-readable credential carries
