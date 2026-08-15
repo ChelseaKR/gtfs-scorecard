@@ -208,7 +208,10 @@ Never solve overflow by shrinking body text or interactive targets.
 ### Product chrome
 
 - `.site-header`, `.nav-stops`, and `.nav-stop` form one wayfinding route. The
-  current section uses `aria-current="page"` and a filled stop pip.
+  stop you are at gets a filled pip and `aria-current`, whose value says which
+  kind of "here" it is: `page` when the stop is the page being read, `true`
+  when it is the hub of the section that page sits inside. Both look the same;
+  only the first claims to be the page you are on.
 - `.nav-menu-btn` controls the same navigation below `1400px`; `nav.js` owns its
   expanded state. The no-script fallback exposes the links rather than hiding
   them behind an inert button.

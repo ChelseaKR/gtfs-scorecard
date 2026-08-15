@@ -1288,7 +1288,9 @@ def test_feature_nav_and_translation_language_deep_link(page: Page, app_url: str
     page.get_by_role("link", name="Feed features").click()
     page.wait_for_url(f"{app_url}#/?view=features")
     expect(page.locator("#feature-finder")).to_be_focused()
-    expect(page.get_by_role("link", name="Feed features")).to_have_attribute("aria-current", "page")
+    # "true", the current item in a set: the two app stops are views of one
+    # page, so neither is ever "page" (the current page in a set of pages).
+    expect(page.get_by_role("link", name="Feed features")).to_have_attribute("aria-current", "true")
 
     page.locator('input[value="translations"]').check()
     page.locator("#translation-language").select_option("fr")
@@ -1344,7 +1346,7 @@ def test_feature_nav_is_available_from_mobile_menu(page: Page, app_url: str) -> 
     expect(page.locator("#feature-finder")).to_be_focused()
     expect(page.get_by_role("button", name="Menu")).to_have_attribute("aria-expanded", "false")
     expect(page.locator('.nav-stops a[href="/app/#/?view=features"]')).to_have_attribute(
-        "aria-current", "page"
+        "aria-current", "true"
     )
 
 

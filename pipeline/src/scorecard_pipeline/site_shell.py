@@ -110,16 +110,42 @@ def _nav_active(path: str) -> str:
     return active
 
 
-def _nav_stops_html(active: str | None, lang: str = "en") -> str:
+def _same_page(href: str, path: str) -> bool:
+    """Whether a nav href addresses the page being rendered, not its section."""
+    return href.rstrip("/") == path.rstrip("/")
+
+
+def _nav_current_attr(href: str, active: str | None, path: str | None) -> str:
+    """The aria-current attribute for one nav stop, or "" when it is not filled.
+
+    ARIA 1.2 gives these two values different meanings, and the difference is
+    the whole point here. ``page`` is "the current page within a set of pages".
+    ``true`` is "the current item within a set". A hub stop filled because you
+    are somewhere inside its section is the second one: the link still
+    navigates, and announcing it as the current page tells a screen-reader user
+    they are already where that link goes.
+    """
+    if href != active:
+        return ""
+    if path is not None and _same_page(href, path):
+        return ' aria-current="page"'
+    return ' aria-current="true"'
+
+
+def _nav_stops_html(active: str | None, lang: str = "en", path: str | None = None) -> str:
     """The <nav> of wayfinding stops, with the active section filled
     (aria-current). The single source of the primary nav's item set (_NAV_ITEMS),
     shared by the generated header (_nav_html) and the hand-authored static pages
     (sync_static_navs, guarded by tests/test_static_nav.py) so the bar cannot
-    drift between them."""
+    drift between them.
+
+    ``path`` is the page being rendered, which is what separates "you are on
+    this page" from "you are inside this section". Without it the stop is
+    marked as the current item, never as the current page."""
     parts = []
     items = _NAV_ITEMS_ES if lang == "es" else _NAV_ITEMS
     for label, href in items:
-        cur = ' aria-current="page"' if href == active else ""
+        cur = _nav_current_attr(href, active, path)
         parts.append(
             f'<a class="nav-stop" href="{href}"{cur}>'
             f'<span class="pip" aria-hidden="true"></span>{label}</a>'
@@ -141,7 +167,7 @@ def _nav_html(canonical: str, lang: str = "en") -> str:
         '<button class="nav-menu-btn" type="button" aria-expanded="false" '
         f'aria-controls="nav-cluster"><span aria-hidden="true">☰</span> {menu}</button>'
         '<div class="nav-cluster" id="nav-cluster">'
-        f"{_nav_stops_html(_nav_active(path), lang)}"
+        f"{_nav_stops_html(_nav_active(path), lang, path)}"
         '<div id="theme-control"></div>'
         "</div></div></header>"
     )
@@ -277,6 +303,16 @@ def _redirect_page(target: str, title: str) -> str:
 """
 
 
+def static_page_path(rel: str) -> str:
+    """The served path of a hand-authored static page, from its file path.
+
+    The nav needs it to tell the page it is on from the section it is in:
+    ``about/index.html`` is served at ``/about/``, which is a nav stop, while
+    ``support/index.html`` is served at ``/support/``, which only sits inside
+    one."""
+    return "/" + rel.removesuffix("index.html")
+
+
 # The one nav-stops block and one footer to replace in each static page.
 _NAV_STOPS_RE = re.compile(r'<nav class="nav-stops".*?</nav>', re.DOTALL)
 _FOOTER_RE = re.compile(r'<footer class="site-footer">.*?</footer>', re.DOTALL)
@@ -296,7 +332,8 @@ def sync_static_navs() -> list[Path]:
         match = _NAV_STOPS_RE.search(old)
         if match is None:
             raise ValueError(f"{path}: expected one nav-stops block to sync, found none")
-        new = old[: match.start()] + _nav_stops_html(active) + old[match.end() :]
+        new = old[: match.start()] + _nav_stops_html(active, path=static_page_path(rel))
+        new += old[match.end() :]
         fmatch = _FOOTER_RE.search(new)
         if fmatch is None:
             raise ValueError(f"{path}: expected one site-footer block to sync, found none")
