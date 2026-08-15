@@ -244,6 +244,11 @@ POINT_IN_TIME: list[tuple[str, str, str]] = [
         "dated observation from the 2026-07 horizon scan",
     ),
     (
+        "docs/renamed-successor-review.md",
+        r"holds ([\d,]+) records",
+        "one pull request's branch as read on a stated date, not the live registry",
+    ),
+    (
         "docs/feeds.md",
         r"moves the registry to ([\d,]+)\s+configured",
         "per-wave curation log: each line records where that wave landed",
