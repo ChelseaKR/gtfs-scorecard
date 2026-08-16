@@ -65,6 +65,16 @@ request. A retirement whose successor publishes under a different agency name
 is called out separately in that report: the catalog is usually right about it,
 and it is still the case to read before merging.
 
+Two of those cases are not left to a reader noticing them. A retirement whose
+successor sits in a **different state or country**, or whose successor's name
+does not read as a rename of the record retiring into it, is **held**: the
+command will not write it, and `pipeline/scripts/check_supersession_review.py`
+fails the build if it is written by hand, until the decision is recorded in
+`supersession-review.yaml` at the repository root. A decision there is either
+`retire` (one agency, or a real merger) or `keep_separate` (not the same
+agency, and the automation must not re-apply the redirect), and each one states
+its evidence. See `docs/supersession-flagging.md`.
+
 ### Reviewed reuse evidence
 
 `reuse_evidence` is an optional, curator-approved record used by bounded

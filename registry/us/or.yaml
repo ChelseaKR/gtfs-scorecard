@@ -579,8 +579,16 @@ agencies:
     mdb_id: 1327
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # The Mobility Database files this record under the city's name, but the feed
+  # is the Confederated Tribes of the Umatilla Indian Reservation's: the path is
+  # ctuir-or-us, and the routes are Kayak's (Mission Metro, Walla Walla
+  # Whistler, Hermiston Hopper) plus the Nixyaawii Community Shuttle. It is
+  # named for the tribal provider that publishes it. The id is left alone
+  # because it is this record's public URL and the address of its dated
+  # artifacts. Both mdb-272 (Kayak) and mdb-274 (the city's own feed) retire
+  # into it; see supersession-review.yaml.
   - id: city-of-milton-freewater-public-transportation-2189
-    name: City of Milton-Freewater Public Transportation
+    name: Kayak Transit (CTUIR)
     subdivision_code: US-OR
     subdivision_name: Oregon
     static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/ctuir-or-us/ctuir-or-us.zip

@@ -2,6 +2,16 @@
 
 Run 2026-08-14. Source: mobilitydatabase.org catalog CSV.
 
+> **Four rows below were changed after this run, and the next run will not
+> reproduce them.** One retirement was undone (Norwalk Transit System (NTS) in
+> California, mdb-102, keeps its own page: the record it pointed at carries the
+> Connecticut Norwalk's feed). Three successors were renamed or relocated to
+> match the feed they publish: mdb-2242 to Norwalk Transit District in
+> Connecticut, mdb-2189 to Kayak Transit (CTUIR), mdb-2194 to Southeast Vermont
+> Transit. The evidence and the decisions are in `docs/supersession-flagging.md`
+> and `supersession-review.yaml`, and from the next run a retirement of this
+> shape is held for review rather than recorded.
+
 The Mobility Database marks a replaced feed record `deprecated` and names the record that replaced it. Where both records are tracked here, the retired one is set to `feed_status: deprecated` with `alias_of` pointing at its successor: its dated artifacts stay available for reproducibility and its scorecard URL redirects, but it stops publishing a second current grade under the same agency's name.
 
 - **168** retired records resolve to a successor published here.

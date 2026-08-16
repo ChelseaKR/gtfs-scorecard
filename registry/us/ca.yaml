@@ -567,6 +567,19 @@ agencies:
     mdb_id: 1243
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Filed under Tennessee in the catalog and in registry/us/tn.yaml until now,
+  # but the feed is Contra Costa County's: its stops span 37.66-38.02N,
+  # 122.19-121.78W and its routes run to Concord, Walnut Creek and Pleasant Hill
+  # BART. Recorded as California, the state mdb-1243 retires out of.
+  - id: county-connection-cccta-2421
+    ntd_id: "90078"
+    name: County Connection (CCCTA)
+    subdivision_code: US-CA
+    subdivision_name: California
+    static_gtfs_url: https://countyconnection.com/GTFS/google_transit.zip
+    mdb_id: 2421
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
   # Mobility Database mdb-318 is deprecated and redirects to mdb-2248.
   - id: cudahy-area-rapid-transit
     name: Cudahy Area Rapid Transit
@@ -1512,29 +1525,18 @@ agencies:
     mdb_id: 3093
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
-  # Mobility Database mdb-102 is deprecated and redirects to mdb-2242.
+  # The catalog deprecates mdb-102 and redirects it to mdb-2242, but mdb-2242's
+  # feed is the Connecticut Norwalk's (see registry/us/ct.yaml), so that redirect
+  # is not followed here: this record keeps its own page. Its stops span
+  # 33.87-34.07N, 118.13-117.96W and its routes are Cerritos College, Rio Hondo
+  # and 166th Street, so this is Norwalk in Los Angeles County.
   - id: norwalk-transit-system-nts
     name: Norwalk Transit System (NTS)
-    alias_of: norwalk-transit-system-nts-2242
-    feed_status: deprecated
     organization_id: city-of-norwalk
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/nts-ca-us/nts-ca-us.zip
     mdb_id: 102
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-    rt_urls:
-      trip_updates: https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
-      vehicle_positions: https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
-      service_alerts: https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
-
-  - id: norwalk-transit-system-nts-2242
-    name: Norwalk Transit System (NTS)
-    organization_id: city-of-norwalk
-    subdivision_code: US-CA
-    subdivision_name: California
-    static_gtfs_url: https://mystop.norwalktransit.com/InfoPoint/gtfs-zip.ashx
-    mdb_id: 2242
     license_note: No stated data license in the Mobility Database; verify before publishing.
     rt_urls:
       trip_updates: https://nts.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
@@ -1706,18 +1708,6 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/delnorte-ca-us/delnorte-ca-us.zip
     mdb_id: 20
     license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  # Mobility Database mdb-110 is deprecated and redirects to mdb-2351.
-  - id: regional-transportation-commission-of-southern-nevada-rtc
-    name: Regional Transportation Commission of Southern Nevada (RTC)
-    alias_of: regional-transportation-commission-of-southern-nevada-rtc-2351
-    feed_status: deprecated
-    subdivision_code: US-CA
-    subdivision_name: California
-    static_gtfs_url: http://rtcws.rtcsnv.com/g/google_transit.zip
-    mdb_id: 110
-    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
-    license_note: "License: https://www.rtcsnv.com/ways-to-travel/transit-services/for-developers/"
 
   - id: relaxsan
     name: reLAXsan

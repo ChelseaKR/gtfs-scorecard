@@ -1379,16 +1379,21 @@ def _cmd_supersessions(args: argparse.Namespace, parser: argparse.ArgumentParser
         apply_supersessions,
         fetch_catalog,
         find_supersessions,
+        hold_for_review,
         parse_catalog,
         render_supersessions_md,
     )
+    from .supersession_review import REVIEW_FILENAME, read_review
 
     source = args.catalog or DEFAULT_PROPOSAL_CATALOG_URL
     is_url = source.startswith(("http://", "https://"))
     csv_text = fetch_catalog(source) if is_url else Path(source).read_text()
     feeds = parse_catalog(csv_text)
-    superseded, unresolved = find_supersessions(feeds, AGENCIES.values())
-    report = render_supersessions_md(superseded, unresolved, today=utc_today().isoformat())
+    found, unresolved = find_supersessions(feeds, AGENCIES.values())
+    superseded, held = hold_for_review(found, read_review(repo_root()))
+    report = render_supersessions_md(
+        superseded, unresolved, today=utc_today().isoformat(), held=held
+    )
     if args.out:
         Path(args.out).write_text(report)
         log.info("Wrote the supersession report to %s", args.out)
@@ -1400,6 +1405,13 @@ def _cmd_supersessions(args: argparse.Namespace, parser: argparse.ArgumentParser
         len(superseded),
         len(unresolved),
     )
+    if held:
+        log.warning(
+            "%d retirement(s) are held for review: the successor may not be the same "
+            "agency. Decide each one in %s; none of them is recorded here.",
+            len(held),
+            REVIEW_FILENAME,
+        )
 
     if args.apply:
         from .agencies import registry_paths

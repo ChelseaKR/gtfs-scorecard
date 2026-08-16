@@ -257,6 +257,7 @@ Full hand-authored doc inventory checked by this pass:
 - `docs/standards-conformance-gaps.md`
 - `docs/standards-contribution/HONESTY-AS-A-FEATURE.md`
 - `docs/standards-proposal-2026-07-05-accessibility.md`
+- `docs/supersession-flagging.md`
 - `docs/vpat.md`
 - `infra/README.md`
 - `pipeline/tests/goldens/robots.txt`

@@ -201,6 +201,19 @@ agencies:
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Filed under New York in the catalog and in registry/us/ny.yaml until now,
+  # but the feed is the National Park Service's Boston Harbor Islands one: its
+  # stops span 42.25-42.36N, 71.05-70.92W and its routes are Georges Island,
+  # Peddocks Island, Spectacle Island and the Hingham run. Recorded as
+  # Massachusetts, the state both records that retire into it sit in.
+  - id: boston-harbor-islands-ferry
+    name: Boston Harbor Islands Ferry
+    subdivision_code: US-MA
+    subdivision_name: Massachusetts
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/boha/boston-harbor-islands-ferry.zip
+    mdb_id: 2679
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
   # Mobility Database mdb-446 is deprecated and redirects to mdb-2679.
   - id: boston-harbor-islands-ferries
     name: Boston Harbor Islands Ferries
