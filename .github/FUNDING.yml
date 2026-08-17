@@ -1,11 +1,12 @@
 # Funding links for the repository's Sponsor button and the /support/ page.
 #
-# The repository points to the project's support page while payment accounts
-# are still being evaluated. What sponsorship pays for, and what it never buys, is on
+# What sponsorship pays for, and what it never buys, is on
 # https://gtfsscorecard.org/support/, in SUPPORT.md, and in docs/support.md.
 #
-# PLACEHOLDER(owner): when a payment rail goes live, add it here and update the
-# buttons in web/support/index.html. Add channels only if the
-# accounts actually exist, e.g.:
-# open_collective: gtfs-scorecard
+# Add a channel here only once that account actually exists, and update the
+# buttons in web/support/index.html at the same time. A key pointing at a
+# checkout that is not live is worse than no key at all.
+#
+# The custom entry is the project's own support page, not a checkout.
+github: ChelseaKR
 custom: ["https://gtfsscorecard.org/support/"]

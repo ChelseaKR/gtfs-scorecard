@@ -32,10 +32,10 @@ What running the service costs, and what stays free no matter what, is spelled
 out on the [support page](https://gtfsscorecard.org/support/) and in
 [docs/support.md](docs/support.md).
 
-**No payment rail is live yet.** Sponsorship accounts are still being set up, so
-nothing here points at a checkout that does not exist. To start a conversation:
+To sponsor the work:
 
-- [Open a sponsorship inquiry](https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=Sponsorship%20inquiry), or
+- [GitHub Sponsors](https://github.com/sponsors/ChelseaKR), or
+- [open a sponsorship inquiry](https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=Sponsorship%20inquiry) if you would rather talk first, or
 - write to [Chelsea Kelly-Reif](mailto:ckellyreif@gmail.com).
 
 ## Paid services
