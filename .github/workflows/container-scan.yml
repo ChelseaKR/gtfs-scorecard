@@ -13,25 +13,32 @@ name: container-scan
 # repo fetches on demand). CI fetches the exact pinned release the Dockerfile
 # already sha256-verifies and stages it at that path before building, so the
 # scanned image matches what a real build produces.
+#
+# The path filters cover everything that ends up inside an image, not just the
+# Dockerfiles: both images `COPY pipeline` and then `pip install /opt/pipeline`
+# (which resolves from pyproject.toml, not uv.lock), plus their own handler and
+# the sync-source-metadata schema. Filtering on the Dockerfiles alone let a
+# change to worker.py, handler.py, or any pipeline dependency alter the image
+# without the CVE scan running on it.
 
 on:
   push:
     branches: [main]
     paths:
-      - "infra/compute/Dockerfile"
-      - "infra/instant-score/Dockerfile"
-      - "pipeline/pyproject.toml"
-      - "pipeline/uv.lock"
+      - "infra/compute/**"
+      - "infra/instant-score/**"
+      - "pipeline/**"
+      - "web/schemas/sync-source-metadata-1.2.schema.json"
       - ".dockerignore"
       - ".trivyignore.yaml"
       - "vex.json"
       - ".github/workflows/container-scan.yml"
   pull_request:
     paths:
-      - "infra/compute/Dockerfile"
-      - "infra/instant-score/Dockerfile"
-      - "pipeline/pyproject.toml"
-      - "pipeline/uv.lock"
+      - "infra/compute/**"
+      - "infra/instant-score/**"
+      - "pipeline/**"
+      - "web/schemas/sync-source-metadata-1.2.schema.json"
       - ".dockerignore"
       - ".trivyignore.yaml"
       - "vex.json"
