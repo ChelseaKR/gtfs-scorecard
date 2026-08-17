@@ -681,8 +681,11 @@ def _published_agency_artifacts() -> list[Path]:
 
 def test_every_published_agency_artifact_conforms() -> None:
     paths = _published_agency_artifacts()
-    if not paths:
-        pytest.skip("no published artifacts in this checkout")
+    # Not pytest.skip. A corpus gate that turns itself off when it finds no
+    # corpus reports green for the one change most likely to need it: the one
+    # that moved, emptied, or stopped committing data/artifacts. Assert the
+    # floor instead, so an absent corpus is a failure with a reason.
+    assert paths, "no published artifacts under data/artifacts; this gate has nothing to check"
     validator = _validator("artifact.schema.json")
     bad: dict[str, str] = {}
     for path in paths:
@@ -893,8 +896,9 @@ def _published_rollups() -> list[Path]:
 
 def test_every_published_rollup_conforms() -> None:
     paths = _published_rollups()
-    if not paths:
-        pytest.skip("no published rollups in this checkout")
+    assert paths, (
+        "no published rollups under data/artifacts/rollups; this gate has nothing to check"
+    )
     validator = _validator("rollup.schema.json")
     bad: dict[str, str] = {}
     for path in paths:
