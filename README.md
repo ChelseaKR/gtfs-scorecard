@@ -299,23 +299,23 @@ see the integrity note in that directory's history). Per
 `docs/standards/README.md`'s conformance rule, every applicable standard is
 declared here; none is silently skipped.
 
-| Standard | Applies? |
-|---|---|
-| [Code Quality](docs/standards/CODE-QUALITY-STANDARD.md) | Applies (Python; TS/Node N/A — `web/` is no-build vanilla JS) |
-| [Security & Supply-Chain](docs/standards/SECURITY-AND-SUPPLY-CHAIN-STANDARD.md) | Applies (ASVS L1 shape: no auth, no PII store) |
-| [CI/CD](docs/standards/CI-CD-STANDARD.md) | Applies |
-| [Observability](docs/standards/OBSERVABILITY-STANDARD.md) | Applies — Tier B (frontend) + Tier C (batch pipeline); see [ADR 0031](docs/decisions/0031-observability-tier.md) |
-| [Accessibility](docs/standards/ACCESSIBILITY-STANDARD.md) | Applies fully — civic content, self-declared WCAG 2.2 AAA (see [docs/accessibility.md](docs/accessibility.md), [docs/vpat.md](docs/vpat.md)) |
-| [Internationalization](docs/standards/INTERNATIONALIZATION-STANDARD.md) | Applies — civic transit data, public-facing; exemption path unavailable |
-| [Performance](docs/standards/PERFORMANCE-STANDARD.md) | Applies — the static frontend has blocking Lighthouse budgets on code changes; the scheduled data-refresh path retains its documented advisory exception |
-| [AI Evaluation](docs/standards/AI-EVALUATION-STANDARD.md) | N/A — no LLM/model component: no model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to APPLIES on first LLM SDK use. |
-| [AI Development Measurement](docs/standards/AI-DEVELOPMENT-MEASUREMENT-STANDARD.md) | Applies — delivery and quality-debt outcomes are measured at repository level; local AI-tool telemetry is never a merge gate |
-| [Quality & Metrics](docs/standards/QUALITY-AND-METRICS-STANDARD.md) | Applies (data-quality/lineage named for this repo explicitly) |
-| [Documentation](docs/standards/DOCUMENTATION-STANDARD.md) | Applies |
-| [Release & Versioning](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.4.0`), monthly dataset releases; the MCP server manifest is written but not published to the registry (see Versioning) |
-| [Responsible-Tech Framework](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies (audits A-F; AI-governance rows N/A — no AI system) |
-| [Incident Response](docs/standards/INCIDENT-RESPONSE-STANDARD.md) | Applies — deployed static site and scheduled pipeline; incidents use the shared severity, label, postmortem, and secret-leak conventions |
-| [Data Governance](docs/standards/DATA-GOVERNANCE-STANDARD.md) | Applies — public civic datasets, feed provenance, licenses, retention, and publication lineage are core product concerns |
+| Standard | State | Standard document |
+|---|---|---|
+| Code Quality | Applies (Python; TS/Node N/A — `web/` is no-build vanilla JS) | [`CODE-QUALITY-STANDARD.md`](docs/standards/CODE-QUALITY-STANDARD.md) |
+| Security & Supply-Chain | Applies (ASVS L1 shape: no auth, no PII store) | [`SECURITY-AND-SUPPLY-CHAIN-STANDARD.md`](docs/standards/SECURITY-AND-SUPPLY-CHAIN-STANDARD.md) |
+| CI/CD | Applies | [`CI-CD-STANDARD.md`](docs/standards/CI-CD-STANDARD.md) |
+| Observability | Applies — Tier B (frontend) + Tier C (batch pipeline); see [ADR 0031](docs/decisions/0031-observability-tier.md) | [`OBSERVABILITY-STANDARD.md`](docs/standards/OBSERVABILITY-STANDARD.md) |
+| Accessibility | Applies fully — civic content, self-declared WCAG 2.2 AAA (see [docs/accessibility.md](docs/accessibility.md), [docs/vpat.md](docs/vpat.md)) | [`ACCESSIBILITY-STANDARD.md`](docs/standards/ACCESSIBILITY-STANDARD.md) |
+| Internationalization | Applies — civic transit data, public-facing; exemption path unavailable | [`INTERNATIONALIZATION-STANDARD.md`](docs/standards/INTERNATIONALIZATION-STANDARD.md) |
+| Performance | Applies — the static frontend has blocking Lighthouse budgets on code changes; the scheduled data-refresh path retains its documented advisory exception | [`PERFORMANCE-STANDARD.md`](docs/standards/PERFORMANCE-STANDARD.md) |
+| AI Evaluation | N/A — no LLM/model component: no model inference in any user-facing or decision-making path (`AI-EVALUATION-STANDARD` §0); the MCP server (`server.json`) is read-only data retrieval, no LLM SDK. Flips to APPLIES on first LLM SDK use. | [`AI-EVALUATION-STANDARD.md`](docs/standards/AI-EVALUATION-STANDARD.md) |
+| AI Development Measurement | Applies — delivery and quality-debt outcomes are measured at repository level; local AI-tool telemetry is never a merge gate | [`AI-DEVELOPMENT-MEASUREMENT-STANDARD.md`](docs/standards/AI-DEVELOPMENT-MEASUREMENT-STANDARD.md) |
+| Quality & Metrics | Applies (data-quality/lineage named for this repo explicitly) | [`QUALITY-AND-METRICS-STANDARD.md`](docs/standards/QUALITY-AND-METRICS-STANDARD.md) |
+| Documentation | Applies | [`DOCUMENTATION-STANDARD.md`](docs/standards/DOCUMENTATION-STANDARD.md) |
+| Release & Versioning | Applies — reusable Action tags (`v1`/`v1.4.0`), monthly dataset releases; the MCP server manifest is written but not published to the registry (see Versioning) | [`RELEASE-AND-VERSIONING-STANDARD.md`](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) |
+| Responsible-Tech Framework | Applies (audits A-F; AI-governance rows N/A — no AI system) | [`RESPONSIBLE-TECH-FRAMEWORK.md`](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) |
+| Incident Response | Applies — deployed static site and scheduled pipeline; incidents use the shared severity, label, postmortem, and secret-leak conventions | [`INCIDENT-RESPONSE-STANDARD.md`](docs/standards/INCIDENT-RESPONSE-STANDARD.md) |
+| Data Governance | Applies — public civic datasets, feed provenance, licenses, retention, and publication lineage are core product concerns | [`DATA-GOVERNANCE-STANDARD.md`](docs/standards/DATA-GOVERNANCE-STANDARD.md) |
 
 Open gaps per standard, as of the most recent conformance audit, are tracked
 in [docs/standards-conformance-gaps.md](docs/standards-conformance-gaps.md)
