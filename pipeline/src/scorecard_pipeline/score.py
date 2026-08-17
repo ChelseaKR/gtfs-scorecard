@@ -48,6 +48,26 @@ def published_score(score: float) -> float:
     return round(score, PUBLISHED_SCORE_DECIMALS)
 
 
+def published_overall(score: float) -> dict[str, Any]:
+    """The whole published ``overall`` block a raw score earns.
+
+    The single place the artifact's score, letter and band margins are derived,
+    so the three can never be computed from different numbers. Anything that
+    re-derives a current surface from an already-published score (publish's
+    reindex, the index.json trend points) calls this rather than copying a
+    stored letter forward, and ``validate_artifact`` refuses to write an
+    ``overall`` block that disagrees with it.
+    """
+    value = published_score(score)
+    margin_up, margin_down = grade_margins(value)
+    return {
+        "score": value,
+        "grade": letter_grade(value),
+        "margin_to_next_band": margin_up,
+        "margin_to_lower_band": margin_down,
+    }
+
+
 # A dated, plain-language log of methodology versions, newest first. Surfaced on
 # the public "how to read" page and in scoring.json so a reader can tell a score
 # change apart from a rule change and see exactly when each rubric version took
@@ -187,19 +207,14 @@ class Scorecard:
                     "weight": weight,
                     "summary": "Not scored yet. Nothing here counts against the grade.",
                 }
-        score = published_score(self.overall_score)
-        margin_up, margin_down = grade_margins(score)
         return {
-            "overall": {
-                "score": score,
-                "grade": self.grade,
-                # How close the letter sits to its band edges (FIX-07), so a
-                # near-boundary grade reads as "a B, 0.4 points from an A" rather
-                # than a verdict. Additive fields; margin_to_next_band is null
-                # for an A, which has no higher band.
-                "margin_to_next_band": margin_up,
-                "margin_to_lower_band": margin_down,
-            },
+            # score, grade, and the two margins all come out of published_overall,
+            # so the letter is always the letter the printed score earns. The
+            # margins say how close that letter sits to its band edges (FIX-07),
+            # so a near-boundary grade reads as "a B, 0.4 points from an A" rather
+            # than a verdict; margin_to_next_band is null for an A, which has no
+            # higher band.
+            "overall": published_overall(self.overall_score),
             "categories": cats,
             "top_fixes": [{**f.to_json(), "rank": i + 1} for i, f in enumerate(self.top_fixes)],
         }
@@ -278,7 +293,7 @@ def build_scorecard(categories: list[CategoryResult]) -> Scorecard:
 
     return Scorecard(
         overall_score=overall,
-        grade=letter_grade(published_score(overall)),
+        grade=str(published_overall(overall)["grade"]),
         categories=measured,
         top_fixes=top,
     )

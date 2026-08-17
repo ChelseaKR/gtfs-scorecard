@@ -28,7 +28,7 @@ from scorecard_pipeline.publish import (
     publish,
     validate_artifact,
 )
-from scorecard_pipeline.score import build_scorecard
+from scorecard_pipeline.score import build_scorecard, letter_grade
 from scorecard_pipeline.validate import VALIDATOR_VERSION
 
 # The source checkout, not the SCORECARD_ROOT tmp dir the autouse fixture sets:
@@ -690,6 +690,112 @@ def test_every_published_agency_artifact_conforms() -> None:
         if error is not None:
             bad[path.parent.name] = f"{error.json_path}: {error.message}"
     assert not bad, f"{len(bad)} published artifacts violate the schema: {bad}"
+
+
+# The current, rewritable published surfaces. docs/api.md's HTTP contract:
+# dated artifacts (<agency>/<date>.json) are immutable once written so a
+# consumer can pin one, while latest.json, catalog.json and directory.json are
+# rewritten when a scoring run completes. Everything below is on the rewritable
+# side, which is why the letters in it are required to be right today rather
+# than only from the next run onward.
+CURRENT_SURFACE_GLOBS = (
+    "data/artifacts/*/latest.json",
+    "data/artifacts/index.json",
+    "data/artifacts/directory.json",
+    "data/artifacts/rollups/*.json",
+    "web/catalog.json",
+    "web/dataset.json",
+    "web/api/v1/*.json",
+    "pipeline/tests/fixtures/golden_site/data/artifacts/*/latest.json",
+    "pipeline/tests/fixtures/golden_site/data/artifacts/rollups/*.json",
+)
+
+
+def _graded_pairs(node: Any, path: str) -> list[tuple[str, float, str]]:
+    """Every (json path, score, grade) pair anywhere in a published document."""
+    found: list[tuple[str, float, str]] = []
+    if isinstance(node, dict):
+        grade, score = node.get("grade"), node.get("score")
+        if isinstance(grade, str) and isinstance(score, (int, float)) and grade in set("ABCDF"):
+            found.append((path, float(score), grade))
+        for key, value in node.items():
+            found.extend(_graded_pairs(value, f"{path}.{key}"))
+    elif isinstance(node, list):
+        for i, value in enumerate(node):
+            found.extend(_graded_pairs(value, f"{path}[{i}]"))
+    return found
+
+
+def test_every_published_letter_is_the_letter_its_own_score_earns() -> None:
+    """No published surface may show a grade its printed score contradicts.
+
+    test_every_published_agency_artifact_conforms above walks the same
+    latest.json files and cannot catch this: the schema constrains grade to the
+    A-F enum and score to 0-100, and the relationship between them is not
+    expressible there. It passed on nine agencies reading "Grade C * 80.0 /
+    100" -- bus-eireann, express-bus-ie, slieve-bloom-coach-tours, cape-ann,
+    sandy-area-metro-sam at 80.0/C, regional-transportation-commission-rtc at
+    70.0/D, and stan-nancy, ukmerge and vilnius-district at 60.0/F -- while
+    docs/rubric.md and the scoring.json this project publishes so a reader can
+    "reproduce or contest the grade" say 80 is a B and 60 is a D.
+
+    This is the check that reproduces the grade the way that reader would.
+    """
+    wrong: list[str] = []
+    scanned = 0
+    for pattern in CURRENT_SURFACE_GLOBS:
+        for path in sorted(REPO_ROOT.glob(pattern)):
+            if path.parent.name in RESERVED_ARTIFACT_DIRS:
+                continue
+            scanned += 1
+            rel = path.relative_to(REPO_ROOT)
+            for json_path, score, grade in _graded_pairs(_load(path), "$"):
+                earned = letter_grade(score)
+                if grade != earned:
+                    wrong.append(
+                        f"{rel}{json_path[1:]}: {score} is a {earned}, published as {grade}"
+                    )
+    assert scanned, "no published current surfaces found in this checkout"
+    assert not wrong, f"{len(wrong)} published letters contradict their own score:\n" + "\n".join(
+        wrong[:40]
+    )
+
+
+def test_the_badge_a_consumer_embeds_shows_the_same_grade_as_the_artifact() -> None:
+    """badge.json/badge.svg go on an agency's own developer page.
+
+    They are pure functions of latest.json's overall block, written next to it
+    by publish and rebuild_index, so a badge that disagrees with the artifact
+    it links to is always wrong. 302 committed badges did: 268 showed a score
+    latest.json no longer carried, and 20 of those a different letter --
+    anchorage-people-mover's artifact read C 73.5 beside a badge reading D
+    65.8. Nothing compared the two files.
+    """
+    wrong: list[str] = []
+    checked = 0
+    for latest_path in sorted((REPO_ROOT / "data" / "artifacts").glob("*/latest.json")):
+        agency = latest_path.parent.name
+        if agency in RESERVED_ARTIFACT_DIRS:
+            continue
+        badge_path = latest_path.parent / "badge.json"
+        svg_path = latest_path.parent / "badge.svg"
+        if not badge_path.exists():
+            continue
+        checked += 1
+        overall = _load(latest_path)["overall"]
+        expected = f"{overall['grade']} {overall['score']}"
+        message = str(_load(badge_path).get("message", ""))
+        # A status segment ("... - feed expired") is appended by design; the
+        # grade and score are the leading two words either way.
+        if " ".join(message.split(" ")[:2]) != expected:
+            wrong.append(f"{agency}: badge.json says {message!r}, artifact says {expected!r}")
+        elif f">{overall['grade']} {round(float(overall['score']))}<" not in svg_path.read_text():
+            wrong.append(f"{agency}: badge.svg disagrees with badge.json {message!r}")
+    assert checked, "no badges found in this checkout"
+    assert not wrong, (
+        f"{len(wrong)} of {checked} embeddable badges disagree with their own artifact:\n"
+        + "\n".join(wrong[:40])
+    )
 
 
 def test_golden_site_agency_artifacts_conform() -> None:
