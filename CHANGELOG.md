@@ -63,6 +63,51 @@ the declared public surface).
   `published_score()`, the one place the published number is produced. The grade
   bands are unchanged, so this is a defect fix rather than a rubric change; the
   nine move up to the letter their published score already earned.
+  A sweep of all 36,121 committed JSON files then found the same contradiction
+  on 111 published letters across the rewritable current surfaces, not nine:
+  `index.json`'s trend points (82), `directory.json` (8), five rollups (14), and
+  `web/catalog.json`, `web/dataset.json`, `web/api/v1/agencies.json` and
+  `web/api/v1/features.json` (3 each). All are corrected in place. The letter is
+  now re-derived on the way out to every current surface, the way the
+  conformance credential already was, so a `latest.json` rebuilt from a dated
+  snapshot written before the fix still shows the right letter. The 82
+  contradicting letters inside `<agency>/<date>.json` are left alone: `docs/api.md`
+  promises dated artifacts are immutable once written.
+  `validate_artifact` now refuses to write an `overall` block that contradicts
+  its own score, and two new gates check the committed corpus, because
+  `artifact.schema.json` can require the grade to be one of A-F but cannot
+  require it to be the right one — the existing conformance test walked all nine
+  wrong artifacts and passed.
+- **325 embeddable badges disagreed with the artifact beside them.** `badge.json`
+  and `badge.svg` are pure functions of `latest.json`, written next to it, and
+  nothing compared the two. 268 showed a score `latest.json` no longer carried
+  and 20 showed a different letter: Anchorage People Mover's artifact read
+  `C 73.5` next to a badge reading `D 65.8`. All regenerated from the artifacts
+  through the pipeline's own badge writer, and now gated.
+
+### Security
+- **`web/src/` is scanned again.** ~6,600 lines of hand-written browser
+  JavaScript, including 24 `innerHTML` assignment sites, were excluded from
+  Semgrep (`.semgrepignore`) and gitleaks (`.gitleaks.toml`) and never analysed
+  by CodeQL, which covers python and actions only — so the only code in this
+  repository that runs in a rider's browser had no SAST and no secret scanning
+  from any of the three. Both exclusions existed for the public GTFS feed-URL
+  keys that appear in *generated* pages under `web/`, and both now name the
+  generated trees instead of the whole directory. Measured first: with `^web/`
+  removed, gitleaks reports 77 findings and every one is a feed-URL key under
+  `web/agency/`, `web/api/` or `web/catalog.json`, none in `web/src/`. Semgrep
+  now also runs `p/javascript`, since `p/python` over browser code was running
+  almost no rules on it. Adding `javascript` to CodeQL remains open (#288).
+- **Five pull-request checks could not block a merge**, contrary to ADR 0033's
+  rule that a new gate joins the ruleset "in the same change that adds the
+  workflow": both `Trivy image CVE scan` matrix jobs, `terraform fmt + validate`,
+  `zizmor (workflow security lint)` and `Dependency review (PRs only)`.
+  `container-scan` caught ten HIGH CVEs in the shipped Lambda images this month
+  because it happened to run, not because anything required it to pass. All five
+  are added to `.github/rulesets/main.json`, and a new test compares the
+  workflows to the ruleset so a job can no longer run while blocking nothing.
+  **The live ruleset is the enforcement source and still needs
+  `gh api .../rulesets/{id} -X PUT`; this change only updates the file.**
 - **A StatCan outage could unpublish every Canadian need tier under a green
   run.** Each per-agency failure in `scorecard canada-equity` is a `continue`
   and the command then returned 0 and wrote whatever it had, so a total outage
