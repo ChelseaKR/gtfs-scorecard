@@ -9,12 +9,12 @@ The public version of this page is [gtfsscorecard.org/support](https://gtfsscore
 The core service costs single-digit dollars a month today. A $75 to $200 monthly
 operating envelope would add bounded capacity while keeping hard spending caps:
 
-- Hosting and bandwidth for the static site, the read API, and the grade badges agencies embed.
+- Hosting and bandwidth for the static site, the read API, and the grade badges the project publishes.
 - The scheduled daily data refresh: fetching more than 2,100 configured feed records
   in the current worldwide coverage, still mostly in the US and Canada. The public
   status page reports the exact current count and records when each run completed.
 - Validator compute. Each refresh runs feeds through the canonical MobilityData gtfs-validator.
-- Release monitoring and private evidence retention needed to reproduce published checks and audit participant-approved remediation receipts.
+- Release monitoring and private evidence retention needed to reproduce a published check and to audit a remediation receipt if one is ever submitted.
 
 A capped hosted one-off scorer remains an option if repeated demand justifies its
 abuse controls and operating cost. It is not enabled today; the site currently
@@ -32,7 +32,7 @@ The real return is the tool itself: it stays free for every agency, including th
 
 ## How to sponsor
 
-- [Open a sponsorship inquiry](https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=Sponsorship%20inquiry) and we will take it from there. No payment rail is advertised until an account is actually ready to receive funds.
+- [Sponsor on GitHub](https://github.com/sponsors/ChelseaKR), or [open a sponsorship inquiry](https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=Sponsorship%20inquiry) if you would rather talk first or need an invoice. No payment rail is advertised here until the account behind it can actually receive funds.
 
 ## For programs and consultancies
 
