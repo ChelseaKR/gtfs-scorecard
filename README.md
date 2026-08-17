@@ -79,6 +79,10 @@ be added through `registry/intake.yaml`.
   [bounded open issue](https://github.com/ChelseaKR/gtfs-scorecard/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
   or read [CONTRIBUTING.md](CONTRIBUTING.md). Feed corrections, accessibility
   review, and practitioner feedback are useful without changing scoring code.
+- **Get help, or fund the work:** [SUPPORT.md](SUPPORT.md) is the front door for
+  both. Scoring is free for every agency and stays that way; the
+  [support page](https://gtfsscorecard.org/support/) explains what running the
+  service costs, what sponsorship would pay for, and what it never buys.
 
 ## Quickstart
 
