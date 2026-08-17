@@ -465,7 +465,7 @@ agencies:
     service_type: demand_response
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://gtfs.dds.dot.ca.gov/gtfs_files/WascoDialaRideFlex.zip
+    static_gtfs_url: https://gtfs.calitp.org/production/WascoDialaRideFlex.zip
     mdb_id: 1788
     license_note: >-
       CC BY 4.0 through the Caltrans DDS GTFS index:
@@ -1758,7 +1758,7 @@ agencies:
     organization_id: san-mateo-county-transit-district
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://www.samtrans.com/media/37078/download
+    static_gtfs_url: http://api.511.org/transit/datafeeds?operator_id=SM
     mdb_id: 2708
     license_note: "License: https://www.samtrans.com/developer"
 
