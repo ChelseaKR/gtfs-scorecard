@@ -1434,3 +1434,127 @@ def test_traceback_escape_hatch_still_raises(monkeypatch: pytest.MonkeyPatch) ->
     monkeypatch.setattr(cli, "_dispatch", boom)
     with pytest.raises(AgencyConfigError):
         cli.main(["lint"])
+
+
+def _canada_agency(agency_id: str, name: str):  # type: ignore[no-untyped-def]
+    from scorecard_pipeline.config import Agency
+
+    return Agency(
+        id=agency_id,
+        name=name,
+        static_gtfs_url=f"https://example.org/{agency_id}.zip",
+        country="CA",
+    )
+
+
+def _canada_equity_fixture(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, *, published: list[str]
+) -> Path:
+    """Two Canadian agencies with geometry, and an overlay already published."""
+    from scorecard_pipeline import cimd, cli, config
+
+    agencies = {
+        "barrie-transit": _canada_agency("barrie-transit", "Barrie Transit"),
+        "london-transit": _canada_agency("london-transit", "London Transit"),
+    }
+    monkeypatch.setattr(cli, "AGENCIES", agencies, raising=False)
+    monkeypatch.setattr(config, "AGENCIES", agencies)
+    monkeypatch.setattr("scorecard_pipeline.agencies.load_agencies", lambda *a, **k: None)
+
+    artifact_root = tmp_path / "artifacts"
+    for agency_id in agencies:
+        agency_dir = artifact_root / agency_id
+        agency_dir.mkdir(parents=True)
+        (agency_dir / "geometry.geojson").write_text(json.dumps({"features": []}))
+    monkeypatch.setattr(config, "artifacts_dir", lambda: artifact_root)
+
+    out_path = artifact_root / "canada-equity.json"
+    out_path.write_text(
+        json.dumps(
+            {
+                "schema_version": 1,
+                "agencies": {
+                    agency_id: {"name": agency_id, "need_tier": "high", "mean_quintile": 4.0}
+                    for agency_id in published
+                },
+            }
+        )
+    )
+    monkeypatch.setattr(cimd, "stops_from_geometry", lambda _doc: [(45.0, -75.0)], raising=False)
+    monkeypatch.setattr(
+        "scorecard_pipeline.tract_data.stops_from_geometry", lambda _doc: [(45.0, -75.0)]
+    )
+    return out_path
+
+
+def test_canada_equity_refuses_to_empty_the_overlay_when_statcan_fails(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A StatCan outage must not silently unpublish every Canadian need tier.
+
+    Every per-agency failure in the command is a `continue`, so before this
+    guard a total outage wrote `{"agencies": {}}`, the monthly workflow
+    committed it, and three published tiers vanished under a green run.
+    """
+    from scorecard_pipeline import cli
+
+    out_path = _canada_equity_fixture(
+        monkeypatch, tmp_path, published=["barrie-transit", "london-transit"]
+    )
+    before = out_path.read_text()
+
+    def boom(_stops: object) -> tuple[str, float | None]:
+        raise RuntimeError("StatCan CIMD service returned 503")
+
+    monkeypatch.setattr("scorecard_pipeline.cimd.agency_cimd", boom)
+
+    args = argparse.Namespace(out=str(out_path), allow_empty=False)
+    assert cli._cmd_canada_equity(args, argparse.ArgumentParser()) == 1
+    assert out_path.read_text() == before, "the published overlay must be left untouched"
+
+
+def test_canada_equity_refuses_to_drop_a_single_published_agency(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A partial failure must not quietly delete the agency it failed on."""
+    from scorecard_pipeline import cli
+
+    out_path = _canada_equity_fixture(
+        monkeypatch, tmp_path, published=["barrie-transit", "london-transit"]
+    )
+    before = out_path.read_text()
+
+    def one_sided(_stops: object) -> tuple[str, float | None]:
+        # Fails for whichever agency is processed second; sorted() puts
+        # barrie-transit first, so london-transit is the one that drops out.
+        one_sided.calls += 1  # type: ignore[attr-defined]
+        if one_sided.calls > 1:  # type: ignore[attr-defined]
+            raise RuntimeError("StatCan CIMD service returned 503")
+        return "high", 4.0
+
+    one_sided.calls = 0  # type: ignore[attr-defined]
+    monkeypatch.setattr("scorecard_pipeline.cimd.agency_cimd", one_sided)
+
+    args = argparse.Namespace(out=str(out_path), allow_empty=False)
+    assert cli._cmd_canada_equity(args, argparse.ArgumentParser()) == 1
+    assert out_path.read_text() == before
+
+
+def test_canada_equity_writes_when_every_published_agency_reports(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """The guard must not block the ordinary refresh it is protecting."""
+    from scorecard_pipeline import cli
+
+    out_path = _canada_equity_fixture(
+        monkeypatch, tmp_path, published=["barrie-transit", "london-transit"]
+    )
+    monkeypatch.setattr(
+        "scorecard_pipeline.cimd.agency_cimd", lambda _stops: ("moderate", 3.0)
+    )
+
+    args = argparse.Namespace(out=str(out_path), allow_empty=False)
+    assert cli._cmd_canada_equity(args, argparse.ArgumentParser()) == 0
+    written = json.loads(out_path.read_text())
+    assert set(written["agencies"]) == {"barrie-transit", "london-transit"}
+    assert written["agencies"]["barrie-transit"]["need_tier"] == "moderate"
