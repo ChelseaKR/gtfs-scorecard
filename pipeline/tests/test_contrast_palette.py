@@ -82,7 +82,10 @@ def _palette(text: str, theme: str) -> dict[str, str]:
 def _badge_background(css: str, theme: str, token: str) -> str:
     """The literal `.alert .badge` background the browser paints for ``theme``."""
     suffix = {"badge-error": "", "badge-warning": ".sev-warning", "badge-info": ".sev-info"}[token]
-    prefix = "" if theme == "light" else THEME_SELECTORS[theme].removesuffix(" {") + " "
+    selector = THEME_SELECTORS[theme]
+    # Only the light theme sits on bare :root and so has no selector to prefix.
+    assert selector is not None or theme == "light", f"theme {theme!r} needs a selector"
+    prefix = "" if selector is None else selector.removesuffix(" {") + " "
     rule = f"{prefix}.alert .badge{suffix} {{"
     background = re.search(r"background:\s*([^;]+);", _rule_body(css, rule))
     assert background, f"no background declaration in {rule!r}"

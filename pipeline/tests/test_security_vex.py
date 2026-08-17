@@ -46,9 +46,7 @@ def test_container_scan_consumes_the_reviewed_ignore_file() -> None:
 VALIDATOR_NETWORK_FLAGS = ("-u", "--url", "-s", "--storage_directory")
 
 
-def test_validator_is_never_handed_a_url(
-    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
-) -> None:
+def test_validator_is_never_handed_a_url(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     """The httpcore5 VEX rests on the validator never fetching anything itself.
 
     ``run_validator`` is the only place in the package that starts the JVM, so

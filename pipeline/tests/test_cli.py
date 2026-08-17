@@ -1549,9 +1549,7 @@ def test_canada_equity_writes_when_every_published_agency_reports(
     out_path = _canada_equity_fixture(
         monkeypatch, tmp_path, published=["barrie-transit", "london-transit"]
     )
-    monkeypatch.setattr(
-        "scorecard_pipeline.cimd.agency_cimd", lambda _stops: ("moderate", 3.0)
-    )
+    monkeypatch.setattr("scorecard_pipeline.cimd.agency_cimd", lambda _stops: ("moderate", 3.0))
 
     args = argparse.Namespace(out=str(out_path), allow_empty=False)
     assert cli._cmd_canada_equity(args, argparse.ArgumentParser()) == 0

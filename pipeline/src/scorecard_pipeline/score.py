@@ -47,6 +47,7 @@ def published_score(score: float) -> float:
     """
     return round(score, PUBLISHED_SCORE_DECIMALS)
 
+
 # A dated, plain-language log of methodology versions, newest first. Surfaced on
 # the public "how to read" page and in scoring.json so a reader can tell a score
 # change apart from a rule change and see exactly when each rubric version took
