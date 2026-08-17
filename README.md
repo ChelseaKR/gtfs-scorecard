@@ -312,7 +312,7 @@ declared here; none is silently skipped.
 | [AI Development Measurement](docs/standards/AI-DEVELOPMENT-MEASUREMENT-STANDARD.md) | Applies — delivery and quality-debt outcomes are measured at repository level; local AI-tool telemetry is never a merge gate |
 | [Quality & Metrics](docs/standards/QUALITY-AND-METRICS-STANDARD.md) | Applies (data-quality/lineage named for this repo explicitly) |
 | [Documentation](docs/standards/DOCUMENTATION-STANDARD.md) | Applies |
-| [Release & Versioning](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.4.0`), monthly dataset releases; the MCP server manifest is written but not published to the registry (see Versioning) |
+| [Release & Versioning](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.5.0`), monthly dataset releases; the MCP server manifest is written but not published to the registry (see Versioning) |
 | [Responsible-Tech Framework](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies (audits A-F; AI-governance rows N/A — no AI system) |
 | [Incident Response](docs/standards/INCIDENT-RESPONSE-STANDARD.md) | Applies — deployed static site and scheduled pipeline; incidents use the shared severity, label, postmortem, and secret-leak conventions |
 | [Data Governance](docs/standards/DATA-GOVERNANCE-STANDARD.md) | Applies — public civic datasets, feed provenance, licenses, retention, and publication lineage are core product concerns |
