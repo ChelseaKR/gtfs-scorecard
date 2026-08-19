@@ -32,7 +32,16 @@ from .metrics import expiry_status, resolve_service_horizon_status
 READY = "ready"
 AT_RISK = "at_risk"
 NOT_READY = "not_ready"
+# A dimension nobody measured for this feed. Deliberately outside the three
+# verdicts above, because it is neither a pass nor something the agency can act
+# on. Reporting an unmeasured dimension as "at risk" put a "Needs attention"
+# badge next to genuine failures and invited a reader to conclude their own feed
+# had a defect we had never looked at. An unmeasured pillar therefore carries
+# this status, is left out of the overall verdict, and is named in the summary.
+NOT_CHECKED = "not_checked"
 
+# Ranks the three verdicts we can actually reach. NOT_CHECKED is absent on
+# purpose: membership in this mapping is what "we measured it" means.
 _RANK = {READY: 0, AT_RISK: 1, NOT_READY: 2}
 
 
@@ -126,8 +135,9 @@ def _identified(artifact: dict[str, Any]) -> Pillar:
     if not isinstance(alignment, dict):
         return Pillar(
             "agency_id",
-            AT_RISK,
-            "agency_id presence has not been checked for this feed yet.",
+            NOT_CHECKED,
+            "agency_id presence has not been checked for this feed yet, so this row "
+            "says nothing about your agency_id either way.",
         )
     values = alignment.get("feed_agency_ids")
     ids = [str(value).strip() for value in values] if isinstance(values, list) else []
@@ -149,9 +159,18 @@ def _identified(artifact: dict[str, Any]) -> Pillar:
 
 
 def assess(artifact: dict[str, Any]) -> NtdReadiness:
-    """Assess a feed's readiness to certify for the NTD GTFS requirement."""
+    """Assess a feed's readiness to certify for the NTD GTFS requirement.
+
+    The overall verdict is the worst *measured* pillar. A pillar we never
+    measured is reported as ``not_checked`` and left out of the roll-up, so the
+    verdict is never derived from an input nobody looked at, in either
+    direction: it cannot manufacture a problem, and it cannot be quietly counted
+    as a pass. ``_summary`` names any unmeasured pillar so a "ready" chip never
+    implies a check that did not run.
+    """
     pillars = [_published(artifact), _valid(artifact), _current(artifact), _identified(artifact)]
-    status = max(pillars, key=lambda p: _RANK[p.status]).status
+    measured = [p for p in pillars if p.status in _RANK]
+    status = max(measured, key=lambda p: _RANK[p.status]).status if measured else NOT_CHECKED
     return NtdReadiness(status, pillars, _summary(status, pillars))
 
 
@@ -168,16 +187,42 @@ def presented_readiness(artifact: dict[str, Any]) -> dict[str, Any] | None:
 
 
 def _summary(status: str, pillars: list[Pillar]) -> str:
+    unchecked = [p.key for p in pillars if p.status == NOT_CHECKED]
+    if status == NOT_CHECKED:
+        return (
+            "None of the RY2026 feed checks have run for this feed yet, so there is no "
+            "readiness reading to report. Your own D-10 and P-50 filings are the official check."
+        )
+    unchecked_note = ""
+    if unchecked:
+        unchecked_note = (
+            f" We have not checked {_join_keys(unchecked)} for this feed, so it is left out "
+            "of this reading rather than counted for or against you."
+        )
     if status == READY:
+        if unchecked:
+            held = _join_keys([p.key for p in pillars if p.status == READY])
+            return (
+                f"Every RY2026 feed check we ran holds here ({held})."
+                f"{unchecked_note} Only your own D-10 and P-50 filings make readiness "
+                "official; this is a heads-up, not a determination."
+            )
         return (
             "Published at a public URL, valid, current, and identified with agency_id: "
             "the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 "
             "filings make that official; this is a heads-up, not a determination."
         )
-    problems = " ".join(p.detail for p in pillars if p.status != READY)
+    problems = " ".join(p.detail for p in pillars if p.status not in (READY, NOT_CHECKED))
     if status == NOT_READY:
-        return f"Resolve this before you certify on the D-10. {problems}"
-    return f"This feed is close to NTD-ready. {problems}"
+        return f"Resolve this before you certify on the D-10. {problems}{unchecked_note}"
+    return f"This feed is close to NTD-ready. {problems}{unchecked_note}"
+
+
+def _join_keys(keys: list[str]) -> str:
+    """Join pillar keys for prose, without an Oxford-comma list of one."""
+    if len(keys) == 1:
+        return keys[0]
+    return f"{', '.join(keys[:-1])} and {keys[-1]}"
 
 
 # NTD ID alignment: a feed's agency_id versus the agency's NTD ID.
@@ -395,13 +440,22 @@ def portfolio_summary(artifacts: list[dict[str, Any]]) -> PortfolioSummary:
     portfolio: ``agency.country`` defaults to "US" (existing artifacts are
     unaffected), and a feed marked otherwise (e.g. "CA") is dropped so it never
     counts toward a "% ready to certify" figure it cannot meet. See ADR 0026.
+
+    A feed with a pillar we never measured is also left out, the same way
+    ``shapes_portfolio_summary`` counts only feeds the shapes check ran for. Its
+    readiness is unknown, so counting it either way would put an unmeasured feed
+    behind a published percentage.
     """
     artifacts = [a for a in artifacts if a.get("agency", {}).get("country", "US") == "US"]
-    total = len(artifacts)
+    total = 0
     ready = at_risk = not_ready = 0
     by_state: dict[str, dict[str, int]] = {}
     for artifact in artifacts:
-        status = assess(artifact).status
+        verdict = assess(artifact)
+        if any(p.status == NOT_CHECKED for p in verdict.pillars):
+            continue
+        total += 1
+        status = verdict.status
         state = _state_of(artifact)
         bucket = by_state.setdefault(state, {"ready": 0, "at_risk": 0, "not_ready": 0, "total": 0})
         bucket["total"] += 1
@@ -489,6 +543,11 @@ def one_fix_from_ready(artifacts: list[dict[str, Any]]) -> list[dict[str, Any]]:
         if artifact.get("agency", {}).get("country", "US") != "US":
             continue
         verdict = assess(artifact)
+        if any(p.status == NOT_CHECKED for p in verdict.pillars):
+            # An unmeasured pillar can be ruled neither in nor out, so this feed
+            # is not knowably one fix from ready and must not be forwarded as if
+            # it were.
+            continue
         failing = [p for p in verdict.pillars if p.status != READY]
         if len(failing) != 1:
             continue
