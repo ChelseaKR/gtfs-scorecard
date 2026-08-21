@@ -167,7 +167,7 @@ def _routability_block(reader_path: Path) -> dict[str, Any]:
     }
 
 
-def run_agency(  # noqa: C901
+def run_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     agency_id: str,
     date: dt.date,
     force_fetch: bool = False,
