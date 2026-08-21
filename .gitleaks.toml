@@ -30,5 +30,17 @@ paths = [
     '''^registry/.*\.ya?ml$''',
     '''^pipeline/tests/fixtures/''',
     '''^data/''',
-    '''^web/''',
+    # The generated half of web/ only. A blanket ^web/ also allowlisted
+    # web/src/, the hand-written browser JavaScript, which is the one place in
+    # this tree a real credential could be committed and shipped to a rider.
+    # Scanning all of web/ with these four entries in place finds nothing, so
+    # this costs no waiver: the 77 hits a blanket removal produces are all
+    # public GTFS feed-URL keys under web/agency/ (74), web/api/ (2) and
+    # web/catalog.json (1). gitleaks path patterns are RE2, which has no
+    # negative lookahead, so the generated trees are named rather than carved
+    # out of a broader one.
+    '''^web/agency/''',
+    '''^web/api/''',
+    '''^web/catalog\.(json|csv)$''',
+    '''^web/dataset\.(json|csv)$''',
 ]

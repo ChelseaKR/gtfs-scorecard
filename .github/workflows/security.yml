@@ -110,13 +110,21 @@ jobs:
         with:
           python-version: "3.12"
       - name: Semgrep scan (blocking on ERROR severity)
-        # Pinned tool version; default + python registry rulesets. --severity
-        # ERROR limits findings to high-severity rules (HIGH/CRITICAL) and
-        # --error makes any such finding fail the build (no `|| true`).
+        # Pinned tool version; default + python + javascript registry rulesets.
+        # --severity ERROR limits findings to high-severity rules
+        # (HIGH/CRITICAL) and --error makes any such finding fail the build (no
+        # `|| true`).
+        #
+        # p/javascript is here because web/src/ is now in scope (.semgrepignore
+        # excluded all of web/ until 2026-08-16). p/python over a tree with
+        # ~6,600 lines of browser JavaScript was not covering it. Measured
+        # locally over the whole of web/ with the narrowed ignore: 183 files,
+        # 77 rules, 0 findings, 6 seconds.
         run: >
           uvx --from semgrep==1.168.0 semgrep scan
           --config p/default
           --config p/python
+          --config p/javascript
           --severity ERROR
           --error
           --metrics off
