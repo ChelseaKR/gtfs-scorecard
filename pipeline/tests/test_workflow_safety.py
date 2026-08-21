@@ -137,10 +137,24 @@ def test_pages_verifies_the_deployed_crawl_surface() -> None:
     assert "source_run_id" in workflow
     assert "source_run_attempt" in workflow
     assert "release_manifest_sha256" in workflow
-    assert "deployment.json?deploy=${DEPLOYMENT_ID}" in workflow
     assert ".schema_version == 3" in workflow
     assert ".commit == $commit" in workflow
     assert "ref: ${{ github.sha }}" in workflow
+
+    # Pages is fronted by Fastly, which does not vary its cache key on the
+    # query string. The `?deploy=${DEPLOYMENT_ID}` buster this check used to
+    # carry bought nothing, and it disguised the real hazard: a request that
+    # arrives before the origin has flipped caches the *previous* deployment's
+    # bytes at the edge for a full max-age, and short retries then re-read that
+    # same copy forever. Fetch the plain URL, and make a miss outlast the edge
+    # TTL it is blocked on rather than hammering it.
+    smoke = workflow[workflow.index("  production-smoke:") :]
+    assert '"${BASE_URL}/deployment.json" -o' in smoke
+    assert "served_max_age" in smoke
+    # Bounded, so a genuinely broken deploy still fails closed instead of
+    # waiting forever, and the job cannot outlive its own budget.
+    assert "SMOKE_BUDGET_SECONDS" in smoke
+    assert "timeout-minutes: 20" in smoke
 
 
 def test_watchdog_schedules_isolated_uptime_and_production_lighthouse_jobs() -> None:
