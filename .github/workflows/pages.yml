@@ -234,13 +234,22 @@ jobs:
           --site-root ../_site
           --config ../site-seo.json
           --report ../seo-report.json
+      # RELIABILITY (issue #297): `if-no-files-found: error` meant that when an
+      # earlier step in this job failed (so the SEO check above never ran and
+      # never wrote seo-report.json), this `if: always()` retention step also
+      # failed — with a different, more prominent error ("No files were found
+      # with the provided path: seo-report.json") that read as the headline
+      # failure and buried the real, earlier cause. `warn` (matching the
+      # Lighthouse retention step below, which already uses it) lets a missing
+      # report pass through quietly so the first red step in the job stays the
+      # true root cause.
       - name: Retain the structural SEO report
         if: ${{ always() }}
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: seo-report-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: seo-report.json
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
       - name: Enforce generated page-size budgets
         env:

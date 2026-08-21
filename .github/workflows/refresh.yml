@@ -27,6 +27,14 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    # RELIABILITY (issue #297): no bound previously existed short of the
+    # platform's 360-minute default. Observed successful runs range from ~70
+    # to ~137 minutes depending on how many feeds are due this cycle (cadence
+    # tiers, ADR 0010), so this stays well above that range to avoid flagging
+    # a legitimately heavy cycle, while still catching a genuine hang (a
+    # runner killed validating a large feed, as in issue #297) inside one
+    # scheduling day instead of running silent for six hours.
+    timeout-minutes: 240
     concurrency:
       group: artifacts-publish
       cancel-in-progress: false
