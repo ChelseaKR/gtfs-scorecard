@@ -14,35 +14,26 @@ name: container-scan
 # already sha256-verifies and stages it at that path before building, so the
 # scanned image matches what a real build produces.
 #
-# The path filters cover everything that ends up inside an image, not just the
-# Dockerfiles: both images `COPY pipeline` and then `pip install /opt/pipeline`
-# (which resolves from pyproject.toml, not uv.lock), plus their own handler and
-# the sync-source-metadata schema. Filtering on the Dockerfiles alone let a
-# change to worker.py, handler.py, or any pipeline dependency alter the image
-# without the CVE scan running on it.
+# RELIABILITY/CICD (issue #289): this used to filter on `paths:` at the
+# trigger level (the list below is preserved as the record of what was
+# scoped: infra/compute/**, infra/instant-score/**, pipeline/** — both images
+# COPY pipeline and pip install it, resolving from pyproject.toml, not
+# uv.lock — plus the sync-source-metadata schema, .dockerignore,
+# .trivyignore.yaml, vex.json, and this workflow file itself). Required-
+# status-check enforcement (ADR 0033) blocks a merge on a named context; a
+# trigger-level path filter means the job — and its check — never runs at
+# all for a PR outside that list, which is indistinguishable from a hung
+# check and blocks that PR forever with no recovery short of an admin
+# bypass. Verified against two real in-flight PRs that didn't touch any of
+# these paths before this fix landed. Public-repo Actions minutes are free,
+# so this now triggers unconditionally and always does the real build+scan,
+# rather than adding path-check skip logic whose own bug could silently
+# report success without ever scanning.
 
 on:
   push:
     branches: [main]
-    paths:
-      - "infra/compute/**"
-      - "infra/instant-score/**"
-      - "pipeline/**"
-      - "web/schemas/sync-source-metadata-1.2.schema.json"
-      - ".dockerignore"
-      - ".trivyignore.yaml"
-      - "vex.json"
-      - ".github/workflows/container-scan.yml"
   pull_request:
-    paths:
-      - "infra/compute/**"
-      - "infra/instant-score/**"
-      - "pipeline/**"
-      - "web/schemas/sync-source-metadata-1.2.schema.json"
-      - ".dockerignore"
-      - ".trivyignore.yaml"
-      - "vex.json"
-      - ".github/workflows/container-scan.yml"
   schedule:
     - cron: "0 8 * * 1" # Mondays 08:00 UTC — catch new CVEs against a pinned base image
 
