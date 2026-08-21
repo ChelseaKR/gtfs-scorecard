@@ -36,14 +36,12 @@ RULESET = REPO_ROOT / ".github" / "rulesets" / "main.json"
 
 # Pull-request jobs that deliberately do not block a merge. Each entry is a
 # decision someone made, not a gap nobody noticed. Keep the reason with it.
-ADVISORY_JOBS: dict[str, str] = {
-    # issue #288: CodeQL javascript is new. Deliberately advisory for its
-    # first real PR run rather than required sight-unseen — the exact trap
-    # #289 hit with a different pair of checks, avoided this time. Once a
-    # real run reports clean, move this to .github/rulesets/main.json (file
-    # and live) and drop the entry here.
-    "Analyze (javascript)": "codeql.yml::analyze — verifying its first real PR run",
-}
+#
+# "Analyze (javascript)" (issue #288) briefly lived here while its first real
+# PR run was unverified — see PR #302, which reported clean (run 32507900709,
+# job "Analyze (javascript)": success) — then moved to
+# .github/rulesets/main.json's required list (file and live) once confirmed.
+ADVISORY_JOBS: dict[str, str] = {}
 
 _MATRIX_REF = re.compile(r"\$\{\{\s*matrix\.([A-Za-z_][A-Za-z0-9_-]*)\s*\}\}")
 
