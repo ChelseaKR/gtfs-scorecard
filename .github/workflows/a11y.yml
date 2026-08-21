@@ -51,12 +51,19 @@ jobs:
           --config ../site-seo.json
           --report ../seo-report.json
       - name: Retain the structural SEO report
+        # RELIABILITY (issue #297): same masking bug as pages.yml — when
+        # "Materialize validated current dated records" above fails, the SEO
+        # check never runs and never writes seo-report.json, and this
+        # always-run step failed too under the previous `error` setting, with
+        # a different, more prominent "No files were found" error that buried
+        # the real, earlier cause. `warn` lets a missing report pass through
+        # quietly so the first red step in the job stays the true root cause.
         if: ${{ always() }}
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: seo-report-a11y-${{ github.run_id }}-${{ github.run_attempt }}
           path: seo-report.json
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
       - name: Enforce generated page-size budgets
         working-directory: pipeline
