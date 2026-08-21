@@ -23,6 +23,17 @@ RUN mkdir -p /tmp/al2023-pinned \
     && dnf clean all \
     && rm -rf /tmp/al2023-pinned
 
+# Drop the AWS Lambda Runtime Interface Emulator, for the reasons spelled out
+# in infra/compute/Dockerfile: it is a local-testing shim, it is the only Go
+# binary in the image, and its vendored Go standard library is a standing
+# source of container CVEs. This handler is deployed only as a
+# `package_type = "Image"` Lambda, where the managed runtime sets
+# AWS_LAMBDA_RUNTIME_API and /lambda-entrypoint.sh execs /var/runtime/bootstrap
+# without touching the emulator. The grep fails the build if a future base
+# image stops gating the emulator on that variable.
+RUN grep -qF -- '-z "${AWS_LAMBDA_RUNTIME_API}"' /lambda-entrypoint.sh \
+    && rm -f /usr/local/bin/aws-lambda-rie
+
 # The pipeline package (this handler imports scorecard_pipeline.cli.run_adhoc).
 COPY pipeline /opt/pipeline
 # Hatch maps this immutable public schema into the installed wheel. Preserve
