@@ -303,8 +303,39 @@ def validate_artifact(artifact: dict[str, Any]) -> None:
     so no collect run can write an artifact that violates the published schema:
     a shape change must ship with a schema update (and version bump), never by
     consumers noticing.
+
+    The schema can say the grade is one of A-F but not that it is the *right*
+    letter, so the one relationship a reader actually checks -- apply the
+    published bands in scoring.json to the published score, get the published
+    letter -- is enforced here instead. Nine live artifacts read "Grade C, 80.0
+    / 100" against named transit agencies before this check existed.
     """
     _artifact_validator().validate(artifact)
+    _validate_published_overall(artifact)
+
+
+def _validate_published_overall(artifact: dict[str, Any]) -> None:
+    """Refuse an ``overall`` block whose letter or margins contradict its score."""
+    from .score import published_overall
+
+    overall = artifact.get("overall")
+    if not isinstance(overall, dict) or not isinstance(overall.get("score"), (int, float)):
+        return
+    expected = published_overall(float(overall["score"]))
+    wrong = {
+        field: (overall.get(field), value)
+        for field, value in expected.items()
+        # Margins are additive fields an older artifact may not carry at all;
+        # only a present field that disagrees is a contradiction.
+        if field in overall and overall.get(field) != value
+    }
+    if wrong:
+        detail = ", ".join(
+            f"{f}={got!r} but the score earns {want!r}" for f, (got, want) in wrong.items()
+        )
+        raise jsonschema.ValidationError(
+            f"published overall block contradicts its own score {overall['score']}: {detail}"
+        )
 
 
 def _current_conformance(artifact: dict[str, Any]) -> dict[str, Any]:
@@ -320,10 +351,24 @@ def _current_conformance(artifact: dict[str, Any]) -> dict[str, Any]:
 
 
 def _with_current_conformance(artifact: dict[str, Any]) -> dict[str, Any]:
-    """Copy an artifact and replace its derived conformance presentation."""
+    """Copy an artifact and replace its derived presentation fields.
+
+    The conformance credential and the overall letter are both presentations of
+    numbers the artifact already carries, not new measurements, so a current
+    surface re-derived from a dated record states today's rendering of them
+    rather than copying whatever was written on the day. That is what lets a
+    ``latest.json`` rebuilt from an immutable pre-fix snapshot show the letter
+    its score earns; the dated evidence itself is never rewritten.
+    """
+    from .score import published_overall
 
     current = dict(artifact)
     current["conformance"] = _current_conformance(artifact)
+    overall = current.get("overall")
+    if isinstance(overall, dict) and isinstance(overall.get("score"), (int, float)):
+        # Keep any additive fields the block carries, and only re-derive the
+        # ones published_overall owns.
+        current["overall"] = {**overall, **published_overall(float(overall["score"]))}
     return current
 
 
@@ -450,10 +495,17 @@ def _history_entry(artifact: dict[str, Any]) -> dict[str, Any]:
     fresh_details = artifact.get("categories", {}).get("freshness", {}).get("details", {})
     days = fresh_details.get("days_until_expiry")
     profile = artifact.get("scoring_profile") or {}
+    from .score import published_overall
+
+    # The trend point's letter is derived from its own score, not copied from
+    # the dated artifact. index.json is rebuilt every run and is what the app
+    # draws trends from, so a point published before the rounding fix must not
+    # make the next run's correct letter look like an agency's grade changing.
+    derived = published_overall(float(artifact["overall"]["score"]))
     return {
         "date": artifact["snapshot_date"],
-        "score": artifact["overall"]["score"],
-        "grade": artifact["overall"]["grade"],
+        "score": derived["score"],
+        "grade": derived["grade"],
         "rubric_version": artifact.get("rubric_version"),
         "scoring_profile_id": profile.get("id"),
         "scoring_profile_rubric_version": profile.get("rubric_version"),

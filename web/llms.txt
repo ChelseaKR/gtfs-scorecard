@@ -1,8 +1,8 @@
 # GTFS Scorecard
 
-> An open-source data quality scorecard for US transit GTFS feeds, built for small and rural agencies.
+> An open-source data quality scorecard for transit GTFS feeds worldwide, built for small and rural agencies.
 
-GTFS Scorecard scores the data quality of 2,083 US transit agencies' GTFS Schedule and GTFS-Realtime feeds daily. It runs the MobilityData canonical gtfs-validator, checks calendar freshness, rider accessibility fields, and realtime health, and translates every finding into a plain-language fix. Scoring methodology is documented with citations to the Caltrans California Transit Data Guidelines v4.0. Piloted with Unitrans (Davis, CA) and Yolobus (Yolo County, CA).
+GTFS Scorecard scores the data quality of more than 2,100 transit agencies' GTFS Schedule and GTFS-Realtime feeds daily, most of them in the United States and the rest across dozens of other countries. It runs the MobilityData canonical gtfs-validator, checks calendar freshness, rider accessibility fields, and realtime health, and translates every finding into a plain-language fix. Scoring methodology is documented with citations to the Caltrans California Transit Data Guidelines v4.0. Piloted with Unitrans (Davis, CA) and Yolobus (Yolo County, CA).
 
 The primary users are transit managers at small and rural agencies who need to know if their feed is any good, and state program staff (Caltrans district liaisons, Cal-ITP customer success) preparing for agency check-ins.
 
