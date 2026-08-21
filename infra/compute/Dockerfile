@@ -1,6 +1,10 @@
 # Container image for the validator worker (Year 2, docs/roadmap.md).
 # A JVM base so the MobilityData gtfs-validator runs in-process, with Python and
-# the pipeline installed on top. Used as a Lambda container image or an ECS task.
+# the pipeline installed on top. Deployed as a Lambda container image
+# (`package_type = "Image"` in main.tf). An ECS task would have to override the
+# entrypoint to run `scorecard` directly: the base image's default entrypoint
+# needs the runtime emulator this Dockerfile removes below, and the ECS
+# cluster/task wiring is not written (see main.tf).
 FROM public.ecr.aws/lambda/python:3.12
 
 # Apply Amazon Linux security fixes from a reviewed, content-addressed
@@ -20,6 +24,23 @@ RUN mkdir -p /tmp/al2023-pinned \
     && dnf install -y --setopt=reposdir=/tmp/al2023-pinned java-17-amazon-corretto-headless \
     && dnf clean all \
     && rm -rf /tmp/al2023-pinned
+
+# Drop the AWS Lambda Runtime Interface Emulator. It is a local-testing shim
+# the base image ships at /usr/local/bin/aws-lambda-rie, and it is the only
+# thing in this image built from Go, so its vendored Go standard library is a
+# standing source of container CVEs (eight fixable HIGHs as of 2026-08-16,
+# fixed in Go 1.26.6, which AWS has not yet rebuilt the emulator against).
+# Nothing in this repository runs these images outside Lambda: infra/compute
+# and infra/instant-score both deploy them as `package_type = "Image"`
+# functions, so the managed runtime always sets AWS_LAMBDA_RUNTIME_API and
+# /lambda-entrypoint.sh execs /var/runtime/bootstrap directly, never the
+# emulator. The grep is the guard, not decoration: if a future base image
+# stops gating the emulator on that variable, the entrypoint could need it on
+# the managed path, and this build fails loudly instead of shipping an image
+# whose entrypoint is missing. Consequence of the removal: `docker run` of
+# this image on a workstation no longer emulates the Lambda API.
+RUN grep -qF -- '-z "${AWS_LAMBDA_RUNTIME_API}"' /lambda-entrypoint.sh \
+    && rm -f /usr/local/bin/aws-lambda-rie
 
 # The pipeline package (CLI entrypoint: `scorecard`).
 COPY pipeline /opt/pipeline

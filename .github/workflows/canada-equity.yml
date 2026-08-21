@@ -8,6 +8,12 @@ name: Canada equity (CIMD)
 # within-Canada served-area need tier. No API key is needed. The territories are
 # excluded from the CIMD, so a feed there (e.g. Yukon) reads as no-coverage. The
 # agency pages and /api/v1/canada-equity.json read the committed result.
+#
+# If the StatCan service is down, the job FAILS rather than committing an
+# overlay that drops agencies already published (the same rule equity.yml
+# states for ACS). `scorecard canada-equity` exits non-zero and writes nothing
+# when it would empty the overlay or lose a published agency; --allow-empty is
+# the deliberate override for a real registry change.
 
 on:
   schedule:

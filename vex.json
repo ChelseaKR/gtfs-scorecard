@@ -2,9 +2,9 @@
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
   "serialNumber": "urn:uuid:78832d4f-c352-48f0-b872-671567120801",
-  "version": 1,
+  "version": 2,
   "metadata": {
-    "timestamp": "2026-07-10T20:30:00Z",
+    "timestamp": "2026-08-16T00:00:00Z",
     "component": {
       "type": "application",
       "bom-ref": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli",
@@ -19,15 +19,7 @@
       ]
     }
   },
-  "components": [
-    {
-      "type": "application",
-      "bom-ref": "pkg:golang/github.com/aws/aws-lambda-runtime-interface-emulator@1.26.4",
-      "name": "aws-lambda-runtime-interface-emulator",
-      "version": "1.26.4",
-      "purl": "pkg:golang/github.com/aws/aws-lambda-runtime-interface-emulator@1.26.4"
-    }
-  ],
+  "components": [],
   "vulnerabilities": [
     {
       "id": "CVE-2022-25647",
@@ -134,16 +126,29 @@
       }
     },
     {
-      "id": "CVE-2026-39822",
-      "source": {"name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-39822"},
-      "affects": [{"ref": "pkg:golang/github.com/aws/aws-lambda-runtime-interface-emulator@1.26.4"}],
+      "id": "CVE-2026-54399",
+      "source": {"name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-54399"},
+      "affects": [{"ref": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli"}],
       "analysis": {
         "state": "not_affected",
         "justification": "code_not_reachable",
         "response": ["will_not_fix"],
-        "detail": "The Runtime Interface Emulator is included by the official AWS Lambda base image for local container execution. AWS Lambda's managed runtime does not invoke this binary, and neither production image exposes a local-emulator network endpoint. Remove this exception as soon as AWS refreshes the base image with RIE 1.26.5 or newer.",
-        "firstIssued": "2026-07-10T20:55:00Z",
-        "lastUpdated": "2026-07-10T20:55:00Z"
+        "detail": "The advisory is against the Apache HttpComponents Core HTTP/1.1 message parser. That parser is only reached through the validator's own feed download (-u/--url); this pipeline never uses it. run_validator() in pipeline/src/scorecard_pipeline/validate.py is the single place that starts the JVM, and it always passes -i with a local path -- including on the ad-hoc/instant-score path, where cli.run_adhoc downloads the feed with the Python fetcher first and hands the validator the file on disk. Measured rather than asserted, inside the built compute image on 2026-08-16: `java -verbose:class -jar /opt/validator/gtfs-validator.jar -i <local zip> -o <dir> -c us` loads 5953 classes and 0 of them are org.apache.hc.*; the same command with -u loads 140 org.apache.hc.core5.* classes. (The validator's version-update check does make an outbound call on both paths, but over the JDK's own sun.net.www.protocol.https stack, not Apache HttpComponents.) test_validator_is_never_handed_a_url in pipeline/tests/test_security_vex.py fails if run_validator ever grows a URL argument. Reassess when MobilityData publishes a release newer than 8.0.1 built on httpcore5 5.4.3 or later.",
+        "firstIssued": "2026-08-16T00:00:00Z",
+        "lastUpdated": "2026-08-16T00:00:00Z"
+      }
+    },
+    {
+      "id": "CVE-2026-54428",
+      "source": {"name": "NVD", "url": "https://nvd.nist.gov/vuln/detail/CVE-2026-54428"},
+      "affects": [{"ref": "pkg:github/MobilityData/gtfs-validator@8.0.1?type=cli"}],
+      "analysis": {
+        "state": "not_affected",
+        "justification": "code_not_reachable",
+        "response": ["will_not_fix"],
+        "detail": "The advisory is against the Apache HttpComponents Core HTTP/2 HPACK decoder, which needs an HTTP/2 connection to a remote peer. Same measured basis as CVE-2026-54399: the validator only opens connections when given -u/--url, and this pipeline only ever gives it -i with a local path, so no org.apache.hc.* class is loaded on the scoring path. Reassess when MobilityData publishes a release newer than 8.0.1 built on httpcore5-h2 5.4.3 or later.",
+        "firstIssued": "2026-08-16T00:00:00Z",
+        "lastUpdated": "2026-08-16T00:00:00Z"
       }
     }
   ]
