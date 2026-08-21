@@ -751,3 +751,103 @@ def test_reindex_purges_unverifiable_legacy_fixlog() -> None:
     rebuild_index()
 
     assert not fixlog.exists()
+
+
+# --- The published letter must be the letter the published score earns. -------
+#
+# Nine live artifacts read "Grade C * 80.0 / 100" against named transit
+# agencies, because build_scorecard graded the unrounded weighted score while
+# to_json published round(overall, 1). score.published_overall is now the one
+# derivation; these cover the two ways a wrong letter could still reach a
+# reader after that fix -- written fresh by publish(), or copied forward out of
+# a dated snapshot that was written before it.
+
+
+def _contradicting(artifact: dict) -> dict:  # type: ignore[type-arg]
+    """A copy whose overall block says C where its own 80.0 earns a B."""
+    contradicted: dict = json.loads(json.dumps(artifact))  # type: ignore[type-arg]
+    contradicted["overall"] = {
+        "score": 80.0,
+        "grade": "C",
+        "margin_to_next_band": 0.0,
+        "margin_to_lower_band": 10.0,
+    }
+    return contradicted
+
+
+def test_validate_artifact_rejects_a_letter_that_contradicts_its_own_score() -> None:
+    """The schema can say the grade is one of A-F, not that it is the right one.
+
+    docs/rubric.md and the published scoring.json both say 80 is a B, so an
+    artifact that prints 80.0 and calls it a C is unpublishable, whatever
+    produced it.
+    """
+    from jsonschema import ValidationError
+
+    from scorecard_pipeline.publish import validate_artifact
+
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    validate_artifact(artifact)  # the honest one is fine
+
+    with pytest.raises(ValidationError, match=r"contradicts its own score 80.0"):
+        validate_artifact(_contradicting(artifact))
+
+
+def test_validate_artifact_rejects_margins_measured_from_a_different_number() -> None:
+    """All nine also reported an F as 0.0 points from a D."""
+    from jsonschema import ValidationError
+
+    from scorecard_pipeline.publish import validate_artifact
+
+    artifact = make_artifact(dt.date(2026, 6, 11))
+    artifact["overall"] = {
+        "score": 60.0,
+        "grade": "D",
+        "margin_to_next_band": 0.0,  # 60.0 is 10.0 points from a C, not 0.0
+        "margin_to_lower_band": 0.0,
+    }
+    with pytest.raises(ValidationError, match="margin_to_next_band"):
+        validate_artifact(artifact)
+
+
+def test_reindex_rederives_the_published_letter_without_rewriting_dated_history() -> None:
+    """A current surface rebuilt from a pre-fix snapshot shows the right letter.
+
+    docs/api.md: dated artifacts are immutable once written, while latest.json
+    is rewritten when a scoring run completes. So the fix cannot reach the nine
+    published letters by editing the evidence -- the letter has to be re-derived
+    on the way out, the same way the conformance credential already is.
+    """
+    from scorecard_pipeline.publish import rebuild_index
+
+    dated = publish(make_artifact(dt.date(2026, 6, 19), score=90.0))
+    stale_text = json.dumps(_contradicting(json.loads(dated.read_text())), indent=2) + "\n"
+    dated.write_text(stale_text)
+    (dated.parent / "latest.json").write_text(stale_text)
+
+    rebuild_index()
+
+    assert dated.read_text() == stale_text, "immutable dated evidence was rewritten"
+
+    latest = json.loads((dated.parent / "latest.json").read_text())
+    assert latest["overall"]["score"] == 80.0, "the score itself must not move"
+    assert latest["overall"]["grade"] == "B"
+    assert latest["overall"]["margin_to_next_band"] == 10.0
+    assert latest["overall"]["margin_to_lower_band"] == 0.0
+
+    badge = json.loads((dated.parent / "badge.json").read_text())
+    assert badge["message"] == "B 80.0"
+    assert badge["color"] == "green"
+    assert "B 80" in (dated.parent / "badge.svg").read_text()
+
+    # index.json is what the app draws trends from. A point carrying the old
+    # letter would make the corrected one look like the agency's grade changing.
+    index = json.loads((artifacts_dir() / "index.json").read_text())
+    point = index["agencies"]["unitrans"]["history"][-1]
+    assert (point["score"], point["grade"]) == (80.0, "B")
+
+
+def test_history_entry_letter_comes_from_its_own_score() -> None:
+    artifact = make_artifact(dt.date(2026, 6, 19))
+    point = _history_entry(_contradicting(artifact))
+    assert (point["score"], point["grade"]) == (80.0, "B")

@@ -167,6 +167,17 @@ RULES: list[tuple[str, str, str, str]] = [
     # (ADR 0040) and a reader checking the gate's geography needs the real
     # number, not a rounded one. Exact figures drift on the next admitted
     # record, so both halves of the sentence are checked.
+    # web/llms.txt is the file published specifically for machine readers, and
+    # it was the one live-facing document nothing swept: not Markdown, not a
+    # STATIC_NAV_PAGES entry. It sat at an exact "2,083 US transit agencies"
+    # while the scored corpus passed 2,100 and grew to 46 countries — a stale
+    # count and a wrong scope, served to the audience least able to check it.
+    (
+        r"web/llms.txt",
+        r"scores the data quality of more than ([\d,]+) transit agencies",
+        "scored",
+        "floor",
+    ),
     (
         r"README.md",
         r"a ([\d,]+)-record reviewed European cohort",
@@ -308,12 +319,18 @@ def swept_docs() -> list[str]:
     Those come from ``STATIC_NAV_PAGES`` rather than a list restated here, so a
     new hand-authored page is swept the day it is added. `*.local.md` is
     gitignored private working context and is never read.
+
+    ``web/llms.txt`` is swept explicitly: it is authored, live-facing, and
+    published for machine readers, but it is neither Markdown nor a nav page,
+    so both halves of the list above missed it and its corpus figure went
+    stale unnoticed.
     """
     from scorecard_pipeline.site_shell import STATIC_NAV_PAGES  # noqa: PLC0415
 
     candidates = [p.name for p in REPO_ROOT.glob("*.md")]
     candidates += [f"docs/{p.name}" for p in (REPO_ROOT / "docs").glob("*.md")]
     candidates += [f"web/{page}" for page in STATIC_NAV_PAGES]
+    candidates.append("web/llms.txt")
     return sorted(
         rel
         for rel in candidates
