@@ -36,6 +36,11 @@ jobs:
         with:
           ref: ${{ github.sha }}
           fetch-depth: 0
+          # This checkout only resolves which SHA to release (reads via the
+          # GH_TOKEN env var below, no git write); the second checkout further
+          # down re-checks-out at that resolved SHA and is the one whose
+          # credential the tag push at the end of this job actually uses.
+          persist-credentials: false
 
       - name: Resolve the release source
         id: source
@@ -121,6 +126,11 @@ jobs:
             echo "SOURCE_RUN_ATTEMPT=$source_run_attempt"
           } >> "$GITHUB_ENV"
 
+      # zizmor(artipacked): this checkout's persisted credential is the one
+      # "Create the missing SSH-signed annotated dataset tag" pushes with
+      # (`git push origin refs/tags/...`); the SSH key configured there signs
+      # the tag object, it isn't the git remote's transport auth. Needs to
+      # stay persisted.
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           ref: ${{ steps.source.outputs.head_sha }}

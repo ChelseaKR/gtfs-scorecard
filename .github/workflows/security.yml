@@ -180,6 +180,18 @@ jobs:
   # CICD-19 / RTF-06 half: zizmor on any PR touching workflow definitions.
   # `onboard.yml` parses a feed URL out of an untrusted issue body, which is
   # exactly the class of finding zizmor exists to catch.
+  #
+  # issue #287: at --min-severity high this gate had zero findings ever, on
+  # any of the three AUTO-GATE audits the portfolio standards name
+  # (persist-credentials, excessive-permissions, unpinned-uses) — it could
+  # not structurally fail on the thing it exists to catch. Lowered to medium.
+  # .github/zizmor.yml records the small number of remaining medium findings
+  # that are real and cannot be fixed (a handful of checkouts whose persisted
+  # credential a later step in the same job genuinely needs to push with),
+  # each with a reason at its own site; every other finding was fixed
+  # directly. Verified this gate now actually fails on a seeded violation
+  # (temporarily removing one of those genuine persist-credentials: false
+  # lines reproduces exit code 13), not just that it passes today.
   zizmor:
     name: zizmor (workflow security lint)
     if: github.event_name == 'pull_request'
@@ -193,4 +205,4 @@ jobs:
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
           python-version: "3.12"
-      - run: uvx zizmor==1.26.1 .github/workflows --min-severity high
+      - run: uvx zizmor==1.26.1 -c .github/zizmor.yml .github/workflows --min-severity medium
