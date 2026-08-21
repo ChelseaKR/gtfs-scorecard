@@ -405,6 +405,108 @@ def test_not_accessible_stops_reported_separately(make_gtfs_zip: Callable[..., P
     assert result.details["wheelchair_marked_not_accessible_pct"] == 50.0
 
 
+def test_no_stops_feed_is_not_measured_not_scored_as_failure(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    """issue #286: a demand-response/Flex-only feed with zero stops must not
+    be scored as if it had 0 stops all failing wheelchair_boarding/stop_name
+    checks. Everything else on this feed is complete, so reweighting over
+    only the measurable components should still earn 100."""
+    feed = {
+        "agency.txt": (
+            "agency_id,agency_name,agency_url,agency_timezone\n"
+            "yolo,Yolobus,https://yolobus.com,America/Los_Angeles\n"
+        ),
+        "feed_info.txt": (
+            "feed_publisher_name,feed_publisher_url,feed_lang,feed_contact_email\n"
+            "Yolobus,https://yolobus.com,en,data@yctd.org\n"
+        ),
+        "stops.txt": "stop_id,stop_name,wheelchair_boarding\n",
+        "trips.txt": (
+            "route_id,service_id,trip_id,trip_headsign,wheelchair_accessible\n"
+            "R1,WK,T1,Anywhere in zone,1\n"
+        ),
+        "fare_attributes.txt": "fare_id,price,currency_type\nbase,2.25,USD\n",
+    }
+    result = completeness(str(make_gtfs_zip(feed)))
+
+    assert result.score == 100.0
+    codes = {f.code for f in result.findings}
+    assert "scorecard_wheelchair_boarding_unknown" not in codes
+    assert "scorecard_stop_names_all_caps" not in codes
+
+    assert result.details["components"]["wheelchair_stops"] is None
+    assert result.details["components"]["stop_names"] is None
+    assert result.details["unmeasured_components"] == ["stop_names", "wheelchair_stops"]
+    assert result.details["wheelchair_boarding_pct"] is None
+    assert result.details["wheelchair_marked_accessible_pct"] is None
+    assert result.details["wheelchair_marked_not_accessible_pct"] is None
+    assert result.details["mixed_case_stop_name_pct"] is None
+    # wheelchair_trips is still measurable (there are trips), so the
+    # accessibility sub-score reweights over just that, not a fabricated 0.
+    assert result.details["accessibility"]["score"] == 100.0
+    assert result.details["accessibility"]["stops_stated_pct"] is None
+
+    assert "no stops to state wheelchair accessibility for" in result.summary
+
+
+def test_no_stops_feed_with_gaps_elsewhere_still_deducts_for_what_is_measurable(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    """The reweight must not become a loophole: a stopless feed that also
+    fails a real, measurable check (no fare data) still loses those points."""
+    feed = {
+        "agency.txt": "agency_id,agency_name\nx,X\n",
+        "stops.txt": "stop_id,stop_name,wheelchair_boarding\n",
+        "trips.txt": (
+            "route_id,service_id,trip_id,trip_headsign,wheelchair_accessible\nR1,WK,T1,Anywhere,1\n"
+        ),
+    }
+    result = completeness(str(make_gtfs_zip(feed)))
+    assert result.score < 100.0
+    codes = {f.code for f in result.findings}
+    assert "scorecard_no_fare_data" in codes
+    assert "scorecard_no_feed_contact" in codes
+    assert "scorecard_bad_agency_url" in codes
+    # Still no fabricated wheelchair/stop-name findings for the 0 stops.
+    assert "scorecard_wheelchair_boarding_unknown" not in codes
+    assert "scorecard_stop_names_all_caps" not in codes
+
+
+def test_unmeasured_components_empty_on_a_complete_feed(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    result = completeness(str(make_gtfs_zip(COMPLETE_FEED)))
+    assert result.details["unmeasured_components"] == []
+
+
+def test_no_trips_feed_does_not_fabricate_headsign_or_wheelchair_trip_failures(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    feed = {
+        "agency.txt": (
+            "agency_id,agency_name,agency_url,agency_timezone\n"
+            "yolo,Yolobus,https://yolobus.com,America/Los_Angeles\n"
+        ),
+        "feed_info.txt": (
+            "feed_publisher_name,feed_publisher_url,feed_lang,feed_contact_email\n"
+            "Yolobus,https://yolobus.com,en,data@yctd.org\n"
+        ),
+        "stops.txt": "stop_id,stop_name,wheelchair_boarding\nS1,Main St,1\n",
+        "trips.txt": "route_id,service_id,trip_id,trip_headsign,wheelchair_accessible\n",
+        "fare_attributes.txt": "fare_id,price,currency_type\nbase,2.25,USD\n",
+    }
+    result = completeness(str(make_gtfs_zip(feed)))
+    codes = {f.code for f in result.findings}
+    assert "scorecard_wheelchair_accessible_unknown" not in codes
+    assert "scorecard_missing_headsigns" not in codes
+    assert result.details["components"]["wheelchair_trips"] is None
+    assert result.details["components"]["headsigns"] is None
+    assert result.details["headsign_pct"] is None
+    assert result.details["headsign_scored_pct"] is None
+    assert result.score == 100.0
+
+
 def test_numbers_and_punctuation_names_not_flagged_as_caps(
     make_gtfs_zip: Callable[..., Path],
 ) -> None:

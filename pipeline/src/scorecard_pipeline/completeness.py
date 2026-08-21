@@ -36,9 +36,19 @@ WEIGHTS = {
 HEADSIGN_STOP_TIMES_MAX_BYTES = 64 * 1024 * 1024
 
 
-def _fraction_with_value(rows: list[dict[str, str]], field: str, allowed: set[str]) -> float:
+def _fraction_with_value(rows: list[dict[str, str]], field: str, allowed: set[str]) -> float | None:
+    """Share of rows whose field holds one of the allowed values.
+
+    ``None`` when there is nothing to measure (``rows`` is empty): a feed
+    with no stops (a demand-response/Flex-only service, GTFS Best Practices)
+    or no trips gave the pipeline nothing to check, which is not the same as
+    every one of them failing the check. Returning ``0.0`` here previously
+    scored a stopless feed as "0 of 0 stops don't say whether a wheelchair
+    user can board there" — a fabricated failure for a measurement that
+    could not be made (issue #286).
+    """
     if not rows:
-        return 0.0
+        return None
     good = sum(1 for row in rows if row.get(field, "").strip() in allowed)
     return good / len(rows)
 
@@ -59,8 +69,16 @@ def _is_shouty(name: str) -> bool:
     )
 
 
-def _fraction_mixed_case(rows: list[dict[str, str]], field: str) -> float:
-    """Share of rows whose name reads like a name, not LIKE THIS."""
+def _fraction_mixed_case(rows: list[dict[str, str]], field: str) -> float | None:
+    """Share of rows whose name reads like a name, not LIKE THIS.
+
+    ``None`` when ``rows`` itself is empty — no stops to check at all
+    (issue #286). A stop that exists but has a blank name is a different,
+    narrower gap than shouting and keeps scoring 0.0 for this specific
+    check, since there was something to measure and it failed.
+    """
+    if not rows:
+        return None
     named = [row[field].strip() for row in rows if row.get(field, "").strip()]
     if not named:
         return 0.0
@@ -211,7 +229,12 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
     stops, trips, agency = tables["stops.txt"], tables["trips.txt"], tables["agency.txt"]
 
     findings: list[Finding] = []
-    parts: dict[str, float] = {}
+    # A component holds points (fraction * its weight) when measurable, or
+    # None when the feed gave the pipeline nothing to check (issue #286).
+    # None components drop out of both the score and the deduction math
+    # below rather than scoring as a failure — the same not-measurable
+    # pattern rt.py already uses for realtime components.
+    parts: dict[str, float | None] = {}
 
     # Accessibility: wheelchair_boarding on stops (1 = accessible, 2 = not).
     # Blank or 0 means "unknown", which helps no rider plan a trip.
@@ -225,8 +248,8 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
     # honest "this stop is not accessible" is visible rather than hidden inside
     # "populated". This is the agency's own data, so surfacing it is not shaming.
     wb_not_accessible = _fraction_with_value(stops, "wheelchair_boarding", {"2"})
-    parts["wheelchair_stops"] = wb * WEIGHTS["wheelchair_stops"]
-    if wb < 1.0:
+    parts["wheelchair_stops"] = wb * WEIGHTS["wheelchair_stops"] if wb is not None else None
+    if wb is not None and wb < 1.0:
         missing = round((1 - wb) * len(stops))
         findings.append(
             Finding(
@@ -245,8 +268,8 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
         )
 
     wa = _fraction_with_value(trips, "wheelchair_accessible", {"1", "2"})
-    parts["wheelchair_trips"] = wa * WEIGHTS["wheelchair_trips"]
-    if wa < 1.0:
+    parts["wheelchair_trips"] = wa * WEIGHTS["wheelchair_trips"] if wa is not None else None
+    if wa is not None and wa < 1.0:
         missing = round((1 - wa) * len(trips))
         findings.append(
             Finding(
@@ -302,8 +325,8 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
 
     # Stop names readable (mixed case, per GTFS best practices).
     mixed = _fraction_mixed_case(stops, "stop_name")
-    parts["stop_names"] = mixed * WEIGHTS["stop_names"]
-    if mixed < 0.95:
+    parts["stop_names"] = mixed * WEIGHTS["stop_names"] if mixed is not None else None
+    if mixed is not None and mixed < 0.95:
         shouty = round((1 - mixed) * len(stops))
         findings.append(
             Finding(
@@ -339,11 +362,15 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
             # Preserve the ordinary check rather than failing scoring or
             # granting an exemption without inspecting complete evidence.
             loop_exempt_trip_ids = set()
-    hs_published = len(headsign_trip_ids) / len(trips) if trips else 0.0
-    hs_scored = (len(headsign_trip_ids) + len(loop_exempt_trip_ids)) / len(trips) if trips else 0.0
-    parts["headsigns"] = hs_scored * WEIGHTS["headsigns"]
+    # None when there are no trips at all: nothing to check (issue #286),
+    # not a feed that failed to publish any headsign.
+    hs_published = len(headsign_trip_ids) / len(trips) if trips else None
+    hs_scored = (len(headsign_trip_ids) + len(loop_exempt_trip_ids)) / len(trips) if trips else None
+    parts["headsigns"] = hs_scored * WEIGHTS["headsigns"] if hs_scored is not None else None
     missing = len(trips) - len(headsign_trip_ids) - len(loop_exempt_trip_ids)
-    if missing:
+    # trips is non-empty whenever missing > 0, so hs_scored was computed above;
+    # the None check narrows the type without a bare assert (S101).
+    if missing and hs_scored is not None:
         findings.append(
             Finding(
                 code="scorecard_missing_headsigns",
@@ -424,51 +451,84 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
     pathways = detect_pathways(gtfs_zip_path, stops)
     findings.extend(pathways_findings(pathways))
 
-    score = max(0.0, min(100.0, sum(parts.values())))
-    accessibility_pct = round(wb * 100)
-    marked_accessible_pct = round(wb_accessible * 100)
-    not_accessible_pct = round(wb_not_accessible * 100)
+    # issue #286: reweight over only the components this feed gave the
+    # pipeline something to measure, the same not-measurable pattern rt.py
+    # uses. `fares` and `contact` are always measurable (presence-based, no
+    # denominator), so this can only drop wheelchair_stops, wheelchair_trips,
+    # stop_names, and headsigns — and only when their whole denominator (no
+    # stops, or no trips) was empty.
+    measured = {k: v for k, v in parts.items() if v is not None}
+    unmeasured_components = sorted(k for k, v in parts.items() if v is None)
+    measured_weight = sum(WEIGHTS[k] for k in measured)
+    score = (
+        max(0.0, min(100.0, sum(measured.values()) / measured_weight * 100.0))
+        if measured_weight > 0
+        else 0.0
+    )
+
+    def pct(fraction: float | None) -> float | None:
+        return round(fraction * 100, 1) if fraction is not None else None
+
     if not has_fares and fare_free:
         fares_sentence = "This agency runs fare-free, so no fare data is expected."
     else:
         fares_sentence = f"Fare data {'is' if has_fares else 'is not'} published."
-    summary = (
-        f"{accessibility_pct}% of stops state wheelchair accessibility "
-        f"({marked_accessible_pct}% marked accessible, {not_accessible_pct}% marked not "
-        "accessible). This measures what the feed publishes, not whether a stop is "
-        f"physically usable. {fares_sentence}"
+    if wb is None or wb_accessible is None or wb_not_accessible is None:
+        # No stops at all (a demand-response/Flex-only feed, GTFS Best
+        # Practices) — there is nothing to state accessibility about, so say
+        # that rather than a fabricated "0% of stops". The three fractions
+        # share the same `stops` input, so they are None together.
+        summary = f"This feed has no stops to state wheelchair accessibility for. {fares_sentence}"
+    else:
+        summary = (
+            f"{round(wb * 100)}% of stops state wheelchair accessibility "
+            f"({round(wb_accessible * 100)}% marked accessible, "
+            f"{round(wb_not_accessible * 100)}% marked not accessible). This measures what "
+            f"the feed publishes, not whether a stop is physically usable. {fares_sentence}"
+        )
+
+    # Accessibility as its own 0-100 sub-score (ADR 0006): the accessibility
+    # points earned over the weight actually measurable. None (not 0) when
+    # neither wheelchair_stops nor wheelchair_trips could be measured at all.
+    access_terms = [
+        (WEIGHTS[k], measured_value)
+        for k in ("wheelchair_stops", "wheelchair_trips")
+        if (measured_value := parts.get(k)) is not None
+    ]
+    access_weight = sum(w for w, _ in access_terms)
+    access_points = sum(v for _, v in access_terms)
+    accessibility_score = (
+        round(access_points / access_weight * 100, 1) if access_weight > 0 else None
     )
+
     return CategoryResult(
         name="completeness",
         score=score,
         summary=summary,
         findings=findings,
         details={
-            "components": {k: round(v, 1) for k, v in parts.items()},
+            "components": {k: (round(v, 1) if v is not None else None) for k, v in parts.items()},
+            # issue #286's confidence signal: which components this feed gave
+            # the pipeline nothing to measure, so a reader (or another tool)
+            # can tell "not measured" apart from "measured and scored low"
+            # without inferring it from an absent finding.
+            "unmeasured_components": unmeasured_components,
             "stops": len(stops),
             "trips": len(trips),
-            "wheelchair_boarding_pct": round(wb * 100, 1),
-            "wheelchair_marked_accessible_pct": round(wb_accessible * 100, 1),
-            "wheelchair_marked_not_accessible_pct": round(wb_not_accessible * 100, 1),
-            "wheelchair_accessible_pct": round(wa * 100, 1),
+            "wheelchair_boarding_pct": pct(wb),
+            "wheelchair_marked_accessible_pct": pct(wb_accessible),
+            "wheelchair_marked_not_accessible_pct": pct(wb_not_accessible),
+            "wheelchair_accessible_pct": pct(wa),
             # Accessibility fields record published values, not a check that a
             # stop is physically usable; consumers should not read a high score
             # as verified accessibility.
             "accessibility_measures": "presence_not_usability",
-            # Accessibility as its own 0-100 sub-score (ADR 0006): the
-            # accessibility points earned over the 40 available. A lens on the
-            # math above, not a new category; the overall grade is unchanged.
             "accessibility": {
-                "score": round(
-                    (parts["wheelchair_stops"] + parts["wheelchair_trips"])
-                    / (WEIGHTS["wheelchair_stops"] + WEIGHTS["wheelchair_trips"])
-                    * 100,
-                    1,
-                ),
-                "stops_stated_pct": round(wb * 100, 1),
-                "stops_marked_accessible_pct": round(wb_accessible * 100, 1),
-                "stops_marked_not_accessible_pct": round(wb_not_accessible * 100, 1),
-                "trips_stated_pct": round(wa * 100, 1),
+                "score": accessibility_score,
+                "stops_stated_pct": pct(wb),
+                "stops_marked_accessible_pct": pct(wb_accessible),
+                "stops_marked_not_accessible_pct": pct(wb_not_accessible),
+                "trips_stated_pct": pct(wa),
                 "measures": "presence_not_usability",
             },
             "has_fares": has_fares,
@@ -480,10 +540,10 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
             # Optional rider-facing translations are an adoption signal, not a
             # score component. Their absence never lowers this category.
             "translations": detect_translations(gtfs_zip_path).to_details(),
-            "headsign_pct": round(hs_published * 100, 1),
-            "headsign_scored_pct": round(hs_scored * 100, 1),
+            "headsign_pct": pct(hs_published),
+            "headsign_scored_pct": pct(hs_scored),
             "headsign_applicable_trips": len(trips) - len(loop_exempt_trip_ids),
             "headsign_loop_exempt_trips": len(loop_exempt_trip_ids),
-            "mixed_case_stop_name_pct": round(mixed * 100, 1),
+            "mixed_case_stop_name_pct": pct(mixed),
         },
     )
