@@ -11,8 +11,11 @@ agencies:
     mdb_id: 486
     license_note: "License: https://octo.dc.gov/page/district-columbia-data-policy"
 
+  # Mobility Database mdb-487 is deprecated and redirects to mdb-2223.
   - id: dc-streetcar
     name: DC Streetcar
+    alias_of: dc-streetcar-2223
+    feed_status: deprecated
     subdivision_code: US-DC
     subdivision_name: District of Columbia
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/dcstreetcar-dc-us/dcstreetcar-dc-us.zip

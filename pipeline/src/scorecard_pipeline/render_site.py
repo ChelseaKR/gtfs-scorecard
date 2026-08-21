@@ -10135,9 +10135,14 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             source_path = f"/agency/{agency.id}/"
             target_path = f"/agency/{target}/"
             retained_agency_redirects[source_path] = target_path
+            successor = registry_by_id.get(target)
             write(
                 f"agency/{agency.id}/index.html",
-                _redirect_page(target_path, agency.name),
+                _redirect_page(
+                    target_path,
+                    agency.name,
+                    link_label=successor.name if successor else None,
+                ),
             )
     write(
         "_meta/retained-agency-redirects.json",

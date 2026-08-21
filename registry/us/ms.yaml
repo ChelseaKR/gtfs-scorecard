@@ -3,8 +3,11 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-155 is deprecated and redirects to mdb-2652.
   - id: jtran
     name: JTRAN
+    alias_of: city-of-jackson-jtran
+    feed_status: deprecated
     subdivision_code: US-MS
     subdivision_name: Mississippi
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/jatran-ms-us/jatran-ms-us.zip

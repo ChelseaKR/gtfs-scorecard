@@ -3,8 +3,11 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-222 is deprecated and redirects to mdb-2065.
   - id: capital-area-transit-system-cats
     name: Capital Area Transit System (CATS)
+    alias_of: capital-area-transit-system-cats-2065
+    feed_status: deprecated
     subdivision_code: US-LA
     subdivision_name: Louisiana
     static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/f-baton~rouge~cats.zip

@@ -7,14 +7,15 @@
 # and the plain-language readability check. Mirrors .github/workflows/ci.yml.
 verify:
 	cd pipeline && uv run python scripts/generate_iso3166.py --check
-	cd pipeline && uv run ruff check src tests scripts/generate_iso3166.py scripts/check_site_seo.py scripts/materialize_current_artifacts.py
-	cd pipeline && uv run ruff format --check src tests scripts/generate_iso3166.py scripts/check_site_seo.py scripts/materialize_current_artifacts.py
+	cd pipeline && uv run ruff check src tests scripts/generate_iso3166.py scripts/check_site_seo.py scripts/materialize_current_artifacts.py scripts/check_supersession_review.py
+	cd pipeline && uv run ruff format --check src tests scripts/generate_iso3166.py scripts/check_site_seo.py scripts/materialize_current_artifacts.py scripts/check_supersession_review.py
 	cd pipeline && uv run mypy
 	cd pipeline && uv run pytest -q --cov=scorecard_pipeline --cov-branch --cov-fail-under=92
 	cd pipeline && uv run python scripts/check_contrast.py
 	cd pipeline && uv run python scripts/check_readability.py
 	cd pipeline && uv run python scripts/check_versions.py
 	cd pipeline && uv run python scripts/check_doc_stats.py
+	cd pipeline && uv run python scripts/check_supersession_review.py
 	$(MAKE) no-todos
 
 # CQ-34: keep the repo's current zero-bare-TODO state a merge-blocking gate

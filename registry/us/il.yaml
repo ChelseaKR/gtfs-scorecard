@@ -27,8 +27,11 @@ agencies:
     mdb_id: 308
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-385 is deprecated and redirects to mdb-3187.
   - id: springfield-mass-transit-district-smtd
     name: Springfield Mass Transit District (SMTD)
+    alias_of: springfield-mass-transit-district-smtd-3187
+    feed_status: deprecated
     subdivision_code: US-IL
     subdivision_name: Illinois
     static_gtfs_url: http://data.smtd.org/gtfs/smtd_gtfs_feed.zip
@@ -39,8 +42,11 @@ agencies:
       service_alerts: http://ride.smtd.org/gtfsrt/alerts
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-386 is deprecated and redirects to mdb-2208.
   - id: greater-peoria-mass-transit-citylink
     name: Greater Peoria Mass Transit (CityLink)
+    alias_of: greater-peoria-mass-transit-citylink-2208
+    feed_status: deprecated
     subdivision_code: US-IL
     subdivision_name: Illinois
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/ridecitylink-il-us/ridecitylink-il-us.zip
@@ -63,25 +69,34 @@ agencies:
     mdb_id: 389
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-390 is deprecated and redirects to mdb-2347.
   - id: pace-bus
     name: Pace Bus
+    alias_of: pace-bus-2347
+    feed_status: deprecated
     subdivision_code: US-IL
     subdivision_name: Illinois
     static_gtfs_url: https://public.pacebus.com/gtfs/gtfs.zip
     mdb_id: 390
     license_note: "License: http://www.pacebus.com/sub/about/data_services.asp"
 
+  # Mobility Database mdb-1187 is deprecated and redirects to mdb-2854.
   - id: metra
     ntd_id: "50118"
     name: Metra
+    alias_of: metra-2854
+    feed_status: deprecated
     subdivision_code: US-IL
     subdivision_name: Illinois
     static_gtfs_url: https://transitfeeds.com/p/metra/169/latest/download
     mdb_id: 1187
     license_note: "License: https://metrarail.com/developers"
 
+  # Mobility Database mdb-1238 is deprecated and redirects to mdb-2267.
   - id: connect-transit-1238
     name: Connect Transit
+    alias_of: connect-transit-2267
+    feed_status: deprecated
     subdivision_code: US-IL
     subdivision_name: Illinois
     static_gtfs_url: https://transitfeeds.com/p/connect-transit/668/latest/download

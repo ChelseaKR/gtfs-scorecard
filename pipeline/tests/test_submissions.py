@@ -7,10 +7,35 @@ from pathlib import Path
 import pytest
 import yaml
 
-from scorecard_pipeline.agencies import AgencyConfigError, parse_agencies
+from scorecard_pipeline.agencies import (
+    AgencyConfigError,
+    parse_agencies,
+    registry_paths,
+)
+from scorecard_pipeline.config import Agency
 from scorecard_pipeline.submissions import build_submission, form_to_entry
 
-INTAKE_YAML = (Path(__file__).resolve().parents[2] / "registry/intake.yaml").read_text()
+# The real checkout, not the isolated per-test repo root the suite patches in.
+REPO_ROOT = Path(__file__).resolve().parents[2]
+INTAKE_PATH = REPO_ROOT / "registry/intake.yaml"
+INTAKE_YAML = INTAKE_PATH.read_text()
+
+
+def parse_intake_in_registry_context(intake_yaml: str) -> list[Agency]:
+    """Validate an intake shard the way the registry actually loads it.
+
+    The manifest validates every shard together, and intake entries reference
+    records in the located shards: a retired feed record here can be an
+    ``alias_of`` its successor in a state shard. Parsing intake on its own would
+    reject that reference for being outside one file, which is not how the
+    registry is read (and not how a submission is merged either).
+    """
+    entries: list[object] = []
+    for path in registry_paths(REPO_ROOT):
+        source = intake_yaml if path == INTAKE_PATH else path.read_text()
+        entries.extend((yaml.safe_load(source) or {}).get("agencies") or [])
+    return parse_agencies({"agencies": entries})
+
 
 FORM = {
     "name": "Fairfield and Suisun Transit",
@@ -30,10 +55,10 @@ def test_form_to_entry_derives_slug_and_rt() -> None:
 
 def test_submission_yaml_parses_and_includes_new_agency() -> None:
     sub = build_submission(FORM, INTAKE_YAML)
-    agencies = parse_agencies(yaml.safe_load(sub.file_content))
+    agencies = parse_intake_in_registry_context(sub.file_content)
     ids = {a.id for a in agencies}
     assert "fairfield-and-suisun-transit" in ids
-    existing = {a.id for a in parse_agencies(yaml.safe_load(INTAKE_YAML))}
+    existing = {a.id for a in parse_intake_in_registry_context(INTAKE_YAML)}
     assert existing <= ids
     assert sub.branch == "submit-fairfield-and-suisun-transit"
     assert "fasttransit.example" in sub.pr_body
@@ -53,7 +78,7 @@ def test_international_submission_preserves_explicit_portable_location() -> None
     assert entry["subdivision_code"] == "CA-ON"
     assert entry["subdivision_name"] == "Ontario"
     sub = build_submission(form, INTAKE_YAML)
-    agencies = parse_agencies(yaml.safe_load(sub.file_content))
+    agencies = parse_intake_in_registry_context(sub.file_content)
     added = next(a for a in agencies if a.id == "barrie-transit-test")
     assert (added.country, added.subdivision_code, added.subdivision_name) == (
         "CA",
@@ -69,7 +94,7 @@ def test_country_only_international_submission_is_valid() -> None:
     assert entry["country"] == "CA"
     assert "subdivision_code" not in entry
     sub = build_submission(form, INTAKE_YAML)
-    agencies = parse_agencies(yaml.safe_load(sub.file_content))
+    agencies = parse_intake_in_registry_context(sub.file_content)
     added = next(a for a in agencies if a.id == "national-feed-test")
     assert (added.country, added.subdivision_code, added.subdivision_name) == ("CA", "", "")
 

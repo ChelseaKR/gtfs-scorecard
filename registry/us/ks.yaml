@@ -11,16 +11,22 @@ agencies:
     mdb_id: 185
     license_note: "License: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/blob/master/wichita-transit-license.pdf"
 
+  # Mobility Database mdb-188 is deprecated and redirects to mdb-2063.
   - id: ku-on-wheels-lawrence-transit-system
     name: KU on Wheels & Lawrence Transit System
+    alias_of: ku-on-wheels-lawrence-transit-system-2063
+    feed_status: deprecated
     subdivision_code: US-KS
     subdivision_name: Kansas
     static_gtfs_url: https://assets.lawrenceks.org/assets/gis/google-transit/google_transit.zip
     mdb_id: 188
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-1160 is deprecated and redirects to mdb-2303.
   - id: the-jo
     name: The JO
+    alias_of: johnson-county-transit
+    feed_status: deprecated
     subdivision_code: US-KS
     subdivision_name: Kansas
     static_gtfs_url: https://transitfeeds.com/p/the-jo/632/latest/download

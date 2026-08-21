@@ -3,8 +3,11 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-4 is deprecated and redirects to mdb-1973.
   - id: athens-public-transit
     name: Athens Public Transit
+    alias_of: athens-public-transit-1973
+    feed_status: deprecated
     subdivision_code: US-OH
     subdivision_name: Ohio
     static_gtfs_url: https://transitfeeds.com/p/athens-public-transit/298/latest/download
@@ -90,24 +93,33 @@ agencies:
     mdb_id: 410
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-411 is deprecated and redirects to mdb-2071.
   - id: akron-metro-regional-transit-authority-metro
     name: Akron Metro Regional Transit Authority (METRO)
+    alias_of: akron-metro-regional-transit-authority-metro-2071
+    feed_status: deprecated
     subdivision_code: US-OH
     subdivision_name: Ohio
     static_gtfs_url: https://www.akronmetro.org/Data/Sites/2/gtfs-data/akronmetrogtfs.zip
     mdb_id: 411
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-818 is deprecated and redirects to mdb-2001.
   - id: stark-area-regional-transit-authority-sarta
     name: Stark Area Regional Transit Authority (SARTA)
+    alias_of: stark-area-regional-transit-authority-sarta-2001
+    feed_status: deprecated
     subdivision_code: US-OH
     subdivision_name: Ohio
     static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/stark-area-regional-transit-authority.zip
     mdb_id: 818
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-908 is deprecated and redirects to mdb-2256.
   - id: portage-area-regional-transportation-authority-parta
     name: Portage Area Regional Transportation Authority (PARTA)
+    alias_of: portage-area-regional-transportation-authority-parta-2256
+    feed_status: deprecated
     subdivision_code: US-OH
     subdivision_name: Ohio
     static_gtfs_url: https://592f5f98-5029-425f-ac4d-0774faecf068.filesusr.com/archives/f64377_81ed397719364abbb0aa6a97a1dbf1c9.zip?dn=12_17google_transit.zip

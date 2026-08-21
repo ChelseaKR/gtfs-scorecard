@@ -14,9 +14,10 @@ the registry are skipped by stable catalog id or normalized URL.
 
 The catalog CSVs are public exports of the Mobility Database; their column
 names are used directly so the mapping is auditable against the source. New
-registry proposals use the V2 export. Mirror fallback, moved-feed discovery,
-and state backfill retain the legacy export until their redirect semantics are
-migrated separately.
+registry proposals use the V2 export, as does the supersession check, which
+needs the V2 `redirect.id` column to tell which record replaced which. Mirror
+fallback, moved-feed discovery, and state backfill retain the legacy export
+until their redirect semantics are migrated separately.
 """
 
 from __future__ import annotations
@@ -25,7 +26,7 @@ import csv
 import hashlib
 import io
 import re
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 
 from .config import Agency
@@ -33,6 +34,14 @@ from .identity import normalized_mdb_id
 from .lint import is_feed_descriptor
 from .location import normalize_location
 from .net import safe_get
+from .supersession_review import (
+    FLAG_REASONS,
+    ReviewedRetirement,
+    approved,
+    blocking,
+    review_entry_yaml,
+    review_flags,
+)
 
 # https://mobilitydatabase.org — V2 is the current proposal corpus. The legacy
 # export remains the default for existing consumers that depend on its mirror
@@ -131,6 +140,10 @@ class CatalogFeed:
     hosted_url: str = ""  # urls.latest: MobilityData's hosted mirror on GCS
     status: str = ""  # active / deprecated / inactive / development
     is_official: bool | None = None
+    # redirect.id: the catalog record(s) that replaced this one. Set on
+    # deprecated rows and the catalog's only statement of which feed record
+    # supersedes which. Empty on a row the catalog has not redirected.
+    redirect_ids: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -290,6 +303,7 @@ def _catalog_feed(row: dict[str, str], *, source_record_number: int = 0) -> Cata
         hosted_url=_cell(row, "urls.latest"),
         status=_cell(row, "status").lower(),
         is_official=_optional_bool(_cell(row, "is_official")),
+        redirect_ids=_pipe_values(_cell(row, "redirect.id")),
     )
 
 
@@ -1250,6 +1264,394 @@ def apply_replacements(yaml_text: str, matches: list[FeedMatch]) -> tuple[str, l
         out.append(line)
     trailing = "\n" if yaml_text.endswith("\n") else ""
     return "\n".join(out) + trailing, changed
+
+
+@dataclass(frozen=True)
+class Supersession:
+    """A tracked record the catalog has replaced, and the record that replaced it.
+
+    ``review_flags`` names the ways the two records look like different agencies
+    rather than one agency renamed (see ``supersession_review``). A flagged
+    retirement is reported and held for a decision instead of being applied, so
+    a redirect that crosses a state line cannot be recorded silently.
+    """
+
+    agency_id: str
+    agency_name: str
+    mdb_id: str
+    successor_agency_id: str
+    successor_agency_name: str
+    successor_mdb_id: str
+    review_flags: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class UnresolvedSupersession:
+    """A tracked record the catalog deprecated without a successor we publish.
+
+    Named rather than dropped: "the catalog retired this feed record and we
+    cannot say what replaced it" is a different fact from "this record is
+    current", and only the first one is true here.
+    """
+
+    agency_id: str
+    agency_name: str
+    mdb_id: str
+    redirect_ids: tuple[str, ...]
+    # ambiguous_redirect | no_current_successor | successor_not_in_catalog |
+    # successor_not_published | redirect_cycle
+    reason: str
+
+
+_REDIRECT_CHAIN_LIMIT = 8
+
+
+def _reachable_catalog_ids(feed: CatalogFeed, by_mdb: dict[str, CatalogFeed]) -> list[str]:
+    """Every catalog record this one's redirects lead to, directly or in turn.
+
+    Breadth-first and cycle-safe: the catalog chains retirements, and a record
+    that names two successors has to be followed down both branches before the
+    chain can say which one is still current.
+    """
+    seen = {normalized_mdb_id(feed.mdb_id)}
+    frontier = [feed]
+    reached: list[str] = []
+    for _ in range(_REDIRECT_CHAIN_LIMIT):
+        following: list[CatalogFeed] = []
+        for current in frontier:
+            for target in current.redirect_ids:
+                key = normalized_mdb_id(target)
+                if key in seen:
+                    continue
+                seen.add(key)
+                reached.append(key)
+                onward = by_mdb.get(key)
+                if onward is not None:
+                    following.append(onward)
+        if not following:
+            break
+        frontier = following
+    return reached
+
+
+def _resolve_successor(
+    agency: Agency,
+    feed: CatalogFeed,
+    by_mdb: dict[str, CatalogFeed],
+    registry_by_mdb: dict[str, Agency],
+) -> tuple[Agency | None, str]:
+    """The one record we publish that this retired record's redirects lead to.
+
+    Among the records the redirects reach, only the ones this registry publishes
+    can be a destination, and a record the catalog has itself replaced by another
+    of those is not the current one. Exactly one survivor is the successor. More
+    than one is a real fork, which is a curator's call, not a mechanical one.
+    """
+    reached = _reachable_catalog_ids(feed, by_mdb)
+    if not reached:
+        return None, "no_current_successor"
+    if not any(key in by_mdb for key in reached):
+        return None, "successor_not_in_catalog"
+    candidates = {
+        key: record
+        for key in reached
+        if (record := registry_by_mdb.get(key)) is not None
+        and record.is_canonical_feed
+        and record.id != agency.id
+    }
+    if not candidates:
+        return None, "successor_not_published"
+    live = [
+        record
+        for key, record in candidates.items()
+        if not _replaced_by_another_candidate(key, candidates, by_mdb)
+    ]
+    if len(live) == 1:
+        return live[0], ""
+    return None, "redirect_cycle" if not live else "ambiguous_redirect"
+
+
+def _replaced_by_another_candidate(
+    key: str, candidates: dict[str, Agency], by_mdb: dict[str, CatalogFeed]
+) -> bool:
+    """Whether the catalog has replaced this candidate with one of the others."""
+    feed = by_mdb.get(key)
+    if feed is None or feed.status != "deprecated":
+        return False
+    return any(reached in candidates for reached in _reachable_catalog_ids(feed, by_mdb))
+
+
+def _looping_retirements(retirements: dict[str, str]) -> set[str]:
+    """Ids whose retirement would leave the registry pointing in a circle.
+
+    Two records that each name the other as their successor cannot both be
+    retired: the registry would have no live record to resolve either one to.
+    """
+    looped: set[str] = set()
+    for start, first in retirements.items():
+        seen = {start}
+        node = first
+        while node in retirements:
+            if node in seen:
+                looped.add(start)
+                break
+            seen.add(node)
+            node = retirements[node]
+    return looped
+
+
+def find_supersessions(
+    feeds: list[CatalogFeed], agencies: Iterable[Agency]
+) -> tuple[list[Supersession], list[UnresolvedSupersession]]:
+    """Which tracked feed records the catalog has retired, and what replaced them.
+
+    The Mobility Database marks a replaced feed record ``deprecated`` and points
+    ``redirect.id`` at the record that took its place. Both records are often
+    tracked here, so without reading the redirect the same agency publishes two
+    current scorecards with two different grades and neither page mentions the
+    other. Nothing else in the catalog identifies that pair: the retired record
+    and its successor share no id, no URL and no feed hash, which is why the
+    existing duplicate detector cannot see them.
+
+    Returns the retirements that resolve to a record we already publish, and the
+    ones that do not, each with the reason. This proposes; it never rewrites the
+    registry, and it never invents a successor from a similar name.
+    """
+    by_mdb = {normalized_mdb_id(f.mdb_id): f for f in feeds if f.mdb_id}
+    registry_by_mdb: dict[str, Agency] = {
+        normalized_mdb_id(a.mdb_id): a for a in agencies if a.mdb_id
+    }
+    resolved: list[Supersession] = []
+    unresolved: list[UnresolvedSupersession] = []
+    for key, agency in sorted(registry_by_mdb.items()):
+        if not agency.is_canonical_feed:
+            continue  # already retired, or already an alias of something else
+        feed = by_mdb.get(key)
+        if feed is None or feed.status != "deprecated":
+            continue
+        successor, reason = _resolve_successor(agency, feed, by_mdb, registry_by_mdb)
+        if successor is None:
+            unresolved.append(
+                UnresolvedSupersession(
+                    agency.id, agency.name, agency.mdb_id, feed.redirect_ids, reason
+                )
+            )
+            continue
+        resolved.append(
+            Supersession(
+                agency.id,
+                agency.name,
+                agency.mdb_id,
+                successor.id,
+                successor.name,
+                successor.mdb_id,
+                review_flags(agency, successor),
+            )
+        )
+    looped = _looping_retirements({s.agency_id: s.successor_agency_id for s in resolved})
+    unresolved.extend(
+        UnresolvedSupersession(
+            s.agency_id,
+            s.agency_name,
+            s.mdb_id,
+            by_mdb[normalized_mdb_id(s.mdb_id)].redirect_ids,
+            "redirect_cycle",
+        )
+        for s in resolved
+        if s.agency_id in looped
+    )
+    return [s for s in resolved if s.agency_id not in looped], unresolved
+
+
+def hold_for_review(
+    superseded: Sequence[Supersession], reviewed: Mapping[str, ReviewedRetirement]
+) -> tuple[list[Supersession], list[Supersession]]:
+    """Split retirements into the ones a recorded decision covers, and the rest.
+
+    A retirement with no review flags needs no decision and applies as before.
+    A flagged one applies only when ``supersession-review.yaml`` approves that
+    exact pairing for those exact reasons, so a redirect that crosses a state
+    line, or that renames an agency into an unrelated one, waits for a person
+    instead of being written into the registry by the weekly job.
+    """
+    ready: list[Supersession] = []
+    held: list[Supersession] = []
+    for item in superseded:
+        entry = reviewed.get(item.agency_id)
+        target = ready if approved(entry, item.successor_agency_id, item.review_flags) else held
+        target.append(item)
+    return ready, held
+
+
+def apply_supersessions(yaml_text: str, supersessions: list[Supersession]) -> tuple[str, list[str]]:
+    """Retire each superseded record in one registry shard, in place.
+
+    Writes the two fields the registry already defines for this
+    (``alias_of`` and ``feed_status: deprecated``) plus a comment naming the
+    catalog evidence, so the reason survives in the file a curator reads. A
+    targeted line insertion rather than a YAML round-trip, mirroring
+    apply_replacements, so comments and hand-written formatting are untouched.
+    Returns the new text and the ids changed.
+    """
+    wanted = {s.agency_id: s for s in supersessions}
+    if not wanted:
+        return yaml_text, []
+    out: list[str] = []
+    changed: list[str] = []
+    pending: Supersession | None = None
+    indent = ""
+    for line in yaml_text.splitlines():
+        id_match = re.match(r"(\s*)-\s*id:\s*(\S+)", line)
+        if id_match:
+            if pending is not None:  # a block with no name line; keep the fields anyway
+                out.extend(_supersession_fields(indent, pending))
+            indent = id_match.group(1)
+            pending = wanted.pop(id_match.group(2), None)
+            if pending is not None:
+                retired_id = normalized_mdb_id(pending.mdb_id)
+                successor_id = normalized_mdb_id(pending.successor_mdb_id)
+                out.append(
+                    f"{indent}# Mobility Database {retired_id} is deprecated "
+                    f"and redirects to {successor_id}."
+                )
+                changed.append(pending.agency_id)
+            out.append(line)
+            continue
+        out.append(line)
+        if pending is not None and re.match(r"\s*name:\s*\S", line):
+            out.extend(_supersession_fields(indent, pending))
+            pending = None
+    if pending is not None:
+        out.extend(_supersession_fields(indent, pending))
+    trailing = "\n" if yaml_text.endswith("\n") else ""
+    return "\n".join(out) + trailing, changed
+
+
+def _supersession_fields(indent: str, superseded: Supersession) -> list[str]:
+    """The two registry fields that retire one record to its successor."""
+    return [
+        f"{indent}  alias_of: {superseded.successor_agency_id}",
+        f"{indent}  feed_status: deprecated",
+    ]
+
+
+_UNRESOLVED_REASON_TEXT = {
+    "ambiguous_redirect": "the catalog lists more than one successor record",
+    "no_current_successor": "the catalog names no successor it still calls current",
+    "successor_not_in_catalog": "the successor record is not in this catalog export",
+    "successor_not_published": "the successor record is not published here",
+    "redirect_cycle": "the catalog's redirects loop",
+}
+
+
+def render_supersessions_md(
+    superseded: list[Supersession],
+    unresolved: list[UnresolvedSupersession],
+    *,
+    today: str,
+    held: Sequence[Supersession] = (),
+) -> str:
+    """A reviewable Markdown report of catalog-recorded feed retirements."""
+    out: list[str] = [
+        "# Superseded feed records in the Mobility Database",
+        "",
+        f"Run {today}. Source: mobilitydatabase.org catalog CSV.",
+        "",
+        "The Mobility Database marks a replaced feed record `deprecated` and names "
+        "the record that replaced it. Where both records are tracked here, the "
+        "retired one is set to `feed_status: deprecated` with `alias_of` pointing "
+        "at its successor: its dated artifacts stay available for reproducibility "
+        "and its scorecard URL redirects, but it stops publishing a second current "
+        "grade under the same agency's name.",
+        "",
+        f"- **{len(superseded)}** retired records resolve to a successor published here.",
+        f"- **{len(unresolved)}** retired records do not, and keep their own page.",
+        "",
+    ]
+    if held:
+        out += [
+            f"- **{len(held)}** of those retirements are **held for review**: the "
+            "successor is in a different state, or carries a name that does not read "
+            "as this agency renamed. They are not recorded until a decision for each "
+            "is in `supersession-review.yaml`.",
+            "",
+        ]
+    if superseded:
+        out += [
+            "## Retired, with the successor we publish",
+            "",
+            "| Retired record | Successor | Catalog redirect |",
+            "| --- | --- | --- |",
+        ]
+        for s in sorted(superseded, key=lambda item: item.agency_name.lower()):
+            redirect = f"{normalized_mdb_id(s.mdb_id)} to {normalized_mdb_id(s.successor_mdb_id)}"
+            out.append(
+                f"| {s.agency_name} (`{s.agency_id}`) | {s.successor_agency_name} "
+                f"(`{s.successor_agency_id}`) | {redirect} |"
+            )
+        out.append("")
+    if held:
+        out += [
+            "## Held for review",
+            "",
+            "Each of these is a retirement the catalog asks for where the two records "
+            "do not look like one agency. Read the pair, then record the decision in "
+            "`supersession-review.yaml` at the repository root: `retire` if it is the "
+            "same agency or a real merger, `keep_separate` if it is not. Until then "
+            "the retirement is not written, and the build fails if one is written "
+            "without a decision.",
+            "",
+        ]
+        for s in sorted(held, key=lambda item: item.agency_name.lower()):
+            reasons = "; ".join(FLAG_REASONS[flag] for flag in blocking(s.review_flags))
+            out += [
+                f"### {s.agency_name} (`{s.agency_id}`) to {s.successor_agency_name} "
+                f"(`{s.successor_agency_id}`)",
+                "",
+                f"- Catalog redirect: {normalized_mdb_id(s.mdb_id)} to "
+                f"{normalized_mdb_id(s.successor_mdb_id)}",
+                f"- Held because {reasons}.",
+                "",
+                "```yaml",
+                review_entry_yaml(s.agency_id, s.successor_agency_id, s.review_flags).rstrip("\n"),
+                "```",
+                "",
+            ]
+    renamed = [s for s in superseded if s.agency_name.strip() != s.successor_agency_name.strip()]
+    if renamed:
+        out += [
+            "### Read these ones closely",
+            "",
+            "The successor publishes under a different name, so the redirect sends a "
+            "reader from one agency's name to another. That is what the catalog "
+            "records, and it is right often enough to follow, but it is the case "
+            "worth checking by hand before merging.",
+            "",
+        ]
+        for s in sorted(renamed, key=lambda item: item.agency_name.lower()):
+            out.append(
+                f"- {s.agency_name} (`{s.agency_id}`) to {s.successor_agency_name} "
+                f"(`{s.successor_agency_id}`)"
+            )
+        out.append("")
+    if unresolved:
+        out += [
+            "## Retired, with no successor we publish",
+            "",
+            "These stay published on their own record. The catalog has retired the "
+            "feed source, so the grade describes a feed the agency may no longer "
+            "publish; deciding what to say on those pages is a curator call, not a "
+            "mechanical one.",
+            "",
+        ]
+        for u in sorted(unresolved, key=lambda item: item.agency_name.lower()):
+            reason = _UNRESOLVED_REASON_TEXT.get(u.reason, u.reason)
+            catalog_id = normalized_mdb_id(u.mdb_id)
+            named = ", ".join(normalized_mdb_id(target) for target in u.redirect_ids)
+            points_at = f" It points at {named}." if named else ""
+            out.append(f"- {u.agency_name} (`{u.agency_id}`, {catalog_id}): {reason}.{points_at}")
+        out.append("")
+    return "\n".join(out)
 
 
 def resolve_states(agencies: Iterable[Agency], catalog: list[CatalogFeed]) -> dict[str, str]:

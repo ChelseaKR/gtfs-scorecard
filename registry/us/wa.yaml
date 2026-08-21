@@ -3,8 +3,11 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-242 is deprecated and redirects to mdb-3112.
   - id: pacific-transit
     name: Pacific Transit
+    alias_of: pacific-transit-3112
+    feed_status: deprecated
     subdivision_code: US-WA
     subdivision_name: Washington
     static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/pacific_google_transit.zip
@@ -125,8 +128,11 @@ agencies:
     mdb_id: 271
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-273 is deprecated and redirects to mdb-2122.
   - id: ben-franklin-transit
     name: Ben Franklin Transit
+    alias_of: ben-franklin-transit-2122
+    feed_status: deprecated
     subdivision_code: US-WA
     subdivision_name: Washington
     static_gtfs_url: https://www.bft.org/gtfs/google_transit.zip
@@ -242,8 +248,11 @@ agencies:
       service_alerts: http://s3.amazonaws.com/commtrans-realtime-prod/alerts.pb
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-288 is deprecated and redirects to mdb-3038.
   - id: everett-transit
     name: Everett Transit
+    alias_of: everett-transit-3038
+    feed_status: deprecated
     subdivision_code: US-WA
     subdivision_name: Washington
     static_gtfs_url: https://gtfs.sound.obaweb.org/prod/97_gtfs.zip
@@ -259,8 +268,11 @@ agencies:
     mdb_id: 290
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-303 is deprecated and redirects to mdb-2456.
   - id: city-of-ellensburg-public-transit-central-transit
     name: City of Ellensburg Public Transit (Central Transit)
+    alias_of: city-of-ellensburg-public-transit-central-transit-2456
+    feed_status: deprecated
     subdivision_code: US-WA
     subdivision_name: Washington
     static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/centraltransit_google_transit.zip
@@ -283,8 +295,11 @@ agencies:
     mdb_id: 568
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-574 is deprecated and redirects to mdb-2196.
   - id: makah-public-transit
     name: Makah Public Transit
+    alias_of: makah-public-transit-2196
+    feed_status: deprecated
     subdivision_code: US-WA
     subdivision_name: Washington
     static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/makah_google_transit.zip
@@ -299,8 +314,11 @@ agencies:
     mdb_id: 580
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-604 is deprecated and redirects to mdb-2193.
   - id: wahkiakum-ferry
     name: Wahkiakum Ferry
+    alias_of: wahkiakum-ferry-2193
+    feed_status: deprecated
     subdivision_code: US-WA
     subdivision_name: Washington
     static_gtfs_url: https://oregon-gtfs.com/gtfs_data/wahkiakumferry-or-us/wahkiakumferry-or-us.zip
@@ -331,8 +349,11 @@ agencies:
     mdb_id: 838
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-846 is deprecated and redirects to mdb-2197.
   - id: squaxin-island-transit
     name: Squaxin Island Transit
+    alias_of: squaxin-island-transit-2197
+    feed_status: deprecated
     subdivision_code: US-WA
     subdivision_name: Washington
     static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/squaxintribe_google_transit.zip
@@ -381,8 +402,11 @@ agencies:
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-2024 is deprecated and redirects to mdb-2122.
   - id: ben-franklin-transit-2024
     name: Ben Franklin Transit
+    alias_of: ben-franklin-transit-2122
+    feed_status: deprecated
     subdivision_code: US-WA
     subdivision_name: Washington
     static_gtfs_url: http://realtime.bft.org/Static/google_transit.zip

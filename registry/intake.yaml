@@ -67,8 +67,11 @@ agencies:
 
 
 
+  # Mobility Database mdb-2862 is deprecated and redirects to mdb-2885.
   - id: cue-bus
     name: CUE Bus
+    alias_of: fairfax-cue-bus-cue-2885
+    feed_status: deprecated
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cuebus-va-us/cuebus-va-us.zip
     mdb_id: 2862
     license_note: No stated data license in the Mobility Database; verify before publishing.
@@ -131,9 +134,12 @@ agencies:
 
 
 
+  # Mobility Database mdb-3136 is deprecated and redirects to mdb-507.
   - id: long-island-rail-road
     ntd_id: "20100"
     name: Long Island Rail Road
+    alias_of: metropolitan-transit-authority-mta
+    feed_status: deprecated
     static_gtfs_url: https://rrgtfsfeeds.s3.amazonaws.com/gtfslirr.zip
     mdb_id: 3136
     license_note: "License: https://www.mta.info/developers"

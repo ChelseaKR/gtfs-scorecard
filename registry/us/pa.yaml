@@ -3,8 +3,11 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-221 is deprecated and redirects to mdb-2064.
   - id: berks-area-regional-transportation-authority-barta
     name: Berks Area Regional Transportation Authority (BARTA)
+    alias_of: berks-area-regional-transportation-authority-barta-2064
+    feed_status: deprecated
     subdivision_code: US-PA
     subdivision_name: Pennsylvania
     static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/barta.zip
@@ -79,8 +82,11 @@ agencies:
     mdb_id: 523
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-807 is deprecated and redirects to mdb-2000.
   - id: red-rose-transit-authority-rrta
     name: Red Rose Transit Authority (RRTA)
+    alias_of: red-rose-transit-authority-rrta-2000
+    feed_status: deprecated
     subdivision_code: US-PA
     subdivision_name: Pennsylvania
     static_gtfs_url: https://github.com/transitland/gtfs-archives-not-hosted-elsewhere/raw/master/rrta.zip
@@ -95,8 +101,11 @@ agencies:
     mdb_id: 1236
     license_note: "License: https://catabus.com/developer-tools/"
 
+  # Mobility Database mdb-1312 is deprecated and redirects to mdb-2262.
   - id: beaver-county-transit-authority
     name: Beaver County Transit Authority
+    alias_of: beaver-county-transit-authority-2262
+    feed_status: deprecated
     subdivision_code: US-PA
     subdivision_name: Pennsylvania
     static_gtfs_url: https://transitfeeds.com/p/beaver-county-transit-authority/1154/latest/download

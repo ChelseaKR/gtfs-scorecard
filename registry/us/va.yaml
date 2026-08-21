@@ -35,16 +35,22 @@ agencies:
     mdb_id: 334
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-379 is deprecated and redirects to mdb-2198.
   - id: pulaski-area-transit-pat
     name: Pulaski Area Transit (PAT)
+    alias_of: pulaski-area-transit-pat-2198
+    feed_status: deprecated
     subdivision_code: US-VA
     subdivision_name: Virginia
     static_gtfs_url: https://ridesolutions.org/gtfs/pulaski-va-us.zip
     mdb_id: 379
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-380 is deprecated and redirects to mdb-2415.
   - id: radford-transit
     name: Radford Transit
+    alias_of: radford-transit-2415
+    feed_status: deprecated
     subdivision_code: US-VA
     subdivision_name: Virginia
     static_gtfs_url: https://passio3.com/radford/passioTransit/gtfs/google_transit.zip
@@ -112,8 +118,11 @@ agencies:
       vehicle_positions: http://www.vre.org/gtfs-realtime/VehiclePositionFeed
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-481 is deprecated and redirects to mdb-1156.
   - id: potomac-and-rappahannock-transportation-commission-prtc
     name: Potomac and Rappahannock Transportation Commission (PRTC)
+    alias_of: potomac-and-rappahannock-transportation-commission-prtc-omniride
+    feed_status: deprecated
     subdivision_code: US-VA
     subdivision_name: Virginia
     static_gtfs_url: http://www.prtctransit.org/feeds/google_transit.zip
@@ -137,8 +146,11 @@ agencies:
     mdb_id: 483
     license_note: "License: https://www.fairfaxcounty.gov/connector/bustracker/data"
 
+  # Mobility Database mdb-484 is deprecated and redirects to mdb-2885.
   - id: fairfax-cue-bus-cue
     name: Fairfax CUE Bus (CUE)
+    alias_of: fairfax-cue-bus-cue-2885
+    feed_status: deprecated
     subdivision_code: US-VA
     subdivision_name: Virginia
     static_gtfs_url: https://www.fairfaxva.gov/Home/ShowDocument?id=6713
@@ -221,8 +233,11 @@ agencies:
     mdb_id: 882
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-901 is deprecated and redirects to mdb-2649.
   - id: williamsburg-area-transit-authority
     name: Williamsburg Area Transit Authority
+    alias_of: williamsburg-area-transit-authority-2649
+    feed_status: deprecated
     subdivision_code: US-VA
     subdivision_name: Virginia
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/williamsburg-va-us/williamsburg-va-us.zip
@@ -261,8 +276,11 @@ agencies:
     mdb_id: 1189
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-1239 is deprecated and redirects to mdb-2274.
   - id: valley-metro
     name: Valley Metro
+    alias_of: valley-metro-2274
+    feed_status: deprecated
     subdivision_code: US-VA
     subdivision_name: Virginia
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/roanoke-va-us/roanoke-va-us.zip
@@ -277,8 +295,11 @@ agencies:
     mdb_id: 1287
     license_note: "License: http://virginia-gtfs.com/"
 
+  # Mobility Database mdb-1299 is deprecated and redirects to mdb-2430.
   - id: fredericksburg-regional-transit
     name: Fredericksburg Regional Transit
+    alias_of: fredericksburg-regional-transit-2430
+    feed_status: deprecated
     subdivision_code: US-VA
     subdivision_name: Virginia
     static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/d1483daba66d43358e29682c91907817/data

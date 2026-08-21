@@ -1,11 +1,12 @@
 name: Discover moved feeds
 
-# Weekly check of every expired feed's URL against the Mobility Database
-# (docs/feature-roadmap.md, "discover on a schedule"). The report is always
-# uploaded as an artifact. When a feed's canonical URL has actually moved, the
-# job rewrites the affected manifest-listed registry shard and opens a pull
-# request for a human to review;
-# it never edits the registry on its own.
+# Weekly check of tracked feeds against the Mobility Database
+# (docs/feature-roadmap.md, "discover on a schedule"): every expired feed's URL,
+# and every tracked record the catalog has retired in favour of another. The
+# reports are always uploaded as artifacts. When a feed's canonical URL has
+# actually moved, or the catalog has replaced a record we publish, the job
+# rewrites the affected manifest-listed registry shard and opens a pull request
+# for a human to review; it never edits the registry on its own.
 
 on:
   schedule:
@@ -34,6 +35,14 @@ jobs:
         working-directory: pipeline
         run: uv run scorecard discover --expired --apply --out ../docs/feed-discovery.md
 
+      # The catalog also retires whole feed records and names what replaced
+      # them. Left unread, the retired record keeps publishing a current grade
+      # beside its successor and one agency carries two. Same review path as
+      # the moved-URL check: the edit lands on a branch, a human merges it.
+      - name: Check tracked records against the catalog's own retirements
+        working-directory: pipeline
+        run: uv run scorecard supersessions --apply --out ../docs/feed-supersessions.md
+
       # Report-only: orphaned artifact directories (agency removed from the
       # registry, pages still live). Deletion stays a curator decision per
       # docs/listing-policy.md; this keeps the drift visible weekly.
@@ -50,18 +59,20 @@ jobs:
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: feed-discovery-report
-          path: docs/feed-discovery.md
+          path: |
+            docs/feed-discovery.md
+            docs/feed-supersessions.md
           retention-days: 30
 
-      # The report's run date changes every week; only a real feed move (an
-      # registry edit) is worth a pull request. Discard a report-only diff
-      # so the job stays quiet on weeks with nothing to do.
-      - name: Keep the refreshed report only when a feed moved
+      # Both reports' run date changes every week; only a real registry edit is
+      # worth a pull request. Discard a report-only diff so the job stays quiet
+      # on weeks with nothing to do.
+      - name: Keep the refreshed reports only when the registry changed
         id: changes
         run: |
           if git diff --quiet -- registry/; then
             echo "moved=false" >> "$GITHUB_OUTPUT"
-            git checkout -- docs/feed-discovery.md
+            git checkout -- docs/feed-discovery.md docs/feed-supersessions.md
           else
             echo "moved=true" >> "$GITHUB_OUTPUT"
           fi
@@ -78,17 +89,21 @@ jobs:
           # write and contents: write) to open the PR as that identity instead.
           token: ${{ secrets.DISCOVERY_PR_TOKEN || github.token }}
           branch: chore/feed-discovery
-          title: "chore(data): update feed URLs that moved in the Mobility Database"
-          commit-message: "chore(data): update feed URLs that moved in the Mobility Database"
+          title: "chore(data): follow Mobility Database feed moves and retirements"
+          commit-message: "chore(data): follow Mobility Database feed moves and retirements"
           body: |
-            The weekly feed-discovery check found one or more tracked feeds whose
-            canonical download URL has moved in the Mobility Database, and updated
-            `static_gtfs_url` to match. Review each change against the catalog
-            before merging; the full report is regenerated in `docs/feed-discovery.md`.
+            The weekly check against the Mobility Database found either a tracked
+            feed whose canonical download URL has moved (`static_gtfs_url` updated
+            to match) or a tracked feed record the catalog has retired in favour of
+            another (`alias_of` and `feed_status` recorded, so the retired record
+            stops publishing a second current grade beside its successor). Review
+            each change against the catalog before merging; the full reports are
+            regenerated in `docs/feed-discovery.md` and `docs/feed-supersessions.md`.
           labels: data, automated
           add-paths: |
             registry/
             docs/feed-discovery.md
+            docs/feed-supersessions.md
 
       # The action pushes the branch before it calls the pull request API, so a
       # permissions failure leaves the registry edits on the branch with no

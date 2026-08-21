@@ -1366,6 +1366,69 @@ def _cmd_discover(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
     return 0
 
 
+def _cmd_supersessions(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Report (and optionally record) feed records the catalog has replaced.
+
+    Without this, a record the Mobility Database retired keeps publishing a
+    current scorecard beside the record that replaced it, so one agency carries
+    two grades and neither page mentions the other.
+    """
+    from .config import repo_root
+    from .mobilitydb import (
+        DEFAULT_PROPOSAL_CATALOG_URL,
+        apply_supersessions,
+        fetch_catalog,
+        find_supersessions,
+        hold_for_review,
+        parse_catalog,
+        render_supersessions_md,
+    )
+    from .supersession_review import REVIEW_FILENAME, read_review
+
+    source = args.catalog or DEFAULT_PROPOSAL_CATALOG_URL
+    is_url = source.startswith(("http://", "https://"))
+    csv_text = fetch_catalog(source) if is_url else Path(source).read_text()
+    feeds = parse_catalog(csv_text)
+    found, unresolved = find_supersessions(feeds, AGENCIES.values())
+    superseded, held = hold_for_review(found, read_review(repo_root()))
+    report = render_supersessions_md(
+        superseded, unresolved, today=utc_today().isoformat(), held=held
+    )
+    if args.out:
+        Path(args.out).write_text(report)
+        log.info("Wrote the supersession report to %s", args.out)
+    else:
+        print(report, end="")
+    log.info(
+        "%d tracked records are superseded by a record published here; "
+        "%d are retired with no successor we publish.",
+        len(superseded),
+        len(unresolved),
+    )
+    if held:
+        log.warning(
+            "%d retirement(s) are held for review: the successor may not be the same "
+            "agency. Decide each one in %s; none of them is recorded here.",
+            len(held),
+            REVIEW_FILENAME,
+        )
+
+    if args.apply:
+        from .agencies import registry_paths
+
+        changed: list[str] = []
+        for registry_path in registry_paths(repo_root()):
+            updated, changed_here = apply_supersessions(registry_path.read_text(), superseded)
+            if changed_here:
+                registry_path.write_text(updated)
+                changed.extend(changed_here)
+        if changed:
+            log.info("Retired %d superseded record(s) in the registry.", len(changed))
+        else:
+            log.info("No superseded records to retire.")
+    return 0
+
+
 def _cmd_vendor_report(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     """Emit a freshness-by-host report for CI step summaries.
 
@@ -3234,6 +3297,20 @@ def main(argv: list[str] | None = None) -> int:
         help="rewrite static_gtfs_url in registry shards for agencies whose feed moved",
     )
 
+    supersessions = sub.add_parser(
+        "supersessions",
+        help="check tracked feed records against the Mobility Database's own retirements",
+    )
+    supersessions.add_argument(
+        "--catalog", help="catalog CSV path or URL (default: Mobility Database feeds v2)"
+    )
+    supersessions.add_argument("--out", help="write the report here instead of stdout")
+    supersessions.add_argument(
+        "--apply",
+        action="store_true",
+        help="record the retirement (alias_of + feed_status) in the registry shards",
+    )
+
     prune = sub.add_parser(
         "prune", help="report artifact directories whose agency left the registry"
     )
@@ -3737,6 +3814,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "try": _cmd_try,
         "sync": _cmd_sync,
         "discover": _cmd_discover,
+        "supersessions": _cmd_supersessions,
         "prune": _cmd_prune,
         "vendors": _cmd_vendors,
         "vendor-report": _cmd_vendor_report,

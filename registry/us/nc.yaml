@@ -3,8 +3,11 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-372 is deprecated and redirects to mdb-2244.
   - id: concord-kannapolis-area-transit-rider-transit
     name: Concord Kannapolis Area Transit (Rider Transit)
+    alias_of: concord-kannapolis-area-transit-rider-transit-2244
+    feed_status: deprecated
     subdivision_code: US-NC
     subdivision_name: North Carolina
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/ckrider-nc-us/ckrider-nc-us.zip
@@ -19,18 +22,24 @@ agencies:
     mdb_id: 373
     license_note: "License: https://creativecommons.org/licenses/by/4.0/"
 
+  # Mobility Database mdb-374 is deprecated and redirects to mdb-3183.
   - id: gotriangle
     ntd_id: "40108"
     name: GoTriangle
+    alias_of: gotriangle-3183
+    feed_status: deprecated
     subdivision_code: US-NC
     subdivision_name: North Carolina
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/tta-regionalbus-nc-us/tta-regionalbus-nc-us.zip
     mdb_id: 374
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-375 is deprecated and redirects to mdb-2277.
   - id: gocary
     ntd_id: "40143"
     name: GoCary
+    alias_of: gocary-2277
+    feed_status: deprecated
     subdivision_code: US-NC
     subdivision_name: North Carolina
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cary-transit-nc-us/cary-transit-nc-us.zip
@@ -63,8 +72,11 @@ agencies:
     mdb_id: 378
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-471 is deprecated and redirects to mdb-2074.
   - id: capital-area-transit-goraleigh
     name: Capital Area Transit (GoRaleigh)
+    alias_of: capital-area-transit-goraleigh-2074
+    feed_status: deprecated
     subdivision_code: US-NC
     subdivision_name: North Carolina
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/capital-area-transit-nc-us/capital-area-transit-nc-us.zip
@@ -87,8 +99,11 @@ agencies:
     mdb_id: 615
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-640 is deprecated and redirects to mdb-2265.
   - id: charlotte-area-transit-system-cats
     name: Charlotte Area Transit System (CATS)
+    alias_of: charlotte-area-transit-system-cats-2265
+    feed_status: deprecated
     subdivision_code: US-NC
     subdivision_name: North Carolina
     static_gtfs_url: https://transitfeeds.com/p/charlotte-area-transit-system/1252/latest/download
@@ -113,16 +128,22 @@ agencies:
     mdb_id: 1110
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-1289 is deprecated and redirects to mdb-2245.
   - id: north-carolina-state-university-ncsu
     name: North Carolina State University (NCSU)
+    alias_of: north-carolina-state-university-ncsu-2245
+    feed_status: deprecated
     subdivision_code: US-NC
     subdivision_name: North Carolina
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/ncsu-wolfline-nc-us/ncsu-wolfline-nc-us.zip
     mdb_id: 1289
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-1862 is deprecated and redirects to mdb-2026.
   - id: wave-transit-1862
     name: UNCW Seahawk Shuttle
+    alias_of: wave-transit-2026
+    feed_status: deprecated
     subdivision_code: US-NC
     subdivision_name: North Carolina
     static_gtfs_url: https://drive.google.com/u/0/uc?id=1w_7Ma9B9-aA-iBTWz3gxwGlORXPjppQ-&export=download
@@ -138,8 +159,11 @@ agencies:
     mdb_id: 1971
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-1983 is deprecated and redirects to mdb-2074.
   - id: capital-area-transit-goraleigh-1983
     name: Capital Area Transit (GoRaleigh)
+    alias_of: capital-area-transit-goraleigh-2074
+    feed_status: deprecated
     subdivision_code: US-NC
     subdivision_name: North Carolina
     static_gtfs_url: https://goraleigh.org/sites/default/files/gtfsexport.zip
