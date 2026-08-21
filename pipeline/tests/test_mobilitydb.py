@@ -908,6 +908,36 @@ def test_find_replacements_classifies_each_agency() -> None:
     assert by_id["phantom-shuttle"].candidates == []
 
 
+def test_find_replacements_ignores_generic_national_token() -> None:
+    """A tracked agency whose only catalog "matches" share nothing but the
+    generic word "national" must report no candidate, not an unrelated agency
+    of a different mode and country. Regression for the 2026-08-17
+    feed-discovery run, which offered Rocky Mountain National Park Shuttles
+    (Colorado) as a replacement for Keretapi Tanah Melayu, Malaysia's national
+    railway — the two names share only "national", previously not a
+    stopword."""
+    catalog = (
+        "mdb_source_id,data_type,entity_type,location.country_code,"
+        "location.subdivision_name,provider,name,urls.direct_download,urls.license,"
+        "urls.authentication_type,static_reference\n"
+        "176,gtfs,,US,Colorado,Rocky Mountain National Park Shuttles,"
+        "Rocky Mountain National Park Shuttles,"
+        "http://data.trilliumtransit.com/gtfs/rockymountainnationalpark-co-us/"
+        "rockymountainnationalpark-co-us.zip,,,\n"
+    )
+    feeds = parse_catalog(catalog)
+    registry = [
+        (
+            "ktmb-national",
+            "Keretapi Tanah Melayu (KTMB)",
+            "https://api.data.gov.my/gtfs-static/ktmb",
+        )
+    ]
+    (m,) = find_replacements(feeds, registry)
+    assert m.status == "missing"
+    assert m.candidates == []
+
+
 def test_render_replacements_md_lists_only_actionable() -> None:
     feeds = parse_catalog(DISCOVERY_CATALOG)
     registry = [
