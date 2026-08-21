@@ -230,6 +230,21 @@ def test_run_validator_heap_is_tunable_by_env(
     assert calls[0][1] == "-Xmx10g"
 
 
+def test_run_validator_heap_falls_back_when_env_is_present_but_empty(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Regression for issue #297's live validate-one-feed.yml dispatch: a
+    workflow_dispatch input left blank sets the env var to "", not absent.
+    os.environ.get(key, default) only falls back on a missing key, so this
+    previously produced a bare "-Xmx" and the JVM refused to start."""
+    gtfs = _stub_runner(monkeypatch, tmp_path)
+    out = tmp_path / "out"
+    calls = _capture_cmd(monkeypatch, out)
+    monkeypatch.setenv("SCORECARD_LARGE_FEED_HEAP", "")
+    validate.run_validator(gtfs, out, large_feed=True)
+    assert calls[0][1] == f"-Xmx{validate.DEFAULT_LARGE_FEED_HEAP}"
+
+
 def test_run_validator_standard_feed_has_no_heap_flag(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:

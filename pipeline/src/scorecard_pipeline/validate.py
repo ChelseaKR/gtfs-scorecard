@@ -117,7 +117,19 @@ DEFAULT_LARGE_FEED_HEAP = "6g"
 
 
 def large_feed_heap() -> str:
-    return os.environ.get("SCORECARD_LARGE_FEED_HEAP", DEFAULT_LARGE_FEED_HEAP)
+    """The -Xmx value for a large-feed validation.
+
+    Caught live dispatching validate-one-feed.yml (issue #297) against
+    ovapi-netherlands: a workflow_dispatch input left at its default `""`
+    sets the env var present-but-empty, not absent. `os.environ.get(key,
+    default)` only falls back to `default` when `key` is missing entirely, so
+    that produced `-Xmx` with no value and the JVM refused to start
+    ("Invalid maximum heap size: -Xmx") — a different failure than anything
+    this env var was meant to cause. Stripped and treated as unset here so
+    every caller gets a real heap value regardless of how the empty case is
+    spelled.
+    """
+    return os.environ.get("SCORECARD_LARGE_FEED_HEAP", "").strip() or DEFAULT_LARGE_FEED_HEAP
 
 
 def _memory_bound_prefix() -> list[str]:
