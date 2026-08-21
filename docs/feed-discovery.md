@@ -4,7 +4,8 @@ Run 2026-08-17. Source: mobilitydatabase.org catalog CSV.
 
 This checks whether the feed URL each agency is tracked on still appears in the Mobility Database, and where it doesn't, proposes the catalog feed that looks like the same agency. Candidates are suggestions to verify by hand, not automatic edits.
 
-- **7** agencies look **replaced**: the catalog lists a different download URL for the same agency.
+- **5** agencies look **replaced**: the catalog lists a different download URL for the same agency.
+- **2** agencies (KTMB, City of Wasco) surfaced a candidate that a human reviewer rejected — see below.
 - **0** agencies have **no catalog match** on name or URL.
 - **459** agencies are still on their **listed URL**: the link is canonical, so any staleness is at the source, not a wrong URL here.
 
@@ -13,18 +14,6 @@ This checks whether the feed URL each agency is tracked on still appears in the 
 ### Azienda Napoletana Mobilità (ANM) (`anm-napoli`)
 - Tracked URL (not in catalog): https://dati.comune.napoli.it/dataset/75007df9-fdb2-427c-ad81-d5e084946ebc/resource/8b17b44d-1afc-421a-881b-857fa756ec03/download/google_transit.zip
 - Candidate (mdb 893, Azienda Napoletana Mobilità): http://www.anm.it/google/google-transit.zip
-
-### City of Wasco (`city-of-wasco`)
-- Tracked URL (not in catalog): https://gtfs.dds.dot.ca.gov/gtfs_files/WascoDialaRideFlex.zip
-- Candidate (mdb 1788, City of Wasco): https://gtfs.calitp.org/production/WascoDialaRideFlex.zip
-
-### Keretapi Tanah Melayu (KTMB) (`ktmb-national`)
-- Tracked URL (not in catalog): https://api.data.gov.my/gtfs-static/ktmb
-- Candidate (mdb 176, Rocky Mountain National Park Shuttles): http://data.trilliumtransit.com/gtfs/rockymountainnationalpark-co-us/rockymountainnationalpark-co-us.zip
-- Candidate (mdb 405, National Park Service): http://nationalparkservice.github.io/nps-gtfs/cuva/scenic-rail/gtfs.zip — license https://creativecommons.org/publicdomain/zero/1.0/
-- Candidate (mdb 969, Morton's Coaches): https://www.transportforireland.ie/transitData/google_transit_mortons.zip
-- Candidate (mdb 1081, Ulmer Eisenbahnfreunde, Sächsisch-Oberlausitzer Eisenbahngesellschaft, SDG Sächsische Dampfeisenbahngesellschaft mbH, SNCF, vlexx, DB AG, SBB, Nordbahn Eisenbahngesellschaft, Norddeutsche Eisenbahn Gesellschaft, AKN Eisenbahn GmbH, Ostdeutsche Eisenbahn GmbH, NEB Niederbarnimer Eisenbahn, Hanseatische Eisenbahn GmbH, City-Bahn Chemnitz, vogtlandbahn - Die Länderbahn GmbH DLB, trilex - Die Länderbahn GmbH DLB, Mitteldeutsche Regiobahn, DB Regio AG Südost, Freiberger Eisenbahngesellschaft, Arriva Danmark, Abellio Rail NRW GmbH, TRI Train Rental GmbH, National Express, DB Regio AG NRW, eurobahn, Hessische Landesbahn, NordWestBahn, Centralbahn, VIAS Rail GmbH, Rurtalbahn, SNCB, DB RegioNetz Verkehrs GmbH Kurhessenbahn, cantus Verkehrsgesellschaft, metronom, Verkehrsgesellschaft Start Unterelbe mbH, erixx, WestfalenBahn, enno, EVB ELBE-WESER GmbH, Bentheimer Eisenbahn, Abellio Rail Mitteldeutschland GmbH, Dessau-Wörlitzer Eisenbahn, Harzer Schmalspurbahn, DB Regio AG Bayern, alex - Die Länderbahn GmbH DLB, DB Regio AG Bayern, DB RegioNetz Verkehrs GmbH Südostbayernbahn, Bayerische Regiobahn, DB Regio AG Bayern, Bayerische Regiobahn, DB RegioNetz Verkehrs GmbH Südostbayernbahn, Bayerische Regiobahn, Go-Ahead Bayern GmbH, agilis, agilis-Schnellzug, oberpfalz-express - Die Länderbahn GmbH DLB, oberpfalzbahn - Die Länderbahn GmbH DLB, waldbahn - Die Länderbahn GmbH DLB, Erfurter Bahn, Österreichische Bundesbahnen, Museumsbahn, Brohltalbahn, Kasbachtalbahn, Kandertalbahn, Wutachtalbahn, Öchsle-Bahn-Betriebsgesellschaft mbH, Rhön-Zügle, Mainschleifenbahn, Ilztalbahn, Wanderbahn im Regental, Chiemgauer Lokalbahn, BayernBahn GmbH, SÜWEX, CFL, MittelrheinBahn (Trans Regio), Rhenus Veniro, Daadetalbahn, Go-Ahead Baden-Württemberg GmbH, THURBO, DB Regio AG Baden-Württemberg, Hohenzollerische Landesbahn AG, SWEG Bahn Stuttgart GmbH (ehem. Abellio BW), Südwestdeutsche Verkehrs-GmbH, Schwäbische Alb-Bahn, Bodensee-Oberschwaben-Bahn, Erfurter Bahn Express, Süd-Thüringen-Bahn, Süd-Thüringen-Bahn Express, Pressnitztalbahn, Mecklenburgische Bäderbahn Molli, Ceske Drahy, GW Train Regio): https://www.nvbw.de/fileadmin/user_upload/service/open_data/fahrplandaten_mit_liniennetz/bwspnv.zip — license https://www.nvbw.de/open-data/fahrplandaten/fahrplandaten-mit-liniennetz
-- Candidate (mdb 1094, Rurtalbahn GmbH, ABELLIO Rail, VIAS GmbH, Aachener Straßenbahn und Energieversorgungs-AG, Rurtalbus GmbH, WestVerkehr GmbH, Staatsbahnen, National Express, ASEAG Netliner): http://opendata.avv.de/current_GTFS/AVV_GTFS_mit_SPNV.zip
 
 ### Münchner Verkehrs- und Tarifverbund (MVV) (`mvv-munchen`)
 - Tracked URL (not in catalog): https://storage.googleapis.com/storage/v1/b/mdb-latest/o/de-bayern-munchner-verkehrs-und-tarifverbund-mvv-gtfs-779.zip?alt=media
@@ -41,6 +30,17 @@ This checks whether the feed URL each agency is tracked on still appears in the 
 ### STCP (Sociedade de Transportes Colectivos do Porto) (`stcp-porto`)
 - Tracked URL (not in catalog): https://opendata.porto.digital/dataset/5275c986-592c-43f5-8f87-aabbd4e4f3a4/resource/57320c51-39e0-4181-a4d4-17cf0b031be8/download/gtfs_feed.zip
 - Candidate (mdb 2148, Sociedade de Transportes Colectivos do Porto (STCP)): https://opendata.porto.digital/dataset/5275c986-592c-43f5-8f87-aabbd4e4f3a4/resource/89a6854f-2ea3-4ba0-8d2f-6558a9df2a98/download/horarios_gtfs_stcp_16_04_2025.zip — license https://opendata.porto.digital/dataset/horarios-paragens-e-rotas-em-formato-gtfs-stcp/resource/415bf8d5-4c18-40b3-9516-9d9187185ef9
+
+## Reviewed and rejected — no valid candidate
+
+### Keretapi Tanah Melayu (KTMB) (`ktmb-national`)
+- Tracked URL: https://api.data.gov.my/gtfs-static/ktmb — not present in the catalog CSV, but confirmed live by hand (HTTP 200, `Last-Modified` within the last day). **Left unchanged.**
+- The catalog-matching step returned five candidates for this agency, none of which is Keretapi Tanah Melayu: Rocky Mountain National Park Shuttles (mdb 176, Colorado), a National Park Service scenic railroad (mdb 405, Ohio), Morton's Coaches (mdb 969, Ireland), and two German regional-rail consortium feeds (mdb 1081, mdb 1094). Root cause: `_name_tokens()` in `pipeline/src/scorecard_pipeline/mobilitydb.py` tokenizes "Keretapi Tanah Melayu (KTMB)" and "ktmb-national" down to `{keretapi, tanah, melayu, ktmb, national}`, and "national" was not a stopword — so any catalog feed whose provider or name also contained the word "national" scored as a one-token match, regardless of country or mode. Fixed in the same change that reverts this URL: `national` added to `_NAME_STOPWORDS` alongside the already-excluded `regional`/`metropolitan`/`municipal`, with a regression test (`test_find_replacements_ignores_generic_national_token` in `pipeline/tests/test_mobilitydb.py`) reproducing this exact pairing. Before the fix, the top-ranked candidate (mdb 176) had been applied to the registry on the branch this report first shipped on, pairing Malaysia's national railway with a Colorado park-shuttle feed; that edit was reverted by hand before merge.
+
+### City of Wasco (`city-of-wasco`)
+- Tracked URL: https://gtfs.dds.dot.ca.gov/gtfs_files/WascoDialaRideFlex.zip — pinned via `mdb_id: 1788`, so the matcher's highest-trust path fired correctly; the catalog really does list a different URL for this exact mdb id. **Left unchanged anyway.**
+- Candidate (mdb 1788, City of Wasco): https://gtfs.calitp.org/production/WascoDialaRideFlex.zip
+- This one isn't a matcher bug: `registry/us/ca.yaml`'s `city-of-wasco` entry carries a hand-written `operating_note` ("The official DDS ZIP is stale and noncanonical as packaged...") and a `license_note` that deliberately cites the Caltrans DDS index, not the calitp.org mirror, as the attributed source — a prior curatorial decision to source from the state's own index despite its worse packaging, pinned down by `pipeline/tests/test_agencies.py::test_repo_registry_tracks_calitp_hosting_migration`. Applying the catalog's pinned-id candidate would have silently reverted that decision. A pinned `mdb_id` match is correct evidence that a URL moved; it isn't evidence that the moved-to URL is the one this repo wants to track. Worth a follow-up: teach `discover` to skip (or flag instead of list under "Likely replaced") any agency with a `operating_note`/`license_note` that already names the current host, so this doesn't require a manual reject every week the report reruns.
 
 ## Still on the listed URL — staleness is at the source
 

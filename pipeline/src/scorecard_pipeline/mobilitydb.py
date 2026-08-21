@@ -1079,6 +1079,7 @@ _NAME_STOPWORDS = frozenset(
         "county",
         "area",
         "regional",
+        "national",
         "rural",
         "public",
         "system",
