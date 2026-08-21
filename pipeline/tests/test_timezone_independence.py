@@ -239,6 +239,19 @@ BANNED_CLOCK_READS = (
 )
 
 
+# Directories that hold code this repository did not write: the Lambda packaging
+# step vendors its dependencies into `infra/submit/build/`, and a virtualenv or a
+# byte-cache can appear anywhere. All three are gitignored, so CI never sees
+# them, and the guard was failing only on the laptop of whoever had run the build
+# last. It named `urllib3/connection.py` when it did, which is not a file anyone
+# here can fix.
+NOT_OUR_SOURCE = frozenset({"build", "dist", "__pycache__", ".venv", "venv", "site-packages"})
+
+
+def _is_our_source(path: Path) -> bool:
+    return NOT_OUR_SOURCE.isdisjoint(path.parts)
+
+
 def test_no_pipeline_module_reads_the_machines_local_clock() -> None:
     """Keep the fix from being undone one convenient one-liner at a time.
 
@@ -249,12 +262,13 @@ def test_no_pipeline_module_reads_the_machines_local_clock() -> None:
     `infra/` is in scope because the Lambda and queue workers write the same
     artifacts as the CI matrix. AWS runtimes default to UTC, which is exactly
     what made this class of bug invisible until somebody ran the same code on a
-    laptop.
+    laptop. Build output under `infra/` is not in scope: see `NOT_OUR_SOURCE`.
     """
     offenders = []
     sources = sorted((PIPELINE_ROOT / "src").rglob("*.py"))
     sources += sorted((PIPELINE_ROOT / "scripts").rglob("*.py"))
     sources += sorted((PIPELINE_ROOT.parent / "infra").rglob("*.py"))
+    sources = [path for path in sources if _is_our_source(path)]
     assert sources, "the guard found no sources to scan"
     for path in sources:
         code = _executable_source(path)
@@ -282,3 +296,17 @@ def test_source_guard_would_catch_a_reintroduced_local_read(tmp_path: Path) -> N
     sample.write_text("import datetime as dt\n\nBAD = dt.date.today()\n")
     code = _executable_source(sample)
     assert [banned for banned in BANNED_CLOCK_READS if banned in code] == ["date.today()"]
+
+
+def test_the_guard_skips_vendored_build_output_but_not_our_own_infra_code() -> None:
+    """A vendored dependency under `infra/submit/build/` is not ours to fix.
+
+    The gitignored Lambda bundle put `urllib3/connection.py` in the offender
+    list, so `make verify` failed for anyone who had packaged the submit
+    function locally while CI, checking out a clean tree, stayed green.
+    """
+    root = PIPELINE_ROOT.parent
+    assert _is_our_source(root / "infra" / "submit" / "handler.py")
+    assert not _is_our_source(root / "infra" / "submit" / "build" / "urllib3" / "connection.py")
+    assert not _is_our_source(root / "pipeline" / "src" / "__pycache__" / "cached.py")
+    assert not _is_our_source(root / "pipeline" / ".venv" / "lib" / "somedep.py")
