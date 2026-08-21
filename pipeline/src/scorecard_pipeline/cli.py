@@ -2393,9 +2393,62 @@ def _cmd_canada_equity(args: argparse.Namespace, parser: argparse.ArgumentParser
         log.info("canada-equity: %s -> %s (mean quintile %s)", agency.id, tier, quintile)
     doc: dict[str, Any] = {"schema_version": 1, "agencies": results}
     out_path = Path(args.out) if args.out else artifacts_dir() / "canada-equity.json"
+
+    # Every failure above is a `continue`, so without these two checks a StatCan
+    # outage writes an empty overlay, the monthly workflow commits it, and every
+    # published Canadian need tier disappears under a green run. The ACS command
+    # already refuses that (`equity: 0 of N states ... Refusing to overwrite`);
+    # this is the same rule for the CIMD path. --allow-empty is the deliberate
+    # override, for the first run and for a real registry change.
+    if agencies and not results and not args.allow_empty:
+        log.error(
+            "canada-equity: 0 of %d Canadian agencies produced a need tier. "
+            "Refusing to overwrite %s with an empty overlay (pass --allow-empty to "
+            "override). Check the StatCan CIMD service and whether the geometry "
+            "artifacts have been scored.",
+            len(agencies),
+            out_path,
+        )
+        return 1
+    published = _published_canada_tiers(out_path)
+    registered = {a.id for a in agencies}
+    # An agency that left the registry is allowed to leave the overlay; one that
+    # is still tracked and was published before is not allowed to vanish because
+    # this run happened to fail on it.
+    dropped = sorted((published & registered) - results.keys())
+    if dropped and not args.allow_empty:
+        log.error(
+            "canada-equity: %s %s already published in %s but produced no tier this "
+            "run. Refusing to drop %s from the overlay (pass --allow-empty to "
+            "override). The warnings above name the reason for each.",
+            ", ".join(dropped),
+            "was" if len(dropped) == 1 else "were",
+            out_path,
+            "it" if len(dropped) == 1 else "them",
+        )
+        return 1
+
     out_path.write_text(_json.dumps(doc, indent=2, sort_keys=True) + "\n")
     log.info("canada-equity: wrote %d Canadian agency tiers to %s", len(results), out_path)
     return 0
+
+
+def _published_canada_tiers(out_path: Path) -> set[str]:
+    """Agency ids in the overlay this run is about to overwrite, if it is readable.
+
+    An unreadable or absent file is treated as "nothing published yet" rather
+    than as a failure: the regression guard above only exists to stop a working
+    overlay from being emptied, and there is nothing to protect if there is no
+    prior overlay to compare against.
+    """
+    import json as _json
+
+    try:
+        previous = _json.loads(out_path.read_text())
+    except (OSError, ValueError):
+        return set()
+    agencies = previous.get("agencies")
+    return set(agencies) if isinstance(agencies, dict) else set()
 
 
 def _cmd_gbfs(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
@@ -3140,6 +3193,14 @@ def main(argv: list[str] | None = None) -> int:
     )
     canada_equity.add_argument(
         "--out", help="write canada-equity.json here (default: data/artifacts/canada-equity.json)"
+    )
+    canada_equity.add_argument(
+        "--allow-empty",
+        action="store_true",
+        help=(
+            "write the overlay even when it drops an agency that is already published, "
+            "or has no tiers at all (default: fail rather than empty the overlay)"
+        ),
     )
 
     query = sub.add_parser(

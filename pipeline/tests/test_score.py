@@ -292,3 +292,41 @@ def test_to_json_carries_grade_margins() -> None:
     top = build_scorecard([category("correctness", 95.0)]).to_json()["overall"]
     assert top["margin_to_next_band"] is None
     assert top["margin_to_lower_band"] == 5.0
+
+
+def test_published_letter_agrees_with_the_published_score() -> None:
+    """The letter a reader sees must be the letter the printed score earns.
+
+    Real regression: five agencies published "Grade C * 80.0 / 100" because the
+    raw score was 79.96875 -- rounded up for display, graded down. A consumer
+    applying the bands in the published scoring.json to the published score got
+    a different letter than the artifact carried.
+    """
+    from scorecard_pipeline.score import GRADE_BANDS
+
+    # Category scores chosen so the weighted overall lands just under a band
+    # floor and rounds onto it: 35% * 79.9 + 20% * 80.1 + 25% * 80.0 + 20% * 80.0
+    # = 79.965, which prints as 80.0.
+    card = build_scorecard(
+        [
+            category("correctness", 79.9),
+            category("freshness", 80.1),
+            category("completeness", 80.0),
+            category("realtime", 80.0),
+        ]
+    )
+    assert card.overall_score < 80.0
+    payload = card.to_json()["overall"]
+    assert payload["score"] == 80.0
+    assert payload["grade"] == "B"
+    # And the margins are measured from the same number, so a grade is never
+    # reported as sitting 0.0 points from the band it is already in.
+    assert payload["margin_to_lower_band"] == 0.0
+    assert payload["margin_to_next_band"] == pytest.approx(10.0)
+
+    # The property, stated generally: applying the published bands to the
+    # published score always reproduces the published letter.
+    for raw in (59.96, 59.999, 69.98, 79.96875, 89.97, 90.04, 100.0, 0.0, 42.42):
+        one = build_scorecard([category("correctness", raw)]).to_json()["overall"]
+        expected = next(letter for floor, letter in GRADE_BANDS if one["score"] >= floor)
+        assert one["grade"] == expected, (raw, one)

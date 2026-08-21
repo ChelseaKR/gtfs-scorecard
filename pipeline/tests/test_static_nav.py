@@ -97,19 +97,20 @@ def test_shared_social_image_has_declared_dimensions() -> None:
     assert struct.unpack(">II", png[16:24]) == (1200, 630)
 
 
-def test_consulting_offer_stays_hidden_from_public_project_surfaces() -> None:
-    """The temporary hide covers the live page and repository entry points."""
+def test_consulting_offer_is_reachable_from_public_project_surfaces() -> None:
+    """The July hide was explicitly temporary; this is its inverse.
+
+    A paid offer that quietly disappears from every entry point is the failure
+    this replaces, so the link is asserted present rather than absent. The
+    separation claim is asserted too: paid help never changes a grade.
+    """
     public_sources = (
         _REPO / "web" / "support" / "index.html",
         _REPO / "README.md",
         _REPO / "docs" / "support.md",
     )
     for path in public_sources:
-        text = path.read_text()
-        assert "chelseakr.com/consulting" not in text, path
-    support_html = public_sources[0].read_text()
-    assert "Professional help" not in support_html
-    assert "Implement the fixes with Chelsea" not in support_html
+        assert "chelseakr.com/consulting" in path.read_text(), path
 
 
 def test_local_fonts_do_not_swap_after_first_paint() -> None:

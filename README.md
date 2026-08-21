@@ -84,6 +84,10 @@ be added through `registry/intake.yaml`.
   [bounded open issue](https://github.com/ChelseaKR/gtfs-scorecard/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22)
   or read [CONTRIBUTING.md](CONTRIBUTING.md). Feed corrections, accessibility
   review, and practitioner feedback are useful without changing scoring code.
+- **Get help, or fund the work:** [SUPPORT.md](SUPPORT.md) is the front door for
+  both. Scoring is free for every agency and stays that way; the
+  [support page](https://gtfsscorecard.org/support/) explains what running the
+  service costs, what sponsorship would pay for, and what it never buys.
 
 ## Quickstart
 
@@ -280,12 +284,17 @@ Any agency with a public GTFS feed can be added with one YAML block in
 deployed `infra/submit` endpoint; every submission still opens a pull request
 for human review before publication.
 
-## Support
+## Support and services
 
 The public scorecards, data, API, local pre-publish check, and request-backed
 one-off scoring remain free. The [support page](https://gtfsscorecard.org/support/)
 explains the project's infrastructure needs and accepts sponsorship inquiries;
 it does not advertise a payment rail that is not ready.
+
+Programs and agencies that want a facilitated audit, workshop, or implementation
+help can review the current [consulting services and pricing](https://chelseakr.com/consulting/).
+Paid help is separate from scoring and never changes a grade or removes anything
+from the free tier.
 
 ## Standards conformance
 
@@ -308,7 +317,7 @@ declared here; none is silently skipped.
 | [AI Development Measurement](docs/standards/AI-DEVELOPMENT-MEASUREMENT-STANDARD.md) | Applies — delivery and quality-debt outcomes are measured at repository level; local AI-tool telemetry is never a merge gate |
 | [Quality & Metrics](docs/standards/QUALITY-AND-METRICS-STANDARD.md) | Applies (data-quality/lineage named for this repo explicitly) |
 | [Documentation](docs/standards/DOCUMENTATION-STANDARD.md) | Applies |
-| [Release & Versioning](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.4.0`), monthly dataset releases; the MCP server manifest is written but not published to the registry (see Versioning) |
+| [Release & Versioning](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) | Applies — reusable Action tags (`v1`/`v1.5.0`), monthly dataset releases; the MCP server manifest is written but not published to the registry (see Versioning) |
 | [Responsible-Tech Framework](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) | Applies (audits A-F; AI-governance rows N/A — no AI system) |
 | [Incident Response](docs/standards/INCIDENT-RESPONSE-STANDARD.md) | Applies — deployed static site and scheduled pipeline; incidents use the shared severity, label, postmortem, and secret-leak conventions |
 | [Data Governance](docs/standards/DATA-GOVERNANCE-STANDARD.md) | Applies — public civic datasets, feed provenance, licenses, retention, and publication lineage are core product concerns |

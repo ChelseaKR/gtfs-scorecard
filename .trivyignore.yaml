@@ -1,9 +1,12 @@
 vulnerabilities:
-  # MobilityData 8.0.1 is the latest official gtfs-validator release as of
-  # 2026-07-10. Its shaded CLI jar carries these fixed transitive-library CVEs,
-  # but no patched upstream artifact exists. vex.json records the code-path or
-  # archive-preflight justification for each time-bounded exception. CI tests
-  # keep this list, the VEX, and the validator pin synchronized.
+  # MobilityData 8.0.1 is still the latest official gtfs-validator release as
+  # of 2026-08-16 (checked against the GitHub releases API). Its shaded CLI jar
+  # carries these fixed transitive-library CVEs, but no patched upstream
+  # artifact exists, and repackaging the jar ourselves would break the sha256
+  # pin to the published release that both Dockerfiles verify. Every entry here
+  # is about that one jar; vex.json records the code-path or archive-preflight
+  # justification for each time-bounded exception. CI tests keep this list, the
+  # VEX, and the validator pin synchronized.
   - id: CVE-2022-25647
     statement: "Gson deserialization path is not used for untrusted GTFS input; see vex.json."
     expired_at: 2026-10-08
@@ -28,6 +31,9 @@ vulnerabilities:
   - id: CVE-2021-36090
     statement: "GTFS archive size, entry, and compression limits run before Java; see vex.json."
     expired_at: 2026-10-08
-  - id: CVE-2026-39822
-    statement: "AWS Lambda RIE is not invoked in the managed Lambda runtime; see vex.json."
+  - id: CVE-2026-54399
+    statement: "Validator is only ever given a local zip, so its Apache HTTP parser never loads; measured, see vex.json."
+    expired_at: 2026-10-08
+  - id: CVE-2026-54428
+    statement: "Validator is only ever given a local zip, so its HTTP/2 HPACK decoder never loads; measured, see vex.json."
     expired_at: 2026-10-08
