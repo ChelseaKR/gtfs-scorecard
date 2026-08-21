@@ -3060,7 +3060,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     ntd_label = _NTD_LABELS.get(ntd_status, ntd_status)
     pillar_rows = "".join(
         f"<dt>{esc(_NTD_PILLAR_NAMES.get(p.get('key', ''), p.get('key', '')))} "
-        f'<span class="ntd-status ntd-{esc(str(p.get("status", "")))}">'
+        f'<span class="ntd-status {_ntd_status_class(str(p.get("status", "")))}">'
         f"{esc(_NTD_LABELS.get(str(p.get('status', '')), str(p.get('status', ''))))}</span></dt>"
         f"<dd>{esc(str(p.get('detail', '')))}</dd>"
         for p in readiness.get("pillars", [])
@@ -3565,13 +3565,34 @@ def _google_gate_line(artifact: dict[str, Any], now: dt.datetime | None = None) 
     )
 
 
-_NTD_LABELS = {"ready": "Ready", "at_risk": "Needs attention", "not_ready": "Not ready"}
+_NTD_LABELS = {
+    "ready": "Ready",
+    "at_risk": "Needs attention",
+    "not_ready": "Not ready",
+    # A pillar nobody measured. Same wording the optional-equality row already
+    # uses for its unchecked case, so an unmeasured dimension never borrows the
+    # "Needs attention" badge that genuine failures carry.
+    "not_checked": "Not checked yet",
+}
 _NTD_PILLAR_NAMES = {
     "published": "Published",
     "valid": "Valid",
     "current": "Current",
     "agency_id": "agency_id provided",
 }
+# Status to badge class. "not_checked" reuses the neutral class the equality row
+# already uses, rather than the warning color that reads as a defect.
+_NTD_STATUS_CLASSES = {
+    "ready": "ntd-ready",
+    "at_risk": "ntd-at_risk",
+    "not_ready": "ntd-not_ready",
+    "not_checked": "ntd-unknown",
+}
+
+
+def _ntd_status_class(status: str) -> str:
+    return _NTD_STATUS_CLASSES.get(status, "ntd-unknown")
+
 
 # Equality between agency_id and the five-digit NTD ID is optional, separate
 # from the required agency_id presence pillar, and carries no score. A mismatch
@@ -3671,7 +3692,7 @@ def _shapes_readiness_html(artifact: dict[str, Any]) -> str:
         body += f" {esc(fix)}"
     return (
         '<dl class="standards-list">'
-        f'<dt>shapes.txt covers your trips <span class="ntd-status ntd-{status}">'
+        f'<dt>shapes.txt covers your trips <span class="ntd-status {_ntd_status_class(status)}">'
         f"{esc(label)}</span></dt><dd>{body}</dd></dl>"
     )
 
@@ -3723,19 +3744,33 @@ def _ntd_section(artifact: dict[str, Any]) -> str:
     each labelled in text as well as color so status never relies on color alone.
 
     US-only: a non-US agency (agency.country != "US") has no FTA NTD, so this
-    returns "" and the page shows just the GTFS-quality rubric. See ADR 0026."""
+    returns "" and the page shows just the GTFS-quality rubric. See ADR 0026.
+
+    Gated on ``presented_readiness``, which returns None when the artifact
+    carries no stored ``ntd_readiness``. Calling the assessor directly here used
+    to synthesize a verdict for feeds the pipeline had never assessed, so the
+    standalone HTML showed a readiness box that the SPA and the API both omitted
+    for the same artifact. The three surfaces now agree: no stored readiness, no
+    box."""
     if artifact.get("agency", {}).get("country", "US") != "US":
         return ""
-    readiness = ntd_assess(artifact)
+    readiness = presented_ntd_readiness(artifact)
+    if not readiness:
+        return ""
+    pillars = readiness.get("pillars", [])
     rows = []
-    for pillar in readiness.pillars:
-        label = _NTD_LABELS.get(pillar.status, pillar.status)
-        name = _NTD_PILLAR_NAMES.get(pillar.key, pillar.key)
+    for pillar in pillars:
+        status = str(pillar.get("status", ""))
+        label = _NTD_LABELS.get(status, status)
+        key = str(pillar.get("key", ""))
+        name = _NTD_PILLAR_NAMES.get(key, key)
         rows.append(
-            f'<dt>{name} <span class="ntd-status ntd-{pillar.status}">{esc(label)}</span></dt>'
-            f"<dd>{esc(pillar.detail)}</dd>"
+            f'<dt>{esc(name)} <span class="ntd-status {_ntd_status_class(status)}">'
+            f"{esc(label)}</span></dt>"
+            f"<dd>{esc(str(pillar.get('detail', '')))}</dd>"
         )
-    overall = _NTD_LABELS.get(readiness.status, readiness.status)
+    readiness_status = str(readiness.get("status", ""))
+    overall = _NTD_LABELS.get(readiness_status, readiness_status)
     # Curator-recorded reporting arrangement (a shared regional feed, an FTA
     # waiver): shown with the verdict so those agencies are never read as
     # flagged for identity or coverage they do not own (R15).
@@ -3745,16 +3780,29 @@ def _ntd_section(artifact: dict[str, Any]) -> str:
         if ntd_note
         else ""
     )
+    # The shapes.txt requirement is only stated when this page actually shows a
+    # shapes coverage line. Asserting the requirement with no measurement beside
+    # it left a reader to supply the missing verdict themselves, which is how a
+    # workshop participant reported partial coverage for a feed whose shapes were
+    # never counted. Requirement and measurement now appear together or not at all.
+    shapes_html = _shapes_readiness_html(artifact)
+    shapes_fineprint = (
+        "FTA also requires shapes.txt in the published GTFS: Full Reporters from Report "
+        "Year 2025, and Reduced, Rural, and Tribal Reporters from Report Year 2026. "
+        if shapes_html
+        else ""
+    )
     return (
         '<section aria-labelledby="ntd-h" class="feed-details">'
         '<h2 class="section-title" id="ntd-h">'
         '<abbr title="National Transit Database">NTD</abbr> GTFS readiness '
-        f'<span class="ntd-status ntd-{readiness.status}">{esc(overall)}</span></h2>'
+        f'<span class="ntd-status {_ntd_status_class(readiness_status)}">'
+        f"{esc(overall)}</span></h2>"
         f"{note_html}"
-        f'<p class="page-lede">{esc(readiness.summary)}</p>'
+        f'<p class="page-lede">{esc(str(readiness.get("summary", "")))}</p>'
         f'<dl class="standards-list">{"".join(rows)}</dl>'
         f"{_ntd_id_alignment_html(artifact)}"
-        f"{_shapes_readiness_html(artifact)}"
+        f"{shapes_html}"
         '<p class="plain-summary"><strong>In plain words:</strong> if you report to the federal '
         "transit database, you have to publish a working, up-to-date feed, provide a stable "
         "agency_id for each represented reporter, and confirm the feed and P-50 crosswalk each "
@@ -3766,8 +3814,7 @@ def _ntd_section(artifact: dict[str, Any]) -> str:
         'annually on the <abbr title="FTA NTD certification form D-10">D-10</abbr>). For RY2026, '
         "each represented reporter needs a stable agency_id, unique within the feed and "
         "crosswalked to its five-digit NTD ID on P-50; the values do not need to be equal. "
-        "FTA also requires shapes.txt in the published GTFS: Full Reporters from Report "
-        "Year 2025, and Reduced, Rural, and Tribal Reporters from Report Year 2026. Not an "
+        f"{shapes_fineprint}Not an "
         "official determination; your certification is the official check.</p></section>"
     )
 
