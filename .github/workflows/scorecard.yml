@@ -41,6 +41,14 @@ jobs:
   score:
     needs: plan
     runs-on: ubuntu-latest
+    # RELIABILITY (issue #297): a shard whose runner is killed mid-validation
+    # (observed: ovapi-netherlands, "received a shutdown signal") previously had
+    # no bound short of the platform's 360-minute default, so a hang was
+    # indistinguishable from a slow shard for six hours. Sized above the
+    # slowest recent successful shard (~32 min) with headroom for registry
+    # growth; a shard that blows through this is a hang worth surfacing, not
+    # ordinary variance.
+    timeout-minutes: 55
     permissions:
       contents: read
       id-token: write # OIDC for the optional S3 validator cache
@@ -164,13 +172,23 @@ jobs:
 
   collect:
     needs: score
+    # RELIABILITY (issue #297): `needs: score` alone defaults to `if: success()`,
+    # so one dead shard (e.g. a runner killed validating a large feed) skipped
+    # collect and deploy entirely and dropped the whole day's publish, even
+    # though the other 31 shards scored cleanly. `!cancelled()` runs collect
+    # whenever the workflow wasn't cancelled outright, regardless of individual
+    # shard outcomes; the artifact-count floor below refuses to publish only
+    # when that leniency would otherwise ship an empty corpus.
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
+    timeout-minutes: 60
     concurrency:
       group: artifacts-publish
       cancel-in-progress: false
     permissions:
       contents: read
       id-token: write # OIDC for the optional CDN mirror
+      actions: read # count shard artifact bundles before trusting a publish
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
@@ -221,6 +239,30 @@ jobs:
           pattern: artifacts-*
           merge-multiple: true
           path: data/artifacts
+      # RELIABILITY (issue #297): download-artifact silently tolerates a
+      # missing shard bundle (a shard whose runner died before upload has
+      # nothing to fetch), so a run where every shard failed would otherwise
+      # merge zero files into data/artifacts and reindex/publish an empty
+      # corpus with no error. Count the shard bundles this run actually
+      # produced against how many `plan` scheduled, before spending any more
+      # of this job on them.
+      - name: Verify shard artifacts before publishing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          expected="$SHARD_COUNT"
+          got=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts?per_page=100" \
+            --paginate --jq '.artifacts[].name' | grep -c '^artifacts-' || true)
+          echo "shard artifact bundles present: $got / $expected"
+          if [ "$got" -eq 0 ]; then
+            echo "::error::No shard uploaded any artifacts this run (0/$expected). Every score shard failed or its runner died before upload; refusing to publish an empty corpus. See the score jobs above for the cause."
+            exit 1
+          fi
+          half=$(( expected / 2 ))
+          if [ "$got" -lt "$half" ]; then
+            echo "::warning title=Most shards missing::Only $got of $expected shards uploaded artifacts this run. Publishing anyway with the shards that did score; investigate the missing ones."
+          fi
       - name: Gather shard run-health summaries
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
         with:

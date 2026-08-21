@@ -101,7 +101,13 @@ def test_browser_workflows_block_on_structural_seo_independent_of_perf_gate() ->
         assert f"name: {artifact_name}-${{{{ github.run_id }}}}" in report_step, name
         assert "${{ github.run_attempt }}" in report_step, name
         assert "path: seo-report.json" in report_step, name
-        assert "if-no-files-found: error" in report_step, name
+        # issue #297: `error` here meant a failure in an earlier step (e.g.
+        # "Materialize validated current dated records") — which skips the
+        # SEO check and leaves no report to retain — got masked by a second,
+        # more prominent "No files were found" failure from this always-run
+        # step, burying the real cause. `warn` lets a genuinely missing
+        # report pass through quietly instead.
+        assert "if-no-files-found: warn" in report_step, name
         assert "retention-days: 14" in report_step, name
 
 
