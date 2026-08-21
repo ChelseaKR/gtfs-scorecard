@@ -1,0 +1,35 @@
+# zizmor workflow-security-lint config (issue #287).
+#
+# CICD-19/RTF-06 (security.yml's zizmor gate) ran at --min-severity high,
+# which zero of the AUTO-GATE audits the portfolio standards name
+# (persist-credentials, excessive-permissions, unpinned-uses) have ever
+# produced a finding at, so the gate could not fail on the thing it exists to
+# catch. Lowered to --min-severity medium in security.yml; this file records
+# the remaining medium findings that are real, current, and cannot be "fixed"
+# — each is a workflow that pushes to the repository (a branch, a tag, or
+# main) using the same checkout's persisted credential, per an inline
+# `# zizmor(artipacked): ...` comment at each site naming the exact push step
+# that needs it. Exceptions are recorded here, not hidden behind a raised
+# threshold.
+#
+# Every other artipacked finding (17 checkouts across 14 files, none of which
+# push) was fixed directly with persist-credentials: false rather than
+# waived here.
+rules:
+  artipacked:
+    ignore:
+      # git push origin "$branch"; gh pr create (default github.token)
+      - caltrans-crosswalk.yml
+      # git push origin HEAD:main, over a write-scoped deploy key
+      # (secrets.SCHEDULED_WRITER_SSH_KEY)
+      - canada-equity.yml
+      - equity.yml
+      - rt-archive.yml
+      - rt-monitor.yml
+      # The second of two checkouts in the `release` job: the first only
+      # resolves the release SHA (read-only) and already has
+      # persist-credentials: false; this one is what the tag push at the end
+      # of the job uses.
+      - dataset-release.yml
+      # git push (direct to main), committing the rebuilt PMTiles archive
+      - tiles.yml
