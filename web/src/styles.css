@@ -326,6 +326,7 @@ a:hover { color: var(--green-bright); }
   border-radius: var(--radius);
   box-shadow: var(--shadow);
 }
+.support-path-featured { border-top: 5px solid var(--amber); }
 .support-path-kicker {
   margin: 0 0 0.2rem;
   color: var(--green);
@@ -343,7 +344,7 @@ a:hover { color: var(--green-bright); }
 .support-path p { margin-block: 0 0.75rem; }
 .support-path > :last-child { margin-bottom: 0; }
 @media (min-width: 64rem) {
-  .support-paths { grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr)); }
+  .support-paths { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
 :focus-visible {

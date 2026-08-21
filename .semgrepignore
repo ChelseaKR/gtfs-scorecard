@@ -8,11 +8,25 @@
 # reviewed quarterly. At each review, re-run semgrep over the excluded paths,
 # drop any entry that no longer flags, and renew the expiry date in this
 # comment. A lapsed date here is itself a review finding.
-# Last reviewed: 2026-07-17.
+# Last reviewed: 2026-08-16.
+#
+# "Hand-written source stays in scope" was not true of web/ until 2026-08-16.
+# A blanket `web/` excluded the ~6,600 lines of browser JavaScript in web/src/
+# along with the generated pages, so the only hand-written code that runs in a
+# member of the public's browser had no SAST coverage from any tool this repo
+# runs. The exclusion is now the generated feed data itself, which is what the
+# paragraph above actually describes. Note `!` un-ignore lines do NOT work
+# here: semgrep skips the file anyway, so a broad pattern cannot be carved out
+# and each generated tree has to be named.
 registry/**/*.yaml
 registry/**/*.yml
 data/
-web/
+web/agency/
+web/api/
+web/catalog.json
+web/catalog.csv
+web/dataset.json
+web/dataset.csv
 pipeline/tests/fixtures/
 
 # Standard housekeeping (mirrors Semgrep's built-in default ignore list,
