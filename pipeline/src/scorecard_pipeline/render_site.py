@@ -45,6 +45,7 @@ from .comparisons import (
     reader_archive_profile,
     same_producer_contract,
 )
+from .completeness import WEIGHTS as COMPLETENESS_WEIGHTS
 from .config import Agency, artifacts_dir
 from .conformance import assess as conformance_assess
 from .constants_export import GRADE_RANK
@@ -984,7 +985,8 @@ def _accessibility_score(comp_cat: dict[str, Any]) -> float | None:
     Prefers the structured ``accessibility`` block when the artifact carries it,
     and otherwise derives the same number from the wheelchair components that
     already-published artifacts contain, so the sub-score appears without a
-    re-score. Returns None when the category is not measured.
+    re-score. Returns None when the category is not measured, and when neither
+    wheelchair component was measurable.
     """
     if comp_cat.get("status") != "measured":
         return None
@@ -993,10 +995,23 @@ def _accessibility_score(comp_cat: dict[str, Any]) -> float | None:
     if isinstance(acc, dict) and isinstance(acc.get("score"), (int, float)):
         return float(acc["score"])
     comp = details.get("components", {})
-    if "wheelchair_stops" not in comp and "wheelchair_trips" not in comp:
+    # A component is null when the feed gave the pipeline nothing to measure
+    # (no stops, or no trips) rather than zero -- issue #286, fixed in
+    # completeness.py by #300. Reweight over the weight actually measurable,
+    # exactly as completeness.py does, so an unmeasurable half is left out of
+    # the denominator instead of scored as zero points earned. Note that
+    # `comp.get(key, 0)` cannot be used to normalize this: it returns the
+    # default only when the key is absent, and these keys are present and
+    # null.
+    terms = [
+        (COMPLETENESS_WEIGHTS[key], value)
+        for key in ("wheelchair_stops", "wheelchair_trips")
+        if isinstance(value := comp.get(key), (int, float))
+    ]
+    measurable = sum(weight for weight, _ in terms)
+    if not measurable:
         return None
-    earned = float(comp.get("wheelchair_stops", 0)) + float(comp.get("wheelchair_trips", 0))
-    return round(earned / 40 * 100, 1)  # 25 (stops) + 15 (trips) available
+    return round(sum(value for _, value in terms) / measurable * 100, 1)
 
 
 def _accessibility_depth_signals(artifact: dict[str, Any]) -> str:
