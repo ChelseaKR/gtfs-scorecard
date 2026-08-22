@@ -488,8 +488,40 @@ def test_accessibility_score_derives_from_components_in_old_artifacts() -> None:
         "details": {"components": {"wheelchair_stops": 25.0, "wheelchair_trips": 15.0}},
     }
     assert _accessibility_score(cat) == 100.0
+    # Only stops present. The 15 points that belong to trips were never
+    # measured here, so they leave the denominator rather than counting as
+    # zero earned: 12.5 of a measurable 25, not 12.5 of 40.
     half = {"status": "measured", "details": {"components": {"wheelchair_stops": 12.5}}}
-    assert _accessibility_score(half) == round(12.5 / 40 * 100, 1)
+    assert _accessibility_score(half) == 50.0
+
+
+def test_accessibility_score_treats_null_components_as_unmeasured() -> None:
+    # A stops-less feed (demand-response/Flex-only) makes completeness.py emit
+    # `wheelchair_stops: null` rather than 0 -- issue #286, fixed there by #300.
+    # The keys are present and null, so `comp.get(key, 0)` returns None and the
+    # old derivation raised `TypeError: float() argument must be a string or a
+    # real number, not 'NoneType'`, which crashed `render-site` and took the
+    # Daily collect job down with it.
+    null_stops = {
+        "status": "measured",
+        "details": {"components": {"wheelchair_stops": None, "wheelchair_trips": 7.5}},
+    }
+    # Scored over the 15 points that were measurable, not over 40.
+    assert _accessibility_score(null_stops) == 50.0
+
+    null_trips = {
+        "status": "measured",
+        "details": {"components": {"wheelchair_stops": 5.0, "wheelchair_trips": None}},
+    }
+    assert _accessibility_score(null_trips) == 20.0
+
+    # Neither half measurable: no number to report, so report none rather than
+    # a fabricated zero.
+    neither = {
+        "status": "measured",
+        "details": {"components": {"wheelchair_stops": None, "wheelchair_trips": None}},
+    }
+    assert _accessibility_score(neither) is None
 
 
 def test_fares_substat_reports_model_and_applied_state() -> None:
