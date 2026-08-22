@@ -187,10 +187,10 @@ roadmaps and `docs/ideation/`. Hard rules: every metric ships with its
 plain-language explanation; accessibility (WCAG 2.2 AAA) is non-negotiable in
 the web app; agencies without realtime are shown neutrally, never shamed.
 (Agent-facing instructions live here, not in the README; the README states the
-same guardrails for visitors under "Guardrails" and points here. This is a
-deliberate divergence from the vendored DOCUMENTATION-STANDARD v1.0.1, whose §2
-table assigns the Claude Code build entrypoint to the README and whose §7 tells
-an agent to start there. An earlier version of this note cited a
-"DOCUMENTATION-STANDARD §9 [DOC-18]" as authority; the pinned standard has
-eight sections and no such rule, so the divergence is now declared as one in
-`docs/standards-conformance-gaps.md` instead of claimed as conformance.)
+same guardrails for visitors under "Guardrails" and points here. Under the
+v1.0.1 pin this was a declared divergence: that standard's §2 table assigned the
+Claude Code build entrypoint to the README and its §7 told an agent to start
+there, and it had no §9. The pin moved to v2.0.0 on 2026-08-09, which added §9
+"Audience register" and amended §7's first bullet, so DOC-18 now requires the
+arrangement this repo already had. Re-checked 2026-08-15: `agent_docs_separated`
+passes. What was a divergence is conformance under the current pin.)

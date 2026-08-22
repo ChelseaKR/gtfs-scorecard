@@ -16,6 +16,45 @@ dated grades, prioritized fixes, history, program views, practitioner tools,
 and open data. It does not implement a competing GTFS validator. Correctness
 findings come from MobilityData's canonical validator.
 
+## Quickstart
+
+Requires Python 3.12+, [uv](https://docs.astral.sh/uv/), and Java 17+
+(the validator jar is downloaded automatically on first run).
+
+```sh
+cd pipeline
+uv sync
+uv run scorecard run --all
+```
+
+This fetches today's snapshot of every current configured feed, validates and
+scores it, and writes artifacts to `data/artifacts/<agency>/<date>.json` plus a
+`latest.json` and a cross-agency `index.json`. Retired aliases are excluded
+from the batch; an explicit historical rescore writes a dated record without
+recreating mutable current files. Re-running a day is idempotent. Checks (from
+the repo root; mirrors the CI gate):
+
+```sh
+make verify
+```
+
+### Run the web app locally
+
+The frontend reads the JSON artifacts over HTTP. Serve the repo root and open
+the page through `http://`, not by double-clicking the file:
+
+```sh
+cd ..            # repo root, so data/artifacts/ is reachable
+python3 -m http.server 8000
+# then open http://localhost:8000/web/index.html
+```
+
+Opening `web/index.html` as a `file://` URL leaves the page stuck on
+"Loading scorecards…": browsers block ES module loading and `fetch` over
+`file://`, so the app never runs. Any static server works; the only requirement
+is that `data/artifacts/` sits one level above `web/`, which the
+`../data/artifacts` fallback in `web/src/app.js` expects.
+
 ## Where it fits
 
 GTFS Scorecard is the evidence and triage layer:
@@ -88,45 +127,6 @@ be added through `registry/intake.yaml`.
   both. Scoring is free for every agency and stays that way; the
   [support page](https://gtfsscorecard.org/support/) explains what running the
   service costs, what sponsorship would pay for, and what it never buys.
-
-## Quickstart
-
-Requires Python 3.12+, [uv](https://docs.astral.sh/uv/), and Java 17+
-(the validator jar is downloaded automatically on first run).
-
-```sh
-cd pipeline
-uv sync
-uv run scorecard run --all
-```
-
-This fetches today's snapshot of every current configured feed, validates and
-scores it, and writes artifacts to `data/artifacts/<agency>/<date>.json` plus a
-`latest.json` and a cross-agency `index.json`. Retired aliases are excluded
-from the batch; an explicit historical rescore writes a dated record without
-recreating mutable current files. Re-running a day is idempotent. Checks (from
-the repo root; mirrors the CI gate):
-
-```sh
-make verify
-```
-
-### Run the web app locally
-
-The frontend reads the JSON artifacts over HTTP. Serve the repo root and open
-the page through `http://`, not by double-clicking the file:
-
-```sh
-cd ..            # repo root, so data/artifacts/ is reachable
-python3 -m http.server 8000
-# then open http://localhost:8000/web/index.html
-```
-
-Opening `web/index.html` as a `file://` URL leaves the page stuck on
-"Loading scorecards…": browsers block ES module loading and `fetch` over
-`file://`, so the app never runs. Any static server works; the only requirement
-is that `data/artifacts/` sits one level above `web/`, which the
-`../data/artifacts` fallback in `web/src/app.js` expects.
 
 ## What an agency gets
 

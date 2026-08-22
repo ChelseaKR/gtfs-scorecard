@@ -1,9 +1,15 @@
 name: Standards pin
 
 # DOC-01/DOC-03: the vendored standards were verified byte-for-byte against
-# ChelseaKR/portfolio-standards v1.0.1 on 2026-07-10. The reviewed manifest
+# ChelseaKR/portfolio-standards v2.0.0 on 2026-08-09. The reviewed manifest
 # makes that proof self-contained and merge-blocking without a cross-repository
 # PAT. Renovate must update the pin, files, and manifest in one reviewed change.
+#
+# Scope, so this job is not mistaken for more than it is: it proves the
+# vendored bytes match the pinned tag. It does not run the conformance
+# checker, so no control gate in the standards is enforced here. The
+# applicability declaration and the open gaps against v2.0.0 live in
+# docs/standards-conformance-gaps.md.
 
 on:
   push:
