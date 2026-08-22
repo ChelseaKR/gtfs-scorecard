@@ -7,7 +7,8 @@ Last reviewed: 2026-07-08; corrected in review 2026-07-09. Base branch: `main`.
 > (`ROADMAP.md`, `ACCESSIBILITY.md`) that resolve to nothing on GitHub's
 > case-sensitive hosting; both are fixed. The sweep also edited the vendored
 > `docs/standards/README.md`, which is pinned byte-identical to
-> `ChelseaKR/portfolio-standards` tag `v1.0.1` and must never be edited
+> `ChelseaKR/portfolio-standards` (tag `v1.0.1` at the time of this audit;
+> `v2.0.0` since 2026-08-09) and must never be edited
 > in-repo (DOC-03; `standards-pin.yml` enforces this once its token exists).
 > That edit is reverted here. Its two relative links (`AUDIT-2026-06-21.md`,
 > `IMPROVEMENTS-BACKLOG.md`) resolve in the upstream repo, not this one; that
