@@ -52,8 +52,11 @@ agencies:
     mdb_id: 121
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-122 is deprecated and redirects to mdb-3219.
   - id: rogue-valley-transportation-district-rvtd
     name: Rogue Valley Transportation District (RVTD)
+    alias_of: rogue-valley-transportation-district-rvtd-3219
+    feed_status: deprecated
     subdivision_code: US-OR
     subdivision_name: Oregon
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/rvtd-or-us/rvtd-or-us.zip
@@ -171,8 +174,11 @@ agencies:
     mdb_id: 135
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-136 is deprecated and redirects to mdb-2283.
   - id: city-of-corvallis
     name: City of Corvallis
+    alias_of: city-of-corvallis-2283
+    feed_status: deprecated
     subdivision_code: US-OR
     subdivision_name: Oregon
     static_gtfs_url: https://oregon-gtfs.com/gtfs_data/corvallis-or-us/corvallis-or-us.zip
@@ -240,8 +246,11 @@ agencies:
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-248 is deprecated and redirects to mdb-2706.
   - id: south-metro-area-regional-transit-smart
     name: South Metro Area Regional Transit (SMART)
+    alias_of: south-metro-area-regional-transit-smart-2706
+    feed_status: deprecated
     subdivision_code: US-OR
     subdivision_name: Oregon
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/wilsonville-or-us/wilsonville-or-us.zip
@@ -339,16 +348,22 @@ agencies:
     mdb_id: 261
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-272 is deprecated and redirects to mdb-2189.
   - id: kayak-transit-ctuir
     name: Kayak Transit (CTUIR)
+    alias_of: city-of-milton-freewater-public-transportation-2189
+    feed_status: deprecated
     subdivision_code: US-OR
     subdivision_name: Oregon
     static_gtfs_url: https://oregon-gtfs.com/gtfs_data/ctuir-or-us/ctuir-or-us.zip
     mdb_id: 272
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-274 is deprecated and redirects to mdb-2189.
   - id: city-of-milton-freewater-public-transportation
     name: City of Milton-Freewater Public Transportation
+    alias_of: city-of-milton-freewater-public-transportation-2189
+    feed_status: deprecated
     subdivision_code: US-OR
     subdivision_name: Oregon
     static_gtfs_url: https://oregon-gtfs.com/gtfs_data/milton-freewater-or-us/milton-freewater-or-us.zip
@@ -419,16 +434,22 @@ agencies:
     mdb_id: 634
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-635 is deprecated and redirects to mdb-132.
   - id: hut-airport-shuttle
     name: HUT Airport Shuttle
+    alias_of: oregon-express-shuttle
+    feed_status: deprecated
     subdivision_code: US-OR
     subdivision_name: Oregon
     static_gtfs_url: https://oregon-gtfs.com/gtfs_data/hut-or-us/hut-or-us.zip
     mdb_id: 635
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-636 is deprecated and redirects to mdb-133.
   - id: high-desert-point
     name: High Desert Point
+    alias_of: pacific-crest-bus-lines
+    feed_status: deprecated
     subdivision_code: US-OR
     subdivision_name: Oregon
     static_gtfs_url: https://oregon-gtfs.com/gtfs_data/highdesertpoint-or-us/highdesertpoint-or-us.zip
@@ -491,8 +512,11 @@ agencies:
     mdb_id: 834
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-878 is deprecated and redirects to mdb-2205.
   - id: philomath-connection
     name: Philomath Connection
+    alias_of: philomath-connection-2205
+    feed_status: deprecated
     subdivision_code: US-OR
     subdivision_name: Oregon
     static_gtfs_url: https://oregon-gtfs.com/gtfs_data/philomathconnection-or-us/philomathconnection-or-us.zip
@@ -555,8 +579,16 @@ agencies:
     mdb_id: 1327
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # The Mobility Database files this record under the city's name, but the feed
+  # is the Confederated Tribes of the Umatilla Indian Reservation's: the path is
+  # ctuir-or-us, and the routes are Kayak's (Mission Metro, Walla Walla
+  # Whistler, Hermiston Hopper) plus the Nixyaawii Community Shuttle. It is
+  # named for the tribal provider that publishes it. The id is left alone
+  # because it is this record's public URL and the address of its dated
+  # artifacts. Both mdb-272 (Kayak) and mdb-274 (the city's own feed) retire
+  # into it; see supersession-review.yaml.
   - id: city-of-milton-freewater-public-transportation-2189
-    name: City of Milton-Freewater Public Transportation
+    name: Kayak Transit (CTUIR)
     subdivision_code: US-OR
     subdivision_name: Oregon
     static_gtfs_url: https://oregon-gtfs.trilliumtransit.com/gtfs_data/ctuir-or-us/ctuir-or-us.zip
@@ -640,8 +672,11 @@ agencies:
     mdb_id: 2741
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-3103 is deprecated and redirects to mdb-3219.
   - id: rogue-valley-transportation-district-rvtd-3103
     name: Rogue Valley Transportation District (RVTD)
+    alias_of: rogue-valley-transportation-district-rvtd-3219
+    feed_status: deprecated
     subdivision_code: US-OR
     subdivision_name: Oregon
     static_gtfs_url: https://rvtd.org/wp-content/uploads/2026/05/rvtd-or-us.zip

@@ -12,8 +12,11 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
 
+  # Mobility Database mdb-162 is deprecated and redirects to mdb-2278.
   - id: roaring-fork-transportation-authority
     name: Roaring Fork Transportation Authority
+    alias_of: roaring-fork-transportation-authority-2278
+    feed_status: deprecated
     subdivision_code: US-CO
     subdivision_name: Colorado
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/rfta-co-us/rfta-co-us.zip
@@ -49,8 +52,11 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
 
+  # Mobility Database mdb-169 is deprecated and redirects to mdb-2280.
   - id: regional-transportation-district-rtd
     name: Bustang
+    alias_of: regional-transportation-district-rtd-2280
+    feed_status: deprecated
     subdivision_code: US-CO
     subdivision_name: Colorado
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/bustang-co-us/bustang-co-us.zip
@@ -67,8 +73,11 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
 
+  # Mobility Database mdb-173 is deprecated and redirects to mdb-2061.
   - id: eco-transit
     name: ECO Transit
+    alias_of: eco-transit-2061
+    feed_status: deprecated
     subdivision_code: US-CO
     subdivision_name: Colorado
     static_gtfs_url: https://www.eaglecounty.us/web/downloads/ecoTransit/GTFS.zip
@@ -135,8 +144,11 @@ agencies:
     license_note: "License: http://www.ridetransfort.com/img/site_specific/uploads/Transfort_GTFS_License_Agreement.pdf"
 
 
+  # Mobility Database mdb-180 is deprecated and redirects to mdb-2395.
   - id: via-mobility
     name: Via Mobility
+    alias_of: via-mobility-2395
+    feed_status: deprecated
     subdivision_code: US-CO
     subdivision_name: Colorado
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/viamobilityservices-co-us/viamobilityservices-co-us.zip
@@ -163,8 +175,11 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
 
+  # Mobility Database mdb-218 is deprecated and redirects to mdb-2433.
   - id: avon-transit
     name: Avon Transit
+    alias_of: avon-transit-2433
+    feed_status: deprecated
     subdivision_code: US-CO
     subdivision_name: Colorado
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/avon-co-us/avon-co-us.zip
@@ -262,8 +277,11 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
 
+  # Mobility Database mdb-603 is deprecated and redirects to mdb-2195.
   - id: town-of-telluride
     name: Town of Telluride
+    alias_of: san-miguel-county
+    feed_status: deprecated
     subdivision_code: US-CO
     subdivision_name: Colorado
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/telluride-co-us/telluride-co-us.zip
@@ -388,8 +406,11 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
 
+  # Mobility Database mdb-1241 is deprecated and redirects to mdb-2356.
   - id: mountain-metropolitan-transit
     name: Mountain Metropolitan Transit
+    alias_of: mountain-metropolitan-transit-2356
+    feed_status: deprecated
     subdivision_code: US-CO
     subdivision_name: Colorado
     static_gtfs_url: https://transitfeeds.com/p/mountain-metropolitan-transit/374/latest/download
@@ -406,8 +427,11 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
 
+  # Mobility Database mdb-2040 is deprecated and redirects to mdb-2433.
   - id: avon-transit-2040
     name: Avon Transit Flex
+    alias_of: avon-transit-2433
+    feed_status: deprecated
     subdivision_code: US-CO
     subdivision_name: Colorado
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/avon-co-us/avon-co-us--flex-v2.zip

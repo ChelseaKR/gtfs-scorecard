@@ -9,6 +9,7 @@ from scorecard_pipeline.ntd import (
     AT_RISK,
     MISMATCH,
     MISSING,
+    NOT_CHECKED,
     NOT_READY,
     READY,
     UNKNOWN,
@@ -195,13 +196,47 @@ def test_readiness_requires_agency_id_presence() -> None:
     assert result.status == NOT_READY
 
 
-def test_readiness_is_cautious_when_identity_was_not_checked() -> None:
+def test_unchecked_identity_is_not_reported_as_a_problem() -> None:
+    """An agency_id we never looked at is ``not_checked``, not ``at_risk``.
+
+    Reporting it as at_risk gave an unmeasured dimension the same "Needs
+    attention" badge as a genuine failure, and drove the whole feed's verdict
+    off an input nobody measured. The pillar now says it was not checked, the
+    verdict comes from the pillars that were measured, and the summary names the
+    gap so "ready" never implies agency_id was verified.
+    """
     artifact = _artifact()
     del artifact["ntd_id_alignment"]
     result = assess(artifact)
     identity = next(p for p in result.pillars if p.key == "agency_id")
-    assert identity.status == AT_RISK
-    assert result.status == AT_RISK
+    assert identity.status == NOT_CHECKED
+    assert identity.status != AT_RISK
+    # The other three pillars hold, so the verdict is READY rather than a
+    # manufactured at_risk, and the summary discloses the unmeasured pillar.
+    assert result.status == READY
+    assert "not checked agency_id" in result.summary
+    assert "the four feed checks for RY2026 all hold here" not in result.summary
+
+
+def test_unchecked_identity_is_excluded_from_portfolio_and_one_fix() -> None:
+    """A feed with an unmeasured pillar is not counted as ready to certify, and
+    is not forwarded to a liaison as one fix from ready."""
+    from scorecard_pipeline.ntd import one_fix_from_ready, portfolio_summary
+
+    checked = _artifact(errors=0, days=90)
+    checked["agency"] = {"id": "checked-t", "name": "Checked Transit", "state": "Iowa"}
+    unchecked = _artifact(errors=2, days=90)
+    unchecked["agency"] = {"id": "unchecked-t", "name": "Unchecked Transit", "state": "Iowa"}
+    del unchecked["ntd_id_alignment"]
+
+    summary = portfolio_summary([checked, unchecked])
+    assert summary.total == 1  # the unmeasured feed is left out, not counted ready
+    assert summary.ready == 1
+    assert summary.by_state["Iowa"]["total"] == 1
+
+    # The unchecked feed misses exactly one *measured* pillar, so the old
+    # `!= READY` filter would have listed it as one fix from ready.
+    assert [row["id"] for row in one_fix_from_ready([checked, unchecked])] == []
 
 
 def test_alignment_mismatch_acknowledges_shared_regional_feeds() -> None:

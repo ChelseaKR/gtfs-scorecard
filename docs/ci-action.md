@@ -38,7 +38,7 @@ jobs:
 ```
 
 `@v1` follows the latest compatible v1 release. Pin the current full version
-tag (`@v1.4.0`) or a commit SHA when you want an exact, unchanging contract.
+tag (`@v1.5.0`) or a commit SHA when you want an exact, unchanging contract.
 
 ## Inputs
 

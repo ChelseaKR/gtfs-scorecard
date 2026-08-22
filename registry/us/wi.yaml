@@ -40,8 +40,11 @@ agencies:
       service_alerts: https://metromap.cityofmadison.com/gtfsrt/alerts
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-395 is deprecated and redirects to mdb-2246.
   - id: ryde-racine
     name: Ryde Racine
+    alias_of: ryde-racine-2246
+    feed_status: deprecated
     subdivision_code: US-WI
     subdivision_name: Wisconsin
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/racine-wi-us/racine-wi-us.zip
@@ -64,8 +67,11 @@ agencies:
     mdb_id: 397
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-398 is deprecated and redirects to mdb-2069.
   - id: valley-transit-wi
     name: Valley Transit (WI)
+    alias_of: valley-transit-wi-2069
+    feed_status: deprecated
     subdivision_code: US-WI
     subdivision_name: Wisconsin
     static_gtfs_url: http://gis.appleton.org/DataDownload/google_transit.zip
@@ -96,8 +102,11 @@ agencies:
     mdb_id: 917
     license_note: "License: https://greenbaywi.gov/496/Transit-Data-Developer"
 
+  # Mobility Database mdb-1318 is deprecated and redirects to mdb-2127.
   - id: milwaukee-county-transit-system-mcts
     name: Milwaukee County Transit System (MCTS)
+    alias_of: milwaukee-county-transit-system-mcts-2127
+    feed_status: deprecated
     subdivision_code: US-WI
     subdivision_name: Wisconsin
     static_gtfs_url: https://transitfeeds.com/p/milwaukee-county-transit-system/182/latest/download
@@ -124,8 +133,11 @@ agencies:
       service_alerts: https://realtime.ridemcts.com/gtfsrt/alerts
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-2239 is deprecated and redirects to mdb-393.
   - id: janesville-transit-system-2239
     name: Janesville Transit System
+    alias_of: janesville-transit-system
+    feed_status: deprecated
     subdivision_code: US-WI
     subdivision_name: Wisconsin
     static_gtfs_url: https://gtfs.remix.com/Janesville_Transit.zip

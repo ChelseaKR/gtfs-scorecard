@@ -10,6 +10,7 @@ import pytest
 import yaml
 
 from scorecard_pipeline.agencies import AgencyConfigError, parse_agencies
+from scorecard_pipeline.config import Agency
 from scorecard_pipeline.mobilitydb import (
     DEFAULT_CATALOG_URL,
     DEFAULT_PROPOSAL_CATALOG_URL,
@@ -17,22 +18,27 @@ from scorecard_pipeline.mobilitydb import (
     MOBILITY_DATABASE_FEEDS_V2_URL,
     apply_replacements,
     apply_state_backfill,
+    apply_supersessions,
     canonical_state,
     catalog_source_counts,
     fetch_catalog,
     fetch_catalog_bytes,
     find_replacements,
+    find_supersessions,
+    hold_for_review,
     parse_catalog,
     parse_catalog_records,
     proposal_catalog_schema,
     propose_agencies,
     propose_agencies_with_dispositions,
     render_replacements_md,
+    render_supersessions_md,
     render_yaml,
     replacement_url,
     resolve_states,
     slugify,
 )
+from scorecard_pipeline.supersession_review import ReviewedRetirement
 
 V2_FIXTURE = Path(__file__).parent / "fixtures" / "mobilitydb_feeds_v2_trimmed.csv"
 V2_HEADER = (
@@ -902,6 +908,36 @@ def test_find_replacements_classifies_each_agency() -> None:
     assert by_id["phantom-shuttle"].candidates == []
 
 
+def test_find_replacements_ignores_generic_national_token() -> None:
+    """A tracked agency whose only catalog "matches" share nothing but the
+    generic word "national" must report no candidate, not an unrelated agency
+    of a different mode and country. Regression for the 2026-08-17
+    feed-discovery run, which offered Rocky Mountain National Park Shuttles
+    (Colorado) as a replacement for Keretapi Tanah Melayu, Malaysia's national
+    railway — the two names share only "national", previously not a
+    stopword."""
+    catalog = (
+        "mdb_source_id,data_type,entity_type,location.country_code,"
+        "location.subdivision_name,provider,name,urls.direct_download,urls.license,"
+        "urls.authentication_type,static_reference\n"
+        "176,gtfs,,US,Colorado,Rocky Mountain National Park Shuttles,"
+        "Rocky Mountain National Park Shuttles,"
+        "http://data.trilliumtransit.com/gtfs/rockymountainnationalpark-co-us/"
+        "rockymountainnationalpark-co-us.zip,,,\n"
+    )
+    feeds = parse_catalog(catalog)
+    registry = [
+        (
+            "ktmb-national",
+            "Keretapi Tanah Melayu (KTMB)",
+            "https://api.data.gov.my/gtfs-static/ktmb",
+        )
+    ]
+    (m,) = find_replacements(feeds, registry)
+    assert m.status == "missing"
+    assert m.candidates == []
+
+
 def test_render_replacements_md_lists_only_actionable() -> None:
     feeds = parse_catalog(DISCOVERY_CATALOG)
     registry = [
@@ -1128,3 +1164,357 @@ def test_hosted_mirror_url_rejects_unsafe_or_port_ambiguous_current_urls(
     monkeypatch.setattr(m, "load_catalog", lambda **_: feeds)
 
     assert m.hosted_mirror_url("yolobus", "Yolobus", current_url) is None
+
+
+# The catalog's own record of which feed record replaced which: mdb-10 was
+# replaced by mdb-11, and mdb-20 by mdb-21, which was itself replaced by mdb-22.
+# mdb-30 forks into two records we publish, mdb-40 names one the export does not
+# contain, mdb-50 is deprecated with nothing named at all, mdb-60's successor is
+# not tracked here, mdb-80's chain ends on a record we do not track, and mdb-90
+# names two successors that turn out to be the same one.
+SUPERSESSION_CATALOG = (
+    "id,data_type,entity_type,provider,is_official,urls.direct_download,"
+    "urls.authentication_type,status,static_reference,redirect.id\n"
+    "mdb-10,gtfs,,Athens Public Transit,true,https://archive.example/athens.zip,0,"
+    "deprecated,,mdb-11\n"
+    "mdb-11,gtfs,,Athens Public Transit,true,https://athens.example/gtfs.zip,0,active,,\n"
+    "mdb-20,gtfs,,Cue Bus,true,https://archive.example/cue.zip,0,deprecated,,mdb-21\n"
+    "mdb-21,gtfs,,Cue Bus,true,https://archive.example/cue-2.zip,0,deprecated,,mdb-22\n"
+    "mdb-22,gtfs,,Fairfax CUE Bus,true,https://fairfax.example/cue.zip,0,active,,\n"
+    "mdb-30,gtfs,,Split Transit,true,https://archive.example/split.zip,0,"
+    "deprecated,,mdb-31|mdb-32\n"
+    "mdb-31,gtfs,,Split North,true,https://north.example/gtfs.zip,0,active,,\n"
+    "mdb-32,gtfs,,Split South,true,https://south.example/gtfs.zip,0,active,,\n"
+    "mdb-40,gtfs,,Elsewhere Transit,true,https://archive.example/elsewhere.zip,0,"
+    "deprecated,,tld-900\n"
+    "mdb-50,gtfs,,Ended Transit,true,https://archive.example/ended.zip,0,deprecated,,\n"
+    "mdb-60,gtfs,,Untracked Successor,true,https://archive.example/untracked.zip,0,"
+    "deprecated,,mdb-61\n"
+    "mdb-61,gtfs,,Untracked Successor,true,https://untracked.example/gtfs.zip,0,active,,\n"
+    "mdb-80,gtfs,,Metro Transit,true,https://archive.example/metro.zip,0,deprecated,,mdb-81\n"
+    "mdb-81,gtfs,,Metro Transit,true,https://metro.example/gtfs.zip,0,deprecated,,mdb-82\n"
+    "mdb-82,gtfs,,Metro Transit,true,https://newer.example/metro.zip,0,active,,\n"
+    "mdb-90,gtfs,,River Transit,true,https://archive.example/river.zip,0,"
+    "deprecated,,mdb-91|mdb-92\n"
+    "mdb-91,gtfs,,River Transit,true,https://archive.example/river-2.zip,0,deprecated,,mdb-92\n"
+    "mdb-92,gtfs,,River Transit,true,https://river.example/gtfs.zip,0,active,,\n"
+)
+
+
+def _supersession_registry() -> list[Agency]:
+    def entry(aid: str, name: str, mdb: str) -> dict[str, object]:
+        return {
+            "id": aid,
+            "name": name,
+            "static_gtfs_url": f"https://ex.org/{aid}.zip",
+            "mdb_id": mdb,
+        }
+
+    return parse_agencies(
+        {
+            "agencies": [
+                entry("athens-public-transit", "Athens Public Transit", "10"),
+                entry("athens-public-transit-11", "Athens Public Transit", "11"),
+                entry("cue-bus", "Cue Bus", "20"),
+                entry("fairfax-cue-bus", "Fairfax CUE Bus", "22"),
+                entry("split-transit", "Split Transit", "30"),
+                entry("split-north", "Split North", "31"),
+                entry("split-south", "Split South", "32"),
+                entry("elsewhere-transit", "Elsewhere Transit", "40"),
+                entry("ended-transit", "Ended Transit", "50"),
+                entry("untracked-successor", "Untracked Successor", "60"),
+                entry("metro-transit", "Metro Transit", "80"),
+                entry("metro-transit-81", "Metro Transit", "81"),
+                entry("river-transit", "River Transit", "90"),
+                entry("river-transit-91", "River Transit", "91"),
+                entry("river-transit-92", "River Transit", "92"),
+            ]
+        }
+    )
+
+
+def test_find_supersessions_pairs_a_retired_record_with_the_record_that_replaced_it() -> None:
+    feeds = parse_catalog(SUPERSESSION_CATALOG)
+
+    superseded, _ = find_supersessions(feeds, _supersession_registry())
+
+    by_id = {s.agency_id: s for s in superseded}
+    assert by_id["athens-public-transit"].successor_agency_id == "athens-public-transit-11"
+    assert by_id["athens-public-transit"].successor_mdb_id == "11"
+    # A record the catalog still calls current is never proposed for retirement.
+    assert "athens-public-transit-11" not in by_id
+
+
+def test_find_supersessions_follows_a_chain_to_the_record_still_published() -> None:
+    feeds = parse_catalog(SUPERSESSION_CATALOG)
+
+    superseded, _ = find_supersessions(feeds, _supersession_registry())
+
+    by_id = {s.agency_id: s for s in superseded}
+    # mdb-20 -> mdb-21 (itself retired) -> mdb-22. Pointing a reader at the
+    # middle of the chain would send them to another retired record.
+    assert by_id["cue-bus"].successor_agency_id == "fairfax-cue-bus"
+
+
+@pytest.mark.parametrize(
+    ("agency_id", "reason"),
+    [
+        ("split-transit", "ambiguous_redirect"),
+        ("elsewhere-transit", "successor_not_in_catalog"),
+        ("ended-transit", "no_current_successor"),
+        ("untracked-successor", "successor_not_published"),
+    ],
+)
+def test_find_supersessions_names_what_it_cannot_resolve(agency_id: str, reason: str) -> None:
+    feeds = parse_catalog(SUPERSESSION_CATALOG)
+
+    superseded, unresolved = find_supersessions(feeds, _supersession_registry())
+
+    assert agency_id not in {s.agency_id for s in superseded}
+    assert {u.agency_id: u.reason for u in unresolved}[agency_id] == reason
+
+
+def test_find_supersessions_retires_neither_record_of_a_redirect_loop() -> None:
+    """Two records naming each other cannot both point at a live successor.
+
+    Retiring both would leave the registry resolving in a circle, with no
+    current grade at the end of it, so neither is retired and both are named.
+    """
+    catalog = (
+        "id,data_type,entity_type,provider,is_official,urls.direct_download,"
+        "urls.authentication_type,status,static_reference,redirect.id\n"
+        "mdb-70,gtfs,,Loop Transit,true,https://ex.org/a.zip,0,deprecated,,mdb-71\n"
+        "mdb-71,gtfs,,Loop Transit,true,https://ex.org/b.zip,0,deprecated,,mdb-70\n"
+    )
+    agencies = parse_agencies(
+        {
+            "agencies": [
+                {
+                    "id": "loop-transit",
+                    "name": "Loop Transit",
+                    "static_gtfs_url": "https://ex.org/a.zip",
+                    "mdb_id": "70",
+                },
+                {
+                    "id": "loop-transit-71",
+                    "name": "Loop Transit",
+                    "static_gtfs_url": "https://ex.org/b.zip",
+                    "mdb_id": "71",
+                },
+            ]
+        }
+    )
+
+    superseded, unresolved = find_supersessions(parse_catalog(catalog), agencies)
+
+    assert superseded == []
+    assert {u.agency_id: u.reason for u in unresolved} == {
+        "loop-transit": "redirect_cycle",
+        "loop-transit-71": "redirect_cycle",
+    }
+
+
+def test_find_supersessions_points_at_the_last_record_we_publish() -> None:
+    """The catalog's final record is often one this registry does not track.
+
+    Stopping there would leave both tracked records publishing a grade. The
+    successor is the furthest record along the chain that is actually published
+    here, which is the one a reader can be sent to.
+    """
+    feeds = parse_catalog(SUPERSESSION_CATALOG)
+
+    superseded, _ = find_supersessions(feeds, _supersession_registry())
+
+    by_id = {s.agency_id: s for s in superseded}
+    # mdb-80 -> mdb-81 (published here) -> mdb-82 (not tracked).
+    assert by_id["metro-transit"].successor_agency_id == "metro-transit-81"
+
+
+def test_find_supersessions_resolves_two_branches_that_converge() -> None:
+    feeds = parse_catalog(SUPERSESSION_CATALOG)
+
+    superseded, _ = find_supersessions(feeds, _supersession_registry())
+
+    by_id = {s.agency_id: s for s in superseded}
+    # mdb-90 names mdb-91 and mdb-92, and mdb-91 was itself replaced by mdb-92,
+    # so the two branches are one destination, not a fork.
+    assert by_id["river-transit"].successor_agency_id == "river-transit-92"
+    assert by_id["river-transit-91"].successor_agency_id == "river-transit-92"
+
+
+def test_one_agency_stops_carrying_two_current_grades() -> None:
+    """The defect: a retired record and its successor both published as current.
+
+    Both records grade a feed, both pages are reachable, and nothing on either
+    says the other exists. After the catalog's retirement is recorded, exactly
+    one of the two is a current scorecard.
+    """
+    yaml_text = (
+        "agencies:\n"
+        "  - id: athens-public-transit\n"
+        "    name: Athens Public Transit\n"
+        "    static_gtfs_url: https://archive.example/athens.zip\n"
+        "    mdb_id: '10'\n"
+        "  - id: athens-public-transit-11\n"
+        "    name: Athens Public Transit\n"
+        "    static_gtfs_url: https://athens.example/gtfs.zip\n"
+        "    mdb_id: '11'\n"
+    )
+    before = parse_agencies(yaml.safe_load(yaml_text))
+    assert [a.id for a in before if a.is_canonical_feed] == [
+        "athens-public-transit",
+        "athens-public-transit-11",
+    ]
+
+    superseded, _ = find_supersessions(parse_catalog(SUPERSESSION_CATALOG), before)
+    updated, changed = apply_supersessions(yaml_text, superseded)
+
+    assert changed == ["athens-public-transit"]
+    after = parse_agencies(yaml.safe_load(updated))
+    assert [a.id for a in after if a.is_canonical_feed] == ["athens-public-transit-11"]
+    retired = next(a for a in after if a.id == "athens-public-transit")
+    assert retired.alias_of == "athens-public-transit-11"
+    assert retired.feed_status == "deprecated"
+
+
+def test_apply_supersessions_records_the_catalog_evidence_and_is_idempotent() -> None:
+    yaml_text = (
+        "agencies:\n"
+        "  # A hand-written comment that must survive.\n"
+        "  - id: athens-public-transit\n"
+        "    name: Athens Public Transit\n"
+        "    static_gtfs_url: https://archive.example/athens.zip\n"
+        "    mdb_id: '10'\n"
+        "\n"
+        "  - id: athens-public-transit-11\n"
+        "    name: Athens Public Transit\n"
+        "    static_gtfs_url: https://athens.example/gtfs.zip\n"
+        "    mdb_id: '11'\n"
+    )
+    feeds = parse_catalog(SUPERSESSION_CATALOG)
+    superseded, _ = find_supersessions(feeds, parse_agencies(yaml.safe_load(yaml_text)))
+    updated, _ = apply_supersessions(yaml_text, superseded)
+
+    assert "# A hand-written comment that must survive." in updated
+    assert "# Mobility Database mdb-10 is deprecated and redirects to mdb-11." in updated
+    assert (
+        "  - id: athens-public-transit\n"
+        "    name: Athens Public Transit\n"
+        "    alias_of: athens-public-transit-11\n"
+        "    feed_status: deprecated\n"
+    ) in updated
+    # A record already retired is not a candidate, so a second pass is a no-op.
+    again, changed_again = apply_supersessions(
+        updated, find_supersessions(feeds, parse_agencies(yaml.safe_load(updated)))[0]
+    )
+    assert changed_again == []
+    assert again == updated
+
+
+def test_supersession_report_flags_a_successor_with_a_different_name() -> None:
+    feeds = parse_catalog(SUPERSESSION_CATALOG)
+    superseded, unresolved = find_supersessions(feeds, _supersession_registry())
+
+    report = render_supersessions_md(superseded, unresolved, today="2026-08-14")
+
+    assert "Read these ones closely" in report
+    assert "Cue Bus (`cue-bus`) to Fairfax CUE Bus (`fairfax-cue-bus`)" in report
+    # Same name on both sides: nothing to check by hand.
+    assert "Athens Public Transit (`athens-public-transit`) to" not in report
+    assert "the catalog lists more than one successor record" in report
+
+
+# One agency name, two states: the catalog redirects a Connecticut record into a
+# California one. This is the shape that would have shipped a Connecticut agency
+# as Californian, and the shape the catalog alone cannot rule out.
+CROSS_STATE_CATALOG = (
+    "id,data_type,entity_type,provider,is_official,urls.direct_download,"
+    "urls.authentication_type,status,static_reference,redirect.id\n"
+    "mdb-529,gtfs,,Norwalk Transit District,true,https://ct.example/gtfs.zip,0,"
+    "deprecated,,mdb-2242\n"
+    "mdb-2242,gtfs,,Norwalk Transit System,true,https://ca.example/gtfs.zip,0,active,,\n"
+)
+
+
+def _cross_state_registry() -> list[Agency]:
+    return parse_agencies(
+        {
+            "agencies": [
+                {
+                    "id": "norwalk-transit-district",
+                    "name": "Norwalk Transit District",
+                    "static_gtfs_url": "https://ct.example/gtfs.zip",
+                    "mdb_id": "529",
+                    "subdivision_code": "US-CT",
+                },
+                {
+                    "id": "norwalk-transit-system",
+                    "name": "Norwalk Transit System",
+                    "static_gtfs_url": "https://ca.example/gtfs.zip",
+                    "mdb_id": "2242",
+                    "subdivision_code": "US-CA",
+                },
+            ]
+        }
+    )
+
+
+def test_a_retirement_across_a_state_line_is_flagged_and_held() -> None:
+    superseded, _ = find_supersessions(parse_catalog(CROSS_STATE_CATALOG), _cross_state_registry())
+    ready, held = hold_for_review(superseded, {})
+
+    assert superseded[0].review_flags == ("different_subdivision",)
+    assert ready == []
+    assert [s.agency_id for s in held] == ["norwalk-transit-district"]
+
+
+def test_a_held_retirement_is_not_written_into_the_registry() -> None:
+    """The point of holding one: the registry is unchanged until a person decides."""
+    yaml_text = (
+        "agencies:\n"
+        "  - id: norwalk-transit-district\n"
+        "    name: Norwalk Transit District\n"
+        "    subdivision_code: US-CT\n"
+        "    static_gtfs_url: https://ct.example/gtfs.zip\n"
+        "    mdb_id: '529'\n"
+    )
+    superseded, _ = find_supersessions(parse_catalog(CROSS_STATE_CATALOG), _cross_state_registry())
+    ready, _ = hold_for_review(superseded, {})
+
+    updated, changed = apply_supersessions(yaml_text, ready)
+
+    assert changed == []
+    assert updated == yaml_text
+
+
+def test_a_recorded_decision_releases_the_retirement_it_covers() -> None:
+    superseded, _ = find_supersessions(parse_catalog(CROSS_STATE_CATALOG), _cross_state_registry())
+    reviewed = {
+        "norwalk-transit-district": ReviewedRetirement(
+            agency_id="norwalk-transit-district",
+            successor_id="norwalk-transit-system",
+            flags=("different_subdivision",),
+            decision="retire",
+            evidence="checked the feed: one agency, two catalog records",
+        )
+    }
+
+    ready, held = hold_for_review(superseded, reviewed)
+
+    assert [s.agency_id for s in ready] == ["norwalk-transit-district"]
+    assert held == []
+
+
+def test_the_report_names_why_a_retirement_is_held_and_how_to_decide_it() -> None:
+    superseded, unresolved = find_supersessions(
+        parse_catalog(CROSS_STATE_CATALOG), _cross_state_registry()
+    )
+    ready, held = hold_for_review(superseded, {})
+
+    report = render_supersessions_md(ready, unresolved, today="2026-08-14", held=held)
+
+    assert "Held for review" in report
+    assert "the successor is in a different state or province" in report
+    assert "agency_id: norwalk-transit-district" in report
+    assert "flags: [different_subdivision]" in report
+    assert "Catalog redirect: mdb-529 to mdb-2242" in report

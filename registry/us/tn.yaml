@@ -3,8 +3,11 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-359 is deprecated and redirects to mdb-2082.
   - id: chattanooga-area-regional-transportation-authority-carta
     name: Chattanooga Area Regional Transportation Authority (CARTA)
+    alias_of: chattanooga-area-regional-transportation-authority-carta-2082
+    feed_status: deprecated
     subdivision_code: US-TN
     subdivision_name: Tennessee
     static_gtfs_url: https://www.gocarta.org/wp-content/uploads/2021/08/GTFS.zip
@@ -31,8 +34,11 @@ agencies:
     mdb_id: 361
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-602 is deprecated and redirects to mdb-2352.
   - id: memphis-area-transit-authority
     name: Memphis Area Transit Authority
+    alias_of: memphis-area-transit-authority-2352
+    feed_status: deprecated
     subdivision_code: US-TN
     subdivision_name: Tennessee
     static_gtfs_url: https://www.matatransit.com/assets/2/6/Memphis_TN_transitfeed2.zip
@@ -77,13 +83,4 @@ agencies:
     subdivision_name: Tennessee
     static_gtfs_url: https://www.sctdd.org/wp-content/uploads/2025/02/gtfs_muletown.zip
     mdb_id: 2420
-    license_note: No stated data license in the Mobility Database; verify before publishing.
-
-  - id: county-connection-cccta-2421
-    ntd_id: "90078"
-    name: County Connection (CCCTA)
-    subdivision_code: US-TN
-    subdivision_name: Tennessee
-    static_gtfs_url: https://countyconnection.com/GTFS/google_transit.zip
-    mdb_id: 2421
     license_note: No stated data license in the Mobility Database; verify before publishing.

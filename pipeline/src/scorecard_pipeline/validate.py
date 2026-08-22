@@ -117,7 +117,55 @@ DEFAULT_LARGE_FEED_HEAP = "6g"
 
 
 def large_feed_heap() -> str:
-    return os.environ.get("SCORECARD_LARGE_FEED_HEAP", DEFAULT_LARGE_FEED_HEAP)
+    """The -Xmx value for a large-feed validation.
+
+    Caught live dispatching validate-one-feed.yml (issue #297) against
+    ovapi-netherlands: a workflow_dispatch input left at its default `""`
+    sets the env var present-but-empty, not absent. `os.environ.get(key,
+    default)` only falls back to `default` when `key` is missing entirely, so
+    that produced `-Xmx` with no value and the JVM refused to start
+    ("Invalid maximum heap size: -Xmx") — a different failure than anything
+    this env var was meant to cause. Stripped and treated as unset here so
+    every caller gets a real heap value regardless of how the empty case is
+    spelled.
+    """
+    return os.environ.get("SCORECARD_LARGE_FEED_HEAP", "").strip() or DEFAULT_LARGE_FEED_HEAP
+
+
+def _memory_bound_prefix() -> list[str]:
+    """Wrap the validator subprocess in a hard virtual-memory ceiling, if configured.
+
+    issue #297: on `ovapi-netherlands` (a `large_feed`), the Actions runner was
+    observed dying outright ("received a shutdown signal" / "lost
+    communication with the server") 2-4 minutes into validation, on some runs
+    but not others under identical settings — the JVM taking the whole runner
+    down with it, rather than the validator failing on its own. `-Xmx` alone
+    only bounds the JVM heap; it does nothing to stop total process memory
+    (heap + metaspace + native/off-heap) from growing enough to starve the
+    runner's other processes or trip the platform's own health checks.
+
+    ``SCORECARD_VALIDATOR_MEMORY_MB``, when set, runs the validator under
+    ``prlimit --as=<bytes>``: a hard kernel-enforced ceiling on the child
+    process's virtual address space (RLIMIT_AS), independent of whatever else
+    is running on the same host. An overrun fails the allocating syscall, so
+    the JVM exits (no ``report.json`` written) instead of the runner itself
+    being killed; the existing ``RuntimeError`` below already treats that as
+    an ordinary, catchable validator failure. Unset by default — this is an
+    environment-specific ceiling (real Actions-runner memory, not local dev
+    memory), so it opts in per workflow rather than always-on. Silently
+    unwrapped wherever ``prlimit`` isn't on PATH (e.g. local macOS dev), so
+    the same code path runs everywhere without platform special-casing.
+
+    RLIMIT_AS is virtual memory, not resident set size: the JVM reserves
+    address space up front for its heap arena, so this ceiling must sit well
+    above ``-Xmx`` to leave room for that reservation plus metaspace and
+    native memory — it is a coarse backstop against a genuine runaway, not a
+    tight RSS budget.
+    """
+    limit_mb = os.environ.get("SCORECARD_VALIDATOR_MEMORY_MB", "").strip()
+    if not limit_mb or not shutil.which("prlimit"):
+        return []
+    return ["prlimit", f"--as={int(limit_mb) * 1024 * 1024}", "--"]
 
 
 def run_validator(
@@ -144,6 +192,7 @@ def run_validator(
     output_dir.mkdir(parents=True, exist_ok=True)
     heap_flags = [f"-Xmx{large_feed_heap()}"] if large_feed else []
     cmd = [
+        *_memory_bound_prefix(),
         _java_binary(),
         *heap_flags,
         "-jar",

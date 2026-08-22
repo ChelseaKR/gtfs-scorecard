@@ -201,8 +201,24 @@ agencies:
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Filed under New York in the catalog and in registry/us/ny.yaml until now,
+  # but the feed is the National Park Service's Boston Harbor Islands one: its
+  # stops span 42.25-42.36N, 71.05-70.92W and its routes are Georges Island,
+  # Peddocks Island, Spectacle Island and the Hingham run. Recorded as
+  # Massachusetts, the state both records that retire into it sit in.
+  - id: boston-harbor-islands-ferry
+    name: Boston Harbor Islands Ferry
+    subdivision_code: US-MA
+    subdivision_name: Massachusetts
+    static_gtfs_url: https://www.nps.gov/external-resources/gtfs/boha/boston-harbor-islands-ferry.zip
+    mdb_id: 2679
+    license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  # Mobility Database mdb-446 is deprecated and redirects to mdb-2679.
   - id: boston-harbor-islands-ferries
     name: Boston Harbor Islands Ferries
+    alias_of: boston-harbor-islands-ferry
+    feed_status: deprecated
     subdivision_code: US-MA
     subdivision_name: Massachusetts
     static_gtfs_url: http://nationalparkservice.github.io/nps-gtfs/boha/ferries/gtfs.zip
@@ -257,8 +273,11 @@ agencies:
     mdb_id: 556
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-592 is deprecated and redirects to mdb-2192.
   - id: bloom-tours
     name: Bloom Tours
+    alias_of: bloom-bus
+    feed_status: deprecated
     subdivision_code: US-MA
     subdivision_name: Massachusetts
     static_gtfs_url: https://www.mass.gov/doc/bloom-tours-zip-file-6242015/download
@@ -281,8 +300,11 @@ agencies:
     mdb_id: 645
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-1234 is deprecated and redirects to mdb-2416.
   - id: pioneer-valley-transit-authority-pvta
     name: Pioneer Valley Transit Authority (PVTA)
+    alias_of: pioneer-valley-transit-authority-pvta-2416
+    feed_status: deprecated
     subdivision_code: US-MA
     subdivision_name: Massachusetts
     static_gtfs_url: https://transitfeeds.com/p/massdot/104/latest/download
@@ -297,8 +319,11 @@ agencies:
     mdb_id: 1309
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-2073 is deprecated and redirects to mdb-2679.
   - id: boston-harbor-islands-ferries-2073
     name: Boston Harbor Islands Ferries
+    alias_of: boston-harbor-islands-ferry
+    feed_status: deprecated
     subdivision_code: US-MA
     subdivision_name: Massachusetts
     static_gtfs_url: https://www.nps.gov/external-resources/gtfs/boha/thompson-island-ferry.zip

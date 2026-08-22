@@ -25,16 +25,22 @@ agencies:
     mdb_id: 452
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-453 is deprecated and redirects to mdb-2641.
   - id: south-portland
     name: South Portland
+    alias_of: south-portland-2641
+    feed_status: deprecated
     subdivision_code: US-ME
     subdivision_name: Maine
     static_gtfs_url: http://smttracker.com/downloads/gtfs/south-portland-me-us.zip
     mdb_id: 453
     license_note: "License: http://smttracker.com/developer-terms-of-use/"
 
+  # Mobility Database mdb-454 is deprecated and redirects to mdb-2642.
   - id: greater-portland-metro-bus
     name: Greater Portland Metro Bus
+    alias_of: greater-portland-metro-bus-2642
+    feed_status: deprecated
     subdivision_code: US-ME
     subdivision_name: Maine
     static_gtfs_url: http://smttracker.com/downloads/gtfs/greater-portland-me.zip

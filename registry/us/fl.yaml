@@ -19,8 +19,11 @@ agencies:
     mdb_id: 322
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-323 is deprecated and redirects to mdb-2259.
   - id: collier-area-transit-cat
     name: Collier Area Transit (CAT)
+    alias_of: collier-area-transit-cat-2259
+    feed_status: deprecated
     subdivision_code: US-FL
     subdivision_name: Florida
     static_gtfs_url: https://ftis.org/PostFileDownload.aspx?id=396A0
@@ -54,16 +57,22 @@ agencies:
     mdb_id: 326
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-327 is deprecated and redirects to mdb-2260.
   - id: sarasota-county-area-transit
     name: Sarasota County Area Transit
+    alias_of: breeze-transit
+    feed_status: deprecated
     subdivision_code: US-FL
     subdivision_name: Florida
     static_gtfs_url: https://ftis.org/PostFileDownload.aspx?id=457A0
     mdb_id: 327
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-328 is deprecated and redirects to mdb-2258.
   - id: manatee-county-area-transit
     name: Manatee County Area Transit
+    alias_of: manatee-county-area-transit-2258
+    feed_status: deprecated
     subdivision_code: US-FL
     subdivision_name: Florida
     static_gtfs_url: https://ftis.org/PostFileDownload.aspx?id=342A0
@@ -176,8 +185,11 @@ agencies:
     mdb_id: 344
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-345 is deprecated and redirects to mdb-2412.
   - id: gainesville-regional-transit-system
     name: Gainesville Regional Transit System
+    alias_of: gainesville-regional-transit-system-2412
+    feed_status: deprecated
     subdivision_code: US-FL
     subdivision_name: Florida
     static_gtfs_url: https://ftis.org/PostFileDownload.aspx?id=468A0
@@ -247,16 +259,22 @@ agencies:
     mdb_id: 626
     license_note: "License: https://corporate.sunrail.com/about-sunrail/gtfs-data-download/"
 
+  # Mobility Database mdb-630 is deprecated and redirects to mdb-2257.
   - id: citrus-county-transit
     name: Citrus County Transit
+    alias_of: citrus-county-transit-2257
+    feed_status: deprecated
     subdivision_code: US-FL
     subdivision_name: Florida
     static_gtfs_url: https://ftis.org/PostFileDownload.aspx?id=152A0
     mdb_id: 630
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-876 is deprecated and redirects to mdb-2255.
   - id: lake-county-connection
     name: Lake County Connection
+    alias_of: lake-county-connection-2255
+    feed_status: deprecated
     subdivision_code: US-FL
     subdivision_name: Florida
     static_gtfs_url: http://www.ftis.org/PostFileDownload.aspx?id=160A0

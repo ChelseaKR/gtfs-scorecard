@@ -3,8 +3,11 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-428 is deprecated and redirects to mdb-2194.
   - id: the-current
     name: The Current
+    alias_of: rockingham-moover
+    feed_status: deprecated
     subdivision_code: US-VT
     subdivision_name: Vermont
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/crtransit-vt-us/crtransit-vt-us.zip
@@ -106,8 +109,16 @@ agencies:
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Named for one local brand in the catalog, but the feed is the whole
+  # Southeast Vermont operation: the path is sevt-vt-us and the routes are The
+  # Current's (Springfield In-Town, Bellows Falls In-Town, the Brattleboro
+  # lines) together with the MOOver's (Wilmington-West Dover, Mount Snow,
+  # Readsboro). Named for the operator whose feed it is, so mdb-428's
+  # retirement does not land a reader on a page named for a brand that is only
+  # part of it. The MOOver's own record (mdb-434) is still current in the
+  # catalog and keeps its page. See supersession-review.yaml.
   - id: rockingham-moover
-    name: Rockingham MOOver
+    name: Southeast Vermont Transit
     subdivision_code: US-VT
     subdivision_name: Vermont
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sevt-vt-us/sevt-vt-us.zip

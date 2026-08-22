@@ -12,13 +12,17 @@ name: iac
 on:
   push:
     branches: [main]
-    paths:
-      - "infra/**"
-      - ".github/workflows/iac.yml"
   pull_request:
-    paths:
-      - "infra/**"
-      - ".github/workflows/iac.yml"
+
+# RELIABILITY/CICD (issue #289): this used to filter on `paths:` at the
+# trigger level. Required-status-check enforcement (ADR 0033) blocks a merge
+# on a named context; a trigger-level path filter means the job — and its
+# check — never runs at all for a PR that doesn't touch infra/**, which is
+# indistinguishable from a hung check and blocks that PR forever with no
+# recovery short of an admin bypass. Verified against two real in-flight PRs
+# that didn't touch infra/** before this fix landed. `terraform fmt +
+# validate` is cheap (a handful of small modules, offline), so it now
+# triggers unconditionally rather than adding path-check skip logic.
 
 # Least privilege: the checks only read the repo.
 permissions:

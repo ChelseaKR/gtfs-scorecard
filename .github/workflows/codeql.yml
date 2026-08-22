@@ -1,19 +1,15 @@
-# SEC-08 / CICD-20: CodeQL SAST over the Python pipeline and the GitHub
-# Actions workflows themselves (the `actions` CodeQL pack covers injection via
+# SEC-08 / CICD-20: CodeQL SAST over the Python pipeline, the GitHub Actions
+# workflows themselves (the `actions` CodeQL pack covers injection via
 # untrusted expression contexts, exactly the class of issue `onboard.yml`'s
-# issue-body parsing needs watching).
-#
-# This header used to read "both languages this repo actually has attack
-# surface in". That was wrong: web/src/ is ~6,600 lines of hand-written
-# browser JavaScript, including 24 innerHTML assignment sites in app.js, and
-# it is the code a transit rider actually loads. Adding `javascript` to the
-# matrix below is the open item from issue #288. It is not done here because
-# it cannot be validated without running CodeQL, and a `javascript` row lands
-# a new required status check ("Analyze (javascript)", see ADR 0033 and
-# tests/test_required_status_checks.py) that would gate every merge on a
-# result nobody has seen yet. Semgrep and gitleaks now cover web/src/ instead
-# (.semgrepignore, .gitleaks.toml, both verified clean over the whole tree),
-# so the directory is no longer unscanned by everything.
+# issue-body parsing needs watching), and web/src/ — ~6,600 lines of
+# hand-written browser JavaScript, including 24 innerHTML assignment sites in
+# app.js, and the code a transit rider actually loads. Semgrep and gitleaks
+# already cover web/src/ (.semgrepignore, .gitleaks.toml, both verified clean
+# over the whole tree); `javascript` here (issue #288's remaining item) adds
+# CodeQL as the third. Deliberately not yet in .github/rulesets/main.json's
+# required checks (ADR 0033): that follow-up lands once a real PR run of this
+# change shows "Analyze (javascript)" reporting cleanly, not on the assumption
+# that it will.
 name: CodeQL
 
 on:
@@ -43,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [python, actions]
+        language: [python, actions, javascript]
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:

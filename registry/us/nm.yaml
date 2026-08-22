@@ -3,16 +3,22 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-149 is deprecated and redirects to mdb-2284.
   - id: carlsbad-municipal-transit-system
     name: Carlsbad Municipal Transit System
+    alias_of: carlsbad-municipal-transit-system-2284
+    feed_status: deprecated
     subdivision_code: US-NM
     subdivision_name: New Mexico
     static_gtfs_url: https://github.com/ethan-nelson/carlsbadnmtransit/blob/master/gtfs-odbl/carlsbadtransit-odbl.zip?raw=true
     mdb_id: 149
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-157 is deprecated and redirects to mdb-2346.
   - id: navajo-transit-system
     name: Navajo Transit System
+    alias_of: navajo-transit-system-2346
+    feed_status: deprecated
     subdivision_code: US-NM
     subdivision_name: New Mexico
     static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/navajo_google_transit.zip
@@ -60,8 +66,11 @@ agencies:
     mdb_id: 462
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-564 is deprecated and redirects to mdb-2075.
   - id: roadrunner-transit
     name: RoadRUNNER Transit
+    alias_of: roadrunner-transit-2075
+    feed_status: deprecated
     subdivision_code: US-NM
     subdivision_name: New Mexico
     static_gtfs_url: https://mjcaction.com/MJC_GTFS_Public/lascrucesroadrunner_google_transit.zip

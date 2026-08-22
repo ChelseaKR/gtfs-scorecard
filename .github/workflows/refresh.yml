@@ -27,6 +27,14 @@ permissions:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    # RELIABILITY (issue #297): no bound previously existed short of the
+    # platform's 360-minute default. Observed successful runs range from ~70
+    # to ~137 minutes depending on how many feeds are due this cycle (cadence
+    # tiers, ADR 0010), so this stays well above that range to avoid flagging
+    # a legitimately heavy cycle, while still catching a genuine hang (a
+    # runner killed validating a large feed, as in issue #297) inside one
+    # scheduling day instead of running silent for six hours.
+    timeout-minutes: 240
     concurrency:
       group: artifacts-publish
       cancel-in-progress: false
@@ -35,6 +43,8 @@ jobs:
       id-token: write # publish refreshed artifacts through AWS OIDC
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          persist-credentials: false
       - uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165 # v5.0.0
         with:
           distribution: temurin

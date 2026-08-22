@@ -427,6 +427,17 @@ def test_status_board_identifies_ungraded_ferry_mode() -> None:
     assert "Overall grade B" in html
 
 
+# A stored ntd_readiness block, the artifact key the pipeline writes at score
+# time. `_ntd_section` renders only when it is present, matching the SPA and the
+# API; the wording itself is recomputed from the artifact, so the stored verdict
+# here only has to exist.
+_STORED_READINESS: dict[str, Any] = {
+    "status": "ready",
+    "summary": "stored summary, recomputed at render time",
+    "pillars": [],
+}
+
+
 def test_ntd_section_is_us_only() -> None:
     from scorecard_pipeline.render_site import _ntd_section
 
@@ -439,6 +450,7 @@ def test_ntd_section_is_us_only() -> None:
             },
             "freshness": {"status": "measured", "details": {"days_until_expiry": 90}},
         },
+        "ntd_readiness": _STORED_READINESS,
     }
     us = {**base, "agency": {"id": "d", "name": "D"}}  # no country -> US default
     ca = {**base, "agency": {"id": "wh", "name": "Whitehorse Transit", "country": "CA"}}
@@ -1159,6 +1171,14 @@ def test_render_retires_stale_f_scorecard_and_redirects_to_live_successor(
     assert f"url=/agency/{successor_id}/" in redirect
     assert f'<a href="/agency/{successor_id}/">' in redirect
     assert "stale F scorecard" not in redirect
+    # The successor often publishes under a different name. Naming the retired
+    # record as the destination would tell a reader they are going somewhere
+    # they are not.
+    assert (
+        f'Continue to <a href="/agency/{successor_id}/">Unitrans (ASUCD / City of Davis)</a>'
+        in redirect
+    )
+    assert "Retired Unitrans export</a>" not in redirect
     assert not (stale_page / "brief").exists()
     retained_redirects = json.loads(
         (isolated_repo_root / "web" / "_meta" / "retained-agency-redirects.json").read_text()
@@ -3001,6 +3021,7 @@ def test_ntd_section_maps_pillars_and_labels_status_in_text() -> None:
             "correctness": {"status": "measured", "findings": []},
             "freshness": {"status": "measured", "details": {"days_until_expiry": 90}},
         },
+        "ntd_readiness": _STORED_READINESS,
     }
     html = _ntd_section(art)
     # The NTD abbreviation is wrapped for 3.1.4, so the heading reads
@@ -3019,6 +3040,7 @@ def test_ntd_section_maps_pillars_and_labels_status_in_text() -> None:
             "correctness": {"status": "measured", "findings": []},
             "freshness": {"status": "measured", "details": {"days_until_expiry": -200}},
         },
+        "ntd_readiness": _STORED_READINESS,
     }
     assert "Not ready" in _ntd_section(expired)
 
@@ -3032,6 +3054,7 @@ def test_ntd_section_renders_id_alignment_when_present() -> None:
             "correctness": {"status": "measured", "findings": []},
             "freshness": {"status": "measured", "details": {"days_until_expiry": 90}},
         },
+        "ntd_readiness": _STORED_READINESS,
     }
     # A mismatch shows optional equality neutrally; required agency_id presence
     # is a separate readiness pillar (ADR 0016).
@@ -3089,6 +3112,7 @@ def test_ntd_section_renders_shapes_readiness_when_present() -> None:
             "correctness": {"status": "measured", "findings": []},
             "freshness": {"status": "measured", "details": {"days_until_expiry": 90}},
         },
+        "ntd_readiness": _STORED_READINESS,
     }
     partial = {
         **base,
@@ -3113,6 +3137,116 @@ def test_ntd_section_renders_shapes_readiness_when_present() -> None:
     # Absent block (older artifacts, or a feed scored before this check shipped)
     # renders no shapes row.
     assert "shapes.txt covers your trips" not in _ntd_section(base)
+
+
+# --- Regression: an unmeasured NTD dimension must never be published as a
+# verdict. A workshop audit (2026-08-19) traced a participant-facing defect to
+# this section: it assessed the artifact directly instead of gating on stored
+# readiness, so a feed the pipeline had never assessed still got a readiness
+# box, a "Needs attention" chip on an unchecked agency_id, and fine print
+# asserting a shapes requirement with no coverage line under it. Participants
+# were asked to record the shapes coverage line from that page and, finding
+# none, reported partial coverage for their own agency.
+
+
+def _unassessed_artifact() -> dict[str, Any]:
+    """A US artifact with none of the three NTD keys the pipeline writes.
+
+    This is the shape the SPA and the API already handle by omitting the
+    section, and the shape the standalone HTML used to render anyway.
+    """
+    return {
+        "agency": {"id": "unassessed", "name": "Unassessed Transit"},
+        "feed": {"reachable": True, "static_url": "https://ex.org/g.zip"},
+        "categories": {
+            "correctness": {"status": "measured", "findings": []},
+            "freshness": {"status": "measured", "details": {"days_until_expiry": 90}},
+        },
+    }
+
+
+def test_ntd_section_omits_the_box_when_no_readiness_was_stored() -> None:
+    """No stored ntd_readiness, no readiness box, matching the SPA and the API.
+
+    The section used to call the assessor directly, so it published a verdict
+    for a feed nobody had assessed.
+    """
+    from scorecard_pipeline.ntd import presented_readiness
+    from scorecard_pipeline.render_site import _ntd_section
+
+    art = _unassessed_artifact()
+    # The gate the other two surfaces use agrees there is nothing to present.
+    assert presented_readiness(art) is None
+
+    html = _ntd_section(art)
+    assert html == ""
+    # Nothing from the box survives: no verdict chip, no pillar rows, no prose
+    # about a requirement this page has no measurement for.
+    assert "GTFS readiness" not in html
+    assert "Needs attention" not in html
+    assert "agency_id" not in html
+    assert "shapes.txt" not in html
+
+
+def test_ntd_section_still_renders_when_readiness_was_stored() -> None:
+    """The gate omits an unassessed feed without hiding an assessed one."""
+    from scorecard_pipeline.render_site import _ntd_section
+
+    art = {**_unassessed_artifact(), "ntd_readiness": _STORED_READINESS}
+    html = _ntd_section(art)
+    assert "GTFS readiness" in html
+    assert "Published" in html and "Valid" in html and "Current" in html
+
+
+def test_unchecked_agency_id_reads_as_not_checked_not_as_a_failure() -> None:
+    """An agency_id nobody checked gets the neutral "Not checked yet" label the
+    optional-equality row already uses, not the "Needs attention" chip that
+    genuine failures carry, and not the warning color that goes with it."""
+    from scorecard_pipeline.render_site import _ntd_section
+
+    # Readiness was stored, but the agency_id alignment block was not, so the
+    # pillar is recomputed as unchecked.
+    art = {**_unassessed_artifact(), "ntd_readiness": _STORED_READINESS}
+    html = _ntd_section(art)
+
+    assert "agency_id provided" in html
+    assert "Not checked yet" in html
+    assert "Needs attention" not in html
+    # Neutral badge class, not the at-risk warning color. `ntd-unknown` is the
+    # class the optional-equality row already uses for its unchecked case.
+    assert '<span class="ntd-status ntd-unknown">Not checked yet</span>' in html
+    assert "ntd-at_risk" not in html
+    # The row says plainly that nothing was measured, and the verdict does not
+    # silently absorb the gap.
+    assert "has not been checked for this feed yet" in html
+    assert "not checked agency_id" in html
+
+
+def test_shapes_fineprint_is_absent_without_a_shapes_coverage_line() -> None:
+    """The fine print may not assert the shapes.txt requirement on a page that
+    shows no shapes coverage measurement.
+
+    Requirement text with no measurement beside it left the reader to supply the
+    verdict, which is exactly the wrong conclusion the workshop recorded.
+    """
+    from scorecard_pipeline.render_site import _ntd_section
+
+    without_shapes = {**_unassessed_artifact(), "ntd_readiness": _STORED_READINESS}
+    html = _ntd_section(without_shapes)
+    assert "shapes.txt covers your trips" not in html  # no measurement rendered
+    assert "shapes.txt" not in html  # and so no requirement asserted either
+    assert "Report Year 2025" not in html
+    assert "Report Year 2026" not in html
+
+    # With a measurement present, requirement and coverage line appear together.
+    with_shapes = {
+        **without_shapes,
+        "shapes_readiness": {"status": "ready", "total_trips": 10, "trips_with_shape": 10},
+    }
+    with_html = _ntd_section(with_shapes)
+    assert "shapes.txt covers your trips" in with_html
+    assert "All 10 trips have a shape in shapes.txt." in with_html
+    assert "Report Year 2025" in with_html and "Report Year 2026" in with_html
 
 
 def _member(agency_id: str, shapes_status: str | None, grade: str = "C") -> dict[str, Any]:
@@ -4252,6 +4386,7 @@ def test_ntd_section_carries_curator_reporting_context() -> None:
             "correctness": {"status": "measured", "findings": []},
             "freshness": {"status": "measured", "details": {"days_until_expiry": 90}},
         },
+        "ntd_readiness": _STORED_READINESS,
     }
     html = _ntd_section(art)
     # The shared-feed/waiver context leads the box, so the reader never takes

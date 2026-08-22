@@ -49,8 +49,13 @@ snapshot that moves only when it is deliberately re-materialized from the live
 corpus (last refreshed 2026-08-07),
 with more than 2,100 numeric scorecards published. CI can only gate the
 snapshot figure, because `make verify` runs offline. A feed record is not
-always a distinct transit agency: regional feeds, modal variants, and retired
-aliases are counted separately while the identity registry is reconciled.
+always a distinct transit agency: regional feeds and modal variants are counted
+separately while the identity registry is reconciled. A record the Mobility
+Database has retired in favour of another is no longer one of them: it keeps
+its dated artifacts and redirects its old URL, and only its successor publishes
+a current grade, so one agency does not carry two
+(`docs/feed-supersessions.md`). That leaves the published count lower than it
+was, and right.
 
 **Live:** [gtfsscorecard.org](https://gtfsscorecard.org/) — with the latest
 completed-run evidence at [gtfsscorecard.org/status](https://gtfsscorecard.org/status/).
@@ -312,7 +317,7 @@ declared here; none is silently skipped.
 | AI Development Measurement | Applies — delivery and quality-debt outcomes are measured at repository level; local AI-tool telemetry is never a merge gate | [`AI-DEVELOPMENT-MEASUREMENT-STANDARD.md`](docs/standards/AI-DEVELOPMENT-MEASUREMENT-STANDARD.md) |
 | Quality & Metrics | Applies (data-quality/lineage named for this repo explicitly) | [`QUALITY-AND-METRICS-STANDARD.md`](docs/standards/QUALITY-AND-METRICS-STANDARD.md) |
 | Documentation | Applies | [`DOCUMENTATION-STANDARD.md`](docs/standards/DOCUMENTATION-STANDARD.md) |
-| Release & Versioning | Applies — reusable Action tags (`v1`/`v1.4.0`), monthly dataset releases; the MCP server manifest is written but not published to the registry (see Versioning) | [`RELEASE-AND-VERSIONING-STANDARD.md`](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) |
+| Release & Versioning | Applies — reusable Action tags (`v1`/`v1.5.0`), monthly dataset releases; the MCP server manifest is written but not published to the registry (see Versioning) | [`RELEASE-AND-VERSIONING-STANDARD.md`](docs/standards/RELEASE-AND-VERSIONING-STANDARD.md) |
 | Responsible-Tech Framework | Applies (audits A-F; AI-governance rows N/A — no AI system) | [`RESPONSIBLE-TECH-FRAMEWORK.md`](docs/standards/RESPONSIBLE-TECH-FRAMEWORK.md) |
 | Incident Response | Applies — deployed static site and scheduled pipeline; incidents use the shared severity, label, postmortem, and secret-leak conventions | [`INCIDENT-RESPONSE-STANDARD.md`](docs/standards/INCIDENT-RESPONSE-STANDARD.md) |
 | Data Governance | Applies — public civic datasets, feed provenance, licenses, retention, and publication lineage are core product concerns | [`DATA-GOVERNANCE-STANDARD.md`](docs/standards/DATA-GOVERNANCE-STANDARD.md) |

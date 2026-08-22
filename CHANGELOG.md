@@ -27,28 +27,210 @@ the declared public surface).
 
 ## [Unreleased]
 
-### Security
-- **Both Lambda worker images now delete the AWS Runtime Interface Emulator.**
-  `/usr/local/bin/aws-lambda-rie` is a local-testing shim the base image ships,
-  it is the only Go binary in either image, and its vendored Go standard library
-  carried eight fixable HIGH CVEs with no rebuilt base image available. Both
-  images deploy only as `package_type = "Image"` Lambdas, where the managed
-  runtime never invokes it. The delete is gated on the base entrypoint still
-  testing `AWS_LAMBDA_RUNTIME_API`, so a base image that changes that fails the
-  build rather than shipping an image with no entrypoint. `docker run` of these
-  images no longer emulates the Lambda API locally.
-- **CVE-2026-54399 and CVE-2026-54428** (Apache HttpComponents Core, inside the
-  shaded MobilityData gtfs-validator 8.0.1 jar) are recorded in `vex.json` as
-  `code_not_reachable` on measured grounds: in the built image the validator
-  loads no `org.apache.hc.*` class when given a local zip, and 140 of them when
-  given `-u`. The pipeline only ever gives it a local zip, and
-  `test_validator_is_never_handed_a_url` fails if that changes. `CVE-2026-39822`
-  drops out with the binary it was about.
-- **The container CVE scan now runs on every change that alters an image** -
-  the handlers, the schema, and all of `pipeline/`, not just the Dockerfiles and
-  the lockfile the images never read.
+## [1.5.0] - 2026-08-18
+
+### Added
+
+- **The repository now says how to support the project.** A root `SUPPORT.md`
+  populates GitHub's community-health Support surface and separates getting
+  help with a feed from funding the project; the homepage footer gains the
+  `/support/` link it alone lacked (it carries its own footer rather than the
+  shared one); and the README points at both near the top instead of from
+  line 278 of about 390. The live GitHub Sponsors rail is wired through
+  `.github/FUNDING.yml`, which now states the rule that a channel is listed
+  only once the account behind it actually exists. The consulting offer
+  hidden on 2026-07-14 is restored on `/support/`, the README, and
+  `docs/support.md` — the link target was verified live before restoring —
+  and the guard test now asserts the offer is present in all three rather
+  than absent, because a paid offer that quietly disappears from every entry
+  point is the failure worth guarding against now. Support copy no longer
+  implies agencies embed the badges or submit receipts. Paid help sits
+  alongside the free tool, never replaces it, and never changes a grade.
+- **Continuous realtime health for the California cohort.** Realtime is a
+  compliance area in the California Transit Data Guidelines, and the state's
+  monthly reports check realtime presence at most twice a month; the monitor
+  here already samples reachability, header freshness, and trip coverage on
+  a schedule, but almost no Californian record outside the pilots had a
+  realtime endpoint configured, so there was nothing for it to sample.
+  Endpoints are taken from each agency's own monthly report and attached
+  only to registry records whose organization match the crosswalk confirms,
+  and every candidate had to answer with a parseable GTFS-Realtime message
+  before being configured. Of 362 listed endpoints, 179 verified across 63
+  agencies; the 183 excluded are recorded per endpoint with their reason in
+  `data/california-realtime-sources.yaml` — 90 behind a Bay Area 511 API
+  key, 71 behind a Swiftly key, and 22 that did not answer with a readable
+  message. The program page renders the rollup least reliable first, reusing
+  the national reliability bands rather than inventing a second model. A
+  feed publishing no header timestamp is described that way instead of being
+  scored stale, and nothing here changes a grade.
+- **Findings now carry what they cost, not only what is wrong.** A pure
+  consequence layer computes reach, rider-trips (National Transit Database,
+  US-scoped per ADR 0026), and served-area need (North America, ADRs 0015
+  and 0027) for published findings. Denominators are derived from each
+  producer's arithmetic and checked against the published corpus —
+  `orphan_stops` must divide by boardable stops, not all stops — and a
+  finding with no honest denominator says so with the reason instead of
+  printing a share. Reach is never multiplied into rider-trips, because
+  boardings are not spread evenly across stops and the product would read as
+  a measurement while being an invention. Across 3,547 published top fixes
+  nothing came back unmapped, and a test fails if a new finding arrives
+  without a reviewed basis. Nothing reads the layer yet: no artifact field
+  changes and `SCHEMA_VERSION` is untouched.
+- **`/focus/` groups the checks a validator does not run** — the four-week
+  Maps availability bar, whether sampled trips complete, whether the
+  realtime feed answers, and whether the feed URL still resolves — and
+  `/how-to-read/` and the homepage workflow step now point at that group,
+  which previously existed as one phrase inside the routability lede.
+  Presentation only: no rule, weight, score, or grade moves.
+- **The fresh site must pass a blocking structural quality gate before it
+  deploys**: local links and fragments, duplicate IDs, metadata, canonical
+  aliases, sitemap and robots parity, required structured-data identity and
+  dates, and representative-page performance budgets. The same pass repaired
+  what the gate and a production crawl then surfaced — glossary fragment
+  links, fragments in redirect canonicals, overlong location metadata,
+  curated agency identity, published article dates, and bounded rendering
+  for the largest directory pages.
+- **`check_doc_stats.py` now also reads the documents backwards**, so a corpus
+  figure nobody registered cannot enter a live-facing doc unnoticed. The rule
+  list only ever checked claims someone remembered to register, which is
+  precisely why CLAUDE.md's 1,286 survived the registry doubling while every
+  registered claim stayed correct. The sweep finds corpus-shaped figures across
+  66 live-facing documents and fails on any that no rule covers and no
+  `POINT_IN_TIME` declaration excuses; each declaration states its reason and
+  must still match, so an exemption cannot outlive the figure it excuses.
+  Deliberately not a completeness claim: it matches "<number> <corpus noun>",
+  so a figure separated from its noun by an unexpected word slips through, and
+  it is a net under the registration discipline rather than a replacement for
+  it. Dated records (`CHANGELOG.md`, the `docs/` subdirectories) are not swept,
+  and `*.local.md` private notes are never read.
+- Gate `AGENTS.md`'s corpus figures. The file is excluded from the repo, so a
+  normal rule naming it would fail every clean CI checkout, which is exactly why
+  it went ungated and carried the same stale 1,286 CLAUDE.md did. `OPTIONAL_RULES`
+  enforces it when the file is present and skips it when it is not, so a local
+  `make verify` catches drift at the moment someone edits it.
+- Deliver the structural export diff (EXP-18) through the alert channels, not
+  just the agency page. A run whose export changed shape now produces an
+  `export_change` item in the email digest (its own section, deliverable to
+  webhooks), an `export_change` entry in the site-wide Atom feed, and one in
+  that agency's own Atom feed. Subscribers can opt into or out of the kind by
+  name in `subscriptions.yaml`. Site-wide entries are gated to the same
+  comparison-eligible cohort as grade-change entries, so a duplicate feed
+  identity cannot announce one change twice. `changes/latest.json` is
+  unchanged and still carries grade and score moves only; `docs/api.md` states
+  the difference.
+- Move proposal-only `scorecard sync` intake to Mobility Database
+  `feeds_v2.csv`, while keeping mirror recovery and replacement discovery on
+  the legacy catalog. Normalize numeric Mobility Database identities across
+  both forms, reject unsafe V2 schema drift, prefer HTTPS endpoint spellings,
+  and leave ambiguous Realtime endpoints unattached with a review note.
+- Add `scorecard sync --source-metadata-out` receipts that bind the exact
+  source bytes, header, filters, registry identity inputs, rendered proposal
+  bytes, and proposal-tool source tree. Proposal outputs cannot overwrite their
+  catalog input or the curated registry, and an empty run clears stale output.
+- Extend the sync receipt with a versioned candidate-disposition ledger that
+  accounts for every recognized Mobility Database Schedule row without
+  publishing raw endpoints or contact data. Proposal selection is
+  deterministic, existing registry matches are named, and conflicting catalog
+  ids fail closed.
+
+### Changed
+
+- **The California cohort is reconciled against the Caltrans report
+  directory.** The program page counted feed records, and a feed record is
+  not an agency, so one operator with two feed URLs could be listed as two
+  expired agencies. Every California registry record is now crosswalked
+  against a committed, dated snapshot of the state's monthly GTFS quality
+  report directory, strongest evidence first; a case the evidence does not
+  settle is recorded as uncertain and never counted as agreement. Of the 133
+  feed records the page carries, 112 match an agency in that directory, 3
+  are uncertain, and 18 have no counterpart there, mostly park, campus, and
+  private shuttles; they describe 108 distinct organizations, and 29
+  agencies in the state's directory have no feed record here yet. Five exact
+  duplicates retire as aliases, and remaining repeats group under
+  `organization_id` with labeled variants. Nothing is deleted.
+- **Re-materialize the committed artifact fallback snapshot from the live S3
+  corpus (2026-08-07), moving the doc-stats denominator instead of weakening the
+  gate.** The previous entry made `check_doc_stats.py` name its frozen snapshot
+  honestly; this one refreshes the snapshot itself, using the same bounded flow
+  the Pages build runs (`aws s3 sync` of the documented public set, then
+  `scripts/materialize_current_artifacts.py` to validate index/latest parity).
+  `data/artifacts/index.json` now carries the corpus the service actually
+  publishes — 2,182 pages with 2,182 numeric latest scores, newest scoring date
+  2026-08-07, schema 1.17 — against the cutover snapshot's 1,128 pages frozen at
+  2026-07-10. With the denominator refreshed, the unchanged `floor` gate itself
+  forced every "more than 1,100" claim up to "more than 2,100" (README,
+  CLAUDE.md, `docs/roadmap.md`, `docs/product-roadmap.md`,
+  `docs/feature-roadmap.md`) and the landing page's static "1,100+" published
+  count up to "2,100+". The snapshot still only moves when it is deliberately
+  re-materialized — automation stopped committing generated data at the S3
+  cutover and still does not — so the gate's output keeps printing the
+  snapshot's own date beside the counts.
+- Cap oversized per-agency route tables at 500 rows while preserving the total
+  route count and linking the complete current JSON record. Normal agency pages
+  remain unchanged; national aggregates no longer produce multi-megabyte HTML.
+- Move the Alice Springs registry source to the Northern Territory publisher's
+  current canonical download. The retired URL now takes six redirects across a
+  renamed department and filenames, beyond the scorer's guarded redirect cap.
+- Treat a vanished public publisher hostname as an availability failure eligible
+  for an identity-pinned mirror. Private, malformed, and otherwise unsafe URLs
+  still fail closed and can never route through fallback infrastructure.
+- Resolve legacy numeric Mobility Database mirror records through the current
+  `files.mobilitydatabase.org/mdb-N/latest.zip` endpoint. The retired GCS
+  object path no longer blocks recovery when a publisher endpoint is offline.
+  Track Danville Mass Transit's latest first-party document URL even though its
+  host currently rejects unattended fetches.
+- Recover the final missing coverage cohort with current first-party Schedule
+  downloads for DCTA, Rockford Mass Transit, and SamTrans. Their retired,
+  archived, or key-gated registry URLs now point to the agencies' public GTFS
+  downloads; feeds whose publisher is still unavailable continue to use the
+  explicitly disclosed Mobility Database mirror fallback.
+- Retry lifecycle tagging after transient S3 connection failures in both daily
+  and targeted publication. A single dropped response no longer leaves an
+  otherwise successful daily corpus refresh red or triggers the watchdog.
+- Keep reviewed national aggregates scoreable when `stop_times.txt` exceeds
+  the 1 GiB whole-table reader cap. The graded scorecard now publishes while
+  the zero-deduction routability block says it was not measured, instead of
+  failing the entire feed. Nullable contact fields are also treated as missing
+  data rather than a pipeline error. Mark the OVapi national aggregate for the
+  reviewed large-feed tier and move Cache Valley, Greenlink, and Jacksonville
+  to their current catalog-confirmed Schedule sources.
+- Make the contributor-facing failures in `docs/add-your-agency.md` plain
+  messages instead of Python tracebacks (#188). Walking that walkthrough from a
+  clean fork, both cases the doc promises "fail immediately with a plain
+  message" — a malformed registry entry and an unreachable feed URL — produced
+  an uncaught twenty-frame traceback. The underlying messages were already
+  precise; they were just buried. `main` now reports `AgencyConfigError`,
+  `UnsafeURLError`, and `requests` failures as one line and exits 1, and a
+  single-agency `scorecard run` logs the failure without a stack (a `--all`
+  batch keeps the stack, because whoever is debugging 900 feeds wants it).
+  `SCORECARD_TRACEBACK=1` restores the full traceback for either audience.
+  The walkthrough now also names `scorecard lint --strict` — the registry gate
+  CI actually runs on the pull request — as a fast, Java-free first check.
+- Harden the newly published sync-receipt contract as schema 1.2. The 1.1
+  schema stays frozen at its existing URL and both versions have stable,
+  retrievable schema references. New receipts validate before either output
+  is written. Registry provenance binds each external identity to the public
+  registry record that currently carries it. Tool evidence also binds the
+  packaged jurisdiction data and exact schema bytes. Scope, count, and decision
+  contradictions are rejected, while Mobility Database-only receipt runs reuse
+  one proposer evaluation.
+- Move the `feeds/` reproducibility archive to S3 Glacier Instant Retrieval
+  after 30 days. Retrieval stays millisecond-class, so
+  `scorecard reproduce <agency> <date>` is unchanged, at roughly a sixth of
+  the storage price; the recent tail stays in Standard, where a fresh grade
+  is most likely to be questioned.
+- Run the intraday refresh every three hours instead of hourly, stop
+  re-downloading the artifact corpus every build, and publish only artifacts
+  whose content actually changed.
+- Stop shipping the whole registry inside `/compare/`. The page
+  interpolated one option per catalog record into both selects — 399,514
+  bytes raw at 2,176 records, growing with every coverage wave — and had
+  fallen below the Lighthouse performance floor. It now ships a bounded
+  window and fetches `compare/agencies.json`, the shape `/map/` already
+  uses, only when someone reaches for the picker.
 
 ### Fixed
+
 - **Nine agencies were published with a letter grade that contradicted their own
   printed score.** The overall score is published rounded to one decimal, but
   the letter and the band margins were computed from the unrounded value behind
@@ -84,30 +266,39 @@ the declared public surface).
   and 20 showed a different letter: Anchorage People Mover's artifact read
   `C 73.5` next to a badge reading `D 65.8`. All regenerated from the artifacts
   through the pipeline's own badge writer, and now gated.
-
-### Security
-- **`web/src/` is scanned again.** ~6,600 lines of hand-written browser
-  JavaScript, including 24 `innerHTML` assignment sites, were excluded from
-  Semgrep (`.semgrepignore`) and gitleaks (`.gitleaks.toml`) and never analysed
-  by CodeQL, which covers python and actions only — so the only code in this
-  repository that runs in a rider's browser had no SAST and no secret scanning
-  from any of the three. Both exclusions existed for the public GTFS feed-URL
-  keys that appear in *generated* pages under `web/`, and both now name the
-  generated trees instead of the whole directory. Measured first: with `^web/`
-  removed, gitleaks reports 77 findings and every one is a feed-URL key under
-  `web/agency/`, `web/api/` or `web/catalog.json`, none in `web/src/`. Semgrep
-  now also runs `p/javascript`, since `p/python` over browser code was running
-  almost no rules on it. Adding `javascript` to CodeQL remains open (#288).
-- **Five pull-request checks could not block a merge**, contrary to ADR 0033's
-  rule that a new gate joins the ruleset "in the same change that adds the
-  workflow": both `Trivy image CVE scan` matrix jobs, `terraform fmt + validate`,
-  `zizmor (workflow security lint)` and `Dependency review (PRs only)`.
-  `container-scan` caught ten HIGH CVEs in the shipped Lambda images this month
-  because it happened to run, not because anything required it to pass. All five
-  are added to `.github/rulesets/main.json`, and a new test compares the
-  workflows to the ruleset so a job can no longer run while blocking nothing.
-  **The live ruleset is the enforcement source and still needs
-  `gh api .../rulesets/{id} -X PUT`; this change only updates the file.**
+- **Three checks the site's positioning depends on were measuring the wrong
+  thing.** The Maps availability gate read `last_service_date`, the calendar
+  tail, while every other surface uses `effective_expiry_date`; the two
+  disagree on 136 published feeds, and one scorecard published
+  `days_until_expiry: -1135` beside a passing gate. 48 of 2,515 feeds change
+  verdict. Realtime drift anchored stop times to local midnight instead of
+  the GTFS service day (noon minus twelve hours), so on the two
+  daylight-saving transition days a punctual bus read 3,600 seconds off and
+  every realtime agency in a transition zone could receive a false
+  implausible-predictions finding. And the anomaly detector compared
+  adjacent history rows as if they were adjacent days — 1,114 published
+  steps span 27 days — so a month-long regression could be labeled a
+  one-day glitch and both the dip and its recovery suppressed; neighbouring
+  rows must now be within two days. No grade moves in any of the three: the
+  gate is advisory, drift is not a score component, and no published
+  history contained a gap-spanning dip.
+- **A screen reader is told which page it is on, not which section.** The
+  primary nav put `aria-current="page"` on a section's hub link from every
+  page inside that section, so a screen-reader user on `/ntd/` heard
+  "Coverage, current page" about a link that navigates elsewhere — wrong on
+  17 of 26 top-level pages and on every agency page. `page` is now emitted
+  only for the page being rendered and `true` for the containing hub, per
+  ARIA 1.2's distinction between the two.
+- **Published dates come from UTC, not from whichever machine runs the
+  job.** A sweep found every remaining bare `date.today()` — nineteen of
+  them deciding something that outlives the process, including snapshot
+  dates, the as-of date expiry alerts are graded against, and dates stamped
+  into committed files — and routed them through `config.utc_today()`, the
+  aware clock the rest of the pipeline already read. The publisher-snapshot
+  script's `retrieved_on` stamp follows the same rule.
+- Repair the apex `gtfsscorecard.com` redirect and serve
+  `www.gtfsscorecard.com` from its own redirect bucket, so both spellings
+  reach `gtfsscorecard.org` again.
 - **A StatCan outage could unpublish every Canadian need tier under a green
   run.** Each per-agency failure in `scorecard canada-equity` is a `continue`
   and the command then returned 0 and wrote whatever it had, so a total outage
@@ -266,122 +457,6 @@ the declared public surface).
   live; its 2x/5x storage model names 2026-07-18 as the measurement date and
   labels 2,300 and 5,800 as projections, not counts.
   `docs/global-coverage-roadmap.md`'s phase-3 outcome now carries its date.
-
-### Added
-- **`check_doc_stats.py` now also reads the documents backwards**, so a corpus
-  figure nobody registered cannot enter a live-facing doc unnoticed. The rule
-  list only ever checked claims someone remembered to register, which is
-  precisely why CLAUDE.md's 1,286 survived the registry doubling while every
-  registered claim stayed correct. The sweep finds corpus-shaped figures across
-  66 live-facing documents and fails on any that no rule covers and no
-  `POINT_IN_TIME` declaration excuses; each declaration states its reason and
-  must still match, so an exemption cannot outlive the figure it excuses.
-  Deliberately not a completeness claim: it matches "<number> <corpus noun>",
-  so a figure separated from its noun by an unexpected word slips through, and
-  it is a net under the registration discipline rather than a replacement for
-  it. Dated records (`CHANGELOG.md`, the `docs/` subdirectories) are not swept,
-  and `*.local.md` private notes are never read.
-- Gate `AGENTS.md`'s corpus figures. The file is excluded from the repo, so a
-  normal rule naming it would fail every clean CI checkout, which is exactly why
-  it went ungated and carried the same stale 1,286 CLAUDE.md did. `OPTIONAL_RULES`
-  enforces it when the file is present and skips it when it is not, so a local
-  `make verify` catches drift at the moment someone edits it.
-- Deliver the structural export diff (EXP-18) through the alert channels, not
-  just the agency page. A run whose export changed shape now produces an
-  `export_change` item in the email digest (its own section, deliverable to
-  webhooks), an `export_change` entry in the site-wide Atom feed, and one in
-  that agency's own Atom feed. Subscribers can opt into or out of the kind by
-  name in `subscriptions.yaml`. Site-wide entries are gated to the same
-  comparison-eligible cohort as grade-change entries, so a duplicate feed
-  identity cannot announce one change twice. `changes/latest.json` is
-  unchanged and still carries grade and score moves only; `docs/api.md` states
-  the difference.
-- Move proposal-only `scorecard sync` intake to Mobility Database
-  `feeds_v2.csv`, while keeping mirror recovery and replacement discovery on
-  the legacy catalog. Normalize numeric Mobility Database identities across
-  both forms, reject unsafe V2 schema drift, prefer HTTPS endpoint spellings,
-  and leave ambiguous Realtime endpoints unattached with a review note.
-- Add `scorecard sync --source-metadata-out` receipts that bind the exact
-  source bytes, header, filters, registry identity inputs, rendered proposal
-  bytes, and proposal-tool source tree. Proposal outputs cannot overwrite their
-  catalog input or the curated registry, and an empty run clears stale output.
-- Extend the sync receipt with a versioned candidate-disposition ledger that
-  accounts for every recognized Mobility Database Schedule row without
-  publishing raw endpoints or contact data. Proposal selection is
-  deterministic, existing registry matches are named, and conflicting catalog
-  ids fail closed.
-
-### Changed
-
-- **Re-materialize the committed artifact fallback snapshot from the live S3
-  corpus (2026-08-07), moving the doc-stats denominator instead of weakening the
-  gate.** The previous entry made `check_doc_stats.py` name its frozen snapshot
-  honestly; this one refreshes the snapshot itself, using the same bounded flow
-  the Pages build runs (`aws s3 sync` of the documented public set, then
-  `scripts/materialize_current_artifacts.py` to validate index/latest parity).
-  `data/artifacts/index.json` now carries the corpus the service actually
-  publishes — 2,182 pages with 2,182 numeric latest scores, newest scoring date
-  2026-08-07, schema 1.17 — against the cutover snapshot's 1,128 pages frozen at
-  2026-07-10. With the denominator refreshed, the unchanged `floor` gate itself
-  forced every "more than 1,100" claim up to "more than 2,100" (README,
-  CLAUDE.md, `docs/roadmap.md`, `docs/product-roadmap.md`,
-  `docs/feature-roadmap.md`) and the landing page's static "1,100+" published
-  count up to "2,100+". The snapshot still only moves when it is deliberately
-  re-materialized — automation stopped committing generated data at the S3
-  cutover and still does not — so the gate's output keeps printing the
-  snapshot's own date beside the counts.
-- Cap oversized per-agency route tables at 500 rows while preserving the total
-  route count and linking the complete current JSON record. Normal agency pages
-  remain unchanged; national aggregates no longer produce multi-megabyte HTML.
-- Move the Alice Springs registry source to the Northern Territory publisher's
-  current canonical download. The retired URL now takes six redirects across a
-  renamed department and filenames, beyond the scorer's guarded redirect cap.
-- Treat a vanished public publisher hostname as an availability failure eligible
-  for an identity-pinned mirror. Private, malformed, and otherwise unsafe URLs
-  still fail closed and can never route through fallback infrastructure.
-- Resolve legacy numeric Mobility Database mirror records through the current
-  `files.mobilitydatabase.org/mdb-N/latest.zip` endpoint. The retired GCS
-  object path no longer blocks recovery when a publisher endpoint is offline.
-  Track Danville Mass Transit's latest first-party document URL even though its
-  host currently rejects unattended fetches.
-- Recover the final missing coverage cohort with current first-party Schedule
-  downloads for DCTA, Rockford Mass Transit, and SamTrans. Their retired,
-  archived, or key-gated registry URLs now point to the agencies' public GTFS
-  downloads; feeds whose publisher is still unavailable continue to use the
-  explicitly disclosed Mobility Database mirror fallback.
-- Retry lifecycle tagging after transient S3 connection failures in both daily
-  and targeted publication. A single dropped response no longer leaves an
-  otherwise successful daily corpus refresh red or triggers the watchdog.
-- Keep reviewed national aggregates scoreable when `stop_times.txt` exceeds
-  the 1 GiB whole-table reader cap. The graded scorecard now publishes while
-  the zero-deduction routability block says it was not measured, instead of
-  failing the entire feed. Nullable contact fields are also treated as missing
-  data rather than a pipeline error. Mark the OVapi national aggregate for the
-  reviewed large-feed tier and move Cache Valley, Greenlink, and Jacksonville
-  to their current catalog-confirmed Schedule sources.
-- Make the contributor-facing failures in `docs/add-your-agency.md` plain
-  messages instead of Python tracebacks (#188). Walking that walkthrough from a
-  clean fork, both cases the doc promises "fail immediately with a plain
-  message" — a malformed registry entry and an unreachable feed URL — produced
-  an uncaught twenty-frame traceback. The underlying messages were already
-  precise; they were just buried. `main` now reports `AgencyConfigError`,
-  `UnsafeURLError`, and `requests` failures as one line and exits 1, and a
-  single-agency `scorecard run` logs the failure without a stack (a `--all`
-  batch keeps the stack, because whoever is debugging 900 feeds wants it).
-  `SCORECARD_TRACEBACK=1` restores the full traceback for either audience.
-  The walkthrough now also names `scorecard lint --strict` — the registry gate
-  CI actually runs on the pull request — as a fast, Java-free first check.
-- Harden the newly published sync-receipt contract as schema 1.2. The 1.1
-  schema stays frozen at its existing URL and both versions have stable,
-  retrievable schema references. New receipts validate before either output
-  is written. Registry provenance binds each external identity to the public
-  registry record that currently carries it. Tool evidence also binds the
-  packaged jurisdiction data and exact schema bytes. Scope, count, and decision
-  contradictions are rejected, while Mobility Database-only receipt runs reuse
-  one proposer evaluation.
-
-### Fixed
-
 - Gate the README's European cohort figures ("a 528-record reviewed European
   cohort across 26 countries") against the registry and the Europe beta gate's
   own country list. Both numbers were correct when checked, but they are the
@@ -402,6 +477,50 @@ the declared public surface).
   the agent entrypoint in the README. The arrangement is unchanged and still
   deliberate, but it is now declared as a divergence in
   `docs/standards-conformance-gaps.md` rather than presented as conformance.
+
+### Security
+
+- **Both Lambda worker images now delete the AWS Runtime Interface Emulator.**
+  `/usr/local/bin/aws-lambda-rie` is a local-testing shim the base image ships,
+  it is the only Go binary in either image, and its vendored Go standard library
+  carried eight fixable HIGH CVEs with no rebuilt base image available. Both
+  images deploy only as `package_type = "Image"` Lambdas, where the managed
+  runtime never invokes it. The delete is gated on the base entrypoint still
+  testing `AWS_LAMBDA_RUNTIME_API`, so a base image that changes that fails the
+  build rather than shipping an image with no entrypoint. `docker run` of these
+  images no longer emulates the Lambda API locally.
+- **CVE-2026-54399 and CVE-2026-54428** (Apache HttpComponents Core, inside the
+  shaded MobilityData gtfs-validator 8.0.1 jar) are recorded in `vex.json` as
+  `code_not_reachable` on measured grounds: in the built image the validator
+  loads no `org.apache.hc.*` class when given a local zip, and 140 of them when
+  given `-u`. The pipeline only ever gives it a local zip, and
+  `test_validator_is_never_handed_a_url` fails if that changes. `CVE-2026-39822`
+  drops out with the binary it was about.
+- **The container CVE scan now runs on every change that alters an image** -
+  the handlers, the schema, and all of `pipeline/`, not just the Dockerfiles and
+  the lockfile the images never read.
+- **`web/src/` is scanned again.** ~6,600 lines of hand-written browser
+  JavaScript, including 24 `innerHTML` assignment sites, were excluded from
+  Semgrep (`.semgrepignore`) and gitleaks (`.gitleaks.toml`) and never analysed
+  by CodeQL, which covers python and actions only — so the only code in this
+  repository that runs in a rider's browser had no SAST and no secret scanning
+  from any of the three. Both exclusions existed for the public GTFS feed-URL
+  keys that appear in *generated* pages under `web/`, and both now name the
+  generated trees instead of the whole directory. Measured first: with `^web/`
+  removed, gitleaks reports 77 findings and every one is a feed-URL key under
+  `web/agency/`, `web/api/` or `web/catalog.json`, none in `web/src/`. Semgrep
+  now also runs `p/javascript`, since `p/python` over browser code was running
+  almost no rules on it. Adding `javascript` to CodeQL remains open (#288).
+- **Five pull-request checks could not block a merge**, contrary to ADR 0033's
+  rule that a new gate joins the ruleset "in the same change that adds the
+  workflow": both `Trivy image CVE scan` matrix jobs, `terraform fmt + validate`,
+  `zizmor (workflow security lint)` and `Dependency review (PRs only)`.
+  `container-scan` caught ten HIGH CVEs in the shipped Lambda images this month
+  because it happened to run, not because anything required it to pass. All five
+  are added to `.github/rulesets/main.json`, and a new test compares the
+  workflows to the ruleset so a job can no longer run while blocking nothing.
+  **The live ruleset is the enforcement source and still needs
+  `gh api .../rulesets/{id} -X PUT`; this change only updates the file.**
 
 ## [1.4.0] - 2026-07-25
 
@@ -842,7 +961,8 @@ from `git log` against current history. As of this tag, the repo shipped:
 - Realtime drift/plausibility checks, embeddable grade badges, and rollup
   views across agency cohorts.
 
-[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/ChelseaKR/gtfs-scorecard/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.3.0
 [1.2.1]: https://github.com/ChelseaKR/gtfs-scorecard/releases/tag/v1.2.1

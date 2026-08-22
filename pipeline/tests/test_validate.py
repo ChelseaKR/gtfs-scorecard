@@ -230,6 +230,21 @@ def test_run_validator_heap_is_tunable_by_env(
     assert calls[0][1] == "-Xmx10g"
 
 
+def test_run_validator_heap_falls_back_when_env_is_present_but_empty(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """Regression for issue #297's live validate-one-feed.yml dispatch: a
+    workflow_dispatch input left blank sets the env var to "", not absent.
+    os.environ.get(key, default) only falls back on a missing key, so this
+    previously produced a bare "-Xmx" and the JVM refused to start."""
+    gtfs = _stub_runner(monkeypatch, tmp_path)
+    out = tmp_path / "out"
+    calls = _capture_cmd(monkeypatch, out)
+    monkeypatch.setenv("SCORECARD_LARGE_FEED_HEAP", "")
+    validate.run_validator(gtfs, out, large_feed=True)
+    assert calls[0][1] == f"-Xmx{validate.DEFAULT_LARGE_FEED_HEAP}"
+
+
 def test_run_validator_standard_feed_has_no_heap_flag(
     monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
@@ -240,6 +255,61 @@ def test_run_validator_standard_feed_has_no_heap_flag(
     # An ordinary feed keeps the runner's default heap; no -Xmx is injected.
     assert not any(arg.startswith("-Xmx") for arg in calls[0])
     assert calls[0][1] == "-jar"
+
+
+def test_memory_bound_prefix_absent_by_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.delenv("SCORECARD_VALIDATOR_MEMORY_MB", raising=False)
+    assert validate._memory_bound_prefix() == []
+
+
+def test_memory_bound_prefix_absent_when_prlimit_missing(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Configured, but the tool isn't on this machine (e.g. local macOS dev):
+    # unwrapped, not a hard failure, so the same code path runs everywhere.
+    monkeypatch.setenv("SCORECARD_VALIDATOR_MEMORY_MB", "10240")
+    monkeypatch.setattr(shutil, "which", lambda _name: None)
+    assert validate._memory_bound_prefix() == []
+
+
+def test_memory_bound_prefix_wraps_with_prlimit_when_configured(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("SCORECARD_VALIDATOR_MEMORY_MB", "10240")
+    monkeypatch.setattr(
+        shutil, "which", lambda name: f"/usr/bin/{name}" if name == "prlimit" else None
+    )
+    assert validate._memory_bound_prefix() == ["prlimit", "--as=10737418240", "--"]
+
+
+def test_run_validator_unwrapped_without_memory_limit_configured(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    gtfs = _stub_runner(monkeypatch, tmp_path)
+    out = tmp_path / "out"
+    calls = _capture_cmd(monkeypatch, out)
+    monkeypatch.delenv("SCORECARD_VALIDATOR_MEMORY_MB", raising=False)
+    validate.run_validator(gtfs, out)
+    assert calls[0][0] == "java"
+
+
+def test_run_validator_wraps_java_with_prlimit_when_memory_limit_configured(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    gtfs = _stub_runner(monkeypatch, tmp_path)
+    out = tmp_path / "out"
+    calls = _capture_cmd(monkeypatch, out)
+    monkeypatch.setenv("SCORECARD_VALIDATOR_MEMORY_MB", "8192")
+    monkeypatch.setattr(
+        shutil, "which", lambda name: f"/usr/bin/{name}" if name == "prlimit" else None
+    )
+    validate.run_validator(gtfs, out, large_feed=True)
+    # prlimit wraps the whole invocation ahead of the java binary and its
+    # own flags; the heap flag is still where the pre-existing tests expect
+    # it, just shifted past the wrapper.
+    assert calls[0][:3] == ["prlimit", "--as=8589934592", "--"]
+    assert calls[0][3] == "java"
+    assert calls[0][4] == f"-Xmx{validate.DEFAULT_LARGE_FEED_HEAP}"
 
 
 def test_country_scoped_output_dir_preserves_us_and_isolates_other_countries(

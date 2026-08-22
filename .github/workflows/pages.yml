@@ -61,6 +61,7 @@ jobs:
           # Daily scorecard this is the head SHA reported by the completed run;
           # for push/dispatch it is that event's own immutable revision.
           ref: ${{ github.sha }}
+          persist-credentials: false
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
           python-version: "3.12"
@@ -235,12 +236,21 @@ jobs:
           --config ../site-seo.json
           --report ../seo-report.json
       - name: Retain the structural SEO report
+        # RELIABILITY (issue #297): the previous `error` setting meant that
+        # when an earlier step in this job failed (so the SEO check above
+        # never ran and never wrote seo-report.json), this always-run
+        # retention step failed too — with a different, more prominent error
+        # ("No files were found with the provided path: seo-report.json")
+        # that read as the headline failure and buried the real, earlier
+        # cause. `warn` (matching the Lighthouse retention step below, which
+        # already uses it) lets a missing report pass through quietly so the
+        # first red step in the job stays the true root cause.
         if: ${{ always() }}
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: seo-report-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: seo-report.json
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
       - name: Enforce generated page-size budgets
         env:
@@ -340,31 +350,92 @@ jobs:
   production-smoke:
     needs: [lighthouse, deploy]
     runs-on: ubuntu-latest
+    # One edge TTL (600s) plus slack, so the wait below can never outlive the
+    # job that contains it.
+    timeout-minutes: 20
     permissions: {}
     steps:
+      # Pages is fronted by Fastly with `cache-control: max-age=600`, and
+      # Fastly does not vary its cache key on the query string: `/deployment
+      # .json?deploy=<id>` is answered from the same cached object as
+      # `/deployment.json` (verified against production: four requests with
+      # distinct query strings returned one object whose `age` kept counting
+      # up, `x-cache: HIT` throughout). `Cache-Control: no-cache` and `Pragma:
+      # no-cache` on the request are ignored too. So the `?deploy=` buster this
+      # check used to carry was inert, and the retry loop around it was
+      # decorative: the first request after `deploy-pages` returns can land
+      # before the origin has flipped, which caches the *previous* deployment's
+      # bytes at this runner's edge for the next ten minutes, and every 5s
+      # retry then re-reads that same stale copy until the budget runs out.
+      #
+      # It stayed hidden while deployment.json's only identity was `commit`,
+      # because consecutive deploys often carry the same commit and a stale
+      # copy still satisfied the check. Schema 3's run-scoped identity changes
+      # on every deploy, so a stale copy now always fails it. The 2026-08-14
+      # daily run failed exactly this way (107s, the full old budget) while its
+      # deployment was in fact live and serving, which reddened the daily and
+      # tripped the freshness watchdog over data that was never stale.
+      #
+      # The assertions below are unchanged and still fail closed. What changes
+      # is that a miss now waits out the edge TTL it is actually blocked on
+      # instead of hammering a cached response, and reports which assertion
+      # failed and what production served instead of a bare mismatch.
       - name: Verify the deployed crawl surface
         env:
           BASE_URL: https://gtfsscorecard.org
           DEPLOYED_SHA: ${{ needs.lighthouse.outputs.deployed_sha }}
           DEPLOYMENT_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+          # Ceiling on the whole wait. One full edge TTL plus slack: enough for
+          # a poisoned cache entry to expire once, not enough to sit on a
+          # genuinely broken deploy.
+          SMOKE_BUDGET_SECONDS: "900"
         run: |
           set -euo pipefail
           smoke_dir=$(mktemp -d)
           trap 'rm -rf "$smoke_dir"' EXIT
-          for attempt in $(seq 1 20); do
-            if curl -fsSL "${BASE_URL}/deployment.json?deploy=${DEPLOYMENT_ID}" \
-                -o "$smoke_dir/deployment.json" \
-              && curl -fsSL "${BASE_URL}/?deploy=${DEPLOYMENT_ID}" \
-                -o "$smoke_dir/home.html" \
-              && curl -fsSL "${BASE_URL}/robots.txt?deploy=${DEPLOYMENT_ID}" \
-                -o "$smoke_dir/robots.txt" \
-              && curl -fsSL "${BASE_URL}/sitemap.xml?deploy=${DEPLOYMENT_ID}" \
-                -o "$smoke_dir/sitemap.xml" \
-              && curl -fsSL "${BASE_URL}/agency/unitrans/?deploy=${DEPLOYMENT_ID}" \
-                -o "$smoke_dir/unitrans.html" \
-              && curl -fsSL "${BASE_URL}/agency/yolobus/?deploy=${DEPLOYMENT_ID}" \
-                -o "$smoke_dir/yolobus.html" \
-              && jq -e --arg commit "$DEPLOYED_SHA" \
+
+          fail_reason=""
+          served_age=0
+          served_max_age=600
+
+          fetch_surface() {
+            fail_reason=""
+            # deployment.json first: its response headers are what the backoff
+            # below reasons about.
+            if ! curl -fsSL --max-time 30 -D "$smoke_dir/deployment.headers" \
+                "${BASE_URL}/deployment.json" -o "$smoke_dir/deployment.json"; then
+              fail_reason="could not fetch /deployment.json"
+              return 1
+            fi
+            served_age=$(awk 'BEGIN { a = 0 }
+              tolower($1) == "age:" { a = $2 + 0 }
+              END { print a }' "$smoke_dir/deployment.headers")
+            served_max_age=$(awk 'BEGIN { m = 600 }
+              tolower($0) ~ /^cache-control:/ && match($0, /max-age=[0-9]+/) {
+                m = substr($0, RSTART + 8, RLENGTH - 8) + 0
+              }
+              END { print m }' "$smoke_dir/deployment.headers")
+            local spec path name
+            for spec in \
+              "/:home.html" \
+              "/robots.txt:robots.txt" \
+              "/sitemap.xml:sitemap.xml" \
+              "/agency/unitrans/:unitrans.html" \
+              "/agency/yolobus/:yolobus.html"; do
+              path="${spec%:*}"
+              name="${spec##*:}"
+              if ! curl -fsSL --max-time 30 "${BASE_URL}${path}" \
+                  -o "$smoke_dir/$name"; then
+                fail_reason="could not fetch ${path}"
+                return 1
+              fi
+            done
+            return 0
+          }
+
+          assert_surface() {
+            fail_reason=""
+            if ! jq -e --arg commit "$DEPLOYED_SHA" \
                 --arg deployment_id "$DEPLOYMENT_ID" \
                 --argjson source_run_id "$GITHUB_RUN_ID" \
                 --argjson source_run_attempt "$GITHUB_RUN_ATTEMPT" \
@@ -373,28 +444,79 @@ jobs:
                  and .source_run_attempt == $source_run_attempt
                  and .deployment_id == $deployment_id
                  and (.release_manifest_sha256 | test("^[0-9a-f]{64}$"))' \
-                "$smoke_dir/deployment.json" >/dev/null \
-              && grep -Fq '<link rel="canonical" href="https://gtfsscorecard.org/">' \
-                "$smoke_dir/home.html" \
-              && grep -Fq 'Sitemap: https://gtfsscorecard.org/sitemap.xml' \
-                "$smoke_dir/robots.txt" \
-              && grep -Fq '<loc>https://gtfsscorecard.org/agency/unitrans/</loc>' \
-                "$smoke_dir/sitemap.xml" \
-              && grep -Fq '<loc>https://gtfsscorecard.org/agency/yolobus/</loc>' \
-                "$smoke_dir/sitemap.xml" \
-              && grep -Fq '<link rel="canonical" href="https://gtfsscorecard.org/agency/unitrans/">' \
-                "$smoke_dir/unitrans.html" \
-              && grep -Fq '<h1 class="board-title"><bdi>Unitrans' \
-                "$smoke_dir/unitrans.html" \
-              && grep -Fq '<link rel="canonical" href="https://gtfsscorecard.org/agency/yolobus/">' \
-                "$smoke_dir/yolobus.html" \
-              && grep -Fq '<h1 class="board-title"><bdi>Yolobus' \
-                "$smoke_dir/yolobus.html"; then
+                "$smoke_dir/deployment.json" >/dev/null 2>&1; then
+              local served_id
+              served_id=$(jq -r '.deployment_id // "absent"' \
+                "$smoke_dir/deployment.json" 2>/dev/null || echo "unparseable")
+              fail_reason="deployment.json is not this deployment (production served deployment_id=${served_id}, expected ${DEPLOYMENT_ID})"
+              return 1
+            fi
+            local label file needle
+            while IFS='|' read -r label file needle; do
+              [ -n "$label" ] || continue
+              if ! grep -Fq "$needle" "$smoke_dir/$file"; then
+                fail_reason="${label} missing from ${file}"
+                return 1
+              fi
+            done <<'ASSERTIONS'
+          home canonical|home.html|<link rel="canonical" href="https://gtfsscorecard.org/">
+          sitemap directive|robots.txt|Sitemap: https://gtfsscorecard.org/sitemap.xml
+          unitrans sitemap entry|sitemap.xml|<loc>https://gtfsscorecard.org/agency/unitrans/</loc>
+          yolobus sitemap entry|sitemap.xml|<loc>https://gtfsscorecard.org/agency/yolobus/</loc>
+          unitrans canonical|unitrans.html|<link rel="canonical" href="https://gtfsscorecard.org/agency/unitrans/">
+          unitrans board title|unitrans.html|<h1 class="board-title"><bdi>Unitrans
+          yolobus canonical|yolobus.html|<link rel="canonical" href="https://gtfsscorecard.org/agency/yolobus/">
+          yolobus board title|yolobus.html|<h1 class="board-title"><bdi>Yolobus
+          ASSERTIONS
+            return 0
+          }
+
+          # Give the origin a moment to flip before the first read. A request
+          # that arrives too early does not just fail, it caches the stale
+          # answer for a full TTL, so a few seconds here is much cheaper than
+          # the ten-minute recovery it avoids.
+          sleep 5
+
+          deadline=$(( $(date -u +%s) + SMOKE_BUDGET_SECONDS ))
+          attempt=0
+          while :; do
+            attempt=$(( attempt + 1 ))
+            if fetch_surface && assert_surface; then
+              echo "Production crawl surface matched ${DEPLOYMENT_ID} on attempt ${attempt}."
               exit 0
             fi
-            if [ "$attempt" -eq 20 ]; then
-              echo "Production crawl surface did not match ${DEPLOYED_SHA}." >&2
-              exit 1
+            now=$(date -u +%s)
+            if [ "$now" -ge "$deadline" ]; then
+              break
             fi
-            sleep 5
+            # Sleep until the cached copy the edge is holding expires; re-reading
+            # it sooner returns the identical bytes by construction.
+            wait_for=10
+            if [ "$served_age" -gt 0 ]; then
+              ttl_remaining=$(( served_max_age - served_age + 5 ))
+              if [ "$ttl_remaining" -gt "$wait_for" ]; then
+                wait_for="$ttl_remaining"
+              fi
+            fi
+            budget_remaining=$(( deadline - now ))
+            if [ "$wait_for" -gt "$budget_remaining" ]; then
+              wait_for="$budget_remaining"
+            fi
+            if [ "$wait_for" -lt 1 ]; then
+              wait_for=1
+            fi
+            echo "attempt ${attempt}: ${fail_reason}; edge copy age=${served_age}s of max-age=${served_max_age}s, retrying in ${wait_for}s"
+            sleep "$wait_for"
           done
+
+          {
+            echo "::error title=Production crawl surface did not match this deployment::${fail_reason}"
+            echo "Expected deployment_id=${DEPLOYMENT_ID} commit=${DEPLOYED_SHA}"
+            echo "Gave up after ${attempt} attempts over ${SMOKE_BUDGET_SECONDS}s."
+            echo "Last /deployment.json production served:"
+            cat "$smoke_dir/deployment.json" 2>/dev/null || echo "(nothing readable)"
+            echo
+            echo "Its response headers (age/x-served-by show whether this was a cached copy):"
+            cat "$smoke_dir/deployment.headers" 2>/dev/null || echo "(nothing readable)"
+          } >&2
+          exit 1

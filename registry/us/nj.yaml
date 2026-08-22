@@ -3,8 +3,11 @@
 # The field reference and contribution workflow live in registry/README.md.
 # Every id must be unique across every shard listed by registry/index.yaml.
 agencies:
+  # Mobility Database mdb-505 is deprecated and redirects to mdb-3035.
   - id: patco-speedline
     name: PATCO Speedline
+    alias_of: patco-speedline-3035
+    feed_status: deprecated
     subdivision_code: US-NJ
     subdivision_name: New Jersey
     static_gtfs_url: http://www.ridepatco.org/developers/PortAuthorityTransitCorporation.zip

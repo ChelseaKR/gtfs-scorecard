@@ -11,8 +11,11 @@ agencies:
     mdb_id: 182
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Mobility Database mdb-183 is deprecated and redirects to mdb-2062.
   - id: embark
     name: Embark
+    alias_of: embark-2062
+    feed_status: deprecated
     subdivision_code: US-OK
     subdivision_name: Oklahoma
     static_gtfs_url: http://embarkok.com/data/gtfs/google_transit.zip
