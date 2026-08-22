@@ -37,7 +37,6 @@ without discussion.
 | `render_site` | `src/scorecard_pipeline/render_site.py:9934` | 54 | Top-level orchestrator calling every page renderer in sequence; the biggest single item here — candidate: split into `render_site` (thin driver) plus a registry of `(route, render_fn)` pairs. |
 | `parse_agencies` | `src/scorecard_pipeline/agencies.py:171` | 36 | Config-parsing fan-out over many optional YAML fields; candidate: split per-field validators. |
 | `propose_agencies_with_dispositions` | `src/scorecard_pipeline/mobilitydb.py:652` | 32 | Mobility Database matching heuristics; candidate: extract match-scoring helper. Was tracked as `propose_agencies`, which is now a thin wrapper at `mobilitydb.py:909` with no suppression. |
-| `realtime` | `src/scorecard_pipeline/rt.py:399` | 29 | Realtime category scoring; candidate: extract per-subscore helpers. Tracked as issue #250, whose title still says 21. |
 | `render_digest` | `src/scorecard_pipeline/alerts.py:421` | 17 | Digest section assembly; candidate: extract one function per digest section. |
 | `_render_brief` | `src/scorecard_pipeline/render_site.py:3014` | 16 | Template string assembly. |
 | `parse_subscribers` | `src/scorecard_pipeline/notify.py:87` | 15 | Subscriber YAML parsing and validation; candidate: split per-field validators (same shape as `parse_agencies`). |
@@ -51,10 +50,11 @@ without discussion.
 | `run_agency` | `src/scorecard_pipeline/cli.py:170` | 12 | Per-agency run driver. Was suppressed with a bare `# noqa: C901` and no row; both fixed here. |
 | `compute_drift` | `src/scorecard_pipeline/rt_drift.py:96` | 12 | Schedule-vs-RT drift computation; candidate: extract per-window drift helper. |
 
-Sixteen sites, sorted by how far over the floor they sit. Two rows that used to
-be here are gone because the functions are now under the floor: `_md_to_html`
-(`render_site.py:5182`) and `_render_agency_index` (`render_site.py:4445`).
-Neither carries a suppression any more.
+Fifteen sites, sorted by how far over the floor they sit. Three rows that used
+to be here are gone because the functions are now under the floor:
+`_md_to_html` (`render_site.py:5182`), `_render_agency_index`
+(`render_site.py:4445`), and `realtime` (`rt.py`, was 29, issue #250). None of
+them carries a suppression any more.
 
 ## Plan
 
@@ -62,8 +62,17 @@ Ratchet down opportunistically: when touching any function above for a
 feature/bugfix, refactor it under the threshold and delete its row rather
 than editing around it. `render_site` (54), `parse_agencies` (36) and
 `propose_agencies_with_dispositions` (32) are the highest-value targets given
-how far over the floor they sit; `realtime` (29) is fourth, not second as an
-earlier version of this file said. Re-run
+how far over the floor they sit. Re-run
 `ruff check --statistics` after each removal to confirm the count only goes
-down. Tracked in the issue tracker: #250 covers `realtime`, and #249 covered the drift
-this sync resolves.
+down. Tracked in the issue tracker: #250 covered `realtime` and is resolved by
+the row's removal above; #249 covered the drift the 2026-08-15 sync resolved.
+
+`realtime` is the worked example for the rest of this table. It came down from
+29 to 3 by extracting one helper per scored component (`_reachability`,
+`_freshness`, `_alerts`, `_trip_coverage`, `_plausibility_component`,
+`_drift_component`) plus `_assessed_kinds` and `_realtime_summary`, leaving
+`realtime` itself as a thin driver that calls each one and assembles the
+result. No helper is over the floor; the largest is `_freshness` at 9. The
+scoring is unchanged, which was checked by running the old and new
+implementations over 27,232 generated input combinations and diffing the score,
+summary, findings, and the `details` dict in key order: byte-for-byte identical.

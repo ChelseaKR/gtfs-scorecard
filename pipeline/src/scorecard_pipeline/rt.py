@@ -396,7 +396,339 @@ def _trip_time_spans(gtfs_zip_path: str) -> dict[str, tuple[int, int]]:
 # ---------------------------------------------------------------- scoring
 
 
-def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
+def _assessed_kinds(window: RtWindow, configured_kinds: Collection[str] | None) -> tuple[str, ...]:
+    """The feed kinds this window is scored against, in ``RT_KINDS`` order.
+
+    ``configured_kinds`` is the authoritative agency configuration. Callers
+    predating that argument fall back to the known feed kinds present in the
+    window, and an entirely empty legacy window retains the former fail-closed
+    three-feed interpretation.
+    """
+    if configured_kinds is None:
+        observed = {sample.kind for sample in window.samples if sample.kind in RT_KINDS}
+        return tuple(kind for kind in RT_KINDS if kind in observed) or RT_KINDS
+    assessed = tuple(kind for kind in RT_KINDS if kind in configured_kinds)
+    if not assessed:
+        raise ValueError("realtime requires at least one configured GTFS-Realtime feed kind")
+    return assessed
+
+
+def _reachability(
+    window: RtWindow, assessed_kinds: tuple[str, ...]
+) -> tuple[list[str], float, list[Finding]]:
+    """Reachability of the configured feed kinds (``WEIGHT_REACHABLE``)."""
+    reachable_kinds = [kind for kind in assessed_kinds if window.kind_ok(kind)]
+    findings = [
+        Finding(
+            code=f"scorecard_rt_{kind}_unreachable",
+            severity="ERROR",
+            count=1,
+            what=f"The {kind.replace('_', ' ')} realtime feed failed during sampling.",
+            why="When this feed is down, riders see scheduled times "
+            "presented as if they were live.",
+            fix=f"Check the {kind.replace('_', ' ')} endpoint with your AVL vendor; it "
+            "should return a fresh GTFS-Realtime protobuf on every request.",
+            effort="Usually a vendor support ticket.",
+            deduction=WEIGHT_REACHABLE / len(assessed_kinds),
+        )
+        for kind in assessed_kinds
+        if not window.kind_ok(kind)
+    ]
+    return reachable_kinds, len(reachable_kinds) / len(assessed_kinds), findings
+
+
+def _freshness(
+    window: RtWindow, assessed_kinds: tuple[str, ...]
+) -> tuple[int | None, float | None, str | None, list[Finding]]:
+    """Header freshness (``WEIGHT_FRESH``): worst lag, fraction, band, findings.
+
+    Mirrors the schedule's freshness framing so a stale realtime feed reads the
+    same way: fresh, stale (transient lag), or lapsed (effectively stopped).
+    """
+    freshness_kinds = tuple(
+        kind for kind in ("trip_updates", "vehicle_positions") if kind in assessed_kinds
+    )
+    known_lags = [
+        lag for lag in (window.worst_lag(kind) for kind in freshness_kinds) if lag is not None
+    ]
+    if not known_lags:
+        # No header timestamp on any reachable feed: freshness isn't measurable,
+        # so it drops out of the score (renormalized) rather than scoring zero.
+        # A reachable feed that simply omits the optional timestamp shouldn't be
+        # marked stale. Note it as a fix instead.
+        findings = []
+        if any(window.kind_ok(kind) for kind in freshness_kinds):
+            findings.append(
+                Finding(
+                    code="scorecard_rt_no_timestamp",
+                    severity="INFO",
+                    count=1,
+                    what="Realtime feeds didn't include a header timestamp, so "
+                    "freshness couldn't be checked.",
+                    why="Without a header timestamp, apps and this scorecard can't "
+                    "tell how old the data is.",
+                    fix="Set the GTFS-Realtime FeedHeader.timestamp on every response.",
+                    effort="A vendor configuration question.",
+                    deduction=0.0,
+                )
+            )
+        return None, None, None, findings
+
+    worst = max(known_lags)
+    if worst <= FRESH_FULL_SECONDS:
+        fresh_fraction = 1.0
+    elif worst >= FRESH_ZERO_SECONDS:
+        fresh_fraction = 0.0
+    else:
+        fresh_fraction = 1 - (worst - FRESH_FULL_SECONDS) / (
+            FRESH_ZERO_SECONDS - FRESH_FULL_SECONDS
+        )
+
+    findings = []
+    if worst >= RT_LAPSED_SECONDS:
+        # The feed has effectively stopped. Frame it like an expired schedule:
+        # a freshness failure, not a transient lag.
+        findings.append(
+            Finding(
+                code="scorecard_rt_feed_lapsed",
+                severity="ERROR",
+                count=1,
+                what=f"The realtime feed's last update was about {_human_duration(worst)} "
+                "old when sampled.",
+                why="A realtime feed this far behind has effectively stopped. Riders see "
+                "buses that already left, or apps quietly fall back to the schedule while "
+                "still showing a live label.",
+                fix="Ask your AVL vendor why the feed stopped advancing; the "
+                "GTFS-Realtime header timestamp should move forward on every publish.",
+                effort="A vendor support ticket; treat it as a feed outage.",
+                deduction=(1 - fresh_fraction) * WEIGHT_FRESH,
+            )
+        )
+    elif fresh_fraction < 1.0:
+        findings.append(
+            Finding(
+                code="scorecard_rt_stale",
+                severity="WARNING",
+                count=1,
+                what=f"Realtime data was up to {worst} seconds old when sampled.",
+                why="Stale positions and predictions are worse than none: riders "
+                "watch a bus that already left.",
+                fix="Ask your AVL vendor to publish updates at least every 20 "
+                "seconds (the Caltrans guideline).",
+                effort="A vendor configuration question.",
+                deduction=(1 - fresh_fraction) * WEIGHT_FRESH,
+            )
+        )
+
+    if worst >= RT_LAPSED_SECONDS:
+        band = "lapsed"
+    elif worst > FRESH_FULL_SECONDS:
+        band = "stale"
+    else:
+        band = "fresh"
+    return worst, fresh_fraction, band, findings
+
+
+def _alerts(
+    window: RtWindow, assessed_kinds: tuple[str, ...]
+) -> tuple[dict[str, int] | None, list[Finding]]:
+    """Service-alert content (EXP-19): observed and reported, never scored.
+
+    Any weight for this enters through the governed shadow-scoring path
+    (FIX-06), never a quiet commit, so every finding here carries
+    ``deduction=0.0``.
+    """
+    if "service_alerts" not in assessed_kinds:
+        return None, []
+    summary = alerts_content(window)
+    if summary is None:
+        return None, []
+    findings = []
+    stale_count = summary["ended_over_30_days_ago"]
+    if stale_count:
+        findings.append(
+            Finding(
+                code="scorecard_rt_alerts_ended",
+                severity="WARNING",
+                count=stale_count,
+                what=f"{stale_count} of {summary['alerts']} published service "
+                "alerts ended more than 30 days ago.",
+                why="A rider who reads an alert about a detour that finished weeks "
+                "ago learns to ignore every future alert.",
+                fix="Remove or close out ended alerts in your alerts tool; most "
+                "publish an end date and clear them automatically.",
+                effort="A few minutes in your alerts tool.",
+                deduction=0.0,
+            )
+        )
+    missing_text = summary["alerts"] - summary["with_header_text"]
+    if missing_text:
+        findings.append(
+            Finding(
+                code="scorecard_rt_alerts_missing_text",
+                severity="INFO",
+                count=missing_text,
+                what=f"{missing_text} of {summary['alerts']} published service "
+                "alerts have no header text.",
+                why="An alert without text shows riders an empty or generic notice, "
+                "so the disruption it describes goes unread.",
+                fix="Give every alert a one-line plain-language header in your "
+                "alerts tool; the description field can carry the detail.",
+                effort="A habit in your alerts tool, not a code change.",
+                deduction=0.0,
+            )
+        )
+    return summary, findings
+
+
+def _trip_coverage(
+    window: RtWindow, assessed_kinds: tuple[str, ...], scheduled: set[str] | None
+) -> tuple[float | None, dict[str, object], list[Finding]]:
+    """Sampled trip coverage (``WEIGHT_COVERAGE``).
+
+    Returns its detail keys in the order the artifact publishes them.
+    """
+    if "trip_updates" not in assessed_kinds:
+        return None, {"coverage_pct": None}, []
+    if not (scheduled and any(sample.ok for sample in window.for_kind("trip_updates"))):
+        return None, {"scheduled_trips_in_window": len(scheduled or ()), "coverage_pct": None}, []
+
+    seen = window.seen_trip_ids()
+    covered = len(scheduled & seen)
+    coverage_fraction = covered / len(scheduled)
+    details: dict[str, object] = {
+        "scheduled_trips_in_window": len(scheduled),
+        "covered_trips": covered,
+        "coverage_pct": round(coverage_fraction * 100, 1),
+    }
+    findings = []
+    if coverage_fraction < 1.0:
+        missing = len(scheduled) - covered
+        findings.append(
+            Finding(
+                code="scorecard_rt_trip_coverage",
+                severity="WARNING",
+                count=missing,
+                what=f"{missing} of {len(scheduled)} trips scheduled during the "
+                "sampling window had no live predictions.",
+                why="Riders on those trips get schedule data dressed up as "
+                "realtime. Caltrans expects every operating trip in TripUpdates.",
+                fix="Check with your AVL vendor that every vehicle assignment "
+                "flows into TripUpdates, including school-day and tripper runs.",
+                effort="A vendor data-mapping question.",
+                deduction=(1 - coverage_fraction) * WEIGHT_COVERAGE,
+            )
+        )
+    return coverage_fraction, details, findings
+
+
+def _plausibility_component(
+    assessed_kinds: tuple[str, ...], plausibility: PlausibilityStats | None
+) -> tuple[float | None, dict[str, object], list[Finding]]:
+    """Vehicle position plausibility (``WEIGHT_PLAUSIBLE``)."""
+    if "vehicle_positions" not in assessed_kinds or plausibility is None:
+        return None, {}, []
+    details: dict[str, object] = {
+        "vehicles_checked": plausibility.vehicles_checked,
+        "vehicles_on_route_pct": round(plausibility.plausible_share * 100, 1),
+    }
+    findings = []
+    if plausibility.plausible_share < 0.9:
+        # ceil, not round: when this finding fires (share < 0.9) at least one
+        # vehicle is off-route, so "0 of N" must never be shown.
+        off = math.ceil((1 - plausibility.plausible_share) * plausibility.vehicles_checked)
+        findings.append(
+            Finding(
+                code="scorecard_rt_vehicles_off_route",
+                severity="WARNING",
+                count=off,
+                what=f"{off} of {plausibility.vehicles_checked} sampled vehicle "
+                f"positions were far from their assigned route (worst: "
+                f"{plausibility.worst_meters} m).",
+                why="A bus shown off its route usually means a wrong trip "
+                "assignment; riders watch their bus drive the wrong streets.",
+                fix="Ask your AVL vendor to check vehicle-to-trip assignments "
+                "for the flagged trips.",
+                effort="A vendor support ticket with the trip ids attached.",
+                deduction=(1 - plausibility.plausible_share) * WEIGHT_PLAUSIBLE,
+            )
+        )
+    return plausibility.plausible_share, details, findings
+
+
+def _drift_component(
+    assessed_kinds: tuple[str, ...], drift: DriftStats | None
+) -> tuple[dict[str, object], list[Finding]]:
+    """Schedule-vs-realtime drift: reported in the details, not scored.
+
+    It only becomes a finding when predictions disagree with the schedule
+    beyond plausibility, and even then it deducts nothing.
+    """
+    if "trip_updates" not in assessed_kinds or drift is None:
+        return {}, []
+    details: dict[str, object] = {
+        "drift": {
+            "observations": drift.observations,
+            "median_seconds": drift.median_seconds,
+            "p90_abs_seconds": drift.p90_abs_seconds,
+            "on_time_share_pct": round(drift.on_time_share * 100, 1),
+        }
+    }
+    findings = []
+    if drift.p90_abs_seconds > 1800:
+        findings.append(
+            Finding(
+                code="scorecard_rt_predictions_implausible",
+                severity="WARNING",
+                count=drift.observations,
+                what="Some live predictions disagree with the schedule by more than 30 minutes.",
+                why="Differences that large usually mean predictions are keyed "
+                "to the wrong trips, not that buses are that late.",
+                fix="Spot-check the flagged predictions against what buses "
+                "actually did; raise trip-matching with your AVL vendor.",
+                effort="A vendor data-mapping question.",
+                deduction=0.0,
+            )
+        )
+    return details, findings
+
+
+def _realtime_summary(
+    window: RtWindow,
+    assessed_kinds: tuple[str, ...],
+    kinds_ok: int,
+    details: dict[str, object],
+    scheduled: set[str] | None,
+    coverage_fraction: float | None,
+    plausible_fraction: float | None,
+    drift: DriftStats | None,
+) -> str:
+    """The plain-language one-liner shown above the realtime findings."""
+    feed_word = "feed" if len(assessed_kinds) == 1 else "feeds"
+    bits = [
+        f"Sampled {len(window.samples)} times: {kinds_ok} of "
+        f"{len(assessed_kinds)} configured {feed_word} healthy"
+    ]
+    if coverage_fraction is not None:
+        bits.append(f"{details['coverage_pct']}% of scheduled trips had live predictions")
+    elif "trip_updates" in assessed_kinds and not scheduled:
+        bits[0] = (
+            f"Sampled {len(window.samples)} times outside service hours: "
+            f"{kinds_ok} of {len(assessed_kinds)} configured {feed_word} healthy"
+        )
+    if plausible_fraction is not None:
+        bits.append(f"{details['vehicles_on_route_pct']}% of vehicles on their route")
+    elif "vehicle_positions" in assessed_kinds:
+        bits.append("vehicle position plausibility was not measurable")
+    if "trip_updates" in assessed_kinds and drift is not None:
+        bits.append(
+            f"predictions ran a median of {abs(drift.median_seconds)}s "
+            f"{'behind' if drift.median_seconds >= 0 else 'ahead of'} schedule"
+        )
+    return "; ".join(bits) + "."
+
+
+def realtime(
     window: RtWindow,
     scheduled: set[str] | None,
     drift: DriftStats | None = None,
@@ -422,121 +754,19 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     three-feed interpretation; the collect path never calls this function for
     an agency with no realtime configuration.
     """
-    findings: list[Finding] = []
+    assessed_kinds = _assessed_kinds(window, configured_kinds)
 
-    if configured_kinds is None:
-        observed_kinds = {sample.kind for sample in window.samples if sample.kind in RT_KINDS}
-        assessed_kinds = tuple(kind for kind in RT_KINDS if kind in observed_kinds) or RT_KINDS
-    else:
-        assessed_kinds = tuple(kind for kind in RT_KINDS if kind in configured_kinds)
-        if not assessed_kinds:
-            raise ValueError("realtime requires at least one configured GTFS-Realtime feed kind")
-
-    reachable_kinds = [kind for kind in assessed_kinds if window.kind_ok(kind)]
+    reachable_kinds, reachable_fraction, reach_findings = _reachability(window, assessed_kinds)
     kinds_ok = len(reachable_kinds)
-    reachable_fraction = kinds_ok / len(assessed_kinds)
-    for kind in assessed_kinds:
-        if not window.kind_ok(kind):
-            label = kind.replace("_", " ")
-            findings.append(
-                Finding(
-                    code=f"scorecard_rt_{kind}_unreachable",
-                    severity="ERROR",
-                    count=1,
-                    what=f"The {label} realtime feed failed during sampling.",
-                    why="When this feed is down, riders see scheduled times "
-                    "presented as if they were live.",
-                    fix=f"Check the {label} endpoint with your AVL vendor; it "
-                    "should return a fresh GTFS-Realtime protobuf on every request.",
-                    effort="Usually a vendor support ticket.",
-                    deduction=WEIGHT_REACHABLE / len(assessed_kinds),
-                )
-            )
-
-    freshness_kinds = tuple(
-        kind for kind in ("trip_updates", "vehicle_positions") if kind in assessed_kinds
+    worst, fresh_fraction, rt_freshness, fresh_findings = _freshness(window, assessed_kinds)
+    alert_summary, alert_findings = _alerts(window, assessed_kinds)
+    coverage_fraction, coverage_details, coverage_findings = _trip_coverage(
+        window, assessed_kinds, scheduled
     )
-    lags = [window.worst_lag(kind) for kind in freshness_kinds]
-    known_lags = [lag for lag in lags if lag is not None]
-    worst: int | None
-    fresh_fraction: float | None
-    if known_lags:
-        worst = max(known_lags)
-        if worst <= FRESH_FULL_SECONDS:
-            fresh_fraction = 1.0
-        elif worst >= FRESH_ZERO_SECONDS:
-            fresh_fraction = 0.0
-        else:
-            fresh_fraction = 1 - (worst - FRESH_FULL_SECONDS) / (
-                FRESH_ZERO_SECONDS - FRESH_FULL_SECONDS
-            )
-        if worst >= RT_LAPSED_SECONDS:
-            # The feed has effectively stopped. Frame it like an expired schedule:
-            # a freshness failure, not a transient lag.
-            findings.append(
-                Finding(
-                    code="scorecard_rt_feed_lapsed",
-                    severity="ERROR",
-                    count=1,
-                    what=f"The realtime feed's last update was about {_human_duration(worst)} "
-                    "old when sampled.",
-                    why="A realtime feed this far behind has effectively stopped. Riders see "
-                    "buses that already left, or apps quietly fall back to the schedule while "
-                    "still showing a live label.",
-                    fix="Ask your AVL vendor why the feed stopped advancing; the "
-                    "GTFS-Realtime header timestamp should move forward on every publish.",
-                    effort="A vendor support ticket; treat it as a feed outage.",
-                    deduction=(1 - fresh_fraction) * WEIGHT_FRESH,
-                )
-            )
-        elif fresh_fraction < 1.0:
-            findings.append(
-                Finding(
-                    code="scorecard_rt_stale",
-                    severity="WARNING",
-                    count=1,
-                    what=f"Realtime data was up to {worst} seconds old when sampled.",
-                    why="Stale positions and predictions are worse than none: riders "
-                    "watch a bus that already left.",
-                    fix="Ask your AVL vendor to publish updates at least every 20 "
-                    "seconds (the Caltrans guideline).",
-                    effort="A vendor configuration question.",
-                    deduction=(1 - fresh_fraction) * WEIGHT_FRESH,
-                )
-            )
-    else:
-        # No header timestamp on any reachable feed: freshness isn't measurable,
-        # so it drops out of the score (renormalized) rather than scoring zero.
-        # A reachable feed that simply omits the optional timestamp shouldn't be
-        # marked stale. Note it as a fix instead.
-        worst = None
-        fresh_fraction = None
-        if any(window.kind_ok(kind) for kind in freshness_kinds):
-            findings.append(
-                Finding(
-                    code="scorecard_rt_no_timestamp",
-                    severity="INFO",
-                    count=1,
-                    what="Realtime feeds didn't include a header timestamp, so "
-                    "freshness couldn't be checked.",
-                    why="Without a header timestamp, apps and this scorecard can't "
-                    "tell how old the data is.",
-                    fix="Set the GTFS-Realtime FeedHeader.timestamp on every response.",
-                    effort="A vendor configuration question.",
-                    deduction=0.0,
-                )
-            )
-
-    # Mirror the schedule's freshness framing so a stale realtime feed reads the
-    # same way: fresh, stale (transient lag), or lapsed (effectively stopped).
-    if worst is None:
-        rt_freshness = None
-    elif worst >= RT_LAPSED_SECONDS:
-        rt_freshness = "lapsed"
-    elif worst > FRESH_FULL_SECONDS:
-        rt_freshness = "stale"
-    else:
-        rt_freshness = "fresh"
+    plausible_fraction, plausible_details, plausible_findings = _plausibility_component(
+        assessed_kinds, plausibility
+    )
+    drift_details, drift_findings = _drift_component(assessed_kinds, drift)
 
     details: dict[str, object] = {
         "samples": len(window.samples),
@@ -547,130 +777,22 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         "worst_lag_seconds": worst,
         "rt_freshness": rt_freshness,
     }
-
-    # Service-alert content (EXP-19): observed and reported, not scored. Any
-    # weight for it enters through the governed shadow-scoring path (FIX-06),
-    # never a quiet commit, so every finding below carries deduction=0.0.
-    alert_summary = alerts_content(window) if "service_alerts" in assessed_kinds else None
     if alert_summary is not None:
         details["alerts_content"] = alert_summary
-        stale_count = alert_summary["ended_over_30_days_ago"]
-        if stale_count:
-            findings.append(
-                Finding(
-                    code="scorecard_rt_alerts_ended",
-                    severity="WARNING",
-                    count=stale_count,
-                    what=f"{stale_count} of {alert_summary['alerts']} published service "
-                    "alerts ended more than 30 days ago.",
-                    why="A rider who reads an alert about a detour that finished weeks "
-                    "ago learns to ignore every future alert.",
-                    fix="Remove or close out ended alerts in your alerts tool; most "
-                    "publish an end date and clear them automatically.",
-                    effort="A few minutes in your alerts tool.",
-                    deduction=0.0,
-                )
-            )
-        missing_text = alert_summary["alerts"] - alert_summary["with_header_text"]
-        if missing_text:
-            findings.append(
-                Finding(
-                    code="scorecard_rt_alerts_missing_text",
-                    severity="INFO",
-                    count=missing_text,
-                    what=f"{missing_text} of {alert_summary['alerts']} published service "
-                    "alerts have no header text.",
-                    why="An alert without text shows riders an empty or generic notice, "
-                    "so the disruption it describes goes unread.",
-                    fix="Give every alert a one-line plain-language header in your "
-                    "alerts tool; the description field can carry the detail.",
-                    effort="A habit in your alerts tool, not a code change.",
-                    deduction=0.0,
-                )
-            )
+    details.update(coverage_details)
+    details.update(plausible_details)
+    details.update(drift_details)
 
-    # Weighted components; None fraction means "not measurable this window".
-    coverage_fraction: float | None = None
-    trip_updates_configured = "trip_updates" in assessed_kinds
-    trip_updates_sampled = any(sample.ok for sample in window.for_kind("trip_updates"))
-    if trip_updates_configured and scheduled and trip_updates_sampled:
-        seen = window.seen_trip_ids()
-        coverage_fraction = len(scheduled & seen) / len(scheduled)
-        details["scheduled_trips_in_window"] = len(scheduled)
-        details["covered_trips"] = len(scheduled & seen)
-        details["coverage_pct"] = round(coverage_fraction * 100, 1)
-        if coverage_fraction < 1.0:
-            missing = len(scheduled) - len(scheduled & seen)
-            findings.append(
-                Finding(
-                    code="scorecard_rt_trip_coverage",
-                    severity="WARNING",
-                    count=missing,
-                    what=f"{missing} of {len(scheduled)} trips scheduled during the "
-                    "sampling window had no live predictions.",
-                    why="Riders on those trips get schedule data dressed up as "
-                    "realtime. Caltrans expects every operating trip in TripUpdates.",
-                    fix="Check with your AVL vendor that every vehicle assignment "
-                    "flows into TripUpdates, including school-day and tripper runs.",
-                    effort="A vendor data-mapping question.",
-                    deduction=(1 - coverage_fraction) * WEIGHT_COVERAGE,
-                )
-            )
-    elif trip_updates_configured:
-        details["scheduled_trips_in_window"] = len(scheduled or ())
-        details["coverage_pct"] = None
-    else:
-        details["coverage_pct"] = None
-
-    plausible_fraction: float | None = None
-    if "vehicle_positions" in assessed_kinds and plausibility is not None:
-        plausible_fraction = plausibility.plausible_share
-        details["vehicles_checked"] = plausibility.vehicles_checked
-        details["vehicles_on_route_pct"] = round(plausibility.plausible_share * 100, 1)
-        if plausibility.plausible_share < 0.9:
-            # ceil, not round: when this finding fires (share < 0.9) at least one
-            # vehicle is off-route, so "0 of N" must never be shown.
-            off = math.ceil((1 - plausibility.plausible_share) * plausibility.vehicles_checked)
-            findings.append(
-                Finding(
-                    code="scorecard_rt_vehicles_off_route",
-                    severity="WARNING",
-                    count=off,
-                    what=f"{off} of {plausibility.vehicles_checked} sampled vehicle "
-                    f"positions were far from their assigned route (worst: "
-                    f"{plausibility.worst_meters} m).",
-                    why="A bus shown off its route usually means a wrong trip "
-                    "assignment; riders watch their bus drive the wrong streets.",
-                    fix="Ask your AVL vendor to check vehicle-to-trip assignments "
-                    "for the flagged trips.",
-                    effort="A vendor support ticket with the trip ids attached.",
-                    deduction=(1 - plausibility.plausible_share) * WEIGHT_PLAUSIBLE,
-                )
-            )
-
-    if "trip_updates" in assessed_kinds and drift is not None:
-        details["drift"] = {
-            "observations": drift.observations,
-            "median_seconds": drift.median_seconds,
-            "p90_abs_seconds": drift.p90_abs_seconds,
-            "on_time_share_pct": round(drift.on_time_share * 100, 1),
-        }
-        if drift.p90_abs_seconds > 1800:
-            findings.append(
-                Finding(
-                    code="scorecard_rt_predictions_implausible",
-                    severity="WARNING",
-                    count=drift.observations,
-                    what="Some live predictions disagree with the schedule by more "
-                    "than 30 minutes.",
-                    why="Differences that large usually mean predictions are keyed "
-                    "to the wrong trips, not that buses are that late.",
-                    fix="Spot-check the flagged predictions against what buses "
-                    "actually did; raise trip-matching with your AVL vendor.",
-                    effort="A vendor data-mapping question.",
-                    deduction=0.0,
-                )
-            )
+    # Findings are concatenated in the order the components are scored, which
+    # is the order the agency page reads them in.
+    findings: list[Finding] = [
+        *reach_findings,
+        *fresh_findings,
+        *alert_findings,
+        *coverage_findings,
+        *plausible_findings,
+        *drift_findings,
+    ]
 
     components: list[tuple[float, float | None]] = [
         (WEIGHT_REACHABLE, reachable_fraction),
@@ -694,33 +816,19 @@ def realtime(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         for finding in findings
     ]
 
-    feed_word = "feed" if len(assessed_kinds) == 1 else "feeds"
-    bits = [
-        f"Sampled {len(window.samples)} times: {kinds_ok} of "
-        f"{len(assessed_kinds)} configured {feed_word} healthy"
-    ]
-    if coverage_fraction is not None:
-        bits.append(f"{details['coverage_pct']}% of scheduled trips had live predictions")
-    elif trip_updates_configured and not scheduled:
-        bits[0] = (
-            f"Sampled {len(window.samples)} times outside service hours: "
-            f"{kinds_ok} of {len(assessed_kinds)} configured {feed_word} healthy"
-        )
-    if plausible_fraction is not None:
-        bits.append(f"{details['vehicles_on_route_pct']}% of vehicles on their route")
-    elif "vehicle_positions" in assessed_kinds:
-        bits.append("vehicle position plausibility was not measurable")
-    if "trip_updates" in assessed_kinds and drift is not None:
-        bits.append(
-            f"predictions ran a median of {abs(drift.median_seconds)}s "
-            f"{'behind' if drift.median_seconds >= 0 else 'ahead of'} schedule"
-        )
-    summary = "; ".join(bits) + "."
-
     return CategoryResult(
         name="realtime",
         score=max(0.0, min(100.0, score)),
-        summary=summary,
+        summary=_realtime_summary(
+            window,
+            assessed_kinds,
+            kinds_ok,
+            details,
+            scheduled,
+            coverage_fraction,
+            plausible_fraction,
+            drift,
+        ),
         findings=findings,
         details=details,
     )
