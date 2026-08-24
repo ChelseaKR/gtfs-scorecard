@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .score import CATEGORY_WEIGHTS, letter_grade
+from .score import CATEGORY_WEIGHTS, letter_grade, published_score
 
 # The published perturbation size: each weight moved by this fraction of itself.
 DEFAULT_FACTOR = 0.2
@@ -98,7 +98,7 @@ def weight_sensitivity(
     only moving part is the weights.
     """
     baseline = {
-        agency_id: letter_grade(rescore(cats, CATEGORY_WEIGHTS))
+        agency_id: letter_grade(published_score(rescore(cats, CATEGORY_WEIGHTS)))
         for agency_id, cats in per_agency.items()
     }
     total = len(per_agency)
@@ -117,7 +117,8 @@ def weight_sensitivity(
         changed = sum(
             1
             for agency_id, cats in per_agency.items()
-            if letter_grade(rescore(cats, perturbation["weights"])) != baseline[agency_id]
+            if letter_grade(published_score(rescore(cats, perturbation["weights"])))
+            != baseline[agency_id]
         )
         share = round(changed / total * 100, 1)
         perturbations.append(

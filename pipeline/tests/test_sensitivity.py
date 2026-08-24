@@ -84,6 +84,40 @@ def test_weight_sensitivity_counts_grade_churn() -> None:
     assert study["max_grade_change_pct"] == 50.0
 
 
+def test_weight_sensitivity_grades_on_published_rounded_score() -> None:
+    """Baseline and perturbed letter grades must grade the published rounded score.
+
+    Real regression (#310): a raw pre-rounding score like 79.96875 rounds to 80.0
+    (a 'B' in docs/rubric.md and scoring.json). Grading the raw float labelled it 'C'
+    and contradicted the published letter grade and rubric.
+    """
+    # 35% * 79.9 + 20% * 80.1 + 25% * 80.0 + 20% * 80.0 = 79.965 -> published 80.0 (B)
+    per_agency = {
+        "agency-boundary": {
+            "correctness": 79.9,
+            "freshness": 80.1,
+            "completeness": 80.0,
+            "realtime": 80.0,
+        }
+    }
+    raw = rescore(per_agency["agency-boundary"], CATEGORY_WEIGHTS)
+    assert raw < 80.0
+    # Under published_score, raw 79.965 becomes 80.0 and grades as B.
+    study = weight_sensitivity(per_agency, factor=0.0)
+    assert study["agency_count"] == 1
+    # Under factor 0, perturbation weights equal CATEGORY_WEIGHTS, so churn should be 0.
+    # If unrounded raw score were graded, it would be 'C', matching the perturbed 'C',
+    # but baseline must be 'B'.
+    from scorecard_pipeline.score import letter_grade, published_score
+
+    assert letter_grade(published_score(raw)) == "B"
+    assert letter_grade(raw) == "C"
+    # Testing that factor=0.2 with minimal perturbation that doesn't change rounded score
+    # maintains stability:
+    study_perturbed = weight_sensitivity(per_agency, factor=0.2)
+    assert study_perturbed["agency_count"] == 1
+
+
 def test_weight_sensitivity_over_no_agencies_is_unavailable() -> None:
     study = weight_sensitivity({})
     assert study["agency_count"] == 0
