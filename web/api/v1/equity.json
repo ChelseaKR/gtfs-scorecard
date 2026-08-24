@@ -1,23 +1,23 @@
 {
   "comparison": {
     "absolute_rankings_published": false,
-    "eligible_count": 1634,
-    "excluded_count": 542,
+    "eligible_count": 1614,
+    "excluded_count": 395,
     "exclusion_counts": {
-      "duplicate_feed_identity": 26,
-      "measured_category_set_mismatch": 145,
-      "reader_archive_profile_mismatch": 8,
-      "rubric_version_mismatch": 13,
-      "scoring_profile_mismatch": 12,
+      "duplicate_feed_identity": 8,
+      "measured_category_set_mismatch": 143,
+      "reader_archive_profile_mismatch": 5,
+      "rubric_version_mismatch": 10,
+      "scoring_profile_mismatch": 9,
       "scoring_profile_missing": 1,
-      "scoring_profile_rubric_mismatch": 12,
+      "scoring_profile_rubric_mismatch": 9,
       "scoring_profile_rubric_missing": 1,
-      "service_data_long_expired": 367
+      "service_data_long_expired": 237
     },
     "individual_percentiles_published": false,
     "measured_category_cohorts": {
-      "correctness+freshness+completeness": 1634,
-      "correctness+freshness+completeness+realtime": 145
+      "correctness+freshness+completeness": 1614,
+      "correctness+freshness+completeness+realtime": 143
     },
     "note": "Score aggregates and named changes use one current producer contract, raw reader archive profile, and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
     "required_measured_categories": [
@@ -33,23 +33,23 @@
   "notes": "Need tiers are from ACS poverty, zero-vehicle, and disability shares, joined by state. Score summaries use one current producer contract across canonical, non-duplicate feed records. They prioritize data-quality help; they never change a grade.",
   "priority": [
     {
-      "agency_count": 3,
-      "comparison_eligible_count": 2,
-      "feed_record_count": 3,
+      "agency_count": 2,
+      "comparison_eligible_count": 1,
+      "feed_record_count": 2,
       "indicators": {
         "disability_pct": 15.8,
         "poverty_pct": 18.7,
         "zero_vehicle_pct": 8.3
       },
       "low_grade_share": 100.0,
-      "median_score": 56.4,
+      "median_score": 66.5,
       "need_tier": "high",
       "state": "Louisiana"
     },
     {
-      "agency_count": 14,
+      "agency_count": 11,
       "comparison_eligible_count": 8,
-      "feed_record_count": 14,
+      "feed_record_count": 11,
       "indicators": {
         "disability_pct": 16.3,
         "poverty_pct": 18.3,
@@ -61,9 +61,9 @@
       "state": "New Mexico"
     },
     {
-      "agency_count": 3,
+      "agency_count": 2,
       "comparison_eligible_count": 2,
-      "feed_record_count": 3,
+      "feed_record_count": 2,
       "indicators": {
         "disability_pct": 17.2,
         "poverty_pct": 19.2,
@@ -77,9 +77,9 @@
   ],
   "states": [
     {
-      "agency_count": 9,
+      "agency_count": 6,
       "comparison_eligible_count": 4,
-      "feed_record_count": 9,
+      "feed_record_count": 6,
       "indicators": {
         "disability_pct": 16.2,
         "poverty_pct": 15.7,
@@ -105,23 +105,23 @@
       "state": "Alaska"
     },
     {
-      "agency_count": 23,
-      "comparison_eligible_count": 13,
-      "feed_record_count": 23,
+      "agency_count": 20,
+      "comparison_eligible_count": 12,
+      "feed_record_count": 20,
       "indicators": {
         "disability_pct": 13.4,
         "poverty_pct": 13.1,
         "zero_vehicle_pct": 5.5
       },
-      "low_grade_share": 61.5,
-      "median_score": 69.3,
+      "low_grade_share": 58.3,
+      "median_score": 69.5,
       "need_tier": "lower",
       "state": "Arizona"
     },
     {
-      "agency_count": 3,
+      "agency_count": 2,
       "comparison_eligible_count": 1,
-      "feed_record_count": 3,
+      "feed_record_count": 2,
       "indicators": {
         "disability_pct": 17.7,
         "poverty_pct": 16.2,
@@ -133,37 +133,37 @@
       "state": "Arkansas"
     },
     {
-      "agency_count": 183,
-      "comparison_eligible_count": 84,
-      "feed_record_count": 183,
+      "agency_count": 148,
+      "comparison_eligible_count": 79,
+      "feed_record_count": 148,
       "indicators": {
         "disability_pct": 11.0,
         "poverty_pct": 12.1,
         "zero_vehicle_pct": 6.9
       },
-      "low_grade_share": 47.6,
-      "median_score": 74.4,
+      "low_grade_share": 45.6,
+      "median_score": 77.3,
       "need_tier": "lower",
       "state": "California"
     },
     {
-      "agency_count": 95,
-      "comparison_eligible_count": 74,
-      "feed_record_count": 95,
+      "agency_count": 87,
+      "comparison_eligible_count": 72,
+      "feed_record_count": 87,
       "indicators": {
         "disability_pct": 11.0,
         "poverty_pct": 9.6,
         "zero_vehicle_pct": 5.0
       },
-      "low_grade_share": 20.3,
+      "low_grade_share": 19.4,
       "median_score": 77.0,
       "need_tier": "lower",
       "state": "Colorado"
     },
     {
-      "agency_count": 11,
+      "agency_count": 7,
       "comparison_eligible_count": 5,
-      "feed_record_count": 11,
+      "feed_record_count": 7,
       "indicators": {
         "disability_pct": 11.6,
         "poverty_pct": 10.1,
@@ -189,9 +189,9 @@
       "state": "Delaware"
     },
     {
-      "agency_count": 5,
+      "agency_count": 4,
       "comparison_eligible_count": 2,
-      "feed_record_count": 5,
+      "feed_record_count": 4,
       "indicators": {
         "disability_pct": 11.0,
         "poverty_pct": 15.1,
@@ -203,9 +203,9 @@
       "state": "District of Columbia"
     },
     {
-      "agency_count": 43,
+      "agency_count": 37,
       "comparison_eligible_count": 20,
-      "feed_record_count": 43,
+      "feed_record_count": 37,
       "indicators": {
         "disability_pct": 13.5,
         "poverty_pct": 12.9,
@@ -217,9 +217,9 @@
       "state": "Florida"
     },
     {
-      "agency_count": 16,
+      "agency_count": 12,
       "comparison_eligible_count": 1,
-      "feed_record_count": 16,
+      "feed_record_count": 12,
       "indicators": {
         "disability_pct": 12.7,
         "poverty_pct": 13.5,
@@ -231,9 +231,9 @@
       "state": "Georgia"
     },
     {
-      "agency_count": 3,
+      "agency_count": 2,
       "comparison_eligible_count": 1,
-      "feed_record_count": 3,
+      "feed_record_count": 2,
       "indicators": {
         "disability_pct": 12.0,
         "poverty_pct": 9.6,
@@ -259,23 +259,23 @@
       "state": "Idaho"
     },
     {
-      "agency_count": 15,
-      "comparison_eligible_count": 11,
-      "feed_record_count": 15,
+      "agency_count": 10,
+      "comparison_eligible_count": 10,
+      "feed_record_count": 10,
       "indicators": {
         "disability_pct": 11.6,
         "poverty_pct": 11.8,
         "zero_vehicle_pct": 10.8
       },
-      "low_grade_share": 72.7,
-      "median_score": 62.0,
+      "low_grade_share": 70.0,
+      "median_score": 62.9,
       "need_tier": "lower",
       "state": "Illinois"
     },
     {
-      "agency_count": 11,
+      "agency_count": 9,
       "comparison_eligible_count": 5,
-      "feed_record_count": 11,
+      "feed_record_count": 9,
       "indicators": {
         "disability_pct": 13.7,
         "poverty_pct": 12.3,
@@ -287,9 +287,9 @@
       "state": "Indiana"
     },
     {
-      "agency_count": 21,
+      "agency_count": 19,
       "comparison_eligible_count": 17,
-      "feed_record_count": 21,
+      "feed_record_count": 19,
       "indicators": {
         "disability_pct": 12.2,
         "poverty_pct": 11.1,
@@ -301,9 +301,9 @@
       "state": "Iowa"
     },
     {
-      "agency_count": 6,
+      "agency_count": 4,
       "comparison_eligible_count": 2,
-      "feed_record_count": 6,
+      "feed_record_count": 4,
       "indicators": {
         "disability_pct": 13.4,
         "poverty_pct": 11.6,
@@ -315,9 +315,9 @@
       "state": "Kansas"
     },
     {
-      "agency_count": 7,
+      "agency_count": 4,
       "comparison_eligible_count": 3,
-      "feed_record_count": 7,
+      "feed_record_count": 4,
       "indicators": {
         "disability_pct": 17.6,
         "poverty_pct": 16.1,
@@ -329,23 +329,23 @@
       "state": "Kentucky"
     },
     {
-      "agency_count": 3,
-      "comparison_eligible_count": 2,
-      "feed_record_count": 3,
+      "agency_count": 2,
+      "comparison_eligible_count": 1,
+      "feed_record_count": 2,
       "indicators": {
         "disability_pct": 15.8,
         "poverty_pct": 18.7,
         "zero_vehicle_pct": 8.3
       },
       "low_grade_share": 100.0,
-      "median_score": 56.4,
+      "median_score": 66.5,
       "need_tier": "high",
       "state": "Louisiana"
     },
     {
-      "agency_count": 7,
+      "agency_count": 5,
       "comparison_eligible_count": 2,
-      "feed_record_count": 7,
+      "feed_record_count": 5,
       "indicators": {
         "disability_pct": 15.8,
         "poverty_pct": 10.9,
@@ -357,9 +357,9 @@
       "state": "Maine"
     },
     {
-      "agency_count": 33,
+      "agency_count": 27,
       "comparison_eligible_count": 13,
-      "feed_record_count": 33,
+      "feed_record_count": 27,
       "indicators": {
         "disability_pct": 11.3,
         "poverty_pct": 9.3,
@@ -371,23 +371,23 @@
       "state": "Maryland"
     },
     {
-      "agency_count": 41,
-      "comparison_eligible_count": 27,
-      "feed_record_count": 41,
+      "agency_count": 37,
+      "comparison_eligible_count": 26,
+      "feed_record_count": 37,
       "indicators": {
         "disability_pct": 11.9,
         "poverty_pct": 9.9,
         "zero_vehicle_pct": 11.9
       },
-      "low_grade_share": 33.3,
-      "median_score": 73.5,
+      "low_grade_share": 34.6,
+      "median_score": 73.2,
       "need_tier": "lower",
       "state": "Massachusetts"
     },
     {
-      "agency_count": 18,
+      "agency_count": 13,
       "comparison_eligible_count": 9,
-      "feed_record_count": 18,
+      "feed_record_count": 13,
       "indicators": {
         "disability_pct": 14.1,
         "poverty_pct": 13.1,
@@ -413,9 +413,9 @@
       "state": "Minnesota"
     },
     {
-      "agency_count": 3,
+      "agency_count": 2,
       "comparison_eligible_count": 2,
-      "feed_record_count": 3,
+      "feed_record_count": 2,
       "indicators": {
         "disability_pct": 17.2,
         "poverty_pct": 19.2,
@@ -455,9 +455,9 @@
       "state": "Montana"
     },
     {
-      "agency_count": 5,
+      "agency_count": 3,
       "comparison_eligible_count": 3,
-      "feed_record_count": 5,
+      "feed_record_count": 3,
       "indicators": {
         "disability_pct": 12.0,
         "poverty_pct": 10.4,
@@ -497,23 +497,23 @@
       "state": "New Hampshire"
     },
     {
-      "agency_count": 6,
-      "comparison_eligible_count": 6,
-      "feed_record_count": 6,
+      "agency_count": 5,
+      "comparison_eligible_count": 5,
+      "feed_record_count": 5,
       "indicators": {
         "disability_pct": 10.6,
         "poverty_pct": 9.7,
         "zero_vehicle_pct": 11.3
       },
-      "low_grade_share": 50.0,
-      "median_score": 63.0,
+      "low_grade_share": 60.0,
+      "median_score": 52.9,
       "need_tier": "lower",
       "state": "New Jersey"
     },
     {
-      "agency_count": 14,
+      "agency_count": 11,
       "comparison_eligible_count": 8,
-      "feed_record_count": 14,
+      "feed_record_count": 11,
       "indicators": {
         "disability_pct": 16.3,
         "poverty_pct": 18.3,
@@ -525,23 +525,23 @@
       "state": "New Mexico"
     },
     {
-      "agency_count": 84,
-      "comparison_eligible_count": 51,
-      "feed_record_count": 84,
+      "agency_count": 76,
+      "comparison_eligible_count": 49,
+      "feed_record_count": 76,
       "indicators": {
         "disability_pct": 11.9,
         "poverty_pct": 13.6,
         "zero_vehicle_pct": 29.0
       },
-      "low_grade_share": 80.4,
+      "low_grade_share": 79.6,
       "median_score": 58.5,
       "need_tier": "moderate",
       "state": "New York"
     },
     {
-      "agency_count": 24,
+      "agency_count": 16,
       "comparison_eligible_count": 12,
-      "feed_record_count": 24,
+      "feed_record_count": 16,
       "indicators": {
         "disability_pct": 13.3,
         "poverty_pct": 13.3,
@@ -553,9 +553,9 @@
       "state": "North Carolina"
     },
     {
-      "agency_count": 3,
+      "agency_count": 2,
       "comparison_eligible_count": 1,
-      "feed_record_count": 3,
+      "feed_record_count": 2,
       "indicators": {
         "disability_pct": 11.4,
         "poverty_pct": 10.8,
@@ -567,9 +567,9 @@
       "state": "North Dakota"
     },
     {
-      "agency_count": 19,
+      "agency_count": 15,
       "comparison_eligible_count": 8,
-      "feed_record_count": 19,
+      "feed_record_count": 15,
       "indicators": {
         "disability_pct": 14.1,
         "poverty_pct": 13.3,
@@ -581,9 +581,9 @@
       "state": "Ohio"
     },
     {
-      "agency_count": 4,
+      "agency_count": 3,
       "comparison_eligible_count": 2,
-      "feed_record_count": 4,
+      "feed_record_count": 3,
       "indicators": {
         "disability_pct": 16.6,
         "poverty_pct": 15.2,
@@ -595,23 +595,23 @@
       "state": "Oklahoma"
     },
     {
-      "agency_count": 78,
-      "comparison_eligible_count": 49,
-      "feed_record_count": 78,
+      "agency_count": 69,
+      "comparison_eligible_count": 46,
+      "feed_record_count": 69,
       "indicators": {
         "disability_pct": 14.9,
         "poverty_pct": 11.9,
         "zero_vehicle_pct": 7.0
       },
-      "low_grade_share": 28.6,
-      "median_score": 75.2,
+      "low_grade_share": 23.9,
+      "median_score": 76.8,
       "need_tier": "lower",
       "state": "Oregon"
     },
     {
-      "agency_count": 15,
+      "agency_count": 12,
       "comparison_eligible_count": 4,
-      "feed_record_count": 15,
+      "feed_record_count": 12,
       "indicators": {
         "disability_pct": 14.1,
         "poverty_pct": 11.8,
@@ -637,9 +637,9 @@
       "state": "Rhode Island"
     },
     {
-      "agency_count": 4,
+      "agency_count": 3,
       "comparison_eligible_count": 1,
-      "feed_record_count": 4,
+      "feed_record_count": 3,
       "indicators": {
         "disability_pct": 14.3,
         "poverty_pct": 14.4,
@@ -665,9 +665,9 @@
       "state": "South Dakota"
     },
     {
-      "agency_count": 10,
+      "agency_count": 8,
       "comparison_eligible_count": 5,
-      "feed_record_count": 10,
+      "feed_record_count": 8,
       "indicators": {
         "disability_pct": 15.3,
         "poverty_pct": 14.0,
@@ -679,9 +679,9 @@
       "state": "Tennessee"
     },
     {
-      "agency_count": 15,
+      "agency_count": 14,
       "comparison_eligible_count": 8,
-      "feed_record_count": 15,
+      "feed_record_count": 14,
       "indicators": {
         "disability_pct": 11.7,
         "poverty_pct": 13.9,
@@ -693,23 +693,23 @@
       "state": "Texas"
     },
     {
-      "agency_count": 5,
-      "comparison_eligible_count": 1,
-      "feed_record_count": 5,
+      "agency_count": 3,
+      "comparison_eligible_count": 2,
+      "feed_record_count": 3,
       "indicators": {
         "disability_pct": 10.0,
         "poverty_pct": 8.5,
         "zero_vehicle_pct": 3.9
       },
       "low_grade_share": 100.0,
-      "median_score": 58.6,
+      "median_score": 46.7,
       "need_tier": "lower",
       "state": "Utah"
     },
     {
-      "agency_count": 16,
+      "agency_count": 15,
       "comparison_eligible_count": 12,
-      "feed_record_count": 16,
+      "feed_record_count": 15,
       "indicators": {
         "disability_pct": 14.5,
         "poverty_pct": 10.4,
@@ -721,29 +721,29 @@
       "state": "Vermont"
     },
     {
-      "agency_count": 58,
-      "comparison_eligible_count": 45,
-      "feed_record_count": 58,
+      "agency_count": 51,
+      "comparison_eligible_count": 43,
+      "feed_record_count": 51,
       "indicators": {
         "disability_pct": 12.1,
         "poverty_pct": 10.0,
         "zero_vehicle_pct": 6.1
       },
-      "low_grade_share": 46.7,
-      "median_score": 74.1,
+      "low_grade_share": 44.2,
+      "median_score": 74.8,
       "need_tier": "lower",
       "state": "Virginia"
     },
     {
-      "agency_count": 78,
+      "agency_count": 70,
       "comparison_eligible_count": 52,
-      "feed_record_count": 78,
+      "feed_record_count": 70,
       "indicators": {
         "disability_pct": 13.0,
         "poverty_pct": 9.9,
         "zero_vehicle_pct": 6.9
       },
-      "low_grade_share": 19.2,
+      "low_grade_share": 17.3,
       "median_score": 75.5,
       "need_tier": "lower",
       "state": "Washington"
@@ -763,16 +763,16 @@
       "state": "West Virginia"
     },
     {
-      "agency_count": 15,
-      "comparison_eligible_count": 8,
-      "feed_record_count": 15,
+      "agency_count": 11,
+      "comparison_eligible_count": 7,
+      "feed_record_count": 11,
       "indicators": {
         "disability_pct": 11.9,
         "poverty_pct": 10.7,
         "zero_vehicle_pct": 6.3
       },
-      "low_grade_share": 37.5,
-      "median_score": 78.1,
+      "low_grade_share": 28.6,
+      "median_score": 78.4,
       "need_tier": "lower",
       "state": "Wisconsin"
     }
