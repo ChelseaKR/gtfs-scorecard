@@ -131,6 +131,13 @@ existing surface without changing a grade or adding a service:
   binds each external identity to the public registry record that currently
   carries it. Proposals remain separate from human identity, rights,
   attribution, and admission decisions (ADR 0043).
+- **Shipped 2026-08-27:** the alert stack reads a planned service boundary
+  from the published scorecard, closing EXP-04's open RR:R3 half. A campus or
+  seasonal feed at the end of a service period is no longer told by email that
+  trip planners have dropped it, on the same morning its page calls the same
+  event a planned transition. Wording only, on the opt-in alert channel and the
+  weekly cohort digest: no tier, ordering, grade, or public page moved
+  (ADR 0047).
 - **Next only through curation:** work the European candidate queue toward the
   beta gate in [`global-expansion.md`](global-expansion.md). Feed count alone
   does not pass source, license, identity, freshness, or country-spread review.

@@ -20,6 +20,14 @@ one is not a private-only signal: it mirrors the "What changed inside the
 export" block the agency page already renders (`exportdiff.py`, `render_site.py`)
 so a subscriber hears the same finding here that a page visitor would see.
 
+Expiry items read `service_periods` before they choose their words. A feed
+whose calendars run in distinct service periods, or whose registry record
+declares seasonal or demand-response service, is described as reaching a
+planned boundary instead of being told trip planners have dropped it (EXP-04's
+open alert-tier half). The tier, the ordering, and whether the item is sent do
+not change: only the sentence does, and only when the published scorecard
+already reads the same way.
+
 The digest is rendered as Markdown and written to stdout or a file. Routing it
 to subscribers (email via SES, a Slack post) is a deploy concern handled by the
 caller; keeping the build and the send separate is what makes the logic
@@ -43,6 +51,7 @@ from .config import artifacts_dir, current_agency_ids, utc_today
 from .instance import BASE_URL as SCORECARD_BASE
 from .lapse_risk import TIER_ELEVATED, TIER_HIGH
 from .lapse_risk import assess as assess_lapse_risk
+from .service_periods import ServicePeriodRead, read_service_period
 
 # A letter-grade drop, or a score fall of at least this many points between the
 # two most recent runs, is worth telling someone about. Smaller day-to-day
@@ -131,6 +140,11 @@ class AlertItem:
     fix: str
     scorecard_url: str = ""
     days_until_expiry: int | None = None
+    # True when this expiry item describes a transition between the feed's own
+    # service periods rather than a lapse (see service_periods). Read by the
+    # renderer to explain the distinction once per section instead of in every
+    # item. Always False for every other alert kind.
+    planned_boundary: bool = False
 
 
 @dataclass
@@ -153,6 +167,83 @@ def _grade_dropped(prev: str, curr: str) -> bool:
         return False
 
 
+# The fix an agency is asked to make. The lapse case asks for a longer
+# calendar; the planned case asks for the next period, which is the export the
+# agency was already going to produce.
+_LAPSE_FIX = (
+    "Re-export the feed with a calendar that extends further out, or "
+    "set feed_info end dates past the next service change."
+)
+_PLANNED_BOUNDARY_FIX = (
+    "Confirm the next service period is published: export its calendar and "
+    "set feed_info feed_end_date past it."
+)
+
+
+def _lapse_wording(days: int) -> tuple[str, str, str]:
+    """Headline, detail, and fix for a calendar with no known service pattern."""
+    if days < 0:
+        return (
+            "Service data has expired",
+            f"The schedule stopped covering service {abs(days)} day(s) ago. "
+            "Trip planners may have already dropped this agency.",
+            _LAPSE_FIX,
+        )
+    return (
+        f"Service data expires in {days} day(s)",
+        "When the calendar runs out, trip planners stop showing this "
+        "agency's service even while service is still running.",
+        _LAPSE_FIX,
+    )
+
+
+def _declared_boundary_wording(days: int, noun: str) -> tuple[str, str, str]:
+    """Wording for a service the registry records as seasonal or on-demand."""
+    if days < 0:
+        return (
+            f"Published {noun} calendar has run out",
+            f"This service is registered as {noun}, so the gap may sit between two "
+            "service periods. Riders still cannot plan a trip until the next "
+            "period's calendar is published.",
+            _PLANNED_BOUNDARY_FIX,
+        )
+    return (
+        f"Published {noun} calendar ends in {days} day(s)",
+        f"This service is registered as {noun}. Publishing the next period's "
+        "calendar before that date keeps trip planners showing it without a gap.",
+        _PLANNED_BOUNDARY_FIX,
+    )
+
+
+def _detected_boundary_wording(days: int) -> tuple[str, str, str]:
+    """Wording for a boundary the feed's own calendars encode."""
+    if days < 0:
+        return (
+            f"Scheduled service period ended {abs(days)} day(s) ago",
+            "This feed's calendars run in distinct service periods, the way an "
+            "academic term does, and one of them has ended. That reads as a planned "
+            "transition rather than a feed left to expire. Riders still cannot plan "
+            "a trip until the next period is published.",
+            _PLANNED_BOUNDARY_FIX,
+        )
+    return (
+        f"Scheduled service period ends in {days} day(s)",
+        "This feed's calendars run in distinct service periods, the way an academic "
+        "term does, and the current one is ending. Publishing the next period before "
+        "that date keeps trip planners showing this agency without a gap.",
+        _PLANNED_BOUNDARY_FIX,
+    )
+
+
+def _expiry_wording(days: int, period: ServicePeriodRead) -> tuple[str, str, str]:
+    """Choose the sentence that matches what the scorecard page already says."""
+    if not period.planned:
+        return _lapse_wording(days)
+    if period.declared:
+        return _declared_boundary_wording(days, period.service_noun)
+    return _detected_boundary_wording(days)
+
+
 def _expiry_item(latest: dict[str, Any], expiry_days: int) -> AlertItem | None:
     freshness = latest.get("categories", {}).get("freshness", {})
     raw_days = freshness.get("details", {}).get("days_until_expiry")
@@ -162,26 +253,17 @@ def _expiry_item(latest: dict[str, Any], expiry_days: int) -> AlertItem | None:
     if days > expiry_days:
         return None
     agency = latest["agency"]
-    if days < 0:
-        headline = "Service data has expired"
-        detail = (
-            f"The schedule stopped covering service {abs(days)} day(s) ago. "
-            "Trip planners may have already dropped this agency."
-        )
-    else:
-        headline = f"Service data expires in {days} day(s)"
-        detail = (
-            "When the calendar runs out, trip planners stop showing this "
-            "agency's service even while service is still running."
-        )
+    # Wording only. The lead-time tier, the sort order, and the fact that this
+    # item is raised at all are decided above and stay identical either way.
+    period = read_service_period(latest, days)
+    headline, detail, fix = _expiry_wording(days, period)
     return AlertItem(
         agency_id=agency["id"],
         agency_name=agency["name"],
         kind="expiry",
         headline=headline,
         detail=detail,
-        fix="Re-export the feed with a calendar that extends further out, or "
-        "set feed_info end dates past the next service change.",
+        fix=fix,
         # Link straight to the ready-to-send note on the scorecard.
         scorecard_url=_scorecard_url(
             agency["id"],
@@ -189,6 +271,7 @@ def _expiry_item(latest: dict[str, Any], expiry_days: int) -> AlertItem | None:
             _primary_finding_code(latest),
         ),
         days_until_expiry=days,
+        planned_boundary=period.planned,
     )
 
 
@@ -418,6 +501,28 @@ def build_digest(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     return Digest(as_of=as_of, items=items)
 
 
+def _expiring_section_note(expiring: list[AlertItem]) -> list[str]:
+    """An explanatory line when a planned boundary shares the expiry section.
+
+    The tier headings group on the calendar date and nothing else, so a feed at
+    a boundary between its own service periods lands under the same heading as
+    one that quietly lapsed. Say that once here instead of repeating the caveat
+    in every item, and return nothing at all when no such feed is present, so a
+    digest without one is byte-identical to before.
+    """
+    planned = [item for item in expiring if item.planned_boundary]
+    if not planned:
+        return []
+    subject = "One of them runs" if len(planned) == 1 else f"{len(planned)} of them run"
+    return [
+        "The headings below group feeds by calendar date alone. "
+        f"{subject} in distinct service periods, so a closing calendar reads as a "
+        "planned transition rather than a lapse. Those still need the next period "
+        "published before riders can plan it.",
+        "",
+    ]
+
+
 def render_digest(digest: Digest) -> str:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Render the digest as Markdown.
 
@@ -463,6 +568,7 @@ def render_digest(digest: Digest) -> str:  # noqa: C901 - tracked, see docs/lint
     if expiring:
         lines.append("## Feeds expiring soon")
         lines.append("")
+        lines.extend(_expiring_section_note(expiring))
         # Group by lead-time tier so the ramp is visible: expired, then a week
         # out, two weeks, a month, two months. Items are already soonest-first.
         tier_order = [_EXPIRED_LABEL] + [label for _, label in _EXPIRY_TIERS]

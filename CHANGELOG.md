@@ -27,6 +27,41 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Changed
+
+- **An alert about a seasonal feed now says what its scorecard page says.**
+  `metrics.freshness` has read a feed's own calendars since EXP-04 landed on
+  2026-07-02: when a feed encodes distinct service periods and its expiry falls
+  on one of those boundaries, the page calls it a planned transition and asks
+  the agency to publish the next period. The alert stack never read that
+  signal. So on the morning after a university system's term ended, its page
+  said "confirm your next service period is published" and the email sent the
+  same morning said "the schedule stopped covering service 12 day(s) ago. Trip
+  planners may have already dropped this agency." The weekly cohort digest told
+  a liaison the same feed "expired this week".
+
+  A new `service_periods` module answers that question once for every alert
+  surface, from what the published artifact already states, and `alerts` and
+  `portfolio_digest` both read it. The daily digest, the subscriber email, the
+  webhook payload, and the weekly cohort digest now describe a planned boundary
+  as one, name a registry-declared seasonal or on-demand service in its own
+  words, and ask for the next period's calendar instead of a longer one.
+
+  Wording is all that changes. The lead-time tier, the sort order, the
+  `days_until_expiry`, the alert kind, the scorecard link, and whether an
+  agency or a liaison is told anything at all are identical either way, and the
+  item still says riders cannot plan a trip until the next period is published.
+  Four limits keep the softer sentence from becoming a hiding place: after a
+  calendar closes it requires the finding the scoring path already published;
+  before it closes it uses only the artifact's own `service_type` and
+  `seasonal_boundary` values; a feed lapsed a year or more is never softened
+  (the `STALE_FEED_DAYS` floor, applied first); and a feed with no readable end
+  date never is either. Anything unreadable falls through to the existing lapse
+  wording. See [ADR 0047](docs/decisions/0047-seasonal-boundary-alert-wording.md);
+  this closes the "RR:R3 alert-tier wiring remains open" note EXP-04 left behind.
+
+  No score, grade, category, weight, threshold, or public page moved.
+
 ## [1.5.0] - 2026-08-18
 
 ### Added
