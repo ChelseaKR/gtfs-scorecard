@@ -416,6 +416,44 @@ def test_rt_health_batch_excludes_retired_alias_but_keeps_explicit_reproduction(
     assert recorded == [live.id, retired.id]
 
 
+def test_rt_health_batch_skips_a_corrupt_record_instead_of_overwriting_it(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """One agency's corrupt rt-health record must not crash the whole batch
+    monitor run, and (the destructive case this guards against) the real
+    ``append_observation`` must refuse to treat the corruption as an empty
+    history and overwrite it with just this run's single observation."""
+    from scorecard_pipeline import cli, rt_health
+    from scorecard_pipeline.config import AGENCIES, Agency
+
+    monkeypatch.setattr(rt_health, "repo_root", lambda: tmp_path)
+    rt_urls = {"trip_updates": "https://example.org/trip-updates.pb"}
+    broken = Agency(
+        id="broken",
+        name="Broken Transit",
+        static_gtfs_url="https://example.org/broken.zip",
+        rt_urls=rt_urls,
+    )
+    monkeypatch.setitem(AGENCIES, broken.id, broken)
+
+    path = rt_health.state_path(broken.id)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("<<<<<<< HEAD\nnot valid json\n=======\n>>>>>>> branch\n")
+
+    monkeypatch.setattr(cli, "capture_window", lambda *_a, **_k: object())
+    monkeypatch.setattr(
+        rt_health,
+        "observe",
+        lambda *_a, **_k: argparse.Namespace(kinds_reachable=1, kinds_total=1, worst_lag_seconds=5),
+    )
+    args = argparse.Namespace(agency=broken.id, samples=1, interval=0)
+
+    assert cli._cmd_rt_health(args, argparse.ArgumentParser()) == 0
+    # Untouched: still exactly the corrupt bytes it started with, not a fresh
+    # record built from just this run's one observation.
+    assert path.read_text() == "<<<<<<< HEAD\nnot valid json\n=======\n>>>>>>> branch\n"
+
+
 def test_prune_reports_orphans_without_deleting(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

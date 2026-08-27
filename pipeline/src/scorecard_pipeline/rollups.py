@@ -18,6 +18,7 @@ import csv
 import datetime as dt
 import io
 import json
+import logging
 from collections import Counter
 from dataclasses import dataclass
 from functools import lru_cache
@@ -36,6 +37,8 @@ from .metrics import expiry_status
 from .ntd import assess_shapes_readiness
 from .publish import _write_json, registered_agency_dirs
 from .ridership import annual_trips_for, duplicate_ntd_reporter_ids, normalize_ntd_id
+
+log = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -447,7 +450,7 @@ def _realtime_block(members: list[dict[str, Any]]) -> dict[str, Any]:
     score.
     """
     from ._stats import _median
-    from .rt_health import load_observations, summarize
+    from .rt_health import RtHealthRecordCorruptError, load_observations, summarize
     from .rt_national import reliability_band
 
     registry = _configured_rt_kinds()
@@ -457,7 +460,15 @@ def _realtime_block(members: list[dict[str, Any]]) -> dict[str, Any]:
         kinds: tuple[str, ...] = registry.get(member["id"], ())
         if kinds:
             configured += 1
-        observations = load_observations(member["id"])
+        try:
+            observations = load_observations(member["id"])
+        except RtHealthRecordCorruptError:
+            # Logged, not raised: one member's corrupt record must not fail a
+            # whole program's rollup. The file itself is left for a human to fix.
+            log.warning(
+                "%s: rt-health record is corrupt; excluding it from this rollup.", member["id"]
+            )
+            continue
         if not observations:
             continue
         health = summarize(observations)
