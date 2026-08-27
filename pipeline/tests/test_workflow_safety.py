@@ -517,3 +517,50 @@ def test_dataset_release_publication_uses_one_successful_run_bound_package() -> 
     assert script.index('gh run download "$workflow_run_id"') < script.index(
         "scorecard_pipeline.dataset_release_promotion"
     )
+
+
+def test_publish_survives_a_dead_score_shard() -> None:
+    """One dead shard must not skip the day's publish (issue #297).
+
+    `collect` was fixed in #298; `deploy` was not, and a job's implicit
+    `if: success()` is evaluated over its whole ancestry rather than over
+    `needs:` alone. So a failed `score` shard went on skipping `deploy` even
+    when `collect` succeeded, which the incident's own root cause had already
+    described ("skipping collect (and, transitively, deploy)"). Observed live
+    on runs 32975621570, 32854480196 and 32642725318: collect success, deploy
+    skipped, for six days, masked by Intraday refresh publishing separately.
+    """
+    workflow = _workflow("scorecard.yml")
+
+    collect = workflow.index("\n  collect:")
+    deploy = workflow.index("\n  deploy:")
+    assert collect < deploy
+
+    collect_block = workflow[collect:deploy]
+    deploy_block = workflow[deploy:]
+
+    assert "if: ${{ !cancelled() }}" in collect_block, (
+        "collect must run regardless of individual shard outcomes"
+    )
+    assert "needs.collect.result == 'success'" in deploy_block, (
+        "deploy must gate on collect's own result, not on the implicit "
+        "success() that transitively includes the score matrix"
+    )
+
+
+def test_scheduled_workflows_bound_the_validator_subprocess() -> None:
+    """The memory ceiling is opt-in, so a workflow that forgets it is unprotected.
+
+    Without it a runaway validator takes the Actions runner down with it
+    ("The runner has received a shutdown signal") instead of failing as an
+    ordinary per-agency RuntimeError. Both scheduled workflows run the Java
+    validator: the daily one over every feed, the intraday one over whichever
+    feeds changed, which can include a large feed.
+    """
+    for name in ("scorecard.yml", "refresh.yml"):
+        workflow = _workflow(name)
+        assert 'SCORECARD_VALIDATOR_MEMORY_MB: "10240"' in workflow, name
+        jobs_at = workflow.index("\njobs:")
+        assert workflow.index("SCORECARD_VALIDATOR_MEMORY_MB") < jobs_at, (
+            f"{name}: the ceiling must be workflow-level env so every job inherits it"
+        )
