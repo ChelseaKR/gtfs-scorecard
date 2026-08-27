@@ -127,7 +127,17 @@ boundary as a planned transition (`scorecard_planned_service_boundary`,
 "confirm your next service period is published", score floored at 50); the
 `STALE_FEED_DAYS` hard floor still applies so a feed dead over a year is never
 softened, and the flag round-trips through the freshness sweep. Continuous
-calendars are unchanged. RR:R3 alert-tier wiring remains open.
+calendars are unchanged.
+
+**RR:R3 alert-tier wiring: done (2026-08-27).** `service_periods` gives the
+alert stack one read of whether a closing calendar is a transition or a lapse,
+taken from what the published artifact already states. `alerts._expiry_item`
+and `portfolio_digest._diff_member` use it to choose their words, so the daily
+email, the subscriber webhook, and the weekly cohort digest now say what the
+scorecard page says. Wording only: the lead-time tier, the ordering, the
+`days_until_expiry`, and whether anyone is told are all unchanged, and a feed
+lapsed a year or more is never softened. See
+[ADR 0047](../decisions/0047-seasonal-boundary-alert-wording.md).
 
 **Pitch.** Distinguish a feed that legitimately changes for a school break or
 summer service from one silently drifting toward expiry.

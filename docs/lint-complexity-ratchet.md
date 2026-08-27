@@ -16,13 +16,16 @@ debt explicitly here with a dated, visible `# noqa: C901` at each site
 pointing back to this file — rather than leaving `C90` out of `select`
 (which would let the audit's FAIL stand unchanged) or leaving CI red.
 
-**Last synced:** 2026-08-22, when `realtime` came off the table. Every row
-below was regenerated from
+**Last synced:** 2026-08-27, alongside the seasonal-boundary alert wording.
+Every row below was regenerated from
 `uv run ruff check --select C901 --ignore-noqa --output-format concise src`,
 so the file:line and the number are what ruff prints today, not what it printed
-when the row was written. Four rows had drifted since the 2026-08-15 sync:
-`completeness` had gone from 13 to 15, and `render_site`,
-`propose_agencies_with_dispositions` and `_cmd_liveness` had all moved line.
+when the row was written. Seven rows moved line and none moved number, so this
+sync records no new debt. Two of the moves are from that change (`render_digest`
+and `build_digest`, both in `alerts.py`, which gained helper functions above
+them and kept their complexity at 17 and 14). The other five had already
+drifted on `main`: `render_site` went from 54 to 55, and it, `_render_brief`,
+`_render_agency`, `_board_hero` and `_cmd_liveness` all moved line.
 Re-run that command and rewrite this table whenever a row changes — including
 when removing one, since the removal shifts lines in the same file.
 
@@ -40,19 +43,19 @@ without discussion.
 
 | Function | File:line | Complexity | Note |
 |---|---|---|---|
-| `render_site` | `src/scorecard_pipeline/render_site.py:9996` | 54 | Top-level orchestrator calling every page renderer in sequence; the biggest single item here — candidate: split into `render_site` (thin driver) plus a registry of `(route, render_fn)` pairs. |
+| `render_site` | `src/scorecard_pipeline/render_site.py:10007` | 55 | Top-level orchestrator calling every page renderer in sequence; the biggest single item here — candidate: split into `render_site` (thin driver) plus a registry of `(route, render_fn)` pairs. |
 | `parse_agencies` | `src/scorecard_pipeline/agencies.py:171` | 36 | Config-parsing fan-out over many optional YAML fields; candidate: split per-field validators. |
 | `propose_agencies_with_dispositions` | `src/scorecard_pipeline/mobilitydb.py:666` | 32 | Mobility Database matching heuristics; candidate: extract match-scoring helper. Was tracked as `propose_agencies`, which is now a thin wrapper at `mobilitydb.py:909` with no suppression. |
-| `render_digest` | `src/scorecard_pipeline/alerts.py:421` | 17 | Digest section assembly; candidate: extract one function per digest section. |
-| `_render_brief` | `src/scorecard_pipeline/render_site.py:3029` | 16 | Template string assembly. |
+| `render_digest` | `src/scorecard_pipeline/alerts.py:526` | 17 | Digest section assembly; candidate: extract one function per digest section. |
+| `_render_brief` | `src/scorecard_pipeline/render_site.py:3032` | 16 | Template string assembly. |
 | `completeness` | `src/scorecard_pipeline/completeness.py:209` | 15 | Rider-experience field scoring; candidate: extract per-field scorers. |
 | `parse_subscribers` | `src/scorecard_pipeline/notify.py:87` | 15 | Subscriber YAML parsing and validation; candidate: split per-field validators (same shape as `parse_agencies`). |
-| `build_digest` | `src/scorecard_pipeline/alerts.py:343` | 14 | Alert digest construction. Was suppressed with a bare `# noqa: C901` and no row; both fixed here. |
+| `build_digest` | `src/scorecard_pipeline/alerts.py:426` | 14 | Alert digest construction. Was suppressed with a bare `# noqa: C901` and no row; both fixed here. |
 | `parse_ridership_csv` | `src/scorecard_pipeline/ridership.py:58` | 14 | CSV column-mapping heuristics; candidate: extract per-column parsers. |
-| `_cmd_liveness` | `src/scorecard_pipeline/cli.py:2582` | 13 | CLI subcommand with several independent check branches; candidate: table-driven checks. |
-| `_render_agency` | `src/scorecard_pipeline/render_site.py:2611` | 13 | Template string assembly. Its suppression pointed at this file and had no row; added here. |
+| `_cmd_liveness` | `src/scorecard_pipeline/cli.py:2611` | 13 | CLI subcommand with several independent check branches; candidate: table-driven checks. |
+| `_render_agency` | `src/scorecard_pipeline/render_site.py:2614` | 13 | Template string assembly. Its suppression pointed at this file and had no row; added here. |
 | `route_type_family` | `src/scorecard_pipeline/modes.py:48` | 13 | GTFS route-type classification. Moved here from `route_geometry.py`, which now keeps a two-line wrapper with no suppression. Its `# noqa` carries its own rationale ("explicit spec range mapping") rather than pointing at this file; that is a deliberate permanent exemption, listed so the count reconciles. |
-| `_board_hero` | `src/scorecard_pipeline/render_site.py:1114` | 12 | Template string assembly with several conditional blocks. |
+| `_board_hero` | `src/scorecard_pipeline/render_site.py:1117` | 12 | Template string assembly with several conditional blocks. |
 | `compute_drift` | `src/scorecard_pipeline/rt_drift.py:96` | 12 | Schedule-vs-RT drift computation; candidate: extract per-window drift helper. |
 | `run_agency` | `src/scorecard_pipeline/cli.py:170` | 12 | Per-agency run driver. Was suppressed with a bare `# noqa: C901` and no row; both fixed here. |
 

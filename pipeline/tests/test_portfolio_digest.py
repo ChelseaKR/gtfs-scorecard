@@ -37,9 +37,13 @@ def write_latest(
     validator_version: str = VALIDATOR_VERSION,
     reader_archive_profile: str = RAW_READER_ARCHIVE_PROFILE,
     measured_categories: tuple[str, ...] = ("correctness", "freshness", "completeness"),
+    freshness_details: dict[str, Any] | None = None,
+    freshness_findings: list[dict[str, Any]] | None = None,
 ) -> None:
     path = artifacts_dir() / agency_id
     path.mkdir(parents=True, exist_ok=True)
+    details: dict[str, Any] = {"days_until_expiry": days}
+    details.update(freshness_details or {})
     (path / "latest.json").write_text(
         json.dumps(
             {
@@ -62,7 +66,8 @@ def write_latest(
                         "status": (
                             "measured" if "freshness" in measured_categories else "not_measured"
                         ),
-                        "details": {"days_until_expiry": days},
+                        "details": details,
+                        "findings": freshness_findings or [],
                     },
                     "completeness": {
                         "status": (
@@ -295,3 +300,99 @@ def test_partial_contract_reset_only_claims_over_comparable_members() -> None:
     assert "All 1 comparable feed(s)" in text
     assert "All 2 feed(s)" not in text
     assert "1 other feed(s) started a new baseline" in text
+
+
+# --- Seasonal service boundaries in the cohort digest (EXP-04 / RR:R3) -------
+#
+# A cohort digest is where a liaison decides who to call this week. Telling
+# them a campus system "expired" in the week its term ended sends the wrong
+# call. The movement is still reported and still counts as needing attention;
+# only the sentence changes.
+
+PLANNED_BOUNDARY_FINDING = [{"code": "scorecard_planned_service_boundary", "count": 1}]
+
+
+def test_newly_lapsed_at_a_planned_boundary_is_described_as_a_transition() -> None:
+    write_latest(
+        "campus",
+        "Campus Transit",
+        60.0,
+        "D",
+        days=-5,
+        freshness_details={"seasonal_boundary": True},
+        freshness_findings=PLANNED_BOUNDARY_FINDING,
+    )
+    digest = build_portfolio_digest(
+        ALL, today=TODAY, previous_snapshot={"campus": snap(62.0, "D", 120)}
+    )
+
+    lapsed = [m for m in digest.movements if m.kind == "newly_lapsed"]
+    assert len(lapsed) == 1
+    assert lapsed[0].headline == "Feed reached a scheduled service boundary"
+    assert "distinct service periods" in lapsed[0].detail
+    text = render_portfolio_digest(digest)
+    # Still in the attention section: nothing is hidden from the caseload.
+    assert "## Worth a look" in text
+    assert "expired this week" not in text.lower()
+
+
+def test_newly_expiring_at_a_planned_boundary_drops_the_cliff_edge_line() -> None:
+    write_latest(
+        "term",
+        "Term Transit",
+        70.0,
+        "C",
+        days=20,
+        freshness_details={"seasonal_boundary": True},
+    )
+    digest = build_portfolio_digest(
+        ALL, today=TODAY, previous_snapshot={"term": snap(70.0, "C", 120)}
+    )
+
+    expiring = [m for m in digest.movements if m.kind == "newly_expiring"]
+    assert len(expiring) == 1
+    assert expiring[0].headline == "Feed's service period ends within a month"
+    assert "the week it dies" not in expiring[0].detail
+
+
+def test_an_ordinary_lapse_keeps_its_wording_in_the_cohort_view() -> None:
+    write_latest("plain", "Plain Transit", 60.0, "D", days=-5)
+    digest = build_portfolio_digest(
+        ALL, today=TODAY, previous_snapshot={"plain": snap(62.0, "D", 120)}
+    )
+
+    lapsed = [m for m in digest.movements if m.kind == "newly_lapsed"]
+    assert lapsed and lapsed[0].headline == "Feed expired this week"
+
+
+def test_a_long_dead_seasonal_feed_is_not_softened_in_the_cohort_view() -> None:
+    from scorecard_pipeline.metrics import STALE_FEED_DAYS
+
+    write_latest(
+        "abandoned",
+        "Abandoned Transit",
+        20.0,
+        "F",
+        days=-STALE_FEED_DAYS - 30,
+        freshness_details={"seasonal_boundary": True, "service_type": "seasonal"},
+        freshness_findings=PLANNED_BOUNDARY_FINDING,
+    )
+    digest = build_portfolio_digest(
+        ALL, today=TODAY, previous_snapshot={"abandoned": snap(62.0, "D", 120)}
+    )
+
+    lapsed = [m for m in digest.movements if m.kind == "newly_lapsed"]
+    assert lapsed and lapsed[0].headline == "Feed expired this week"
+    assert digest.snapshot["abandoned"]["planned_boundary"] is False
+
+
+def test_a_snapshot_written_before_this_field_existed_still_diffs() -> None:
+    """Last week's persisted state has no planned_boundary key; that is fine."""
+    write_latest("legacy", "Legacy Transit", 60.0, "D", days=-5)
+    previous = snap(62.0, "D", 120)
+    previous.pop("planned_boundary", None)
+
+    digest = build_portfolio_digest(ALL, today=TODAY, previous_snapshot={"legacy": previous})
+
+    assert [m.kind for m in digest.movements] == ["newly_lapsed"]
+    assert digest.snapshot["legacy"]["planned_boundary"] is False
