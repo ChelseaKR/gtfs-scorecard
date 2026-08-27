@@ -24,6 +24,13 @@ on:
 permissions:
   contents: read
 
+env:
+  # Same backstop as the daily workflow. This tier runs the Java validator only
+  # on feeds that actually changed, but "fewer feeds" is not "no large feeds":
+  # a changed `large_feed` lands here too, so it can take a runner down the same
+  # way. See the note in scorecard.yml for why 10240 and what it does not claim.
+  SCORECARD_VALIDATOR_MEMORY_MB: "10240"
+
 jobs:
   refresh:
     runs-on: ubuntu-latest

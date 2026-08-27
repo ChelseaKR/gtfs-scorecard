@@ -1,6 +1,6 @@
 # Daily scorecard silently skipped four consecutive publishes
 
-**Status:** Resolved
+**Status:** Reopened 2026-08-26, see "Recurrence" at the end
 **Issue:** [#297](https://github.com/ChelseaKR/gtfs-scorecard/issues/297)
 **Severity:** SEV3 (public data went stale for up to a day at a time; the live
 site never served an error, and Intraday refresh kept most of the corpus
@@ -146,3 +146,60 @@ runner down with it, if and when it recurs.
   not assumed here — the original diagnosis explicitly refuted "the feed
   outgrew the runner" as the sole explanation, so changing the heap number
   without new evidence would be guessing, not fixing.
+
+## Recurrence, 2026-08-26
+
+This incident was closed as Resolved. It was not resolved, and the record
+above overstates what the fix accomplished. Both halves are corrected here
+rather than edited above, so the original claim and its correction both stay
+readable.
+
+**The gate fix was applied to half of what the diagnosis named.** The root
+cause section says the condition skipped "`collect` (and, transitively,
+`deploy`)". Remediation item 1 added `if: !cancelled()` to `collect` only.
+`deploy` kept its implicit `if: success()`, which GitHub evaluates over a
+job's whole ancestry rather than over its `needs:` list, so a dead `score`
+shard went on skipping `deploy` exactly as before.
+
+Observed on the three most recent daily runs at the time of writing
+([32975621570](https://github.com/ChelseaKR/gtfs-scorecard/actions/runs/32975621570),
+[32854480196](https://github.com/ChelseaKR/gtfs-scorecard/actions/runs/32854480196),
+[32642725318](https://github.com/ChelseaKR/gtfs-scorecard/actions/runs/32642725318)):
+`collect: success`, `deploy: skipped`.
+
+This was invisible because `Intraday refresh` deploys every three hours and
+kept the live site current, which is the same masking effect the original
+investigation had to see through in the opposite direction. It would have
+become a visible outage the moment that workflow was paused.
+
+**The daily has been red for eight of the last nine scheduled runs**
+(2026-08-18 through 08-26, with a single success on 08-21), failing on the
+same shard at `ovapi-netherlands` with the same "The runner has received a
+shutdown signal". The "What's still open" note above says that if this
+recurred, `SCORECARD_VALIDATOR_MEMORY_MB` should be exercised against the
+failing feed. It recurred five more times and the ceiling was never switched
+on for a scheduled run, because item 3 shipped it opt-in and no scheduled
+workflow set it.
+
+**What changed now**
+
+1. `deploy` gates on `needs.collect.result == 'success'` instead of the
+   implicit ancestry-wide `success()`, finishing item 1.
+2. `SCORECARD_VALIDATOR_MEMORY_MB: "10240"` is set at workflow level in
+   `scorecard.yml` and `refresh.yml`, so both scheduled tiers run the
+   validator under the ceiling that
+   [32508141222](https://github.com/ChelseaKR/gtfs-scorecard/actions/runs/32508141222)
+   verified live against that feed's real data.
+3. Two regression tests in `pipeline/tests/test_workflow_safety.py`, both
+   confirmed to fail against the configuration this repository carried before
+   this change. An opt-in safeguard that no workflow opts into, and a gate fix
+   applied to one job out of two, are both the kind of defect a merge-blocking
+   assertion catches and a prose remediation list does not.
+
+**Still open, unchanged.** The trigger for the runner death remains
+unconfirmed. Nothing here claims to fix it. What changes is the blast radius:
+one agency logged and skipped, rather than the day's publish lost. Whether the
+ceiling actually converts a runner death into a catchable validator failure is
+now testable in production for the first time, and the next occurrence at
+`ovapi-netherlands` is the observation to watch for.
+

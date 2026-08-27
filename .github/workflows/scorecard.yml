@@ -23,6 +23,24 @@ env:
   # At 2,000+ feed records, 32 shards keeps each score job inside the one-hour
   # AWS OIDC session. Override per-run via workflow_dispatch.
   SHARD_COUNT: ${{ github.event.inputs.shards || '32' }}
+  # RELIABILITY (issue #297): a `prlimit --as` ceiling on the validator
+  # subprocess, so an overrun fails the allocating syscall and the JVM exits
+  # with no report.json (already handled as an ordinary per-agency
+  # RuntimeError) instead of the Actions runner itself being killed. Added in
+  # #298 as opt-in and never switched on for a scheduled run, which is why the
+  # daily has stayed red: the shard validating `ovapi-netherlands` keeps dying
+  # with "The runner has received a shutdown signal".
+  #
+  # 10240 MiB is not a guess. It is the value exercised live against that
+  # feed's real current data in run 32508141222, which succeeded at 6,715,340
+  # KB peak RSS, matching the unbounded run alongside it. RLIMIT_AS is virtual
+  # address space rather than resident set, so this sits well above -Xmx by
+  # design; it is a backstop against a genuine runaway, not a tight budget.
+  #
+  # This does not claim to fix the underlying runner death, whose trigger the
+  # incident record says is still unconfirmed. It changes the blast radius
+  # from "the whole day's publish" to "one agency logged and skipped".
+  SCORECARD_VALIDATOR_MEMORY_MB: "10240"
 
 jobs:
   plan:
@@ -537,6 +555,17 @@ jobs:
   # workflow, so deploy explicitly after the refresh.
   deploy:
     needs: collect
+    # RELIABILITY (issue #297, finishing the remediation): `collect` gained
+    # `if: !cancelled()` so a dead shard could not skip the publish, but
+    # `deploy` kept the implicit `if: success()`, which GitHub evaluates over
+    # the whole job ancestry rather than over `needs:` alone. So a failed
+    # `score` shard went on skipping `deploy` even when `collect` succeeded,
+    # which is the second half of what the incident's own root cause described
+    # ("skipping collect (and, transitively, deploy)"). Observed on runs
+    # 32975621570, 32854480196 and 32642725318: `collect: success`,
+    # `deploy: skipped`. Gate on `collect`'s own result instead, so this job
+    # tracks the thing it actually depends on.
+    if: ${{ !cancelled() && needs.collect.result == 'success' }}
     permissions:
       contents: read
       pages: write
