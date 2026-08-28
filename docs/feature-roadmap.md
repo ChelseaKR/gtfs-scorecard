@@ -149,6 +149,11 @@ existing surface without changing a grade or adding a service:
   The inventory refuses a `Finding(...)` site whose copy it cannot read, so the
   gate's coverage cannot narrow again silently. No threshold, score, grade or
   schema moved (ADR 0048).
+- **Shipped 2026-08-27:** the complexity register is checked against ruff
+  instead of by hand (#309), and the published weight-sensitivity study grades
+  the published score rather than the raw weighted average (#310). Both were
+  controls that read as enforcement and could not fail over the thing they
+  covered (ADR 0050).
 - **Next only through curation:** work the European candidate queue toward the
   beta gate in [`global-expansion.md`](global-expansion.md). Feed count alone
   does not pass source, license, identity, freshness, or country-spread review.

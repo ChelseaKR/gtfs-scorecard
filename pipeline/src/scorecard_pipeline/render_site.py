@@ -93,7 +93,7 @@ from .rule_links import (
     RuleLink,
     rule_link_for,
 )
-from .score import letter_grade
+from .score import letter_grade, published_score
 from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
     _SOCIAL_IMAGE_HEIGHT,
     _SOCIAL_IMAGE_URL,
@@ -978,8 +978,12 @@ def _feeddiff_section(
 
 def _grade_band(score: float) -> str:
     """Map a 0-100 score to a grade-band token (a/b/c/d/f) for bar color: the
-    rubric's own letter (score.GRADE_BANDS), lowercased."""
-    return letter_grade(score).lower()
+    rubric's own letter (score.GRADE_BANDS), lowercased.
+
+    Rounds through ``published_score`` first. Callers pass an already-published
+    score, so this changes no output; it keeps every letter in the package on
+    the one path, which is what ``test_published_grade_path.py`` asserts."""
+    return letter_grade(published_score(score)).lower()
 
 
 def _accessibility_score(comp_cat: dict[str, Any]) -> float | None:

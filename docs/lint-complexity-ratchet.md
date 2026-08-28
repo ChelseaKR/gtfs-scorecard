@@ -67,9 +67,19 @@ them carries a suppression any more.
 
 ## Plan
 
+**Checked, not remembered (2026-08-27).** `pipeline/tests/test_complexity_ratchet.py`
+compares this file with what ruff reports on every run: a function over the
+floor with no row, a row for a function no longer over the floor, a recorded
+number that disagrees, a table out of its declared order, a `# noqa: C901` with
+no row, and a figure quoted in this prose that has drifted all fail, and the
+failure prints the regenerated table so a sync is a copy-paste. File and line
+are deliberately not gated; they churn on every unrelated edit above a
+function. Issue #309; the check found the `render_site` figure in the paragraph
+below still reading 54 against ruff's 55.
+
 Ratchet down opportunistically: when touching any function above for a
 feature/bugfix, refactor it under the threshold and delete its row rather
-than editing around it. `render_site` (54), `parse_agencies` (36) and
+than editing around it. `render_site` (55), `parse_agencies` (36) and
 `propose_agencies_with_dispositions` (32) are the highest-value targets given
 how far over the floor they sit. Re-run
 `ruff check --statistics` after each removal to confirm the count only goes
