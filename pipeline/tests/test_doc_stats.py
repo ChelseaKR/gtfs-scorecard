@@ -207,3 +207,75 @@ def test_optional_rules_name_only_files_that_may_be_absent() -> None:
             == 0
         )
         assert not tracked, f"{rel_path} is tracked; use RULES"
+
+
+# --- a rule naming a file that vanished ------------------------------------
+
+
+def _isolate(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Run main() over just the rule list under test.
+
+    The corpus counts and the ungated-figure sweep have their own tests above;
+    holding them still here keeps this one about the missing-file branch.
+    """
+    monkeypatch.setattr(doc_stats, "registry_count", lambda: 2000)
+    monkeypatch.setattr(doc_stats, "published_counts", lambda: (2000, 2000, "2026-08-07"))
+    monkeypatch.setattr(doc_stats, "europe_counts", lambda: (500, 25))
+    monkeypatch.setattr(doc_stats, "swept_docs", list)
+    monkeypatch.setattr(doc_stats, "POINT_IN_TIME", [])
+    monkeypatch.setattr(doc_stats, "RULES", [])
+    monkeypatch.setattr(doc_stats, "OPTIONAL_RULES", [])
+
+
+def test_a_rule_naming_a_missing_required_file_fails_the_gate(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The loop that reads the rules used to `continue` past any missing file,
+    with a comment claiming a missing required doc "still raises". Nothing in
+    the loop told the two lists apart, so it did not: renaming README.md or
+    docs/roadmap.md silently removed those claims from the gate, and only the
+    printed `checked` count moved. A gate that stops checking without saying so
+    is the defect this whole script exists to prevent, one level up."""
+    _isolate(monkeypatch)
+    monkeypatch.setattr(
+        doc_stats,
+        "RULES",
+        [
+            (
+                r"docs/this-document-does-not-exist.md",
+                r"more than ([\d,]+)\s+feed records",
+                "registry",
+                "floor",
+            )
+        ],
+    )
+
+    assert doc_stats.main() == 1
+
+    out = capsys.readouterr().out
+    assert "docs/this-document-does-not-exist.md" in out
+    assert "does not exist" in out
+
+
+def test_a_rule_naming_a_missing_optional_file_is_still_skipped(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """OPTIONAL_RULES keeps its skip: AGENTS.md is in .git/info/exclude, so CI
+    genuinely does not have it. The skip is now counted and printed rather than
+    being invisible."""
+    _isolate(monkeypatch)
+    monkeypatch.setattr(
+        doc_stats,
+        "OPTIONAL_RULES",
+        [
+            (
+                r"NOT-IN-ANY-CHECKOUT.md",
+                r"more than ([\d,]+)\s+feed records",
+                "registry",
+                "floor",
+            )
+        ],
+    )
+
+    assert doc_stats.main() == 0
+    assert "1 optional rule(s) skipped" in capsys.readouterr().out
