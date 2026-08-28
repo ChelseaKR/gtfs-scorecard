@@ -92,6 +92,10 @@ not. #309 already names the repo's own precedent for the fix.
 runs died over roughly 20 hours on one feed's artifact and the traceback did not
 say which feed.
 
+**Depends on Phase 3**, which this file first called independent. Naming the
+feed edits `render_site`, which moves rows in the complexity register Phase 3
+makes enforceable, so the two are one stack.
+
 ## Track A continued: numbers and denominators that do not mislead
 
 ### Phase 5 (2026 Q4) — Say that the public corpus aggregates exclude realtime feeds
@@ -197,6 +201,36 @@ realtime archive, public agency or vendor rankings, a replacement ticket system,
 consumer-app scraping, a broad multimodal index without a named place-level
 user, AI-generated fixes in the graded or automatically verified path, and
 coverage growth used as a success measure by itself.
+
+## Delivery status, 2026-08-27
+
+Phases 1 to 6 have been built and each has an open pull request. Nothing here
+is merged, and nothing was deployed, tagged, or released.
+
+| Phase | State | Where |
+| --- | --- | --- |
+| 1. Plain-language gate reads every finding | Built | PR #316, ADR 0048 |
+| 2. Gate reads the assembled reader copy | Built | PR #317, ADR 0049 |
+| 3. Two controls made able to fail | Built | PR #318, ADR 0050 |
+| 4. A failure names the feed | Built | PR #319 |
+| 5. Disclose the realtime cohort exclusion | Built | PR #320, ADR 0051 |
+| 6. Publish the NTD reporter denominator | Built | PR #321, ADR 0052 |
+| 7 to 10. The closure proof | Not started, gated on people | see Track B |
+
+Two corrections to this plan, made while building it rather than after:
+
+- **Phase 4 depends on Phase 3, which this file first called independent.**
+  Naming the feed edits `render_site`, which moves rows in the complexity
+  register that Phase 3 makes enforceable. They are one stack, and Phase 4's PR
+  is based on Phase 3's.
+- **Phase 2's description was wrong in two places**, corrected above and in
+  ADR 0049: the recommendation block needed no work, and the remaining copy is
+  assembled at run time rather than written at a site.
+
+Phase 5 ships one of the three options issue #248 records. The other two re-base
+a published methodology number and go through the shadow-scoring path with a
+methodology announcement, so they stay the maintainer's decision; ADR 0051 keeps
+both visible rather than letting the cheapest option foreclose them.
 
 ## How to read a phase
 
