@@ -177,13 +177,12 @@ def fares_v2_findings_for(profile: FaresV2Profile) -> list[Finding]:
                 code="scorecard_fares_v2_no_rider_categories",
                 severity="INFO",
                 count=0,
-                what="The feed publishes fare products but no rider_categories.txt "
-                "defining who qualifies for each fare.",
-                why="Without rider categories, apps can only show the full adult "
-                "fare and can't surface senior, youth, or student discounts a "
-                "rider may be eligible for.",
-                fix="Add rider_categories.txt for the fares you already offer, then "
-                "reference those categories from your fare products.",
+                what="The feed lists fare products but has no rider_categories.txt "
+                "to say who each fare is for.",
+                why="Apps can only show the full adult fare. Riders who qualify for a "
+                "senior, youth, or student discount never see it.",
+                fix="Add rider_categories.txt for the fares you already offer. Then "
+                "point your fare products at those categories.",
                 effort="Usually a short file naming the discount groups you already publish.",
                 deduction=0.0,
             )
@@ -196,9 +195,8 @@ def fares_v2_findings_for(profile: FaresV2Profile) -> list[Finding]:
                 count=0,
                 what="The feed publishes fare products but no fare_media.txt "
                 "declaring how riders can pay.",
-                why="Riders can't tell from the feed which payment methods you "
-                "accept, such as a transit card, a mobile app, or tap-to-pay with "
-                "a contactless bank card.",
+                why="Riders can't tell from the feed which payment methods you take. "
+                "A transit card, a phone app, and tap-to-pay all look the same.",
                 fix="Add fare_media.txt listing your accepted payment methods, "
                 "including contactless EMV if riders can tap to pay.",
                 effort="A short file; one row per payment method you accept.",

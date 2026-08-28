@@ -2,6 +2,8 @@
 
 Last updated: 2026-07-25
 
+The multiyear arc across all of these is [`multiyear-plan.md`](multiyear-plan.md).
+
 This is the ordered delivery list for the next 90 days. It implements the
 proof-first direction in [`product-roadmap.md`](product-roadmap.md) and uses the
 operating gates in [`roadmap.md`](roadmap.md). Earlier FIX, EXP, and RR lists are
@@ -138,6 +140,15 @@ existing surface without changing a grade or adding a service:
   event a planned transition. Wording only, on the opt-in alert channel and the
   weekly cohort digest: no tier, ordering, grade, or public page moved
   (ADR 0047).
+- **Shipped 2026-08-27:** the plain-language readability gate now reads every
+  finding the scorecard publishes, not only the curated validator translations.
+  The findings the pipeline authors itself (accessibility, completeness, fares,
+  flexible service, pathways, routability, realtime, freshness) were half the
+  finding copy on an agency page and had never been measured by the gate that
+  exists to measure it; 23 strings missed the existing bars and were rewritten.
+  The inventory refuses a `Finding(...)` site whose copy it cannot read, so the
+  gate's coverage cannot narrow again silently. No threshold, score, grade or
+  schema moved (ADR 0048).
 - **Next only through curation:** work the European candidate queue toward the
   beta gate in [`global-expansion.md`](global-expansion.md). Feed count alone
   does not pass source, license, identity, freshness, or country-spread review.

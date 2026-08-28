@@ -82,23 +82,23 @@ def pathways_findings(profile: PathwaysProfile) -> list[Finding]:
                 what="This feed models stations or entrances but has no pathways.txt.",
                 why="Trip planners can't guide riders through the station, and there "
                 "is no step-free route information for wheelchair users.",
-                fix="Add pathways.txt connecting entrances, platforms, and any "
-                "elevators, with a level for each.",
+                fix="Add pathways.txt to link entrances, platforms, and elevators. "
+                "Give each one a level.",
                 effort="Worth it for multi-level or large stations; flat stops don't need it.",
                 deduction=0.0,
             )
         ]
     detail = (
-        "including step-free (elevator) routes"
+        "It includes step-free routes with an elevator."
         if profile.has_step_free
-        else "without an elevator route described"
+        else "No elevator route is described."
     )
     return [
         Finding(
             code="scorecard_station_pathways",
             severity="INFO",
             count=profile.pathway_count,
-            what=f"This feed describes station pathways, {detail}.",
+            what=f"This feed maps paths inside its stations. {detail}",
             why="Riders can be routed through the station, and wheelchair users can "
             "see whether a step-free route exists.",
             fix="No action needed."

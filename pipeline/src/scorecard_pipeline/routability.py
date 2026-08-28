@@ -128,8 +128,8 @@ def assess_routability(gtfs_zip_path: str) -> RoutabilityProfile:
                 severity="WARNING",
                 count=single_stop_trips,
                 what=f"{single_stop_trips} of {len(trip_ids)} trips list fewer than two stops.",
-                why="A trip with one stop has no leg a rider can ride; trip planners "
-                "can't route anyone on it, so the service effectively does not exist.",
+                why="A trip with one stop has no ride in it. Trip planners can't put "
+                "a rider on that trip at all.",
                 fix="Check your scheduling export: every trip should list each stop it "
                 "calls at, in order, with times.",
                 effort="Usually an export setting or a stop_times mapping in your software.",
