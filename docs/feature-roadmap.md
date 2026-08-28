@@ -154,6 +154,9 @@ existing surface without changing a grade or adding a service:
   the published score rather than the raw weighted average (#310). Both were
   controls that read as enforcement and could not fail over the thing they
   covered (ADR 0050).
+- **Shipped 2026-08-27:** a render failure names the feed it happened to
+  (#308). Re-raised with the slug, never swallowed; whether one bad artifact
+  should abort the whole site render is left as a separate product call.
 - **Next only through curation:** work the European candidate queue toward the
   beta gate in [`global-expansion.md`](global-expansion.md). Feed count alone
   does not pass source, license, identity, freshness, or country-spread review.
