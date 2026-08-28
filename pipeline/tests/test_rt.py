@@ -137,7 +137,7 @@ class TestScoring:
         assert result.details["kinds_reachable"] == 1
         assert result.details["coverage_pct"] is None
         assert "scheduled_trips_in_window" not in result.details
-        assert "1 of 1 configured feed healthy" in result.summary
+        assert "1 of 1 configured feed was healthy" in result.summary
         assert "outside service hours" not in result.summary
         codes = {finding.code for finding in result.findings}
         assert "scorecard_rt_trip_updates_unreachable" not in codes
@@ -154,7 +154,7 @@ class TestScoring:
         )
 
         assert result.score == 100.0
-        assert "vehicle position plausibility was not measurable" in result.summary
+        assert "We could not check whether vehicles were on their route" in result.summary
 
     def test_vehicle_positions_only_stale_deduction_matches_score_loss(self) -> None:
         result = realtime(
@@ -231,7 +231,7 @@ class TestScoring:
         assert result.score == 100.0
         assert result.details["coverage_pct"] == 100.0
         assert result.findings == []
-        assert "1 of 1 configured feed healthy" in result.summary
+        assert "1 of 1 configured feed was healthy" in result.summary
 
     def test_trip_updates_only_half_coverage_deduction_matches_score_loss(self) -> None:
         result = realtime(
@@ -564,7 +564,7 @@ class TestScoring:
         assert result.details["vehicles_on_route_pct"] == 91.7
         assert result.details["drift"]["on_time_share_pct"] == 66.7
         assert "66.7% of scheduled trips had live predictions" in result.summary
-        assert "91.7% of vehicles on their route" in result.summary
+        assert "91.7% of vehicles were on their route" in result.summary
 
     def test_every_finding_the_category_can_emit_is_publishable(self) -> None:
         # Same contract as the freshness findings: the artifact schema requires

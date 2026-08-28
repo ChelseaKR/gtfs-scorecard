@@ -705,29 +705,33 @@ def _realtime_summary(
     plausible_fraction: float | None,
     drift: DriftStats | None,
 ) -> str:
-    """The plain-language one-liner shown above the realtime findings."""
-    feed_word = "feed" if len(assessed_kinds) == 1 else "feeds"
+    """The plain-language paragraph shown above the realtime findings.
+
+    One short sentence per thing measured. This used to be a single
+    semicolon-joined clause list, which read as one 25-word sentence and could
+    not clear the plain-language bars the gate applies to every other sentence
+    on the page (ADR 0049).
+    """
+    feed_word = "feed was" if len(assessed_kinds) == 1 else "feeds were"
+    times = "once" if len(window.samples) == 1 else f"{len(window.samples)} times"
+    outside_hours = coverage_fraction is None and "trip_updates" in assessed_kinds and not scheduled
+    when = f"Sampled {times}, outside service hours." if outside_hours else f"Sampled {times}."
     bits = [
-        f"Sampled {len(window.samples)} times: {kinds_ok} of "
-        f"{len(assessed_kinds)} configured {feed_word} healthy"
+        when,
+        f"{kinds_ok} of {len(assessed_kinds)} configured {feed_word} healthy.",
     ]
     if coverage_fraction is not None:
-        bits.append(f"{details['coverage_pct']}% of scheduled trips had live predictions")
-    elif "trip_updates" in assessed_kinds and not scheduled:
-        bits[0] = (
-            f"Sampled {len(window.samples)} times outside service hours: "
-            f"{kinds_ok} of {len(assessed_kinds)} configured {feed_word} healthy"
-        )
+        bits.append(f"{details['coverage_pct']}% of scheduled trips had live predictions.")
     if plausible_fraction is not None:
-        bits.append(f"{details['vehicles_on_route_pct']}% of vehicles on their route")
+        bits.append(f"{details['vehicles_on_route_pct']}% of vehicles were on their route.")
     elif "vehicle_positions" in assessed_kinds:
-        bits.append("vehicle position plausibility was not measurable")
+        bits.append("We could not check whether vehicles were on their route.")
     if "trip_updates" in assessed_kinds and drift is not None:
         bits.append(
-            f"predictions ran a median of {abs(drift.median_seconds)}s "
-            f"{'behind' if drift.median_seconds >= 0 else 'ahead of'} schedule"
+            f"Predictions ran a median of {abs(drift.median_seconds)}s "
+            f"{'behind' if drift.median_seconds >= 0 else 'ahead of'} schedule."
         )
-    return "; ".join(bits) + "."
+    return " ".join(bits)
 
 
 def realtime(

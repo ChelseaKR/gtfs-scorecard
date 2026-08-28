@@ -390,7 +390,7 @@ def test_summary_states_presence_not_usability(make_gtfs_zip: Callable[..., Path
     # The accessibility number is presence, not a usability check; say so, and
     # never collapse "marked not accessible" into the populated share.
     result = completeness(str(make_gtfs_zip(COMPLETE_FEED)))
-    assert "not whether a stop is physically usable" in result.summary
+    assert "not whether a stop can be used" in result.summary
     assert result.details["accessibility_measures"] == "presence_not_usability"
     assert "wheelchair_marked_not_accessible_pct" in result.details
 

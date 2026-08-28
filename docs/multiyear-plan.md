@@ -67,7 +67,14 @@ A finding is not the only prose on the page. Each scored category carries a
 `consequence.py` carries the impact sentences. Same promise, same bars, same
 fail-closed inventory, one family at a time.
 
-**Depends on Phase 1.**
+**Depends on Phase 1.** Delivered with two corrections to this description,
+recorded in ADR 0049. The recommendation block needed no work: it re-serializes
+findings Phase 1 already gates. And the remaining copy is assembled at run time
+rather than written at a site, so source reading could not see it; it is
+measured by exhausting each producer's branches instead, with a check that fails
+when a producer gains wording its input set does not reach. Two families are
+still uncovered and are named in ADR 0049: the page chrome in `render_site.py`
+and `site_shell.py`, and the 41 authored fix guides in `docs/fixes/`.
 
 ### Phase 3 (2026 Q3) — Two guardrails that cannot currently fail
 

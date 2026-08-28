@@ -149,6 +149,13 @@ existing surface without changing a grade or adding a service:
   The inventory refuses a `Finding(...)` site whose copy it cannot read, so the
   gate's coverage cannot narrow again silently. No threshold, score, grade or
   schema moved (ADR 0048).
+- **Shipped 2026-08-27:** the plain-language gate extended to reader copy the
+  pipeline assembles at run time: the four category summaries, the realtime lead
+  sentence, and the consequence prose. Measured by exhausting each producer's
+  branches rather than by reading source, with a check that fails when a
+  producer gains wording its input set does not reach. 294 strings gated, up
+  from 232. The recommendation block needed no work; it re-serializes findings
+  already gated (ADR 0049).
 - **Next only through curation:** work the European candidate queue toward the
   beta gate in [`global-expansion.md`](global-expansion.md). Feed count alone
   does not pass source, license, identity, freshness, or country-spread review.

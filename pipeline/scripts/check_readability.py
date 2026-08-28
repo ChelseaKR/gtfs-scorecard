@@ -10,13 +10,12 @@ stay above MIN_FLESCH. Pure Python, no dependencies. Run from pipeline/:
 
     uv run python scripts/check_readability.py
 
-The inventory is ``scorecard_pipeline.reader_copy``, which covers two families:
-the curated wording in ``notices.TRANSLATIONS``, and the findings the pipeline
-authors itself at each ``Finding(...)`` site (accessibility, completeness,
-fares, flexible service, pathways, routability, realtime, freshness). Until
-2026-08-27 this gate read only the first family, so about half the finding
-strings on an agency page were never measured by the check that exists to
-measure them.
+The inventory is ``scorecard_pipeline.reader_copy``, which covers three
+families: the curated wording in ``notices.TRANSLATIONS``; the copy the pipeline
+authors at a construction site, meaning every ``Finding(...)`` and the
+``summary`` sentence on every scored ``CategoryResult(...)``; and the copy
+assembled at run time by a registered producer, measured over an input set that
+reaches every branch. Until 2026-08-27 this gate read only the first family.
 
 Effort hints are excluded: they are fragments ("One setting."), not prose. The
 generated fallback for an uncurated notice code is also excluded, because it is
@@ -138,21 +137,19 @@ def main() -> int:
         fails.extend(report_string(string))
     report_deferred(deferred)
 
-    counts = {
-        provenance: sum(1 for s in strings if s.provenance == provenance)
-        for provenance in ("curated", "authored")
-    }
+    families = ("curated", "authored", "assembled")
+    counts = {family: sum(1 for s in strings if s.provenance == family) for family in families}
     print()
     if fails:
         print(f"{len(fails)} FAILURES:")
         for f in fails:
             print("  -", f)
         return 1
+    breakdown = ", ".join(f"{counts[family]} {family}" for family in families)
     print(
-        f"All {len(strings)} reader-facing finding strings clear the plain-language "
+        f"All {len(strings)} reader-facing strings clear the plain-language "
         f"bars (avg sentence <= {MAX_AVG_SENTENCE_WORDS:.0f} words, "
-        f"Flesch >= {MIN_FLESCH:.0f}): "
-        f"{counts['curated']} curated, {counts['authored']} authored."
+        f"Flesch >= {MIN_FLESCH:.0f}): {breakdown}."
     )
     return 0
 

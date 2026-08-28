@@ -90,11 +90,11 @@ class TestCorrectness:
             )
         )
         assert "3 kinds" in flagged.summary
-        assert "9 instances" in flagged.summary
-        assert "(2 error, 3 warning, 4 informational)" in flagged.summary
+        assert "There are 9 in all" in flagged.summary
+        assert "2 are errors, 3 are warnings, and 4 are notes" in flagged.summary
         assert "no problems" not in flagged.summary
         single = correctness(report(NoticeGroup("a", "ERROR", 1)))
-        assert "1 kind of issue across 1 instance " in single.summary
+        assert "1 kind of issue in this feed. There is 1 in all" in single.summary
         # A feed with nothing flagged says so, and only then.
         assert "no problems" in correctness(report()).summary
 

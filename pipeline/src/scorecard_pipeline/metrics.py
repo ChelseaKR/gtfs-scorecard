@@ -147,10 +147,10 @@ def correctness(report: ValidationReport) -> CategoryResult:
         total = counts["ERROR"] + counts["WARNING"] + counts["INFO"]
         summary = (
             f"The MobilityData validator flagged {n_codes} "
-            f"{'kind' if n_codes == 1 else 'kinds'} of issue across {total} "
-            f"{'instance' if total == 1 else 'instances'} "
-            f"({counts['ERROR']} error, {counts['WARNING']} warning, "
-            f"{counts['INFO']} informational)."
+            f"{'kind' if n_codes == 1 else 'kinds'} of issue in this feed. "
+            f"There {'is' if total == 1 else 'are'} {total} in all, of which "
+            f"{counts['ERROR']} are errors, "
+            f"{counts['WARNING']} are warnings, and {counts['INFO']} are notes."
         )
     return CategoryResult(
         name="correctness",
@@ -391,8 +391,8 @@ def freshness(dates: FeedDates, today: dt.date, service_type: str = "fixed") -> 
         return CategoryResult(
             name="freshness",
             score=0.0,
-            summary="No service end date could be found in this feed, so there is "
-            "no way to know when riders will lose trip planning.",
+            summary="No service end date was found in this feed. So there is no way "
+            "to know when riders will lose trip planning.",
             findings=[
                 Finding(
                     code="scorecard_no_expiry_date",

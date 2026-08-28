@@ -29,6 +29,20 @@ the declared public surface).
 
 ### Changed
 
+- **The plain-language gate now also reads the copy assembled at run time.**
+  ADR 0048 covered every `Finding(...)` site by reading source. The category
+  summaries, the realtime lead sentence and the consequence prose are not
+  written whole at a site: they are assembled from clauses chosen by what a feed
+  contained, so source reading cannot see them. They are now measured by running
+  each producer over an input set that reaches every branch, with every authored
+  fragment in the producer's source required to appear in some output, so the
+  input set cannot fall behind the code. The gate reads 294 strings across three
+  families where it read 232 across two. `_realtime_summary` was the worst text
+  on the page by the project's own measure, a semicolon-joined clause list at
+  Flesch -9.8; it is now one short sentence per thing measured. The
+  recommendation block turned out to need no work: it re-serializes findings ADR
+  0048 already gates (ADR 0049).
+
 - **The plain-language gate now reads every finding the scorecard publishes.**
   `make verify` has run `scripts/check_readability.py` since FIX-08 landed on
   2026-07-02, and it measured `notices.TRANSLATIONS` only. That is one of two

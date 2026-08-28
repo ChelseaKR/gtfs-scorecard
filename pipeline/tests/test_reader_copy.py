@@ -18,14 +18,20 @@ from typing import Any
 
 import pytest
 
+from scorecard_pipeline import reader_copy as reader_copy_module
 from scorecard_pipeline.notices import TRANSLATIONS
 from scorecard_pipeline.reader_copy import (
     COPY_FIELDS,
     MAX_VARIANTS,
     RUNTIME_VALUE,
+    Producer,
+    UnmeasuredFragment,
     UnreadableCopy,
+    assembled_copy,
     authored_finding_copy,
+    authored_fragments,
     curated_copy,
+    producer_labels,
     reader_copy,
 )
 
@@ -80,8 +86,13 @@ def test_real_package_is_fully_accounted_for() -> None:
     curated = [s for s in strings if s.provenance == "curated"]
     assert authored, "the authored family must not be empty"
     assert len(curated) == len(TRANSLATIONS) * len(COPY_FIELDS)
-    # Both deferral reasons are in use, and each one names why.
-    assert {site.provenance for site in deferred} == {"curated_table", "republished"}
+    assert [s for s in strings if s.provenance == "assembled"], "producers must contribute"
+    # Every deferral reason is in use, and each one names why.
+    assert {site.provenance for site in deferred} == {
+        "curated_table",
+        "republished",
+        "produced",
+    }
     assert all(site.reason for site in deferred)
 
 
@@ -146,12 +157,35 @@ def test_name_assigned_once_in_the_function_resolves(tmp_path: Path) -> None:
     assert texts["sample_code.what#2"] == "Paths are mapped. No elevator."
 
 
-def test_name_assigned_twice_is_ambiguous_and_refused(tmp_path: Path) -> None:
-    """Two assignments means the inventory cannot know which sentence ships."""
+def test_every_branch_of_a_name_is_a_reading(tmp_path: Path) -> None:
+    """A sentence chosen by an if/elif chain is measured once per branch.
+
+    ADR 0048 refused a name assigned more than once. That refused the category
+    summaries, which are chosen exactly that way, so ADR 0049 reads all of them
+    instead. More coverage, not less: an unreadable assignment still refuses.
+    """
     body = (
         "def build():\n"
         '    detail = "First."\n'
-        '    detail = "Second."\n'
+        "    if x:\n"
+        '        detail = "Second."\n'
+        '    return Finding(code="sample_code", severity="INFO", count=1,\n'
+        '                   what=detail, why="Why.", fix="Fix.",\n'
+        '                   effort="None.", deduction=0.0)\n'
+    )
+    pkg = _package(tmp_path, body)
+    texts = _texts(pkg)
+    assert texts["sample_code.what#1"] == "First."
+    assert texts["sample_code.what#2"] == "Second."
+
+
+def test_one_unreadable_branch_refuses_the_whole_name(tmp_path: Path) -> None:
+    """A name is only as readable as its least readable assignment."""
+    body = (
+        "def build():\n"
+        '    detail = "First."\n'
+        "    if x:\n"
+        "        detail = build_it()\n"
         '    return Finding(code="sample_code", severity="INFO", count=1,\n'
         '                   what=detail, why="Why.", fix="Fix.",\n'
         '                   effort="None.", deduction=0.0)\n'
@@ -159,6 +193,38 @@ def test_name_assigned_twice_is_ambiguous_and_refused(tmp_path: Path) -> None:
     pkg = _package(tmp_path, body)
     with pytest.raises(UnreadableCopy, match="cannot read what="):
         authored_finding_copy(pkg)
+
+
+def test_a_name_bound_to_itself_refuses_rather_than_recursing(tmp_path: Path) -> None:
+    body = (
+        "def build():\n"
+        '    detail = "First."\n'
+        "    detail = detail\n"
+        '    return Finding(code="sample_code", severity="INFO", count=1,\n'
+        '                   what=detail, why="Why.", fix="Fix.",\n'
+        '                   effort="None.", deduction=0.0)\n'
+    )
+    pkg = _package(tmp_path, body)
+    with pytest.raises(UnreadableCopy, match="cannot read what="):
+        authored_finding_copy(pkg)
+
+
+def test_an_assignment_inside_a_nested_function_stays_in_its_own_scope(
+    tmp_path: Path,
+) -> None:
+    """A helper's local must not become a reading of the outer sentence."""
+    body = (
+        "def build():\n"
+        '    detail = "Outer."\n'
+        "    def helper():\n"
+        '        detail = "Inner."\n'
+        "        return detail\n"
+        '    return Finding(code="sample_code", severity="INFO", count=1,\n'
+        '                   what=detail, why="Why.", fix="Fix.",\n'
+        '                   effort="None.", deduction=0.0)\n'
+    )
+    pkg = _package(tmp_path, body)
+    assert _texts(pkg)["sample_code.what"] == "Outer."
 
 
 def test_unreadable_expression_raises_naming_file_line_and_field(tmp_path: Path) -> None:
@@ -264,3 +330,101 @@ def test_the_gate_still_fails_a_string_that_misses_a_bar() -> None:
         "of the operational calendar."
     )
     assert len(gate.check_text("synthetic", dense)) == 2
+
+
+# --- copy assembled at run time (ADR 0049) ------------------------------------
+
+
+def test_producers_cover_every_registered_assembler() -> None:
+    """Each producer emits at least one sentence, and every fragment is reached."""
+    strings = assembled_copy()
+    labels = {s.label.split("#")[0] for s in strings}
+    assert labels == producer_labels()
+    assert all(s.provenance == "assembled" for s in strings)
+
+
+def test_producer_labels_match_the_registry() -> None:
+    assert "_realtime_summary" in producer_labels()
+    assert "reach_sentence" in producer_labels()
+
+
+def test_authored_fragments_reads_phrases_and_conditional_words() -> None:
+    def sample(late: bool, count: int) -> str:
+        """A docstring, which is not reader copy."""
+        kind = "trip_updates"
+        assert kind == "trip_updates"
+        return f"Predictions ran {count}s {'behind' if late else 'ahead of'} schedule."
+
+    fragments = authored_fragments(sample)
+    assert "Predictions ran " in fragments
+    assert "behind" in fragments
+    assert "ahead of" in fragments
+    # A docstring and a bare identifier are not prose.
+    assert "A docstring, which is not reader copy." not in fragments
+    assert "trip_updates" not in fragments
+
+
+def test_an_unreached_fragment_raises_naming_it(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The producer's input set cannot quietly fall behind its own wording."""
+
+    def only_one_branch() -> str:
+        return "The measured branch."
+
+    def both_branches(second: bool) -> str:
+        return "The unreached branch." if second else "The measured branch."
+
+    producer = Producer("sample", lambda: [only_one_branch()], (both_branches,))
+    monkeypatch.setattr(reader_copy_module, "_producers", lambda: (producer,))
+    with pytest.raises(UnmeasuredFragment) as excinfo:
+        assembled_copy()
+    assert "The unreached branch." in str(excinfo.value)
+    assert "both_branches" in str(excinfo.value)
+
+
+def test_run_time_numbers_do_not_split_one_sentence_into_many(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Two outputs differing only in counts are one measured sentence."""
+
+    def sentence(n: int) -> str:
+        return f"Sampled {n} times."
+
+    producer = Producer("sample", lambda: [sentence(3), sentence(41)], (sentence,))
+    monkeypatch.setattr(reader_copy_module, "_producers", lambda: (producer,))
+    strings = assembled_copy()
+    assert [s.text for s in strings] == [f"Sampled {RUNTIME_VALUE} times."]
+
+
+def test_a_category_summary_from_an_unregistered_call_is_refused(tmp_path: Path) -> None:
+    """Only a registered producer accounts for an assembled summary."""
+    body = (
+        "def build():\n"
+        '    return CategoryResult(name="realtime", score=1.0,\n'
+        "                          summary=some_other_builder(), findings=[])\n"
+    )
+    pkg = tmp_path / "pkg"
+    pkg.mkdir()
+    (pkg / "sample.py").write_text(
+        "from scorecard_pipeline.metrics import CategoryResult\n\n\n" + body, encoding="utf-8"
+    )
+    with pytest.raises(UnreadableCopy, match="cannot read summary="):
+        authored_finding_copy(pkg)
+
+
+def test_a_category_summary_from_a_registered_producer_is_deferred(tmp_path: Path) -> None:
+    body = (
+        "def build():\n"
+        '    return CategoryResult(name="realtime", score=1.0,\n'
+        "                          summary=_realtime_summary(), findings=[])\n"
+    )
+    pkg = tmp_path / "pkg"
+    pkg.mkdir()
+    (pkg / "sample.py").write_text(
+        "from scorecard_pipeline.metrics import CategoryResult\n\n\n" + body, encoding="utf-8"
+    )
+    strings, deferred = authored_finding_copy(pkg)
+    assert not strings
+    assert [site.provenance for site in deferred] == ["produced"]
+    assert "_realtime_summary" in deferred[0].reason

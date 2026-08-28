@@ -544,8 +544,8 @@ _REACH_ABSENCE: dict[str, str] = {
         "What this one counts is not stops, routes, or trips, so there is no network share."
     ),
     VALIDATOR_NOTICE: (
-        "This is a validator notice, and the validator decides what each instance covers, "
-        "so no share of the network can be read from it here."
+        "This is a validator notice. The validator decides what each instance covers, "
+        "so no share of the network can be read from it."
     ),
     UNMAPPED_FINDING: (
         "This finding has no reviewed denominator yet, so no share is reported for it."
@@ -555,8 +555,8 @@ _REACH_ABSENCE: dict[str, str] = {
 
 _RIDERSHIP_ABSENCE: dict[str, str] = {
     OUTSIDE_RIDERSHIP_SCOPE: (
-        "Rider-trip figures come from the United States National Transit Database, "
-        "which does not cover this feed's country."
+        "Rider-trip counts come from the United States National Transit Database. "
+        "It does not cover this feed's country."
     ),
     NO_RIDERSHIP_DATA: "No ridership snapshot was supplied, so annual rider-trips are not known.",
     NO_NTD_ID: (
@@ -564,8 +564,8 @@ _RIDERSHIP_ABSENCE: dict[str, str] = {
         "are not known for it."
     ),
     DUPLICATE_NTD_REPORTER: (
-        "More than one feed record claims this National Transit Database reporter, so its "
-        "rider-trips are held back rather than counted against any single feed."
+        "More than one feed record claims this National Transit Database reporter. "
+        "Its rider-trips are held back rather than counted against any one feed."
     ),
     UNMATCHED_NTD_ID: (
         "The ridership snapshot has no row for this feed's National Transit Database ID."

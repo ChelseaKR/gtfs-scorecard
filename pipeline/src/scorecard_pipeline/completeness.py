@@ -481,10 +481,10 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
         summary = f"This feed has no stops to state wheelchair accessibility for. {fares_sentence}"
     else:
         summary = (
-            f"{round(wb * 100)}% of stops state wheelchair accessibility "
-            f"({round(wb_accessible * 100)}% marked accessible, "
-            f"{round(wb_not_accessible * 100)}% marked not accessible). This measures what "
-            f"the feed publishes, not whether a stop is physically usable. {fares_sentence}"
+            f"{round(wb * 100)}% of stops say whether a wheelchair user can board "
+            f"({round(wb_accessible * 100)}% yes, "
+            f"{round(wb_not_accessible * 100)}% no). This is what the feed states, "
+            f"not whether a stop can be used. {fares_sentence}"
         )
 
     # Accessibility as its own 0-100 sub-score (ADR 0006): the accessibility
