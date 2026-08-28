@@ -110,6 +110,15 @@ jobs:
           # the class of finding regardless of content.
           MATRIX_SHARD: ${{ toJSON(matrix.shard) }}
         run: |
+          # `bash -e {0}` is the Actions default: -e without -o pipefail. The
+          # work of this step happens inside `... | jq -r '.[]' | while read`,
+          # where jq is not the last element, so its exit status was discarded.
+          # A malformed matrix slice or a `scorecard shards` output change made
+          # the loop read nothing, iterate zero times, and exit 0: a shard that
+          # scored no agency at all reported as a clean shard, and
+          # `if-no-files-found: ignore` on the upload below meant nothing
+          # downstream noticed either.
+          set -euo pipefail
           # One agency's feed being unreachable (a 403, a vendor outage) must not
           # abort the shard and skip the whole daily refresh. Score each agency
           # independently; a failure is a warning, and the agencies that did score
@@ -292,6 +301,13 @@ jobs:
           half=$(( expected / 2 ))
           if [ "$got" -lt "$half" ]; then
             echo "::warning title=Most shards missing::Only $got of $expected shards uploaded artifacts this run. Publishing anyway with the shards that did score; investigate the missing ones."
+          elif [ "$got" -lt "$expected" ]; then
+            # A single dead shard used to pass this step in silence: 31 of 32 is
+            # neither zero nor below half, so nothing was printed at all, and
+            # roughly one thirty-second of the corpus quietly kept yesterday's
+            # scorecard. Any shortfall is now named here, and the merged
+            # run-health summary marks the run degraded on /status/.
+            echo "::warning title=Shard missing::Only $got of $expected shards uploaded artifacts this run. Publishing with the shards that did score; the feed records owned by the missing $(( expected - got )) keep their previous scorecard."
           fi
       - name: Gather shard run-health summaries
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
@@ -313,15 +329,24 @@ jobs:
       - name: Merge run-health summaries
         working-directory: pipeline
         run: |
+          set -euo pipefail
           shopt -s nullglob
           summaries=(../run-summaries/run-summary-*/run-summary.json)
           if [ ${#summaries[@]} -eq 0 ]; then
-            echo "::warning title=no run-health summaries::no shard uploaded a run-summary.json; /status/ will show no data for today"
+            echo "::warning title=no run-health summaries::no shard uploaded a run-summary.json; /status/ will keep showing the previous run"
           else
-            uv run scorecard run-summary merge --out ../data/artifacts/run/latest.json "${summaries[@]}"
-            if uv run python -c "import json,sys; sys.exit(0 if json.load(open('../data/artifacts/run/latest.json')).get('degraded') else 1)"; then
-              echo "::warning title=pipeline run degraded::more than the threshold share of agencies were not refreshed this run; see /status/"
-            fi
+            # --expected-shards is the denominator the merge cannot infer for
+            # itself. A shard whose runner is killed (observed daily on the
+            # ovapi-netherlands shard) uploads no run-summary.json, so it is
+            # absent from the glob rather than present and empty, and every
+            # total below is summed over the survivors. Without the planned
+            # count, losing a whole shard's feed records left `degraded` false
+            # and /status/ said "Run completed".
+            uv run scorecard run-summary merge \
+              --expected-shards "$SHARD_COUNT" \
+              --out ../data/artifacts/run/latest.json "${summaries[@]}"
+            jq -r '.degraded_reasons[]? | "::warning title=pipeline run degraded::" + .' \
+              ../data/artifacts/run/latest.json
           fi
       - name: Rebuild index and rollups
         working-directory: pipeline

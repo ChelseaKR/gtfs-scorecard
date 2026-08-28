@@ -311,9 +311,9 @@ jobs:
             exit 1
           fi
           npx --yes @lhci/cli@0.14 autorun \
-            --config="$CORE_CONFIG" | tee lhci-core.log
+            --config="$CORE_CONFIG" 2>&1 | tee lhci-core.log
           npx --yes @lhci/cli@0.14 autorun \
-            --config="$ROUTES_CONFIG" | tee lhci-representative.log
+            --config="$ROUTES_CONFIG" 2>&1 | tee lhci-representative.log
           if [ "$PERF_GATE" = "advisory" ] && grep -Eq "warning for" \
             lhci-core.log lhci-representative.log; then
             echo "::warning title=Performance budget missed (advisory)::This data-refresh deploy missed a Lighthouse performance budget and deployed anyway (FIX-14). Investigate before the next code push, where the budget blocks."

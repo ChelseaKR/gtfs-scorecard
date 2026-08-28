@@ -564,3 +564,160 @@ def test_scheduled_workflows_bound_the_validator_subprocess() -> None:
         assert workflow.index("SCORECARD_VALIDATOR_MEMORY_MB") < jobs_at, (
             f"{name}: the ceiling must be workflow-level env so every job inherits it"
         )
+
+
+def test_daily_merge_tells_the_run_summary_how_many_shards_were_planned() -> None:
+    """A shard whose runner is killed uploads no run-summary.json, so the merge
+    step's glob simply returns one fewer file. Nothing downstream can recover
+    the planned count, so the workflow has to hand it over. Without it the
+    merged artifact totals over the survivors and /status/ reports a day that
+    lost a thirty-second of the corpus as "Run completed"."""
+    workflow = _workflow("scorecard.yml")
+    merge_at = workflow.index("scorecard run-summary merge")
+    merge_block = workflow[merge_at : merge_at + 400]
+
+    assert "--expected-shards" in merge_block, (
+        "the merge step must pass the planned shard count; it cannot be inferred "
+        "from the summaries that arrived"
+    )
+    assert '--expected-shards "$SHARD_COUNT"' in merge_block, (
+        "the planned count is SHARD_COUNT, the same value the matrix was built from"
+    )
+    assert "degraded_reasons" in workflow, (
+        "the CI log must name why the run was degraded, not just that it was"
+    )
+
+
+def test_daily_publish_names_any_shard_shortfall_not_only_a_collapse() -> None:
+    """31 of 32 is neither zero nor below half. The step that verifies shard
+    artifacts printed nothing at all in that case, which is the shape the daily
+    run has actually been failing in since 2026-08-17."""
+    workflow = _workflow("scorecard.yml")
+    verify_at = workflow.index("Verify shard artifacts before publishing")
+    verify_block = workflow[verify_at : workflow.index("Gather shard run-health summaries")]
+
+    assert '"$got" -eq 0' in verify_block, "a total collapse must still be an error"
+    assert '"$got" -lt "$expected"' in verify_block, (
+        "any shortfall must be reported, not only a shortfall below half"
+    )
+
+
+def test_lighthouse_logs_capture_the_stream_the_assertions_are_written_to() -> None:
+    """`@lhci/cli` writes every assertion line to stderr (assert.js writes
+    `<label> for <url> assertion` with `process.stderr.write`); only progress
+    lines go to stdout. A `| tee` with no `2>&1` therefore captures a log that
+    can never contain the word "warning", which is what `pages.yml`'s advisory
+    performance annotation greps for. That annotation is the entire signal FIX-14
+    leaves in place on the roughly nine intraday deploys a day that pass
+    `perf_gate: advisory`, and it had never once been emitted.
+
+    `watchdog.yml` already redirects, and `test_watchdog_production_lighthouse...`
+    pins it there. Pin it for the other two callers so the log a gate reads and
+    the log a human downloads both contain the thing they are for."""
+    for name, commands in (
+        ("pages.yml", ("tee lhci-core.log", "tee lhci-representative.log")),
+        (
+            "a11y.yml",
+            ("tee lhci-core.log", "tee lhci-representative.log", "tee pa11y-output.log"),
+        ),
+        ("watchdog.yml", ("tee lhci-production.log",)),
+    ):
+        workflow = _workflow(name)
+        for command in commands:
+            assert f"2>&1 | {command}" in workflow, (
+                f"{name}: `{command}` must capture stderr, or the retained log and any "
+                "grep over it see only progress output"
+            )
+            assert f" | {command}" not in workflow.replace(f"2>&1 | {command}", ""), (
+                f"{name}: an unredirected `{command}` remains"
+            )
+
+
+def test_the_advisory_performance_annotation_greps_a_log_that_can_hold_it() -> None:
+    """The grep and the redirect have to stay together: either change alone
+    silently turns the annotation back into an unreachable branch."""
+    pages = _workflow("pages.yml")
+    grep_at = pages.index('grep -Eq "warning for"')
+    grep_block = pages[grep_at - 400 : grep_at + 200]
+
+    assert "2>&1 | tee lhci-core.log" in grep_block
+    assert "2>&1 | tee lhci-representative.log" in grep_block
+
+
+def test_the_intraday_refresh_has_a_floor_under_its_rescore_loop() -> None:
+    """`refresh.yml` deploys roughly nine times a day and turned every
+    per-feed failure into an `echo`. Nothing counted them, so a cycle in which
+    every changed feed failed to re-score still ran reindex, rollups,
+    render-site, the S3 publish and the Pages deploy, and reported success.
+    `scorecard.yml` has had a floor since #298; this tier had none at all
+    (`grep -n '::error\\|exit 1' refresh.yml` returned nothing)."""
+    workflow = _workflow("refresh.yml")
+    step_at = workflow.index("Re-score only the feeds that changed")
+    step = workflow[step_at : workflow.index("Rebuild index and rollups", step_at)]
+
+    assert "::error::" in step, "a cycle that refreshed nothing must fail, not warn"
+    assert "exit 1" in step
+    assert '[ "$refreshed" -eq 0 ]' in step, (
+        "the floor has to be counted from real per-feed outcomes, not inferred"
+    )
+    assert "::warning title=partial refresh::" in step, (
+        "a partial refresh must still say how much of it was partial"
+    )
+
+
+def test_the_intraday_rescore_loop_tells_unchanged_apart_from_failed() -> None:
+    """`scorecard run` reserves exit 2 for "the feed had not changed after
+    all". `scorecard.yml` has always separated it; this loop treated every
+    non-zero exit identically, which would make the new floor fire on a cycle
+    where nothing needed doing the moment --skip-unchanged is added here."""
+    workflow = _workflow("refresh.yml")
+    step_at = workflow.index("Re-score only the feeds that changed")
+    step = workflow[step_at : workflow.index("Rebuild index and rollups", step_at)]
+
+    assert '[ "$EXIT" -eq 2 ]' in step
+
+
+def test_the_shard_step_runs_under_pipefail() -> None:
+    """The whole of a shard's work happens inside
+    `echo "$MATRIX_SHARD" | jq -r '.[]' | while read -r id`. Actions runs
+    `run:` blocks under `bash -e {0}`: -e but not -o pipefail. jq is not the
+    last element of that pipeline, so its exit status was thrown away. A
+    malformed matrix slice made the loop read nothing, iterate zero times and
+    exit 0, and `if-no-files-found: ignore` on the upload meant a shard that
+    scored no agency at all looked exactly like a shard with nothing to do.
+    Verified locally: the same pipeline exits 0 under `set -e` and 5 under
+    `set -euo pipefail` when jq is handed input it cannot parse."""
+    workflow = _workflow("scorecard.yml")
+    step_at = workflow.index("Score this shard's agencies")
+    step = workflow[step_at : workflow.index("actions/upload-artifact", step_at)]
+
+    pipeline_at = step.index('echo "$MATRIX_SHARD" | jq -r')
+    assert "set -euo pipefail" in step
+    assert step.index("set -euo pipefail") < pipeline_at, (
+        "the options have to be set before the pipeline they protect"
+    )
+
+
+def test_the_tiles_size_ceiling_stops_the_commit_it_exists_to_stop() -> None:
+    """ADR 0023 commits the PMTiles archive into `web/tiles/` "as long as it
+    stays at or under 25 MB" and says to move it to S3 + CloudFront above that.
+    The step checking it printed a `::warning` and returned 0, and the commit
+    step below it runs with `inputs.commit` defaulting to true, so the archive
+    was pushed to main either way. The branch had also never been taken: the
+    committed archive is around 670 KB against a 26,214,400-byte ceiling, so
+    nothing had ever exercised it."""
+    workflow = _workflow("tiles.yml")
+    gate_at = workflow.index("26214400")
+    gate = workflow[gate_at : workflow.index("Upload archive as a workflow artifact")]
+
+    assert "::error" in gate, "over the ceiling has to be an error, not a warning"
+    assert "exit 1" in gate, "and it has to fail, so the commit step is skipped"
+
+    commit_at = workflow.index("- name: Commit the rebuilt archive")
+    assert gate_at < commit_at, "the ceiling must be checked before the commit, not after"
+
+    upload = workflow[workflow.index("Upload archive as a workflow artifact") : commit_at]
+    assert "if: ${{ always() }}" in upload, (
+        "an archive that trips the ceiling still has to be downloadable; it is "
+        "the file ADR 0023 says to move to S3"
+    )
