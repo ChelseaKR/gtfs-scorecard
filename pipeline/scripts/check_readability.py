@@ -1,18 +1,32 @@
 #!/usr/bin/env python3
-"""Plain-language readability gate for the curated notice translations.
+"""Plain-language readability gate for every finding the scorecard publishes.
 
 The product's promise is that every curated finding reads as plain language a
 non-developer transit manager can act on. This asserts that promise mechanically
-for every ``what``/``why``/``fix`` string in ``notices.TRANSLATIONS``, the same
+for every ``what``/``why``/``fix`` string in the reader-copy inventory, the same
 shape as the contrast gate: average sentence length must stay under
 MAX_AVG_SENTENCE_WORDS, and a syllable-based Flesch reading-ease estimate must
 stay above MIN_FLESCH. Pure Python, no dependencies. Run from pipeline/:
 
     uv run python scripts/check_readability.py
 
+The inventory is ``scorecard_pipeline.reader_copy``, which covers two families:
+the curated wording in ``notices.TRANSLATIONS``, and the findings the pipeline
+authors itself at each ``Finding(...)`` site (accessibility, completeness,
+fares, flexible service, pathways, routability, realtime, freshness). Until
+2026-08-27 this gate read only the first family, so about half the finding
+strings on an agency page were never measured by the check that exists to
+measure them.
+
 Effort hints are excluded: they are fragments ("One setting."), not prose. The
-thresholds gate regressions in curated text; they do not measure the generic
-fallback, which the coverage metric on /problems/ tracks instead.
+generated fallback for an uncurated notice code is also excluded, because it is
+assembled from the code and a rule URL rather than written; the curated-coverage
+metric on /problems/ remains its measure. Both exclusions are printed, not
+assumed: the inventory reports them as deferred sites with their reason, and a
+site whose copy cannot be accounted for at all raises rather than passing.
+
+The thresholds gate regressions in reader-facing text. Never loosen them to
+admit one hard string; rewrite the string.
 """
 
 from __future__ import annotations
@@ -20,7 +34,7 @@ from __future__ import annotations
 import re
 import sys
 
-from scorecard_pipeline.notices import TRANSLATIONS
+from scorecard_pipeline.reader_copy import CopyString, DeferredSite, reader_copy
 
 # Plain-language bars. 22 words/sentence is the upper edge of "easy to follow"
 # in most plain-writing guidance; Flesch 50 is the floor of "fairly difficult"
@@ -96,20 +110,38 @@ def check_text(label: str, text: str) -> list[str]:
     return fails
 
 
+def report_string(string: CopyString) -> list[str]:
+    """Print one measured string's numbers; return its failures."""
+    string_fails = check_text(string.label, string.text)
+    print(
+        f"{'OK ' if not string_fails else 'FAIL'} flesch {flesch(string.text):6.1f}  "
+        f"avg-words {avg_sentence_words(string.text):5.1f}  "
+        f"{string.provenance:9s} {string.label}"
+    )
+    return string_fails
+
+
+def report_deferred(deferred: list[DeferredSite]) -> None:
+    """Say what the gate did not measure, and why, rather than staying silent."""
+    if not deferred:
+        return
+    print()
+    print(f"Not measured here ({len(deferred)} fields):")
+    for site in sorted(deferred, key=lambda d: (d.origin, d.field)):
+        print(f"  - {site.origin} {site.field}= — {site.reason}")
+
+
 def main() -> int:
+    strings, deferred = reader_copy()
     fails: list[str] = []
-    for code in sorted(TRANSLATIONS):
-        tr = TRANSLATIONS[code]
-        for field in ("what", "why", "fix"):
-            text: str = getattr(tr, field)
-            label = f"{code}.{field}"
-            string_fails = check_text(label, text)
-            ok = not string_fails
-            print(
-                f"{'OK ' if ok else 'FAIL'} flesch {flesch(text):6.1f}  "
-                f"avg-words {avg_sentence_words(text):5.1f}  {label}"
-            )
-            fails.extend(string_fails)
+    for string in sorted(strings, key=lambda s: (s.provenance, s.label)):
+        fails.extend(report_string(string))
+    report_deferred(deferred)
+
+    counts = {
+        provenance: sum(1 for s in strings if s.provenance == provenance)
+        for provenance in ("curated", "authored")
+    }
     print()
     if fails:
         print(f"{len(fails)} FAILURES:")
@@ -117,9 +149,10 @@ def main() -> int:
             print("  -", f)
         return 1
     print(
-        f"All {len(TRANSLATIONS)} curated translations clear the plain-language "
+        f"All {len(strings)} reader-facing finding strings clear the plain-language "
         f"bars (avg sentence <= {MAX_AVG_SENTENCE_WORDS:.0f} words, "
-        f"Flesch >= {MIN_FLESCH:.0f})."
+        f"Flesch >= {MIN_FLESCH:.0f}): "
+        f"{counts['curated']} curated, {counts['authored']} authored."
     )
     return 0
 

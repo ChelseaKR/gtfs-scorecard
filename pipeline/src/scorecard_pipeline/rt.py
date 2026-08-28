@@ -467,7 +467,8 @@ def _freshness(
                     "freshness couldn't be checked.",
                     why="Without a header timestamp, apps and this scorecard can't "
                     "tell how old the data is.",
-                    fix="Set the GTFS-Realtime FeedHeader.timestamp on every response.",
+                    fix="Stamp every realtime response with the time it was made. "
+                    "The field is FeedHeader.timestamp.",
                     effort="A vendor configuration question.",
                     deduction=0.0,
                 )
@@ -513,8 +514,8 @@ def _freshness(
                 what=f"Realtime data was up to {worst} seconds old when sampled.",
                 why="Stale positions and predictions are worse than none: riders "
                 "watch a bus that already left.",
-                fix="Ask your AVL vendor to publish updates at least every 20 "
-                "seconds (the Caltrans guideline).",
+                fix="Ask your AVL vendor to send updates at least every 20 seconds. "
+                "That is the Caltrans guideline.",
                 effort="A vendor configuration question.",
                 deduction=(1 - fresh_fraction) * WEIGHT_FRESH,
             )
@@ -553,8 +554,8 @@ def _alerts(
                 count=stale_count,
                 what=f"{stale_count} of {summary['alerts']} published service "
                 "alerts ended more than 30 days ago.",
-                why="A rider who reads an alert about a detour that finished weeks "
-                "ago learns to ignore every future alert.",
+                why="A rider who reads about a detour that ended weeks ago learns "
+                "to ignore the next alert too.",
                 fix="Remove or close out ended alerts in your alerts tool; most "
                 "publish an end date and clear them automatically.",
                 effort="A few minutes in your alerts tool.",
@@ -570,8 +571,8 @@ def _alerts(
                 count=missing_text,
                 what=f"{missing_text} of {summary['alerts']} published service "
                 "alerts have no header text.",
-                why="An alert without text shows riders an empty or generic notice, "
-                "so the disruption it describes goes unread.",
+                why="An alert with no text shows up blank in the app. Riders never "
+                "learn what changed.",
                 fix="Give every alert a one-line plain-language header in your "
                 "alerts tool; the description field can carry the detail.",
                 effort="A habit in your alerts tool, not a code change.",
@@ -611,10 +612,11 @@ def _trip_coverage(
                 count=missing,
                 what=f"{missing} of {len(scheduled)} trips scheduled during the "
                 "sampling window had no live predictions.",
-                why="Riders on those trips get schedule data dressed up as "
-                "realtime. Caltrans expects every operating trip in TripUpdates.",
-                fix="Check with your AVL vendor that every vehicle assignment "
-                "flows into TripUpdates, including school-day and tripper runs.",
+                why="Riders on those trips get schedule times labeled as live. "
+                "Caltrans asks that every trip you run shows up in TripUpdates.",
+                fix="Ask your AVL vendor to check that every vehicle assignment "
+                "reaches TripUpdates. School-day and tripper runs are the ones most "
+                "often left out.",
                 effort="A vendor data-mapping question.",
                 deduction=(1 - coverage_fraction) * WEIGHT_COVERAGE,
             )
@@ -681,7 +683,7 @@ def _drift_component(
                 code="scorecard_rt_predictions_implausible",
                 severity="WARNING",
                 count=drift.observations,
-                what="Some live predictions disagree with the schedule by more than 30 minutes.",
+                what="Some live predictions are more than 30 minutes away from the schedule.",
                 why="Differences that large usually mean predictions are keyed "
                 "to the wrong trips, not that buses are that late.",
                 fix="Spot-check the flagged predictions against what buses "
