@@ -553,6 +553,59 @@ def test_run_summary_build_and_merge_end_to_end(tmp_path: Path, isolated_repo_ro
     assert merged["shard_count"] == 1
 
 
+def test_run_summary_merge_carries_the_planned_shard_count_through(
+    tmp_path: Path, isolated_repo_root: Path
+) -> None:
+    """`--expected-shards` is the only route by which the merged artifact can
+    learn that a shard never reported. A shard whose runner was killed uploads
+    nothing, so CI's glob just yields one fewer path and every total sums over
+    the survivors."""
+    from scorecard_pipeline.cli import main
+
+    isolated_repo_root.mkdir(parents=True, exist_ok=True)
+    (isolated_repo_root / "agencies.yaml").write_text(
+        "agencies:\n"
+        "  - id: unitrans\n"
+        "    name: Unitrans\n"
+        "    static_gtfs_url: https://example.org/gtfs.zip\n"
+    )
+
+    summary_path = tmp_path / "run-summary-0.json"
+    summary_path.write_text(
+        json.dumps(
+            {
+                "shard": "0",
+                "agency_count": 40,
+                "scored": 40,
+                "reused": 0,
+                "unreachable": 0,
+                "mirrored": 0,
+                "cache_hit": 0,
+                "unreachable_agencies": [],
+            }
+        )
+    )
+
+    merged_path = tmp_path / "run" / "latest.json"
+    exit_code = main(
+        [
+            "run-summary",
+            "merge",
+            "--expected-shards",
+            "32",
+            "--out",
+            str(merged_path),
+            str(summary_path),
+        ]
+    )
+
+    assert exit_code == 0
+    merged = json.loads(merged_path.read_text())
+    assert merged["expected_shard_count"] == 32
+    assert merged["missing_shard_count"] == 31
+    assert merged["degraded"] is True
+
+
 def test_run_summary_merge_skips_missing_shard_files(
     tmp_path: Path, isolated_repo_root: Path
 ) -> None:

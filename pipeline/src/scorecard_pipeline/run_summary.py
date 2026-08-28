@@ -119,14 +119,34 @@ def build_shard_summary(
 
 
 def merge_run_summaries(
-    summaries: list[dict[str, Any]], generated_at: dt.datetime
+    summaries: list[dict[str, Any]],
+    generated_at: dt.datetime,
+    *,
+    expected_shard_count: int | None = None,
 ) -> dict[str, Any]:
-    """Merge every shard's run-summary.json into the one artifact /status/
-    reads. A shard that failed to upload its summary at all (the runner
-    itself crashed, not an individual agency) is simply absent from
-    ``summaries``; totals undercount rather than the merge raising, matching
-    the rest of the pipeline's per-shard-failure-is-a-warning posture
-    (scorecard.yml's ``fail-fast: false``)."""
+    """Merge every shard's run-summary.json into the one artifact /status/ reads.
+
+    ``expected_shard_count`` is how many shards the run planned, which the
+    merge cannot learn from the summaries themselves: a shard whose runner was
+    killed uploads nothing, so it is absent from ``summaries`` rather than
+    present and empty.
+
+    Without that number this merge was structurally unable to report the one
+    failure the module docstring says it exists to make visible, "if one of
+    twelve shards failed, the agencies it owned silently kept showing
+    yesterday's data with no public signal anywhere". Every total, including
+    ``agency_count``, is summed over the shards that did report, so a dead
+    shard shrank the denominator by exactly the agencies it lost and
+    ``degraded`` stayed false. The daily run has ended that way on the same
+    shard every day since 2026-08-17 and /status/ said "Run completed".
+
+    So the merge now fails loudly in the only sense a report can: a shortfall
+    against ``expected_shard_count`` degrades the run and is named in
+    ``degraded_reasons``. Totals still undercount, because the lost outcomes
+    genuinely are not knowable here, but the run no longer claims to be whole.
+    ``expected_shard_count=None`` means the caller did not say, and is
+    reported as such rather than assumed to be ``len(shards)``.
+    """
     shards = sorted(summaries, key=lambda s: str(s.get("shard", "")))
     total_scored = sum(s.get("scored", 0) for s in shards)
     total_reused = sum(s.get("reused", 0) for s in shards)
@@ -138,9 +158,29 @@ def merge_run_summaries(
         {aid for s in shards for aid in s.get("unreachable_agencies", [])}
     )
     fraction_unreachable = (total_unreachable / total_agencies) if total_agencies else 0.0
+    missing_shards = (
+        max(0, expected_shard_count - len(shards)) if expected_shard_count is not None else 0
+    )
+    degraded_reasons: list[str] = []
+    if missing_shards:
+        # "1 of 32 shards", not "1 of 32 shard": the noun agrees with the
+        # denominator, which is what a reader is being asked to compare against.
+        owned = "it owned" if missing_shards == 1 else "they owned"
+        degraded_reasons.append(
+            f"{missing_shards} of {expected_shard_count} shards reported no outcomes for "
+            f"this run. The feed records {owned} kept their previous scorecard and are not "
+            "counted in the totals below."
+        )
+    if fraction_unreachable > DEGRADED_THRESHOLD:
+        degraded_reasons.append(
+            f"{total_unreachable} of {total_agencies} attempted feed records could not be "
+            f"refreshed, above the {round(DEGRADED_THRESHOLD * 100)}% warning threshold."
+        )
     return {
         "generated_at": generated_at.isoformat(),
         "shard_count": len(shards),
+        "expected_shard_count": expected_shard_count,
+        "missing_shard_count": missing_shards,
         "agency_count": total_agencies,
         "scored": total_scored,
         "reused": total_reused,
@@ -148,7 +188,8 @@ def merge_run_summaries(
         "mirrored": total_mirrored,
         "cache_hit": total_cache_hit,
         "unreachable_agencies": unreachable_agencies,
-        "degraded": fraction_unreachable > DEGRADED_THRESHOLD,
+        "degraded": bool(degraded_reasons),
+        "degraded_reasons": degraded_reasons,
         "degraded_threshold": DEGRADED_THRESHOLD,
         "shards": shards,
     }
