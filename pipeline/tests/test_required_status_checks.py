@@ -163,3 +163,127 @@ def test_the_security_gates_adr_0033_names_are_required(context: str) -> None:
     an ADR change, not a test edit.
     """
     assert context in _required_contexts()
+
+
+# Every context required today. The two tests above compare the ruleset to the
+# workflows and stay green if a context leaves both at once, so the required set
+# could shrink with nothing to see. This list is the ratchet: dropping a gate is
+# a deliberate edit here, in the same diff, and not a quiet consequence of
+# deleting a job.
+PINNED_REQUIRED_CONTEXTS = (
+    "pipeline",
+    "Secret scan (gitleaks)",
+    "SAST (Semgrep)",
+    "axe",
+    "e2e",
+    "Dependency audit (pip-audit + osv-scanner)",
+    "Analyze (python)",
+    "Analyze (actions)",
+    "Analyze (javascript)",
+    "standards-pin",
+    "Trivy image CVE scan (compute)",
+    "Trivy image CVE scan (instant-score)",
+    "terraform fmt + validate",
+    "zizmor (workflow security lint)",
+    "Dependency review (PRs only)",
+)
+
+# A job-level `if:` on a required job is the sharpest form of this file's own
+# subject. GitHub counts a skipped required check as satisfied, so a required
+# job that does not run is a green gate that ran nothing. These conditions are
+# true on every pull request, which is the only reason they are allowed.
+ALWAYS_TRUE_ON_A_PULL_REQUEST = {
+    "github.event_name == 'pull_request'",
+}
+
+
+def _ruleset() -> dict[str, Any]:
+    return json.loads(RULESET.read_text())  # type: ignore[no-any-return]
+
+
+@pytest.mark.parametrize("context", PINNED_REQUIRED_CONTEXTS)
+def test_the_required_set_does_not_shrink_unnoticed(context: str) -> None:
+    assert context in _required_contexts(), (
+        f"{context!r} was a required status check and is not any more. If that is "
+        "deliberate, remove it from PINNED_REQUIRED_CONTEXTS in the same change "
+        "and say why in the pull request."
+    )
+
+
+def test_the_ruleset_is_actually_switched_on() -> None:
+    """`_required_contexts` reads only the list of checks. It never looked at
+    `enforcement`, so flipping the ruleset to "disabled" or "evaluate" left
+    every test in this file green while nothing blocked anything. A required
+    check inside a ruleset that is not enforcing is exactly the shape this file
+    exists to catch, one level up from the checks themselves."""
+    ruleset = _ruleset()
+
+    assert ruleset["enforcement"] == "active", (
+        f"the ruleset is {ruleset['enforcement']!r}; required checks in a ruleset "
+        "that is not active block nothing"
+    )
+    assert ruleset["conditions"]["ref_name"]["include"] == ["refs/heads/main"], (
+        "a ruleset that no longer targets main protects nothing"
+    )
+    rule_types = {rule["type"] for rule in ruleset["rules"]}
+    assert "required_status_checks" in rule_types
+    assert "pull_request" in rule_types, "review requirements are part of the same gate"
+
+
+def test_no_required_job_can_skip_itself() -> None:
+    """GitHub evaluates a required status check as satisfied when its job is
+    skipped, so a job-level `if:` on a required job can turn it into a gate
+    that reports success without running. The two live conditions are
+    `github.event_name == 'pull_request'`, which is true whenever the check is
+    being required at all."""
+    required = _required_contexts()
+    offenders: list[str] = []
+    for path in sorted(WORKFLOW_DIR.glob("*.y*ml")):
+        workflow = _load_yaml(path)
+        if "pull_request" not in _triggers(workflow):
+            continue
+        for job_id, job in (workflow.get("jobs") or {}).items():
+            if not isinstance(job, dict) or "if" not in job:
+                continue
+            if not any(name in required for name in _check_names(job_id, job)):
+                continue
+            condition = str(job["if"]).strip()
+            if condition not in ALWAYS_TRUE_ON_A_PULL_REQUEST:
+                offenders.append(f"{path.name}::{job_id} if: {condition!r}")
+    assert not offenders, (
+        "required jobs carrying a condition that is not known to hold on every "
+        "pull request; a skip reads as a pass:\n  " + "\n  ".join(offenders)
+    )
+
+
+def test_no_workflow_producing_a_required_check_filters_on_paths() -> None:
+    """Issue #289: `on.pull_request.paths` on a workflow that produces a
+    required check leaves that check permanently pending on any pull request
+    the filter excludes, which blocks the merge rather than gating it. The
+    filters were removed from iac.yml and container-scan.yml and each carries a
+    comment saying why. Nothing stopped them coming back."""
+    offenders: list[str] = []
+    required = _required_contexts()
+    for path in sorted(WORKFLOW_DIR.glob("*.y*ml")):
+        workflow = _load_yaml(path)
+        on = workflow.get(True, workflow.get("on"))
+        if not isinstance(on, dict):
+            continue
+        pull_request = on.get("pull_request")
+        if not isinstance(pull_request, dict):
+            continue
+        produces_required = any(
+            name in required
+            for job_id, job in (workflow.get("jobs") or {}).items()
+            if isinstance(job, dict)
+            for name in _check_names(job_id, job)
+        )
+        if not produces_required:
+            continue
+        for key in ("paths", "paths-ignore"):
+            if key in pull_request:
+                offenders.append(f"{path.name}: on.pull_request.{key} = {pull_request[key]!r}")
+    assert not offenders, (
+        "a path filter on a workflow that produces a required check (issue #289):\n  "
+        + "\n  ".join(offenders)
+    )
