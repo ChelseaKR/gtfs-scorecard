@@ -122,3 +122,40 @@ def test_parent_budget_path_is_rejected(tmp_path: Path) -> None:
 
     assert result.returncode == 2
     assert "must stay inside the site root" in result.stderr
+
+
+def test_a_passing_run_says_how_much_headroom_each_budget_had(tmp_path: Path) -> None:
+    """A budget that passes tells you nothing about whether it could ever fail.
+    The repository's own catch-all, `**/index.html` at 3,407,872 bytes, has
+    never come within a factor of six of the largest page it matches, and a
+    passing run looked exactly the same as one that squeaked through. The
+    percentage is printed now so the slack is a number in the build log."""
+    result = _run_checker(
+        tmp_path,
+        required={"index.html": 1000},
+        patterns={"**/index.html": 100_000},
+        files={
+            "index.html": b"x" * 900,
+            "deep/index.html": b"x" * 5_000,
+        },
+    )
+
+    assert result.returncode == 0
+    assert "Largest page under each budget" in result.stdout
+    # 900 of 1,000 is tight; 5,000 of 100,000 is not. Tightest first.
+    assert result.stdout.index("index.html: 90%") < result.stdout.index("**/index.html: 5%")
+    assert "deep/index.html" in result.stdout
+
+
+def test_the_headroom_report_skips_a_budget_nothing_matches(tmp_path: Path) -> None:
+    """A pattern matching no files is already a structural failure, so the
+    report never has to invent a row for it."""
+    result = _run_checker(
+        tmp_path,
+        required={"index.html": 1000},
+        patterns={"never/**/index.html": 100_000},
+        files={"index.html": b"x" * 900},
+    )
+
+    assert result.returncode == 2
+    assert "matched no files" in result.stdout

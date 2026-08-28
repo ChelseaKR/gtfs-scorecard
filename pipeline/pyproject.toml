@@ -146,10 +146,13 @@ omit = [
     # that are unit-tested directly, exercised end-to-end by the daily build. Not
     # worth mocking the world to unit-test for a coverage number.
     "*/scorecard_pipeline/cli.py",
-    # Static-site HTML/JS string assembly: its logic-bearing helpers are covered
-    # behaviorally by tests/test_render_site.py; a % over the templating glue would
-    # measure markup, not correctness.
-    "*/scorecard_pipeline/render_site.py",
+    # render_site.py was omitted here on the same argument, that a percentage
+    # over templating glue measures markup. Measured, it is at 90% branch
+    # coverage from tests/test_render_site.py, and it is 3,132 statements, the
+    # largest module in the package by a wide margin. Omitted, its only
+    # independent gate was the golden suite, whose baseline render_site()
+    # itself regenerates. It is in the floor now, and the floor still clears
+    # 92% without being moved.
 ]
 
 [tool.coverage.report]
