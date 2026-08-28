@@ -35,9 +35,14 @@ verify:
 # instead of an aspiration. A real, tracked TODO should carry an issue
 # reference and live in docs/ (e.g. docs/lint-complexity-ratchet.md), not a
 # bare marker in source.
+#
+# The scope was pipeline/src and web/src only, which left out pipeline/scripts,
+# where the gates this Makefile runs actually live, along with pipeline/tests
+# and the repo root's scripts/. All four are clean today, so widening costs
+# nothing and closes the case where a marker lands in a gate and nothing says so.
 no-todos:
-	@if grep -rnE "TODO|FIXME|HACK" pipeline/src web/src; then \
-		echo "Bare TODO/FIXME/HACK found in pipeline/src or web/src — track it in docs/ instead (CQ-34)."; \
+	@if grep -rnE "TODO|FIXME|HACK" pipeline/src pipeline/scripts pipeline/tests web/src scripts; then \
+		echo "Bare TODO/FIXME/HACK found — track it in docs/ instead (CQ-34)."; \
 		exit 1; \
 	fi
 
