@@ -148,7 +148,9 @@ def main(argv: list[str] | None = None) -> int:
     args.out.parent.mkdir(parents=True, exist_ok=True)
     cmd = [tippecanoe, "-o", str(args.out), *_TIPPECANOE_ARGS, str(geojsonl_path)]
     print("Running:", " ".join(cmd), file=sys.stderr)
-    result = subprocess.run(cmd, check=False)
+    # argv list, no shell=True; tippecanoe is resolved from PATH above and
+    # every remaining element is a module constant or an argparse path.
+    result = subprocess.run(cmd, check=False)  # noqa: S603
     if result.returncode != 0:
         print("tippecanoe failed.", file=sys.stderr)
         return result.returncode

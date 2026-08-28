@@ -45,9 +45,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from scorecard_pipeline.agencies import read_agencies  # noqa: E402
-from scorecard_pipeline.location import US_SUBDIVISIONS  # noqa: E402
-from scorecard_pipeline.ntd_coverage import (  # noqa: E402
+from scorecard_pipeline.agencies import read_agencies
+from scorecard_pipeline.location import US_SUBDIVISIONS
+from scorecard_pipeline.ntd_coverage import (
     TIER_ORDER,
     US_AND_TERRITORY_CODES,
     CatalogIndex,
@@ -91,7 +91,11 @@ class Fetched:
 
 
 def fetch(url: str) -> Fetched:
-    request = urllib.request.Request(url, headers={"User-Agent": "gtfs-scorecard/ntd-coverage"})
+    # Same as the urlopen below: the four source URLs are pinned https
+    # constants in this module, never caller-supplied.
+    request = urllib.request.Request(  # noqa: S310
+        url, headers={"User-Agent": "gtfs-scorecard/ntd-coverage"}
+    )
     with urllib.request.urlopen(request, timeout=180) as response:  # noqa: S310 - pinned https
         return Fetched(url=url, body=response.read())
 
@@ -253,17 +257,38 @@ def main() -> int:
             Counter(r.organization_type for r in unmatched).most_common()
         ),
         "sources": [
-            {"name": "FTA NTD Annual Database, Agency Information", "url": ROSTER_URL,
-             "sha256": roster_raw.sha256, "rows": len(roster),
-             "license": "Public domain (US Government work); attribution: Federal Transit Administration"},
-            {"name": "FTA NTD Annual Data View, Service (by Mode)", "url": MODE_URL,
-             "sha256": mode_raw.sha256, "rows": len(modes),
-             "license": "Public domain (US Government work); attribution: Federal Transit Administration"},
-            {"name": "Transitland Atlas", "url": ATLAS_URL, "sha256": atlas_raw.sha256,
-             "license": "CC-BY 4.0, Interline Technologies and contributors"},
-            {"name": "Mobility Database catalog (storage.googleapis.com copy)", "url": CATALOG_URL,
-             "sha256": catalog_raw.sha256,
-             "license": "See mobilitydatabase.org terms; per-feed licences vary"},
+            {
+                "name": "FTA NTD Annual Database, Agency Information",
+                "url": ROSTER_URL,
+                "sha256": roster_raw.sha256,
+                "rows": len(roster),
+                "license": (
+                    "Public domain (US Government work); attribution: "
+                    "Federal Transit Administration"
+                ),
+            },
+            {
+                "name": "FTA NTD Annual Data View, Service (by Mode)",
+                "url": MODE_URL,
+                "sha256": mode_raw.sha256,
+                "rows": len(modes),
+                "license": (
+                    "Public domain (US Government work); attribution: "
+                    "Federal Transit Administration"
+                ),
+            },
+            {
+                "name": "Transitland Atlas",
+                "url": ATLAS_URL,
+                "sha256": atlas_raw.sha256,
+                "license": "CC-BY 4.0, Interline Technologies and contributors",
+            },
+            {
+                "name": "Mobility Database catalog (storage.googleapis.com copy)",
+                "url": CATALOG_URL,
+                "sha256": catalog_raw.sha256,
+                "license": "See mobilitydatabase.org terms; per-feed licences vary",
+            },
         ],
     }
     (args.out / f"reporter-coverage-ry{args.report_year}.json").write_text(

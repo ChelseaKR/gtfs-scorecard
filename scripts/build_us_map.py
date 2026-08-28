@@ -121,7 +121,9 @@ def build(geojson: dict) -> dict[str, str]:
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--source", default=SOURCE)
-    ap.add_argument("--out", default=str(Path(__file__).resolve().parents[1] / "web" / "us-states.json"))
+    ap.add_argument(
+        "--out", default=str(Path(__file__).resolve().parents[1] / "web" / "us-states.json")
+    )
     args = ap.parse_args()
 
     with urlopen(args.source, timeout=30) as resp:  # noqa: S310 - fixed https source

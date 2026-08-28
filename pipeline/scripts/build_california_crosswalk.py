@@ -35,6 +35,7 @@ import json
 import re
 import sys
 from collections import Counter, defaultdict
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit
@@ -188,49 +189,249 @@ CURATED_UNCERTAIN: dict[str, str] = {
 }
 
 ORG_WORDS = {
-    "city", "county", "of", "the", "transit", "transportation", "authority", "agency",
-    "district", "regional", "area", "system", "systems", "service", "services", "bus",
-    "lines", "joint", "powers", "board", "commission", "association", "governments",
-    "department", "public", "works", "and", "municipal", "rural", "council", "inc",
-    "valley", "line", "express", "shuttle", "trolley", "link", "connects", "connection",
-    "metropolitan", "corridor", "national", "monument", "california", "university",
-    "for", "local", "rapid", "coach", "center", "community", "free", "weekend", "town",
+    "city",
+    "county",
+    "of",
+    "the",
+    "transit",
+    "transportation",
+    "authority",
+    "agency",
+    "district",
+    "regional",
+    "area",
+    "system",
+    "systems",
+    "service",
+    "services",
+    "bus",
+    "lines",
+    "joint",
+    "powers",
+    "board",
+    "commission",
+    "association",
+    "governments",
+    "department",
+    "public",
+    "works",
+    "and",
+    "municipal",
+    "rural",
+    "council",
+    "inc",
+    "valley",
+    "line",
+    "express",
+    "shuttle",
+    "trolley",
+    "link",
+    "connects",
+    "connection",
+    "metropolitan",
+    "corridor",
+    "national",
+    "monument",
+    "california",
+    "university",
+    "for",
+    "local",
+    "rapid",
+    "coach",
+    "center",
+    "community",
+    "free",
+    "weekend",
+    "town",
 }
 URL_NOISE = {
-    "gtfs", "ca", "us", "zip", "google", "transit", "data", "public", "feed", "feeds",
-    "download", "latest", "static", "com", "org", "gov", "net", "www", "documentcenter",
-    "view", "files", "resource", "utility", "rtt", "master", "main", "raw", "flex", "v1",
-    "v2", "preview", "schedule", "realtime", "api", "current", "prod", "production",
+    "gtfs",
+    "ca",
+    "us",
+    "zip",
+    "google",
+    "transit",
+    "data",
+    "public",
+    "feed",
+    "feeds",
+    "download",
+    "latest",
+    "static",
+    "com",
+    "org",
+    "gov",
+    "net",
+    "www",
+    "documentcenter",
+    "view",
+    "files",
+    "resource",
+    "utility",
+    "rtt",
+    "master",
+    "main",
+    "raw",
+    "flex",
+    "v1",
+    "v2",
+    "preview",
+    "schedule",
+    "realtime",
+    "api",
+    "current",
+    "prod",
+    "production",
 }
 HOST_NOISE = {
-    "www", "com", "org", "net", "gov", "edu", "info", "app", "apps", "web", "data",
-    "gtfs", "api", "cdn", "transit", "public", "portal", "ride", "bus", "the", "and",
-    "city", "county", "http", "https", "amazonaws", "azurewebsites", "core", "windows",
-    "githubusercontent", "raw", "files", "assets", "media", "documents", "site", "sites",
-    "west", "east", "north", "south", "central", "area", "regional", "rider", "riders",
-    "schedule", "shuttle", "hosted", "feeds", "gtfsrealtime", "staticgtfs", "google",
+    "www",
+    "com",
+    "org",
+    "net",
+    "gov",
+    "edu",
+    "info",
+    "app",
+    "apps",
+    "web",
+    "data",
+    "gtfs",
+    "api",
+    "cdn",
+    "transit",
+    "public",
+    "portal",
+    "ride",
+    "bus",
+    "the",
+    "and",
+    "city",
+    "county",
+    "http",
+    "https",
+    "amazonaws",
+    "azurewebsites",
+    "core",
+    "windows",
+    "githubusercontent",
+    "raw",
+    "files",
+    "assets",
+    "media",
+    "documents",
+    "site",
+    "sites",
+    "west",
+    "east",
+    "north",
+    "south",
+    "central",
+    "area",
+    "regional",
+    "rider",
+    "riders",
+    "schedule",
+    "shuttle",
+    "hosted",
+    "feeds",
+    "gtfsrealtime",
+    "staticgtfs",
+    "google",
 }
 # Landscape words show up in unrelated agency names all over the state, so one
 # of them on its own ("mountain", "airport", "sierra") is not an identification.
 # A match on this tier needs at least one shared word from outside this set.
 GENERIC_PLACE = {
-    "mountain", "mountains", "airport", "beach", "beaches", "bay", "lake", "tahoe",
-    "river", "sierra", "gold", "golden", "blue", "green", "red", "reds", "park",
-    "coast", "coastal", "harbor", "island", "hill", "hills", "springs", "creek",
-    "grove", "ridge", "vista", "delta", "canyon", "mesa", "point", "port", "gateway",
-    "summit", "star", "sun", "desert", "forest", "metro", "resort", "grand", "royal",
-    "cruz", "santa", "san", "los", "county", "big", "little", "upper", "lower",
-    "downtown", "campus", "college", "school", "medical", "airporter", "ferry",
-    "water", "yosemite", "sequoia", "national", "state", "shuttle", "trolley",
+    "mountain",
+    "mountains",
+    "airport",
+    "beach",
+    "beaches",
+    "bay",
+    "lake",
+    "tahoe",
+    "river",
+    "sierra",
+    "gold",
+    "golden",
+    "blue",
+    "green",
+    "red",
+    "reds",
+    "park",
+    "coast",
+    "coastal",
+    "harbor",
+    "island",
+    "hill",
+    "hills",
+    "springs",
+    "creek",
+    "grove",
+    "ridge",
+    "vista",
+    "delta",
+    "canyon",
+    "mesa",
+    "point",
+    "port",
+    "gateway",
+    "summit",
+    "star",
+    "sun",
+    "desert",
+    "forest",
+    "metro",
+    "resort",
+    "grand",
+    "royal",
+    "cruz",
+    "santa",
+    "san",
+    "los",
+    "county",
+    "big",
+    "little",
+    "upper",
+    "lower",
+    "downtown",
+    "campus",
+    "college",
+    "school",
+    "medical",
+    "airporter",
+    "ferry",
+    "water",
+    "yosemite",
+    "sequoia",
+    "national",
+    "state",
+    "shuttle",
+    "trolley",
 }
 
 # Hosts that carry many operators' feeds, so sharing one proves nothing.
 SHARED_HOSTS = {
-    "api.511.org", "data.trilliumtransit.com", "gtfs.remix.com", "gtfs.calitp.org",
-    "gtfs.dds.dot.ca.gov", "rapid.nationalrtap.org", "s3.amazonaws.com", "passio3.com",
-    "app.mecatran.com", "www.ips-systems.com", "ips-systems.com", "data.peaktransit.com",
-    "api.goswift.ly", "gitlab.com", "github.com", "raw.githubusercontent.com",
-    "urldefense.com", "api.sparelabs.com", "transitfeeds.com", "iportal.sacrt.com",
+    "api.511.org",
+    "data.trilliumtransit.com",
+    "gtfs.remix.com",
+    "gtfs.calitp.org",
+    "gtfs.dds.dot.ca.gov",
+    "rapid.nationalrtap.org",
+    "s3.amazonaws.com",
+    "passio3.com",
+    "app.mecatran.com",
+    "www.ips-systems.com",
+    "ips-systems.com",
+    "data.peaktransit.com",
+    "api.goswift.ly",
+    "gitlab.com",
+    "github.com",
+    "raw.githubusercontent.com",
+    "urldefense.com",
+    "api.sparelabs.com",
+    "transitfeeds.com",
+    "iportal.sacrt.com",
 }
 
 
@@ -254,8 +455,11 @@ def hostname_of(url: str) -> str:
 
 
 def words(text: str) -> list[str]:
-    return [t for t in re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).split()
-            if len(t) > 2 and not t.isdigit()]
+    return [
+        t
+        for t in re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).split()
+        if len(t) > 2 and not t.isdigit()
+    ]
 
 
 def flat_name(name: str) -> str:
@@ -273,8 +477,11 @@ def url_words(url: str) -> set[str]:
 
 
 def host_labels(host: str) -> set[str]:
-    return {t for t in re.split(r"[.-]+", (host or "").lower())
-            if len(t) > 3 and t not in HOST_NOISE and not t.isdigit()}
+    return {
+        t
+        for t in re.split(r"[.-]+", (host or "").lower())
+        if len(t) > 3 and t not in HOST_NOISE and not t.isdigit()
+    }
 
 
 def california_records() -> list[dict[str, Any]]:
@@ -285,9 +492,7 @@ def california_records() -> list[dict[str, Any]]:
     still parked in another shard.
     """
     rollups = yaml.safe_load((REPO_ROOT / "rollups.yaml").read_text())["rollups"]
-    members = set(
-        next(r for r in rollups if r["id"] == "california").get("members", [])
-    )
+    members = set(next(r for r in rollups if r["id"] == "california").get("members", []))
     index = yaml.safe_load((REPO_ROOT / "registry" / "index.yaml").read_text())
     out: list[dict[str, Any]] = []
     for shard in index["shards"]:
@@ -299,22 +504,23 @@ def california_records() -> list[dict[str, Any]]:
     return sorted(out, key=lambda e: e["id"])
 
 
-def decide(
-    record: dict[str, Any],
-    directory: list[dict[str, Any]],
-    org_word_owners: dict[str, set[int]],
-    host_owners: dict[str, set[int]],
-) -> tuple[str, str, int | None, str]:
-    """Return (status, method, caltrans_id, evidence) for one registry record."""
-    agency_id = record["id"]
+# (status, method, caltrans_id, evidence) for one registry record.
+Decision = tuple[str, str, int | None, str]
+
+
+def _curated_decision(agency_id: str) -> Decision | None:
+    """A hand-reviewed answer, which outranks every derived one."""
     if agency_id in CURATED:
         caltrans_id, reason = CURATED[agency_id]
         status = "matched" if caltrans_id is not None else "absent"
         return status, "curated", caltrans_id, reason
     if agency_id in CURATED_UNCERTAIN:
         return "uncertain", "curated", None, CURATED_UNCERTAIN[agency_id]
+    return None
 
-    feed_url = record.get("static_gtfs_url", "")
+
+def _feed_url_decision(directory: list[dict[str, Any]], feed_url: str) -> Decision | None:
+    """The strongest derived signal: their own report lists this exact feed URL."""
     key = normalized_url(feed_url)
     hits = [a for a in directory if key and key in a["_urls"]]
     if len(hits) == 1:
@@ -322,25 +528,49 @@ def decide(
     if len(hits) > 1:
         named = ", ".join(sorted(a["name"] for a in hits))
         return "uncertain", "feed_url", None, f"their reports list this feed URL under {named}"
+    return None
 
+
+def _org_name_decision(directory: list[dict[str, Any]], record: dict[str, Any]) -> Decision | None:
+    """Exact organization-name agreement, flattened for punctuation and case."""
     exact = [a for a in directory if flat_name(a["name"]) == flat_name(record["name"])]
     if len(exact) == 1:
         return "matched", "org_name", exact[0]["caltrans_id"], "the organization names agree"
+    return None
 
+
+def _place_name_decision(
+    directory: list[dict[str, Any]],
+    record_words: set[str],
+    org_word_owners: dict[str, set[int]],
+) -> Decision | None:
+    """A place word only one organization in their directory owns."""
     shared: dict[int, tuple[dict[str, Any], set[str]]] = {}
-    record_words = place_words(record["name"]) | url_words(feed_url)
     for agency in directory:
         common = {w for w in record_words & agency["_words"] if len(org_word_owners[w]) == 1}
         if common and common - GENERIC_PLACE:
             shared[agency["caltrans_id"]] = (agency, common)
     if len(shared) == 1:
         agency, common = next(iter(shared.values()))
-        return ("matched", "place_name", agency["caltrans_id"],
-                f"shared name: {', '.join(sorted(common))}")
+        return (
+            "matched",
+            "place_name",
+            agency["caltrans_id"],
+            f"shared name: {', '.join(sorted(common))}",
+        )
     if len(shared) > 1:
         named = ", ".join(sorted(a["name"] for a, _ in shared.values()))
         return "uncertain", "place_name", None, f"the name fits more than one of them: {named}"
+    return None
 
+
+def _host_decision(
+    directory: list[dict[str, Any]],
+    record: dict[str, Any],
+    feed_url: str,
+    host_owners: dict[str, set[int]],
+) -> Decision | None:
+    """A feed hostname label only one organization publishes under."""
     brand: dict[int, tuple[dict[str, Any], set[str]]] = {}
     host = hostname_of(feed_url)
     labels = place_words(record["name"])
@@ -352,11 +582,46 @@ def decide(
             brand[agency["caltrans_id"]] = (agency, common)
     if len(brand) == 1:
         agency, common = next(iter(brand.values()))
-        return ("matched", "source_url_token", agency["caltrans_id"],
-                f"shared feed hostname: {', '.join(sorted(common))}")
+        return (
+            "matched",
+            "source_url_token",
+            agency["caltrans_id"],
+            f"shared feed hostname: {', '.join(sorted(common))}",
+        )
     if len(brand) > 1:
         named = ", ".join(sorted(a["name"] for a, _ in brand.values()))
         return "uncertain", "source_url_token", None, f"the feed host fits {named}"
+    return None
+
+
+def decide(
+    record: dict[str, Any],
+    directory: list[dict[str, Any]],
+    org_word_owners: dict[str, set[int]],
+    host_owners: dict[str, set[int]],
+) -> Decision:
+    """Return (status, method, caltrans_id, evidence) for one registry record.
+
+    The strategies are tried in descending order of evidence strength and the
+    first one with an answer wins. Each is its own function so the cascade
+    reads as the ordered policy it is; the order and every returned tuple are
+    unchanged from when this was one body.
+    """
+    feed_url = record.get("static_gtfs_url", "")
+    record_words = place_words(record["name"]) | url_words(feed_url)
+    # Lazily, so a curated answer still costs nothing and no later strategy
+    # touches a record the cascade would never have reached.
+    strategies: tuple[Callable[[], Decision | None], ...] = (
+        lambda: _curated_decision(record["id"]),
+        lambda: _feed_url_decision(directory, feed_url),
+        lambda: _org_name_decision(directory, record),
+        lambda: _place_name_decision(directory, record_words, org_word_owners),
+        lambda: _host_decision(directory, record, feed_url, host_owners),
+    )
+    for strategy in strategies:
+        result = strategy()
+        if result is not None:
+            return result
 
     loose = [a for a in directory if record_words & a["_words"]]
     if loose:
@@ -369,9 +634,9 @@ def main() -> int:
     snapshot = json.loads(SNAPSHOT.read_text())
     directory = snapshot["agencies"]
     for agency in directory:
-        agency["_urls"] = {
-            normalized_url(u) for urls in agency["feeds"].values() for u in urls
-        } - {""}
+        agency["_urls"] = {normalized_url(u) for urls in agency["feeds"].values() for u in urls} - {
+            ""
+        }
         agency["_words"] = place_words(agency["name"])
         agency["_hosts"] = set()
         for urls in agency["feeds"].values():

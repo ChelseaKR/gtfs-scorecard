@@ -9,11 +9,12 @@ import json
 import re
 import sys
 from collections import Counter, defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import date, datetime
 from html.parser import HTMLParser
 from pathlib import Path, PurePosixPath
-from typing import Any
+from typing import Any, cast
 from urllib.parse import unquote, urljoin, urlsplit
 from xml.etree.ElementTree import Element, ParseError
 
@@ -859,8 +860,11 @@ def _validate_no_tracking(
             )
         if path.suffix.casefold() != ".js":
             continue
-        script = (site_root / relative_path).read_text(encoding="utf-8")
-        if _contains_forbidden_telemetry_marker(script):
+        # A distinct name: `script` above this loop is a Reference, and reusing
+        # it for the file's text made a strict-mode type error inside the
+        # privacy gate that nothing was checking.
+        script_source = (site_root / relative_path).read_text(encoding="utf-8")
+        if _contains_forbidden_telemetry_marker(script_source):
             findings.append(
                 Finding(
                     "privacy.telemetry_script",
@@ -1215,10 +1219,11 @@ def _validate_duplicate_metadata(
     redirect_aliases: dict[str, str],
     findings: list[Finding],
 ) -> None:
-    for label, getter in (
+    getters: tuple[tuple[str, Callable[[Page], list[str]]], ...] = (
         ("title", lambda page: page.titles),
         ("description", lambda page: page.descriptions),
-    ):
+    )
+    for label, getter in getters:
         groups: dict[str, list[Page]] = defaultdict(list)
         for page in pages.values():
             if (
@@ -1513,7 +1518,7 @@ def _parse_sitemap(path: Path, relative_path: str, findings: list[Finding]) -> E
             )
         )
         return None
-    return root
+    return cast("Element", root)
 
 
 def _sitemap_locations(root: Element, relative_path: str, findings: list[Finding]) -> list[str]:

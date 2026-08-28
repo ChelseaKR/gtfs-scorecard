@@ -62,8 +62,7 @@ def main() -> int:
     for name, value in sources.items():
         print(f"  {value!r:<10} {name}")
     print(
-        "\nPick one source of truth (pipeline/pyproject.toml today) and update the "
-        "others to match."
+        "\nPick one source of truth (pipeline/pyproject.toml today) and update the others to match."
     )
     return 1
 
