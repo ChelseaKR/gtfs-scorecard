@@ -43,6 +43,19 @@ the declared public surface).
   site whose copy it cannot account for instead of skipping it. Deferred fields
   are printed with their reason. No threshold moved: every breaching string was
   rewritten (ADR 0048).
+- **`/ntd/` publishes the reporter denominator, not only the feed one.** The
+  page answered "45.0% of 1,125 tracked feeds", over this project's registry,
+  and could not answer the question an FTA reviewer asks first: how many
+  obligated reporters have nothing discoverable at all (#278). The inverted join
+  and its RY2024 snapshot had existed since 2026-08-15, and
+  `data/ntd/PROVENANCE.md` recorded that nothing read them. They are now
+  published, in reporter units, stating that 1,253 reporters and 1,125 feed
+  records are different denominators that are never added, and giving the
+  no-discoverable-feed range at both ends (473 to 641) rather than averaging a
+  name-based join. A reporter with no discoverable feed is shown as a limit of
+  what open catalogues can see, never as a zero and never as a finding about
+  that agency. The section publishes nothing at all if the snapshot does not
+  declare its unit or its tiers do not sum to its own denominator (ADR 0052).
 
 - **An alert about a seasonal feed now says what its scorecard page says.**
   `metrics.freshness` has read a feed's own calendars since EXP-04 landed on

@@ -34,9 +34,11 @@ two must never be added or compared as though they were the same thing.
 
 from __future__ import annotations
 
+import json
 import re
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Any
 
 from .ntd_crosswalk import normalize_name
@@ -411,3 +413,80 @@ def summarize(matches: list[Match], *, report_year: str, obligated: int) -> Cove
         obligated=obligated,
         by_tier={tier: counts.get(tier, 0) for tier in TIER_ORDER},
     )
+
+
+# --- publishing the committed snapshot ---------------------------------------
+
+#: Where the committed reporter-coverage snapshot lives, and the unit it must
+#: declare. `data/ntd/PROVENANCE.md` records the sources, their retrieval date
+#: and their terms.
+SNAPSHOT_NAME = "reporter-coverage-ry2024.json"
+
+#: The only unit these counts may carry. The registry counts feed records, which
+#: is a different unit, and the two must never be added or compared as though
+#: they were the same thing.
+REPORTER_UNIT = "ntd_reporters"
+
+
+def snapshot_path() -> Path:
+    """The committed snapshot's path under the repository root."""
+    from .config import repo_root
+
+    return repo_root() / "data" / "ntd" / SNAPSHOT_NAME
+
+
+def published_reporter_coverage(path: Path | None = None) -> dict[str, Any] | None:
+    """The committed reporter counts, or None when they cannot be trusted.
+
+    Fails closed on every disagreement rather than publishing a number that
+    does not reconcile:
+
+    * a missing or unreadable snapshot publishes nothing;
+    * a snapshot that does not declare `unit: ntd_reporters` publishes nothing,
+      so a feed-record count can never be rendered under a reporter label;
+    * tier counts that do not sum to the stated obligated population publish
+      nothing, because then no denominator on the page would be the real one.
+
+    Returning None is the honest outcome: the page keeps its existing
+    tracked-feed measurement and says nothing about reporters at all.
+    """
+    source = path if path is not None else snapshot_path()
+    try:
+        payload = json.loads(source.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(payload, dict) or payload.get("unit") != REPORTER_UNIT:
+        return None
+
+    obligated = payload.get("obligated_reporters")
+    by_tier = payload.get("by_tier")
+    if not _is_count(obligated) or not isinstance(by_tier, dict):
+        return None
+    if sorted(by_tier) != sorted(TIER_ORDER):
+        return None
+    if not all(_is_count(count) for count in by_tier.values()):
+        return None
+    if sum(by_tier.values()) != obligated:
+        return None
+
+    tracked = sum(by_tier[tier] for tier in TRACKED_BY_US_TIERS)
+    elsewhere = sum(by_tier[tier] for tier in STRONG_TIERS - TRACKED_BY_US_TIERS)
+    return {
+        "unit": REPORTER_UNIT,
+        "report_year": str(payload.get("report_year") or ""),
+        "retrieved_utc": str(payload.get("retrieved_utc") or ""),
+        "obligated_reporters": obligated,
+        "tracked_by_registry": tracked,
+        "discoverable_elsewhere": elsewhere,
+        # The two ends of the same honest range: the low end counts a shared
+        # rare word as a match, the high end does not. The distance between them
+        # is the width of a name-based join, and it is wide.
+        "no_discoverable_feed_low": by_tier["no_candidate"],
+        "no_discoverable_feed_high": obligated - sum(by_tier[tier] for tier in STRONG_TIERS),
+        "needs_human_review": by_tier["weak_shared_token"],
+        "by_tier": dict(by_tier),
+    }
+
+
+def _is_count(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value >= 0

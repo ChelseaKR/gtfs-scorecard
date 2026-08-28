@@ -149,6 +149,12 @@ existing surface without changing a grade or adding a service:
   The inventory refuses a `Finding(...)` site whose copy it cannot read, so the
   gate's coverage cannot narrow again silently. No threshold, score, grade or
   schema moved (ADR 0048).
+- **Shipped 2026-08-27:** `/ntd/` and `ntd.json` publish the NTD reporter
+  denominator alongside the tracked-feed one, from the committed RY2024
+  snapshot that nothing had read (#278). Reporter counts are labelled as such
+  and never added to feed-record counts, the no-discoverable-feed range is
+  published at both ends, and the section renders nothing if the snapshot does
+  not reconcile (ADR 0052).
 - **Next only through curation:** work the European candidate queue toward the
   beta gate in [`global-expansion.md`](global-expansion.md). Feed count alone
   does not pass source, license, identity, freshness, or country-spread review.
