@@ -4621,7 +4621,25 @@ def _render_agency_index(
         head_extra=_agency_index_head_links(page, page_count),
         body=body,
         wide=True,
+        jsonld=_collection_page_jsonld(f"Agency scorecards{page_suffix}", desc, canonical),
     )
+
+
+def _collection_page_jsonld(name: str, description: str, canonical: str) -> dict[str, Any]:
+    """A listing page's structured identity, from what the page already says.
+
+    Every value here is the page's own visible name, its meta description, and
+    its canonical URL. Nothing is counted, inferred, or added: a listing page
+    is a schema.org CollectionPage, and saying only that is the whole claim.
+    Matches the node the /fix/ index has published since it shipped."""
+    return {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": name,
+        "description": description,
+        "url": canonical,
+        "isPartOf": {"@type": "WebSite", "name": "GTFS Scorecard", "url": BASE_URL},
+    }
 
 
 def _grade_distribution_bar(dist: dict[str, Any], total: int) -> str:
@@ -4818,7 +4836,11 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     </section>"""
     body = "\n".join(line.rstrip() for line in body.splitlines())
     return _page(
-        title=f"{rname} — GTFS Scorecard", description=desc, canonical=canonical, body=body
+        title=f"{rname} — GTFS Scorecard",
+        description=desc,
+        canonical=canonical,
+        body=body,
+        jsonld=_collection_page_jsonld(rname, desc, canonical),
     )
 
 
