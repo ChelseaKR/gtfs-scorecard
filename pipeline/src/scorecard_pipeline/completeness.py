@@ -376,8 +376,8 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
                 code="scorecard_missing_headsigns",
                 severity="WARNING",
                 count=missing,
-                what=f"{missing} of {len(trips)} trips lack rider-facing destination "
-                "or direction text.",
+                what=f"{missing} of {len(trips)} trips have no headsign, the text "
+                "that tells riders where the bus is going.",
                 why="When a route has multiple directions or patterns, the route "
                 "name alone may not tell riders which service is coming.",
                 fix="Add the destination, direction, or 'via' label riders actually "
@@ -407,8 +407,8 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
                 count=1,
                 what="feed_info.txt has no technical contact (feed_contact_email or "
                 "feed_contact_url).",
-                why="Trip-planning apps and regional data coordinators have nobody to email when "
-                "they spot a problem with your feed, so problems linger.",
+                why="App makers and state data programs have nobody to email when they "
+                "spot a problem. Small errors then sit in the feed for months.",
                 fix="Add feed_contact_email to feed_info.txt.",
                 effort="One field.",
                 deduction=round(0.5 * WEIGHTS["contact"], 1),

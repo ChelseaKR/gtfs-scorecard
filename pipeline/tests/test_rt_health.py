@@ -9,6 +9,7 @@ import pytest
 import scorecard_pipeline.rt_health as rt_health
 from scorecard_pipeline.rt import RtSample, RtWindow
 from scorecard_pipeline.rt_health import (
+    RtHealthRecordCorruptError,
     RtObservation,
     append_observation,
     load_observations,
@@ -106,3 +107,50 @@ def test_append_and_load_round_trip_and_cap(
 def test_load_missing_is_empty(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(rt_health, "repo_root", lambda: tmp_path)
     assert load_observations("nobody") == []
+
+
+def test_load_corrupt_record_raises_instead_of_reading_as_empty(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A record file that exists but fails to parse is corruption, not an
+    empty history, and must never be silently read as one (see
+    RtHealthRecordCorruptError's docstring: reading it as empty would let the
+    next ``append_observation`` overwrite it, destroying real history)."""
+    monkeypatch.setattr(rt_health, "repo_root", lambda: tmp_path)
+    path = rt_health.state_path("demo")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("<<<<<<< HEAD\nnot valid json\n=======\n>>>>>>> branch\n")
+
+    with pytest.raises(RtHealthRecordCorruptError):
+        load_observations("demo")
+
+
+def test_append_refuses_to_overwrite_a_corrupt_record(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The destructive case this guards against: real accumulated history,
+    corrupted on disk (e.g. a bad merge), must survive the next monitor run
+    rather than being replaced by a single new observation."""
+    monkeypatch.setattr(rt_health, "repo_root", lambda: tmp_path)
+    for i in range(5):
+        append_observation(
+            "demo",
+            RtObservation(
+                ts=i, kinds_reachable=1, kinds_total=1, worst_lag_seconds=i, coverage_pct=None
+            ),
+        )
+    path = rt_health.state_path("demo")
+    original = path.read_text()
+    path.write_text(original[:20])  # truncate mid-JSON, simulating corruption
+
+    with pytest.raises(RtHealthRecordCorruptError):
+        append_observation(
+            "demo",
+            RtObservation(
+                ts=999, kinds_reachable=1, kinds_total=1, worst_lag_seconds=1, coverage_pct=None
+            ),
+        )
+
+    # The corrupt file on disk is untouched, not replaced by a fresh
+    # single-observation record.
+    assert path.read_text() == original[:20]

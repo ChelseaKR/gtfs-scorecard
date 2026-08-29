@@ -335,6 +335,18 @@ fallback. Adding a fix page and adding a translation were separate acts with
 nothing checking they agreed. `test_every_published_fix_page_has_a_curated_translation`
 is now that check.
 
+**The readability gate read half the copy it appeared to gate (2026-08-27).**
+The sentence above, "gates every curated `what`/`why`/`fix` string", was
+accurate and was narrower than it read. `notices.TRANSLATIONS` is one of two
+families of finding copy. The other is written inline at each `Finding(...)`
+site in `accessibility.py`, `completeness.py`, `fares.py`, `flex.py`,
+`metrics.py`, `pathways.py`, `routability.py` and `rt.py`, and reaches the same
+paragraph of the same agency page. That family, 118 strings, had never been
+measured; 23 of them missed the bars the gate already enforced. The gate now
+reads an inventory of both families and refuses a construction site whose copy
+it cannot account for, so its coverage cannot narrow again without failing.
+ADR 0048; the thresholds did not move and the breaching strings were rewritten.
+
 **Pitch.** Turn "grow the translation table" from an intention into a managed
 metric: instance-weighted coverage, a frequency-ranked curation queue, and a
 readability gate.

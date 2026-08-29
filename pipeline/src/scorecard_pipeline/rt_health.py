@@ -143,6 +143,22 @@ def summarize(observations: list[RtObservation]) -> RtHealth:
     )
 
 
+class RtHealthRecordCorruptError(RuntimeError):
+    """An agency's rt-health record file exists but its contents can't be parsed.
+
+    Deliberately distinct from "no record file exists yet". That case is a
+    real, legitimate empty history (an agency the monitor hasn't observed
+    yet) and ``load_observations`` returns ``[]`` for it. A record that
+    exists but fails to parse — a bad git merge leaving conflict markers in
+    the tracked JSON, a truncated write, hand editing gone wrong — is
+    corruption, not absence, and must never be treated as the same thing:
+    ``append_observation`` builds its payload from ``load_observations``, so
+    silently reading corruption as "no history" would make the very next
+    monitor run overwrite months of recorded uptime with a single new
+    observation, with nothing in the logs to say why.
+    """
+
+
 def _state_dir() -> Path:
     return repo_root() / "data" / "rt-health"
 
@@ -152,11 +168,23 @@ def state_path(agency_id: str) -> Path:
 
 
 def load_observations(agency_id: str) -> list[RtObservation]:
-    """The recorded observations for an agency, oldest first; empty when none."""
+    """The recorded observations for an agency, oldest first; empty when none.
+
+    Raises ``RtHealthRecordCorruptError`` when the record file exists but is
+    not valid JSON, so a corrupt file is never mistaken for an empty history
+    (see that error's docstring for why that distinction matters).
+    """
+    path = state_path(agency_id)
     try:
-        data = json.loads(state_path(agency_id).read_text())
-    except (FileNotFoundError, ValueError):
+        text = path.read_text()
+    except FileNotFoundError:
         return []
+    try:
+        data = json.loads(text)
+    except ValueError as exc:
+        raise RtHealthRecordCorruptError(
+            f"{path} exists but is not valid JSON; refusing to read it as an empty history."
+        ) from exc
     out: list[RtObservation] = []
     for row in data.get("observations", []):
         out.append(

@@ -28,6 +28,7 @@ from .comparisons import producer_contract, same_producer_contract
 from .config import artifacts_dir, utc_today
 from .metrics import expiry_status
 from .rollups import Rollup, _load_latest, resolve_member_ids
+from .service_periods import read_service_period
 
 # A score move of at least this many points (or any grade change) is worth
 # reporting; smaller wobble is validator noise. Reuses the alerts threshold so
@@ -148,6 +149,11 @@ def _member_state(latest: dict[str, Any] | None) -> dict[str, Any] | None:
         "grade": grade,
         "days_until_expiry": days,
         "expiry_status": expiry_status(days),
+        # Wording input only, never an eligibility or attention decision. Read
+        # fresh from this week's artifact, so a snapshot written before this
+        # field existed still diffs correctly: the key is absent on the "was"
+        # side and no comparison reads it there.
+        "planned_boundary": read_service_period(latest, days).planned,
         "producer_contract": contract,
     }
 
@@ -166,6 +172,44 @@ _STATUS_PHRASE = {
     "lapsed": "expired",
     "stale": "long expired",
 }
+
+
+def _lapsed_movement_text(name: str, planned: bool) -> tuple[str, str]:
+    """Headline and detail for a feed whose calendar closed this week.
+
+    A cohort view is where a liaison decides who to call. Calling a campus
+    system about an expired feed in the week its term ended wastes the call and
+    the goodwill, so a boundary the feed's own calendars encode is described as
+    what it is (see service_periods). The movement is still reported, still
+    counts as needing attention, and still sorts the same way.
+    """
+    if planned:
+        return (
+            "Feed reached a scheduled service boundary",
+            f"{name}'s calendar runs in distinct service periods, and one of them ended "
+            "this week. Riders cannot plan a trip until the next period is published.",
+        )
+    return (
+        "Feed expired this week",
+        f"{name}'s schedule stopped covering service since last week. A re-export "
+        "with a calendar that reaches further out brings it back.",
+    )
+
+
+def _expiring_movement_text(name: str, planned: bool) -> tuple[str, str]:
+    """Headline and detail for a feed whose window moved inside a month."""
+    if planned:
+        return (
+            "Feed's service period ends within a month",
+            f"{name}'s calendar runs in distinct service periods and the current one "
+            "closes within a month. Publishing the next period keeps trip planners "
+            "showing it without a gap.",
+        )
+    return (
+        "Feed is expiring soon",
+        f"{name}'s service window is now inside a month. A calm heads-up now beats a "
+        "cliff-edge warning the week it dies.",
+    )
 
 
 def _diff_member(
@@ -189,27 +233,13 @@ def _diff_member(
             )
         )
     elif prev_status not in _EXPIRED_STATUS and curr_status in _EXPIRED_STATUS:
-        movements.append(
-            PortfolioMovement(
-                agency_id,
-                name,
-                "newly_lapsed",
-                "Feed expired this week",
-                f"{name}'s schedule stopped covering service since last week. A re-export "
-                "with a calendar that reaches further out brings it back.",
-            )
-        )
+        # Wording only: the kind, and therefore the attention grouping and the
+        # counts a liaison reads off this digest, are identical either way.
+        headline, detail = _lapsed_movement_text(name, bool(now.get("planned_boundary")))
+        movements.append(PortfolioMovement(agency_id, name, "newly_lapsed", headline, detail))
     elif prev_status == "current" and curr_status == "expiring_soon":
-        movements.append(
-            PortfolioMovement(
-                agency_id,
-                name,
-                "newly_expiring",
-                "Feed is expiring soon",
-                f"{name}'s service window is now inside a month. A calm heads-up now beats a "
-                "cliff-edge warning the week it dies.",
-            )
-        )
+        headline, detail = _expiring_movement_text(name, bool(now.get("planned_boundary")))
+        movements.append(PortfolioMovement(agency_id, name, "newly_expiring", headline, detail))
 
     # Score/grade movement, independent of the expiry window.
     delta = now["score"] - was["score"]

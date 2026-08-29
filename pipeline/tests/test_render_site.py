@@ -43,6 +43,7 @@ from scorecard_pipeline.render_site import (
     _rollup_percentile_context,
     _route_map_section,
     _rt_accuracy_section,
+    _rt_health_section,
     _standards_section,
     _states_by_agency,
     _vendor_request,
@@ -6290,3 +6291,22 @@ def test_focus_maps_bar_uses_the_singular_and_survives_an_empty_corpus() -> None
         "0 of 1 published feed record clears the bar"
     )
     assert render_site._beyond_validator_stat([]) == "Stated on each scorecard"
+
+
+def test_rt_health_section_empty_for_an_unmonitored_agency() -> None:
+    """No record file at all is a legitimate empty history, not an error."""
+    assert _rt_health_section("nobody-monitors-this-agency") == ""
+
+
+def test_rt_health_section_survives_a_corrupt_record_file(isolated_repo_root: Path) -> None:
+    """A record file that exists but fails to parse (e.g. a bad merge leaving
+    conflict markers in the tracked JSON) must not crash the page for every
+    other agency the site publishes. It is logged, not raised, and the page
+    renders as if nothing had been observed yet -- the corruption itself is
+    left on disk for a human to fix, never silently overwritten (that duty
+    lives in rt_health.append_observation, unit-tested there)."""
+    rt_dir = isolated_repo_root / "data" / "rt-health"
+    rt_dir.mkdir(parents=True)
+    (rt_dir / "demo.json").write_text("<<<<<<< HEAD\nnot valid json\n=======\n>>>>>>> branch\n")
+
+    assert _rt_health_section("demo") == ""

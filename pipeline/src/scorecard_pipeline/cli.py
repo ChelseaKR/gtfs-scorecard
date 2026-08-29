@@ -2068,24 +2068,37 @@ def _cmd_cadence(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
 
 def _cmd_rt_archive(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .rt_archiver import run_session
+    from .rt_health import RtHealthRecordCorruptError
 
     agency = AGENCIES[args.agency]
     if not agency.rt_urls:
         log.error("%s publishes no realtime feed to archive.", agency.id)
         return 1
-    recorded = run_session(agency, duration_seconds=args.duration, interval_seconds=args.interval)
+    try:
+        recorded = run_session(
+            agency, duration_seconds=args.duration, interval_seconds=args.interval
+        )
+    except RtHealthRecordCorruptError:
+        log.error(
+            "%s: rt-health record is corrupt on disk; refusing to append to it. "
+            "Fix or remove data/rt-health/%s.json by hand.",
+            agency.id,
+            agency.id,
+        )
+        return 1
     log.info("Archived %d realtime observations for %s.", recorded, agency.id)
     return 0
 
 
 def _cmd_rt_health(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
-    from .rt_health import append_observation, observe
+    from .rt_health import RtHealthRecordCorruptError, append_observation, observe
 
     # One explicit id remains available for historical reproduction. The batch
     # monitor is a current-corpus job and must not keep polling a retired alias
     # beside its live successor.
     targets = [args.agency] if args.agency else current_agency_ids(sorted(AGENCIES))
     monitored = 0
+    corrupt = 0
     for agency_id in targets:
         agency = AGENCIES[agency_id]
         if not agency.rt_urls:
@@ -2101,7 +2114,21 @@ def _cmd_rt_health(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
         # The monitor stays a lightweight realtime poll: coverage needs the static
         # feed and is recorded by the daily score, not here.
         obs = observe(window, kinds_total=len(agency.rt_urls), scheduled=None)
-        append_observation(agency_id, obs)
+        try:
+            append_observation(agency_id, obs)
+        except RtHealthRecordCorruptError:
+            # Refused, not swallowed: appending would otherwise need to treat
+            # the corrupt file as an empty history and overwrite it, destroying
+            # whatever was recorded before. Logged loudly so a human fixes or
+            # removes the file; the rest of the cohort keeps being monitored.
+            corrupt += 1
+            log.error(
+                "%s: rt-health record is corrupt on disk; not appending. "
+                "Fix or remove data/rt-health/%s.json by hand.",
+                agency_id,
+                agency_id,
+            )
+            continue
         log.info(
             "%s: rt-health %d/%d feeds up, worst lag %ss",
             agency_id,
@@ -2109,7 +2136,9 @@ def _cmd_rt_health(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
             obs.kinds_total,
             obs.worst_lag_seconds,
         )
-    log.info("Monitored realtime for %d agencies.", monitored)
+    log.info(
+        "Monitored realtime for %d agencies (%d corrupt record files skipped).", monitored, corrupt
+    )
     return 0
 
 

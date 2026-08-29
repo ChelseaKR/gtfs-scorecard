@@ -226,10 +226,10 @@ def flex_findings(profile: FlexProfile) -> list[Finding]:
                 code="scorecard_flex_no_booking_rules",
                 severity="WARNING",
                 count=1,
-                what="This feed describes flexible (demand-responsive) service but "
-                "has no booking_rules.txt.",
-                why="Riders can see the service area but not how or when to reserve "
-                "a trip, so they can't actually use the service.",
+                what="This feed offers flexible service that riders book ahead, but "
+                "it has no booking_rules.txt.",
+                why="Riders can see the service area but not how or when to book a "
+                "trip. Without that, they can't use the service.",
                 fix="Add booking_rules.txt saying how far ahead and how to book "
                 "(phone, app, or web).",
                 effort="A small file; one rule often covers the whole service.",

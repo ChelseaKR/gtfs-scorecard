@@ -7,7 +7,7 @@ import json
 from typing import Any
 
 from scorecard_pipeline import RUBRIC_VERSION, SCORING_PROFILE_ID
-from scorecard_pipeline.alerts import build_digest, render_digest
+from scorecard_pipeline.alerts import AlertItem, build_digest, render_digest
 from scorecard_pipeline.config import Agency, artifacts_dir, register
 from scorecard_pipeline.validate import VALIDATOR_VERSION
 
@@ -43,16 +43,21 @@ def write_latest(
     days_until_expiry: int | None,
     *,
     export_diff: dict[str, Any] | None = None,
+    freshness_details: dict[str, Any] | None = None,
+    freshness_findings: list[dict[str, Any]] | None = None,
 ) -> None:
     path = artifacts_dir() / agency_id
     path.mkdir(parents=True, exist_ok=True)
+    details: dict[str, Any] = {"days_until_expiry": days_until_expiry}
+    details.update(freshness_details or {})
+    freshness: dict[str, Any] = {"details": details}
+    if freshness_findings is not None:
+        freshness["findings"] = freshness_findings
     artifact: dict[str, Any] = {
         "agency": {"id": agency_id, "name": name},
         "snapshot_date": "2026-06-12",
         "overall": {"score": score, "grade": grade},
-        "categories": {
-            "freshness": {"details": {"days_until_expiry": days_until_expiry}},
-        },
+        "categories": {"freshness": freshness},
         "top_fixes": [],
     }
     if export_diff is not None:
@@ -501,3 +506,230 @@ def test_one_day_glitch_is_still_suppressed() -> None:
         {"date": "2026-06-12", "score": 84.0, "grade": "B", "days_until_expiry": 118},
     ]
     assert _anomaly_alert_items(history, "blip", "Blip Transit") == []
+
+
+# --- Seasonal service boundaries in the alert wording (EXP-04 / RR:R3) -------
+#
+# The excellence bar EXP-04 set: a legitimately seasonal feed no longer
+# receives cliff-edge expiry language, and a truly lapsing feed is unaffected.
+# The second half is the one that has to hold under pressure, so it is tested
+# from more angles than the first.
+
+PLANNED_BOUNDARY_FINDING = [{"code": "scorecard_planned_service_boundary", "count": 1}]
+LAPSE_FINDING = [{"code": "scorecard_feed_expired", "count": 1}]
+
+# Phrases the agency-facing copy must not use about a planned transition.
+CLIFF_EDGE_PHRASES = (
+    "Service data has expired",
+    "may have already dropped this agency",
+)
+
+
+def _only_expiry_item(agency_id: str, name: str, **kwargs: Any) -> Any:
+    """Build a one-agency digest and return its single expiry item."""
+    write_latest(agency_id, name, 70.0, "C", **kwargs)
+    write_index(
+        {
+            agency_id: {
+                "name": name,
+                "history": [{"date": "2026-06-12", "score": 70.0, "grade": "C"}],
+            }
+        }
+    )
+    digest = build_digest(today=dt.date(2026, 6, 12), expiry_days=60)
+    expiry = [item for item in digest.items if item.kind == "expiry"]
+    assert len(expiry) == 1
+    return expiry[0]
+
+
+def test_detected_boundary_replaces_the_cliff_edge_sentence() -> None:
+    item = _only_expiry_item(
+        "campus",
+        "Campus Transit",
+        days_until_expiry=-12,
+        freshness_details={"seasonal_boundary": True},
+        freshness_findings=PLANNED_BOUNDARY_FINDING,
+    )
+    assert item.planned_boundary
+    assert item.headline == "Scheduled service period ended 12 day(s) ago"
+    assert "distinct service periods" in item.detail
+    for phrase in CLIFF_EDGE_PHRASES:
+        assert phrase not in item.headline + item.detail
+    # Still framed as a fix, and still says riders are affected right now.
+    assert "next service period is published" in item.fix
+    assert "cannot plan a trip" in item.detail
+
+
+def test_declared_seasonal_service_names_itself() -> None:
+    item = _only_expiry_item(
+        "trolley",
+        "Summer Trolley",
+        days_until_expiry=-5,
+        freshness_details={"service_type": "seasonal"},
+        freshness_findings=[{"code": "scorecard_intermittent_calendar_ended", "count": 1}],
+    )
+    assert item.headline == "Published seasonal calendar has run out"
+    assert "registered as seasonal" in item.detail
+
+
+def test_demand_response_service_is_called_on_demand() -> None:
+    item = _only_expiry_item(
+        "dial",
+        "County Dial-a-Ride",
+        days_until_expiry=-5,
+        freshness_details={"service_type": "demand_response"},
+        freshness_findings=[{"code": "scorecard_intermittent_calendar_ended", "count": 1}],
+    )
+    assert "on-demand" in item.headline
+    assert "seasonal" not in item.detail
+
+
+def test_approaching_boundary_keeps_the_countdown_and_softens_the_tone() -> None:
+    item = _only_expiry_item(
+        "term",
+        "Term Transit",
+        days_until_expiry=9,
+        freshness_details={"seasonal_boundary": True},
+        freshness_findings=[],
+    )
+    assert item.planned_boundary
+    assert item.headline == "Scheduled service period ends in 9 day(s)"
+    assert item.days_until_expiry == 9
+
+
+def test_ordinary_expired_feed_keeps_the_original_wording() -> None:
+    item = _only_expiry_item(
+        "lapsed",
+        "Lapsed Transit",
+        days_until_expiry=-12,
+        freshness_findings=LAPSE_FINDING,
+    )
+    assert not item.planned_boundary
+    assert item.headline == "Service data has expired"
+    assert "may have already dropped this agency" in item.detail
+    assert "Re-export the feed" in item.fix
+
+
+def test_ordinary_approaching_feed_keeps_the_original_wording() -> None:
+    item = _only_expiry_item("soon2", "Soon Transit", days_until_expiry=9)
+    assert not item.planned_boundary
+    assert item.headline == "Service data expires in 9 day(s)"
+
+
+def test_a_year_dead_seasonal_feed_is_never_softened() -> None:
+    """The STALE_FEED_DAYS floor, asserted at the alert surface as well."""
+    from scorecard_pipeline.metrics import STALE_FEED_DAYS
+
+    item = _only_expiry_item(
+        "abandoned",
+        "Abandoned Transit",
+        days_until_expiry=-STALE_FEED_DAYS - 30,
+        freshness_details={"seasonal_boundary": True, "service_type": "seasonal"},
+        freshness_findings=PLANNED_BOUNDARY_FINDING,
+    )
+    assert not item.planned_boundary
+    assert item.headline == "Service data has expired"
+
+
+def test_a_planned_boundary_is_still_reported_in_the_same_tier() -> None:
+    """Softer words, identical urgency: nothing is suppressed, delayed, or moved."""
+    planned = _only_expiry_item(
+        "planned",
+        "Planned Transit",
+        days_until_expiry=-3,
+        freshness_details={"seasonal_boundary": True},
+        freshness_findings=PLANNED_BOUNDARY_FINDING,
+    )
+    plain = _only_expiry_item("plain", "Plain Transit", days_until_expiry=-3)
+    assert planned.kind == plain.kind == "expiry"
+    assert planned.days_until_expiry == plain.days_until_expiry
+    assert planned.scorecard_url == plain.scorecard_url.replace("plain", "planned")
+
+
+def test_digest_explains_the_boundary_once_per_section() -> None:
+    write_latest(
+        "campus2",
+        "Campus Transit",
+        70.0,
+        "C",
+        days_until_expiry=-12,
+        freshness_details={"seasonal_boundary": True},
+        freshness_findings=PLANNED_BOUNDARY_FINDING,
+    )
+    write_latest("plain2", "Plain Transit", 70.0, "C", days_until_expiry=-12)
+    write_index(
+        {
+            agency_id: {
+                "name": agency_id,
+                "history": [{"date": "2026-06-12", "score": 70.0, "grade": "C"}],
+            }
+            for agency_id in ("campus2", "plain2")
+        }
+    )
+    rendered = render_digest(build_digest(today=dt.date(2026, 6, 12), expiry_days=60))
+    assert "The headings below group feeds by calendar date alone." in rendered
+    assert "One of them runs in distinct service periods" in rendered
+    # Both feeds still appear, in the same section, under the same tier.
+    assert rendered.count("### Already expired") == 1
+    assert "Campus Transit" in rendered
+    assert "Plain Transit" in rendered
+
+
+def test_digest_without_a_boundary_adds_no_note() -> None:
+    write_latest("plain3", "Plain Transit", 70.0, "C", days_until_expiry=-12)
+    write_index(
+        {
+            "plain3": {
+                "name": "Plain Transit",
+                "history": [{"date": "2026-06-12", "score": 70.0, "grade": "C"}],
+            }
+        }
+    )
+    rendered = render_digest(build_digest(today=dt.date(2026, 6, 12), expiry_days=60))
+    assert "group feeds by calendar date alone" not in rendered
+
+
+def _load_readability() -> Any:
+    import importlib.util
+    from pathlib import Path
+
+    path = Path(__file__).resolve().parents[1] / "scripts" / "check_readability.py"
+    spec = importlib.util.spec_from_file_location("check_readability", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_new_boundary_copy_clears_the_plain_language_bars() -> None:
+    """The wording this change introduced meets the notice-translation bars.
+
+    `scripts/check_readability.py` gates `notices.TRANSLATIONS` and nothing
+    else, so this asserts the same two thresholds against the strings added
+    here rather than widening that gate. The two lapse strings are deliberately
+    excluded: they are the existing published copy, carried through unchanged,
+    and rewriting them is not part of this change.
+    """
+    from scorecard_pipeline.alerts import _expiring_section_note, _expiry_wording
+    from scorecard_pipeline.service_periods import ServicePeriodRead
+
+    readability = _load_readability()
+    reads = (
+        ServicePeriodRead(planned=True),
+        ServicePeriodRead(planned=True, declared=True, service_type="seasonal"),
+        ServicePeriodRead(planned=True, declared=True, service_type="demand_response"),
+    )
+    strings = [
+        text for read in reads for days in (-12, 9) for text in _expiry_wording(days, read)[1:]
+    ]
+    strings.extend(
+        _expiring_section_note(
+            [
+                AlertItem("a", "A Transit", "expiry", "h", "d", "f", planned_boundary=True),
+                AlertItem("b", "B Transit", "expiry", "h", "d", "f", planned_boundary=True),
+            ]
+        )[:1]
+    )
+    for text in strings:
+        assert readability.avg_sentence_words(text) <= readability.MAX_AVG_SENTENCE_WORDS, text
+        assert readability.flesch(text) >= readability.MIN_FLESCH, text

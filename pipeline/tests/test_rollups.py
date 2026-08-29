@@ -12,6 +12,7 @@ from scorecard_pipeline import RUBRIC_VERSION, SCORING_PROFILE_ID
 from scorecard_pipeline.config import Agency, artifacts_dir, register, repo_root
 from scorecard_pipeline.rollups import (
     Rollup,
+    _realtime_block,
     build_rollup,
     load_rollups,
     publish_rollups,
@@ -531,3 +532,42 @@ def test_rollup_shapes_readiness_all_zero_when_nothing_measured() -> None:
         "not_measured": 1,
         "total": 1,
     }
+
+
+def test_realtime_block_skips_a_corrupt_record_without_crashing(isolated_repo_root: Path) -> None:
+    """A member's rt-health record that exists but fails to parse must not
+    take down the whole program rollup. It is logged and excluded, not
+    treated as an empty history to overwrite (that refusal lives in
+    rt_health.append_observation, unit-tested there); a healthy sibling
+    member's record still comes through untouched."""
+    rt_dir = isolated_repo_root / "data" / "rt-health"
+    rt_dir.mkdir(parents=True)
+    (rt_dir / "broken.json").write_text("<<<<<<< HEAD\nnot valid json\n=======\n>>>>>>> branch\n")
+    (rt_dir / "healthy.json").write_text(
+        json.dumps(
+            {
+                "agency_id": "healthy",
+                "observations": [
+                    {
+                        "ts": 1,
+                        "kinds_reachable": 1,
+                        "kinds_total": 1,
+                        "worst_lag_seconds": 10,
+                        "coverage_pct": None,
+                    }
+                ],
+            }
+        )
+    )
+
+    result = _realtime_block(
+        [
+            {"id": "broken", "name": "Broken Transit"},
+            {"id": "healthy", "name": "Healthy Transit"},
+            {"id": "unmonitored", "name": "Unmonitored Transit"},
+        ]
+    )
+
+    ids = {row["id"] for row in result["members"]}
+    assert ids == {"healthy"}
+    assert result["monitored_feed_records"] == 1

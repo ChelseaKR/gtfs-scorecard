@@ -22,6 +22,7 @@ import hashlib
 import html as html_lib
 import io
 import json
+import logging
 import math
 import re
 import shutil
@@ -116,6 +117,8 @@ from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
 from .timemachine import Event, grade_story, history_events
 from .timemachine import finding_codes as _finding_codes
 from .tool_profiles import detect_tool
+
+log = logging.getLogger(__name__)
 
 FIX_CODES_WITH_PAGES: set[str] = set()  # filled in by render_fixes()
 
@@ -3840,10 +3843,18 @@ def _rt_health_section(agency_id: str) -> str:
     Uptime and median header lag over the recorded window, so a reader sees how
     dependable the realtime feed has been, not only its score on the last sample.
     Absent (returns empty) for agencies the monitor has not yet observed, so a
-    feed without realtime is never shown a hollow reliability box."""
-    from .rt_health import load_observations, summarize
+    feed without realtime is never shown a hollow reliability box. Also absent
+    (logged, not raised) when the agency's record file exists but is corrupt —
+    the site must still build; the corruption itself is not silently erased,
+    since only ``append_observation`` writes this file and it refuses to treat
+    corruption as an empty history to overwrite."""
+    from .rt_health import RtHealthRecordCorruptError, load_observations, summarize
 
-    observations = load_observations(agency_id)
+    try:
+        observations = load_observations(agency_id)
+    except RtHealthRecordCorruptError:
+        log.warning("%s: rt-health record is corrupt; omitting the reliability section.", agency_id)
+        return ""
     if not observations:
         return ""
     s = summarize(observations)
@@ -10776,7 +10787,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # the uptime/lag samples the realtime monitor already records in data/rt-health
     # (ADR 0012), so it stays serverless and adds no polling. Names come from the
     # registry/index; state from the same map the directory uses.
-    from .rt_health import load_observations, state_path, summarize
+    from .rt_health import RtHealthRecordCorruptError, load_observations, state_path, summarize
     from .rt_national import national_rt
 
     rt_summaries: list[dict[str, Any]] = []
@@ -10789,7 +10800,16 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             # only the current published catalog.
             if rt_id not in published_ids:
                 continue
-            health = summarize(load_observations(rt_id))
+            try:
+                health = summarize(load_observations(rt_id))
+            except RtHealthRecordCorruptError:
+                # Logged, not raised: the national rollup covers ~2,100 feed
+                # records and one corrupt file must not fail the whole build.
+                # The file itself is left untouched for a human to fix.
+                log.warning(
+                    "%s: rt-health record is corrupt; excluding it from the national rollup.", rt_id
+                )
+                continue
             if health.observations == 0:
                 continue
             cfg = registry_by_id.get(rt_id)
