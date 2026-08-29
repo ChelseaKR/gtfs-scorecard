@@ -959,9 +959,8 @@ def _render_check_page() -> str:
     return _page(
         title="Check a GTFS feed before you publish — GTFS Scorecard",
         description=(
-            "Drop a GTFS zip in and get the five pre-publish questions answered in "
-            "your browser: required files, expiry, wheelchair fields, fares, and "
-            "stop names. Nothing is uploaded."
+            "Drop a GTFS zip in and answer the five pre-publish questions: required "
+            "files, expiry, wheelchair fields, fares, and stop names. Nothing is uploaded."
         ),
         canonical=f"{BASE_URL}/check/",
         body=body,
