@@ -4648,7 +4648,25 @@ def _render_agency_index(
         head_extra=_agency_index_head_links(page, page_count),
         body=body,
         wide=True,
+        jsonld=_collection_page_jsonld(f"Agency scorecards{page_suffix}", desc, canonical),
     )
+
+
+def _collection_page_jsonld(name: str, description: str, canonical: str) -> dict[str, Any]:
+    """A listing page's structured identity, from what the page already says.
+
+    Every value here is the page's own visible name, its meta description, and
+    its canonical URL. Nothing is counted, inferred, or added: a listing page
+    is a schema.org CollectionPage, and saying only that is the whole claim.
+    Matches the node the /fix/ index has published since it shipped."""
+    return {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": name,
+        "description": description,
+        "url": canonical,
+        "isPartOf": {"@type": "WebSite", "name": "GTFS Scorecard", "url": BASE_URL},
+    }
 
 
 def _grade_distribution_bar(dist: dict[str, Any], total: int) -> str:
@@ -4731,8 +4749,8 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     canonical = f"{BASE_URL}/program/{rid}/"
     desc = (
         f"{rname}: GTFS data quality across {rollup['agency_count']} feed scorecards, "
-        f"attention work first, with {rollup['needs_attention']} needing attention and the "
-        "fixes shared across the group."
+        f"with {rollup['needs_attention']} needing attention and the fixes shared "
+        "across the group."
     )
     rows_parts = []
     for m in rollup["members"]:
@@ -4845,7 +4863,11 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     </section>"""
     body = "\n".join(line.rstrip() for line in body.splitlines())
     return _page(
-        title=f"{rname} — GTFS Scorecard", description=desc, canonical=canonical, body=body
+        title=f"{rname} — GTFS Scorecard",
+        description=desc,
+        canonical=canonical,
+        body=body,
+        jsonld=_collection_page_jsonld(rname, desc, canonical),
     )
 
 
@@ -8352,14 +8374,10 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
         about={"@type": "Thing", "name": "GTFS shapes.txt NTD requirement"},
     )
     return _page(
-        title=(
-            "Does your GTFS feed need shapes.txt? The RY2026 NTD requirement, explained "
-            "— GTFS Scorecard"
-        ),
+        title="Does your GTFS feed need shapes.txt? RY2026 NTD requirement",
         description=(
-            "Who FTA's shapes.txt requirement covers and when it starts, the Report Year "
-            "2026 phase-in for small transit agencies, how to check your feed, and where "
-            "tracked feeds stand."
+            "Who FTA's shapes.txt requirement covers, the Report Year 2026 phase-in for "
+            "small transit agencies, how to check your feed, and where tracked feeds stand."
         ),
         canonical=canonical,
         wide=True,
@@ -8461,8 +8479,7 @@ def _render_disappeared_page() -> str:
         title="Why did my agency disappear from Google Maps? — GTFS Scorecard",
         description=(
             "The buses are still running but riders can't find them: the five GTFS feed "
-            "problems that make a transit agency vanish from trip planners, in the order "
-            "to check them, with plain-language fixes."
+            "problems that make a transit agency vanish from trip planners."
         ),
         canonical=canonical,
         wide=True,
@@ -8855,8 +8872,8 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
     return _page(
         title="What feeds publish — GTFS Scorecard",
         description=(
-            "Which GTFS features covered transit feeds publish (flexible service, fares and "
-            "Fares v2, station pathways, translations) and how complete their accessibility data is."
+            "Which GTFS features covered transit feeds publish: flexible service, fares, "
+            "Fares v2, pathways, translations, and how complete their accessibility data is."
         ),
         canonical=f"{BASE_URL}/adoption/",
         body=_strip_blank_line_whitespace(body),
@@ -9353,7 +9370,7 @@ def _render_status(
     return _page(
         title="Status | GTFS Scorecard",
         description=(
-            "The scorecard's monitoring schedule, current direct feed-URL liveness, latest full "
+            "The scorecard's monitoring schedule, current direct feed-URL liveness, latest "
             "scoring run, catalog freshness, and bounded European GTFS beta readiness."
         ),
         canonical=canonical,

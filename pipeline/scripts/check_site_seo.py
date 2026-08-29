@@ -33,8 +33,28 @@ _CONFIG_KEYS = {
     "hreflang_groups",
     "required_json_ld_types",
     "redirect_aliases",
+    "title_length",
+    "description_length",
 }
 _IGNORED_SCHEMES = {"blob", "data", "javascript", "mailto", "sms", "tel"}
+_HEADING_TAGS = ("h1", "h2", "h3", "h4", "h5", "h6")
+# Elements that cannot contain a heading, so they never open a subtree here.
+_VOID_ELEMENTS = {
+    "area",
+    "base",
+    "br",
+    "col",
+    "embed",
+    "hr",
+    "img",
+    "input",
+    "link",
+    "meta",
+    "param",
+    "source",
+    "track",
+    "wbr",
+}
 _OG_FIELDS = ("og:title", "og:description", "og:type", "og:url", "og:image")
 _JSON_LD_DATE_KEYS = {
     "dateCreated",
@@ -81,6 +101,8 @@ class Config:
     hreflang_groups: tuple[dict[str, str], ...]
     required_json_ld_types: dict[str, tuple[str, ...]]
     redirect_aliases: dict[str, str]
+    title_length: tuple[int, int]
+    description_length: tuple[int, int]
 
 
 @dataclass(frozen=True, order=True)
@@ -130,6 +152,7 @@ class Page:
     descriptions: list[str] = field(default_factory=list)
     canonicals: list[str] = field(default_factory=list)
     headings: list[str] = field(default_factory=list)
+    heading_levels: list[tuple[int, int]] = field(default_factory=list)
     robots: list[str] = field(default_factory=list)
     refreshes: list[Reference] = field(default_factory=list)
     links: list[Reference] = field(default_factory=list)
@@ -159,11 +182,19 @@ class PageParser(HTMLParser):
         self._head_depth = 0
         self._head_seen = False
         self._body_seen = False
+        self._open: list[str] = []
+        self._hidden_at: int | None = None
 
     def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
         tag = tag.casefold()
         values = {key.casefold(): value or "" for key, value in attrs}
         line, _ = self.getpos()
+        if tag not in _VOID_ELEMENTS:
+            self._open.append(tag)
+            if self._hidden_at is None and (
+                "hidden" in values or values.get("aria-hidden", "").strip().casefold() == "true"
+            ):
+                self._hidden_at = len(self._open)
         self._collect_common(tag, values)
         self._start_text_collection(tag, values, line)
         self._collect_element(tag, values, line)
@@ -182,8 +213,8 @@ class PageParser(HTMLParser):
             self.page.language = values.get("lang", "").strip()
         elif tag == "title" and self._head_depth:
             self._title_parts = []
-        elif tag == "h1":
-            self._heading_parts = []
+        elif tag in _HEADING_TAGS:
+            self._collect_heading(tag, line)
         elif tag == "script" and "src" not in values:
             if values.get("type", "").strip().casefold() == "application/ld+json":
                 self._json_ld_parts = []
@@ -191,6 +222,18 @@ class PageParser(HTMLParser):
             else:
                 self._inline_script_parts = []
                 self._inline_script_line = line
+
+    def _collect_heading(self, tag: str, line: int) -> None:
+        """Record one heading's depth, and start collecting an h1's text.
+
+        A heading inside a hidden subtree is not presented and not in the
+        accessibility tree, so it is not part of the outline a reader gets.
+        axe's heading-order rule draws the same line, and counting it here
+        would contradict the axe gate that already runs over this markup."""
+        if self._hidden_at is None:
+            self.page.heading_levels.append((int(tag[1]), line))
+        if tag == "h1":
+            self._heading_parts = []
 
     def _collect_element(self, tag: str, values: dict[str, str], line: int) -> None:
         if tag == "meta":
@@ -216,6 +259,10 @@ class PageParser(HTMLParser):
 
     def handle_endtag(self, tag: str) -> None:
         tag = tag.casefold()
+        if tag not in _VOID_ELEMENTS and tag in self._open:
+            del self._open[self._open.index(tag) :]
+            if self._hidden_at is not None and len(self._open) < self._hidden_at:
+                self._hidden_at = None
         if tag == "title" and self._title_parts is not None:
             self.page.titles.append(_normalize_text("".join(self._title_parts)))
             self._title_parts = None
@@ -532,6 +579,19 @@ def _matches_path_pattern(public_path: str, pattern: str) -> bool:
     )
 
 
+def _length_bounds(raw: dict[str, Any], key: str) -> tuple[int, int]:
+    """Read an inclusive [min, max] character bound for a metadata field."""
+    value = raw[key]
+    if not isinstance(value, list) or len(value) != 2:
+        raise ConfigError(f"{key!r} must be a two-element [min, max] array")
+    if any(not isinstance(item, int) or isinstance(item, bool) or item < 1 for item in value):
+        raise ConfigError(f"{key!r} bounds must be positive integers")
+    minimum, maximum = value
+    if minimum > maximum:
+        raise ConfigError(f"{key!r} minimum must not exceed its maximum")
+    return (minimum, maximum)
+
+
 def _hreflang_groups(raw: dict[str, Any]) -> tuple[dict[str, str], ...]:
     groups = raw["hreflang_groups"]
     if not isinstance(groups, list) or not groups:
@@ -628,6 +688,8 @@ def load_config(path: Path) -> Config:
         hreflang_groups=_hreflang_groups(raw),
         required_json_ld_types=_required_json_ld_types(raw),
         redirect_aliases=redirect_aliases,
+        title_length=_length_bounds(raw, "title_length"),
+        description_length=_length_bounds(raw, "description_length"),
     )
 
 
@@ -907,6 +969,74 @@ def _validate_metadata(
                 f"og:url must be {expected!r}, found {og_url[0]!r}",
             )
         )
+
+
+def _validate_metadata_lengths(page: Page, config: Config, findings: list[Finding]) -> None:
+    """Keep indexable titles and descriptions inside the bound search results show.
+
+    Only indexable pages are measured. A noindex page, a canonical alias and a
+    redirect stub are all excluded elsewhere from the sitemap and from the
+    duplicate-metadata check, so measuring them here would report a truncation
+    no search result can show. Lengths are counted on the parsed text, which
+    HTMLParser has already decoded, so an escaped apostrophe counts as the one
+    character a search engine renders rather than the six the file stores.
+    """
+    for label, values, bounds in (
+        ("title", page.titles, config.title_length),
+        ("description", page.descriptions, config.description_length),
+    ):
+        if len(values) != 1:
+            continue
+        text = _normalize_text(values[0])
+        if not text:
+            continue
+        minimum, maximum = bounds
+        if len(text) > maximum:
+            findings.append(
+                Finding(
+                    f"metadata.{label}_too_long",
+                    page.relative_path,
+                    f"{label} is {len(text)} characters; the bound is {maximum}: {text!r}",
+                )
+            )
+        elif len(text) < minimum:
+            findings.append(
+                Finding(
+                    f"metadata.{label}_too_short",
+                    page.relative_path,
+                    f"{label} is {len(text)} characters; the bound is {minimum}: {text!r}",
+                )
+            )
+
+
+def _validate_heading_levels(page: Page, findings: list[Finding], *, expect_h1: bool) -> None:
+    """Report a heading outline that jumps a level.
+
+    A reader moving by heading, and any tool that builds an outline from them,
+    reads h1 to h6 as nesting depth. Going straight from h2 to h4 leaves a rung
+    missing. The first heading is measured against h1 for the same reason, except
+    on a page not required to carry one: the app shell is a canonical alias
+    whose h1 is written by the client at runtime.
+    """
+    previous = 0
+    for level, line in page.heading_levels:
+        if previous and level > previous + 1:
+            findings.append(
+                Finding(
+                    "html.heading_level_skipped",
+                    page.relative_path,
+                    f"line {line}: h{level} follows h{previous}, skipping h{previous + 1}",
+                )
+            )
+        elif not previous and expect_h1 and level > 1:
+            findings.append(
+                Finding(
+                    "html.heading_level_skipped",
+                    page.relative_path,
+                    f"line {line}: first heading is h{level}, expected h1",
+                )
+            )
+        previous = level
 
 
 def _refresh_target(value: str) -> str | None:
@@ -1701,6 +1831,7 @@ def _validate_page(
             findings,
             require_h1=page.public_path not in config.canonical_aliases,
         )
+        _validate_presentation(page, config, findings)
     _validate_noindex(page, config, findings)
     json_ld_nodes = _validate_json_ld(page, findings)
     if not is_redirect:
@@ -1734,6 +1865,20 @@ def _validate_page(
         _validate_reference(
             page, Reference(og_images[0], 0), "asset", config, pages, files, findings
         )
+
+
+def _validate_presentation(page: Page, config: Config, findings: list[Finding]) -> None:
+    """Measure what a rendered page shows: metadata length and heading outline.
+
+    Length is a search-result concern, so a canonical alias and a noindex page
+    are excluded, as they are from the sitemap and the duplicate-metadata
+    check. The outline is a reading order rather than a search result, so a
+    noindex page is measured; only the h1 expectation follows the alias
+    exemption, because the app shell writes its h1 at runtime."""
+    is_alias = page.public_path in config.canonical_aliases
+    if not is_alias and not _is_noindex_path(page.public_path, config):
+        _validate_metadata_lengths(page, config, findings)
+    _validate_heading_levels(page, findings, expect_h1=not is_alias)
 
 
 def _validate_noindex_patterns(

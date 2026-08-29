@@ -22,6 +22,16 @@ from typing import Any
 from .config import artifacts_dir
 from .instance import BASE_URL as BASE_URL  # re-exported: render_site imports it from here
 
+# The bound site-seo.json enforces on every indexable page, kept here because
+# _page is the one place a title is assembled. It matches the budget
+# render_site._agency_seo_metadata has always held agency titles to.
+SEO_TITLE_MAX_LENGTH = 60
+# One site suffix tells a reader which site a search result belongs to. It
+# stops paying for itself once it pushes the title past the length a result
+# shows, because what gets cut is the end of the page's own name. Long titles
+# therefore keep the name and drop the suffix.
+_SITE_TITLE_SUFFIXES = (" — GTFS Scorecard", " | GTFS Scorecard")
+
 _SOCIAL_IMAGE_URL = f"{BASE_URL}/og.png"
 _SOCIAL_IMAGE_ALT = "GTFS Scorecard: transit data quality for small agencies."
 _SOCIAL_IMAGE_WIDTH = 1200
@@ -350,6 +360,21 @@ def sync_static_navs() -> list[Path]:
     return changed
 
 
+def fit_seo_title(title: str) -> str:
+    """Return ``title`` without its site suffix when it overruns the bound.
+
+    The page's own name is never shortened here. A name that still overruns on
+    its own is a copy problem at the source, and check_site_seo.py fails the
+    build on it rather than quietly ellipsizing away the identity a
+    practitioner scans for."""
+    if len(title) <= SEO_TITLE_MAX_LENGTH:
+        return title
+    for suffix in _SITE_TITLE_SUFFIXES:
+        if title.endswith(suffix):
+            return title[: -len(suffix)]
+    return title
+
+
 def _page(
     *,
     title: str,
@@ -374,6 +399,7 @@ def _page(
     they cannot apply; shared global links and all U.S. pages stay unchanged.
     ``main_modifier`` adds a page-family hook without replacing the shared
     container classes."""
+    title = fit_seo_title(title)
     ld = (
         f'\n  <script type="application/ld+json">{json.dumps(jsonld, separators=(",", ":"))}</script>'
         if jsonld

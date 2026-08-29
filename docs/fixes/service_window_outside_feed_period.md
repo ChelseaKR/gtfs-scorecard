@@ -3,7 +3,7 @@ date_published: "2026-07-03"
 date_modified: "2026-07-03"
 ---
 
-# Fix: service dates fall outside the feed's stated validity window
+# Fix: service dates fall outside the feed's validity window
 
 Code: `service_window_outside_feed_period` (MobilityData validator)
 

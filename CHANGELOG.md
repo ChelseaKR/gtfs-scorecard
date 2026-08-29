@@ -29,6 +29,31 @@ the declared public surface).
 
 ### Changed
 
+- **The structural SEO gate now measures title and description length, and the
+  heading outline.** `check_site_seo.py` has been merge-blocking in `a11y.yml`
+  and `pages.yml` since it landed, and it checked that a title, a description
+  and a canonical were present, unique and self-referencing. It never checked
+  how long they were, so 27 generated titles and 9 descriptions were running
+  past the length a search result shows without anything noticing: the worst
+  title was 91 characters on `/ntd/shapes/`, the worst description 192 on
+  `/guide/disappeared-from-trip-planners/`. Nearly all the long titles were
+  `/fix/<code>/` pages, where a 17-character site suffix was appended to a
+  notice name that was already a full sentence.
+
+  `site-seo.json` now carries `title_length` and `description_length`, and
+  `site_shell.fit_seo_title` drops the site suffix instead of the page's own
+  name when a title would overrun the bound, so the notice a practitioner is
+  scanning for stays legible. Three fix headings and the `/ntd/shapes/` title
+  were still too long with the suffix gone and were shortened at the source.
+  Eight descriptions were trimmed; every published claim in them was kept and
+  none was added, including the scoping words on `/adoption/`, `/data/` and
+  `/status/`. `html.heading_level_skipped` reports an outline that jumps a
+  level. Headings inside a hidden subtree stay out of it, matching axe.
+
+  The agency-page `Dataset` omission found alongside these was checked and is
+  correct: the 173 agency paths without JSON-LD are all retained redirect
+  stubs, which should not advertise a dataset they only point at.
+
 - **The plain-language gate now reads every finding the scorecard publishes.**
   `make verify` has run `scripts/check_readability.py` since FIX-08 landed on
   2026-07-02, and it measured `notices.TRANSLATIONS` only. That is one of two

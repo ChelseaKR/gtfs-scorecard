@@ -317,6 +317,20 @@ It checks internal links, assets, forms, fragments, duplicate IDs, head-only
 page metadata, exact canonical aliases, sitemap and robots rules, reciprocal
 HTTPS language links, required structured-data identity and dates, and the
 public no-tracking contract. A finding stops the build.
+
+It also measures two things a page can get wrong while every element is
+present. `title_length` and `description_length` in `site-seo.json` bound each
+indexable page's title and description in characters, counted on the decoded
+text so an escaped apostrophe counts as the one character a result renders.
+The title bound is 60, the same budget `_agency_seo_metadata` has always held
+agency titles to, and `site_shell.fit_seo_title` drops the site suffix rather
+than the page's own name when a title would overrun it. A noindex page, a
+canonical alias, and a redirect stub are excluded, as they are from the
+sitemap and the duplicate-metadata check. Separately, `html.heading_level_skipped`
+reports an outline that jumps a level, or opens below h1 on a page required to
+carry one. Headings inside a hidden subtree are not counted: they are not in
+the accessibility tree, and counting them would contradict the axe gate that
+runs over the same markup.
 Each workflow uploads its `seo-report.json` even on failure and retains it for
 14 days.
 
