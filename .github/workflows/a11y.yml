@@ -131,11 +131,11 @@ jobs:
             echo "Generated site did not become ready." >&2
             exit 1
           fi
-          npx --yes pa11y-ci@3 --config .pa11yci.json | tee pa11y-output.log
+          npx --yes pa11y-ci@3 --config .pa11yci.json 2>&1 | tee pa11y-output.log
           npx --yes @lhci/cli@0.14 autorun \
-            --config=lighthouserc.json | tee lhci-core.log
+            --config=lighthouserc.json 2>&1 | tee lhci-core.log
           npx --yes @lhci/cli@0.14 autorun \
-            --config=lighthouserc.routes.json | tee lhci-representative.log
+            --config=lighthouserc.routes.json 2>&1 | tee lhci-representative.log
       - name: Retain browser quality reports
         if: ${{ always() }}
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0

@@ -6310,3 +6310,74 @@ def test_rt_health_section_survives_a_corrupt_record_file(isolated_repo_root: Pa
     (rt_dir / "demo.json").write_text("<<<<<<< HEAD\nnot valid json\n=======\n>>>>>>> branch\n")
 
     assert _rt_health_section("demo") == ""
+
+
+def test_status_page_names_the_shard_denominator_when_the_run_recorded_one() -> None:
+    """ "across 31 shards" reads as a fact about the size of the run. It is only
+    a fact about how many shards came back. A reader cannot see that 31 is short
+    of 32 unless the page says 32."""
+    import datetime as dt
+
+    from scorecard_pipeline.render_site import _status_evidence_section
+
+    now = dt.datetime(2026, 8, 28, 20, 0, tzinfo=dt.UTC)
+    run_summary = {
+        "generated_at": "2026-08-28T19:00:00+00:00",
+        "shard_count": 31,
+        "expected_shard_count": 32,
+        "missing_shard_count": 1,
+        "agency_count": 2100,
+        "scored": 2100,
+        "reused": 0,
+        "unreachable": 0,
+        "mirrored": 0,
+        "cache_hit": 0,
+        "unreachable_agencies": [],
+        "degraded": True,
+        "degraded_reasons": [
+            "1 of 32 shards reported no outcomes for this run. The feed records it owned "
+            "kept their previous scorecard and are not counted in the totals below."
+        ],
+        "degraded_threshold": 0.05,
+        "shards": [],
+    }
+    catalog = [{"id": "unitrans", "name": "Unitrans"}]
+
+    html = _status_evidence_section(run_summary, catalog, now)
+
+    assert "31 of 32 shards" in html
+    assert "Run completed with warnings" in html
+    assert "1 of 32 shards reported no outcomes for this run." in html
+
+
+def test_status_page_omits_the_denominator_when_the_run_did_not_record_one() -> None:
+    """Artifacts merged before the planned count was recorded must keep reading
+    correctly rather than claiming a denominator of zero."""
+    import datetime as dt
+
+    from scorecard_pipeline.render_site import _status_evidence_section
+
+    now = dt.datetime(2026, 8, 28, 20, 0, tzinfo=dt.UTC)
+    run_summary = {
+        "generated_at": "2026-08-28T19:00:00+00:00",
+        "shard_count": 3,
+        "expected_shard_count": None,
+        "agency_count": 30,
+        "scored": 30,
+        "reused": 0,
+        "unreachable": 0,
+        "mirrored": 0,
+        "cache_hit": 0,
+        "unreachable_agencies": [],
+        "degraded": False,
+        "degraded_threshold": 0.05,
+        "shards": [],
+    }
+    catalog = [{"id": "unitrans", "name": "Unitrans"}]
+
+    html = _status_evidence_section(run_summary, catalog, now)
+
+    assert "across\n    3 shards" in html or "3 shards" in html
+    assert "of 0 shards" not in html
+    assert "Run completed" in html
+    assert "with warnings" not in html

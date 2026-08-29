@@ -95,6 +95,37 @@ def check_site(
     return structural_failures, overages
 
 
+def budget_headroom(
+    site_root: Path,
+    required: dict[str, int],
+    patterns: dict[str, int],
+) -> list[tuple[str, str, int, int]]:
+    """(budget, largest matching page, its bytes, the limit) for every budget.
+
+    A budget that passes says nothing about how close it came. `**/index.html`
+    is set at 3,407,872 bytes and the largest page it matches in this repository
+    is 504,251, so it has never been within a factor of six of firing: passing
+    and being unable to fail look identical from the outside. Printing the
+    tightest page under each budget makes the slack a number somebody can read
+    off a build log and act on, without this check inventing a policy about what
+    the right number is.
+    """
+    rows: list[tuple[str, str, int, int]] = []
+    for pattern, limit in (*required.items(), *patterns.items()):
+        if glob.has_magic(pattern):
+            matches = [path for path in site_root.glob(pattern) if path.is_file()]
+        else:
+            candidate = site_root / pattern
+            matches = [candidate] if candidate.is_file() else []
+        if not matches:
+            continue
+        largest = max(matches, key=lambda path: path.stat().st_size)
+        rows.append(
+            (pattern, largest.relative_to(site_root).as_posix(), largest.stat().st_size, limit)
+        )
+    return sorted(rows, key=lambda row: row[2] / row[3], reverse=True)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--site-root", type=Path, required=True)
@@ -119,6 +150,10 @@ def main() -> int:
         1 for pattern in patterns for path in args.site_root.glob(pattern) if path.is_file()
     )
     print(f"Generated-site byte budgets passed ({checked_count} checks).")
+    print("Largest page under each budget, tightest first:")
+    for pattern, relative, size, limit in budget_headroom(args.site_root, required, patterns):
+        used = 100 * size / limit
+        print(f"- {pattern}: {used:.0f}% of {limit:,} bytes ({relative}, {size:,})")
     return 0
 
 

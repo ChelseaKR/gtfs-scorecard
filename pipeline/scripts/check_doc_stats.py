@@ -325,7 +325,7 @@ def swept_docs() -> list[str]:
     so both halves of the list above missed it and its corpus figure went
     stale unnoticed.
     """
-    from scorecard_pipeline.site_shell import STATIC_NAV_PAGES  # noqa: PLC0415
+    from scorecard_pipeline.site_shell import STATIC_NAV_PAGES
 
     candidates = [p.name for p in REPO_ROOT.glob("*.md")]
     candidates += [f"docs/{p.name}" for p in (REPO_ROOT / "docs").glob("*.md")]
@@ -334,9 +334,7 @@ def swept_docs() -> list[str]:
     return sorted(
         rel
         for rel in candidates
-        if rel not in UNSWEPT_DOCS
-        and not rel.endswith(".local.md")
-        and (REPO_ROOT / rel).is_file()
+        if rel not in UNSWEPT_DOCS and not rel.endswith(".local.md") and (REPO_ROOT / rel).is_file()
     )
 
 
@@ -444,23 +442,34 @@ def denominator_line(counts: dict[str, int], snapshot_date: str) -> str:
     )
 
 
-def main() -> int:
-    pages, scored, snapshot_date = published_counts()
-    europe_records, europe_countries = europe_counts()
-    counts = {
-        "registry": registry_count(),
-        "pages": pages,
-        "scored": scored,
-        "europe_records": europe_records,
-        "europe_countries": europe_countries,
-    }
+def _rule_failures(counts: dict[str, int]) -> tuple[list[str], int, int]:
+    """Check every registered corpus claim: (failures, checked, skipped).
+
+    Split out of ``main`` so the missing-file policy below reads as policy
+    rather than as one more arm of a long function.
+    """
     failures: list[str] = []
     checked = 0
+    optional_paths = {rel_path for rel_path, _pattern, _d, _m in OPTIONAL_RULES}
+    skipped_optional = 0
     for rel_path, pattern, denominator, mode in (*RULES, *OPTIONAL_RULES):
         path = REPO_ROOT / rel_path
         if not path.is_file():
-            # Only reachable for OPTIONAL_RULES; a missing required doc still
-            # raises, because a rule naming a file that vanished is a real fault.
+            # This branch used to be shared by both lists, with a comment saying
+            # a missing required doc "still raises". Nothing in the loop told the
+            # two lists apart, so it did not: deleting or renaming README.md,
+            # docs/roadmap.md or web/support/index.html removed those rules from
+            # the gate with no signal at all, and `checked` quietly decremented.
+            # Only OPTIONAL_RULES may name a file that is legitimately absent
+            # (AGENTS.md is in .git/info/exclude, so CI never sees it).
+            if rel_path in optional_paths:
+                skipped_optional += 1
+                continue
+            failures.append(
+                f"{rel_path}: the rule names a file that does not exist. A required "
+                "corpus claim cannot be checked against a document that is gone; "
+                "delete the rule deliberately or restore the file"
+            )
             continue
         checked += 1
         text = path.read_text()
@@ -489,6 +498,20 @@ def main() -> int:
                 f"{rel_path}: quotes {quoted:,} but {denominator} has {count:,} "
                 f"entries (allowed {allowed}); refresh the figure"
             )
+    return failures, checked, skipped_optional
+
+
+def main() -> int:
+    pages, scored, snapshot_date = published_counts()
+    europe_records, europe_countries = europe_counts()
+    counts = {
+        "registry": registry_count(),
+        "pages": pages,
+        "scored": scored,
+        "europe_records": europe_records,
+        "europe_countries": europe_countries,
+    }
+    failures, checked, skipped_optional = _rule_failures(counts)
 
     swept = swept_docs()
     for rel_path in swept:
@@ -506,8 +529,13 @@ def main() -> int:
 
     line = denominator_line(counts, snapshot_date)
     if not failures:
+        # Name the skipped count as well as the checked one. A gate that reports
+        # only what it managed to check cannot tell a reader that it checked less
+        # than last time.
+        skipped_note = f" ({skipped_optional} optional rule(s) skipped, file absent)"
         print(
-            f"OK  {checked} corpus claims match their denominator policy; "
+            f"OK  {checked} corpus claims match their denominator policy"
+            f"{skipped_note if skipped_optional else ''}; "
             f"{len(swept)} swept documents carry no ungated corpus figure "
             f"({len(POINT_IN_TIME)} declared point-in-time) ({line})"
         )

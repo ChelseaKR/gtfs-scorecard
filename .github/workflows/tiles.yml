@@ -47,16 +47,28 @@ jobs:
         working-directory: pipeline
         run: uv run python scripts/build_national_pmtiles.py
 
-      - name: Report archive size
+      # ADR 0023 permits committing the archive into web/tiles/ "as long as it
+      # stays at or under 25 MB", and says to move it to S3 + CloudFront if it
+      # ever exceeds that. This step used to print a `::warning` and stop there,
+      # and the commit step below ran anyway with `inputs.commit` defaulting to
+      # true, so the one thing the threshold exists to prevent was the thing it
+      # allowed. It fails now, which skips the commit; the archive is still
+      # uploaded as an artifact so the S3 move has something to move.
+      - name: Enforce the ADR 0023 commit threshold
         run: |
+          set -euo pipefail
           ls -lh web/tiles/national-routes.pmtiles
           SIZE=$(stat -c%s web/tiles/national-routes.pmtiles)
           echo "Archive is $SIZE bytes. Threshold for committing to web/ is 25 MB (ADR 0023)."
           if [ "$SIZE" -gt 26214400 ]; then
-            echo "::warning title=tiles too large::Archive exceeds 25 MB; move it to S3+CloudFront per ADR 0023 instead of committing."
+            echo "::error title=tiles too large::Archive is $SIZE bytes, over the 25 MB ceiling ADR 0023 sets for committing into web/tiles/. Move it to S3 + CloudFront and point the page's pmtiles:// URL there, or revise the ADR. The built archive is attached to this run as an artifact."
+            exit 1
           fi
 
       - name: Upload archive as a workflow artifact
+        # `always()`, so an archive that tripped the ceiling above is still
+        # downloadable: it is the file that has to be moved to S3.
+        if: ${{ always() }}
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
           name: national-routes-pmtiles

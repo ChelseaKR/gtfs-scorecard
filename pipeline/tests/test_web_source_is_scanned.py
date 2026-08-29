@@ -17,6 +17,7 @@ a generated tree under web/, and may not swallow web/src/ with it.
 
 from __future__ import annotations
 
+import datetime as dt
 import re
 import tomllib
 from pathlib import Path
@@ -106,4 +107,46 @@ def test_semgrep_runs_a_javascript_ruleset_now_that_javascript_is_in_scope() -> 
     assert "--config p/javascript" in workflow, (
         "web/src/ is in Semgrep's scope but the scan runs only p/default and "
         "p/python, so the browser code is scanned by almost no rules."
+    )
+
+
+# The waiver's own review clock, written in the file it governs.
+_EXPIRES = re.compile(r"exclusion list expires (\d{4}-\d{2}-\d{2})")
+_REVIEWED = re.compile(r"Last reviewed: (\d{4}-\d{2}-\d{2})")
+
+
+def test_the_semgrep_exclusion_waiver_has_not_lapsed() -> None:
+    """`.semgrepignore` sets its own review deadline and says "A lapsed date
+    here is itself a review finding". Nothing found it. The equivalent clock on
+    the container CVE waivers is enforced (test_security_vex.py asserts
+    `min(expiries) > today`); this one was prose, so the exclusion list could
+    outlive its review indefinitely with every gate green.
+
+    The paths it excludes are the reason to care: a stale exclusion is how
+    hand-written source drifts back out of the SAST scan, which is the failure
+    the rest of this file exists to prevent.
+    """
+    text = SEMGREPIGNORE.read_text()
+    expires_match = _EXPIRES.search(text)
+    reviewed_match = _REVIEWED.search(text)
+
+    assert expires_match, (
+        ".semgrepignore no longer states an expiry date. The waiver has to carry "
+        "its own review clock, or nothing can tell whether it lapsed."
+    )
+    assert reviewed_match, ".semgrepignore no longer states a 'Last reviewed:' date."
+
+    expires = dt.date.fromisoformat(expires_match.group(1))
+    reviewed = dt.date.fromisoformat(reviewed_match.group(1))
+    today = dt.date.today()
+
+    assert expires > today, (
+        f"the .semgrepignore exclusion list expired on {expires}. Re-run semgrep over "
+        "the excluded paths, drop any entry that no longer flags, and renew both dates "
+        "in the file. Do not just move the date."
+    )
+    assert reviewed <= today, f"'Last reviewed: {reviewed}' is in the future"
+    assert expires - reviewed <= dt.timedelta(days=92), (
+        f"the file says the list is reviewed quarterly, but {reviewed} to {expires} is "
+        f"{(expires - reviewed).days} days"
     )

@@ -203,3 +203,79 @@ ceiling actually converts a runner death into a catchable validator failure is
 now testable in production for the first time, and the next occurrence at
 `ovapi-netherlands` is the observation to watch for.
 
+
+## Recurrence, 2026-08-28: the observation the record asked for
+
+The correction above ends "the next occurrence at `ovapi-netherlands` is the
+observation to watch for." It has now occurred twice with the ceiling switched
+on, so this section records what was observed rather than leaving the question
+open.
+
+**The `prlimit` ceiling did not convert the runner death into a catchable
+validator failure.** `SCORECARD_VALIDATOR_MEMORY_MB: "10240"` went to workflow
+level at 2026-08-27 01:43 UTC. The two scheduled Daily runs since,
+[33096623505](https://github.com/ChelseaKR/gtfs-scorecard/actions/runs/33096623505)
+(08-27) and
+[33194678335](https://github.com/ChelseaKR/gtfs-scorecard/actions/runs/33194678335)
+(08-28), both died in the same shard, at the same feed, with the same message.
+From 33194678335's log:
+
+```
+17:39:38 INFO scorecard_pipeline.validate: running gtfs-validator on .../ovapi-netherlands/2026-08-28/gtfs.zip
+17:47:16 ##[error]The runner has received a shutdown signal. This can happen when the runner service is stopped, or a manually started runner is canceled.
+17:47:16 ##[error]The operation was canceled.
+```
+
+No `RuntimeError`, no truncated stderr, no `report.json` diagnostic: the same
+signature as before the ceiling, roughly seven and a half minutes in rather
+than the two to four minutes the original diagnosis recorded. The ceiling is
+therefore a control with no observed effect on this failure, in either
+direction. The one live measurement it does have,
+[32508141222](https://github.com/ChelseaKR/gtfs-scorecard/actions/runs/32508141222),
+recorded peak RSS within a few megabytes of the unbounded run alongside it,
+which says the bound was never reached in a healthy run either.
+
+Nothing here argues for removing it, and nothing here argues for changing the
+number. The original note that a heap change "without new evidence would be
+guessing" applies unchanged to the ceiling. What has changed is that the
+question is answered: the ceiling is not the fix, and the trigger is still
+unconfirmed.
+
+**The blast-radius claim was wrong.** The correction above says the change
+takes the outcome from "the day's publish lost" to "one agency logged and
+skipped". The first half held: `collect` and `deploy` both ran on 08-27 and
+08-28. The second half did not. Because the runner itself dies, the shard never
+reaches its `upload-artifact` step, so every feed record that shard had already
+scored is discarded along with `ovapi-netherlands`. At 32 shards over roughly
+2,100 records that is on the order of 65 records per occurrence, not one, and
+each keeps its previous scorecard.
+
+**That loss was invisible on `/status/`.** `merge_run_summaries` summed every
+total over the shard summaries that arrived. A shard whose runner is killed
+uploads no `run-summary.json` at all, so it was absent rather than present and
+empty: `shard_count` read 31, `agency_count` dropped by the lost shard's
+records, the unreachable fraction stayed at zero, and the page rendered "Run
+completed". That is precisely the failure `run_summary.py`'s own module
+docstring says the feature exists to prevent, "if one of twelve shards failed,
+the agencies it owned silently kept showing yesterday's data with no public
+signal anywhere". The merge now takes the planned shard count from the workflow
+(`--expected-shards`), counts the shortfall, degrades the run, and names the
+reason on `/status/`; `pipeline/tests/test_run_summary.py` and
+`pipeline/tests/test_workflow_safety.py` hold both halves.
+
+**Still open, and a maintainer decision.** Two things this pass deliberately
+did not do:
+
+1. Find the trigger. It needs live experiments against the failing feed
+   (`validate-one-feed.yml` with a lower `SCORECARD_LARGE_FEED_HEAP`, a lower
+   `SCORECARD_VALIDATOR_MEMORY_MB`, and a disk-space reading), not a guess in a
+   config file. Until then the Daily run stays red and the Watchdog stays red
+   behind it.
+2. Stop a killed runner from discarding the work its shard had already
+   finished. The shard uploads its scored artifacts once, at the end. Moving
+   that to an incremental upload, or splitting `large_feed` records onto their
+   own shard, would bound the loss to the feed that actually failed. Both are
+   real changes to how the daily run is structured and should be chosen, not
+   slipped in.
+
+Neither is a reason to silence the Watchdog. It is reporting a true fact.

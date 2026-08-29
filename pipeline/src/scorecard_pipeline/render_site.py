@@ -9020,20 +9020,39 @@ def _status_evidence_section(
             else ""
         )
         unreachable_list = current_unreachable_list + omitted_note
+        # Older merged artifacts carry only the threshold reason, so fall back to
+        # the sentence that reason used to be spelled as rather than going silent.
+        reasons = [str(r) for r in run_summary.get("degraded_reasons", []) if str(r).strip()]
+        if degraded and not reasons:
+            reasons = [
+                f"More than {threshold_pct}% of attempted feed records could not be "
+                "refreshed, so this run exceeded the warning threshold."
+            ]
         degraded_note = (
-            f"""<p>More than {threshold_pct}% of attempted feed records could not be
-        refreshed, so this run exceeded the warning threshold. Records from that set that
-        remain in the current catalog are listed below.</p>"""
+            "".join(f"<p>{esc(reason)}</p>" for reason in reasons)
+            + """<p>Records from the unrefreshed set that remain in the current catalog are
+        listed below.</p>"""
             if degraded
             else ""
         )
         shard_count = run_summary.get("shard_count", 0)
-        shard_word = "shard" if shard_count == 1 else "shards"
+        expected_shards = run_summary.get("expected_shard_count")
+        # "across 31 shards" reads as a fact about the size of the run. It is
+        # only a fact about how many shards came back, so name the denominator
+        # when the run recorded one; a reader cannot otherwise see that 31 is
+        # short of 32. With a denominator the noun agrees with it, so a single
+        # surviving shard still reads "1 of 32 shards".
+        if isinstance(expected_shards, int) and expected_shards > 0:
+            shard_word = "shard" if expected_shards == 1 else "shards"
+            shard_phrase = f"{shard_count} of {expected_shards} {shard_word}"
+        else:
+            shard_word = "shard" if shard_count == 1 else "shards"
+            shard_phrase = f"{shard_count} {shard_word}"
         run_section = f"""    <section class="feed-details"><h3 class="section-title">Run summary</h3>
     <p><span class="{badge_class}">{badge_text}</span> Recorded
     {esc(_ago(now, generated_at))} ({esc(generated_at.strftime("%Y-%m-%d %H:%M UTC"))}).
     The run attempted {run_summary.get("agency_count", 0)} feed records across
-    {shard_count} {shard_word}. The current catalog contains
+    {shard_phrase}. The current catalog contains
     {run_summary.get("published_feed_record_count", len(catalog))} feed records.</p>
     <p class="fineprint">The badge describes this scoring run, not agency feed availability.
     Current direct-URL liveness is reported above.</p>

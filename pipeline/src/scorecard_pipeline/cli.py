@@ -2807,7 +2807,9 @@ def _cmd_run_summary(args: argparse.Namespace, parser: argparse.ArgumentParser) 
             )
             continue
         summaries.append(json.loads(path.read_text()))
-    merged = merge_run_summaries(summaries, dt.datetime.now(dt.UTC))
+    merged = merge_run_summaries(
+        summaries, dt.datetime.now(dt.UTC), expected_shard_count=args.expected_shards
+    )
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(merged, indent=2, sort_keys=True) + "\n")
@@ -2820,6 +2822,11 @@ def _cmd_run_summary(args: argparse.Namespace, parser: argparse.ArgumentParser) 
         merged["degraded"],
         out,
     )
+    # A shard whose runner was killed uploads no summary, so this is the only
+    # place the shortfall is countable. Say it here as well as in the artifact,
+    # so the CI log names it without anyone opening /status/.
+    for reason in merged["degraded_reasons"]:
+        log.warning("run degraded: %s", reason)
     return 0
 
 
@@ -3564,6 +3571,17 @@ def main(argv: list[str] | None = None) -> int:
     )
     rs_merge.add_argument("summaries", nargs="+", help="paths to shard run-summary.json files")
     rs_merge.add_argument("--out", required=True, help="write the merged run summary here")
+    rs_merge.add_argument(
+        "--expected-shards",
+        type=int,
+        default=None,
+        help=(
+            "how many shards the run planned. A shard whose runner died uploads no "
+            "summary at all, so without this the merge cannot tell a whole shard's "
+            "worth of missing feed records from a smaller run, and /status/ reports "
+            "the day as complete."
+        ),
+    )
 
     alerts = sub.add_parser("alerts", help="build the expiry/regression alert digest")
     alerts.add_argument(

@@ -26,8 +26,10 @@ import math
 import statistics
 import sys
 from collections import Counter
+from collections.abc import Callable
 from dataclasses import asdict
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "pipeline" / "src"))
@@ -41,7 +43,7 @@ def load_registry() -> list[dict[str, object]]:
     return [asdict(agency) for agency in read_agencies()]
 
 
-def latest_artifact(agency_id: str) -> dict | None:
+def latest_artifact(agency_id: str) -> dict[str, Any] | None:
     d = ARTIFACTS_DIR / agency_id
     if not d.is_dir():
         return None
@@ -50,7 +52,8 @@ def latest_artifact(agency_id: str) -> dict | None:
         return None
     latest = dated[-1]
     try:
-        return json.loads(latest.read_text())
+        loaded: dict[str, Any] = json.loads(latest.read_text())
+        return loaded
     except (json.JSONDecodeError, OSError):
         return None
 
@@ -167,7 +170,7 @@ def welch_t(a: list[float], b: list[float]) -> tuple[float, float, float, float]
     return t, df, p, cohens_d
 
 
-Group = list[tuple[dict, dict]]
+Group = list[tuple[dict[str, Any], dict[str, Any]]]
 
 
 def scores(group: Group, path: list[str]) -> list[float]:
@@ -202,7 +205,7 @@ def load_groups() -> tuple[Group, Group]:
     rows = []
     missing_artifact = 0
     for agency in registry:
-        art = latest_artifact(agency["id"])
+        art = latest_artifact(str(agency["id"]))
         if art is None:
             missing_artifact += 1
             continue
@@ -267,7 +270,12 @@ def report_category_scores(obligated: Group, not_obligated: Group) -> None:
             print(f"  Mann-Whitney z={z:.2f}  p={p_mw:.4g}  rank-biserial r={rb:.3f}")
 
 
-def report_rate(obligated: Group, not_obligated: Group, title: str, predicate) -> None:
+def report_rate(
+    obligated: Group,
+    not_obligated: Group,
+    title: str,
+    predicate: Callable[[dict[str, Any]], bool],
+) -> None:
     print(f"\n=== {title} ===")
     for label, group in [("NTD-ID-matched", obligated), ("Not matched", not_obligated)]:
         n = len(group)

@@ -46,7 +46,9 @@ _SOURCE_LINK = re.compile(r'<a href="([^"]+)" rel="external" target="_blank">([^
 
 
 def _get(url: str) -> str:
-    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    # S310 covers the scheme, not the caller: every URL this builds comes from
+    # the module's own https:// constants and links parsed out of that page.
+    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})  # noqa: S310
     with urllib.request.urlopen(request, timeout=60) as response:  # noqa: S310
         return str(response.read().decode("utf-8", "replace"))
 

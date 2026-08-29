@@ -47,6 +47,21 @@ def _generate(
 def _compare(actual: str, golden_name: str) -> None:
     golden = GOLDEN_ROOT / golden_name
     if os.environ.get("REPORT_GOLDEN_REGEN"):
+        # This flag turns the assertion below into a write. That is what
+        # `make golden-refresh` wants and is the last thing an automated run
+        # wants: set in the environment of a CI job, every report golden test
+        # would pass by rewriting its own baseline, and the suite would report
+        # green having compared nothing. It is a local tool, so refuse it
+        # anywhere that looks like CI rather than trusting that nobody exports
+        # it. tests/test_report_golden.py::test_the_regeneration_hatch_is_
+        # refused_in_ci holds this.
+        if os.environ.get("GITHUB_ACTIONS") or os.environ.get("CI"):
+            pytest.fail(
+                "REPORT_GOLDEN_REGEN rewrites the golden instead of comparing to "
+                "it. Refusing to do that in CI: the run would be green having "
+                "checked nothing. Regenerate locally with `make golden-refresh` "
+                "and commit the result for review."
+            )
         golden.parent.mkdir(parents=True, exist_ok=True)
         golden.write_text(actual)
         return
@@ -72,3 +87,31 @@ def test_non_us_report_golden(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     actual = _generate("barrie-transit", tmp_path, monkeypatch)
     assert "NTD" not in actual
     _compare(actual, "barrie-transit.html")
+
+
+def test_the_regeneration_hatch_is_refused_in_ci(monkeypatch: pytest.MonkeyPatch) -> None:
+    """REPORT_GOLDEN_REGEN is the one environment variable in this suite that
+    converts an assertion into a write. Nothing stopped it being exported in a
+    CI environment, where it would have made every report golden test pass by
+    rewriting the file it was supposed to be checking."""
+    monkeypatch.setenv("REPORT_GOLDEN_REGEN", "1")
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+
+    with pytest.raises(pytest.fail.Exception, match="Refusing to do that in CI"):
+        _compare("whatever", "this-golden-must-not-be-written.html")
+
+    assert not (GOLDEN_ROOT / "this-golden-must-not-be-written.html").exists()
+
+
+def test_the_regeneration_hatch_still_works_outside_ci(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """The refusal is scoped to CI. `make golden-refresh` still regenerates."""
+    monkeypatch.setenv("REPORT_GOLDEN_REGEN", "1")
+    monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+    monkeypatch.delenv("CI", raising=False)
+    monkeypatch.setattr("tests.test_report_golden.GOLDEN_ROOT", tmp_path)
+
+    _compare("rendered bytes", "scratch.html")
+
+    assert (tmp_path / "scratch.html").read_text() == "rendered bytes"

@@ -96,7 +96,7 @@ class _HttpRangeFile(io.RawIOBase):
     def tell(self) -> int:
         return self.pos
 
-    def readinto(self, buf: Any) -> int:  # type: ignore[override]
+    def readinto(self, buf: Any) -> int:
         want = len(buf)
         if want == 0 or self.pos >= self.size:
             return 0

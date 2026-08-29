@@ -5,10 +5,23 @@
 
 # The merge-blocking gate: lint, format, types, tests, the AAA contrast check,
 # and the plain-language readability check. Mirrors .github/workflows/ci.yml.
+#
+# CQ-38: the ruff lines below name whole directories, not a hand-listed subset.
+# The old list named four scripts, so 13 of the 17 files in pipeline/scripts and
+# all 3 in the repo root's scripts/ were never linted or format-checked. Among
+# them: check_contrast.py, check_readability.py, check_versions.py,
+# check_doc_stats.py and check_site_budgets.py, which are themselves the gates
+# this target runs. A list is a scope that narrows by omission and says nothing
+# when it does; a directory is not. The root scripts/ needs --config because
+# there is no pyproject.toml above it, and ruff would otherwise fall back to its
+# own defaults (E4/E7/E9/F) and report clean over findings the project's select
+# list catches. tests/test_lint_scope.py holds all of this.
 verify:
 	cd pipeline && uv run python scripts/generate_iso3166.py --check
-	cd pipeline && uv run ruff check src tests scripts/generate_iso3166.py scripts/check_site_seo.py scripts/materialize_current_artifacts.py scripts/check_supersession_review.py
-	cd pipeline && uv run ruff format --check src tests scripts/generate_iso3166.py scripts/check_site_seo.py scripts/materialize_current_artifacts.py scripts/check_supersession_review.py
+	cd pipeline && uv run ruff check src tests scripts
+	cd pipeline && uv run ruff format --check src tests scripts
+	uv run --project pipeline ruff check --config pipeline/pyproject.toml scripts
+	uv run --project pipeline ruff format --check --config pipeline/pyproject.toml scripts
 	cd pipeline && uv run mypy
 	cd pipeline && uv run pytest -q --cov=scorecard_pipeline --cov-branch --cov-fail-under=92
 	cd pipeline && uv run python scripts/check_contrast.py
@@ -22,9 +35,14 @@ verify:
 # instead of an aspiration. A real, tracked TODO should carry an issue
 # reference and live in docs/ (e.g. docs/lint-complexity-ratchet.md), not a
 # bare marker in source.
+#
+# The scope was pipeline/src and web/src only, which left out pipeline/scripts,
+# where the gates this Makefile runs actually live, along with pipeline/tests
+# and the repo root's scripts/. All four are clean today, so widening costs
+# nothing and closes the case where a marker lands in a gate and nothing says so.
 no-todos:
-	@if grep -rnE "TODO|FIXME|HACK" pipeline/src web/src; then \
-		echo "Bare TODO/FIXME/HACK found in pipeline/src or web/src — track it in docs/ instead (CQ-34)."; \
+	@if grep -rnE "TODO|FIXME|HACK" pipeline/src pipeline/scripts pipeline/tests web/src scripts; then \
+		echo "Bare TODO/FIXME/HACK found — track it in docs/ instead (CQ-34)."; \
 		exit 1; \
 	fi
 

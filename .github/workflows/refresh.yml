@@ -124,16 +124,50 @@ jobs:
       - name: Re-score only the feeds that changed
         working-directory: pipeline
         run: |
+          set -uo pipefail
           changed="$RUNNER_TEMP/changed.txt"
           [ -s "$changed" ] || { echo "No changed feeds to re-score."; exit 0; }
+          attempted=0
+          refreshed=0
+          failed=0
           # A single feed's vendor outage must not abort the batch; warn and move on.
           while read -r id; do
             [ -n "$id" ] || continue
+            attempted=$(( attempted + 1 ))
             echo "::group::rescore $id"
-            uv run scorecard run --agency "$id" \
-              || echo "::warning title=rescore failed::$id kept its last good artifact"
+            uv run scorecard run --agency "$id" && EXIT=0 || EXIT=$?
+            if [ "$EXIT" -eq 0 ]; then
+              refreshed=$(( refreshed + 1 ))
+            elif [ "$EXIT" -eq 2 ]; then
+              # `scorecard run` reserves exit 2 for "the feed had not changed
+              # after all", which is an outcome and not a failure. It can only
+              # occur under --skip-unchanged, which this tier does not pass
+              # today; counted correctly here so adding that flag later cannot
+              # make the floor below fire on a cycle where nothing needed doing.
+              refreshed=$(( refreshed + 1 ))
+              echo "feed unchanged, keeping last artifact"
+            else
+              failed=$(( failed + 1 ))
+              echo "::warning title=rescore failed::$id kept its last good artifact"
+            fi
             echo "::endgroup::"
           done < "$changed"
+          echo "re-scored $refreshed of $attempted changed feeds ($failed failed)"
+          # The floor scorecard.yml has (its "Verify shard artifacts before
+          # publishing" step) and this tier did not. Every non-zero exit above
+          # became an `echo`, and nothing downstream counted them, so an
+          # intraday cycle in which every changed feed failed to re-score still
+          # ran reindex, rollups, render-site, the S3 publish and the Pages
+          # deploy, and reported success. Republishing yesterday's corpus under
+          # today's deployment timestamp is the one outcome a refresh must not
+          # report as a refresh.
+          if [ "$attempted" -gt 0 ] && [ "$refreshed" -eq 0 ]; then
+            echo "::error::None of the $attempted changed feeds re-scored this cycle. Refusing to publish a refresh that refreshed nothing; each feed's cause is in the warnings above."
+            exit 1
+          fi
+          if [ "$failed" -gt 0 ]; then
+            echo "::warning title=partial refresh::$failed of $attempted changed feeds did not re-score this cycle and kept their previous scorecard."
+          fi
 
       - name: Rebuild index and rollups
         working-directory: pipeline

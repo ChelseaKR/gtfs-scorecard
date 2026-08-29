@@ -43,7 +43,8 @@ renders. Coordinates are rounded to 1 decimal, consecutive duplicates collapse,
 and if a country file would exceed ~120 KB a distance-based point thinning
 tightens until it fits.
 
-Usage: python scripts/build_subdivision_maps.py [--source URL] [--out-dir web/subdivisions] [--countries GB,FR,DE,ES,IT]
+Usage: python scripts/build_subdivision_maps.py [--source URL]
+       [--out-dir web/subdivisions] [--countries GB,FR,DE,ES,IT]
 """
 
 from __future__ import annotations
@@ -75,24 +76,75 @@ ISO_3166_2 = re.compile(r"^[A-Z]{2}-[A-Z0-9]+$")
 # frame regardless. Refresh this if the registry's subdivision tags change.
 REGISTRY = {
     "GB": {
-        "GB-BCP", "GB-BKM", "GB-BNH", "GB-BPL", "GB-CON", "GB-CRF", "GB-DND",
-        "GB-ERY", "GB-ESS", "GB-FAL", "GB-GAT", "GB-HAM", "GB-HRT", "GB-IOW",
-        "GB-IVC", "GB-NFK", "GB-NGM", "GB-NWP", "GB-NYK", "GB-OXF", "GB-PLY",
-        "GB-RDG", "GB-SCB", "GB-STH", "GB-SWD", "GB-WBK", "GB-WIL", "GB-WNM",
-        "GB-WRT", "GB-WSX",
+        "GB-BCP",
+        "GB-BKM",
+        "GB-BNH",
+        "GB-BPL",
+        "GB-CON",
+        "GB-CRF",
+        "GB-DND",
+        "GB-ERY",
+        "GB-ESS",
+        "GB-FAL",
+        "GB-GAT",
+        "GB-HAM",
+        "GB-HRT",
+        "GB-IOW",
+        "GB-IVC",
+        "GB-NFK",
+        "GB-NGM",
+        "GB-NWP",
+        "GB-NYK",
+        "GB-OXF",
+        "GB-PLY",
+        "GB-RDG",
+        "GB-SCB",
+        "GB-STH",
+        "GB-SWD",
+        "GB-WBK",
+        "GB-WIL",
+        "GB-WNM",
+        "GB-WRT",
+        "GB-WSX",
     },
     "FR": {
-        "FR-ARA", "FR-BFC", "FR-BRE", "FR-CVL", "FR-GES", "FR-HDF", "FR-IDF",
-        "FR-NAQ", "FR-NOR", "FR-PAC", "FR-PDL", "FR-974",
+        "FR-ARA",
+        "FR-BFC",
+        "FR-BRE",
+        "FR-CVL",
+        "FR-GES",
+        "FR-HDF",
+        "FR-IDF",
+        "FR-NAQ",
+        "FR-NOR",
+        "FR-PAC",
+        "FR-PDL",
+        "FR-974",
     },
     "DE": {"DE-BE", "DE-BW", "DE-NW"},
     "ES": {
-        "ES-B", "ES-BI", "ES-CT", "ES-MA", "ES-MD", "ES-PM", "ES-TF", "ES-V",
+        "ES-B",
+        "ES-BI",
+        "ES-CT",
+        "ES-MA",
+        "ES-MD",
+        "ES-PM",
+        "ES-TF",
+        "ES-V",
         "ES-VI",
     },
     "IT": {
-        "IT-25", "IT-32", "IT-34", "IT-42", "IT-52", "IT-62", "IT-72", "IT-75",
-        "IT-78", "IT-82", "IT-88",
+        "IT-25",
+        "IT-32",
+        "IT-34",
+        "IT-42",
+        "IT-52",
+        "IT-62",
+        "IT-72",
+        "IT-75",
+        "IT-78",
+        "IT-82",
+        "IT-88",
     },
     # Canada's provinces and territories are admin-1 (iso_3166_2 CA-ON, CA-QC,
     # ...), so no region-level dissolve is needed. Only two carry feeds today.
@@ -106,11 +158,46 @@ REGISTRY = {
     # Japan's prefectures are admin-1 (iso_3166_2 JP-01 ... JP-47), so no
     # region-level dissolve is needed. Forty carry feeds today.
     "JP": {
-        "JP-01", "JP-02", "JP-03", "JP-04", "JP-05", "JP-06", "JP-07", "JP-08",
-        "JP-09", "JP-10", "JP-11", "JP-12", "JP-13", "JP-14", "JP-15", "JP-16",
-        "JP-17", "JP-19", "JP-20", "JP-21", "JP-22", "JP-23", "JP-24", "JP-25",
-        "JP-27", "JP-28", "JP-29", "JP-30", "JP-32", "JP-33", "JP-36", "JP-37",
-        "JP-39", "JP-40", "JP-41", "JP-42", "JP-43", "JP-44", "JP-46", "JP-47",
+        "JP-01",
+        "JP-02",
+        "JP-03",
+        "JP-04",
+        "JP-05",
+        "JP-06",
+        "JP-07",
+        "JP-08",
+        "JP-09",
+        "JP-10",
+        "JP-11",
+        "JP-12",
+        "JP-13",
+        "JP-14",
+        "JP-15",
+        "JP-16",
+        "JP-17",
+        "JP-19",
+        "JP-20",
+        "JP-21",
+        "JP-22",
+        "JP-23",
+        "JP-24",
+        "JP-25",
+        "JP-27",
+        "JP-28",
+        "JP-29",
+        "JP-30",
+        "JP-32",
+        "JP-33",
+        "JP-36",
+        "JP-37",
+        "JP-39",
+        "JP-40",
+        "JP-41",
+        "JP-42",
+        "JP-43",
+        "JP-44",
+        "JP-46",
+        "JP-47",
     },
     # Malaysia's states are admin-1 (iso_3166_2 MY-01 ... MY-16), so no
     # region-level dissolve is needed.
@@ -170,7 +257,9 @@ def _fit(bbox, box):
 def _area(coords: list[tuple[float, float]]) -> float:
     """Unsigned shoelace area of a ring in projected square px."""
     total = 0.0
-    for (x1, y1), (x2, y2) in zip(coords, coords[1:] + coords[:1]):
+    # Same ring, rotated by one, so the two are the same length by
+    # construction; strict=True records that rather than assuming it.
+    for (x1, y1), (x2, y2) in zip(coords, coords[1:] + coords[:1], strict=True):
         total += x1 * y2 - x2 * y1
     return abs(total) / 2.0
 
