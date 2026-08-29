@@ -2683,7 +2683,13 @@ def _cmd_shards(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     current_ids = sorted(
         agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed
     )
-    print(json.dumps(plan_shards(current_ids, args.count)))
+    # issue #297: a `large_feed` gets a shard to itself, so a killed runner
+    # costs that one feed rather than the ~65 records its shard had already
+    # scored and had not yet uploaded. See plan_shards.
+    large_feeds = frozenset(
+        agency_id for agency_id in current_ids if AGENCIES[agency_id].large_feed
+    )
+    print(json.dumps(plan_shards(current_ids, args.count, isolate=large_feeds)))
     return 0
 
 

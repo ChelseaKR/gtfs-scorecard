@@ -10,8 +10,10 @@ from __future__ import annotations
 import json
 import logging
 import os
+import shlex
 import shutil
 import subprocess
+import textwrap
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -132,6 +134,17 @@ def large_feed_heap() -> str:
     return os.environ.get("SCORECARD_LARGE_FEED_HEAP", "").strip() or DEFAULT_LARGE_FEED_HEAP
 
 
+def validator_memory_limit_mb() -> str:
+    """The configured ``SCORECARD_VALIDATOR_MEMORY_MB``, or ``""`` when unset.
+
+    Read through one accessor so the ceiling that shapes the subprocess and the
+    ceiling named in a failure message can never disagree about what was set.
+    Empty-string normalization matches ``large_feed_heap()``: a workflow_dispatch
+    input left at its default sets the variable present-but-empty, not absent.
+    """
+    return os.environ.get("SCORECARD_VALIDATOR_MEMORY_MB", "").strip()
+
+
 def _memory_bound_prefix() -> list[str]:
     """Wrap the validator subprocess in a hard virtual-memory ceiling, if configured.
 
@@ -162,10 +175,94 @@ def _memory_bound_prefix() -> list[str]:
     native memory — it is a coarse backstop against a genuine runaway, not a
     tight RSS budget.
     """
-    limit_mb = os.environ.get("SCORECARD_VALIDATOR_MEMORY_MB", "").strip()
+    limit_mb = validator_memory_limit_mb()
     if not limit_mb or not shutil.which("prlimit"):
         return []
     return ["prlimit", f"--as={int(limit_mb) * 1024 * 1024}", "--"]
+
+
+# Per-stream ceiling on captured validator output quoted into a failure
+# message. A failure has to carry enough to diagnose itself, without giving a
+# pathological validator a way to flood the run log; both streams together are
+# bounded by twice this.
+STREAM_EXCERPT_LIMIT = 8000
+
+
+def _excerpt(stream: str, limit: int = STREAM_EXCERPT_LIMIT) -> str:
+    """One captured stream, quoted for a failure message and truncated audibly.
+
+    Keeps the head and the tail: the head names the cause (a missing Java, a
+    heap the VM could not reserve), the tail carries the last frame before the
+    exit, and a tail-only slice cut the cause off exactly when it was verbose.
+    What was dropped is stated in the message rather than left to the reader to
+    infer from a message that stops mid-sentence.
+    """
+    text = stream.strip("\n")
+    if not text.strip():
+        return "(empty)"
+    if len(text) <= limit:
+        return text
+    half = limit // 2
+    omitted = len(text) - 2 * half
+    return (
+        f"{text[:half]}\n"
+        f"... [{omitted} of {len(text)} characters omitted here; "
+        f"head and tail kept] ...\n"
+        f"{text[-half:]}"
+    )
+
+
+def _no_report_message(
+    result: subprocess.CompletedProcess[str],
+    *,
+    cmd: list[str],
+    gtfs_zip: Path,
+    output_dir: Path,
+) -> str:
+    """Say why the validator produced no report, with enough context to act.
+
+    Both streams are quoted, and that is the point rather than thoroughness for
+    its own sake. The JVM splits its startup failures across the two:
+
+    - a malformed flag ("Invalid maximum heap size: -Xmx", issue #297's
+      present-but-empty env var) goes to **stderr**;
+    - a heap it cannot reserve ("Error occurred during initialization of VM /
+      Could not reserve enough space for ... object heap") goes to **stdout**.
+
+    This function's predecessor quoted stderr alone, so the second mode — the
+    one an ``SCORECARD_VALIDATOR_MEMORY_MB`` set too close to ``-Xmx`` provokes
+    — reported as an exit code followed by a blank line. Observed live in
+    validate-one-feed.yml run 33264844507 on 2026-08-29, where the whole
+    diagnosis had to be inferred from ``/usr/bin/time`` output instead. Quoting
+    only one stream is quoting the wrong one half the time.
+
+    The heap and the ceiling are named because they are the two settings that
+    provoke a no-report exit, and RLIMIT_AS is the trap: it bounds virtual
+    address space, not resident memory.
+    """
+    limit_mb = validator_memory_limit_mb()
+    if not limit_mb:
+        ceiling = "none (SCORECARD_VALIDATOR_MEMORY_MB unset)"
+    elif cmd[:1] == ["prlimit"]:
+        ceiling = (
+            f"{limit_mb} MiB (SCORECARD_VALIDATOR_MEMORY_MB, applied as prlimit --as). "
+            "RLIMIT_AS bounds virtual address space, not resident memory: a JVM "
+            "reserves considerably more address space than its -Xmx, so a ceiling "
+            "set near -Xmx stops the VM initializing at all rather than bounding it"
+        )
+    else:
+        ceiling = f"{limit_mb} MiB requested, but prlimit is not on PATH, so not applied"
+    heap = next((arg for arg in cmd if arg.startswith("-Xmx")), "JVM default (no -Xmx passed)")
+    return (
+        f"gtfs-validator produced no report (exit {result.returncode})\n"
+        f"  feed: {gtfs_zip}\n"
+        f"  expected report: {output_dir / 'report.json'}\n"
+        f"  heap: {heap}\n"
+        f"  address-space ceiling: {ceiling}\n"
+        f"  command: {shlex.join(cmd)}\n"
+        f"  stdout:\n{textwrap.indent(_excerpt(result.stdout or ''), '    ')}\n"
+        f"  stderr:\n{textwrap.indent(_excerpt(result.stderr or ''), '    ')}"
+    )
 
 
 def run_validator(
@@ -214,14 +311,8 @@ def run_validator(
     # The validator exits non-zero in some error-notice situations; the report
     # existing is the real success signal.
     if not report.exists():
-        # Keep the head and the tail of stderr: the head names the cause (a
-        # missing Java, an OOM), the tail carries the final stack frame; a
-        # tail-only slice cut the cause off exactly when it was verbose.
-        stderr = result.stderr or ""
-        if len(stderr) > 12000:
-            stderr = stderr[:6000] + "\n... [stderr truncated] ...\n" + stderr[-6000:]
         raise RuntimeError(
-            f"gtfs-validator produced no report (exit {result.returncode}):\n{stderr}"
+            _no_report_message(result, cmd=cmd, gtfs_zip=gtfs_zip, output_dir=output_dir)
         )
     return report
 
