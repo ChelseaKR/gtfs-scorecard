@@ -28,6 +28,7 @@ import pytest
 from scorecard_pipeline.ntd_coverage import (
     REPORTER_UNIT,
     SNAPSHOT_NAME,
+    TIER_ORDER,
     published_reporter_coverage,
     snapshot_path,
 )
@@ -94,9 +95,30 @@ def test_a_snapshot_whose_tiers_do_not_reconcile_publishes_nothing(tmp_path: Pat
     assert published_reporter_coverage(_written(tmp_path, payload)) is None
 
 
-def test_a_snapshot_missing_a_tier_publishes_nothing(tmp_path: Path) -> None:
+@pytest.mark.parametrize("dropped", TIER_ORDER)
+def test_a_snapshot_missing_a_tier_publishes_nothing(tmp_path: Path, dropped: str) -> None:
+    """The tier-set guard, isolated so that only it can produce the verdict.
+
+    The first version of this dropped `atlas_ntd_id` and left the denominator
+    alone. That count is 33, so the sum stopped reconciling and the *next*
+    guard returned None first: deleting the tier-set comparison outright left
+    this test green. It was asserting the reconciliation guard twice and the
+    tier-set guard never.
+
+    Each case here subtracts the dropped tier's own count from
+    `obligated_reporters`, so the remaining tiers sum to their denominator by
+    construction and the reconciliation guard cannot fire. Every tier is
+    covered rather than one named by hand, so this does not quietly weaken
+    again if the tier it happened to name changes count. Without the tier-set
+    guard, a dropped zero-count tier reaches the tier lookups below it and
+    raises `KeyError` out of `_render_ntd_page`, which is a site render that
+    dies instead of a page that says nothing.
+    """
     payload = _snapshot()
-    payload["by_tier"] = {k: v for k, v in payload["by_tier"].items() if k != "atlas_ntd_id"}
+    removed = payload["by_tier"][dropped]
+    payload["by_tier"] = {k: v for k, v in payload["by_tier"].items() if k != dropped}
+    payload["obligated_reporters"] -= removed
+    assert sum(payload["by_tier"].values()) == payload["obligated_reporters"]
     assert published_reporter_coverage(_written(tmp_path, payload)) is None
 
 
