@@ -491,3 +491,68 @@ rather than hand-merged.
   removes it.
 - **Nothing was executed against production**, and no GitHub state was modified.
   Every `gh` call in this pass was a read.
+
+## Correction, 2026-08-29
+
+Appended, not edited. The pass above was accurate when it was written. Two of
+its recommendations were overtaken by merges made after it, and one of them now
+points the wrong way hard enough to lose work, so the record says so here rather
+than being rewritten above.
+
+### #319 was merged into #318's branch, not into `main`
+
+The triage recommended retargeting #319 to `main`, merging it, and closing #318
+as contained in it. What actually happened on 2026-08-29T02:36:36Z is the
+inverse: #319 was merged **into its declared base**, `fix/guardrails-that-can-fail`,
+which is #318's own branch. Squash commit `b6c57c218c0`.
+
+That commit is not an ancestor of `main`:
+
+```
+$ git merge-base --is-ancestor b6c57c218c0 origin/main ; echo $?
+1
+```
+
+So Phase 4 is not on `main`, and the only open pull request carrying it is
+**#318**. The containment relation the triage described has reversed: #318 now
+contains #319, having absorbed it. Its branch holds three commits off `main`,
+the Phase 3 work, a merge of `main`, and #319's squash, and its diff is the
+union of both phases across nine files.
+
+**#318 must not be closed.** Closing it now drops Phase 3 and Phase 4 together,
+and Phase 4 exists on no other open branch.
+
+### #322 and #326 have since merged to `main`
+
+`af0735f0f3c` and `63927943695`. The triage's "merge #322 first" is done. #326
+was opened after this pass and is not covered by it.
+
+### What still holds
+
+- **#312 must not be merged.** Re-confirmed on 2026-08-29 against a fresh rebase
+  onto `main`: `tests/test_agencies.py::test_repo_registry_tracks_calitp_hosting_migration`
+  fails, 1 failed and 92 passed. The registry hunk sets `city-of-wasco`'s
+  `static_gtfs_url` to `https://gtfs.calitp.org/production/WascoDialaRideFlex.zip`,
+  which is the value that test exists to forbid, and it leaves the entry's
+  `license_note` citing the Caltrans DDS index it no longer points at, so the
+  published attribution would name a source the URL has left.
+- **#321's guard could not fail, and now can.** Re-confirmed by deleting the
+  two-line tier-set comparison in `ntd_coverage.py`: before the fix the pull
+  request's own suite stayed green at 16 passed. The state it failed to catch
+  was reproduced directly rather than reasoned about, a snapshot missing the
+  zero-count `catalog_name_fuzzy` tier sums to its own denominator, passes the
+  reconciliation guard, and raises `KeyError('catalog_name_fuzzy')` out of
+  `published_reporter_coverage`, which is a site render that dies where a page
+  should have published nothing. The missing-tier test now subtracts the dropped
+  tier's count from the denominator so the reconciliation guard cannot fire, and
+  is parametrized over every tier rather than one named by hand. Deleting the
+  guard against the repaired test fails 10 of 25, one per tier.
+
+### Revised order
+
+Measured by materializing each merge in sequence rather than predicted from the
+file lists: **#323, #318 (Phase 3 and Phase 4 together), #325, #324** apply
+cleanly in that order. **#320 and #321 then conflict**, with each other and with
+#318, in `CHANGELOG.md` and `docs/feature-roadmap.md`. Both are the same shape,
+two sides appending a new entry at the same anchor, so the resolution keeps both
+entries and drops neither side's file. Close #312.
