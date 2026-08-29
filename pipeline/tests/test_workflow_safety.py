@@ -580,11 +580,61 @@ def test_daily_merge_tells_the_run_summary_how_many_shards_were_planned() -> Non
         "the merge step must pass the planned shard count; it cannot be inferred "
         "from the summaries that arrived"
     )
-    assert '--expected-shards "$SHARD_COUNT"' in merge_block, (
-        "the planned count is SHARD_COUNT, the same value the matrix was built from"
+    assert '--expected-shards "$PLANNED_SHARDS"' in merge_block, (
+        "the planned count is what `plan` actually emitted, not the requested "
+        "SHARD_COUNT. Since `scorecard shards` gives every large_feed a shard of "
+        "its own (issue #297), the plan is longer than SHARD_COUNT, and measuring "
+        "against SHARD_COUNT would compare more bundles present than expected and "
+        "silently stop detecting any shortfall at all"
     )
     assert "degraded_reasons" in workflow, (
         "the CI log must name why the run was degraded, not just that it was"
+    )
+
+
+def test_the_shard_denominator_comes_from_the_plan_not_the_requested_count() -> None:
+    """Both consumers of the planned shard count must read the same source.
+
+    `scorecard shards` returns SHARD_COUNT round-robin shards plus one shard
+    per `large_feed` (issue #297), so the plan is longer than SHARD_COUNT and
+    the two numbers are no longer interchangeable. If the shortfall check kept
+    reading SHARD_COUNT it would see 42 bundles against 32 expected, every
+    comparison would come out false, and a lost shard would go unreported —
+    the exact defect #322 removed, reintroduced by the fix for a different one.
+    """
+    workflow = _workflow("scorecard.yml")
+
+    assert "shard_count: ${{ steps.plan.outputs.count }}" in workflow, (
+        "the plan job must publish the count it actually produced"
+    )
+    assert "needs: [plan, score]" in workflow, (
+        "collect must depend on plan to read its shard_count output"
+    )
+    verify_at = workflow.index("Verify shard artifacts before publishing")
+    verify_block = workflow[verify_at : workflow.index("Gather shard run-health summaries")]
+    assert 'expected="${PLANNED_SHARDS:-}"' in verify_block, (
+        "the shortfall check measures against the planned count, not SHARD_COUNT"
+    )
+    assert 'expected="$SHARD_COUNT"' not in workflow, (
+        "no consumer of the denominator may fall back to the requested count"
+    )
+
+
+def test_a_missing_shard_denominator_refuses_to_publish() -> None:
+    """A shortfall check with no denominator reads exactly like a passing one.
+
+    `collect` runs under `if: !cancelled()`, so it still runs when `plan`
+    failed, and an empty shard_count would make every numeric comparison below
+    it vacuous rather than loud.
+    """
+    workflow = _workflow("scorecard.yml")
+    verify_at = workflow.index("Verify shard artifacts before publishing")
+    verify_block = workflow[verify_at : workflow.index("Gather shard run-health summaries")]
+    assert '[ "${expected:-0}" -gt 0 ]' in verify_block, (
+        "the denominator must be validated before it is trusted"
+    )
+    assert "refusing to publish without a denominator" in verify_block, (
+        "and the refusal must say why"
     )
 
 

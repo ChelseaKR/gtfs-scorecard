@@ -13,13 +13,31 @@ on:
         description: "registry agency id to validate (e.g. ovapi-netherlands)"
         required: true
         type: string
+      # READ BEFORE SETTING EITHER NUMBER BELOW. These two inputs interact, and
+      # the interaction is an easy and expensive trap.
+      #
+      # SCORECARD_VALIDATOR_MEMORY_MB becomes `prlimit --as`, which sets
+      # RLIMIT_AS: a ceiling on the process's VIRTUAL ADDRESS SPACE, not on its
+      # resident memory. A JVM reserves far more address space than the heap it
+      # is asked for, so a ceiling chosen as if it were an RSS budget does not
+      # bound a runaway — it stops the VM initializing at all, before any feed
+      # is read. Keep the ceiling well clear of the heap.
+      #
+      # Observed live on 2026-08-29, run 33264844507: memory_limit_mb=6144 with
+      # large_feed_heap=4g died 1.3 seconds in at 271 MB peak RSS, which is the
+      # JVM failing to start, not the feed failing to validate. Production runs
+      # 10240 against the default 6g heap, so leaving large_feed_heap empty is
+      # what reproduces production. That pairing validated this feed in 3m30 at
+      # 6.4 GB peak RSS on 2026-08-21 (run 32508141222) and died 2m24 in on
+      # 2026-08-29 (run 33265338459), so a failure at these settings is about
+      # the feed or the runner, not about the numbers.
       memory_limit_mb:
-        description: "SCORECARD_VALIDATOR_MEMORY_MB: prlimit --as ceiling for the validator subprocess, in MiB. Empty = unbounded (pre-#297 behavior)."
+        description: "SCORECARD_VALIDATOR_MEMORY_MB: prlimit --as ceiling, in MiB. Bounds VIRTUAL ADDRESS SPACE, not RSS, so keep it well above the heap or the JVM will not start (6144 with a 4g heap does not). Production uses 10240. Empty = unbounded (pre-#297 behavior)."
         required: false
         default: ""
         type: string
       large_feed_heap:
-        description: "SCORECARD_LARGE_FEED_HEAP override, e.g. 6g. Empty = validate.DEFAULT_LARGE_FEED_HEAP."
+        description: "SCORECARD_LARGE_FEED_HEAP override, e.g. 6g. Empty = validate.DEFAULT_LARGE_FEED_HEAP (6g), which is what production uses; leave it empty to reproduce production. Any value set here must stay well below the ceiling above."
         required: false
         default: ""
         type: string

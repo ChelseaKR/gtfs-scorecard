@@ -38,8 +38,14 @@ env:
   # design; it is a backstop against a genuine runaway, not a tight budget.
   #
   # This does not claim to fix the underlying runner death, whose trigger the
-  # incident record says is still unconfirmed. It changes the blast radius
-  # from "the whole day's publish" to "one agency logged and skipped".
+  # incident record says is still unconfirmed, and it no longer claims to
+  # change the blast radius either. The 2026-08-28 correction in
+  # docs/incidents/2026-08-21-daily-collect-partial-shard-publish.md retracted
+  # that: both scheduled runs after the ceiling was switched on died the same
+  # way at the same feed, and because the runner itself dies the shard never
+  # reaches upload-artifact, so every record it had already scored is
+  # discarded with it (order of 65, not one). Kept as a backstop with no
+  # observed effect in either direction, not as a remediation.
   SCORECARD_VALIDATOR_MEMORY_MB: "10240"
 
 jobs:
@@ -47,6 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       shards: ${{ steps.plan.outputs.shards }}
+      shard_count: ${{ steps.plan.outputs.count }}
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
@@ -56,7 +63,21 @@ jobs:
           python-version: "3.12"
       - id: plan
         working-directory: pipeline
-        run: echo "shards=$(uv run scorecard shards --count "$SHARD_COUNT")" >> "$GITHUB_OUTPUT"
+        run: |
+          set -euo pipefail
+          plan=$(uv run scorecard shards --count "$SHARD_COUNT")
+          echo "shards=$plan" >> "$GITHUB_OUTPUT"
+          # RELIABILITY (issue #297): the planned shard count is no longer
+          # SHARD_COUNT. `scorecard shards` gives every `large_feed` a shard of
+          # its own, so the plan is SHARD_COUNT round-robin shards plus one per
+          # large feed, and collect counts uploaded bundles against this
+          # number. Reading SHARD_COUNT down there would compare 42 bundles
+          # present against 32 expected, leave every shortfall comparison
+          # false, and put the silent shard-loss defect back the same day #322
+          # removed it.
+          count=$(printf '%s' "$plan" | jq 'length')
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+          echo "planned shards: $count (SHARD_COUNT=$SHARD_COUNT plus one per large feed)"
 
   score:
     needs: plan
@@ -208,7 +229,9 @@ jobs:
           if-no-files-found: warn
 
   collect:
-    needs: score
+    # `plan` is here for its shard_count output, the denominator the shortfall
+    # check and the run-health merge both measure against (issue #297).
+    needs: [plan, score]
     # RELIABILITY (issue #297): `needs: score` alone defaults to `if: success()`,
     # so one dead shard (e.g. a runner killed validating a large feed) skipped
     # collect and deploy entirely and dropped the whole day's publish, even
@@ -288,9 +311,19 @@ jobs:
       - name: Verify shard artifacts before publishing
         env:
           GH_TOKEN: ${{ github.token }}
+          # Passed as env rather than interpolated into the script body, the
+          # same way the score job handles matrix.shard.
+          PLANNED_SHARDS: ${{ needs.plan.outputs.shard_count }}
         run: |
           set -euo pipefail
-          expected="$SHARD_COUNT"
+          expected="${PLANNED_SHARDS:-}"
+          # Fail closed: without a denominator every comparison below is
+          # meaningless, and a meaningless shortfall check reads exactly like a
+          # passing one.
+          if ! [ "${expected:-0}" -gt 0 ] 2>/dev/null; then
+            echo "::error::plan reported no shard count (got '${expected}'); refusing to publish without a denominator for the shortfall check."
+            exit 1
+          fi
           got=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/artifacts?per_page=100" \
             --paginate --jq '.artifacts[].name' | grep -c '^artifacts-' || true)
           echo "shard artifact bundles present: $got / $expected"
@@ -328,6 +361,10 @@ jobs:
       # in api/v1/run-status.json).
       - name: Merge run-health summaries
         working-directory: pipeline
+        env:
+          # Same denominator the shortfall check above measures against: the
+          # count `plan` actually produced, not the requested SHARD_COUNT.
+          PLANNED_SHARDS: ${{ needs.plan.outputs.shard_count }}
         run: |
           set -euo pipefail
           shopt -s nullglob
@@ -343,7 +380,7 @@ jobs:
             # count, losing a whole shard's feed records left `degraded` false
             # and /status/ said "Run completed".
             uv run scorecard run-summary merge \
-              --expected-shards "$SHARD_COUNT" \
+              --expected-shards "$PLANNED_SHARDS" \
               --out ../data/artifacts/run/latest.json "${summaries[@]}"
             jq -r '.degraded_reasons[]? | "::warning title=pipeline run degraded::" + .' \
               ../data/artifacts/run/latest.json

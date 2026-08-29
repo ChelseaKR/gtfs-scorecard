@@ -279,3 +279,110 @@ did not do:
    slipped in.
 
 Neither is a reason to silence the Watchdog. It is reporting a true fact.
+
+
+## Recurrence, 2026-08-29: the failure reproduces on demand, and a diagnostic that said nothing
+
+Three `validate-one-feed.yml` dispatches against `ovapi-netherlands` today, all
+three dead. Two of the three retract things this record has been saying since
+2026-08-21.
+
+**"Neither diagnostic run reproduced the runner death" no longer holds.** The
+Verification section above records two successful diagnostic runs on 08-21 and
+concludes the trigger "is intermittent, not deterministic". Today it reproduced
+on every attempt:
+
+| Run | `SCORECARD_VALIDATOR_MEMORY_MB` | `SCORECARD_LARGE_FEED_HEAP` | Outcome |
+|---|---|---|---|
+| [33264844507](https://github.com/ChelseaKR/gtfs-scorecard/actions/runs/33264844507) | 6144 | 4g | exit 1 at 1.3s, peak RSS 271 MB |
+| [33264970236](https://github.com/ChelseaKR/gtfs-scorecard/actions/runs/33264970236) | 10240 | 4g | step `cancelled` 4m01s into validation |
+| [33265338459](https://github.com/ChelseaKR/gtfs-scorecard/actions/runs/33265338459) | 10240 | default (6g) | step `cancelled` 2m24s into validation |
+
+The third is the one that matters. `10240` with the default heap is exactly
+what `scorecard.yml` and `refresh.yml` run, and it is exactly the pairing that
+[32508141222](https://github.com/ChelseaKR/gtfs-scorecard/actions/runs/32508141222)
+validated successfully on 08-21 in 3m30.4s at 6,715,340 KB peak RSS. The same
+configuration, against the same feed id, now dies. In all three the job
+finished `failure` with the validating step `cancelled`, the 55-minute job
+timeout nowhere near reached; `validate-one-feed.yml` has no `concurrency`
+block and no later run superseded any of them, which is the same signature the
+scheduled runs have carried since 08-17. It remains an inference from the
+absence of a cancelling actor rather than a positive signal from the platform.
+
+**So the memory parameters are not the variable.** Two of them have now been
+moved with no effect on the outcome, and the pairing that worked eight days ago
+does not work today. What differs between 08-21 and 08-29 is the feed's own
+bytes, refetched every run, or the runner image underneath. That is consistent
+with the original 08-21 diagnosis, which refuted "the feed outgrew the runner"
+because the same feed passed and failed under identical settings. Nothing here
+identifies the trigger. It narrows where it is not.
+
+**The first run was a bad experiment, and it exposed a real defect.** `6144`
+with a `4g` heap is not a smaller version of the production setting.
+`SCORECARD_VALIDATOR_MEMORY_MB` becomes `prlimit --as`, which caps virtual
+address space, not resident memory, and a JVM reserves far more address space
+than its `-Xmx`. That run died in 1.3 seconds at 271 MB peak RSS: the VM never
+started, so the feed was never read. The run says nothing about the feed.
+
+What it did say, in full, was this:
+
+```
+INFO scorecard_pipeline.validate: running gtfs-validator on .../ovapi-netherlands/2026-08-29/gtfs.zip
+ERROR scorecard_pipeline.cli: ovapi-netherlands: gtfs-validator produced no report (exit 1):
+```
+
+Nothing after the colon. `run_validator` quoted the subprocess's stderr into
+its `RuntimeError` and discarded stdout, and a JVM splits its startup failures
+across both streams: a malformed flag ("Invalid maximum heap size: -Xmx", the
+bug [#299](https://github.com/ChelseaKR/gtfs-scorecard/pull/299) fixed) goes to
+stderr, while a heap it cannot reserve ("Error occurred during initialization
+of VM / Could not reserve enough space for ... object heap") goes to stdout.
+Verified directly against a JVM, not inferred. The failure mode an
+`SCORECARD_VALIDATOR_MEMORY_MB` set too close to `-Xmx` provokes was therefore
+the exact one the error path could not report, and the cause had to be
+reconstructed from `/usr/bin/time`'s peak-RSS line instead. An error path that
+announces a failure without the information to diagnose it is the same class of
+defect as a gate that cannot fail.
+
+**What changed now**
+
+1. `run_validator`'s failure quotes both streams, each labelled, each capped at
+   8,000 characters head-and-tail with the omitted count stated, and names the
+   exit code, the feed, the heap flag, the address-space ceiling and the exact
+   command to reproduce by hand. An empty stream reads `(empty)` rather than as
+   a blank gap, so "the validator said nothing" is distinguishable from "we
+   dropped it".
+2. The address-space-versus-RSS distinction is documented on the
+   `validate-one-feed.yml` dispatch inputs, where an operator actually types
+   the number, rather than only in `scorecard.yml`'s env comment and
+   `validate.py`'s docstring. Today's first run is cited there as the worked
+   example.
+3. `scorecard shards` gives every `large_feed` a shard of its own, the option
+   this record's "Still open" list named. A killed runner never reaches
+   `upload-artifact`, so it discards everything its shard had already scored;
+   at 32 shards over ~2,000 records that has been costing about 65 records per
+   occurrence. Ten records carry `large_feed: true`, so the plan goes from 32
+   shards to 42 and a death at `ovapi-netherlands` costs one record.
+4. That change had a trap in it worth recording. `collect` measured both its
+   shard-shortfall warning and `run-summary merge --expected-shards` against
+   `SHARD_COUNT`, the *requested* round-robin count. Isolation makes the plan
+   longer than `SHARD_COUNT`, so those comparisons would have read 42 bundles
+   present against 32 expected, come out false in every branch, and stopped
+   detecting shortfalls entirely — reintroducing the silent shard loss
+   [#322](https://github.com/ChelseaKR/gtfs-scorecard/pull/322) removed, hours
+   after it landed. Both now read a `shard_count` output the `plan` job
+   publishes, and `collect` refuses to publish if that denominator is missing
+   rather than comparing against an empty string.
+5. The claim in `scorecard.yml`'s env comment that the ceiling "changes the
+   blast radius from the whole day's publish to one agency logged and skipped"
+   is corrected in place to match the 08-28 retraction above, which had left
+   the workflow comment still asserting it.
+
+**Still open, and narrowed.** The trigger is still unconfirmed and nothing here
+claims otherwise. It is cheaper to chase than it was this morning: it now
+reproduces on demand at production settings in a read-only workflow that never
+deploys, and the next failure will say what the validator said instead of
+printing a bare exit code. The heap and the ceiling have each been moved once
+with no effect, so the next experiments worth running are the ones that vary
+something else — the runner image, the feed's own bytes against a pinned
+earlier copy, or the validator version.
