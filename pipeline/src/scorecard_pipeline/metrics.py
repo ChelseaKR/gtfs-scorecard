@@ -433,10 +433,10 @@ def freshness(dates: FeedDates, today: dt.date, service_type: str = "fixed") -> 
                     code="scorecard_intermittent_calendar_ended",
                     severity="WARNING",
                     count=1,
-                    what=f"The published calendar for this {kind} service ended "
-                    f"{-days_left} day(s) ago.",
-                    why="Between service periods this can be expected, but while service is "
-                    "running without a published calendar, trip planners show nothing.",
+                    what=f"This {kind} service has no published calendar. The last "
+                    f"one ended {-days_left} day(s) ago.",
+                    why="Between service periods this is normal. But if buses are "
+                    "running with no published calendar, trip planners show nothing.",
                     fix="Publish the calendar for the current or next service period and set "
                     "feed_info feed_end_date past it.",
                     effort="One export when the next period's schedule is set.",
@@ -458,12 +458,12 @@ def freshness(dates: FeedDates, today: dt.date, service_type: str = "fixed") -> 
                     code="scorecard_planned_service_boundary",
                     severity="WARNING",
                     count=1,
-                    what=f"The published calendar ended {-days_left} day(s) ago at a "
-                    "boundary between the feed's own scheduled service periods.",
-                    why="The calendar encodes distinct service periods (like academic "
-                    "terms), so this looks like a planned transition rather than a "
-                    "lapse — but trip planners still show nothing until the next "
-                    "period is published.",
+                    what=f"The published calendar ended {-days_left} day(s) ago, "
+                    "right where one of the feed's own service periods ends.",
+                    why="The calendar sets out separate service periods, such as "
+                    "school terms. So this reads as a planned change, not a lapse. "
+                    "Trip planners still show nothing until you publish the next "
+                    "period.",
                     fix="Confirm your next service period is published: export its "
                     "calendar and set feed_info feed_end_date past it.",
                     effort="One export when the next period's schedule is set.",
@@ -486,8 +486,8 @@ def freshness(dates: FeedDates, today: dt.date, service_type: str = "fixed") -> 
                 why="When the calendar runs out, trip planners stop showing this "
                 "agency even though the buses are still running. Riders are told "
                 "the service does not exist.",
-                fix="Re-export the feed with a calendar that reaches further out, and "
-                "set feed_info feed_end_date past your next service change.",
+                fix="Re-export the feed with a calendar that reaches further out. "
+                "Set feed_end_date in feed_info.txt past your next service change.",
                 effort="Usually one export setting; export on a schedule so it never lapses again.",
                 deduction=100.0,
             )

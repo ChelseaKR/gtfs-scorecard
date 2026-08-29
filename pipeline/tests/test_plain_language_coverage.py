@@ -1,6 +1,11 @@
 """Tests for plain-language coverage governance: the coverage metric over the
 national rollup (findings_national.plain_language_coverage) and the readability
-gate script (pipeline/scripts/check_readability.py)."""
+gate script (pipeline/scripts/check_readability.py).
+
+The gate's inventory moved to `scorecard_pipeline.reader_copy` on 2026-08-27
+(ADR 0048), so the tests that prove it can fail patch that seam. Patching the
+curated table alone would no longer reach the authored family, and a test that
+cannot reach the thing it asserts about is the failure this repo keeps finding."""
 
 from __future__ import annotations
 
@@ -16,7 +21,8 @@ from scorecard_pipeline.findings_national import (
     national_problems,
     plain_language_coverage,
 )
-from scorecard_pipeline.notices import TRANSLATIONS, Translation
+from scorecard_pipeline.notices import TRANSLATIONS
+from scorecard_pipeline.reader_copy import CopyString, DeferredSite
 
 
 def _load_readability() -> ModuleType:
@@ -172,20 +178,43 @@ def test_shipped_translations_clear_the_gate(capsys: pytest.CaptureFixture[str])
 def test_gate_exits_nonzero_with_diagnostics(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    bad = Translation(
-        what=(
+    """A string that misses a bar exits 1 and names itself, whichever family it
+    is in. The seam is the inventory the gate now reads, not the curated table
+    it used to read directly."""
+    bad = CopyString(
+        label="bad_code.what",
+        field="what",
+        text=(
             "Institutionalized organizational interoperability necessitates "
             "extraordinarily comprehensive documentation harmonization"
         ),
-        why="ok",
-        fix="ok",
-        effort="ok",
+        provenance="authored",
+        origin="sample.py:1",
     )
-    monkeypatch.setattr(readability, "TRANSLATIONS", {"bad_code": bad})
+    monkeypatch.setattr(readability, "reader_copy", lambda: ([bad], []))
     assert readability.main() == 1
     out = capsys.readouterr().out
     assert "bad_code.what" in out
     assert "FAILURES" in out
+
+
+def test_gate_prints_what_it_deliberately_did_not_measure(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A deferred field is reported with its reason, not silently dropped."""
+    site = DeferredSite(
+        label="sample_code",
+        field="what",
+        provenance="republished",
+        origin="sample.py:1",
+        reason="reads back copy from a published artifact, authored elsewhere",
+    )
+    monkeypatch.setattr(readability, "reader_copy", lambda: ([], [site]))
+    assert readability.main() == 0
+    out = capsys.readouterr().out
+    assert "Not measured here (1 fields)" in out
+    assert "sample.py:1 what=" in out
+    assert "authored elsewhere" in out
 
 
 # ---- weekly coverage-drop advisory (FIX-08) ---------------------------------

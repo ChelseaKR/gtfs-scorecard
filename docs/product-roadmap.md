@@ -2,6 +2,8 @@
 
 Last updated: 2026-07-16
 
+The multiyear arc across all of these is [`multiyear-plan.md`](multiyear-plan.md).
+
 This document describes the user value GTFS Scorecard will test next. The
 infrastructure and operating gates are in [`roadmap.md`](roadmap.md). The
 immediate delivery order is in [`feature-roadmap.md`](feature-roadmap.md).

@@ -124,8 +124,8 @@ def route_color_contrast_findings(routes_rows: list[dict[str, str]]) -> list[Fin
             count=len(low_contrast),
             what=f"{len(low_contrast)} route badge(s) pair a color and text color below "
             f"the WCAG 4.5:1 contrast bar ({shown}).",
-            why="Low-contrast route badges are hard to read for riders with low vision "
-            "and wash out on a phone screen in sunlight at the stop.",
+            why="Riders with low vision struggle to read a low-contrast route badge. "
+            "It also washes out on a phone screen in sunlight at the stop.",
             fix="Adjust route_color or route_text_color so each pair clears 4.5:1. "
             "Often switching the text between black and white is enough.",
             effort="A per-route color setting in your scheduling software.",
@@ -177,8 +177,8 @@ def tts_stop_name_findings(stops_rows: list[dict[str, str]]) -> list[Finding]:
             count=len(flagged),
             what=f"{len(flagged)} stop name(s) use abbreviations or symbols a screen "
             f"reader may mispronounce, with no spoken form set ({shown}).",
-            why="Riders who use a screen reader hear the raw name, so 'Main St & 2nd "
-            "Ave' can come out as 'Main saint' or drop the ampersand.",
+            why="A screen reader speaks the raw name. 'Main St & 2nd Ave' can come "
+            "out as 'Main saint', or lose the ampersand.",
             fix="Add tts_stop_name with the spoken form, e.g. 'Main Street and Second "
             "Avenue', for the affected stops.",
             effort="A short text field per affected stop; start with the busiest.",
@@ -219,8 +219,8 @@ def pathway_sufficiency_findings(
             severity="WARNING",
             count=len(missing),
             what=f"This feed models stations or entrances but has no {missing_list}.",
-            why="Without pathways and levels, a wheelchair user can't tell whether a "
-            "step-free route exists inside the station, and trip planners can't route "
+            why="Without pathways and levels, a wheelchair user can't tell if a "
+            "step-free route exists inside the station. Trip planners can't route "
             "anyone through it.",
             fix="Add pathways.txt connecting entrances, platforms, and elevators, and "
             "levels.txt for each floor, so the step-free route is described.",

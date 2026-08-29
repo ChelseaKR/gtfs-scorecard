@@ -29,6 +29,21 @@ the declared public surface).
 
 ### Changed
 
+- **The plain-language gate now reads every finding the scorecard publishes.**
+  `make verify` has run `scripts/check_readability.py` since FIX-08 landed on
+  2026-07-02, and it measured `notices.TRANSLATIONS` only. That is one of two
+  families of finding copy. The other is written inline at each `Finding(...)`
+  site in the scorers themselves, reaches the same paragraph of the same agency
+  page, and had never been measured: 40 construction sites, 118 strings, 23 of
+  which missed the bars the gate already enforced. The two worst were the
+  seasonal-boundary sentence shipped the same week (a 32-word sentence at Flesch
+  36.9) and the step-free-route finding a wheelchair user's agency reads.
+  `scorecard_pipeline.reader_copy` now enumerates both families, reading the
+  `Finding(...)` sites from source rather than from a fixture run, and refuses a
+  site whose copy it cannot account for instead of skipping it. Deferred fields
+  are printed with their reason. No threshold moved: every breaching string was
+  rewritten (ADR 0048).
+
 - **An alert about a seasonal feed now says what its scorecard page says.**
   `metrics.freshness` has read a feed's own calendars since EXP-04 landed on
   2026-07-02: when a feed encodes distinct service periods and its expiry falls
