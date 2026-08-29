@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from .score import CATEGORY_WEIGHTS, letter_grade
+from .score import CATEGORY_WEIGHTS, letter_grade, published_score
 
 # The published perturbation size: each weight moved by this fraction of itself.
 DEFAULT_FACTOR = 0.2
@@ -61,6 +61,20 @@ def rescore(categories: dict[str, float], weights: dict[str, float]) -> float:
     return sum(score * weights[name] / total for name, score in categories.items())
 
 
+def published_letter(categories: dict[str, float], weights: dict[str, float]) -> str:
+    """The letter this agency would publish under ``weights``.
+
+    Rounds through ``published_score`` before grading, because that is what the
+    artifact does. Grading the raw weighted average instead is the bug
+    ``score.py`` documents and ``publish._validate_published_overall`` refuses
+    to write: a raw 79.96875 publishes as 80.0 and grades as B, and the
+    unrounded value grades as C. That guard runs inside ``publish()`` and never
+    saw this study, which ``cli._cmd_sensitivity`` writes straight to
+    ``sensitivity.json`` (#310).
+    """
+    return letter_grade(published_score(rescore(categories, weights)))
+
+
 def perturbed_weights(factor: float = DEFAULT_FACTOR) -> list[dict[str, Any]]:
     """One-at-a-time perturbations of CATEGORY_WEIGHTS: each category moved by
     ±``factor`` of its own weight, then the whole set renormalized to sum to 1.
@@ -95,10 +109,11 @@ def weight_sensitivity(
     Baseline letters are recomputed from the same category scores under the
     published weights (never read back from the index), so baseline and
     perturbed grades come through the identical renormalization path and the
-    only moving part is the weights.
+    only moving part is the weights. Both sides grade the published score, so a
+    feed on a band edge is compared from the letter its own page shows.
     """
     baseline = {
-        agency_id: letter_grade(rescore(cats, CATEGORY_WEIGHTS))
+        agency_id: published_letter(cats, CATEGORY_WEIGHTS)
         for agency_id, cats in per_agency.items()
     }
     total = len(per_agency)
@@ -117,7 +132,7 @@ def weight_sensitivity(
         changed = sum(
             1
             for agency_id, cats in per_agency.items()
-            if letter_grade(rescore(cats, perturbation["weights"])) != baseline[agency_id]
+            if published_letter(cats, perturbation["weights"]) != baseline[agency_id]
         )
         share = round(changed / total * 100, 1)
         perturbations.append(

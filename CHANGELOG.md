@@ -43,6 +43,27 @@ the declared public surface).
   site whose copy it cannot account for instead of skipping it. Deferred fields
   are printed with their reason. No threshold moved: every breaching string was
   rewritten (ADR 0048).
+- **A render failure now says which feed it happened to.** A TypeError in
+  `_accessibility_score` took down four pipeline runs over roughly 20 hours, and
+  every traceback named the function, the line and the type without naming the
+  agency whose artifact was being rendered (#308). `render_site` logs nothing per
+  agency, so the diagnosis had to be reasoned backwards from `completeness.py`.
+  The per-feed body of the render loop now runs inside a context manager that
+  re-raises with the slug attached, so the failure notification carries it. The
+  exception is not swallowed: a feed that cannot be rendered still fails the run,
+  and whether one bad artifact should abort the whole site render stays a
+  separate product call, deliberately not made here.
+- **Two controls that read as enforcement can now fail.** The complexity
+  register in `docs/lint-complexity-ratchet.md` was maintained by hand and
+  drifted twice in seven days (#309); it is now compared with ruff on every run,
+  and a failure prints the regenerated table. Its first run found the file's own
+  prose still calling `render_site` complexity 54 against a table corrected to
+  55 the same day. And the published weight-sensitivity study graded the raw
+  weighted average, outside the `publish._validate_published_overall` guard that
+  exists to stop exactly that (#310): for a feed renormalizing to 79.96875, which
+  publishes as 80.0/B, both perturbations were counted the wrong way round. Every
+  letter outside `score.py` now comes from `published_score(...)`, and a
+  structural check keeps it that way (ADR 0050).
 
 - **An alert about a seasonal feed now says what its scorecard page says.**
   `metrics.freshness` has read a feed's own calendars since EXP-04 landed on
