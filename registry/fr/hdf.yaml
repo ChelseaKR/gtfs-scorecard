@@ -641,3 +641,51 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-07-23'
       identity_reviewed: true
+  - id: fr-pan-83643
+    name: Réseau urbain TADAO
+    country: FR
+    subdivision_code: FR-HDF
+    subdivision_name: Hauts-de-France
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/47a5e290-7883-4a40-bdcf-b693f64087b0
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/c4563dcc-f547-489a-b63a-efb4dbb37262
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/c4563dcc-f547-489a-b63a-efb4dbb37262
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit SM Artois
+      Mobilités, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-tadao
+      terms_url: https://transport.data.gouv.fr/datasets/gtfs-tadao
+      scope:
+      - gtfs_schedule
+      attribution: SM Artois Mobilités
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-83807
+    name: Réseau urbain SITAC
+    country: FR
+    subdivision_code: FR-HDF
+    subdivision_name: Hauts-de-France
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/5dcdb39b-aee3-4a0f-a9a9-be225f5a8b78
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/a6086d6b-049b-4fe8-b52a-4bdcf863db83
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/a6086d6b-049b-4fe8-b52a-4bdcf863db83
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/a6086d6b-049b-4fe8-b52a-4bdcf863db83
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to SI des transports urbains de l'agglomération du
+      Calaisis (SITAC) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-aux-formats-gtfs-et-gtfs-rt-du-reseau-sitac
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-aux-formats-gtfs-et-gtfs-rt-du-reseau-sitac
+      scope:
+      - gtfs_schedule
+      attribution: SI des transports urbains de l'agglomération du Calaisis (SITAC)
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true

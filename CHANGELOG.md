@@ -27,6 +27,32 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Added
+
+- **76 reviewed French feed records from a second National Access Point
+  exhaustion pass (2026-08-30).** Five weeks after the July exhaustion, the
+  transport.data.gouv.fr API snapshot yielded 206 still-untracked datasets
+  under Licence Ouverte 2.0 or ODbL. Every admission passed the same gates as
+  the first pass: portal licence and named legal-owner attribution recorded as
+  reuse evidence, identity review against the tracked registry, the pinned
+  canonical MobilityData validator and complete scorecard path, and at least
+  60 days of effective service. The pass adds records in twelve metropolitan
+  regions plus Guadeloupe, Martinique, and La Réunion, 43 of them with
+  official keyless GTFS-Realtime endpoints, and admits Naolib
+  (Nantes Métropole tramway/bus/ferry) as the first French record on the
+  bounded large-feed tier — its `stop_times.txt` expands past the standard
+  512 MiB per-entry cap, and it completed a full local score under the raised
+  limits (B, 83 days of service). The exclusion ledger (100 near-expiry
+  candidates awaiting the September rentrée refresh, eight regional
+  aggregates, seven alternate publications, six tracked datasets on rotated
+  resource URLs, five unreachable producer hosts, two 9999-12-31 calendars
+  that overflow the freshness date arithmetic, and the "Licence mobilités"
+  holdouts including Île-de-France Mobilités and TCL Lyon) is recorded in
+  `docs/feeds.md`. The European registry sample moves to 604 records; France
+  is now about 56% of it, further above the European beta gate's 40%
+  largest-country ceiling, which that gate continues to report honestly as
+  unmet.
+
 ### Changed
 
 - **The structural SEO gate now measures title and description length, and the
