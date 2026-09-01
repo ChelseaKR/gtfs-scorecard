@@ -177,8 +177,8 @@ def test_repo_registry_matches_documented_feed_record_counts(
     agencies = read_agencies()
     european = [agency for agency in agencies if agency.country in EUROPE_BETA_COUNTRY_CODES]
 
-    assert len(agencies) == 2_185
-    assert len(european) == 528
+    assert len(agencies) == 2_275
+    assert len(european) == 618
     assert len({agency.country for agency in european}) == 26
 
 
@@ -210,7 +210,7 @@ def test_repo_registry_includes_france_pan_and_new_country_code_wave(
     by_id = {agency.id: agency for agency in read_agencies()}
     france_pan = [agency for agency in by_id.values() if agency.id.startswith("fr-pan-")]
 
-    assert len(france_pan) == 136
+    assert len(france_pan) == 226
     assert {agency.country for agency in france_pan} == {"FR"}
     assert {agency.subdivision_code for agency in france_pan} >= {
         "FR-20R",
@@ -228,8 +228,31 @@ def test_repo_registry_includes_france_pan_and_new_country_code_wave(
         assert agency.reuse_evidence.provider_source_url.startswith(
             "https://transport.data.gouv.fr/datasets/"
         )
-        assert agency.reuse_evidence.reviewed_on == "2026-07-23"
+        assert agency.reuse_evidence.reviewed_on in {"2026-07-23", "2026-08-30", "2026-09-01"}
         assert agency.reuse_evidence.identity_reviewed is True
+    # The 2026-08-30 second exhaustion pass added 76 reviewed records,
+    # including the first French large-feed-tier record (Naolib, Nantes).
+    second_pass = [
+        agency
+        for agency in france_pan
+        if agency.reuse_evidence is not None and agency.reuse_evidence.reviewed_on == "2026-08-30"
+    ]
+    assert len(second_pass) == 76
+    naolib = by_id["fr-pan-84101"]
+    assert naolib.large_feed is True
+    assert naolib.subdivision_code == "FR-PDL"
+    # The 2026-09-01 rentrée recheck pass added 14 records whose calendars
+    # refreshed past the 60-day gate, SETRAM (Le Mans) among them.
+    third_pass = [
+        agency
+        for agency in france_pan
+        if agency.reuse_evidence is not None and agency.reuse_evidence.reviewed_on == "2026-09-01"
+    ]
+    assert len(third_pass) == 14
+    setram = by_id["fr-pan-79601"]
+    assert setram.subdivision_code == "FR-PDL"
+    assert setram.reuse_evidence is not None
+    assert setram.reuse_evidence.reviewed_on == "2026-09-01"
 
     taneo = by_id["nc-taneo-82780"]
     assert taneo.country == "NC"
