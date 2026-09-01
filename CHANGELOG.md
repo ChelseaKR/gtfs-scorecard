@@ -29,6 +29,19 @@ the declared public surface).
 
 ### Added
 
+- **14 French feed records from the rentrée recheck pass (2026-09-01).** The
+  2026-08-30 exhaustion left 100 candidates excluded only for short
+  calendars. Two days later, fourteen had refreshed past the 60-day gate and
+  passed the same licence, identity, validator, and calendar path — SETRAM
+  (Le Mans bus and tramway) and Linead (Dreux) among them, plus five Tarn
+  networks from the Gaillac-Graulhet agglomeration. Saint-Sulpice-la-Pointe
+  went from zero days of remaining service to 304 across those two days,
+  which is the recheck queue doing its job. Dataset-slug matching joined the
+  pool dedupe so tracked datasets whose portal resource URL rotated are
+  excluded mechanically. Seventy-eight candidates remain queued on short
+  calendars as September exports land; the registry moves to 2,275 records
+  and the European sample to 618. The pass log is in `docs/feeds.md`.
+
 - **76 reviewed French feed records from a second National Access Point
   exhaustion pass (2026-08-30).** Five weeks after the July exhaustion, the
   transport.data.gouv.fr API snapshot yielded 206 still-untracked datasets

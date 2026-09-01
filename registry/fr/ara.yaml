@@ -1050,3 +1050,63 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-08-30'
       identity_reviewed: true
+  - id: fr-pan-83872
+    name: Réseau scolaire CoqueliGO
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/df09ccf2-6cf5-4d7a-b03a-b3ebb89f7e49
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CA Annonay Rhône Agglo and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-reseau-scolaire-coqueligo-annonay-rhone-agglo
+      terms_url: https://transport.data.gouv.fr/datasets/gtfs-reseau-scolaire-coqueligo-annonay-rhone-agglo
+      scope:
+      - gtfs_schedule
+      attribution: CA Annonay Rhône Agglo
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-09-01'
+      identity_reviewed: true
+  - id: fr-pan-84108
+    name: Réseaux urbains STAR'T
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/030ee04a-3f58-4a1e-ace4-0aac3a6401d8
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA Thonon
+      Agglomération, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/start-horaires-du-reseau-de-lagglomeration-de-thonon
+      terms_url: https://transport.data.gouv.fr/datasets/start-horaires-du-reseau-de-lagglomeration-de-thonon
+      scope:
+      - gtfs_schedule
+      attribution: CA Thonon Agglomération
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-09-01'
+      identity_reviewed: true
+  - id: fr-pan-83994
+    name: Télécabine Eau d'Olle Express (Allemond - Oz)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/179d2464-f007-4005-976e-a7fd98eabcfe
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Loopi, Mobilité Touristique and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/telecabine-eau-dolle-express-allemond-oz
+      terms_url: https://transport.data.gouv.fr/datasets/telecabine-eau-dolle-express-allemond-oz
+      scope:
+      - gtfs_schedule
+      attribution: Loopi, Mobilité Touristique
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-09-01'
+      identity_reviewed: true

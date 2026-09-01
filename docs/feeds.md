@@ -2221,11 +2221,48 @@ Two Oise networks publish calendars ending 9999-12-31, which overflows the
 freshness date arithmetic; they are excluded and noted as a pipeline
 hardening follow-up rather than scored around.
 
-France's admitted records rise from 267 to 343 of a 612-record reviewed
+France's admitted records rise from 267 to 343 of a 604-record reviewed
 European sample, about 56%. That is far above the European beta gate's 40%
 largest-country ceiling, which that gate continues to report as unmet; this
 pass grows the reviewed sample where the defensible supply is and does not
 restate the gate. These are feed records from one national portal, not a
+census of French agencies or coverage.
+
+## France rentrée recheck pass
+
+The 2026-08-30 pass left 100 French candidates excluded only for short
+calendars, most awaiting the September rentrée export. A recheck against a
+fresh National Access Point snapshot ran on 2026-09-01. Dataset-slug
+matching now joins the resource-level dedupe, so the six tracked datasets
+whose portal resource URL rotated are excluded mechanically rather than
+by hand.
+
+Fourteen candidates had refreshed past the 60-day gate and passed the full
+scorecard path: SETRAM (Le Mans bus and tramway), Linead (Dreux, whose
+covered area crosses Centre-Val de Loire and Normandie), Tempo Bus (Agen),
+Glazgo (Auray) and PondiBUS (Pontivy) in Bretagne, ELSA (Sélestat), the
+CoqueliGO school network (Annonay), STAR'T (Thonon), the Eau d'Olle Express
+gondola (Allemond), and five Tarn networks from the Gaillac-Graulhet
+agglomeration and its operator: La Navette in Gaillac and in Graulhet, Le
+Passe Pont, Lislenbus, and Saint-Sulpice-la-Pointe. Ten records carry Licence Ouverte 2.0 and
+four the ODbL; seven publish keyless realtime endpoints. The admission-run
+grades are one C, seven D, and six F; grades were not an admission gate.
+Saint-Sulpice-la-Pointe is the clearest sign the queue works: it scored
+zero days of remaining service on 2026-08-30 and 304 days two days later.
+
+Seventy-eight candidates still show under 60 days in the portal metadata
+and stay in the recheck queue; the portal revalidates each dataset as its
+September export lands, so the queue should keep shrinking through the
+month. The other exclusions repeat their recorded reasons: the aggregates,
+alternate publications, the two 9999-12-31 calendars, the Renfe AVE and
+FLEXI'TUS no-expiry gate failures, and two newly confirmed long-expired
+exports (Intercom Bernay and Horizon at Château-Thierry, 373 and 788 days
+past their calendars). Seven producer hosts remained unreachable from the
+scoring environment, the round-one five plus SEMTM Montauban and the
+Thonon agglomeration urban feed.
+
+France's admitted records rise from 343 to 357 of a 618-record reviewed
+European sample. These are feed records from one national portal, not a
 census of French agencies or coverage.
 
 ## Unitrans (ASUCD / City of Davis)

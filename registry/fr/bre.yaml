@@ -553,3 +553,50 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-08-30'
       identity_reviewed: true
+  - id: fr-pan-83300
+    name: Réseau urbain Glazgo
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/4dc52cb9-909e-40dd-80e5-a90073bc80fc
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/db7ab07b-daf3-4423-9884-d8d5c659dd13
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/db7ab07b-daf3-4423-9884-d8d5c659dd13
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/db7ab07b-daf3-4423-9884-d8d5c659dd13
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CC Auray
+      Quiberon Terre Atlantique, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-glazgo
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-glazgo
+      scope:
+      - gtfs_schedule
+      attribution: CC Auray Quiberon Terre Atlantique
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-09-01'
+      identity_reviewed: true
+  - id: fr-pan-81179
+    name: Réseau urbain PondiBUS
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/57c8ace6-014d-40cd-b2b5-a9c630f87123
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/365ca136-0b94-4c28-9931-a812e792e108
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/365ca136-0b94-4c28-9931-a812e792e108
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CC Pontivy
+      Communauté, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-pondibus
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-pondibus
+      scope:
+      - gtfs_schedule
+      attribution: CC Pontivy Communauté
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-09-01'
+      identity_reviewed: true
