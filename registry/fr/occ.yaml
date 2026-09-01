@@ -353,3 +353,141 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-07-23'
       identity_reviewed: true
+  - id: fr-pan-8487
+    name: Réseau urbain TUM (Mende)
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    organization_id: fr-pan-5cf67b0d6f44413baf79652d
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/2f42baea-fbe1-4b01-bf4a-8232fd83b24e
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/9b9013ec-4cbb-4f18-b44a-1e94088320a8
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/9b9013ec-4cbb-4f18-b44a-1e94088320a8
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Occitanie (CC Coeur de Lozère), identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-transports-urbains-mendois-mende-gtfs-gtfs-rt
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-transports-urbains-mendois-mende-gtfs-gtfs-rt
+      scope:
+      - gtfs_schedule
+      attribution: Région Occitanie (CC Coeur de Lozère)
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-83734
+    name: Réseau urbain et scolaire Sankéo
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/6e9de060-61f6-49aa-a7ae-f0e5f509415a
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/19990c8d-e56f-4a13-afbb-795cddd1a6da
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CU Perpignan Méditerranée Métropole and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-sankeo
+      terms_url: https://transport.data.gouv.fr/datasets/gtfs-sankeo
+      scope:
+      - gtfs_schedule
+      attribution: CU Perpignan Méditerranée Métropole
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-14652
+    name: Navettes Bagnères-de-Bigorre - La Mongie
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    organization_id: fr-pan-5cf67b0d6f44413baf79652d
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/2a189c2d-7ccd-4b2e-bca0-40df0734fe0a
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Occitanie (CC de la Haute-Bigorre), identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-des-navettes-de-la-ligne-bagneres-la-mongie-gtfs-gtfs-rt
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-des-navettes-de-la-ligne-bagneres-la-mongie-gtfs-gtfs-rt
+      scope:
+      - gtfs_schedule
+      attribution: Région Occitanie (CC de la Haute-Bigorre)
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-8119
+    name: Réseau urbain Alliance
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    organization_id: fr-pan-5cf67b0d6f44413baf79652d
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/cf9e898c-9ba6-4820-a51a-93709c07f891
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/ee7325a5-172f-430e-afe7-4072e0cf1321
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/ee7325a5-172f-430e-afe7-4072e0cf1321
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/ee7325a5-172f-430e-afe7-4072e0cf1321
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA Grand
+      Auch Coeur de Gascogne, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-alliance-auch-gtfs-gtfs-rt
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-alliance-auch-gtfs-gtfs-rt
+      scope:
+      - gtfs_schedule
+      attribution: CA Grand Auch Coeur de Gascogne
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-84087
+    name: Réseau urbain LISATIS
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/9364a3b9-6cc7-4543-a927-b31056d07eac
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/eb530fc3-b08f-42a2-a669-0eeeeecee32d
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/eb530fc3-b08f-42a2-a669-0eeeeecee32d
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/eb530fc3-b08f-42a2-a669-0eeeeecee32d
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Région Occitanie (CC Tarn-Agout) and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-de-transport-urbain-lisatis
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-de-transport-urbain-lisatis
+      scope:
+      - gtfs_schedule
+      attribution: Région Occitanie (CC Tarn-Agout)
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-11492
+    name: Réseau urbain TUB (Decazeville)
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/0163a7b9-f4b1-4d9b-9af1-dcc0e583c3b4
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CC Decazeville Communauté and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/transport-urbain-du-bassin
+      terms_url: https://transport.data.gouv.fr/datasets/transport-urbain-du-bassin
+      scope:
+      - gtfs_schedule
+      attribution: CC Decazeville Communauté
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true

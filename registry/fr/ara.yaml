@@ -765,3 +765,288 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-07-23'
       identity_reviewed: true
+  - id: fr-pan-81539
+    name: Navette de Montbrison et de Saint Just Saint Rambert
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/4536fa0a-b880-47ba-9f94-42a6303e584b
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Loire Forez Agglomération (LFA) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/navettes-de-loire-forez-agglomeration
+      terms_url: https://transport.data.gouv.fr/datasets/navettes-de-loire-forez-agglomeration
+      scope:
+      - gtfs_schedule
+      attribution: Loire Forez Agglomération (LFA)
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-76779
+    name: Réseau urbain TAC Mobilité
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/373e19e2-af0a-4939-9f33-3f1268d1e0bb
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/639cd92d-d0ba-4145-8420-670cac4ec244
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/3e7a50c0-a3be-4c7f-9a01-372fa24083b4
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Pôle Métropolitain du Genevois français and the
+      update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transports-reseau-tac-annemasse-agglo
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transports-reseau-tac-annemasse-agglo
+      scope:
+      - gtfs_schedule
+      attribution: Pôle Métropolitain du Genevois français
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-83459
+    name: Réseau urbain TAG
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/b6ec7ba4-09bc-46df-b9a1-79a2c2668cf2
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Syndicat
+      Mixte des Mobilités de l'Aire Grenobloise, identify the ODbL, and preserve share-alike terms where
+      they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-du-reseau-tag
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-du-reseau-tag
+      scope:
+      - gtfs_schedule
+      attribution: Syndicat Mixte des Mobilités de l'Aire Grenobloise
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-84137
+    name: Réseau urbain Mobivie
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/c087ca61-f4db-44b2-bdc1-ec221c2bf762
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/d386adf5-0843-4bc4-89f8-e1a7fd75d93f
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/bb007d9a-970d-4243-a0c3-6369147ba2fc
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CA Vichy Communauté and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/mobivie-reseau-urbain-vichy-communaute
+      terms_url: https://transport.data.gouv.fr/datasets/mobivie-reseau-urbain-vichy-communaute
+      scope:
+      - gtfs_schedule
+      attribution: CA Vichy Communauté
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-83633
+    name: Réseau urbain Mobi'Vals
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/bdbc488f-d0fa-42ae-8e05-a1c291a9abdf
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Auvergne-Rhône-Alpes (CC du Pays Bellegardien (CCPB)), identify the ODbL, and preserve share-alike
+      terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/mobivals-horaires-theoriques-du-reseau-de-transport-urbain-de-valserhone
+      terms_url: https://transport.data.gouv.fr/datasets/mobivals-horaires-theoriques-du-reseau-de-transport-urbain-de-valserhone
+      scope:
+      - gtfs_schedule
+      attribution: Région Auvergne-Rhône-Alpes (CC du Pays Bellegardien (CCPB))
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-79861
+    name: Réseau urbain Star
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    organization_id: fr-pan-61a4f97a13ece510797ede50
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/ff0dffab-3cf5-4c6b-b576-05bd462a1e33
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA Roannais
+      Agglomération, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/star-horaires-theoriques-et-temps-reel-du-reseau-de-transport-urbain-de-roannais-agglomeration
+      terms_url: https://transport.data.gouv.fr/datasets/star-horaires-theoriques-et-temps-reel-du-reseau-de-transport-urbain-de-roannais-agglomeration
+      scope:
+      - gtfs_schedule
+      attribution: CA Roannais Agglomération
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-84136
+    name: Réseau urbain Trans'Cab
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    organization_id: fr-pan-61a4f97a13ece510797ede50
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/787bd0d8-1a57-4d40-ba4d-676321f0101e
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA du
+      Bassin d'Aurillac, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/transcab-horaires-du-reseau-urbain-daurillac
+      terms_url: https://transport.data.gouv.fr/datasets/transcab-horaires-du-reseau-urbain-daurillac
+      scope:
+      - gtfs_schedule
+      attribution: CA du Bassin d'Aurillac
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-79810
+    name: Réseau urbain Colibri (Miribel)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    organization_id: fr-pan-61a4f97a13ece510797ede50
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/dbd0bd0e-933a-4a21-8772-efdf41778e64
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/543f962e-3f4d-4bad-bb5e-7bac71f85aef
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CC de
+      Miribel et du Plateau, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/colibri-horaires-theoriques-et-temps-reel-du-reseau-de-transport-urbain-de-la-ccmp
+      terms_url: https://transport.data.gouv.fr/datasets/colibri-horaires-theoriques-et-temps-reel-du-reseau-de-transport-urbain-de-la-ccmp
+      scope:
+      - gtfs_schedule
+      attribution: CC de Miribel et du Plateau
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-82663
+    name: Réseau urbain Chamonix
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/83a2f241-a0a4-4901-b77b-8a71572a9f6a
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/c447183d-c831-42f6-b85f-5789978398d8
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/c447183d-c831-42f6-b85f-5789978398d8
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/c447183d-c831-42f6-b85f-5789978398d8
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CC de la Vallée de Chamonix-Mont-Blanc and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-reseau-chamonix-mobilite
+      terms_url: https://transport.data.gouv.fr/datasets/gtfs-reseau-chamonix-mobilite
+      scope:
+      - gtfs_schedule
+      attribution: CC de la Vallée de Chamonix-Mont-Blanc
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-82904
+    name: TAD réseau CoqueliGO
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/5e4b3c12-dd7d-4dcf-a761-41024867e56d
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CA Annonay Rhône Agglo and the update date.
+    service_type: demand_response
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-transports-a-la-demande-tad-coqueligo
+      terms_url: https://transport.data.gouv.fr/datasets/gtfs-transports-a-la-demande-tad-coqueligo
+      scope:
+      - gtfs_schedule
+      attribution: CA Annonay Rhône Agglo
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-81549
+    name: Navettes du Giffre
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/58b67800-a341-44f8-9a31-864d578b9757
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Région Auvergne-Rhône-Alpes (CC des Montagnes du
+      Giffre) and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/les-navettes-du-giffre-horaires-hiver-2023-2024
+      terms_url: https://transport.data.gouv.fr/datasets/les-navettes-du-giffre-horaires-hiver-2023-2024
+      scope:
+      - gtfs_schedule
+      attribution: Région Auvergne-Rhône-Alpes (CC des Montagnes du Giffre)
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-80092
+    name: Réseau urbain Jybus
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/9ba40024-aa3c-4e5c-b065-47eef0edf4e6
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/b2b58cc3-575f-437b-9e26-dd2805754817
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/22237a4e-7c42-4d95-a192-d7ebd6ec6357
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CC Rumilly Terre de Savoie and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transports-jybus-a-rumilly
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transports-jybus-a-rumilly
+      scope:
+      - gtfs_schedule
+      attribution: CC Rumilly Terre de Savoie
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-84135
+    name: Réseau urbain TRA Mobilité
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    organization_id: fr-pan-61a4f97a13ece510797ede50
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/c141c126-d60b-4380-9f5e-6108b83230ef
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA Arlysère,
+      identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/tra-mobilite-horaires-du-reseau-dalbertville
+      terms_url: https://transport.data.gouv.fr/datasets/tra-mobilite-horaires-du-reseau-dalbertville
+      scope:
+      - gtfs_schedule
+      attribution: CA Arlysère
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true

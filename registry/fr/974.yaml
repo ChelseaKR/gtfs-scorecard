@@ -145,3 +145,24 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-07-23'
       identity_reviewed: true
+  - id: fr-pan-81116
+    name: Réseau urbain Kar'Ouest
+    country: FR
+    subdivision_code: FR-974
+    subdivision_name: La Réunion
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/c9c2f609-d0cd-4233-ad1b-cf86b9bf2dc8
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CA Territoire de la Côte Ouest (TCO) and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-karouest
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-karouest
+      scope:
+      - gtfs_schedule
+      attribution: CA Territoire de la Côte Ouest (TCO)
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true

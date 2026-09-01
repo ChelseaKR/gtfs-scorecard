@@ -700,3 +700,167 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-07-23'
       identity_reviewed: true
+  - id: fr-pan-83509
+    name: Réseau urbain Lunéo
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/94b9beba-c897-46ca-98a4-a78bf320047a
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/0e17b681-e017-46e2-a792-b3b6ead2c06c
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/0e17b681-e017-46e2-a792-b3b6ead2c06c
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/0e17b681-e017-46e2-a792-b3b6ead2c06c
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit PETR
+      du Pays du Lunévillois, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-lulu-en-bus-ex-luneo-gtfs-gtfs-rt
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-lulu-en-bus-ex-luneo-gtfs-gtfs-rt
+      scope:
+      - gtfs_schedule
+      attribution: PETR du Pays du Lunévillois
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-80451
+    name: Réseau urbain TAC
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    organization_id: fr-pan-5d823fd98b4c411e38e820b4
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/cd55107e-671d-43f9-92bd-2e5360405e30
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/68cafa58-3d5e-49c9-83a7-68d8dd034011
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Ardenne Métropole and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0002-0000-1
+      terms_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0002-0000-1
+      scope:
+      - gtfs_schedule
+      attribution: Ardenne Métropole
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-80787
+    name: Réseau urbain Solea
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    organization_id: fr-pan-5d823fd98b4c411e38e820b4
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/4527e0e2-0e5b-4a1b-b250-d5269e0d5819
+    rt_urls:
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/2853354d-440a-44b0-8a37-2793b07658be
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CA Mulhouse Alsace Agglomération and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0014-0000-1
+      terms_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0014-0000-1
+      scope:
+      - gtfs_schedule
+      attribution: CA Mulhouse Alsace Agglomération
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-80445
+    name: Réseau urbain Le Fil
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    organization_id: fr-pan-5d823fd98b4c411e38e820b4
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/3dbac712-11da-4661-b10e-fd8fab435700
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to SM des transports du bassin de Briey and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0038-0000-1
+      terms_url: https://transport.data.gouv.fr/datasets/fr-200052264-t0038-0000-1
+      scope:
+      - gtfs_schedule
+      attribution: SM des transports du bassin de Briey
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-80459
+    name: Réseau urbain TeMo'b
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    organization_id: fr-pan-5d823fd98b4c411e38e820b4
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/f30a3b64-a902-4e7e-981c-d1f6caad933a
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/62d84b60-39e7-4ba8-b142-ebcc23f38665
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to SM des transports urbains Thionville Fensch and
+      the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-temob-syndicat-mixte-des-transports-urbains-thionville-fensch
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-temob-syndicat-mixte-des-transports-urbains-thionville-fensch
+      scope:
+      - gtfs_schedule
+      attribution: SM des transports urbains Thionville Fensch
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-84148
+    name: Réseau urbain TGL
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/4f11e16d-e326-44fe-b18a-d83e7d041806
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/048e6d89-58b4-4bd6-ba6e-90e3f8884a6e
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/2fcc6653-b7d4-4e48-bb3b-f51884357698
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to SM intercommunal des transports de l'agglomération
+      de Longwy and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-du-reseau-tgl
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-du-reseau-tgl
+      scope:
+      - gtfs_schedule
+      attribution: SM intercommunal des transports de l'agglomération de Longwy
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-80594
+    name: Réseau urbain Grand Reims Mobilités
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    organization_id: fr-pan-5d823fd98b4c411e38e820b4
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/2b928243-523d-42c5-8cf3-77176c0247f6
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/d5062d4f-af39-4088-9e7a-0a99d2fb4438
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CU du Grand Reims and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-grand-reims-mobilites-communaute-urbaine-du-grand-reims
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-grand-reims-mobilites-communaute-urbaine-du-grand-reims
+      scope:
+      - gtfs_schedule
+      attribution: CU du Grand Reims
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true

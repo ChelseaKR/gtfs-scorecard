@@ -397,3 +397,159 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-07-23'
       identity_reviewed: true
+  - id: fr-pan-81459
+    name: Réseau urbain Ar bus
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    organization_id: fr-pan-559a4970c751df46a9a453ba
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/80fc7c72-e21e-4458-a692-9da58db27566
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/613f9061-2d91-4a59-bc9b-26b69428ff87
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA du
+      Pays de Landerneau-Daoulas, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/ar-bus-landerneau-daoulas-transport
+      terms_url: https://transport.data.gouv.fr/datasets/ar-bus-landerneau-daoulas-transport
+      scope:
+      - gtfs_schedule
+      attribution: CA du Pays de Landerneau-Daoulas
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-67655
+    name: Réseau urbain TUB (Saint-Brieuc)
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/9bccfc79-5d35-4fc3-8296-526b791fc950
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA Saint-Brieuc
+      Armor Agglomération, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-du-reseau-de-transports-publics-de-saint-brieuc-armor-agglomeration
+      terms_url: https://transport.data.gouv.fr/datasets/gtfs-du-reseau-de-transports-publics-de-saint-brieuc-armor-agglomeration
+      scope:
+      - gtfs_schedule
+      attribution: CA Saint-Brieuc Armor Agglomération
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-79545
+    name: Réseau urbain Dinamo
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/7ec415c9-a963-40fc-8350-7ca77cb824c8
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA Dinan
+      Agglomération, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-dinamo
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-dinamo
+      scope:
+      - gtfs_schedule
+      attribution: CA Dinan Agglomération
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-82555
+    name: Réseau urbain MAT
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/3bd31fbe-93f4-432d-ade7-ee8d69897880
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/82da1b06-3337-44ca-9146-d70537231a11
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/82da1b06-3337-44ca-9146-d70537231a11
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/82da1b06-3337-44ca-9146-d70537231a11
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CA du Pays de Saint Malo Agglomération and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-mat
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-mat
+      scope:
+      - gtfs_schedule
+      attribution: CA du Pays de Saint Malo Agglomération
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-72361
+    name: Réseau urbain et scolaire Guingamp-Paimpol Mobilité
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/52057eec-3786-444c-8696-8473c4c6888e
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/a61b5af5-10f3-453a-9659-abd2ab0bdb85
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/e8f0a224-df21-4468-8238-694ebef449c7
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA Guingamp-Paimpol
+      Agglomération de l'Armor à l'Argoat, identify the ODbL, and preserve share-alike terms where they
+      apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-scolaire-guingamp-paimpol-mobilite
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-scolaire-guingamp-paimpol-mobilite
+      scope:
+      - gtfs_schedule
+      attribution: CA Guingamp-Paimpol Agglomération de l'Armor à l'Argoat
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-81927
+    name: Réseau urbain Tudbus
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    organization_id: fr-pan-559a4970c751df46a9a453ba
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/d30403b4-6ff8-4a37-a661-8220b18e3cc5
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CC Douarnenez
+      Communauté, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/tudbus-douarnenez-communaute-transport
+      terms_url: https://transport.data.gouv.fr/datasets/tudbus-douarnenez-communaute-transport
+      scope:
+      - gtfs_schedule
+      attribution: CC Douarnenez Communauté
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-81770
+    name: Réseau urbain Tilt
+    country: FR
+    subdivision_code: FR-BRE
+    subdivision_name: Bretagne
+    is_official: true
+    organization_id: fr-pan-559a4970c751df46a9a453ba
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/905a57b4-eb87-4c31-86cc-9a86deff09e0
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/efbce591-9baa-430d-a60b-6066d6d891cb
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA Lannion-Trégor
+      Communauté, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/tilt-lannion-tregor-communaute
+      terms_url: https://transport.data.gouv.fr/datasets/tilt-lannion-tregor-communaute
+      scope:
+      - gtfs_schedule
+      attribution: CA Lannion-Trégor Communauté
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true

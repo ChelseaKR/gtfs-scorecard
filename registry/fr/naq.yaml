@@ -660,3 +660,314 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-07-23'
       identity_reviewed: true
+  - id: fr-pan-79483
+    name: Réseau urbain agglo'Bus
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/4b6bb4e3-86de-491c-8a0a-7892a02ccb60
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CA du Grand Guéret and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/agglobus
+      terms_url: https://transport.data.gouv.fr/datasets/agglobus
+      scope:
+      - gtfs_schedule
+      attribution: CA du Grand Guéret
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-34265
+    name: Réseau urbain La Navette Oloron Sainte-Marie
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    organization_id: fr-pan-5cf67b0d6f44413baf79652d
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/10bb8fff-521d-4b27-a85e-79ae704f1ccc
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/afee6b6e-2c3f-4317-9d0a-d70540acf8d8
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/afee6b6e-2c3f-4317-9d0a-d70540acf8d8
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/afee6b6e-2c3f-4317-9d0a-d70540acf8d8
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CC du
+      Haut Béarn, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-oloron-sainte-marie-la-navette-gtfs-gtfs-rt
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-oloron-sainte-marie-la-navette-gtfs-gtfs-rt
+      scope:
+      - gtfs_schedule
+      attribution: CC du Haut Béarn
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-79992
+    name: Réseau urbain Sarlat Bus
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    organization_id: fr-pan-5cf67b0d6f44413baf79652d
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/f1119940-adc5-4d2e-af7d-5535e50da539
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/1bffdcb5-1839-4725-90da-ca69d1ee05e6
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/1bffdcb5-1839-4725-90da-ca69d1ee05e6
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CC Sarlat-Périgord
+      Noir, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-sarlatbus-gtfs-gtfs-rt
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-sarlatbus-gtfs-gtfs-rt
+      scope:
+      - gtfs_schedule
+      attribution: CC Sarlat-Périgord Noir
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-82377
+    name: Réseau urbain TMA
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    organization_id: fr-pan-5c52f0cc8b4c410915918eee
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/03ebd538-f9be-4eb5-ab22-2b72a0ea338c
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA Mont
+      de Marsan Agglomération, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/arrets-horaires-et-parcours-theoriques-des-reseaux-naq-mdm-nva-m-1
+      terms_url: https://transport.data.gouv.fr/datasets/arrets-horaires-et-parcours-theoriques-des-reseaux-naq-mdm-nva-m-1
+      scope:
+      - gtfs_schedule
+      attribution: CA Mont de Marsan Agglomération
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-82365
+    name: Réseau urbain Transcom
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    organization_id: fr-pan-5c52f0cc8b4c410915918eee
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/7a0c4ec1-628d-4b72-b180-f0c2e750112f
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA du
+      Grand Cognac, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/arrets-horaires-et-parcours-theoriques-des-reseaux-naq-cog-nva-m-1
+      terms_url: https://transport.data.gouv.fr/datasets/arrets-horaires-et-parcours-theoriques-des-reseaux-naq-cog-nva-m-1
+      scope:
+      - gtfs_schedule
+      attribution: CA du Grand Cognac
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-83631
+    name: Réseau scolaire Scolaris
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/cf2d4693-a21d-41af-9c92-a5f8847e38cb
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to SM "Pau Béarn Pyrénées mobilités" and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/fichier-des-donnees-theoriques-du-reseau-scolaris-au-format-gtfs
+      terms_url: https://transport.data.gouv.fr/datasets/fichier-des-donnees-theoriques-du-reseau-scolaris-au-format-gtfs
+      scope:
+      - gtfs_schedule
+      attribution: SM "Pau Béarn Pyrénées mobilités"
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-83389
+    name: Réseau urbain Vitalis
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/82146378-f019-4048-aa16-7328081b0369
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/bc0b47d2-38fa-461c-8916-18e05779370a
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CU du Grand Poitiers and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/mobilite-offre-de-transport-du-reseau-bus-gtfs-gtfs-rt
+      terms_url: https://transport.data.gouv.fr/datasets/mobilite-offre-de-transport-du-reseau-bus-gtfs-gtfs-rt
+      scope:
+      - gtfs_schedule
+      attribution: CU du Grand Poitiers
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-82619
+    name: Réseau urbain Pybus
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/95654461-59d1-4a33-8830-f90d55e8a217
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/ab934941-2bd2-49e2-a83c-0dcddf95b1b9
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/ab934941-2bd2-49e2-a83c-0dcddf95b1b9
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/ab934941-2bd2-49e2-a83c-0dcddf95b1b9
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Alliance Atlantique and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-pybus-le-reseau-urbain-de-parthenay
+      terms_url: https://transport.data.gouv.fr/datasets/gtfs-pybus-le-reseau-urbain-de-parthenay
+      scope:
+      - gtfs_schedule
+      attribution: Alliance Atlantique
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-82373
+    name: Réseau urbain TUB (Bergerac)
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    organization_id: fr-pan-5c52f0cc8b4c410915918eee
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/f5437c89-50b3-4d35-8d38-be8b9417f7a0
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA Bergeracoise,
+      identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-ca-bergeracoise-1
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-ca-bergeracoise-1
+      scope:
+      - gtfs_schedule
+      attribution: CA Bergeracoise
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-12601
+    name: Réseau urbain Buss
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    organization_id: fr-pan-5cf67b0d6f44413baf79652d
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/f2d4be3b-50bc-4f9b-9818-30860890a864
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/47aa1c93-4868-47da-ae43-e2fcbce3575f
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/47aa1c93-4868-47da-ae43-e2fcbce3575f
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA de
+      Saintes, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-buss-saintes-gtfs-gtfs-rt
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-buss-saintes-gtfs-gtfs-rt
+      scope:
+      - gtfs_schedule
+      attribution: CA de Saintes
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-82093
+    name: Réseau urbain Möbius
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/021fd4a3-ba9a-4d78-aa65-71d4d289f389
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/e49e8e21-ff12-46a4-b7a8-02bc8cd6fd75
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA du
+      Grand Angoulême, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-reseau-mobius
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-reseau-mobius
+      scope:
+      - gtfs_schedule
+      attribution: CA du Grand Angoulême
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-82363
+    name: Réseau urbain Tréma (Bressuire)
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    organization_id: fr-pan-5c52f0cc8b4c410915918eee
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/414c049b-323a-4a5c-b484-e3917a62f485
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA du
+      Bocage Bressuirais, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-ca-du-bocage-bressuirais-1
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-ca-du-bocage-bressuirais-1
+      scope:
+      - gtfs_schedule
+      attribution: CA du Bocage Bressuirais
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-81555
+    name: Réseau urbain de la CC Montesquieu
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    organization_id: fr-pan-5c52f0cc8b4c410915918eee
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/fd030551-a63e-441a-98f0-231186f35d82
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CC de
+      Montesquieu, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-cc-montesquieu
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-cc-montesquieu
+      scope:
+      - gtfs_schedule
+      attribution: CC de Montesquieu
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-10230
+    name: Navette Aéroport de Bordeaux
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    organization_id: fr-pan-5cf67b0d6f44413baf79652d
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/4cb2f0a9-d3d8-402b-b0bb-afafb741e5f1
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/372463bd-d7b4-4668-a9b5-bd71a28f389d
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/372463bd-d7b4-4668-a9b5-bd71a28f389d
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Zenbus,
+      identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-bordeaux-navettes-aeroport-30-direct-gtfs-gtfs-rt
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-bordeaux-navettes-aeroport-30-direct-gtfs-gtfs-rt
+      scope:
+      - gtfs_schedule
+      attribution: Zenbus
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true

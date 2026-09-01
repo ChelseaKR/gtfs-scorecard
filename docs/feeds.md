@@ -2,7 +2,7 @@
 
 Source endpoints, licenses, and polling etiquette for the original Yolo County
 pilots and the first worldwide canaries. This page is the hand-verified
-reference; the full registry has more than 2,100 feed records, still mostly in
+reference; the full registry has more than 2,200 feed records, still mostly in
 the United States and Canada, and lives in the explicit shards listed by
 `registry/index.yaml`, with the discovery process documented in
 `docs/feed-discovery.md`. Every URL below was verified with a live request on
@@ -2166,6 +2166,67 @@ agency publications.
 This wave adds 139 reviewed feed records and moves the registry to 2,185
 configured records across 46 country codes. Those are feed records, not a
 census of agencies, operators, or national coverage.
+
+## France national-access-point second exhaustion pass
+
+A second exhaustive loop over France's National Access Point ran on
+2026-08-30, five weeks after the first. The API snapshot held 784 datasets,
+475 of them carrying a GTFS Schedule resource. After removing datasets under
+no admitted open licence (ten unspecified, two under the restricted "Licence
+mobilités") and every dataset already matched to a tracked registry endpoint,
+206 candidate datasets remained. Each was taken as one canonical current
+resource per dataset and, unless excluded first, run through the bounded
+download, pinned canonical MobilityData validator, complete scorecard, and
+60-day effective-calendar path.
+
+The pass admits 76 feed records: 75 standard-tier records and Naolib, the
+Nantes Métropole tramway, bus, and ferry network, whose `stop_times.txt`
+expands past the standard 512 MiB per-entry archive cap and which is the
+first French record admitted on the bounded large-feed tier after a full
+local score under its raised limits. Thirty-seven records carry Licence
+Ouverte 2.0 and 39 the Open Database License, all recorded from the portal's
+dataset pages with the named legal owner as the attribution party. The
+records span twelve metropolitan regions (Corse's remaining candidates all
+fell to the calendar gate) plus Guadeloupe, Martinique, and La Réunion; two
+networks whose official covered area crosses a regional border (TréMA around
+Mâcon, Linggo around Langres) carry the country alone, as does the BlaBlaCar
+Bus European network, recorded like FlixBus as one national feed record.
+Forty-three records also publish official keyless GTFS-Realtime endpoints
+through the portal. The admission-run grade distribution is five B, thirteen
+C, twenty-eight D, and twenty-nine F standard-tier records: grades were not
+an admission gate.
+
+The exclusion set is larger than the admission set, and most of it is
+timing. One hundred candidates showed under 60 days of effective service in
+the portal's own metadata, most of them August exports awaiting the
+September rentrée refresh; they were recorded without a download and are the
+first recheck targets. Five more failed the same 60-day gate after a full
+score (among them the Renfe AVE France archive, which publishes no readable
+expiry). Identity review removed thirteen: six datasets already tracked
+whose portal resource URL has rotated since admission (a `discover`
+follow-up, not new coverage — Transvilles, Fil Bleu, Tanéo Nouméa, Rubis,
+Cara'bus, and the Île d'Yeu ferry), and seven alternate publications of
+tracked networks — a realtime companion of the Montpellier TaM schedule, the
+BreizhGo 35 experimentation export, second Ritmo Haguenau and Rubis Grand
+Bourg datasets, the Aléop GTFS-Flex variant, and two Nouvelle-Aquitaine
+per-network exports duplicating first-party feeds. Eight regional
+multi-network aggregates (Oùra, Grand Est,
+Korrigo, JV Malin, the Normandy multimodal base, Destinéo/Aléop, the
+region-wide Fluo Grand Est interurban file, and the Nouvelle-Aquitaine
+agrégat) stayed out because their member networks are tracked or admitted
+individually. Five producer hosts could not be fetched from the scoring
+environment (Envibus, Astuce Rouen, both Mobilité en Velay files, and
+Maélis Montluçon — Mobilité en Velay also failed the July pass this way).
+Two Oise networks publish calendars ending 9999-12-31, which overflows the
+freshness date arithmetic; they are excluded and noted as a pipeline
+hardening follow-up rather than scored around.
+
+France's admitted records rise from 267 to 343 of a 612-record reviewed
+European sample, about 56%. That is far above the European beta gate's 40%
+largest-country ceiling, which that gate continues to report as unmet; this
+pass grows the reviewed sample where the defensible supply is and does not
+restate the gate. These are feed records from one national portal, not a
+census of French agencies or coverage.
 
 ## Unitrans (ASUCD / City of Davis)
 
