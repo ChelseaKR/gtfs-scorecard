@@ -280,6 +280,11 @@ POINT_IN_TIME: list[tuple[str, str, str]] = [
         "per-wave curation log: the France national-access-point wave's result",
     ),
     (
+        "docs/feeds.md",
+        r"of a ([\d,]+)-record reviewed\s+European sample",
+        "per-wave curation log: the second France exhaustion pass's result",
+    ),
+    (
         "docs/global-expansion.md",
         r"waves contains ([\d,]+) feed records",
         "frozen 2026-07-18 baseline; the section says so and says why",

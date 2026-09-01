@@ -418,3 +418,115 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-07-23'
       identity_reviewed: true
+  - id: fr-pan-83429
+    name: Réseau urbain Mouv'enbus
+    country: FR
+    subdivision_code: FR-PAC
+    subdivision_name: Provence-Alpes-Côte-d’Azur
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/9e2f1dd8-cbf4-4e56-b022-b350561a1cb9
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CA de la Provence Verte and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-transport-mouv-enbus-agglomeration-provence-verte
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-transport-mouv-enbus-agglomeration-provence-verte
+      scope:
+      - gtfs_schedule
+      attribution: CA de la Provence Verte
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-81907
+    name: Réseau urbain TEDbus
+    country: FR
+    subdivision_code: FR-PAC
+    subdivision_name: Provence-Alpes-Côte-d’Azur
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/a1d56fb0-e264-45f2-8822-c08746847a97
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/f32c61d5-30b7-4e06-a05e-a2fc934ba7d9
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/f32c61d5-30b7-4e06-a05e-a2fc934ba7d9
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/f32c61d5-30b7-4e06-a05e-a2fc934ba7d9
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Dracénie Provence Verdon Agglomération and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-tedbus-lignes-regulieres-dracenie-provence-verdon-agglomeration
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-tedbus-lignes-regulieres-dracenie-provence-verdon-agglomeration
+      scope:
+      - gtfs_schedule
+      attribution: Dracénie Provence Verdon Agglomération
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-82294
+    name: Réseau urbain Le Bus (Estérel Côte d'Azur)
+    country: FR
+    subdivision_code: FR-PAC
+    subdivision_name: Provence-Alpes-Côte-d’Azur
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/11e73e58-edb0-4fab-a220-61a659cf6423
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/24e2ecf9-82a3-4bfc-bf86-db6ec81c480f
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/24e2ecf9-82a3-4bfc-bf86-db6ec81c480f
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Estérel Côte d'Azur Agglomération and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-transport-urbain-le-bus
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-transport-urbain-le-bus
+      scope:
+      - gtfs_schedule
+      attribution: Estérel Côte d'Azur Agglomération
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-83739
+    name: Téléphérique du Mont Faron
+    country: FR
+    subdivision_code: FR-PAC
+    subdivision_name: Provence-Alpes-Côte-d’Azur
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/9bba0b17-2863-4ee1-a38a-c7a445f820d1
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Métropole Toulon-Provence-Méditerranée and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/telepherique-du-mont-faron
+      terms_url: https://transport.data.gouv.fr/datasets/telepherique-du-mont-faron
+      scope:
+      - gtfs_schedule
+      attribution: Métropole Toulon-Provence-Méditerranée
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-83448
+    name: Trains régionaux ZOU ! — Transdev Rail Sud
+    country: FR
+    subdivision_code: FR-PAC
+    subdivision_name: Provence-Alpes-Côte-d’Azur
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/764d6d5b-d04e-4aa7-94b7-f8b2274d2964
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/74db080b-3d7c-4f30-8811-b344e79f4092
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Provence-Alpes-Côte d’Azur and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/zou
+      terms_url: https://transport.data.gouv.fr/datasets/zou
+      scope:
+      - gtfs_schedule
+      attribution: Provence-Alpes-Côte d’Azur
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true

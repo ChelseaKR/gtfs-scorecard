@@ -48,3 +48,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: fr-pan-8201
+    name: Réseau urbain Titus
+    country: FR
+    subdivision_code: FR-IDF
+    subdivision_name: Île-de-France
+    is_official: true
+    organization_id: fr-pan-5cf67b0d6f44413baf79652d
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/ed7049d4-4063-457c-ab65-4a26c640e0a1
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/7dd97f96-2fb2-4647-8498-ef234ed0faaa
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/7dd97f96-2fb2-4647-8498-ef234ed0faaa
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/7dd97f96-2fb2-4647-8498-ef234ed0faaa
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Île-de-France
+      Mobilités, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-titus-rosny-sous-bois-gtfs-gtfs-rt
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-titus-rosny-sous-bois-gtfs-gtfs-rt
+      scope:
+      - gtfs_schedule
+      attribution: Île-de-France Mobilités
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
