@@ -140,3 +140,25 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-08-30'
       identity_reviewed: true
+  - id: fr-pan-83529
+    name: Réseau urbain Linead
+    country: FR
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/c654db3d-a710-4ed5-a327-417f812bf9a0
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/cf98048e-7419-46ec-a1e3-36a34e1e11a9
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/cf98048e-7419-46ec-a1e3-36a34e1e11a9
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA Agglo
+      du Pays de Dreux, identify the ODbL, and preserve share-alike terms where they apply.
+    operating_note: The official covered area crosses more than one region; no single subdivision is assigned.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/dreux-offre-theorique-mobilite-reseau-urbain
+      terms_url: https://transport.data.gouv.fr/datasets/dreux-offre-theorique-mobilite-reseau-urbain
+      scope:
+      - gtfs_schedule
+      attribution: CA Agglo du Pays de Dreux
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-09-01'
+      identity_reviewed: true

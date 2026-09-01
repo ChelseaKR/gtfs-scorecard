@@ -337,6 +337,13 @@ portal's restricted "Licence mobilités". The pass is recorded in
 `docs/feeds.md`; it grows the reviewed French sample to 343 records and does
 not change any census or gate claim.
 
+A rentrée recheck on 2026-09-01 then admitted 14 of those deferred
+candidates whose September exports had already landed, SETRAM (Le Mans)
+among them, under the unchanged gates. Seventy-eight stay queued on short
+calendars and the queue is expected to keep clearing through the month.
+The recheck also moved the rotated-resource dedupe from hand review into
+the candidate pool builder itself.
+
 ### Phase 4 — partnership-gated regions
 
 Much of the Global South's transit is informal — minibuses, matatus, colectivos,

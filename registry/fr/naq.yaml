@@ -971,3 +971,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-08-30'
       identity_reviewed: true
+  - id: fr-pan-80245
+    name: Réseau urbain Tempo Bus
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/c1415ff3-7457-4b51-aead-aacbf03a474e
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/37b144db-2013-49ff-9a24-b8396f19655d
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/37b144db-2013-49ff-9a24-b8396f19655d
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CA Agglomération d'Agen and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/agen-gtfs-urbain
+      terms_url: https://transport.data.gouv.fr/datasets/agen-gtfs-urbain
+      scope:
+      - gtfs_schedule
+      attribution: CA Agglomération d'Agen
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-09-01'
+      identity_reviewed: true

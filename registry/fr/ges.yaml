@@ -864,3 +864,25 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-08-30'
       identity_reviewed: true
+  - id: fr-pan-80401
+    name: Réseau urbain ELSA
+    country: FR
+    subdivision_code: FR-GES
+    subdivision_name: Grand-Est
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/e8c2e6a9-d7f3-4c42-82c9-f7366dd79023
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/dd107392-be83-40d3-8447-50078196c898
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to PETR Sélestat Alsace Centrale and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-elsa-petr-selestat-alsace-centrale
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-elsa-petr-selestat-alsace-centrale
+      scope:
+      - gtfs_schedule
+      attribution: PETR Sélestat Alsace Centrale
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-09-01'
+      identity_reviewed: true
