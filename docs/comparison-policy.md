@@ -25,6 +25,22 @@ cohort. A feed record is included only when:
 Realtime remains optional and is not an eligibility condition. A small agency
 without realtime is never excluded for that reason.
 
+The inverse is also true and is easier to miss, so it is stated here rather
+than left to be inferred. Because the homogeneous set the aggregates use is the
+one most feeds share, and most feeds have no measured realtime, a feed **with**
+measured realtime is excluded from the corpus average, the trend series, and
+the change lists. On 2026-08-06 that was 145 of 1,783 comparable feeds. The
+exclusion is a measurement rule, not a judgement: a four-category overall score
+is a different measurement from a three-category one, and averaging them would
+be worse than reporting one. Those feeds' realtime results are published on
+`/realtime/`, and `/pulse/` now says so beside the number.
+
+Re-basing the aggregates so realtime-publishing feeds enter one shared
+three-category average, or publishing both cohorts side by side, are the other
+two options recorded in issue #248. Either changes what a published methodology
+number means, so either would go through the shadow-scoring path with a
+methodology announcement (ADR 0051).
+
 Named changes compare a feed only with its own prior check, and only when both
 checks use the same current rubric, scoring profile, validator, and measured
 category set, including the same reader archive profile. The historical

@@ -128,6 +128,18 @@ the declared public surface).
   publishes as 80.0/B, both perturbations were counted the wrong way round. Every
   letter outside `score.py` now comes from `published_score(...)`, and a
   structural check keeps it that way (ADR 0050).
+- **The corpus average now says it excludes the feeds that publish realtime.**
+  The cohort rule picks the largest homogeneous measured-category set, which is
+  the one without realtime, so 145 of 1,783 comparable feeds sat outside the
+  `/pulse/` average, `api/v1/trend.json` and the change lists, and zero of the 24
+  agencies linked from `/pulse/` on 2026-08-06 had measured realtime (#248). The
+  rule is right; the disclosure was missing, and it pointed against this
+  project's reader: an agency that adds a realtime feed disappears from the
+  headline number on the day they do it. `/pulse/` and `comparison-policy.md` now
+  state it, derived from the comparison block rather than hardcoded, and say a
+  feed leaves the average by publishing realtime rather than by getting worse.
+  Re-basing the aggregates stays an owner decision on the methodology path
+  (ADR 0051).
 
 - **An alert about a seasonal feed now says what its scorecard page says.**
   `metrics.freshness` has read a feed's own calendars since EXP-04 landed on

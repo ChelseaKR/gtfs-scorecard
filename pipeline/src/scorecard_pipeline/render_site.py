@@ -4719,6 +4719,61 @@ def _comparison_contract_text(comparison: dict[str, Any]) -> str:
     )
 
 
+def _excluded_realtime_cohort(comparison: dict[str, Any]) -> int:
+    """How many current-contract feeds this aggregate drops for having realtime.
+
+    The cohort rule in `comparisons.py` picks the largest homogeneous
+    measured-category set, and the largest set is the one without realtime, so
+    every feed with measured realtime falls out of the corpus average, the
+    trend series, and the change lists (#248). The reasoning is sound: a
+    three-category overall score and a four-category one are not the same
+    measurement, and averaging them would be worse.
+
+    The consequence points the wrong way for this audience. An agency that adds
+    a realtime feed, the upgrade this site spends a page encouraging and the one
+    that costs them most, disappears from the headline number on the day they do
+    it. A state program using the corpus average to argue its cohort is
+    improving cannot see the improvement it most wants to show.
+
+    Returns 0 unless realtime is genuinely the difference: the selected set has
+    to omit realtime, and some other cohort has to include it. Zero means there
+    is nothing to disclose, not that the disclosure was skipped.
+    """
+    selected = [str(name) for name in comparison.get("required_measured_categories") or []]
+    if not selected or "realtime" in selected:
+        return 0
+    cohorts = comparison.get("measured_category_cohorts")
+    if not isinstance(cohorts, dict):
+        return 0
+    return sum(
+        int(count)
+        for signature, count in cohorts.items()
+        if "realtime" in str(signature).split("+")
+        and isinstance(count, int)
+        and not isinstance(count, bool)
+    )
+
+
+def _realtime_cohort_note(comparison: dict[str, Any]) -> str:
+    """One sentence saying the aggregate leaves out the feeds that publish realtime.
+
+    `comparison-policy.md` already says a feed without realtime is never
+    excluded for that reason. It was silent on the inverse, which is the half a
+    reader needs, so the disclosure said less than the code did.
+    """
+    excluded = _excluded_realtime_cohort(comparison)
+    if not excluded:
+        return ""
+    feeds = "feed was" if excluded == 1 else "feeds were"
+    return (
+        '<p class="fineprint">Feeds with measured realtime are not in this average. '
+        f"{excluded:,} {feeds} scored on four categories this run, and a four-category "
+        "score is not the same measurement as a three-category one. Their realtime "
+        'results are on the <a href="/realtime/">realtime page</a>. A feed leaves this '
+        "average by publishing realtime, not by getting worse.</p>"
+    )
+
+
 def _guarded_comparison_count(payload: dict[str, Any]) -> int:
     """A cross-feed denominator only when both public count fields agree.
 
@@ -6543,6 +6598,7 @@ def _render_pulse_page(
     scoring profile, validator, and measured category set are unchanged. Corpus aggregates
     use {_comparison_contract_text(comparison)}; records with unresolved duplicate identities
     are excluded.</p>
+    {_realtime_cohort_note(comparison)}
     {_ridership_impact_line(ridership_impact)}
     <section id="changes" aria-labelledby="changes-h" tabindex="-1">
       <h2 class="section-title" id="changes-h">What changed since the last check</h2>
