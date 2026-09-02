@@ -112,6 +112,11 @@ def resweep(artifact: dict[str, Any], today: dt.date) -> tuple[dict[str, Any], d
     service_type = details.get("service_type", "fixed")
 
     new_fresh = freshness(_feed_dates(details), today, service_type)
+    # `_feed_dates` rebuilds from a published artifact whose freshness was
+    # measured, so the date tables were there and freshness re-measures. The
+    # guard keeps the sweep from silently rewriting a category into nothing.
+    if new_fresh is None:  # pragma: no cover - a measured category cannot unmeasure
+        raise ValueError("re-scoring a measured freshness category produced no measurement")
 
     measured: list[CategoryResult] = []
     for name, cat in cats.items():

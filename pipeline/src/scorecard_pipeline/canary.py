@@ -29,12 +29,10 @@ import statistics
 from pathlib import Path
 from typing import Any
 
-from .completeness import completeness
 from .config import AGENCIES, Agency, raw_dir, repo_root, utc_today
 from .fetch import FetchResult, fetch_static
-from .gtfs import read_feed_dates
-from .metrics import correctness, freshness
-from .score import GRADE_BANDS, build_scorecard
+from .metrics import correctness
+from .score import GRADE_BANDS, build_scorecard, score_feed_content
 from .validate import (
     VALIDATOR_VERSION,
     ValidationReport,
@@ -92,8 +90,12 @@ def _scored_result(
     reader_path = fetched.reader_view_path
     cats = [
         correctness(report),
-        freshness(read_feed_dates(str(reader_path)), today=date, service_type=agency.service_type),
-        completeness(str(reader_path), fare_free=agency.fare_free),
+        *score_feed_content(
+            str(reader_path),
+            today=date,
+            service_type=agency.service_type,
+            fare_free=agency.fare_free,
+        ),
     ]
     scorecard = build_scorecard(cats)
     return agency_result(agency.id, report, scorecard.grade, scorecard.overall_score)

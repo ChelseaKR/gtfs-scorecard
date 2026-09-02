@@ -50,18 +50,16 @@ import jsonschema
 import requests
 
 from .agencies import AgencyConfigError, load_agencies
-from .completeness import completeness
 from .config import AGENCIES, Agency, current_agency_ids, raw_dir, repo_root, utc_today
 from .constants_export import GRADE_RANK
 from .fetch import FetchResult, fetch_static, prepare_reader_archive
-from .gtfs import read_feed_dates
-from .metrics import CategoryResult, correctness, freshness
+from .metrics import CategoryResult, correctness
 from .net import UnsafeURLError
 from .publish import build_artifact, publish
 from .rt import capture_window, realtime, scheduled_trip_ids_at
 from .rt_drift import compute_drift, vehicle_plausibility
 from .s3_publish import DEFAULT_PUBLISH_WORKERS, MAX_PUBLISH_WORKERS
-from .score import build_scorecard
+from .score import build_scorecard, score_feed_content
 from .validate import (
     country_scoped_output_dir,
     parse_report,
@@ -242,8 +240,12 @@ def run_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
 
     cats = [
         correctness(report),
-        freshness(read_feed_dates(str(reader_path)), today=date, service_type=agency.service_type),
-        completeness(str(reader_path), fare_free=agency.fare_free),
+        *score_feed_content(
+            str(reader_path),
+            today=date,
+            service_type=agency.service_type,
+            fare_free=agency.fare_free,
+        ),
     ]
     if agency.rt_urls and not skip_rt:
         cats.append(
@@ -438,11 +440,7 @@ def run_adhoc(
     reader_path = fetched.reader_view_path
     report_dir = raw_dir() / scratch_id / date.isoformat() / "validator"
     report = parse_report(run_validator(fetched.path, report_dir, country_code=country_code))
-    cats = [
-        correctness(report),
-        freshness(read_feed_dates(str(reader_path)), today=date),
-        completeness(str(reader_path)),
-    ]
+    cats = [correctness(report), *score_feed_content(str(reader_path), today=date)]
     scorecard = build_scorecard(cats)
     generated_at = dt.datetime.combine(fetched.fetched_date, dt.time(), dt.UTC)
     artifact = build_artifact(agency, fetched, scorecard, generated_at=generated_at)
@@ -539,7 +537,15 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
 
 def _try_gate(artifact: dict[str, Any], args: argparse.Namespace) -> int:
     """Return a non-zero exit code when the scored feed fails a requested
-    threshold, so `scorecard try` can gate CI. No thresholds means exit 0."""
+    threshold, so `scorecard try` can gate CI. No thresholds means exit 0.
+
+    Every artifact that reaches here was read: an archive with no stops and no
+    trips is refused by ``score_feed_content`` before a scorecard exists, and
+    `_cmd_try` reports that the same way it reports a response body that is not
+    a zip -- "could not score <url>: ...", exit 1. The reported bug was this
+    function returning 0 with `passed=true` for such an archive; the fix is that
+    no such artifact is built, not a threshold-free failure invented here.
+    """
     failures: list[str] = []
     if args.min_grade:
         grade = str(artifact["overall"]["grade"])

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import datetime as dt
+from typing import Any
 
 import pytest
 
@@ -14,12 +15,25 @@ from scorecard_pipeline.metrics import (
     CategoryResult,
     correctness,
     expiry_status,
-    freshness,
     operating_signal,
     resolve_service_horizon_status,
     service_horizon_status,
 )
+from scorecard_pipeline.metrics import (
+    freshness as _freshness_maybe,
+)
 from scorecard_pipeline.validate import NoticeGroup, ValidationReport
+
+
+# `freshness` returns None when the archive held no table that can carry a
+# service date. Every fixture below has one, so this wrapper keeps the existing
+# call sites unchanged while turning an unexpected "not measurable" into a loud
+# failure instead of an attribute error.
+def freshness(*args: Any, **kwargs: Any) -> CategoryResult:
+    result = _freshness_maybe(*args, **kwargs)
+    assert result is not None, "this fixture has date tables and must measure freshness"
+    return result
+
 
 TODAY = dt.date(2026, 6, 11)
 
@@ -34,6 +48,7 @@ def feed_dates(
     has_feed_info: bool = True,
     seasonal_boundary: bool = False,
 ) -> FeedDates:
+
     return FeedDates(
         has_feed_info=has_feed_info,
         feed_publisher_name="Test",

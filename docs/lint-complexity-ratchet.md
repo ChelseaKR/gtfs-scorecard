@@ -52,7 +52,7 @@ without discussion.
 | `propose_agencies_with_dispositions` | `src/scorecard_pipeline/mobilitydb.py:666` | 32 | Mobility Database matching heuristics; candidate: extract match-scoring helper. Was tracked as `propose_agencies`, which is now a thin wrapper at `mobilitydb.py:909` with no suppression. |
 | `render_digest` | `src/scorecard_pipeline/alerts.py:526` | 17 | Digest section assembly; candidate: extract one function per digest section. |
 | `_render_brief` | `src/scorecard_pipeline/render_site.py:3059` | 16 | Template string assembly. |
-| `completeness` | `src/scorecard_pipeline/completeness.py:209` | 15 | Rider-experience field scoring; candidate: extract per-field scorers. |
+| `completeness` | `src/scorecard_pipeline/completeness.py:209` | 16 | Rider-experience field scoring; candidate: extract per-field scorers. The 16th branch is the guard that returns no category at all for an archive with no stops and no trips, so a rider-experience score is never published for a feed that described none. |
 | `parse_subscribers` | `src/scorecard_pipeline/notify.py:87` | 15 | Subscriber YAML parsing and validation; candidate: split per-field validators (same shape as `parse_agencies`). |
 | `build_digest` | `src/scorecard_pipeline/alerts.py:426` | 14 | Alert digest construction. Was suppressed with a bare `# noqa: C901` and no row; both fixed here. |
 | `parse_ridership_csv` | `src/scorecard_pipeline/ridership.py:58` | 14 | CSV column-mapping heuristics; candidate: extract per-column parsers. |

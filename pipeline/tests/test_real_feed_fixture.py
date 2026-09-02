@@ -10,9 +10,22 @@ from __future__ import annotations
 
 import datetime as dt
 from pathlib import Path
+from typing import Any
 
 from scorecard_pipeline.gtfs import read_feed_dates
-from scorecard_pipeline.metrics import freshness
+from scorecard_pipeline.metrics import CategoryResult
+from scorecard_pipeline.metrics import freshness as _freshness_maybe
+
+
+# `freshness` returns None when the archive held no table that can carry a
+# service date. Every fixture below has one, so this wrapper keeps the existing
+# call sites unchanged while turning an unexpected "not measurable" into a loud
+# failure instead of an attribute error.
+def freshness(*args: Any, **kwargs: Any) -> CategoryResult:
+    result = _freshness_maybe(*args, **kwargs)
+    assert result is not None, "this fixture has date tables and must measure freshness"
+    return result
+
 
 FIXTURE = Path(__file__).parent / "fixtures" / "unitrans_trimmed.zip"
 
