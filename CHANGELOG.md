@@ -66,6 +66,27 @@ the declared public surface).
   largest-country ceiling, which that gate continues to report honestly as
   unmet.
 
+### Fixed
+
+- **The weekly discovery job no longer overwrites a curator's pinned feed
+  host.** `city-of-wasco` is tracked on the Caltrans DDS ZIP; its
+  `license_note` names that index and its `operating_note` records that the DDS
+  packaging is "stale and noncanonical as packaged" and that we track it
+  anyway. `scorecard discover --apply` proposed the calitp.org listing the
+  catalog holds for the same `mdb_id`, and had no way to see that a person had
+  already compared the two. PR #312 was closed on 2026-08-29 for exactly this,
+  with `docs/PR-TRIAGE.md` recording that it "reverts a deliberate curatorial
+  decision, and in the same diff deletes the paragraph that recorded why".
+  Closing the pull request did not change the job, so the next scheduled run
+  opened #327 with the same edit, it merged, and `main`'s CI went red on
+  2026-09-01 with `test_repo_registry_tracks_calitp_hosting_migration` as the
+  only surviving trace of the decision. The URL is restored, and `discover` now
+  holds any replacement whose agency notes name the host already tracked
+  instead of applying it. Held is not dropped: the report gives them their own
+  section, with the note that pinned each one and the URL that was not applied,
+  and counts them separately from the replacements it did apply, so the report
+  never implies an edit it did not make.
+
 ### Changed
 
 - **The structural SEO gate now measures title and description length, and the

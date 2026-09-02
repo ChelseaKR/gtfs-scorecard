@@ -44,7 +44,7 @@ import time
 import urllib.parse
 from collections import Counter
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import jsonschema
 import requests
@@ -68,6 +68,9 @@ from .validate import (
     run_validator,
     validator_country_code,
 )
+
+if TYPE_CHECKING:  # imported lazily at runtime, inside the commands that use it
+    from .mobilitydb import FeedMatch
 
 log = logging.getLogger(__name__)
 
@@ -1298,6 +1301,47 @@ def _cmd_backfill_state(args: argparse.Namespace, parser: argparse.ArgumentParse
     return 0
 
 
+def _report_discovery(
+    matches: list[FeedMatch], *, checked: int, out: str | None
+) -> list[FeedMatch]:
+    """Write the discovery report and return the replacements safe to apply.
+
+    A record whose notes name the host we already track carries a curator's
+    decision about provenance that the catalog cannot see, so the weekly job
+    proposes the listing regardless. Those are held here rather than applied,
+    and reported separately, so the report never counts an edit it did not make
+    and never hides a proposal a curator might still want to take.
+    """
+    from .mobilitydb import hold_pinned_hosts, pinning_note, render_replacements_md
+
+    appliable, held = hold_pinned_hosts(matches, AGENCIES)
+    notes = {m.agency_id: pinning_note(AGENCIES[m.agency_id], m.current_url) for m in held}
+    report = render_replacements_md(
+        appliable, today=utc_today().isoformat(), held=held, pinning_notes=notes
+    )
+    if out:
+        Path(out).write_text(report)
+        log.info("Wrote feed-discovery report for %d agencies to %s", checked, out)
+    else:
+        print(report, end="")
+    log.info(
+        "%d checked: %d replaced, %d missing, %d held by a pinning note.",
+        checked,
+        sum(1 for m in appliable if m.status == "replaced"),
+        sum(1 for m in appliable if m.status == "missing"),
+        len(held),
+    )
+    if held:
+        log.warning(
+            "%d replacement(s) are held: the registry notes name the host already "
+            "tracked, so a curator chose it. Following the catalog for these is a "
+            "hand edit that should also update the note: %s",
+            len(held),
+            ", ".join(m.agency_id for m in held),
+        )
+    return appliable
+
+
 def _cmd_discover(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .config import repo_root
     from .mobilitydb import (
@@ -1306,7 +1350,6 @@ def _cmd_discover(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         fetch_catalog,
         find_replacements,
         parse_catalog,
-        render_replacements_md,
     )
 
     source = args.catalog or DEFAULT_CATALOG_URL
@@ -1338,22 +1381,14 @@ def _cmd_discover(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         return 0
 
     matches = find_replacements(feeds, registry, mdb_ids)
-    report = render_replacements_md(matches, today=utc_today().isoformat())
-    if args.out:
-        Path(args.out).write_text(report)
-        log.info("Wrote feed-discovery report for %d agencies to %s", len(registry), args.out)
-    else:
-        print(report, end="")
-    replaced = sum(1 for m in matches if m.status == "replaced")
-    missing = sum(1 for m in matches if m.status == "missing")
-    log.info("%d checked: %d replaced, %d missing.", len(registry), replaced, missing)
+    appliable = _report_discovery(matches, checked=len(registry), out=args.out)
 
     if args.apply:
         from .agencies import registry_paths
 
         changed: list[str] = []
         for registry_path in registry_paths(repo_root()):
-            updated, changed_here = apply_replacements(registry_path.read_text(), matches)
+            updated, changed_here = apply_replacements(registry_path.read_text(), appliable)
             if changed_here:
                 registry_path.write_text(updated)
                 changed.extend(changed_here)
