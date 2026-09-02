@@ -1237,6 +1237,57 @@ def replacement_url(match: FeedMatch) -> str | None:
     return None
 
 
+def pinning_note(agency: Agency, url: str) -> str:
+    """The registry note that names ``url``'s host, or "" if none does.
+
+    A curator who writes the host into ``license_note`` or ``operating_note``
+    has said where this feed comes from and why it is the one we track. That is
+    a recorded decision about provenance, which is exactly what a catalog
+    listing cannot see.
+    """
+    host = re.sub(r"^www\.", "", re.sub(r"^https?://", "", url.strip().lower()).split("/", 1)[0])
+    if not host:
+        return ""
+    for note in (agency.license_note, agency.operating_note):
+        if host in (note or "").lower():
+            return note
+    return ""
+
+
+def hold_pinned_hosts(
+    matches: list[FeedMatch], agencies: Mapping[str, Agency]
+) -> tuple[list[FeedMatch], list[FeedMatch]]:
+    """Split ``replaced`` proposals into the appliable ones and the pinned ones.
+
+    The catalog knows which URL it lists. It does not know that a curator looked
+    at both URLs and chose this one: on 2026-08-06 the Wasco record's notes
+    recorded that the Caltrans DDS ZIP is "stale and noncanonical as packaged"
+    and that we track it anyway, and a test pinned that exact URL. The weekly
+    discovery job proposed the calitp.org listing regardless, it was merged, and
+    the deliberate decision was gone -- with the only surviving trace being a
+    test failure on ``main``.
+
+    So a ``replaced`` proposal whose agency notes already name the host of the
+    URL we track is held rather than applied. Held is not dropped: the report
+    still lists it with the note that pinned it, because a curator who wants to
+    follow the catalog needs to see the proposal in order to act on it.
+
+    Only ``replaced`` rows can be held. A ``missing`` row proposes no edit and a
+    ``tracked`` row agrees with the catalog already.
+    """
+    ready: list[FeedMatch] = []
+    held: list[FeedMatch] = []
+    for match in matches:
+        agency = agencies.get(match.agency_id)
+        pinned = (
+            match.status == "replaced"
+            and agency is not None
+            and bool(pinning_note(agency, match.current_url))
+        )
+        (held if pinned else ready).append(match)
+    return ready, held
+
+
 def apply_replacements(yaml_text: str, matches: list[FeedMatch]) -> tuple[str, list[str]]:
     """Rewrite the static URL of each ``replaced`` agency in one registry shard.
 
@@ -1694,7 +1745,45 @@ def apply_state_backfill(yaml_text: str, resolved: dict[str, str]) -> tuple[str,
     return "\n".join(out) + trailing, changed
 
 
-def render_replacements_md(matches: list[FeedMatch], *, today: str) -> str:
+def _render_held_section(held: Sequence[FeedMatch], notes: Mapping[str, str]) -> list[str]:
+    """The replacements the job declined to apply, and the note behind each.
+
+    Printed in full, with the candidate URL it did not write, because a held
+    proposal a curator cannot see is the same as one that was never made.
+    """
+    if not held:
+        return []
+    out = [
+        "## Held — the registry notes pin the host we track",
+        "",
+        "The catalog lists a different URL for these agencies, and this job will "
+        "not apply it: each record's `license_note` or `operating_note` names the "
+        "host already tracked, which is a curator's recorded decision about "
+        "provenance that the catalog cannot see. Following the catalog here is a "
+        "hand edit, and it means editing the note in the same change.",
+        "",
+    ]
+    for m in held:
+        out.append(f"### {m.agency_name} (`{m.agency_id}`)")
+        out.append(f"- Tracked URL, pinned by note: {m.current_url}")
+        if note := notes.get(m.agency_id, ""):
+            out.append(f"- Note: {' '.join(note.split())}")
+        out += [
+            f"- Not applied (mdb {f.mdb_id}, {f.provider}): {f.direct_download}"
+            for f in m.candidates
+            if _url_slug(f.direct_download) != _url_slug(m.current_url)
+        ]
+        out.append("")
+    return out
+
+
+def render_replacements_md(
+    matches: list[FeedMatch],
+    *,
+    today: str,
+    held: Sequence[FeedMatch] = (),
+    pinning_notes: Mapping[str, str] | None = None,
+) -> str:
     """A reviewable Markdown report of how tracked feed URLs relate to the catalog.
 
     ``replaced`` and ``missing`` rows come first, worst first, since they may
@@ -1702,10 +1791,17 @@ def render_replacements_md(matches: list[FeedMatch], *, today: str) -> str:
     that is still the catalog's listed URL needs no link change, even if the data
     behind it has gone stale. This is the key result for the expired cohort, so
     it is stated, not left as an empty report.
+
+    ``held`` rows are replacements the job will not apply because the registry
+    notes pin the current host (see ``hold_pinned_hosts``). They get their own
+    section rather than being folded into the appliable count, so the report
+    never implies an edit was made that was not, and never hides a proposal a
+    curator might still want to take.
     """
     replaced = [m for m in matches if m.status == "replaced"]
     missing = [m for m in matches if m.status == "missing"]
     tracked = [m for m in matches if m.status == "tracked"]
+    notes = pinning_notes or {}
     out: list[str] = [
         "# Feed-discovery check against the Mobility Database",
         "",
@@ -1723,6 +1819,13 @@ def render_replacements_md(matches: list[FeedMatch], *, today: str) -> str:
         "canonical, so any staleness is at the source, not a wrong URL here.",
         "",
     ]
+    if held:
+        out[-1:] = [
+            f"- **{len(held)}** agencies look replaced but are **held**: the registry "
+            "notes name the host we already track, so a curator chose it. This job "
+            "does not overwrite that; the proposals are listed below to act on by hand.",
+            "",
+        ]
     if replaced:
         out += ["## Likely replaced — verify and update the registry", ""]
         for m in replaced:
@@ -1734,6 +1837,7 @@ def render_replacements_md(matches: list[FeedMatch], *, today: str) -> str:
                 lic = f" — license {f.license_url}" if f.license_url else ""
                 out.append(f"- Candidate (mdb {f.mdb_id}, {f.provider}): {f.direct_download}{lic}")
             out.append("")
+    out += _render_held_section(held, notes)
     if missing:
         out += ["## No catalog match — confirm the agency still publishes GTFS", ""]
         for m in missing:
