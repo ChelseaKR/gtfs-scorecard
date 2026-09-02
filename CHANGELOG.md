@@ -81,11 +81,23 @@ the declared public surface).
   way an unmeasured realtime feed already does. The rule is deliberately narrow:
   a feed that ships `calendar.txt` and has no usable end date is still measured
   and still scores 0 with its finding, and an empty-but-present `calendar.txt`
-  is still a claim the feed made. No published grade for any tracked agency
-  moves. `scorecard try` also no longer exits 0 for such an archive even when no
-  thresholds were requested -- the Action derives `passed` from that exit code,
-  so the default configuration reported `passed=true` for a feed it had read
-  nothing out of.
+  is still a claim the feed made. `scorecard try` also no longer exits 0 for such
+  an archive even when no thresholds were requested -- the Action derives
+  `passed` from that exit code, so the default configuration reported
+  `passed=true` for a feed it had read nothing out of.
+
+  **This entry is not shipped and this change is not merged.** Auditing the
+  2,515 committed artifacts found the reported condition live: 22 published
+  agency scorecards score a feed with zero stops and zero trips today, and
+  `high-desert-point` publishes the exact 31.3/F with correctness 71.5 that was
+  reported from downstream. Withdrawing the two fabricated categories therefore
+  raises all 22 grades and moves 20 of them across a letter boundary --
+  `beloit-transit` F to B (+48.7), `boxcar` C to A, thirteen F to D -- because
+  correctness alone then carries the overall, and correctness scores 60 to 99
+  for these feeds by deducting per distinct validator notice code. Publishing a
+  B for a feed with no stops is worse than the F it replaces. The absence fix is
+  correct and the correctness half is an owner decision, and they cannot land
+  separately.
 
 - **The weekly discovery job no longer overwrites a curator's pinned feed
   host.** `city-of-wasco` is tracked on the Caltrans DDS ZIP; its
