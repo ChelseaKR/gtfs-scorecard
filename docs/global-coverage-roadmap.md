@@ -422,6 +422,15 @@ terms, not on the local-steward gate: its terms impose indemnity, unilateral
 amendment and discretionary access restriction, which CC BY 4.0 forbids a
 licensor to add.
 
+One gap in that pass's own record is worth stating. The Iberian lane's agent
+was cut off by an infrastructure error three times and wrote its staging file
+on the third attempt but never its report, so its 15 admissions are in the
+registry and independently spot-checked, while its **rejections were never
+written down**. Spain and Portugal are therefore the one part of the wave whose
+"already looked at and refused" set does not exist. A later pass should expect
+to re-derive it rather than assume those countries were documented as
+exhaustively as the other nineteen lanes.
+
 The pass also corrected the record in three places. A Japanese restriction
 string that had looked like a licence term, and had held up two admissions, is
 an export tool's own notice: it appears byte-identical in feeds from three
