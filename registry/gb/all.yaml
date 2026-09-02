@@ -23,7 +23,40 @@ agencies:
     reuse_evidence:
       decision: approved
       source_kind: official_portal
-      provider_source_url: https://data.bus-data.dft.gov.uk/download/gtfs/
+      provider_source_url: https://data.bus-data.dft.gov.uk/downloads/
+      terms_url: https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+      scope: [gtfs_schedule]
+      attribution: Department for Transport, Bus Open Data Service.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: bods-west-midlands
+    name: Bus Open Data Service (West Midlands)
+    country: GB
+    is_official: true
+    static_gtfs_url: https://data.bus-data.dft.gov.uk/timetable/download/gtfs-file/west_midlands/
+    license_note: >-
+      Open Government Licence v3.0 through the Department for Transport's
+      Bus Open Data Service; credit the Department for Transport.
+    operating_note: >-
+      The Bus Open Data Service regional file for the West Midlands: 60
+      operators, 1,127 routes and 120,635 trips, led by National Express
+      West Midlands, First Worcestershire, National Express Coventry, First
+      Potteries, Diamond Bus, Arriva Midlands and Stagecoach Midlands, plus
+      West Midlands Metro. It is one regional bundle covering many
+      operators, counted here as one feed record rather than as separate
+      agencies. The registry holds no operator in this region, and the
+      file's only overlap with a listed feed is one Newport Bus cross-border
+      route carrying 32 of its 120,635 trips. At 106 MiB it stays inside the
+      standard ingestion caps. No subdivision is recorded because the file
+      covers the Traveline West Midlands region, which spans the
+      metropolitan county plus Staffordshire, Shropshire, Herefordshire,
+      Worcestershire and Warwickshire, and no single ISO 3166-2 code names
+      that area.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.bus-data.dft.gov.uk/downloads/
       terms_url: https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
       scope: [gtfs_schedule]
       attribution: Department for Transport, Bus Open Data Service.

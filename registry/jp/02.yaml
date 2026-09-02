@@ -705,3 +705,33 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-09-01"
       identity_reviewed: true
+  - id: aomori-city-bus
+    name: Aomori City Bus (青森市営バス)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/AomoriCity/AllLines.zip?date=current
+    license_note: >-
+      CC BY 4.0, stated on the dataset page the operator owns at the Public
+      Transportation Open Data Center (ODPT). Credit Aomori City Public
+      Enterprise Bureau Transportation Department and ODPT.
+    operating_note: >-
+      The municipal bus network Aomori City runs directly, 285 routes and
+      4,705 trips. Separate from aomori-city-community-routes, which is the
+      city urban development department's feed for the routes it contracts
+      out. The archive's feed_version carries a use restriction written by
+      its export tool rather than by the city; see the lane report for why
+      the dataset page's CC BY 4.0 is the licence that applies.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/aomori_city_all_lines
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Aomori City Public Enterprise Bureau Transportation Department,
+        published through the Public Transportation Open Data Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

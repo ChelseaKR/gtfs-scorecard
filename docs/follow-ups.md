@@ -186,17 +186,97 @@ replaced" would stop a dead replacement being proposed at all.
 ## Feed sources blocked by the pipeline's HTTP client, not by policy
 
 **Status: open, opened 2026-09-01.** Several feeds pass source, licence,
-identity and calendar and fail only on how this pipeline fetches:
+identity and calendar and fail only on how this pipeline fetches. Two of them
+were diagnosed exactly on 2026-09-01 against OpenSSL 3.5.7, whose default
+security level is 2:
 
-- **Yamaguchi (JP-35)**, one of the two remaining empty Japanese prefectures.
-  Iwakuni City and Hikari City publish official, CC BY, keyless, in-date feeds
-  on the prefecture's CKAN. `curl` fetches them; the pipeline's client refuses
-  the handshake with `TLSV1_ALERT_INSUFFICIENT_SECURITY`.
-- **Grand River Transit (CA-ON)**: `webapps.regionofwaterloo.ca` offers a DH key
-  the client refuses, and the catalog mirror 403s.
-- **Canberra (AU-ACT)**: `transport.act.gov.au` now answers every non-browser
-  client with a Cloudflare interstitial, including with full browser headers.
-  The licence is fine and `data.act.gov.au` names the exact archives.
+- **`yamaguchi-opendata.jp`** — the server sends
+  `TLSV1_ALERT_INSUFFICIENT_SECURITY`. At `DEFAULT@SECLEVEL=1` it negotiates
+  TLS 1.2 with `AES256-SHA256`: static-RSA key exchange, so **no forward
+  secrecy**. This host carries Iwakuni City and Hikari City, both official
+  municipal CKAN datasets, both CC BY, both keyless, calendars to 2027-03-26
+  and 2027-03-31. They are the only route into **JP-35 Yamaguchi**, one of the
+  two Japanese prefectures still empty.
+- **`webapps.regionofwaterloo.ca`** — `DH_KEY_TOO_SMALL`. At
+  `DEFAULT@SECLEVEL=1` it negotiates TLS 1.2 with `DHE-RSA-AES256-GCM-SHA384`,
+  which does have forward secrecy; the server's Diffie-Hellman parameters are
+  simply under 2048 bits. This host carries Grand River Transit (CA-ON).
+- **`transport.act.gov.au`** (Canberra) is a different problem, not TLS: it
+  answers every non-browser client with a Cloudflare interstitial, including
+  with full browser headers. The licence is fine and `data.act.gov.au` names
+  the exact archives.
 
-These are worth separating from licence and freshness rejections when reading
-coverage gaps: no amount of sourcing effort closes them.
+**The recommendation is not to weaken the client.** Lowering the security level
+globally would degrade every one of the 2,575 fetches to accommodate two
+servers, and this tool's standing rests on the trustworthiness of what it
+publishes: a grade is derived from bytes fetched over that connection. A
+per-record opt-in (the shape `large_feed` already uses, e.g. a curator-set
+`legacy_tls: true`) is the only version worth considering, and even that buys
+one prefecture and one Ontario operator.
+
+The cheaper and more useful action is upstream: tell Yamaguchi Prefecture their
+open-data portal offers no forward-secrecy cipher, and tell the Region of
+Waterloo their DH parameters are undersized. Both are ordinary server
+misconfigurations their operators would likely want to know about, and fixing
+them helps every consumer of those portals, not just this project.
+
+Until then these are worth separating from licence and freshness rejections
+when reading coverage gaps: no amount of sourcing effort closes them.
+
+## Coverage blocked on a credential or an email, not on curation
+
+**Status: open, opened 2026-09-01.** Four cases where the licence is already the
+right shape and the only obstacle is access. Each is one action away.
+
+**Austria's regional feeds — a registration wall.** All seven Verkehrsverbünde
+plus Linz AG publish on `data.mobilitaetsverbuende.at`: 17 GTFS datasets
+refreshed weekly, VOR at 262.8 MB down to Linz AG at 5.4 MB. The API enumerates
+anonymously (`GET /api/public/v1/data-sets`) but the file endpoint returns 401,
+and the platform's own documentation says accounts are created manually and
+cannot be scripted. MVO's terms already permit commercial reuse with
+attribution. One project account would unlock eight fixed-route feeds covering
+all nine Bundesländer plus six Flex feeds. This also needs code:
+`static_gtfs_url` assumes a keyless URL, so authenticated fetching does not
+exist in the pipeline.
+
+**ESHOT İzmir — a host that is down.** 19 MB, on `acikveri.bizizmir.com`, under
+the same CC BY 4.0 terms already approved for two registered İzmir records. TCP
+timeout on 443 and 80 across two passes, while sibling `izdeniz.com.tr`
+answered 200 in the same batch, so it is per-host rather than a network path.
+
+**TRANSTU Tunis — a host that is down.** Tunisia's catalog confirms nine
+OTL-licensed datasets and the OTL grants commercial reuse with attribution, but
+every resource URL points at `data.transport.tn`, which refuses on 443, on 80,
+and by IP. Tunisia would be a new country code.
+
+**Yellowknife (CA-NT) — a missing listing.** The open-data terms are live at
+`yellowknife.ca/open-data-terms-use` and are exactly the right shape ("exploit
+the Datasets commercially", attribution only). The City's portal holds 60 items,
+none transit, and no City page names the `passio3.com` endpoint that serves the
+feed. CA-NT has no shard.
+
+Also worth an upstream note: Mobility Database source 2138 still points at a
+stale ÖBB resource (`GTFS_OP_2024_obb.zip`).
+
+## Existing records whose evidence did not survive re-reading
+
+**Status: open, opened 2026-09-01.** Separate from the share-alike question
+above, three records already in the registry were found to rest on evidence that
+does not hold. None was edited; all need a curator decision.
+
+- **`donan-bus`** (`registry/jp/01.yaml`, admitted 2026-07-17) is sourced from
+  the `ckan.hoda.jp` dataset the 2026-09-01 pass rejected, so its evidence is
+  the CKAN licence field that gate 2 excludes. Its calendar now ends 2026-09-30
+  and no alternative URL exists.
+- **CUMTD** carries no `reuse_evidence` and would fail gate 2 today: its terms
+  restrict use to purposes that "assist mass transportation riders", require an
+  embedded key, and are revocable at will.
+- **`st-lawrence-county-public-transit`** (`registry/us/ny.yaml`) has a
+  `license_note` citing a data.ny.gov (OPEN-NY) licence PDF, but the feed is
+  served from the `datatools-511ny` bucket, which is governed by NYSDOT's
+  Developer's Access Agreement and requires registration. Low impact, since the
+  record claims no `reuse_evidence`, but the note misleads a reader.
+
+**Abashiri Bus** is the opposite case and worth a recheck: source and licence
+are clean, and only `feed_info.feed_end_date` (2026-07-31) blocks it while its
+`calendar_dates` run to 2026-11-23.

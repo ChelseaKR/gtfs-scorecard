@@ -469,3 +469,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-09-01"
       identity_reviewed: true
+  - id: ville-de-drummondville
+    name: Ville de Drummondville
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    is_official: true
+    static_gtfs_url: https://geomatique.drummondville.ca/GTFS/DoneesOuverts/GTFS_DMV.zip
+    license_note: >-
+      CC BY 4.0. The city's adopted Politique de données ouvertes names the
+      Creative Commons Attribution 4.0 International licence and states that
+      the city's open data is subject to it. Credit Ville de Drummondville.
+    operating_note: >-
+      Drummondville runs its bus network as a municipal service, so the city
+      is both the transit operator and the data publisher; agency.txt
+      carries one agency, Ville de Drummondville, over 79 routes.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://donnees-vdrummondville.opendata.arcgis.com/
+      terms_url: https://www.drummondville.ca/wp-content/uploads/2019/02/Politique_donnees_ouvertes.pdf
+      scope: [gtfs_schedule]
+      attribution: Ville de Drummondville.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

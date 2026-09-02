@@ -347,7 +347,7 @@ the candidate pool builder itself.
 A twenty-lane parallel pass on 2026-09-01 admitted 390 reviewed records. Its
 France lane overlapped the two exhaustion passes above, which ran on the same
 portal in the same window; after reconciling the overlap the registry stands at
-2,637 records across 48 country codes. It worked a declared
+2,643 records across 48 country codes. It worked a declared
 universe of 3,148 candidates — the Mobility Database and Transitland Atlas rows
 not already tracked — and every candidate has a recorded disposition. Depth
 dominated: Japan 196, Ireland 60, France 57, Canada 16, Spain 11, Norway 10.
@@ -388,6 +388,54 @@ records are listed. Both are the same question — share-alike records already
 published — and both are recorded here for a decision of their own. This wave
 applied the stricter reading to new admissions and changed nothing existing,
 which left roughly 84 ODbL French datasets and 19 Estonian county feeds out.
+
+A second, narrower pass on the same day worked only what the twenty lanes left
+open: countries a lane stopped short on, hosts that were unreachable at the
+time, and deferrals held for a curator. It added 6 records, taking the registry
+to 2,581, and its value is mostly in what it settled rather than what it added.
+
+Austria went from one record to two and is now understood. Its national portal
+moved to the piveau stack, so there is no CKAN API; enumerating all 73,270
+datasets through the working endpoint finds exactly three GTFS datasets. ÖBB is
+admitted on the large-feed tier from the current 2026 resource. Every regional
+Verkehrsverbund publishes instead on `data.mobilitaetsverbuende.at`, which is
+enumerable anonymously but returns 401 on the file endpoint by documented
+policy: 17 datasets, refreshed weekly, licence terms that already permit
+commercial reuse with attribution, and a registration wall that one manually
+created account would clear. That is a partnership and credential decision, and
+it also needs code, because `static_gtfs_url` assumes a keyless URL.
+
+De Lijn opens Flanders on the tier. West Midlands joins London from the Bus
+Open Data Service after the twelve regional bundles were measured rather than
+guessed: streaming each one and matching trips against the registry put
+duplicated trip share at 0.03% for West Midlands and between 7% and 35% for the
+other ten, so only the two regions that duplicate nothing were admitted. The
+Irish small-operators bundle was rejected by the same measurement at about 81%
+duplication.
+
+Two large Japanese blocks stay out, and the reasoning matters more than the
+outcome. `ckan.hoda.jp` is a real municipal venue rather than a private
+re-host, but its GTFS is one third-party dataset in which 50 of 70 archives
+name a single vendor as publisher on a manufactured uniform calendar window,
+with no terms page and only a catalog licence field. OTTOP fails on reuse
+terms, not on the local-steward gate: its terms impose indemnity, unilateral
+amendment and discretionary access restriction, which CC BY 4.0 forbids a
+licensor to add.
+
+The pass also corrected the record in three places. A Japanese restriction
+string that had looked like a licence term, and had held up two admissions, is
+an export tool's own notice: it appears byte-identical in feeds from three
+unrelated publishers on three portals, always immediately after the tool
+version, always with the tool author's address in `feed_contact_email`. Two
+hosts wave 1 recorded as NXDOMAIN resolve normally through public resolvers and
+were local resolver artifacts. And several countries recorded as "unopened"
+were reached and are now documented empty of GTFS: Panama, Peru, Mexico's
+national portal, and Malta, whose absence is confirmed against five independent
+sources including the European Commission's access-point register and an
+Internet Archive sweep of 8,000 URLs per host. Romania's national portal is
+still unreachable, but its European harvest holds 5,238 datasets and no GTFS,
+which disproves rather than defers the hypothesis that it carried the missing
+licences.
 
 ### Phase 4 — partnership-gated regions
 

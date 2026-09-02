@@ -1,0 +1,38 @@
+# BE agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: de-lijn
+    name: De Lijn
+    country: BE
+    subdivision_code: BE-VLG
+    subdivision_name: Vlaams Gewest
+    is_official: true
+    large_feed: true
+    static_gtfs_url: https://api-management-discovery-production.azure-api.net/api/gtfs/feed/delijn/static
+    rt_note: >-
+      The portal publishes De Lijn trip updates and service alerts, but it
+      serves them as GTFS-RT JSON rather than protobuf, so the scorecard
+      does not sample them yet. Nothing here counts against the grade.
+    license_note: >-
+      CC BY 4.0 on the Belgian Mobility open data portal, whose terms allow
+      free reuse including commercial reuse with attribution in the form
+      "Source: De Lijn, Open Data, date of dataset update".
+    operating_note: >-
+      The Flemish region's bus and tram network, published daily through the
+      Belgian Mobility open data portal. The download is 200 MiB but
+      stop_times.txt expands to 1.6 GiB, so the record needs the large-feed
+      ingestion tier. Anonymous download is open; the portal states a rate
+      limit of 100 requests a day for anonymous use, which one daily score
+      run stays well inside.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.belgianmobility.io/en/data.html
+      terms_url: https://data.belgianmobility.io/en/terms.html
+      scope: [gtfs_schedule]
+      attribution: De Lijn, Open Data, with the dataset update date.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

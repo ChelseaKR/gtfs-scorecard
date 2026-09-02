@@ -156,3 +156,29 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-09-01"
       identity_reviewed: true
+  - id: tobetsu-fureai-bus
+    name: Tobetsu Fureai Bus (当別ふれあいバス)
+    country: JP
+    subdivision_code: JP-01
+    subdivision_name: Hokkaido
+    is_official: true
+    static_gtfs_url: https://www.town.tobetsu.hokkaido.jp/img/bus_gtfs.zip
+    license_note: >-
+      CC BY 4.0, stated on Tobetsu Town's own GTFS page alongside the
+      download. Credit Tobetsu Town.
+    operating_note: >-
+      Tobetsu Town's community bus, four services including a phone-booking
+      zone route, run for the town by the Tobetsu Regional Public Transport
+      Revitalisation Council. Published by the town itself; the copy on the
+      Hokkaido open data platform is a separate vendor-generated archive and
+      is not used here.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.town.tobetsu.hokkaido.jp/site/fureai-bus/33942.html
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Tobetsu Town (当別町).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
