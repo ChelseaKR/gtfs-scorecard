@@ -12,9 +12,7 @@ name: links
 # 403 is accepted alongside 2xx because several transit-sector hosts refuse
 # unknown user agents outright, and a bot-blocked page is not a dead page.
 # 429 is accepted because a rate limit is the checker's problem, not the
-# page's. 404, 410, and 5xx fail. Only http(s) links are checked: the site's
-# root-relative paths are covered by the render and SEO gates, and the first
-# run failed on 42 of them with no external link wrong.
+# page's. 404, 410, and 5xx fail.
 
 on:
   pull_request:
@@ -39,6 +37,22 @@ jobs:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           persist-credentials: false
+      # Only the external links, extracted to a list first: fed the HTML
+      # directly, lychee stops on the site's root-relative paths ("cannot
+      # resolve '/agencies/' without a root dir"), and 42 of those failed the
+      # first two runs with no external link wrong. The site's own paths are
+      # covered by the render and SEO gates.
+      - name: Extract the external links on the money pages
+        run: |
+          set -euo pipefail
+          grep -ohE 'https?://[^ "<>)\x27\x60]+' README.md SUPPORT.md docs/support.md web/support/index.html \
+            | sed -E 's/[.,;:]+$//' \
+            | grep -vE '^https?://[^/]*$' \
+            | grep -vE '^https?://[^/]+\.example(/|$)' \
+            | grep -vE '^https://gtfsscorecard.org/support/#' \
+            | grep -v 'www.w3.org/2000/svg' \
+            | sort -u > money-links.txt
+          echo "$(wc -l < money-links.txt) external links to check"
       - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
         env:
           # Raises the github.com rate limit for the many github.com links.
@@ -47,16 +61,8 @@ jobs:
           fail: true
           args: >-
             --no-progress
-            --scheme https
-            --scheme http
             --accept 200..=299,403,429
             --max-retries 2
             --timeout 20
             --exclude-all-private
-            --exclude '^mailto:'
-            --exclude '^https?://[^/]+\.example(/|$)'
-            --exclude '^https://gtfsscorecard.org/support/#'
-            README.md
-            SUPPORT.md
-            docs/support.md
-            web/support/index.html
+            money-links.txt
