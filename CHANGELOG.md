@@ -66,6 +66,25 @@ the declared public surface).
   largest-country ceiling, which that gate continues to report honestly as
   unmet.
 
+### Changed
+
+- **The money page no longer links to a page that does not exist
+  (2026-09-01).** `/support/`, `docs/support.md`, `SUPPORT.md`, and the
+  README all pointed at `chelseakr.com/consulting/`, which returns 404; the
+  consulting offer is withdrawn and every reference to it is gone. The
+  featured "Professional help" card on `/support/` is now a free card for the
+  board report the site already ships. The GitHub Sponsors tiers are now
+  explained on the page and in the docs, each sized to a real cost line from
+  the sustainability plan (the static core, the per-request edges, a month of
+  on-demand scoring) with the caveat that the money is one pot and the caps
+  hold regardless. A Sponsor badge joins the README header. The test that
+  asserted the consulting link *present* on every public surface, which is
+  how the dead link survived, is replaced by its inverse plus a check that
+  every money page reaches the one payment rail that exists. A new
+  `links.yml` workflow (lychee) checks the external links on those four
+  files on every pull request and weekly, so the next dead link fails a
+  build instead of waiting for a reader.
+
 ### Fixed
 
 - **The weekly discovery job no longer overwrites a curator's pinned feed

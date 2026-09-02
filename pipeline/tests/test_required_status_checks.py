@@ -41,7 +41,14 @@ RULESET = REPO_ROOT / ".github" / "rulesets" / "main.json"
 # PR run was unverified — see PR #302, which reported clean (run 32507900709,
 # job "Analyze (javascript)": success) — then moved to
 # .github/rulesets/main.json's required list (file and live) once confirmed.
-ADVISORY_JOBS: dict[str, str] = {}
+ADVISORY_JOBS: dict[str, str] = {
+    # links.yml (2026-09-01): lychee over the four money pages. Advisory for
+    # its first cycle because the check depends on third-party hosts, several
+    # of which in the transit sector refuse unknown user agents, and a false
+    # red on every PR would teach people to ignore it. Promote it to the
+    # ruleset (file and live) once a week of scheduled runs is clean.
+    "money pages have no dead links": "external-host dependency; unverified first cycle",
+}
 
 _MATRIX_REF = re.compile(r"\$\{\{\s*matrix\.([A-Za-z_][A-Za-z0-9_-]*)\s*\}\}")
 

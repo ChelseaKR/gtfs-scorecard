@@ -1,0 +1,58 @@
+name: links
+
+# The pages that ask for money must not link to pages that do not exist.
+# 2026-09-01: /support/, docs/support.md, SUPPORT.md, and the README all
+# linked to chelseakr.com/consulting/, which had returned 404 for weeks, and a
+# unit test asserted the link *present*. This job checks the external links on
+# exactly those files (plus README.md, the repository's front door) on every
+# pull request and once a week, and fails on a dead link.
+#
+# Scope is deliberately narrow. A whole-site crawl would take minutes, hit
+# rate limits, and turn a real 404 into noise; four files is a few seconds.
+# 403 is accepted alongside 2xx because several transit-sector hosts refuse
+# unknown user agents outright, and a bot-blocked page is not a dead page.
+# 429 is accepted because a rate limit is the checker's problem, not the
+# page's. 404, 410, and 5xx fail.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 6 * * 1" # weekly, Monday
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: links-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  money-pages:
+    name: money pages have no dead links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          persist-credentials: false
+      - uses: lycheeverse/lychee-action@e7477775783ea5526144ba13e8db5eec57747ce8 # v2.9.0
+        env:
+          # Raises the github.com rate limit for the many github.com links.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          fail: true
+          args: >-
+            --no-progress
+            --accept 200..=299,403,429
+            --max-retries 2
+            --timeout 20
+            --exclude-all-private
+            --exclude '^mailto:'
+            --exclude '^https?://[^/]+\.example(/|$)'
+            --exclude '^https://gtfsscorecard.org/support/#'
+            README.md
+            SUPPORT.md
+            docs/support.md
+            web/support/index.html
