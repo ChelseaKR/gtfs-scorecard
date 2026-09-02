@@ -250,3 +250,17 @@ def test_read_shapes_coverage_no_trips(make_gtfs_zip: Callable[..., Path]) -> No
     coverage = read_shapes_coverage(str(path))
     assert coverage.total_trips == 0
     assert coverage.trips_with_shape == 0
+
+
+def test_has_data_row_with_bom(make_gtfs_zip: Callable[..., Path]) -> None:
+    # A UTF-8 BOM must be stripped so the header is properly recognized and
+    # data rows are decoded without corruption.
+    bom = b"\xef\xbb\xbf"
+    path = make_gtfs_zip(
+        {
+            "stops.txt": bom + b"stop_id,stop_name\nS1,Main St\n",
+            "trips.txt": bom + b"route_id,service_id,trip_id\n",
+        }
+    )
+    dates = read_feed_dates(str(path))
+    assert dates.has_service_content
