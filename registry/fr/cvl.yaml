@@ -193,3 +193,72 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-07-23'
       identity_reviewed: true
+  - id: fr-pan-83326
+    name: Réseau urbain Amelys
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/39240e80-d3f4-4702-ba93-520fae414649
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CA Montargoise et Rives du Loing (AME) and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transports-urbain-du-reseau-amelys-gtfs
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transports-urbain-du-reseau-amelys-gtfs
+      scope:
+      - gtfs_schedule
+      attribution: CA Montargoise et Rives du Loing (AME)
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-83519
+    name: Réseau urbain AggloBus
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/ef2f826c-c1c6-4eb4-9da3-4c2f37b3afaf
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/853a6334-8a2f-4227-94f6-5a23a6ba6735
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/a1d6229a-4789-451f-a32d-029b294ee589
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Agglobus,
+      identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/agglobus-offre-theorique-mobilite-reseau-urbain-de-bourges
+      terms_url: https://transport.data.gouv.fr/datasets/agglobus-offre-theorique-mobilite-reseau-urbain-de-bourges
+      scope:
+      - gtfs_schedule
+      attribution: Agglobus
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-82554
+    name: Réseau urbain Le Vib'
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/87091347-c7fa-4e63-8fb5-005891ece43b
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/6658a42a-7403-4ee2-92b1-c49296b53c26
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/14eac1a9-ea0e-4e08-8bae-aee9a78964d3
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/9c4d7163-bc41-4b22-b1d1-35d939ab462e
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Région
+      Centre-Val de Loire (CC Vierzon-Sologne-Berry), identify the ODbL, and preserve share-alike terms
+      where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-le-vib
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-le-vib
+      scope:
+      - gtfs_schedule
+      attribution: Région Centre-Val de Loire (CC Vierzon-Sologne-Berry)
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true

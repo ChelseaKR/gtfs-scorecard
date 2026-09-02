@@ -27,7 +27,71 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Added
+
+- **14 French feed records from the rentrée recheck pass (2026-09-01).** The
+  2026-08-30 exhaustion left 100 candidates excluded only for short
+  calendars. Two days later, fourteen had refreshed past the 60-day gate and
+  passed the same licence, identity, validator, and calendar path — SETRAM
+  (Le Mans bus and tramway) and Linead (Dreux) among them, plus five Tarn
+  networks from the Gaillac-Graulhet agglomeration. Saint-Sulpice-la-Pointe
+  went from zero days of remaining service to 304 across those two days,
+  which is the recheck queue doing its job. Dataset-slug matching joined the
+  pool dedupe so tracked datasets whose portal resource URL rotated are
+  excluded mechanically. Seventy-eight candidates remain queued on short
+  calendars as September exports land; the registry moves to 2,275 records
+  and the European sample to 618. The pass log is in `docs/feeds.md`.
+
+- **76 reviewed French feed records from a second National Access Point
+  exhaustion pass (2026-08-30).** Five weeks after the July exhaustion, the
+  transport.data.gouv.fr API snapshot yielded 206 still-untracked datasets
+  under Licence Ouverte 2.0 or ODbL. Every admission passed the same gates as
+  the first pass: portal licence and named legal-owner attribution recorded as
+  reuse evidence, identity review against the tracked registry, the pinned
+  canonical MobilityData validator and complete scorecard path, and at least
+  60 days of effective service. The pass adds records in twelve metropolitan
+  regions plus Guadeloupe, Martinique, and La Réunion, 43 of them with
+  official keyless GTFS-Realtime endpoints, and admits Naolib
+  (Nantes Métropole tramway/bus/ferry) as the first French record on the
+  bounded large-feed tier — its `stop_times.txt` expands past the standard
+  512 MiB per-entry cap, and it completed a full local score under the raised
+  limits (B, 83 days of service). The exclusion ledger (100 near-expiry
+  candidates awaiting the September rentrée refresh, eight regional
+  aggregates, seven alternate publications, six tracked datasets on rotated
+  resource URLs, five unreachable producer hosts, two 9999-12-31 calendars
+  that overflow the freshness date arithmetic, and the "Licence mobilités"
+  holdouts including Île-de-France Mobilités and TCL Lyon) is recorded in
+  `docs/feeds.md`. The European registry sample moves to 604 records; France
+  is now about 56% of it, further above the European beta gate's 40%
+  largest-country ceiling, which that gate continues to report honestly as
+  unmet.
+
 ### Changed
+
+- **The structural SEO gate now measures title and description length, and the
+  heading outline.** `check_site_seo.py` has been merge-blocking in `a11y.yml`
+  and `pages.yml` since it landed, and it checked that a title, a description
+  and a canonical were present, unique and self-referencing. It never checked
+  how long they were, so 27 generated titles and 9 descriptions were running
+  past the length a search result shows without anything noticing: the worst
+  title was 91 characters on `/ntd/shapes/`, the worst description 192 on
+  `/guide/disappeared-from-trip-planners/`. Nearly all the long titles were
+  `/fix/<code>/` pages, where a 17-character site suffix was appended to a
+  notice name that was already a full sentence.
+
+  `site-seo.json` now carries `title_length` and `description_length`, and
+  `site_shell.fit_seo_title` drops the site suffix instead of the page's own
+  name when a title would overrun the bound, so the notice a practitioner is
+  scanning for stays legible. Three fix headings and the `/ntd/shapes/` title
+  were still too long with the suffix gone and were shortened at the source.
+  Eight descriptions were trimmed; every published claim in them was kept and
+  none was added, including the scoping words on `/adoption/`, `/data/` and
+  `/status/`. `html.heading_level_skipped` reports an outline that jumps a
+  level. Headings inside a hidden subtree stay out of it, matching axe.
+
+  The agency-page `Dataset` omission found alongside these was checked and is
+  correct: the 173 agency paths without JSON-LD are all retained redirect
+  stubs, which should not advertise a dataset they only point at.
 
 - **The plain-language gate now reads every finding the scorecard publishes.**
   `make verify` has run `scripts/check_readability.py` since FIX-08 landed on
@@ -43,6 +107,39 @@ the declared public surface).
   site whose copy it cannot account for instead of skipping it. Deferred fields
   are printed with their reason. No threshold moved: every breaching string was
   rewritten (ADR 0048).
+- **A render failure now says which feed it happened to.** A TypeError in
+  `_accessibility_score` took down four pipeline runs over roughly 20 hours, and
+  every traceback named the function, the line and the type without naming the
+  agency whose artifact was being rendered (#308). `render_site` logs nothing per
+  agency, so the diagnosis had to be reasoned backwards from `completeness.py`.
+  The per-feed body of the render loop now runs inside a context manager that
+  re-raises with the slug attached, so the failure notification carries it. The
+  exception is not swallowed: a feed that cannot be rendered still fails the run,
+  and whether one bad artifact should abort the whole site render stays a
+  separate product call, deliberately not made here.
+- **Two controls that read as enforcement can now fail.** The complexity
+  register in `docs/lint-complexity-ratchet.md` was maintained by hand and
+  drifted twice in seven days (#309); it is now compared with ruff on every run,
+  and a failure prints the regenerated table. Its first run found the file's own
+  prose still calling `render_site` complexity 54 against a table corrected to
+  55 the same day. And the published weight-sensitivity study graded the raw
+  weighted average, outside the `publish._validate_published_overall` guard that
+  exists to stop exactly that (#310): for a feed renormalizing to 79.96875, which
+  publishes as 80.0/B, both perturbations were counted the wrong way round. Every
+  letter outside `score.py` now comes from `published_score(...)`, and a
+  structural check keeps it that way (ADR 0050).
+- **The corpus average now says it excludes the feeds that publish realtime.**
+  The cohort rule picks the largest homogeneous measured-category set, which is
+  the one without realtime, so 145 of 1,783 comparable feeds sat outside the
+  `/pulse/` average, `api/v1/trend.json` and the change lists, and zero of the 24
+  agencies linked from `/pulse/` on 2026-08-06 had measured realtime (#248). The
+  rule is right; the disclosure was missing, and it pointed against this
+  project's reader: an agency that adds a realtime feed disappears from the
+  headline number on the day they do it. `/pulse/` and `comparison-policy.md` now
+  state it, derived from the comparison block rather than hardcoded, and say a
+  feed leaves the average by publishing realtime rather than by getting worse.
+  Re-basing the aggregates stays an owner decision on the methodology path
+  (ADR 0051).
 - **`/ntd/` publishes the reporter denominator, not only the feed one.** The
   page answered "45.0% of 1,125 tracked feeds", over this project's registry,
   and could not answer the question an FTA reviewer asks first: how many

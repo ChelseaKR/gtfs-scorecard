@@ -16,6 +16,7 @@ from __future__ import annotations
 
 # This module emits HTML; long literal lines (URLs, markup) are inherent.
 # ruff: noqa: E501
+import contextlib
 import csv
 import datetime as dt
 import hashlib
@@ -28,7 +29,7 @@ import re
 import shutil
 import sys
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -94,7 +95,7 @@ from .rule_links import (
     RuleLink,
     rule_link_for,
 )
-from .score import letter_grade
+from .score import letter_grade, published_score
 from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
     _SOCIAL_IMAGE_HEIGHT,
     _SOCIAL_IMAGE_URL,
@@ -977,10 +978,36 @@ def _feeddiff_section(
     )
 
 
+@contextlib.contextmanager
+def _rendering_feed(agency_id: str) -> Iterator[None]:
+    """Name the feed in any failure raised while its pages are rendered.
+
+    #308. A TypeError in `_accessibility_score` took down four pipeline runs
+    over roughly 20 hours. Every traceback named the function, the line and the
+    type, and none named which feed's artifact was being rendered. `render_site`
+    logs nothing per agency, so the surrounding log was a list of rollup paths
+    and then the traceback, and the diagnosis had to be reasoned backwards from
+    `completeness.py` instead of read off a slug.
+
+    The exception is re-raised, never swallowed. A feed that cannot be rendered
+    is a real failure and still fails the run; the only thing added is which
+    feed. Whether one bad artifact should abort the whole site render is a
+    separate product call and is deliberately not made here.
+    """
+    try:
+        yield
+    except Exception as exc:
+        raise RuntimeError(f"rendering agency {agency_id!r}") from exc
+
+
 def _grade_band(score: float) -> str:
     """Map a 0-100 score to a grade-band token (a/b/c/d/f) for bar color: the
-    rubric's own letter (score.GRADE_BANDS), lowercased."""
-    return letter_grade(score).lower()
+    rubric's own letter (score.GRADE_BANDS), lowercased.
+
+    Rounds through ``published_score`` first. Callers pass an already-published
+    score, so this changes no output; it keeps every letter in the package on
+    the one path, which is what ``test_published_grade_path.py`` asserts."""
+    return letter_grade(published_score(score)).lower()
 
 
 def _accessibility_score(comp_cat: dict[str, Any]) -> float | None:
@@ -4622,7 +4649,25 @@ def _render_agency_index(
         head_extra=_agency_index_head_links(page, page_count),
         body=body,
         wide=True,
+        jsonld=_collection_page_jsonld(f"Agency scorecards{page_suffix}", desc, canonical),
     )
+
+
+def _collection_page_jsonld(name: str, description: str, canonical: str) -> dict[str, Any]:
+    """A listing page's structured identity, from what the page already says.
+
+    Every value here is the page's own visible name, its meta description, and
+    its canonical URL. Nothing is counted, inferred, or added: a listing page
+    is a schema.org CollectionPage, and saying only that is the whole claim.
+    Matches the node the /fix/ index has published since it shipped."""
+    return {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": name,
+        "description": description,
+        "url": canonical,
+        "isPartOf": {"@type": "WebSite", "name": "GTFS Scorecard", "url": BASE_URL},
+    }
 
 
 def _grade_distribution_bar(dist: dict[str, Any], total: int) -> str:
@@ -4675,6 +4720,61 @@ def _comparison_contract_text(comparison: dict[str, Any]) -> str:
     )
 
 
+def _excluded_realtime_cohort(comparison: dict[str, Any]) -> int:
+    """How many current-contract feeds this aggregate drops for having realtime.
+
+    The cohort rule in `comparisons.py` picks the largest homogeneous
+    measured-category set, and the largest set is the one without realtime, so
+    every feed with measured realtime falls out of the corpus average, the
+    trend series, and the change lists (#248). The reasoning is sound: a
+    three-category overall score and a four-category one are not the same
+    measurement, and averaging them would be worse.
+
+    The consequence points the wrong way for this audience. An agency that adds
+    a realtime feed, the upgrade this site spends a page encouraging and the one
+    that costs them most, disappears from the headline number on the day they do
+    it. A state program using the corpus average to argue its cohort is
+    improving cannot see the improvement it most wants to show.
+
+    Returns 0 unless realtime is genuinely the difference: the selected set has
+    to omit realtime, and some other cohort has to include it. Zero means there
+    is nothing to disclose, not that the disclosure was skipped.
+    """
+    selected = [str(name) for name in comparison.get("required_measured_categories") or []]
+    if not selected or "realtime" in selected:
+        return 0
+    cohorts = comparison.get("measured_category_cohorts")
+    if not isinstance(cohorts, dict):
+        return 0
+    return sum(
+        int(count)
+        for signature, count in cohorts.items()
+        if "realtime" in str(signature).split("+")
+        and isinstance(count, int)
+        and not isinstance(count, bool)
+    )
+
+
+def _realtime_cohort_note(comparison: dict[str, Any]) -> str:
+    """One sentence saying the aggregate leaves out the feeds that publish realtime.
+
+    `comparison-policy.md` already says a feed without realtime is never
+    excluded for that reason. It was silent on the inverse, which is the half a
+    reader needs, so the disclosure said less than the code did.
+    """
+    excluded = _excluded_realtime_cohort(comparison)
+    if not excluded:
+        return ""
+    feeds = "feed was" if excluded == 1 else "feeds were"
+    return (
+        '<p class="fineprint">Feeds with measured realtime are not in this average. '
+        f"{excluded:,} {feeds} scored on four categories this run, and a four-category "
+        "score is not the same measurement as a three-category one. Their realtime "
+        'results are on the <a href="/realtime/">realtime page</a>. A feed leaves this '
+        "average by publishing realtime, not by getting worse.</p>"
+    )
+
+
 def _guarded_comparison_count(payload: dict[str, Any]) -> int:
     """A cross-feed denominator only when both public count fields agree.
 
@@ -4705,8 +4805,8 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     canonical = f"{BASE_URL}/program/{rid}/"
     desc = (
         f"{rname}: GTFS data quality across {rollup['agency_count']} feed scorecards, "
-        f"attention work first, with {rollup['needs_attention']} needing attention and the "
-        "fixes shared across the group."
+        f"with {rollup['needs_attention']} needing attention and the fixes shared "
+        "across the group."
     )
     rows_parts = []
     for m in rollup["members"]:
@@ -4819,7 +4919,11 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     </section>"""
     body = "\n".join(line.rstrip() for line in body.splitlines())
     return _page(
-        title=f"{rname} — GTFS Scorecard", description=desc, canonical=canonical, body=body
+        title=f"{rname} — GTFS Scorecard",
+        description=desc,
+        canonical=canonical,
+        body=body,
+        jsonld=_collection_page_jsonld(rname, desc, canonical),
     )
 
 
@@ -6495,6 +6599,7 @@ def _render_pulse_page(
     scoring profile, validator, and measured category set are unchanged. Corpus aggregates
     use {_comparison_contract_text(comparison)}; records with unresolved duplicate identities
     are excluded.</p>
+    {_realtime_cohort_note(comparison)}
     {_ridership_impact_line(ridership_impact)}
     <section id="changes" aria-labelledby="changes-h" tabindex="-1">
       <h2 class="section-title" id="changes-h">What changed since the last check</h2>
@@ -8381,14 +8486,10 @@ def _render_shapes_page(shapes: dict[str, Any]) -> str:
         about={"@type": "Thing", "name": "GTFS shapes.txt NTD requirement"},
     )
     return _page(
-        title=(
-            "Does your GTFS feed need shapes.txt? The RY2026 NTD requirement, explained "
-            "— GTFS Scorecard"
-        ),
+        title="Does your GTFS feed need shapes.txt? RY2026 NTD requirement",
         description=(
-            "Who FTA's shapes.txt requirement covers and when it starts, the Report Year "
-            "2026 phase-in for small transit agencies, how to check your feed, and where "
-            "tracked feeds stand."
+            "Who FTA's shapes.txt requirement covers, the Report Year 2026 phase-in for "
+            "small transit agencies, how to check your feed, and where tracked feeds stand."
         ),
         canonical=canonical,
         wide=True,
@@ -8490,8 +8591,7 @@ def _render_disappeared_page() -> str:
         title="Why did my agency disappear from Google Maps? — GTFS Scorecard",
         description=(
             "The buses are still running but riders can't find them: the five GTFS feed "
-            "problems that make a transit agency vanish from trip planners, in the order "
-            "to check them, with plain-language fixes."
+            "problems that make a transit agency vanish from trip planners."
         ),
         canonical=canonical,
         wide=True,
@@ -8884,8 +8984,8 @@ def _render_adoption_page(adoption: dict[str, Any], coverage: dict[str, Any]) ->
     return _page(
         title="What feeds publish — GTFS Scorecard",
         description=(
-            "Which GTFS features covered transit feeds publish (flexible service, fares and "
-            "Fares v2, station pathways, translations) and how complete their accessibility data is."
+            "Which GTFS features covered transit feeds publish: flexible service, fares, "
+            "Fares v2, pathways, translations, and how complete their accessibility data is."
         ),
         canonical=f"{BASE_URL}/adoption/",
         body=_strip_blank_line_whitespace(body),
@@ -9382,7 +9482,7 @@ def _render_status(
     return _page(
         title="Status | GTFS Scorecard",
         description=(
-            "The scorecard's monitoring schedule, current direct feed-URL liveness, latest full "
+            "The scorecard's monitoring schedule, current direct feed-URL liveness, latest "
             "scoring run, catalog freshness, and bounded European GTFS beta readiness."
         ),
         canonical=canonical,
@@ -10625,118 +10725,119 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             artifact = json.loads(latest.read_text())
         except (json.JSONDecodeError, OSError):
             continue  # already warned in pass 1
-        agency_cfg = registry_by_id.get(agency_id)
-        artifact_agency = artifact.setdefault("agency", {})
-        artifact_agency["name"] = resolve_published_agency_name(
-            agency_id,
-            registry_name=agency_cfg.name if agency_cfg else "",
-            artifact_name=str(artifact_agency.get("name") or ""),
-        )
-        # Feed every public narrative surface the same mode-aware copy. This
-        # covers the full scorecard, call brief, and board one-pager together.
-        from .mode_language import adapt_artifact_language
+        with _rendering_feed(agency_id):
+            agency_cfg = registry_by_id.get(agency_id)
+            artifact_agency = artifact.setdefault("agency", {})
+            artifact_agency["name"] = resolve_published_agency_name(
+                agency_id,
+                registry_name=agency_cfg.name if agency_cfg else "",
+                artifact_name=str(artifact_agency.get("name") or ""),
+            )
+            # Feed every public narrative surface the same mode-aware copy. This
+            # covers the full scorecard, call brief, and board one-pager together.
+            from .mode_language import adapt_artifact_language
 
-        artifact = adapt_artifact_language(artifact)
-        artifact["canada_equity"] = canada_equity.get(agency_id)
-        feature = _map_feature(
-            agency_id,
-            artifact,
-            by_id[agency_id].get("state", ""),
-            by_id[agency_id].get("country", ""),
-            by_id[agency_id].get("subdivision_code", ""),
-            by_id[agency_id].get("subdivision_name", ""),
-        )
-        if feature is not None:
-            map_features.append(feature)
-        history = index["agencies"][agency_id].get("history", [])
-        # The dated snapshots (oldest first; the newest equals latest.json) drive
-        # both the previous-run finding diff and the grade story, so read each one
-        # once and reuse. An unreadable day is skipped, not fatal.
-        dated = sorted((art / agency_id).glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json"))
-        dated_artifacts: list[dict[str, Any]] = []
-        for dated_path in dated:
-            try:
-                dated_artifacts.append(json.loads(dated_path.read_text()))
-            except (json.JSONDecodeError, OSError):
-                continue
-        prev_artifact = _previous_indexed_artifact(agency_id, history, dated_artifacts)
-        # Stop names for the map's accessible equivalent come from the geometry
-        # artifact (the map's own data), kept out of the per-day JSON to avoid
-        # bloating it. Absent or unreadable geometry simply means no stop list.
-        stop_names = _geometry_stop_names(art / agency_id / "geometry.geojson")
-        receipts = load_fixlog(art / agency_id)
-        write(
-            f"agency/{agency_id}/index.html",
-            _render_agency(
+            artifact = adapt_artifact_language(artifact)
+            artifact["canada_equity"] = canada_equity.get(agency_id)
+            feature = _map_feature(
+                agency_id,
                 artifact,
-                history,
-                prev_artifact,
-                by_id[agency_id],
-                liveness_state.get(agency_id),
-                stop_names,
-                has_fixlog=bool(receipts),
-                now=now,
-                artifacts=dated_artifacts,
-                effort_bands=effort_bands,
-                seo_metadata=agency_seo_metadata[agency_id],
-            ),
-            f"{BASE_URL}/agency/{agency_id}/",
-            lastmod=str(artifact.get("snapshot_date") or "") or None,
-        )
-        write(
-            f"agency/{agency_id}/brief/index.html",
-            _render_brief(
-                artifact,
-                history,
-                prev_artifact,
-                by_id[agency_id],
-                liveness_state.get(agency_id),
-                program_ids,
-                effort_bands=effort_bands,
-            ),
-        )
-        # The board packet one-pager: same precomputed fields, different reader
-        # (the agency's board rather than the liaison), so progress leads and the
-        # fixes read as the asks (docs/RESEARCH-ROADMAP.md E6).
-        write(
-            f"agency/{agency_id}/board/index.html",
-            _render_board_page(
-                artifact, history, prev_artifact, by_id[agency_id], effort_bands=effort_bands
-            ),
-        )
-        # The durable clearance log, only once the collect step has recorded at
-        # least one provenance-bearing receipt. Remove a previously generated
-        # page when reconciliation fails closed, or committed web output would
-        # keep serving a stale claim after its evidence disappeared.
-        fixlog_page_dir = web / "agency" / agency_id / "fixes"
-        if receipts:
+                by_id[agency_id].get("state", ""),
+                by_id[agency_id].get("country", ""),
+                by_id[agency_id].get("subdivision_code", ""),
+                by_id[agency_id].get("subdivision_name", ""),
+            )
+            if feature is not None:
+                map_features.append(feature)
+            history = index["agencies"][agency_id].get("history", [])
+            # The dated snapshots (oldest first; the newest equals latest.json) drive
+            # both the previous-run finding diff and the grade story, so read each one
+            # once and reuse. An unreadable day is skipped, not fatal.
+            dated = sorted((art / agency_id).glob("[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json"))
+            dated_artifacts: list[dict[str, Any]] = []
+            for dated_path in dated:
+                try:
+                    dated_artifacts.append(json.loads(dated_path.read_text()))
+                except (json.JSONDecodeError, OSError):
+                    continue
+            prev_artifact = _previous_indexed_artifact(agency_id, history, dated_artifacts)
+            # Stop names for the map's accessible equivalent come from the geometry
+            # artifact (the map's own data), kept out of the per-day JSON to avoid
+            # bloating it. Absent or unreadable geometry simply means no stop list.
+            stop_names = _geometry_stop_names(art / agency_id / "geometry.geojson")
+            receipts = load_fixlog(art / agency_id)
             write(
-                f"agency/{agency_id}/fixes/index.html",
-                _render_fixlog_page(
+                f"agency/{agency_id}/index.html",
+                _render_agency(
                     artifact,
-                    receipts,
+                    history,
+                    prev_artifact,
                     by_id[agency_id],
+                    liveness_state.get(agency_id),
+                    stop_names,
+                    has_fixlog=bool(receipts),
+                    now=now,
+                    artifacts=dated_artifacts,
+                    effort_bands=effort_bands,
                     seo_metadata=agency_seo_metadata[agency_id],
                 ),
-                f"{BASE_URL}/agency/{agency_id}/fixes/",
+                f"{BASE_URL}/agency/{agency_id}/",
+                lastmod=str(artifact.get("snapshot_date") or "") or None,
             )
-        elif fixlog_page_dir.exists():
-            shutil.rmtree(fixlog_page_dir)
-        # This feed's own Atom history (grade moves, expiry crossings, score
-        # swings, and any structural export change on the latest run), so
-        # anyone supporting the agency can subscribe to just it. The grade/
-        # score/expiry events are the same ones the "What changed over time"
-        # timeline shows; the export-change event mirrors the "What changed
-        # inside the export" block on the agency page (EXP-18).
-        write(
-            f"agency/{agency_id}/feed.xml",
-            agency_change_feed(
-                agency_id,
-                artifact["agency"]["name"],
-                _agency_feed_events(artifact, history),
-                base_url=BASE_URL,
-            ),
-        )
+            write(
+                f"agency/{agency_id}/brief/index.html",
+                _render_brief(
+                    artifact,
+                    history,
+                    prev_artifact,
+                    by_id[agency_id],
+                    liveness_state.get(agency_id),
+                    program_ids,
+                    effort_bands=effort_bands,
+                ),
+            )
+            # The board packet one-pager: same precomputed fields, different reader
+            # (the agency's board rather than the liaison), so progress leads and the
+            # fixes read as the asks (docs/RESEARCH-ROADMAP.md E6).
+            write(
+                f"agency/{agency_id}/board/index.html",
+                _render_board_page(
+                    artifact, history, prev_artifact, by_id[agency_id], effort_bands=effort_bands
+                ),
+            )
+            # The durable clearance log, only once the collect step has recorded at
+            # least one provenance-bearing receipt. Remove a previously generated
+            # page when reconciliation fails closed, or committed web output would
+            # keep serving a stale claim after its evidence disappeared.
+            fixlog_page_dir = web / "agency" / agency_id / "fixes"
+            if receipts:
+                write(
+                    f"agency/{agency_id}/fixes/index.html",
+                    _render_fixlog_page(
+                        artifact,
+                        receipts,
+                        by_id[agency_id],
+                        seo_metadata=agency_seo_metadata[agency_id],
+                    ),
+                    f"{BASE_URL}/agency/{agency_id}/fixes/",
+                )
+            elif fixlog_page_dir.exists():
+                shutil.rmtree(fixlog_page_dir)
+            # This feed's own Atom history (grade moves, expiry crossings, score
+            # swings, and any structural export change on the latest run), so
+            # anyone supporting the agency can subscribe to just it. The grade/
+            # score/expiry events are the same ones the "What changed over time"
+            # timeline shows; the export-change event mirrors the "What changed
+            # inside the export" block on the agency page (EXP-18).
+            write(
+                f"agency/{agency_id}/feed.xml",
+                agency_change_feed(
+                    agency_id,
+                    artifact["agency"]["name"],
+                    _agency_feed_events(artifact, history),
+                    base_url=BASE_URL,
+                ),
+            )
 
     # A flat machine-readable catalog so a consumer gets every agency's grade and
     # feed URL in one request instead of fetching every artifact.

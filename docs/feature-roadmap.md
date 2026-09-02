@@ -149,6 +149,19 @@ existing surface without changing a grade or adding a service:
   The inventory refuses a `Finding(...)` site whose copy it cannot read, so the
   gate's coverage cannot narrow again silently. No threshold, score, grade or
   schema moved (ADR 0048).
+- **Shipped 2026-08-27:** the complexity register is checked against ruff
+  instead of by hand (#309), and the published weight-sensitivity study grades
+  the published score rather than the raw weighted average (#310). Both were
+  controls that read as enforcement and could not fail over the thing they
+  covered (ADR 0050).
+- **Shipped 2026-08-27:** a render failure names the feed it happened to
+  (#308). Re-raised with the slug, never swallowed; whether one bad artifact
+  should abort the whole site render is left as a separate product call.
+- **Shipped 2026-08-27:** `/pulse/` and `comparison-policy.md` disclose that
+  the corpus aggregates exclude feeds with measured realtime, with the count
+  derived from the published comparison block (#248, option 1). The two
+  re-basing options stay an owner decision on the shadow-scoring path
+  (ADR 0051).
 - **Shipped 2026-08-27:** `/ntd/` and `ntd.json` publish the NTD reporter
   denominator alongside the tracked-feed one, from the committed RY2024
   snapshot that nothing had read (#278). Reporter counts are labelled as such

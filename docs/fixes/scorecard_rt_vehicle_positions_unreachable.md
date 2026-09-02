@@ -3,7 +3,7 @@ date_published: "2026-07-05"
 date_modified: "2026-07-05"
 ---
 
-# Fix: the VehiclePositions realtime feed failed during sampling
+# Fix: the VehiclePositions feed failed during sampling
 
 Code: `scorecard_rt_vehicle_positions_unreachable`
 

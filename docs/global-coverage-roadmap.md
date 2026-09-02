@@ -91,7 +91,7 @@ contains 2,574 active, keyless Schedule rows.
 contains 3,739 Schedule rows with a current, keyless URL.
 After applying the project's scheme-insensitive endpoint normalization, their
 union is about 5,092 endpoints before content, operator, aggregate, redirect,
-identity, and reuse review. The current registry contains more than 2,100 feed
+identity, and reuse review. The current registry contains more than 2,200 feed
 records.
 
 A literal 100-fold increase from that registry would require more than 200,000
@@ -319,6 +319,30 @@ partnership-gated. The registry these waves produced, 2,185 records across 46
 country codes on 2026-07-25, is a reviewed sample and not a census or
 national-coverage claim. That figure records what the phase delivered and is
 not refreshed as the registry grows.
+
+A second National Access Point exhaustion ran on 2026-08-30, five weeks after
+the first. Of 206 still-untracked open-licence GTFS datasets, it admitted 76
+records under the unchanged licence, identity, validator, and 60-day calendar
+gates, including Naolib (Nantes Métropole) as the first French record on the
+bounded large-feed tier after a full local score under its raised limits. The
+exclusion ledger is the larger half of the result: 100 candidates sat under
+60 days of service ahead of the September rentrée refresh and are the
+standing recheck queue, eight regional aggregates and seven alternate
+publications of tracked networks were refused as non-coverage, six tracked
+datasets were found publishing from rotated resource URLs (a `discover`
+follow-up), five producer hosts were unreachable, and two calendars ending
+9999-12-31 exposed a freshness date-arithmetic overflow now noted as pipeline
+hardening work. Île-de-France Mobilités and TCL Lyon remain out under the
+portal's restricted "Licence mobilités". The pass is recorded in
+`docs/feeds.md`; it grows the reviewed French sample to 343 records and does
+not change any census or gate claim.
+
+A rentrée recheck on 2026-09-01 then admitted 14 of those deferred
+candidates whose September exports had already landed, SETRAM (Le Mans)
+among them, under the unchanged gates. Seventy-eight stay queued on short
+calendars and the queue is expected to keep clearing through the month.
+The recheck also moved the rotated-resource dedupe from hand review into
+the candidate pool builder itself.
 
 ### Phase 4 — partnership-gated regions
 

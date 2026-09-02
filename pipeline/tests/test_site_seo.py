@@ -73,6 +73,8 @@ def _config() -> dict[str, Any]:
         "canonical_aliases": {"/app/": "/agencies/"},
         "hreflang_groups": [{"en": "/", "es": "/es/"}],
         "required_json_ld_types": {"/agency/*/": ["Dataset"]},
+        "title_length": [5, 60],
+        "description_length": [10, 155],
         "redirect_aliases": {
             "/old/": "/target/?view=all#section",
         },
@@ -1212,3 +1214,143 @@ def test_repository_config_keeps_aliases_and_exemptions_narrow() -> None:
         "/leaderboard/": "/pulse/#changes",
         "/trends/": "/pulse/#trend",
     }
+
+
+@pytest.mark.parametrize(
+    ("old", "new", "code"),
+    [
+        ("<title>Home title</title>", f"<title>{'T' * 61}</title>", "metadata.title_too_long"),
+        ("<title>Home title</title>", "<title>Home</title>", "metadata.title_too_short"),
+        (
+            '<meta name="description" content="Home description">',
+            f'<meta name="description" content="{"D" * 156}">',
+            "metadata.description_too_long",
+        ),
+        (
+            '<meta name="description" content="Home description">',
+            '<meta name="description" content="Too short">',
+            "metadata.description_too_short",
+        ),
+    ],
+)
+def test_metadata_length_bounds_fail_the_gate(
+    tmp_path: Path, old: str, new: str, code: str
+) -> None:
+    """Each bound has to be able to fail, in both directions, on its own."""
+    site, config = _write_fixture(tmp_path)
+    report = tmp_path / "report.json"
+    assert _run(site, config, report).returncode == 0
+
+    _replace(site / "index.html", old, new)
+
+    result = _run(site, config, report)
+    assert result.returncode == 1
+    assert code in _codes(report)
+
+
+def test_length_bounds_skip_pages_no_search_result_can_show(tmp_path: Path) -> None:
+    """A noindex page and a canonical alias are excluded, like everywhere else."""
+    site, config = _write_fixture(tmp_path)
+    report = tmp_path / "report.json"
+
+    for relative in ("agency/demo/board/index.html", "app/index.html"):
+        _replace(
+            site / relative,
+            '"Repeated agency description"' if "board" in relative else "Interactive agency search",
+            f'"{"D" * 200}"' if "board" in relative else "A" * 80,
+        )
+
+    result = _run(site, config, report)
+    assert result.returncode == 0, result.stdout
+
+
+def test_heading_outline_must_not_skip_a_level(tmp_path: Path) -> None:
+    site, config = _write_fixture(tmp_path)
+    report = tmp_path / "report.json"
+    assert _run(site, config, report).returncode == 0
+
+    _replace(
+        site / "target/index.html",
+        "<section id=",
+        "<h2>Section</h2><h4>Deep</h4><section id=",
+    )
+
+    result = _run(site, config, report)
+    assert result.returncode == 1
+    assert "html.heading_level_skipped" in _codes(report)
+    message = next(
+        item["message"]
+        for item in json.loads(report.read_text(encoding="utf-8"))["findings"]
+        if item["code"] == "html.heading_level_skipped"
+    )
+    assert "h4 follows h2" in message
+
+
+def test_first_heading_must_be_h1_unless_the_page_is_a_canonical_alias(
+    tmp_path: Path,
+) -> None:
+    site, config = _write_fixture(tmp_path)
+    report = tmp_path / "report.json"
+
+    # The app shell writes its h1 at runtime, so its outline may open at h2.
+    _replace(site / "app/index.html", "<body>", "<body><h2>Results</h2>")
+    assert _run(site, config, report).returncode == 0
+
+    # Any other page opening at h2 is a skipped level.
+    _replace(site / "target/index.html", "<h1>Page heading</h1>", "<h2>Page heading</h2>")
+    result = _run(site, config, report)
+    assert result.returncode == 1
+    assert "html.heading_level_skipped" in _codes(report)
+
+
+def test_heading_inside_a_hidden_subtree_stays_out_of_the_outline(tmp_path: Path) -> None:
+    """axe's heading-order rule ignores hidden content, and so does this one.
+
+    A panel the page reveals later is not part of the outline a reader is
+    handed, so counting it here would contradict the axe gate that already
+    runs over the same markup.
+    """
+    site, config = _write_fixture(tmp_path)
+    report = tmp_path / "report.json"
+
+    _replace(
+        site / "target/index.html",
+        "<h1>Page heading</h1>",
+        "<aside hidden><h2>Selected</h2></aside><h1>Page heading</h1>",
+    )
+    assert _run(site, config, report).returncode == 0
+
+    # The same markup without the hidden attribute is a real skipped level.
+    _replace(site / "target/index.html", "<aside hidden>", "<aside>")
+    result = _run(site, config, report)
+    assert result.returncode == 1
+    assert "html.heading_level_skipped" in _codes(report)
+
+
+@pytest.mark.parametrize(
+    "bounds",
+    [60, [60], [15, 60, 70], ["15", "60"], [0, 60], [61, 60], [True, 60]],
+)
+def test_length_bounds_configuration_is_strict(tmp_path: Path, bounds: Any) -> None:
+    site, config = _write_fixture(tmp_path)
+    report = tmp_path / "report.json"
+    payload = json.loads(config.read_text(encoding="utf-8"))
+    payload["title_length"] = bounds
+    config.write_text(json.dumps(payload), encoding="utf-8")
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 2
+    assert "Traceback" not in result.stderr
+    assert json.loads(report.read_text(encoding="utf-8"))["errors"][0]["code"] == "config.invalid"
+
+
+def test_repository_config_publishes_the_length_bounds_the_renderer_targets() -> None:
+    """The gate's bound and the renderer's title budget are the same number."""
+    from scorecard_pipeline.site_shell import SEO_TITLE_MAX_LENGTH
+
+    config = json.loads((ROOT / "site-seo.json").read_text(encoding="utf-8"))
+
+    assert config["title_length"] == [15, 60]
+    assert config["description_length"] == [50, 155]
+    assert config["title_length"][1] == SEO_TITLE_MAX_LENGTH

@@ -245,3 +245,169 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-07-23'
       identity_reviewed: true
+  - id: fr-pan-80036
+    name: Réseau urbain Irigo
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/32f30b64-33f7-43bb-9b6f-34c21c2f83a3
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/0a6d20c5-19b4-4e72-80bf-3875c2555a45
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/83582223-990a-452d-ba3d-49f2977d0292
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/3349a69a-bc9a-4de4-a2c2-9f9d32e4923c
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CU Angers
+      Loire Métropole, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/angers-loire-metropole-reseau-irigo-gtfs-gtfs-rt-siri
+      terms_url: https://transport.data.gouv.fr/datasets/angers-loire-metropole-reseau-irigo-gtfs-gtfs-rt-siri
+      scope:
+      - gtfs_schedule
+      attribution: CU Angers Loire Métropole
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-12608
+    name: Réseau urbain May'bus
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    is_official: true
+    organization_id: fr-pan-5cf67b0d6f44413baf79652d
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/220e0fb8-fe04-4d99-9fca-cc812eaadfc3
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/6a1ef3cc-13cc-4770-a347-f183dc6accd6
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/6a1ef3cc-13cc-4770-a347-f183dc6accd6
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/6a1ef3cc-13cc-4770-a347-f183dc6accd6
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CC Mayenne
+      Communauté, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-maybus-mayenne-gtfs-gtfs-rt
+      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-du-reseau-maybus-mayenne-gtfs-gtfs-rt
+      scope:
+      - gtfs_schedule
+      attribution: CC Mayenne Communauté
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-81018
+    name: Réseau urbain TUL (Laval)
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/bd780aef-b3c5-405a-8450-8365a7a0c315
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Laval
+      Agglomération, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-de-laval-agglomeration-gtfs
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-de-laval-agglomeration-gtfs
+      scope:
+      - gtfs_schedule
+      attribution: Laval Agglomération
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-80586
+    name: Réseau urbain Illygo
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    is_official: true
+    organization_id: fr-pan-60a4fef38d3ff587de3e17ae
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/024123a0-8665-4983-90bd-134ef7d70383
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/476d53cd-374b-41b7-b11a-a158cc9abfaa
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/476d53cd-374b-41b7-b11a-a158cc9abfaa
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/476d53cd-374b-41b7-b11a-a158cc9abfaa
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit Pôle
+      Métropolitain Mobilités Le Mans – Sarthe, identify the ODbL, and preserve share-alike terms where
+      they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-illygo
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-illygo
+      scope:
+      - gtfs_schedule
+      attribution: Pôle Métropolitain Mobilités Le Mans – Sarthe
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-79151
+    name: Réseau urbain Brévibus
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    is_official: true
+    organization_id: fr-pan-60a4fef38d3ff587de3e17ae
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/b8d1007f-567e-48c4-9c40-bee205f1e688
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/dd56dfc5-85b6-43f9-8b1b-8eebd4cb2c2e
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/dd56dfc5-85b6-43f9-8b1b-8eebd4cb2c2e
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CC du
+      Sud Estuaire, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-brevibus
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-brevibus
+      scope:
+      - gtfs_schedule
+      attribution: CC du Sud Estuaire
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-84101
+    name: Réseau urbain Naolib
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    is_official: true
+    large_feed: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/65bdd7e4-a8e7-4a54-893a-808e71c34d68
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to Nantes Métropole and the update date.
+    operating_note: One metropolitan network (tramway, bus, and ferry) whose stop_times.txt expands past
+      the standard per-entry archive cap, so the record uses the bounded large-feed tier. Counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-de-transports-collectifs-naolib
+      terms_url: https://transport.data.gouv.fr/datasets/reseau-de-transports-collectifs-naolib
+      scope:
+      - gtfs_schedule
+      attribution: Nantes Métropole
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-79601
+    name: Réseau urbain SETRAM
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/5339d96c-6d20-4a01-939a-40f7b56d6cc1
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/45f2e7ad-2199-4e01-8626-8656a6f199ef
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/af4db0ee-fae6-4d71-a40d-70fd1d6f2a07
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to CU Le Mans Métropole and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-du-reseau-des-transports-bus-et-tramway-setram-circulant-sur-le-territoire-le-mans-metropole
+      terms_url: https://transport.data.gouv.fr/datasets/gtfs-du-reseau-des-transports-bus-et-tramway-setram-circulant-sur-le-territoire-le-mans-metropole
+      scope:
+      - gtfs_schedule
+      attribution: CU Le Mans Métropole
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-09-01'
+      identity_reviewed: true

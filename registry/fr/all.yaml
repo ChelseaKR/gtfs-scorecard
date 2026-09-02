@@ -83,3 +83,82 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-07-23'
       identity_reviewed: true
+  - id: fr-pan-80403
+    name: Réseau urbain Linggo En Ville
+    country: FR
+    is_official: true
+    organization_id: fr-pan-5d823fd98b4c411e38e820b4
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/56a0a326-549a-4d50-bfa0-11138946e064
+    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
+      commercial reuse is permitted with attribution to PETR du Pays de Langres and the update date.
+    operating_note: The official covered area crosses more than one region; no single subdivision is assigned.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-linggo-en-ville-petr-du-pays-de-langres
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-linggo-en-ville-petr-du-pays-de-langres
+      scope:
+      - gtfs_schedule
+      attribution: PETR du Pays de Langres
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-84156
+    name: Réseau urbain TréMA (Mâcon)
+    country: FR
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/0a01b036-796f-43a3-9c64-a2f6024427b0
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA Mâconnais
+      Beaujolais Agglomération, identify the ODbL, and preserve share-alike terms where they apply.
+    operating_note: The official covered area crosses more than one region; no single subdivision is assigned.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-trema-gtfs
+      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transport-du-reseau-trema-gtfs
+      scope:
+      - gtfs_schedule
+      attribution: CA Mâconnais Beaujolais Agglomération
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-52605
+    name: Réseau européen BlaBlaCar Bus
+    country: FR
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/fd54f81f-4389-4e73-be75-491133d011c3
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit BlaBlaCar
+      Bus, identify the ODbL, and preserve share-alike terms where they apply.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/blablacar-bus-horaires-theoriques-et-temps-reel-du-reseau-europeen
+      terms_url: https://transport.data.gouv.fr/datasets/blablacar-bus-horaires-theoriques-et-temps-reel-du-reseau-europeen
+      scope:
+      - gtfs_schedule
+      attribution: BlaBlaCar Bus
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-83529
+    name: Réseau urbain Linead
+    country: FR
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/c654db3d-a710-4ed5-a327-417f812bf9a0
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/cf98048e-7419-46ec-a1e3-36a34e1e11a9
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/cf98048e-7419-46ec-a1e3-36a34e1e11a9
+    license_note: Open Database License (ODbL), recorded by France's National Access Point; credit CA Agglo
+      du Pays de Dreux, identify the ODbL, and preserve share-alike terms where they apply.
+    operating_note: The official covered area crosses more than one region; no single subdivision is assigned.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/dreux-offre-theorique-mobilite-reseau-urbain
+      terms_url: https://transport.data.gouv.fr/datasets/dreux-offre-theorique-mobilite-reseau-urbain
+      scope:
+      - gtfs_schedule
+      attribution: CA Agglo du Pays de Dreux
+      reviewed_by: ChelseaKR
+      reviewed_on: '2026-09-01'
+      identity_reviewed: true
