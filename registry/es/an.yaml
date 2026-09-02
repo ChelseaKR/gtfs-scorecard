@@ -1,0 +1,34 @@
+# ES agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: ctan-andalucia
+    name: Red de Consorcios de Transporte de Andalucía
+    country: ES
+    subdivision_code: ES-AN
+    subdivision_name: Andalucía
+    is_official: true
+    static_gtfs_url: https://api.ctan.es/v1/datos/UNIFICADO/gtfs.zip
+    license_note: >-
+      Published under the network's own reuse conditions, which permit
+      commercial and non-commercial reuse when the source and the date the
+      data was obtained are cited.
+    operating_note: >-
+      One daily-updated archive covering the nine Andalusian metropolitan
+      transport consortia (Sevilla, Bahía de Cádiz, Granada, Málaga, Campo
+      de Gibraltar, Almería, Jaén, Córdoba, Costa de Huelva). It carries the
+      consortia's metropolitan services and does not repackage any operator
+      feed already listed.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://api.ctan.es/
+      terms_url: https://api.ctan.es/avisolegal.html
+      scope: [gtfs_schedule]
+      attribution: >-
+        Información obtenida a través del Portal de Datos Abiertos de la Red
+        de Consorcios de Transporte de Andalucía.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

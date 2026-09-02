@@ -133,3 +133,70 @@ Steps:
 
 The floor stays at 0.80 throughout. What is deferred is the tightening, not the
 standard.
+
+## Decide the share-alike question for records already listed
+
+**Status: open, opened 2026-09-01.** Two findings from the 2026-09-01 coverage
+pass are the same question, and neither is safe to settle inside a wave whose
+job was adding records.
+
+**France and ODbL.** 158 French records in the registry cite ODbL in their
+`license_note`, including entries in `registry/fr/idf.yaml`, while
+[`docs/feeds.md`](feeds.md) records ODbL French datasets as *excluded* and names
+Île-de-France as an example of the exclusion. Both cannot be right. The records
+arrived in the 2026-07-23 National Access Point pass; the exclusion predates it.
+
+**Estonia and CC BY-SA 3.0.** Estonia's national Public Transport Register is
+published under CC BY-SA 3.0 on the national open-data portal, and the
+`terms_url` carried by `estonia-public-transport-register` and
+`tallinn-public-transport-tlt` now returns 404.
+
+The 2026-09-01 pass applied the strict reading to new admissions and changed
+nothing already listed. That cost roughly 84 ODbL French datasets (Tisséo
+Toulouse, STAR Rennes, TAG Grenoble among them) and 19 Estonian county feeds,
+all of which pass every other gate.
+
+What has to be decided, once, for both:
+
+1. Does this project redistribute share-alike GTFS? The gates say no. The
+   registry says yes for 160 records.
+2. If yes, `docs/feeds.md` and the admission gates need amending, and the ~103
+   deferred datasets become admissible.
+3. If no, the 160 existing records need retiring, which reduces published
+   coverage and unpublishes live scorecards. That is a listing-policy action,
+   not a curation one, and the affected agencies should be handled under
+   [`listing-policy.md`](listing-policy.md).
+
+Do not resolve this by editing one side quietly to match the other.
+
+## Teach `discover` to check its own replacement candidate
+
+**Status: open, opened 2026-09-01.** All five feeds that
+[`feed-discovery.md`](feed-discovery.md) lists under "Likely replaced" were
+re-checked on 2026-09-01: every tracked URL the repo uses is live and serving a
+zip, and two of the proposed replacements are not (MVV München's candidate
+returns 404, Rockford's refuses the connection). Applying that report
+unreviewed, or running `scorecard discover --apply` against it, would swap two
+working feeds for dead links.
+
+The report is already written as suggestions to verify by hand, which is what
+saved it. A HEAD check on the candidate before listing it under "Likely
+replaced" would stop a dead replacement being proposed at all.
+
+## Feed sources blocked by the pipeline's HTTP client, not by policy
+
+**Status: open, opened 2026-09-01.** Several feeds pass source, licence,
+identity and calendar and fail only on how this pipeline fetches:
+
+- **Yamaguchi (JP-35)**, one of the two remaining empty Japanese prefectures.
+  Iwakuni City and Hikari City publish official, CC BY, keyless, in-date feeds
+  on the prefecture's CKAN. `curl` fetches them; the pipeline's client refuses
+  the handshake with `TLSV1_ALERT_INSUFFICIENT_SECURITY`.
+- **Grand River Transit (CA-ON)**: `webapps.regionofwaterloo.ca` offers a DH key
+  the client refuses, and the catalog mirror 403s.
+- **Canberra (AU-ACT)**: `transport.act.gov.au` now answers every non-browser
+  client with a Cloudflare interstitial, including with full browser headers.
+  The licence is fine and `data.act.gov.au` names the exact archives.
+
+These are worth separating from licence and freshness rejections when reading
+coverage gaps: no amount of sourcing effort closes them.

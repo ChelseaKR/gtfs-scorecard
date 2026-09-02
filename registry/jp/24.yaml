@@ -812,3 +812,200 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: ise-numaki-bus
+    name: Ise City Numaki District Bus (伊勢市沼木地区自主運行バス「沼木バス」)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/isecity/feeds/numakibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 伊勢市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 伊勢市.
+    operating_note: The Numaki district's own-operation bus in Ise City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/isecity.numakibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        伊勢市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kumano-city-bus
+    name: Kumano City Bus and Mihama Town Bus (熊野市バス・御浜町自主運行バス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kumanocity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 熊野市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 熊野市.
+    operating_note: >-
+      Kumano City's bus network together with Mihama Town's own-operation
+      routes, published as one archive by Kumano City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kumanocity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        熊野市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kumano-city-loop-bus
+    name: Kumano City Town Loop Bus (熊野市市街地周遊バス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kumanocity/feeds/shuyubus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 熊野市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 熊野市.
+    operating_note: >-
+      Kumano City's town-centre loop bus, published separately from the city
+      network archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kumanocity.shuyubus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        熊野市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: mie-kotsu-chusei
+    name: Mie Kotsu Chusei (三重交通 中勢営業所)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mie-kotsu/feeds/sancochusei/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 三重交通 through the GTFS
+      Data Repository (gtfs-data.jp). Credit 三重交通.
+    operating_note: >-
+      Mie Kotsu's scheduled bus service from its Chusei office. The operator
+      publishes one archive per office, and the registry already carries
+      several of them.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mie-kotsu.sancochusei
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        三重交通. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: mie-kotsu-nanki
+    name: Mie Kotsu Nanki (三重交通 南紀営業所)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mie-kotsu/feeds/sancoinanki/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 三重交通 through the GTFS
+      Data Repository (gtfs-data.jp). Credit 三重交通.
+    operating_note: >-
+      Mie Kotsu's scheduled bus service from its Nanki office in southern
+      Mie.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mie-kotsu.sancoinanki
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        三重交通. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: ago-bay-ferry
+    name: Ago Bay Ferry (あご湾定期船)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shimacity/feeds/agowanteikisen/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shima City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Shima City.
+    operating_note: >-
+      The scheduled boat service across Ago Bay, operated by Shima Marine
+      Leisure and published as open data by Shima City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shimacity.agowanteikisen
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shima City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: shima-anori-replacement-bus
+    name: Shima City Anori Line Replacement Bus (志摩市安乗線代替バス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shimacity/feeds/anori/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shima City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Shima City.
+    operating_note: Shima City's replacement bus for the Anori line.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shimacity.anori
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shima City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: toba-kamome-bus
+    name: Toba City Kamome Bus (鳥羽市かもめバス)
+    country: JP
+    subdivision_code: JP-24
+    subdivision_name: Mie
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tobacity/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Toba City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Toba City.
+    operating_note: >-
+      Toba City's Kamome Bus community network, published separately from
+      the city's island ferries.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tobacity.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toba City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

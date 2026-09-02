@@ -1,0 +1,34 @@
+# UA agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: uzhhorod-city-transport
+    name: Ужгородська міська рада (Uzhhorod city transport)
+    country: UA
+    subdivision_code: UA-21
+    subdivision_name: Zakarpatska oblast
+    mdb_id: "2931"
+    is_official: true
+    static_gtfs_url: https://track.ua-gis.com/gtfs/uzhhorod/static.zip
+    license_note: >-
+      CC BY through the Uzhhorod City Council open-data portal, which
+      publishes the city's public-transport datasets for reuse with
+      attribution. Credit the Uzhhorod City Council transport department.
+    operating_note: >-
+      The archive names Ужгородська міська рада as feed publisher and
+      carries the municipal operator КП Ужгородський муніципальний транспорт
+      together with three contracted carriers. The council's own open-data
+      portal publishes the same GTFS tables under CC BY.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.rada-uzhgorod.gov.ua/dataset/5fb903fa-a182-4ec2-878a-9672e539bba0
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Відділ транспорту Ужгородської міської ради (Uzhhorod City Council
+        transport department).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

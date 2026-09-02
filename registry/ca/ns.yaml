@@ -1,0 +1,30 @@
+# CA agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: halifax-transit
+    name: Halifax Transit
+    country: CA
+    subdivision_code: CA-NS
+    subdivision_name: Nova Scotia
+    mdb_id: "734"
+    is_official: true
+    static_gtfs_url: https://gtfs.halifax.ca/static/google_transit.zip
+    license_note: >-
+      Open Government Licence – Halifax, based on version 2.0 of the Open
+      Government Licence – Canada: a worldwide, royalty-free, perpetual,
+      non-exclusive licence to use the information, including for commercial
+      purposes, with attribution. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.halifax.ca/transportation/halifax-transit/transit-technology/general-transit-feed-gtfs
+      terms_url: https://data-hrm.hub.arcgis.com/pages/open-data-licence
+      scope: [gtfs_schedule]
+      attribution: >-
+        Contains information licenced under the Open Government
+        Licence—Halifax.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

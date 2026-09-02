@@ -105,3 +105,202 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: gunma-bus
+    name: Gunma Bus (群馬バス)
+    country: JP
+    subdivision_code: JP-10
+    subdivision_name: Gunma
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/GunmaBus/AllLines.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by Gunma Bus through the Public Transportation
+      Open Data Center (ODPT). Credit Gunma Bus and ODPT.
+    operating_note: Gunma Bus's route network around Takasaki and Maebashi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/gunma_bus_all_lines
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Gunma Bus, published through the Public Transportation Open Data
+        Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: gunma-chuo-bus
+    name: Gunma Chuo Bus (群馬中央バス)
+    country: JP
+    subdivision_code: JP-10
+    subdivision_name: Gunma
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/GunmachuoBus/AllLines.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by Gunma Chuo Bus through the Public
+      Transportation Open Data Center (ODPT). Credit Gunma Chuo Bus and
+      ODPT.
+    operating_note: Gunma Chuo Bus's route network around Maebashi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/gunmachuo_bus_all_lines
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Gunma Chuo Bus, published through the Public Transportation Open
+        Data Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kan-etsu-transportation
+    name: Kan-etsu Transportation (関越交通)
+    country: JP
+    subdivision_code: JP-10
+    subdivision_name: Gunma
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/Kan_etsuTransportation/AllLines.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by Kan-etsu Transportation through the Public
+      Transportation Open Data Center (ODPT). Credit Kan-etsu Transportation
+      and ODPT.
+    operating_note: >-
+      Kan-etsu Transportation's route network in northern Gunma, including
+      Numata, Shibukawa, and the Oze and Minakami approaches.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/kan_etsu_transportation_all_lines
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kan-etsu Transportation, published through the Public Transportation
+        Open Data Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nippon-chuo-bus-maebashi
+    name: Nippon Chuo Bus Maebashi Area (日本中央バス 前橋エリア)
+    country: JP
+    subdivision_code: JP-10
+    subdivision_name: Gunma
+    feed_variant: Maebashi area
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/NipponChuoBus/Maebashi_Area.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by Nippon Chuo Bus through the Public
+      Transportation Open Data Center (ODPT). Credit Nippon Chuo Bus and
+      ODPT.
+    operating_note: >-
+      Nippon Chuo Bus's Maebashi-area services. The operator publishes by
+      area, and this is the area archive available on the portal.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/nippon_chuo_bus_maebashi_area
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nippon Chuo Bus, published through the Public Transportation Open
+        Data Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: joshin-kanko-bus
+    name: Joshin Kanko Bus (上信観光バス)
+    country: JP
+    subdivision_code: JP-10
+    subdivision_name: Gunma
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/JoshinKankoBus/AllLines.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by Joshin Kanko Bus through the Public
+      Transportation Open Data Center (ODPT). Credit Joshin Kanko Bus and
+      ODPT.
+    operating_note: >-
+      Joshin Kanko Bus's scheduled routes in the Tomioka and Shimonita area
+      of south-western Gunma.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/joshin_kanko_bus_all_lines
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Joshin Kanko Bus, published through the Public Transportation Open
+        Data Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: joshin-hire
+    name: Joshin Hire (上信ハイヤー)
+    country: JP
+    subdivision_code: JP-10
+    subdivision_name: Gunma
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/JoshinHire/AllLines.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by Joshin Hire through the Public Transportation
+      Open Data Center (ODPT). Credit Joshin Hire and ODPT.
+    operating_note: >-
+      Joshin Hire's four scheduled shared-ride routes in south-western
+      Gunma.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/joshin_hire_all_lines
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Joshin Hire, published through the Public Transportation Open Data
+        Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: midori-city-bus
+    name: Midori City Bus (みどり市)
+    country: JP
+    subdivision_code: JP-10
+    subdivision_name: Gunma
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/MidoriCity/AllLines.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by Midori City through the Public Transportation
+      Open Data Center (ODPT). Credit Midori City and ODPT.
+    operating_note: Midori City's community bus network in eastern Gunma.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/midori_city_all_lines
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Midori City, published through the Public Transportation Open Data
+        Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: takasaki-yoshii-bus
+    name: Takasaki City Yoshii Area Bus (高崎市吉井地域バス)
+    country: JP
+    subdivision_code: JP-10
+    subdivision_name: Gunma
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/TakasakiCity/yosiibus.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by Takasaki City through the Public
+      Transportation Open Data Center (ODPT). Credit Takasaki City and ODPT.
+    operating_note: >-
+      Takasaki City's bus service in the Yoshii area, operated under
+      contract by Seimo Kotsu.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/takasaki_city_yosiibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Takasaki City, published through the Public Transportation Open Data
+        Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

@@ -1,0 +1,31 @@
+# RS agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: jkp-sumadija-kragujevac
+    name: JKP Šumadija Kragujevac
+    country: RS
+    subdivision_code: RS-12
+    subdivision_name: Šumadijski okrug
+    is_official: true
+    static_gtfs_url: https://data.gov.rs/sr/datasets/r/015f6bd4-1428-4ed8-b41e-c73d0885c79d
+    license_note: >-
+      Serbia's national open-data terms permit copying, distribution,
+      adaptation, and commercial or non-commercial reuse with attribution to
+      the publishing public body.
+    operating_note: >-
+      Kragujevac city bus network, published by the City of Kragujevac and
+      operated by its public utility company JKP Šumadija.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.rs/sr/datasets/gtfs-kragujevats/
+      terms_url: https://data.gov.rs/sr/terms/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Град Крагујевац (City of Kragujevac); Republic of Serbia open-data
+        portal.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

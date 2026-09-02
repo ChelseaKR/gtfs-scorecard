@@ -132,3 +132,79 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: balbriggan-express
+    name: Balbriggan Express
+    country: IE
+    subdivision_code: IE-D
+    subdivision_name: Dublin
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_balbriggan_ex.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself. A commuter
+      service between Balbriggan, in Fingal, and Dublin city.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: dublin-express
+    name: Dublin Express
+    country: IE
+    subdivision_code: IE-D
+    subdivision_name: Dublin
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_dublin_express.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself. Airport
+      coach routes between Dublin Airport and Dublin city.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: tud-blanchardstown
+    name: TU Dublin Blanchardstown
+    country: IE
+    subdivision_code: IE-D
+    subdivision_name: Dublin
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_tud_blanch.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself. A campus
+      shuttle for Technological University Dublin's Blanchardstown campus,
+      published by the Authority alongside the commercial operators.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

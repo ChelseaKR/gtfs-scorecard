@@ -29,3 +29,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: trenitalia-liguria
+    name: Trenitalia regional rail in Liguria
+    country: IT
+    subdivision_code: IT-42
+    subdivision_name: Liguria
+    is_official: true
+    static_gtfs_url: https://srvcarto.regione.liguria.it/dtuff/download_statico/opendata/trasporti/GTFS/GTFS-IT-ITC3-TRENITALIA-20260614-20261212-pf.zip
+    license_note: >-
+      CC BY 4.0 through Regione Liguria's open data portal; credit Regione
+      Liguria and Trenitalia.
+    operating_note: >-
+      Trenitalia's regional rail service in Liguria, one operator dataset of
+      the region's planned-service publication. Regione Liguria names each
+      archive after its validity window, so the download is version-pinned
+      and a curator refreshes it when the region publishes the next period.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.regione.liguria.it/dataset/ds-637
+      terms_url: https://creativecommons.org/licenses/by/4.0/deed.it
+      scope: [gtfs_schedule]
+      attribution: Regione Liguria and Trenitalia.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

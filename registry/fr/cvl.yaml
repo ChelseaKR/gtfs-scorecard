@@ -194,25 +194,26 @@ agencies:
       reviewed_on: '2026-07-23'
       identity_reviewed: true
   - id: fr-pan-83326
-    name: Réseau urbain Amelys
+    name: Amelys (Montargis)
     country: FR
     subdivision_code: FR-CVL
     subdivision_name: Centre-Val de Loire
     is_official: true
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/39240e80-d3f4-4702-ba93-520fae414649
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to CA Montargoise et Rives du Loing (AME) and the update
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to the Agglomération Montargoise et Rives du Loing and the update
       date.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transports-urbain-du-reseau-amelys-gtfs
-      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transports-urbain-du-reseau-amelys-gtfs
-      scope:
-      - gtfs_schedule
-      attribution: CA Montargoise et Rives du Loing (AME)
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Agglomération Montargoise et Rives du Loing (AME).
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-08-30'
+      reviewed_on: "2026-09-01"
       identity_reviewed: true
   - id: fr-pan-83519
     name: Réseau urbain AggloBus
@@ -261,4 +262,28 @@ agencies:
       attribution: Région Centre-Val de Loire (CC Vierzon-Sologne-Berry)
       reviewed_by: ChelseaKR
       reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-84169
+    name: Horizon (Châteauroux Métropole)
+    country: FR
+    subdivision_code: FR-CVL
+    subdivision_name: Centre-Val de Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/7edd0b40-0936-4adf-88ed-5e9fe9c3977f
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Châteauroux Métropole and the update date.
+    operating_note: >-
+      The dataset also holds two older exports. The 2026-09-01 export is the
+      one recorded here.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-de-bus-urbain-horizon
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Châteauroux Métropole (réseau Horizon).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
       identity_reviewed: true

@@ -1,0 +1,32 @@
+# GB agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: bods-london
+    name: Bus Open Data Service (London)
+    country: GB
+    is_official: true
+    large_feed: true
+    static_gtfs_url: https://data.bus-data.dft.gov.uk/timetable/download/gtfs-file/london/
+    license_note: >-
+      Open Government Licence v3.0 through the Department for Transport's
+      Bus Open Data Service; credit the Department for Transport.
+    operating_note: >-
+      The Bus Open Data Service regional file for London: 1,110 routes and
+      495,351 trips. It is one regional bundle covering many operators,
+      counted here as one feed record rather than as separate agencies, and
+      it repackages no feed already listed. At 301 MiB it needs the
+      large-feed ingestion tier. No subdivision is recorded because the file
+      covers Greater London, which has no single ISO 3166-2 code; GB-LND is
+      the City of London alone and would misstate the coverage.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.bus-data.dft.gov.uk/download/gtfs/
+      terms_url: https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+      scope: [gtfs_schedule]
+      attribution: Department for Transport, Bus Open Data Service.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

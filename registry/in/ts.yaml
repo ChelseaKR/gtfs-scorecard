@@ -30,3 +30,35 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: hmrl-hyderabad-metro
+    name: Hyderabad Metro Rail
+    country: IN
+    subdivision_code: IN-TS
+    subdivision_name: Telangāna
+    mdb_id: "2457"
+    is_official: true
+    static_gtfs_url: https://data.opencity.in/dataset/4e72c202-4cdb-4437-a629-ffcbe9519f73/resource/5fa250e1-3104-4ca7-ad31-4fa3321f6255/download/telangana_opendata_gtfs_hmrl_03_july_2026.zip
+    license_note: >-
+      HMRL's open-data terms grant free, non-exclusive use, adaptation,
+      reproduction, storage, display, transmission, and redistribution for
+      commercial and non-commercial applications. Credit with "Contains data
+      provided by Hyderabad Metro Rail Ltd."
+    operating_note: >-
+      The three-line Hyderabad metro (Red, Green, Blue), published through
+      Open Data Telangana and named in feed_info.txt as such. The archive is
+      an OpenCity copy of that export because HMRL's own open-data page
+      routes the download through a Google Form, the same arrangement
+      already recorded for the TGSRTC bus feed. A 2026-09-01 preflight found
+      service dated from 2026-07-03 to 2030-01-01; the scorecard measures
+      that distant horizon rather than reading it as proof of maintenance.
+      Counted as one feed record and distinct from the TGSRTC bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://hmrl.co.in/open-data/
+      terms_url: https://hmrl.co.in/open-data/
+      scope: [gtfs_schedule]
+      attribution: Contains data provided by Hyderabad Metro Rail Ltd.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

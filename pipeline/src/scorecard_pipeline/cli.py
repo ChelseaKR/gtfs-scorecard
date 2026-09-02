@@ -384,6 +384,8 @@ def run_adhoc(
     name: str | None,
     date: dt.date,
     country: str = "US",
+    *,
+    large_feed: bool = False,
 ) -> dict[str, Any]:
     """Score an arbitrary GTFS Schedule URL or local zip without publishing.
 
@@ -392,6 +394,11 @@ def run_adhoc(
     tracked agency gets. Nothing is written to the public artifacts or index;
     scratch bytes and validator output land in the gitignored data/raw cache.
     Realtime is not sampled because an ad-hoc source carries no RT endpoints.
+
+    ``large_feed`` applies the same opted-in ceilings a registry record gets
+    from ``large_feed: true``. Without it a curator cannot preflight the very
+    feeds that need the large-feed decision: the standard caps reject them, so
+    the answer to "should this be admitted?" was unobtainable from this command.
     """
     country_code = validator_country_code(country)
     candidate = Path(source).expanduser()
@@ -401,7 +408,13 @@ def run_adhoc(
         raise FileNotFoundError(f"local GTFS zip not found: {candidate}")
     source_ref = candidate.resolve().as_uri() if is_local else source
     label = name or (candidate.stem if is_local else parsed.netloc) or "Ad-hoc feed"
-    agency = Agency(id="_adhoc", name=label, static_gtfs_url=source_ref, country=country_code)
+    agency = Agency(
+        id="_adhoc",
+        name=label,
+        static_gtfs_url=source_ref,
+        country=country_code,
+        large_feed=large_feed,
+    )
     # Keep the public artifact identity stable while isolating scratch files by
     # URL and validator country. Several local/worker invocations can score
     # different feeds at once; a shared `_adhoc/<date>` path lets one download
@@ -497,6 +510,7 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             args.name,
             args.date,
             country=getattr(args, "country", "US"),
+            large_feed=getattr(args, "large_feed", False),
         )
     except Exception as exc:
         log.error("could not score %s: %s", args.url, exc)
@@ -3272,6 +3286,11 @@ def main(argv: list[str] | None = None) -> int:
         type=dt.date.fromisoformat,
         default=utc_today(),
         help="snapshot date (default: today in UTC)",
+    )
+    adhoc.add_argument(
+        "--large-feed",
+        action="store_true",
+        help="apply the large-feed ingestion ceilings, as a record with large_feed: true gets",
     )
     adhoc.add_argument("--html", help="also write a standalone HTML scorecard to this path")
     adhoc.add_argument(

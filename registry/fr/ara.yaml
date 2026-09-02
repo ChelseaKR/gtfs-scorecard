@@ -786,28 +786,30 @@ agencies:
       reviewed_on: '2026-08-30'
       identity_reviewed: true
   - id: fr-pan-76779
-    name: Réseau urbain TAC Mobilité
+    name: TAC Mobilités (Annemasse Agglo)
     country: FR
     subdivision_code: FR-ARA
     subdivision_name: Auvergne-Rhône-Alpes
     is_official: true
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/373e19e2-af0a-4939-9f33-3f1268d1e0bb
     rt_urls:
-      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/639cd92d-d0ba-4145-8420-670cac4ec244
-      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/3e7a50c0-a3be-4c7f-9a01-372fa24083b4
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to Pôle Métropolitain du Genevois français and the
-      update date.
+      trip_updates: https://proxy.transport.data.gouv.fr/resource/tac-annemasse-gtfs-rt-trip-update
+      service_alerts: https://proxy.transport.data.gouv.fr/resource/annemasse-tp2a-gtfs-rt-alerts
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Annemasse-Les Voirons Agglomération and the update date.
+    operating_note: >-
+      A different network from the TAC of Ardenne Métropole (fr-pan-80451).
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transports-reseau-tac-annemasse-agglo
-      terms_url: https://transport.data.gouv.fr/datasets/offre-de-transports-reseau-tac-annemasse-agglo
-      scope:
-      - gtfs_schedule
-      attribution: Pôle Métropolitain du Genevois français
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Annemasse-Les Voirons Agglomération (réseau TAC Mobilités).
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-08-30'
+      reviewed_on: "2026-09-01"
       identity_reviewed: true
   - id: fr-pan-83459
     name: Réseau urbain TAG
@@ -1051,24 +1053,28 @@ agencies:
       reviewed_on: '2026-08-30'
       identity_reviewed: true
   - id: fr-pan-83872
-    name: Réseau scolaire CoqueliGO
+    name: CoqueliGO scolaire (Annonay Rhône Agglo)
     country: FR
     subdivision_code: FR-ARA
     subdivision_name: Auvergne-Rhône-Alpes
     is_official: true
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/df09ccf2-6cf5-4d7a-b03a-b3ebb89f7e49
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to CA Annonay Rhône Agglo and the update date.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Annonay Rhône Agglo and the update date.
+    operating_note: >-
+      The school network of the same authority as fr-pan-83716, published as
+      a separate dataset with its own agency record.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-reseau-scolaire-coqueligo-annonay-rhone-agglo
-      terms_url: https://transport.data.gouv.fr/datasets/gtfs-reseau-scolaire-coqueligo-annonay-rhone-agglo
-      scope:
-      - gtfs_schedule
-      attribution: CA Annonay Rhône Agglo
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté d'agglomération Annonay Rhône Agglo.
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-09-01'
+      reviewed_on: "2026-09-01"
       identity_reviewed: true
   - id: fr-pan-84108
     name: Réseaux urbains STAR'T
@@ -1097,16 +1103,254 @@ agencies:
     subdivision_name: Auvergne-Rhône-Alpes
     is_official: true
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/179d2464-f007-4005-976e-a7fd98eabcfe
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to Loopi, Mobilité Touristique and the update date.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Loopi and the update date.
+    operating_note: >-
+      A gondola link between Allemond and Oz-en-Oisans, published by Loopi
+      and operated by SATA. The published calendar runs to April 2027.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/telecabine-eau-dolle-express-allemond-oz
-      terms_url: https://transport.data.gouv.fr/datasets/telecabine-eau-dolle-express-allemond-oz
-      scope:
-      - gtfs_schedule
-      attribution: Loopi, Mobilité Touristique
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Loopi (Télécabine Eau d'Olle Express).
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-09-01'
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-pan-83716
+    name: CoqueliGO (Annonay Rhône Agglo)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/3bfed862-eba7-4480-9fd5-609b90f8a282
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Annonay Rhône Agglo and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-reseau-transport-urbain-coqueligo
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté d'agglomération Annonay Rhône Agglo.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-pan-83839
+    name: Aléo (Moulins Communauté)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83839/download
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/7c1a4aee-6445-4a2e-90aa-250ade5b9e80
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/7c1a4aee-6445-4a2e-90aa-250ade5b9e80
+    rt_note: >-
+      One combined stream carries both trip updates and vehicle positions.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Moulins Communauté and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/donnees-du-reseau-de-transport-aleo
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Moulins Communauté (réseau Aléo).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-pan-83629
+    name: Navettes de Val d'Isère
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    service_type: seasonal
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/d6c3eae8-fab6-4ff2-adc2-32bb2d213dd7
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to the Communauté de communes de Haute-Tarentaise and the update date.
+    operating_note: >-
+      Resort shuttles operated by STVI. The published season ran to
+      2026-11-01 when checked on 2026-09-01, so this record needs a re-check
+      when the winter export is posted.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/navettes-val-disere
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté de communes de Haute-Tarentaise.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-start-thonon
+    name: START (Thonon Agglomération)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82178/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Thonon Agglomération, réseau STAR'T and
+      the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/thonon-agglomeration-donnees-gtfs
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: Thonon Agglomération, réseau STAR'T.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-mobivie-vichy
+    name: Mobivie (Vichy Communauté)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/84137/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Vichy Communauté, réseau Mobivie and the
+      update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/mobivie-reseau-urbain-vichy-communaute
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: Vichy Communauté, réseau Mobivie.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-jybus-rumilly
+    name: J'ybus (Rumilly Terre de Savoie)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/80092/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté de communes Rumilly Terre de
+      Savoie, réseau J'ybus and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/offre-de-transports-jybus-a-rumilly
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté de communes Rumilly Terre de Savoie, réseau J'ybus.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-navettes-loire-forez
+    name: Navettes urbaines de Loire Forez Agglomération
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/81539/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Loire Forez Agglomération and the update
+      date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/navettes-de-loire-forez-agglomeration
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: Loire Forez Agglomération.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-chamonix-mobilite
+    name: Chamonix Mobilité
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82663/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté de communes de la Vallée de
+      Chamonix-Mont-Blanc, réseau Chamonix Mobilité and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-reseau-chamonix-mobilite
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté de communes de la Vallée de Chamonix-Mont-Blanc, réseau
+        Chamonix Mobilité.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-coqueligo-tad
+    name: CoqueliGO TAD (Annonay Rhône Agglo)
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    organization_id: fr-pan-642d8c4d64e01db258055f82
+    feed_variant: TAD
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82904/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Annonay Rhône Agglo, transport à la
+      demande CoqueliGO and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-transports-a-la-demande-tad-coqueligo
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: Annonay Rhône Agglo, transport à la demande CoqueliGO.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-navettes-val-disere
+    name: Navettes de Val d'Isère
+    country: FR
+    subdivision_code: FR-ARA
+    subdivision_name: Auvergne-Rhône-Alpes
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83629/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté de Communes Haute-Tarentaise,
+      navettes de Val d'Isère and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/navettes-val-disere
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté de Communes Haute-Tarentaise, navettes de Val d'Isère.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
       identity_reviewed: true

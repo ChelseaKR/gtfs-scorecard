@@ -651,3 +651,181 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: nohi-bus
+    name: Nohi Bus local routes (濃飛バス（一般路線）)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    feed_variant: local routes
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nouhibus/feeds/nouhibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nohi Bus (Nohi Norai
+      Jidosha) through the GTFS Data Repository (gtfs-data.jp). Credit Nohi
+      Bus (Nohi Norai Jidosha).
+    operating_note: >-
+      The scheduled local network of Nohi Bus across the Hida region. The
+      operator publishes local, sightseeing and loop services as separate
+      archives.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nouhibus.nouhibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nohi Bus (Nohi Norai Jidosha). Published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nohi-bus-sightseeing
+    name: Nohi Bus sightseeing routes (濃飛バス（観光路線）)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    feed_variant: sightseeing routes
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nouhibus/feeds/nouhibus_kanko/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nohi Bus (Nohi Norai
+      Jidosha) through the GTFS Data Repository (gtfs-data.jp). Credit Nohi
+      Bus (Nohi Norai Jidosha).
+    operating_note: >-
+      Nohi Bus sightseeing services, including the Shinhotaka and Kamikochi
+      corridors.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nouhibus.nouhibus_kanko
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nohi Bus (Nohi Norai Jidosha). Published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: hida-takayama-loop-bus
+    name: Hida Takayama Loop Bus (飛騨高山周遊バス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    feed_variant: Takayama loop
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nouhibus/feeds/takayama_shuyu/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nohi Bus (Nohi Norai
+      Jidosha) through the GTFS Data Repository (gtfs-data.jp). Credit Nohi
+      Bus (Nohi Norai Jidosha).
+    operating_note: >-
+      The Takayama town loop operated by Nohi Bus, published as its own
+      archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nouhibus.takayama_shuyu
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nohi Bus (Nohi Norai Jidosha). Published as GTFS-JP open data
+        through the GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: takayama-nora-my-car
+    name: Takayama Nora My Car (のらマイカー)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/takayamacity/feeds/noramaicar/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Takayama City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Takayama City.
+    operating_note: >-
+      Takayama City's rural community bus network; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/takayamacity.noramaicar
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Takayama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: takayama-takane-go
+    name: Takayama Takane-go (たかね号)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/takayamacity/feeds/takanego/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Takayama City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Takayama City.
+    operating_note: Takayama City's Takane-go service in the Takane district.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/takayamacity.takanego
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Takayama City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: yaotsu-town-community-bus
+    name: Yaotsu Town Community Bus (八百津町コミュニティバス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yaotsutown/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yaotsu Town through the
+      GTFS Data Repository (gtfs-data.jp). Credit Yaotsu Town.
+    operating_note: Yaotsu Town's community bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yaotsutown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yaotsu Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: yaotsu-yao-bus
+    name: YAO Bus (YAOバス)
+    country: JP
+    subdivision_code: JP-21
+    subdivision_name: Gifu
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/yaotsutown/feeds/yaobus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Yaotsu Town through the
+      GTFS Data Repository (gtfs-data.jp). Credit Yaotsu Town.
+    operating_note: >-
+      Yaotsu Town's YAO Bus service, published as a separate archive from
+      the town community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/yaotsutown.yaobus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yaotsu Town. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

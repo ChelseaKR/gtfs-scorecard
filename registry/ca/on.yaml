@@ -162,3 +162,186 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: hamilton-street-railway
+    name: Hamilton Street Railway (HSR)
+    country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
+    mdb_id: "2618"
+    is_official: true
+    static_gtfs_url: https://opendata.hamilton.ca/GTFS-Static/google_transit.zip
+    rt_urls:
+      trip_updates: https://opendata.hamilton.ca/GTFS-RT/GTFS_TripUpdates.pb
+      vehicle_positions: https://opendata.hamilton.ca/GTFS-RT/GTFS_VehiclePositions.pb
+      service_alerts: https://opendata.hamilton.ca/GTFS-RT/GTFS_ServiceAlerts.pb
+    rt_note: >-
+      TripUpdates, VehiclePositions and ServiceAlerts are published keyless
+      on the same open data host and each returned a valid protobuf on
+      2026-09-01.
+    license_note: >-
+      City of Hamilton Open Data Licence: a worldwide, royalty-free,
+      perpetual, non-exclusive licence to use the data, including for
+      commercial purposes, with the attribution statement the licence
+      specifies. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.hamilton.ca/city-council/data-maps/open-data
+      terms_url: https://www.hamilton.ca/city-council/data-maps/open-data/open-data-licence-terms-and-conditions
+      scope: [gtfs_schedule]
+      attribution: >-
+        Contains public sector Data made available under the City of
+        Hamilton's Open Data Licence.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kingston-transit
+    name: Kingston Transit
+    country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
+    mdb_id: "733"
+    is_official: true
+    static_gtfs_url: https://api.cityofkingston.ca/gtfs/gtfs.zip
+    rt_urls:
+      trip_updates: https://api.cityofkingston.ca/gtfs-realtime/tripupdates.pb
+      vehicle_positions: https://api.cityofkingston.ca/gtfs-realtime/vehicleupdates.pb
+      service_alerts: https://api.cityofkingston.ca/gtfs-realtime/alerts.pb
+    rt_note: >-
+      All three keyless realtime endpoints returned a valid protobuf on
+      2026-09-01.
+    license_note: >-
+      City of Kingston Open Data Licence 1.0, based on version 1.0 of the
+      Open Government Licence – Ontario: a worldwide, royalty-free,
+      perpetual, non-exclusive licence to use the information for any
+      purpose, including commercial purposes, with attribution. Derived
+      measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://opendatakingston.cityofkingston.ca/
+      terms_url: https://www.cityofkingston.ca/media/wtpgpkb0/gis_license_opendata.pdf
+      scope: [gtfs_schedule]
+      attribution: >-
+        Contains information licensed under the Open Data Licence – City of
+        Kingston.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: thunder-bay-transit
+    name: Thunder Bay Transit
+    country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
+    mdb_id: "736"
+    is_official: true
+    static_gtfs_url: http://api.nextlift.ca/gtfs.zip
+    rt_urls:
+      trip_updates: http://api.nextlift.ca/gtfs-realtime/tripupdates.pb
+      vehicle_positions: http://api.nextlift.ca/gtfs-realtime/vehicleupdates.pb
+      service_alerts: http://api.nextlift.ca/gtfs-realtime/alerts.pb
+    rt_note: >-
+      All three keyless realtime endpoints returned a valid protobuf on
+      2026-09-01. The feed host serves plain HTTP; its HTTPS certificate
+      does not match the hostname.
+    license_note: >-
+      Open Data Licence – The Corporation of the City of Thunder Bay: a
+      worldwide, royalty-free, perpetual, non-exclusive licence to use the
+      information for any purpose, including commercial purposes, with the
+      attribution statement the licence specifies. Derived measurements by
+      GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://opendata.thunderbay.ca/documents/60dbcb23f9fb4490a8ddfa9e10c50c5e
+      terms_url: https://www.thunderbay.ca/en/city-hall/open-data-licence.aspx
+      scope: [gtfs_schedule]
+      attribution: >-
+        Contains information licensed under the Open Data Licence – The
+        Corporation of the City of Thunder Bay.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: gova-greater-sudbury
+    name: GOVA Transit (Greater Sudbury)
+    country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
+    mdb_id: "737"
+    is_official: true
+    static_gtfs_url: https://www.greatersudbury.ca/image/opendata/gtfs.zip
+    rt_urls:
+      trip_updates: https://sudbury.tmix.se/gtfs-realtime/tripupdates.pb
+      vehicle_positions: https://sudbury.tmix.se/gtfs-realtime/vehicleupdates.pb
+      service_alerts: https://sudbury.tmix.se/gtfs-realtime/alerts.pb
+    rt_note: >-
+      The three keyless realtime endpoints on the city's Consat host each
+      returned a valid protobuf on 2026-09-01.
+    license_note: >-
+      Open Data Licence – City of Greater Sudbury: a worldwide,
+      royalty-free, perpetual, non-exclusive licence to use the information
+      for any purpose, including commercial purposes, with attribution.
+      Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://opendata.greatersudbury.ca/
+      terms_url: https://www.greatersudbury.ca/city-hall/open-government/open-data/licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Contains information licensed under the Open Data Licence – City of
+        Greater Sudbury.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: transit-windsor
+    name: Transit Windsor
+    country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
+    mdb_id: "720"
+    is_official: true
+    static_gtfs_url: https://opendata.citywindsor.ca/Uploads/google_transit.zip
+    license_note: >-
+      Open Government Licence – The Corporation of the City of Windsor: a
+      worldwide, royalty-free, perpetual, non-exclusive licence to use the
+      information, including for commercial purposes, with attribution.
+      Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      The city's new open data portal still points the GTFS download at the
+      legacy opendata.citywindsor.ca path; that path was current on
+      2026-09-01.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://open-data-portal-citywindsor.hub.arcgis.com/documents/98da6de08a9e4b0da49113feac74a38b
+      terms_url: https://opendata.citywindsor.ca/Documents/OpenDataTermsofUse.pdf
+      scope: [gtfs_schedule]
+      attribution: >-
+        Contains information licensed under the Open Government Licence –
+        The Corporation of the City of Windsor.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: burlington-transit
+    name: Burlington Transit
+    country: CA
+    subdivision_code: CA-ON
+    subdivision_name: Ontario
+    is_official: true
+    static_gtfs_url: https://opendata.burlington.ca/gtfs-rt/GTFS_Data.zip
+    license_note: >-
+      City of Burlington Open Data Terms of Use: a worldwide, royalty-free,
+      non-exclusive licence to use, reproduce, modify and distribute the
+      datasets in any medium for any lawful purpose. Credit is invited
+      rather than required. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://navburl-burlington.opendata.arcgis.com/documents/Burlington::transit-schedule-data-gtfs
+      terms_url: https://opendata.burlington.ca/opendata-terms-of-use/City%20of%20Burlington%20-%20Open%20Data%20Terms%20of%20Use.pdf
+      scope: [gtfs_schedule]
+      attribution: City of Burlington (Burlington Transit).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

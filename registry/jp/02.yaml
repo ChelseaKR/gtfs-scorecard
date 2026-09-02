@@ -578,3 +578,130 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: aomori-city-community-routes
+    name: Aomori City Contracted Bus Routes (青森市 委託運行バス)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/UrbanDevelopment_AomoriCity/AllLines.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by the Aomori City urban development department
+      through the Public Transportation Open Data Center (ODPT). Credit
+      Aomori City and ODPT.
+    operating_note: >-
+      The routes Aomori City contracts out (Aoyagi, Yada-Takizawa and
+      others), published by the city's urban policy division. This is a
+      separate feed from the municipal bus operator's own archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/urban_development_aomori_city_all_lines
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Aomori City, published through the Public Transportation Open Data
+        Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: hirakawa-city-shared-taxi
+    name: Hirakawa City Shared Taxi Tobu and Hiraka Lines (平川市予約型乗合タクシー 東部・平賀線)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hirakawacity/feeds/hirakawa-sharedtaxi/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 平川市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 平川市.
+    operating_note: >-
+      Hirakawa City's booking-based shared taxi on the Tobu and Hiraka
+      lines.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hirakawacity.hirakawa-sharedtaxi
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        平川市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: hirakawa-city-bus
+    name: Hirakawa City Ikarigaseki and Hiraka Line Bus (平川市碇ヶ関・平賀線バス)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hirakawacity/feeds/hirakwacitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 平川市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 平川市.
+    operating_note: >-
+      Hirakawa City's scheduled bus on the Ikarigaseki and Hiraka lines.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hirakawacity.hirakwacitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        平川市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: hirosaki-hokusei-shared-taxi
+    name: Hirosaki City Shared Taxi (弘前市乗合タクシー・北星交通)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hirosakicity/feeds/hokusei-noriai/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 弘前市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 弘前市.
+    operating_note: >-
+      Hirosaki City's shared-taxi routes, operated by Hokusei Kotsu.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hirosakicity.hokusei-noriai
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        弘前市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: jr-east-wantaku
+    name: JR East Wantaku Scheduled Service (JR東日本 わんタク定時便)
+    country: JP
+    subdivision_code: JP-02
+    subdivision_name: Aomori
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/jr-east-morioka/feeds/JReast_wandotaxi/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by JR東日本盛岡支社 through the
+      GTFS Data Repository (gtfs-data.jp). Credit JR東日本盛岡支社.
+    operating_note: >-
+      A scheduled shared-taxi service JR East runs around Kanita on the
+      Tsugaru peninsula in Aomori. The publishing office is the Morioka
+      branch, but every stop in the archive is in Aomori Prefecture.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/jr-east-morioka.JReast_wandotaxi
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        JR東日本盛岡支社. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

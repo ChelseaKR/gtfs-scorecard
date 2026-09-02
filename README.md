@@ -77,7 +77,7 @@ Scorecard is independent and is not an official compliance determination.
 
 Pilot agencies: [Unitrans](https://unitrans.ucdavis.edu) (ASUCD / City of
 Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
-District). Beyond the pilots, the registry contains more than 2,200 curated
+District). Beyond the pilots, the registry contains more than 2,600 curated
 feed records, mostly in the United States and Canada, plus reviewed canaries
 across Europe, Asia-Pacific, and South America. Scoring is scheduled daily for
 every registered feed, and the public status page reports the exact current
@@ -270,8 +270,8 @@ current deployment status.
 
 The cohort drafted from the Mobility Database has grown well past the first
 California pass: the manifest-backed [`registry`](registry/README.md) now
-carries more than 2,200 curated feed records, mostly across the US and Canada,
-with a 618-record reviewed European cohort across 26 countries.
+carries more than 2,600 curated feed records, mostly across the US and Canada,
+with a 757-record reviewed European cohort across 28 countries.
 It now includes a geographically diverse reviewed canary cohort, scored daily
 (a 2026-07 dedupe pass removed ~350 records that duplicated an already-listed
 feed).

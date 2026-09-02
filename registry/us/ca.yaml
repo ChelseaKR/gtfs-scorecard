@@ -2614,3 +2614,55 @@ agencies:
       trip_updates: https://passio3.com/yubasutter/passioTransit/gtfs/realtime/tripUpdates
       vehicle_positions: https://passio3.com/yubasutter/passioTransit/gtfs/realtime/vehiclePositions
       service_alerts: https://passio3.com/yubasutter/passioTransit/gtfs/realtime/serviceAlerts
+  - id: yurok-tribe-transit-service
+    name: Yurok Tribe Transit Service
+    country: US
+    subdivision_code: US-CA
+    subdivision_name: California
+    organization_id: yurok-tribe-transportation-department
+    feed_variant: Bus
+    is_official: true
+    static_gtfs_url: https://gtfs.dds.dot.ca.gov/gtfs_files/YurokTribeTransitServiceGTFS.zip
+    license_note: >-
+      CC BY 4.0 through the Caltrans DDS GTFS index (gtfs.dds.dot.ca.gov).
+      Credit the Yurok Tribe Transportation Department.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs.dds.dot.ca.gov/
+      terms_url: https://gtfs.dds.dot.ca.gov/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yurok Tribe Transportation Department, via the Caltrans California
+        GTFS (DDS) index.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: yurok-tribe-river-otter-ferry
+    name: Yurok Tribe River Otter Ferry
+    country: US
+    subdivision_code: US-CA
+    subdivision_name: California
+    organization_id: yurok-tribe-transportation-department
+    feed_variant: River Otter Ferry
+    is_official: true
+    static_gtfs_url: https://gtfs.dds.dot.ca.gov/gtfs_files/YurokRiverOtterFerryGTFS.zip
+    license_note: >-
+      CC BY 4.0 through the Caltrans DDS GTFS index (gtfs.dds.dot.ca.gov).
+      Credit the Yurok Tribe Transportation Department.
+    operating_note: >-
+      Passenger ferry on the lower Klamath River between the Klamath Jet
+      Boats dock, Blue Creek and the Sregon boat docks. Published separately
+      from the tribe's bus feed.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs.dds.dot.ca.gov/
+      terms_url: https://gtfs.dds.dot.ca.gov/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Yurok Tribe Transportation Department, via the Caltrans California
+        GTFS (DDS) index.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

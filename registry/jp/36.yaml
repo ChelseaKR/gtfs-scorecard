@@ -327,3 +327,78 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: naruto-city-community-bus
+    name: Naruto City Community Bus (鳴門市地域バス)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/narutocity/feeds/narutocitychiikibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Naruto City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Naruto City.
+    operating_note: >-
+      Naruto City's district bus network, published separately from the city
+      ferry.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/narutocity.narutocitychiikibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Naruto City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: tokushima-kamihachiman-community-bus
+    name: Kamihachiman Community Bus (上八万コミュニティバス)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tokushimacity/feeds/kamihachimanbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tokushima City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tokushima City.
+    operating_note: >-
+      The Kamihachiman district community bus, run by a local operating
+      committee and published as open data by Tokushima City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tokushimacity.kamihachimanbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tokushima City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: tokushima-oujin-fureai-bus
+    name: Oujin Fureai Bus (応神ふれあいバス)
+    country: JP
+    subdivision_code: JP-36
+    subdivision_name: Tokushima
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/tokushimacity/feeds/oujinfureaibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Tokushima City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Tokushima City.
+    operating_note: >-
+      The Oujin district community bus, run by a local operating council and
+      published as open data by Tokushima City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/tokushimacity.oujinfureaibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tokushima City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

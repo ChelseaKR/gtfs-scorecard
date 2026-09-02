@@ -53,7 +53,12 @@ def _read_table(zf: zipfile.ZipFile, name: str) -> list[dict[str, str]]:
             f"{name} is {info.file_size} bytes uncompressed, over the safety cap"
         )
     text = zf.read(name).decode("utf-8-sig", errors="replace")
-    return list(csv.DictReader(io.StringIO(text)))
+    # restval="" because a data row with fewer fields than the header
+    # otherwise yields None for the missing trailing columns, and every
+    # reader downstream writes row.get("col", "").strip() -- a default that
+    # only fires when the key is absent, not when it is present and None.
+    # One short trips.txt row was enough to crash scoring outright.
+    return list(csv.DictReader(io.StringIO(text), restval=""))
 
 
 def read_tables(gtfs_zip_path: str, names: list[str]) -> dict[str, list[dict[str, str]]]:
@@ -113,7 +118,7 @@ def iter_table_rows(
                 newline="",
             ) as text,
         ):
-            yield from csv.DictReader(text)
+            yield from csv.DictReader(text, restval="")
 
 
 def read_agency_ids(gtfs_zip_path: str) -> list[str]:

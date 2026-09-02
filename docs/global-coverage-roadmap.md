@@ -91,7 +91,7 @@ contains 2,574 active, keyless Schedule rows.
 contains 3,739 Schedule rows with a current, keyless URL.
 After applying the project's scheme-insensitive endpoint normalization, their
 union is about 5,092 endpoints before content, operator, aggregate, redirect,
-identity, and reuse review. The current registry contains more than 2,200 feed
+identity, and reuse review. The current registry contains more than 2,600 feed
 records.
 
 A literal 100-fold increase from that registry would require more than 200,000
@@ -343,6 +343,51 @@ among them, under the unchanged gates. Seventy-eight stay queued on short
 calendars and the queue is expected to keep clearing through the month.
 The recheck also moved the rotated-resource dedupe from hand review into
 the candidate pool builder itself.
+
+A twenty-lane parallel pass on 2026-09-01 admitted 390 reviewed records. Its
+France lane overlapped the two exhaustion passes above, which ran on the same
+portal in the same window; after reconciling the overlap the registry stands at
+2,637 records across 48 country codes. It worked a declared
+universe of 3,148 candidates — the Mobility Database and Transitland Atlas rows
+not already tracked — and every candidate has a recorded disposition. Depth
+dominated: Japan 196, Ireland 60, France 57, Canada 16, Spain 11, Norway 10.
+Iceland and Luxembourg opened as new country codes, both on rechecks whose
+earlier failure was a stale calendar rather than a licence. Five of Japan's
+seven empty prefectures closed — Fukui, Tottori, Hiroshima, Ehime, Miyazaki —
+after the pass established that gtfs-data.jp carries no feed in any of the
+seven, so each had to come from its own prefectural portal.
+
+Three feeds entered the large-feed tier by curator decision: Transport for
+NSW's Greater Sydney bundle, whose registration wall is gone and whose 279 MiB
+download is now keyless; the Bus Open Data Service London file under OGL 3.0;
+and Naolib Nantes, which needs the tier for an oversized `stop_times.txt`
+rather than for its 25 MiB download. Sydney and London are regional bundles
+counted as one feed record each, following the Tasmania precedent, and each
+says so in an `operating_note` rather than implying one accountable publisher.
+
+The pass also recorded what stops coverage rather than only what advanced it.
+Reuse terms, not feed availability, are the binding constraint in the United
+States: of 336 candidates one lane examined, 236 were live archives inside the
+calendar horizon and 206 of those publishers state no reuse terms anywhere on
+their own domain. Two state clearinghouses decline explicitly — Virginia DRPT
+("The agencies retain full rights to the data") and Colorado CDOT, whose
+licence column reads "None" for every agency. Around 210 more candidates sit on
+National RTAP's GTFS Builder host, whose terms grant rights to National RTAP
+rather than to downstream reusers; because RTAP disclaims ownership, no
+platform-level decision by RTAP can release them, and the grant has to come
+from each uploading agency. Sweden stays closed after a full check: every
+Samtrafiken path returns 403 and the national portal carries one GTFS dataset,
+Trafiklab's, behind a key. Kosovo cannot be admitted at all — `XK` is a
+user-assigned code the validator country contract rejects.
+
+Two questions about records already in the registry came out of the pass and
+are deliberately left open rather than settled inside it. 158 French records
+cite ODbL while `docs/feeds.md` names ODbL French datasets as excluded, and
+Estonia's national register is published as CC BY-SA 3.0 although two Estonian
+records are listed. Both are the same question — share-alike records already
+published — and both are recorded here for a decision of their own. This wave
+applied the stricter reading to new admissions and changed nothing existing,
+which left roughly 84 ODbL French datasets and 19 Estonian county feeds out.
 
 ### Phase 4 — partnership-gated regions
 

@@ -30,3 +30,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: alesund-turvogn-service
+    name: Ålesund Turvogn Service
+    country: "NO"
+    subdivision_code: NO-15
+    subdivision_name: Møre og Romsdal
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_atu-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports, covering the shuttle between
+      Valderøya quay and Ålesund airport.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ålesund Turvogn Service AS; published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

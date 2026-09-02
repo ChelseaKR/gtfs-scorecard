@@ -665,27 +665,62 @@ agencies:
       reviewed_on: '2026-08-30'
       identity_reviewed: true
   - id: fr-pan-83807
-    name: Réseau urbain SITAC
+    name: SITAC (Grand Calais Terres et Mers)
     country: FR
     subdivision_code: FR-HDF
     subdivision_name: Hauts-de-France
     is_official: true
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/5dcdb39b-aee3-4a0f-a9a9-be225f5a8b78
     rt_urls:
-      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/a6086d6b-049b-4fe8-b52a-4bdcf863db83
-      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/a6086d6b-049b-4fe8-b52a-4bdcf863db83
-      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/a6086d6b-049b-4fe8-b52a-4bdcf863db83
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to SI des transports urbains de l'agglomération du
-      Calaisis (SITAC) and the update date.
+      trip_updates: https://zenbus.net/gtfs/rt/poll.proto?dataset=sitac-calais-rt
+      vehicle_positions: https://zenbus.net/gtfs/rt/poll.proto?dataset=sitac-calais-rt
+      service_alerts: https://zenbus.net/gtfs/rt/poll.proto?dataset=sitac-calais-rt
+    rt_note: >-
+      One keyless Zenbus endpoint carries trip updates, vehicle positions
+      and service alerts in the same feed, so all three keys point at it.
+      Checked 2026-09-01: valid GTFS-RT 2.0 protobuf with 72 entities.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to the Syndicat Intercommunal des
+      Transports urbains de l'Agglomération du Calaisis and the update date.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-aux-formats-gtfs-et-gtfs-rt-du-reseau-sitac
-      terms_url: https://transport.data.gouv.fr/datasets/horaires-theoriques-et-temps-reel-aux-formats-gtfs-et-gtfs-rt-du-reseau-sitac
-      scope:
-      - gtfs_schedule
-      attribution: SI des transports urbains de l'agglomération du Calaisis (SITAC)
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Syndicat Intercommunal des Transports urbains de l'Agglomération du
+        Calaisis (réseau SITAC).
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-08-30'
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-pan-81068
+    name: Pass'Thelle Bus (CC Thelloise)
+    country: FR
+    subdivision_code: FR-HDF
+    subdivision_name: Hauts-de-France
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/44f6333d-58ab-4e0c-965e-5349d6d1cdcd
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/7f983f50-d0e8-441a-9e31-24affa02efe5
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/f360bd88-af15-4fa0-87f2-b83f9b1e5ffc
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to the Communauté de communes Thelloise and the update date.
+    operating_note: >-
+      The scheduled-service archive. The same dataset also publishes a
+      GTFS-Flex description of the zonal demand-responsive service, which
+      the scorecard reader could not parse on 2026-09-01.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/donnees-theoriques-et-temps-reel-du-reseau-pass-thelle-bus-communaute-de-communes-thelloise
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté de communes Thelloise.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
       identity_reviewed: true

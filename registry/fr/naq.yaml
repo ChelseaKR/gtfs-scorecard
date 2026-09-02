@@ -772,28 +772,32 @@ agencies:
       reviewed_on: '2026-08-30'
       identity_reviewed: true
   - id: fr-pan-83631
-    name: Réseau scolaire Scolaris
+    name: Scolaris (Pau Béarn Pyrénées)
     country: FR
     subdivision_code: FR-NAQ
     subdivision_name: Nouvelle-Aquitaine
     is_official: true
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/cf2d4693-a21d-41af-9c92-a5f8847e38cb
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to SM "Pau Béarn Pyrénées mobilités" and the update
-      date.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Pau Béarn Pyrénées Mobilités and the update date.
+    operating_note: >-
+      The school network of the same authority that runs Idelis, which the
+      registry already holds as idelis-pau. Separate dataset, separate
+      agency.txt, separate routes.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/fichier-des-donnees-theoriques-du-reseau-scolaris-au-format-gtfs
-      terms_url: https://transport.data.gouv.fr/datasets/fichier-des-donnees-theoriques-du-reseau-scolaris-au-format-gtfs
-      scope:
-      - gtfs_schedule
-      attribution: SM "Pau Béarn Pyrénées mobilités"
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Syndicat mixte Pau Béarn Pyrénées Mobilités.
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-08-30'
+      reviewed_on: "2026-09-01"
       identity_reviewed: true
   - id: fr-pan-83389
-    name: Réseau urbain Vitalis
+    name: Vitalis (Grand Poitiers)
     country: FR
     subdivision_code: FR-NAQ
     subdivision_name: Nouvelle-Aquitaine
@@ -801,18 +805,27 @@ agencies:
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/82146378-f019-4048-aa16-7328081b0369
     rt_urls:
       trip_updates: https://www.data.gouv.fr/api/1/datasets/r/bc0b47d2-38fa-461c-8916-18e05779370a
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to CU du Grand Poitiers and the update date.
+    rt_note: >-
+      The publisher exposes trip updates only; vehicle positions and service
+      alerts are not published for this network.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Grand Poitiers and the update date.
+    operating_note: >-
+      The archive carries both the Vitalis network and the Flex'e-bus
+      demand-responsive service under one publisher. The calendar fetched on
+      2026-09-01 ran to 2026-11-08, so this record is worth an early
+      re-check.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/mobilite-offre-de-transport-du-reseau-bus-gtfs-gtfs-rt
-      terms_url: https://transport.data.gouv.fr/datasets/mobilite-offre-de-transport-du-reseau-bus-gtfs-gtfs-rt
-      scope:
-      - gtfs_schedule
-      attribution: CU du Grand Poitiers
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté urbaine du Grand Poitiers.
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-08-30'
+      reviewed_on: "2026-09-01"
       identity_reviewed: true
   - id: fr-pan-82619
     name: Réseau urbain Pybus
@@ -972,25 +985,71 @@ agencies:
       reviewed_on: '2026-08-30'
       identity_reviewed: true
   - id: fr-pan-80245
-    name: Réseau urbain Tempo Bus
+    name: Tempo Bus (Agglomération d'Agen)
     country: FR
     subdivision_code: FR-NAQ
     subdivision_name: Nouvelle-Aquitaine
     is_official: true
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/c1415ff3-7457-4b51-aead-aacbf03a474e
-    rt_urls:
-      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/37b144db-2013-49ff-9a24-b8396f19655d
-      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/37b144db-2013-49ff-9a24-b8396f19655d
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to CA Agglomération d'Agen and the update date.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to l'Agglomération d'Agen and the update date.
+    operating_note: >-
+      agency.txt names the operator Keolis. Identity was confirmed from stop
+      coordinates inside Agen.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/agen-gtfs-urbain
-      terms_url: https://transport.data.gouv.fr/datasets/agen-gtfs-urbain
-      scope:
-      - gtfs_schedule
-      attribution: CA Agglomération d'Agen
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Agglomération d'Agen (réseau Tempo Bus).
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-09-01'
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-agglobus-grand-gueret
+    name: Agglo'Bus (Grand Guéret)
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/79483/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'agglomération du Grand
+      Guéret, réseau Agglo'Bus and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/agglobus
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'agglomération du Grand Guéret, réseau Agglo'Bus.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-pybus-parthenay
+    name: Pybus (Parthenay)
+    country: FR
+    subdivision_code: FR-NAQ
+    subdivision_name: Nouvelle-Aquitaine
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82619/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Alliance Atlantique, réseau Pybus de
+      Parthenay and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-pybus-le-reseau-urbain-de-parthenay
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: Alliance Atlantique, réseau Pybus de Parthenay.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
       identity_reviewed: true

@@ -49,21 +49,32 @@ agencies:
     country: FR
     subdivision_code: FR-972
     subdivision_name: Martinique
+    organization_id: regie-des-transports-de-martinique
     is_official: true
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/6e599077-0719-44b4-82ad-0da90a282846
     rt_urls:
       trip_updates: https://www.data.gouv.fr/api/1/datasets/r/1b7e14e1-ebac-427b-a09f-2968b75a7fa8
       vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/6cfa1c1c-43ef-4b55-9cae-b106180eefdb
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to Martinique Transport and the update date.
+      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/ce705288-9e95-4f22-b27f-fcab94c9c166
+    rt_note: >-
+      All three streams answered with a valid feed on 2026-09-01. The alert
+      stream was empty at that moment, which means no alert was in force.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Martinique Transport and the update date.
+    operating_note: >-
+      The urban network of the Centre zone of Martinique, the CACEM
+      territory. Operated by the Régie des Transports de Martinique, which
+      also runs the Sud zone network already in the registry as
+      fr-pan-79897.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-urbain-de-la-zone-centre
-      terms_url: https://transport.data.gouv.fr/datasets/gtfs-urbain-de-la-zone-centre
-      scope:
-      - gtfs_schedule
-      attribution: Martinique Transport
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Martinique Transport.
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-08-30'
+      reviewed_on: "2026-09-01"
       identity_reviewed: true

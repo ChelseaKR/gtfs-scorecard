@@ -1,0 +1,26 @@
+# JP agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: ozu-city-gururin-bus
+    name: Ozu City Gururin Oozu (大洲市内循環バス「ぐるりんおおず」)
+    country: JP
+    subdivision_code: JP-38
+    subdivision_name: Ehime
+    is_official: true
+    static_gtfs_url: https://www.city.ozu.ehime.jp/uploaded/attachment/47696.zip
+    license_note: CC BY 4.0 on Ozu City's own open-data page. Credit Ozu City.
+    operating_note: >-
+      Ozu City's inner-city loop bus, published by the city's regional
+      revitalisation division.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.city.ozu.ehime.jp/site/opendata/44871.html
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Ozu City (大洲市).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

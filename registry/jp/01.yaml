@@ -131,3 +131,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: kamishihoro-town-bus
+    name: Kamishihoro Town Community Bus (上士幌町コミュニティバス)
+    country: JP
+    subdivision_code: JP-01
+    subdivision_name: Hokkaido
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kamishihorotown/feeds/kamishihoro/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 上士幌町 through the GTFS
+      Data Repository (gtfs-data.jp). Credit 上士幌町.
+    operating_note: >-
+      Kamishihoro Town's community bus in the Tokachi uplands of eastern
+      Hokkaido.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kamishihorotown.kamishihoro
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        上士幌町. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

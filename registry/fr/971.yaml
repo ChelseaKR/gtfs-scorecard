@@ -65,3 +65,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: '2026-08-30'
       identity_reviewed: true
+  - id: fr-trans-sud-grand-sud-caraibe
+    name: Trans Sud (Grand Sud Caraïbe)
+    country: FR
+    subdivision_code: FR-971
+    subdivision_name: Guadeloupe
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83511/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'Agglomération Grand Sud
+      Caraïbe, réseau Trans Sud and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/donnee-statistiques-transport
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'Agglomération Grand Sud Caraïbe, réseau Trans Sud.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

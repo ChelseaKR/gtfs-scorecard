@@ -1,0 +1,31 @@
+# DE agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: vmt-mittelthueringen
+    name: Verkehrsverbund Mittelthüringen (VMT)
+    country: DE
+    subdivision_code: DE-TH
+    subdivision_name: Thüringen
+    mdb_id: "1172"
+    is_official: true
+    static_gtfs_url: https://www.vmt-thueringen.de/fileadmin/VMT_Redaktion/OPEN_DATA/VMT_GTFS.zip
+    license_note: >-
+      CC BY 4.0 per VMT's own open data page, which names VMT GmbH as the
+      required credit. Deutsche Bahn services are excluded from this feed
+      and come with the nationwide DELFI dataset instead.
+    operating_note: >-
+      One association feed covering the VMT tariff area and the wider
+      Thuringia timetable, with 44 listed operators; counted as one feed
+      record, not a distinct-agency count.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.vmt-thueringen.de/service/open-data/
+      terms_url: https://creativecommons.org/licenses/by/4.0/deed.de
+      scope: [gtfs_schedule]
+      attribution: VMT GmbH.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

@@ -24,3 +24,29 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: trentino-trasporti-extraurbano
+    name: Trentino Trasporti (extraurban network)
+    country: IT
+    subdivision_code: IT-32
+    subdivision_name: Trentino-Alto Adige
+    feed_variant: extraurban network
+    is_official: true
+    static_gtfs_url: https://www.trentinotrasporti.it/opendata/google_transit_extraurbano_tte.zip
+    license_note: >-
+      CC BY 4.0 through the dati.trentino.it open data catalog; credit
+      Trentino Trasporti and the Provincia Autonoma di Trento.
+    operating_note: >-
+      The province-wide extraurban network, published by Trentino Trasporti
+      as a separate archive from the urban feed already tracked as
+      `trentino-trasporti`. Both resources sit in the same CC BY 4.0
+      dataset.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dati.trentino.it/dataset/trasporti-pubblici-del-trentino-formato-gtfs
+      terms_url: https://creativecommons.org/licenses/by/4.0/deed.it
+      scope: [gtfs_schedule]
+      attribution: Trentino Trasporti and Provincia Autonoma di Trento.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

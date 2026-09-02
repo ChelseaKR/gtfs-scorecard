@@ -365,28 +365,34 @@ agencies:
       reviewed_on: '2026-08-30'
       identity_reviewed: true
   - id: fr-pan-84101
-    name: Réseau urbain Naolib
+    name: Naolib (Nantes Métropole)
     country: FR
     subdivision_code: FR-PDL
-    subdivision_name: Pays-de-la-Loire
+    subdivision_name: "Pays-de-la-Loire"
     is_official: true
     large_feed: true
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/65bdd7e4-a8e7-4a54-893a-808e71c34d68
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to Nantes Métropole and the update date.
-    operating_note: One metropolitan network (tramway, bus, and ferry) whose stop_times.txt expands past
-      the standard per-entry archive cap, so the record uses the bounded large-feed tier. Counted as one
-      feed record.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Nantes Métropole and the update date.
+    operating_note: >-
+      The Nantes urban network: 96 routes and 192,907 trips across tram, bus
+      and ferry. The download is only 25 MiB, but stop_times.txt expands
+      past the standard single-entry ceiling, so the record needs the
+      large-feed tier for that reason rather than for its download size. The
+      Nantes entry in the discovery catalogs still points at the retired TAN
+      dataset, which now resolves to an ODbL regional aggregate; this record
+      tracks the current Naolib dataset instead.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/reseau-de-transports-collectifs-naolib
-      terms_url: https://transport.data.gouv.fr/datasets/reseau-de-transports-collectifs-naolib
-      scope:
-      - gtfs_schedule
-      attribution: Nantes Métropole
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: Nantes Métropole.
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-08-30'
+      reviewed_on: "2026-09-01"
       identity_reviewed: true
   - id: fr-pan-79601
     name: Réseau urbain SETRAM
@@ -410,4 +416,57 @@ agencies:
       attribution: CU Le Mans Métropole
       reviewed_by: ChelseaKR
       reviewed_on: '2026-09-01'
+      identity_reviewed: true
+  - id: fr-pan-84170
+    name: SETRAM (Le Mans Métropole)
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: Pays-de-la-Loire
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/dee9adc5-044c-4f68-9cd3-eefbdf7a6abd
+    rt_urls:
+      trip_updates: https://proxy.transport.data.gouv.fr/resource/setram-lemans-gtfs-rt-trip-update
+      vehicle_positions: https://proxy.transport.data.gouv.fr/resource/setram-lemans-gtfs-rt-vehicle-position
+      service_alerts: https://proxy.transport.data.gouv.fr/resource/setram-lemans-gtfs-rt-service-alert
+    rt_note: >-
+      All three streams answered with a valid feed on 2026-09-01. The alert
+      stream was empty at that moment, which means no alert was in force.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Le Mans Métropole and the update date.
+    operating_note: >-
+      The bus and tram network of Le Mans. The archive fetched on 2026-09-01
+      ran to 2026-11-01, so this record is worth an early re-check.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-du-reseau-des-transports-bus-et-tramway-setram-circulant-sur-le-territoire-le-mans-metropole
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté urbaine Le Mans Métropole (réseau SETRAM).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-setram-le-mans
+    name: SETRAM (Le Mans Métropole)
+    country: FR
+    subdivision_code: FR-PDL
+    subdivision_name: "Pays-de-la-Loire"
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/79601/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to SETRAM (Le Mans Métropole) and the
+      update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-du-reseau-des-transports-bus-et-tramway-setram-circulant-sur-le-territoire-le-mans-metropole
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: SETRAM (Le Mans Métropole).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
       identity_reviewed: true
