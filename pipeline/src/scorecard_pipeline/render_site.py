@@ -79,6 +79,7 @@ from .metrics import (
 from .mobilitydb import canonical_state
 from .ntd import assess as ntd_assess
 from .ntd import presented_readiness as presented_ntd_readiness
+from .ntd_coverage import published_reporter_coverage
 from .pages_tools import (
     _render_check_page,
     _render_compare_page,
@@ -8164,6 +8165,59 @@ def _render_equity_page(overlay: dict[str, Any], states_geo: dict[str, Any] | No
     )
 
 
+def _reporter_coverage_section(coverage: dict[str, Any] | None) -> str:
+    """The reporter-side counts, in reporter units, beside the feed-side one.
+
+    /ntd/ answers "how ready is this feed to certify" over this project's
+    registry, and says so plainly. The question an FTA reviewer or a district
+    liaison asks first is the other one: which obligated reporters have nothing
+    to certify at all. That population was unreachable from a feed-outward join,
+    so it was never counted (#278).
+
+    Three things this section is careful about. Every number is a count of
+    reporters, and the registry counts feed records, so the two are never added.
+    A reporter with no discoverable feed is a limit of what open catalogues can
+    see, not a finding about the agency and never a zero. And the range is
+    published at both ends, because a name-based join is wide and pretending
+    otherwise would be the overclaim.
+    """
+    if not coverage:
+        return ""
+    obligated = coverage["obligated_reporters"]
+    low = coverage["no_discoverable_feed_low"]
+    high = coverage["no_discoverable_feed_high"]
+    rows = "".join(
+        f"<tr><td>{esc(label)}</td><td>{esc(f'{coverage[key]:,}')}</td></tr>"
+        for key, label in (
+            ("tracked_by_registry", "Matched to a feed this site tracks"),
+            ("discoverable_elsewhere", "Feed found in another open catalogue"),
+            ("needs_human_review", "Name overlap only, needs a human"),
+        )
+    )
+    return f"""<section class="feed-details" id="reporters">
+      <h2 class="section-title">Reporters, not feeds</h2>
+      <p class="page-lede">Of the <strong>{esc(f"{obligated:,}")} NTD reporters</strong>
+      that operated at least one fixed-route mode in Report Year
+      {esc(coverage["report_year"])}, between <strong>{esc(f"{low:,}")} and
+      {esc(f"{high:,}")}</strong> have no feed discoverable in any open catalogue this
+      site reads. The low end counts a shared rare word in an agency name as a match;
+      the high end does not. The gap between them is how wide a name-based join is,
+      and it is stated rather than averaged away.</p>
+      <table class="leaderboard"><thead><tr><th>Reporters</th><th>Count</th></tr></thead>
+      <tbody>{rows}
+      <tr><td>No candidate found anywhere</td><td>{esc(f"{low:,}")}</td></tr></tbody></table>
+      <p class="fineprint">These are counts of NTD reporters. The
+      {esc(f"{obligated:,}")} above is a different denominator from the tracked-feed
+      count at the top of this page, which counts feed records: one operator can
+      publish several, and a regional feed can carry many operators. The two are never
+      added. A reporter with no discoverable feed is a limit of what open catalogues
+      can see, not a finding about that agency, and the fix may belong to FTA's own
+      crosswalk or to a catalogue rather than to the agency. Report year
+      {esc(coverage["report_year"])}, retrieved {esc(coverage["retrieved_utc"][:10])};
+      sources and terms are in <code>data/ntd/PROVENANCE.md</code>.</p>
+    </section>"""
+
+
 def _render_ntd_page(
     payload: dict[str, Any], histories: dict[str, list[dict[str, Any]]] | None = None
 ) -> str:
@@ -8199,6 +8253,7 @@ def _render_ntd_page(
     else:
         state_table = ""
         lead = "No feeds have been assessed for NTD readiness yet."
+    reporter_section = _reporter_coverage_section(payload.get("reporter_coverage"))
     one_fix = payload.get("one_fix_from_ready") or []
     one_fix_total = payload.get("one_fix_total", len(one_fix))
     hist = histories or {}
@@ -8263,6 +8318,7 @@ def _render_ntd_page(
       <tr><td>At risk</td><td>{esc(payload.get("at_risk", 0))}</td></tr>
       <tr><td>Not ready</td><td>{esc(payload.get("not_ready", 0))}</td></tr>
     </tbody></table></section>
+    {reporter_section}
     {ry2026}
     {state_table}
     <p class="plain-summary"><strong>In plain words:</strong> since Report Year 2023, every
@@ -10829,6 +10885,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         "one_fix_total": len(one_fix),
         "shapes": shapes_payload,
     }
+    # Additive, and in a different unit: reporter-side counts from the committed
+    # RY2024 snapshot (#278). Omitted entirely when the snapshot cannot be
+    # reconciled, so a reader never sees a reporter count that does not add up.
+    reporter_coverage = published_reporter_coverage()
+    if reporter_coverage is not None:
+        ntd_payload["reporter_coverage"] = reporter_coverage
     write("ntd.json", json.dumps(ntd_payload, indent=2, sort_keys=True) + "\n")
     # The human page over the same readiness numbers, for an FTA or state-DOT lead.
     write("ntd/index.html", _render_ntd_page(ntd_payload, histories), f"{BASE_URL}/ntd/")
