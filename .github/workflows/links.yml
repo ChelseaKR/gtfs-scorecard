@@ -45,7 +45,9 @@ jobs:
       - name: Extract the external links on the money pages
         run: |
           set -euo pipefail
-          grep -ohE 'https?://[^ "<>)\x27\x60]+' README.md SUPPORT.md docs/support.md web/support/index.html \
+          # ERE has no \x escapes: a class written with them silently excluded
+          # the digits 2, 7, 6, 0 and cut every URL at its first %20.
+          grep -ohE "https?://[^ \"<>)'\`]+" README.md SUPPORT.md docs/support.md web/support/index.html \
             | sed -E 's/[.,;:]+$//' \
             | grep -vE '^https?://[^/]*$' \
             | grep -vE '^https?://[^/]+\.example(/|$)' \
