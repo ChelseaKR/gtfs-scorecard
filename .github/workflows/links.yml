@@ -12,7 +12,9 @@ name: links
 # 403 is accepted alongside 2xx because several transit-sector hosts refuse
 # unknown user agents outright, and a bot-blocked page is not a dead page.
 # 429 is accepted because a rate limit is the checker's problem, not the
-# page's. 404, 410, and 5xx fail.
+# page's. 404, 410, and 5xx fail. Only http(s) links are checked: the site's
+# root-relative paths are covered by the render and SEO gates, and the first
+# run failed on 42 of them with no external link wrong.
 
 on:
   pull_request:
@@ -45,6 +47,8 @@ jobs:
           fail: true
           args: >-
             --no-progress
+            --scheme https
+            --scheme http
             --accept 200..=299,403,429
             --max-retries 2
             --timeout 20
