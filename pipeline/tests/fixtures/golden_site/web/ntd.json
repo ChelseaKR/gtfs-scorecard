@@ -13,6 +13,29 @@
   "one_fix_total": 0,
   "pct_ready": 100.0,
   "ready": 2,
+  "reporter_coverage": {
+    "by_tier": {
+      "atlas_ntd_id": 33,
+      "catalog_domain": 1,
+      "catalog_name_exact": 5,
+      "catalog_name_fuzzy": 0,
+      "no_candidate": 473,
+      "registry_domain": 50,
+      "registry_name_exact": 423,
+      "registry_name_fuzzy": 37,
+      "registry_ntd_id": 63,
+      "weak_shared_token": 168
+    },
+    "discoverable_elsewhere": 39,
+    "needs_human_review": 168,
+    "no_discoverable_feed_high": 641,
+    "no_discoverable_feed_low": 473,
+    "obligated_reporters": 1253,
+    "report_year": "2024",
+    "retrieved_utc": "2026-08-15T19:59:28Z",
+    "tracked_by_registry": 573,
+    "unit": "ntd_reporters"
+  },
   "shapes": {
     "at_risk": 0,
     "by_state": {},
