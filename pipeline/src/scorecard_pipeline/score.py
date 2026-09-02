@@ -274,12 +274,6 @@ def _fix_priority(finding: Finding) -> tuple[int, float, int]:
     return (_fix_tier(finding), -finding.deduction, -finding.count)
 
 
-#: The categories that read the feed's own contents. Correctness is not one of
-#: them: it scores the validator's notices, and an archive with nothing in it
-#: still raises a handful, which is how an empty zip reached a correctness of
-#: 71.5 with nothing to check.
-FEED_CONTENT_CATEGORIES = ("freshness", "completeness")
-
 #: What the refusal says, in one sentence, everywhere it is said.
 NOTHING_WAS_READ = (
     "no GTFS schedule data could be read from this archive: it has no stops and "
@@ -321,10 +315,15 @@ def score_feed_content(
 ) -> list[CategoryResult]:
     """The categories that read the archive, and the refusal when none could.
 
-    The single place a feed's own contents are turned into categories, so the
-    rule that an unreadable archive is not graded cannot be reimplemented, or
-    forgotten, at one of the four call sites that score a feed (the daily run,
-    ``scorecard try``, the validator canary, and reproduction).
+    Freshness and rider experience are the two that read the feed's own
+    contents. Correctness is not one of them: it scores the validator's notices,
+    and an archive with nothing in it still raises a handful, which is how an
+    empty zip reached a correctness of 71.5 with nothing to check.
+
+    This is the single place a feed's own contents are turned into categories,
+    so the rule that an unreadable archive is not graded cannot be
+    reimplemented, or forgotten, at one of the four call sites that score a feed
+    (the daily run, ``scorecard try``, the validator canary, and reproduction).
 
     Returns whichever of freshness and rider experience were measurable, which
     may be one of the two: a feed with stops and trips but no calendar at all
