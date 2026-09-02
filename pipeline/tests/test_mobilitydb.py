@@ -16,6 +16,7 @@ from scorecard_pipeline.mobilitydb import (
     DEFAULT_PROPOSAL_CATALOG_URL,
     LEGACY_MOBILITY_DATABASE_CATALOG_URL,
     MOBILITY_DATABASE_FEEDS_V2_URL,
+    FeedMatch,
     apply_replacements,
     apply_state_backfill,
     apply_supersessions,
@@ -26,8 +27,10 @@ from scorecard_pipeline.mobilitydb import (
     find_replacements,
     find_supersessions,
     hold_for_review,
+    hold_pinned_hosts,
     parse_catalog,
     parse_catalog_records,
+    pinning_note,
     proposal_catalog_schema,
     propose_agencies,
     propose_agencies_with_dispositions,
@@ -1518,3 +1521,138 @@ def test_the_report_names_why_a_retirement_is_held_and_how_to_decide_it() -> Non
     assert "agency_id: norwalk-transit-district" in report
     assert "flags: [different_subdivision]" in report
     assert "Catalog redirect: mdb-529 to mdb-2242" in report
+
+
+# --- a curator's pinned host outranks the catalog listing ---------------------
+#
+# Regression for 2026-09-01. `city-of-wasco` is tracked on the Caltrans DDS ZIP;
+# its notes say the DDS packaging is "stale and noncanonical" and that we track
+# it anyway, and `test_repo_registry_tracks_calitp_hosting_migration` pins the
+# URL. The weekly discovery job proposed the calitp.org listing, the bot PR was
+# merged, and `main` went red with that test as the only surviving record of the
+# decision that had been overwritten.
+
+
+#: The URL the curator chose and the notes describe, and the one the catalog
+#: lists for the same mdb id. Named so the assertions below compare values
+#: rather than hunting for a hostname inside a YAML blob.
+TRACKED_WASCO_URL = "https://gtfs.dds.dot.ca.gov/gtfs_files/WascoDialaRideFlex.zip"
+CATALOG_WASCO_URL = "https://gtfs.calitp.org/production/WascoDialaRideFlex.zip"
+
+
+def _wasco_setup() -> tuple[list[FeedMatch], dict[str, Agency]]:
+    catalog = (
+        "mdb_source_id,data_type,entity_type,location.country_code,"
+        "location.subdivision_name,provider,name,urls.direct_download,urls.license,"
+        "urls.authentication_type,static_reference\n"
+        "1788,gtfs,,US,California,City of Wasco,City of Wasco,"
+        f"{CATALOG_WASCO_URL},,,\n"
+    )
+    tracked = TRACKED_WASCO_URL
+    agency = Agency(
+        id="city-of-wasco",
+        name="City of Wasco",
+        static_gtfs_url=tracked,
+        license_note="CC BY 4.0 through the Caltrans DDS GTFS index: https://gtfs.dds.dot.ca.gov/",
+        operating_note="The official DDS ZIP is stale and noncanonical as packaged.",
+    )
+    matches = find_replacements(
+        parse_catalog(catalog), [(agency.id, agency.name, tracked)], {agency.id: "1788"}
+    )
+    assert [m.status for m in matches] == ["replaced"]
+    return matches, {agency.id: agency}
+
+
+def test_a_note_naming_the_tracked_host_holds_the_replacement() -> None:
+    matches, agencies = _wasco_setup()
+    ready, held = hold_pinned_hosts(matches, agencies)
+    assert ready == []
+    assert [m.agency_id for m in held] == ["city-of-wasco"]
+
+
+def test_a_held_replacement_is_never_written_to_the_registry() -> None:
+    """The whole point: `--apply` must not overwrite the curator's URL."""
+    matches, agencies = _wasco_setup()
+    ready, _ = hold_pinned_hosts(matches, agencies)
+    yaml_text = (
+        "agencies:\n"
+        "  - id: city-of-wasco\n"
+        "    name: City of Wasco\n"
+        "    static_gtfs_url: https://gtfs.dds.dot.ca.gov/gtfs_files/WascoDialaRideFlex.zip\n"
+    )
+
+    # Read the field back rather than searching the text for a hostname: the
+    # assertion is about which URL this record now carries, and an exact
+    # comparison cannot pass on an incidental substring somewhere else in the
+    # shard.
+    def _tracked_url(shard: str) -> str:
+        record = yaml.safe_load(shard)["agencies"][0]
+        return str(record["static_gtfs_url"])
+
+    updated, changed = apply_replacements(yaml_text, ready)
+    assert changed == []
+    assert _tracked_url(updated) == TRACKED_WASCO_URL
+
+    # The counterfactual, so the hold is provably what stops it: the same
+    # matches, unheld, are exactly what overwrote the registry on 2026-09-01.
+    overwritten, would_change = apply_replacements(yaml_text, matches)
+    assert would_change == ["city-of-wasco"]
+    assert _tracked_url(overwritten) == CATALOG_WASCO_URL
+
+
+def test_a_held_replacement_stays_visible_in_the_report() -> None:
+    """Held is not dropped. A proposal nobody can see is a proposal nobody can take."""
+    matches, agencies = _wasco_setup()
+    ready, held = hold_pinned_hosts(matches, agencies)
+    notes = {m.agency_id: pinning_note(agencies[m.agency_id], m.current_url) for m in held}
+    md = render_replacements_md(ready, today="2026-09-01", held=held, pinning_notes=notes)
+
+    assert "Held — the registry notes pin the host we track" in md
+    assert "City of Wasco" in md
+    # the URL the catalog wanted is shown, explicitly as not applied
+    assert f"Not applied (mdb 1788, City of Wasco): {CATALOG_WASCO_URL}" in md
+    assert "Caltrans DDS GTFS index" in md
+    # and it is not counted as an appliable replacement
+    assert "**0** agencies look **replaced**" in md
+    assert "**1** agencies look replaced but are **held**" in md
+    assert "Likely replaced" not in md
+
+
+def test_a_record_with_no_pinning_note_still_follows_the_catalog() -> None:
+    """The guard is narrow: only a note naming the tracked host holds anything."""
+    matches, agencies = _wasco_setup()
+    bare = replace(agencies["city-of-wasco"], license_note="", operating_note="")
+    ready, held = hold_pinned_hosts(matches, {"city-of-wasco": bare})
+    assert held == []
+    assert [m.agency_id for m in ready] == ["city-of-wasco"]
+
+
+def test_a_note_naming_some_other_host_does_not_hold() -> None:
+    matches, agencies = _wasco_setup()
+    unrelated = replace(
+        agencies["city-of-wasco"],
+        license_note="Mirrored from https://example.org/archive",
+        operating_note="",
+    )
+    ready, held = hold_pinned_hosts(matches, {"city-of-wasco": unrelated})
+    assert held == []
+    assert [m.agency_id for m in ready] == ["city-of-wasco"]
+
+
+@pytest.mark.parametrize("status", ["tracked", "missing"])
+def test_only_a_replacement_can_be_held(status: str) -> None:
+    """A row that proposes no edit has nothing to hold, note or not."""
+    matches, agencies = _wasco_setup()
+    ready, held = hold_pinned_hosts([replace(matches[0], status=status)], agencies)
+    assert held == []
+    assert len(ready) == 1
+
+
+def test_pinning_note_returns_the_note_that_named_the_host() -> None:
+    _, agencies = _wasco_setup()
+    agency = agencies["city-of-wasco"]
+    assert "Caltrans DDS" in pinning_note(agency, agency.static_gtfs_url)
+    # www. and scheme differences do not defeat the match
+    assert pinning_note(agency, "http://www.gtfs.dds.dot.ca.gov/gtfs_files/x.zip")
+    assert pinning_note(agency, CATALOG_WASCO_URL) == ""
+    assert pinning_note(agency, "") == ""
