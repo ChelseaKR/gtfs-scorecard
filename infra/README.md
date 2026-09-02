@@ -38,6 +38,15 @@ reference.
   that runs the validator, for when the daily run outgrows the Actions matrix
   (Year 2). Scaffolding with the wiring and IAM; the worker image is built from
   `pipeline/` (see `docs/decisions/0003-fan-out-compute.md`). Not yet applied.
+- `program-bundle/` — the program tier's fulfilment plumbing
+  (docs/program-plan.md, ADR 0049): a post-checkout setup form that confirms a
+  Stripe Checkout Session is paid and dispatches `report-bundle.yml`, a
+  download route that presigns one archive per capability link, a Stripe
+  webhook for subscription state, and a weekly refresh. Two DynamoDB tables
+  it owns outright. Every route that could charge anyone sits behind
+  `payments_enabled = "0"` with plan-failing preconditions. **Not yet
+  applied.** Applying it also needs the `expire-program-bundles` lifecycle
+  rule in `artifacts/` re-applied.
 - `instant-score/` — a container-image Lambda (same JVM base as `compute/`)
   behind API Gateway that scores any GTFS URL on demand for `web/try.html`,
   with its own DynamoDB jobs table, per-IP rate limiting, and a reserved

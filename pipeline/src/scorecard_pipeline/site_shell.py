@@ -196,6 +196,11 @@ STATIC_NAV_PAGES: dict[str, str | None] = {
     "data/index.html": None,
     "support/index.html": "/about/",
     "fetcher/index.html": "/about/",
+    # Program report bundle (docs/program-plan.md): unlinked and noindex until
+    # the payment rail is verified end to end; registered here so the shared
+    # nav and footer stay in sync and the doc-stats sweep reads them.
+    "bundle/index.html": None,
+    "bundle/setup/index.html": None,
 }
 
 # The one shared footer, single-sourced here so the generated pages and the

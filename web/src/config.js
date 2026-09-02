@@ -34,3 +34,8 @@ window.SCORECARD_SUBSCRIBE_URL = "https://5oemr66b9a.execute-api.us-west-2.amazo
 // Issue Form on the same page, so try.html is never a dead end. Set this once
 // the module is applied.
 window.SCORECARD_TRY_URL = null;
+
+// Program report bundle (infra/program-bundle, docs/program-plan.md): the API
+// the post-checkout setup form (web/bundle/setup/) POSTs to. Null disables the
+// form with a plain notice; prices live in web/bundle/plan.json, never here.
+window.SCORECARD_BUNDLE_URL = null;
