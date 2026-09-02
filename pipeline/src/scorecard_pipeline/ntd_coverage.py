@@ -469,12 +469,23 @@ def published_reporter_coverage(path: Path | None = None) -> dict[str, Any] | No
     if sum(by_tier.values()) != obligated:
         return None
 
+    # The section dates its own denominator -- "Report Year {year}, retrieved
+    # {date}" -- and that sentence is what lets a reader judge how old the 1,253
+    # is. Rendered from an absent field it reads "Report Year , retrieved ",
+    # which is a provenance claim with nothing behind it sitting beside real
+    # counts. Same rule as the tiers: if the snapshot cannot say when it is
+    # from, the section does not render.
+    report_year = str(payload.get("report_year") or "").strip()
+    retrieved_utc = str(payload.get("retrieved_utc") or "").strip()
+    if not report_year or len(retrieved_utc) < len("YYYY-MM-DD"):
+        return None
+
     tracked = sum(by_tier[tier] for tier in TRACKED_BY_US_TIERS)
     elsewhere = sum(by_tier[tier] for tier in STRONG_TIERS - TRACKED_BY_US_TIERS)
     return {
         "unit": REPORTER_UNIT,
-        "report_year": str(payload.get("report_year") or ""),
-        "retrieved_utc": str(payload.get("retrieved_utc") or ""),
+        "report_year": report_year,
+        "retrieved_utc": retrieved_utc,
         "obligated_reporters": obligated,
         "tracked_by_registry": tracked,
         "discoverable_elsewhere": elsewhere,

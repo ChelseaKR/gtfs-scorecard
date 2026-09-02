@@ -198,3 +198,39 @@ def test_the_page_publishes_nothing_about_reporters_without_a_snapshot() -> None
     assert "These are counts of NTD reporters." not in html
     # And the feed-side page is otherwise unchanged.
     assert "45.0% of 1125 tracked feeds" in html
+
+
+# --- the section dates its own denominator, or it does not render ------------
+
+
+@pytest.mark.parametrize(
+    "mutate",
+    [
+        pytest.param(lambda p: p.pop("report_year"), id="no report year"),
+        pytest.param(lambda p: p.update(report_year=""), id="blank report year"),
+        pytest.param(lambda p: p.update(report_year="   "), id="whitespace report year"),
+        pytest.param(lambda p: p.pop("retrieved_utc"), id="no retrieval date"),
+        pytest.param(lambda p: p.update(retrieved_utc=""), id="blank retrieval date"),
+        pytest.param(lambda p: p.update(retrieved_utc="2026"), id="truncated retrieval date"),
+    ],
+)
+def test_a_snapshot_that_cannot_date_itself_publishes_nothing(tmp_path: Path, mutate: Any) -> None:
+    """A reconciling tier set is not enough to publish.
+
+    The section's own fine print reads "Report Year {year}, retrieved {date}",
+    and that sentence is how a reader judges whether the 1,253 is current. With
+    the field missing it rendered "Report Year , retrieved " -- a provenance
+    claim with nothing behind it, printed beside counts that are real. The
+    counts would still reconcile, which is exactly why this needs its own guard.
+    """
+    payload = _snapshot()
+    mutate(payload)
+    assert published_reporter_coverage(_written(tmp_path, payload)) is None
+
+
+def test_the_committed_snapshot_dates_itself() -> None:
+    """The guard above is only safe if the real snapshot clears it."""
+    coverage = _coverage()
+    assert coverage is not None
+    assert coverage["report_year"] == "2024"
+    assert coverage["retrieved_utc"].startswith("2026-08-15")

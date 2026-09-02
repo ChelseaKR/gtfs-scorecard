@@ -152,7 +152,10 @@ the declared public surface).
   name-based join. A reporter with no discoverable feed is shown as a limit of
   what open catalogues can see, never as a zero and never as a finding about
   that agency. The section publishes nothing at all if the snapshot does not
-  declare its unit or its tiers do not sum to its own denominator (ADR 0052).
+  declare its unit, if its tiers do not sum to its own denominator, or if it
+  cannot say which report year it is from and when it was retrieved -- the fine
+  print dates the denominator, and an undated one rendered "Report Year ,
+  retrieved " beside counts that were real (ADR 0052).
 
 - **An alert about a seasonal feed now says what its scorecard page says.**
   `metrics.freshness` has read a feed's own calendars since EXP-04 landed on
