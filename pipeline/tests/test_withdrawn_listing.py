@@ -34,6 +34,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -48,8 +49,6 @@ from scorecard_pipeline.metrics import CategoryResult
 from scorecard_pipeline.publish import build_artifact, publish, rebuild_index
 from scorecard_pipeline.render_site import _scope_index_to_canonical_registry, compute_changes
 from scorecard_pipeline.score import build_scorecard
-
-from .test_publish import AGENCY, FEED_SHA, GENERATED_AT
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARTIFACTS = REPO_ROOT / "data" / "artifacts"
@@ -108,6 +107,15 @@ WITHDRAWN_FROM_THE_LIVE_SITE = frozenset(
 )
 
 _DATED = "[0-9]" * 4 + "-[0-9][0-9]-[0-9][0-9].json"
+
+GENERATED_AT = dt.datetime(2026, 6, 11, 12, 0, tzinfo=dt.UTC)
+FEED_SHA = "a" * 64
+HEALTHY = Agency(
+    id="unitrans",
+    name="Unitrans",
+    static_gtfs_url="https://example.org/gtfs.zip",
+    license_note="test",
+)
 
 
 # --- what withdrawal did to the committed corpus -----------------------------
@@ -282,7 +290,7 @@ def test_reindex_drops_a_stale_current_pointer_and_keeps_the_dated_record() -> N
 # --- consumer: the change feed Atom subscribers read -------------------------
 
 
-def _index_with(agency_id: str, history: list[dict[str, object]]) -> dict[str, object]:
+def _index_with(agency_id: str, history: list[dict[str, Any]]) -> dict[str, Any]:
     return {"agencies": {agency_id: {"name": "Unreadable Demo", "history": history}}}
 
 
@@ -383,11 +391,52 @@ def test_rendering_scopes_a_stale_index_to_the_canonical_registry() -> None:
     index["agencies"]["unitrans"] = {"name": "Unitrans", "history": _HISTORY}
 
     removed = _scope_index_to_canonical_registry(
-        index, {"unreadable-demo": _withdrawn_agency(), "unitrans": AGENCY}
+        index, {"unreadable-demo": _withdrawn_agency(), "unitrans": HEALTHY}
     )
 
     assert removed == 1
     assert sorted(index["agencies"]) == ["unitrans"]
+
+
+def test_the_next_render_publishes_no_row_and_no_page_for_a_withdrawn_id(
+    real_registry: dict[str, Agency],
+) -> None:
+    """The catalog, the dataset export, and the crawlable pages all drop them.
+
+    Deploy runs ``scorecard render-site`` and only then copies ``web/`` into the
+    published tree, so what is served is always regenerated. The renderer builds
+    every catalog and dataset row from the registry-scoped index, skipping any
+    id without a ``latest.json``, and deletes the generated page directory of an
+    id the index no longer carries. This runs both of those selections over the
+    real committed corpus rather than a fixture, because the claim being made is
+    about this corpus.
+
+    The committed ``web/`` tree itself is left as it is: it is the frozen
+    cutover snapshot kept as an outage and fork fallback (docs/follow-ups.md,
+    "Stop committing generated data and pages"), it is internally consistent
+    only as a whole, and it is regenerated before anything is served.
+    """
+    index = json.loads((ARTIFACTS / "index.json").read_text())
+    _scope_index_to_canonical_registry(index, real_registry)
+
+    catalog_ids = {
+        agency_id
+        for agency_id in index["agencies"]
+        if (ARTIFACTS / agency_id / "latest.json").exists()
+    }
+    assert catalog_ids, "no catalog rows at all; the selection is not running"
+    assert not (catalog_ids & WITHDRAWN_2026_09_01)
+
+    pages = REPO_ROOT / "web" / "agency"
+    if pages.exists():
+        surviving = {
+            page.name
+            for page in pages.iterdir()
+            if page.is_dir() and page.name in index["agencies"]
+        }
+        assert not (surviving & WITHDRAWN_2026_09_01), (
+            "a withdrawn id would keep its generated page through the render prune"
+        )
 
 
 def test_the_app_needs_an_index_entry_before_it_will_render_a_grade() -> None:
