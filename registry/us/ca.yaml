@@ -60,8 +60,14 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/sanjoaquins-ca-us/sanjoaquins-ca-us.zip
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Withdrawn 2026-09-01: the feed URL answers HTTP 404, and the last archive
+  # that did download had no stops and no trips. No grade could be
+  # measured, so the current listing is withdrawn rather than published as a
+  # letter. Restore it by removing feed_status once the feed reads again.
+  # docs/listing-policy.md, "Feeds we could not read".
   - id: anaheim-resort-transportation-art
     name: Anaheim Resort Transportation (ART)
+    feed_status: inactive
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://art.tripshot.com/v1/gtfs.zip?regionId=CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
@@ -338,8 +344,16 @@ agencies:
     mdb_id: 298
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Withdrawn 2026-09-01: this GitLab archive nests its tables one directory
+  # deep, so the reader finds no stops.txt or trips.txt and sees an empty
+  # feed. The published feed does have service data; the fault is ours, and
+  # issue #333 tracks it. Until it is fixed no grade can be
+  # measured, so the current listing is withdrawn rather than published as a
+  # letter. Restore it by removing feed_status once the feed reads again.
+  # docs/listing-policy.md, "Feeds we could not read".
   - id: catalina-express
     name: Catalina Express
+    feed_status: inactive
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://gitlab.com/LACMTA/gtfs_lax/-/archive/master/gtfs_lax-master.zip?path=catalina_express
@@ -1990,9 +2004,17 @@ agencies:
     rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Withdrawn 2026-09-01: this GitLab archive nests its tables one directory
+  # deep, so the reader finds no stops.txt or trips.txt and sees an empty
+  # feed. The published feed does have service data; the fault is ours, and
+  # issue #333 tracks it. Until it is fixed no grade can be
+  # measured, so the current listing is withdrawn rather than published as a
+  # letter. Restore it by removing feed_status once the feed reads again.
+  # docs/listing-policy.md, "Feeds we could not read".
   - id: santa-clarita-transit
     ntd_id: "90171"
     name: Santa Clarita Transit
+    feed_status: inactive
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://gitlab.com/LACMTA/gtfs_lax/-/archive/master/gtfs_lax-master.zip?path=santa_clarita

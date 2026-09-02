@@ -96,9 +96,15 @@ agencies:
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
   # Mobility Database mdb-1118 is deprecated and redirects to mdb-2355.
+  # The catalog retired mdb-1118 into mdb-2355, and this record redirected
+  # readers there. mdb-2355's endpoint now answers HTTP 404 and its listing was
+  # withdrawn on 2026-09-01, so there is no live page left to redirect to and
+  # the redirect is removed. The record stays deprecated: it publishes no
+  # current grade either way, and its dated evidence is unchanged. Whether
+  # mdb-1118 should instead be restored as the current Xpress feed -- it still
+  # serves readable data -- is a supersession-review decision, not this one.
   - id: xpress
     name: Xpress
-    alias_of: xpress-2355
     feed_status: deprecated
     subdivision_code: US-GA
     subdivision_name: Georgia
@@ -130,8 +136,14 @@ agencies:
     mdb_id: 2241
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Withdrawn 2026-09-01: the feed URL answers HTTP 404, and the last archive
+  # that did download had no stops and no trips. No grade could be
+  # measured, so the current listing is withdrawn rather than published as a
+  # letter. Restore it by removing feed_status once the feed reads again.
+  # docs/listing-policy.md, "Feeds we could not read".
   - id: xpress-2355
     name: Xpress
+    feed_status: inactive
     subdivision_code: US-GA
     subdivision_name: Georgia
     static_gtfs_url: https://gamobility.info/wp-content/uploads/2024/07/Google_Transit.zip

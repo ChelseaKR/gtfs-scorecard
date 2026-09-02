@@ -82,6 +82,40 @@ and we tell them apart by hand rather than by the grade:
   they are not presented as the agency's current condition. We do not leave a
   permanent failing grade on an agency that no longer exists.
 
+## Feeds we could not read
+
+The rules above are about agencies. This one is about the tool.
+
+Sometimes a feed downloads fine and still cannot be measured: its `stops.txt`
+and `trips.txt` hold a header row and nothing else, the archive contains no GTFS
+tables at all, or our own reader cannot find the tables inside it. There is no
+grade to give in that case. A letter would be a claim about data nobody read.
+
+So we do not publish one. The listing is **withdrawn**: its current scorecard,
+badge, conformance file, and map are removed, and the agency drops out of the
+directory, the rollups, and the change feed. Its dated score records stay
+exactly where they are, because they are evidence of what we published and when.
+The registry entry stays too, marked `feed_status: inactive`, with a comment
+naming what we measured, on what date, and what would restore the listing.
+
+Three things this is not:
+
+- **It is not a judgment about the agency.** These agencies mostly still run
+  buses. Only the feed could not be read, and sometimes the reason is a bug on
+  our side, in which case the comment says so and names the issue.
+- **It is not a failing grade, and it is not a zero.** A withdrawn listing has
+  no letter and no score. The published page is gone rather than emptied, so
+  nothing downstream can read a missing grade as an F or a missing score as a
+  regression.
+- **It is not permanent.** Withdrawal is one line in the registry. When the feed
+  reads again, a curator deletes that line and the next run publishes a real
+  grade from real data.
+
+A feed whose data we *can* read is never withdrawn on this rule, however bad it
+looks. A feed with stops and trips whose calendar lapsed years ago still scores
+zero on freshness and still says so: that is a measurement, and hiding it would
+defeat the point of the tool.
+
 The registry is curated, so every entry can be reviewed, corrected, or removed
 by a person. If something here is wrong or unwelcome, that is a bug, and we want
 to fix it.

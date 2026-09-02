@@ -48,8 +48,14 @@ agencies:
     mdb_id: 3035
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Withdrawn 2026-09-01: stops.txt and trips.txt in this archive carry a
+  # header row and no data rows. No grade could be
+  # measured, so the current listing is withdrawn rather than published as a
+  # letter. Restore it by removing feed_status once the feed reads again.
+  # docs/listing-policy.md, "Feeds we could not read".
   - id: boxcar
     name: Boxcar Commuter Bus
+    feed_status: inactive
     subdivision_code: US-NJ
     subdivision_name: New Jersey
     static_gtfs_url: https://boxcar-gtfs.vercel.app/api/gtfs

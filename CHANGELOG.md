@@ -102,6 +102,55 @@ the declared public surface).
   files on every pull request and weekly, so the next dead link fails a
   build instead of waiting for a reader.
 
+### Removed
+
+- **22 published scorecards that graded a feed nobody could read are
+  withdrawn (2026-09-01).** The refusal below stopped the scorer minting
+  another; it could not touch the ones already published. Derived by
+  measurement over all 2,515 committed artifacts rather than from a list:
+  every `latest.json` reporting `stops: 0` and `trips: 0` in its
+  rider-experience details. Twenty-one carried an F, `boxcar` a C.
+
+  They are withdrawn by the path a retired feed already used — the six mutable
+  current pointers go (`artifact_lifecycle.MUTABLE_PUBLIC_ARTIFACT_NAMES`),
+  every dated record stays, and the S3 publisher's retirement manifest expands
+  the same ids into the same six names, so nothing that was measured is
+  deleted anywhere. Seven were active canonical registry records and are now
+  `feed_status: inactive` with a comment naming what was measured and what
+  would restore them; two were already retired aliases and thirteen had no
+  registry record at all, so for those fifteen the committed pointers were
+  simply stale.
+
+  `docs/listing-policy.md` gained a **"Feeds we could not read"** section for
+  this. The nearest existing rule — *"we do not leave a permanent failing
+  grade on an agency that no longer exists"* — is about agencies that ended,
+  and most of these agencies still run buses, so the rule was extended rather
+  than stretched: a listing we cannot measure is withdrawn, not graded; it is
+  not a judgment about the agency, not a zero, and not permanent.
+
+  Withdrawal was chosen over publishing a "could not be read" state precisely
+  because of the three consumers that would have misreported it, and each is
+  now pinned by a test rather than assumed: `publish._history_entry` is never
+  reached for a withdrawn agency (`registered_agency_dirs` filters the reindex
+  walk first, so no `{score: 0, grade: "F"}` point is minted); `compute_changes`
+  reads only the index, so an unindexed agency sends Atom subscribers nothing —
+  against a break test showing the −73-point regression the other route would
+  have published; and `web/src/app.js` checks `index.agencies[id]` *before*
+  fetching `latest.json`, so the `String(grade || "F")` split-flap is
+  unreachable for an id that has neither.
+
+  Two of the 22 turned out to be our own bug, not an empty feed:
+  `santa-clarita-transit` and `catalina-express` publish real service data in a
+  GitLab archive that nests its tables one directory deep, which the reader
+  cannot see (issue #333). Their F was fabricated in the worst direction — a
+  healthy feed graded on nothing — and the withdrawal removes it until the
+  reader is fixed, at which point deleting one `feed_status` line restores the
+  listing.
+
+  The ratchet from the fix below is now an equality with the empty set rather
+  than a subset of a named list, with a positive control so a check that
+  expects to find nothing cannot pass by having stopped looking.
+
 ### Fixed
 
 - **A feed with no stops and no trips is no longer given a letter grade.**

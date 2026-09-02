@@ -83,8 +83,14 @@ agencies:
     mdb_id: 429
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Withdrawn 2026-09-01: this archive holds one empty member,
+  # service_cancelled.txt, and no GTFS tables at all. No grade could be
+  # measured, so the current listing is withdrawn rather than published as a
+  # letter. Restore it by removing feed_status once the feed reads again.
+  # docs/listing-policy.md, "Feeds we could not read".
   - id: massachusetts-area-express-max
     name: Massachusetts Area Express (MAX)
+    feed_status: inactive
     subdivision_code: US-MA
     subdivision_name: Massachusetts
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/truenorthtransit-ma-us/truenorthtransit-ma-us.zip

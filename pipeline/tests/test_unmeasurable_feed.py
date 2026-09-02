@@ -238,45 +238,26 @@ def test_the_gate_no_longer_needs_a_case_for_an_unreadable_archive() -> None:
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-#: Published scorecards that grade a feed with zero stops and zero trips, as of
-#: 2026-09-01. Every one predates the refusal above: they were minted by a
-#: scorer that had no way to say "could not be read", and the daily run can no
-#: longer produce or refresh them -- ``score_feed_content`` now raises for these
-#: feeds, so each run leaves the stale record in place and warns.
+#: Published scorecards that grade a feed with zero stops and zero trips.
 #:
-#: Verified live, not inferred: `boxcar`'s feed at
-#: https://boxcar-gtfs.vercel.app/api/gtfs is a well-formed GTFS archive whose
-#: stops.txt and trips.txt contain a header row and nothing else.
+#: This was a list of 22. Every one predated the refusal above: they were minted
+#: by a scorer that had no way to say "could not be read". The refusal stopped
+#: the daily run producing or refreshing another, and the 22 already published
+#: were withdrawn on 2026-09-01 under docs/listing-policy.md, "Feeds we could
+#: not read" -- current pointers dropped, dated evidence kept
+#: (tests/test_withdrawn_listing.py).
 #:
-#: Withdrawing them is a listing-policy call (docs/listing-policy.md), not a
-#: scoring one, so they are named here rather than deleted. The assertion is a
-#: subset, not an equality: this set may only shrink.
-STALE_GRADED_EMPTY_FEEDS = frozenset(
-    {
-        "anaheim-resort-transportation-art",
-        "anaheim-resort-transportation-art-100",
-        "beloit-transit",
-        "beloit-transit-392",
-        "boxcar",
-        "catalina-express",
-        "citrus-county-transit-630",
-        "cobb-community-transit-cct-354",
-        "detroit-people-mover-417",
-        "high-desert-point",
-        "high-desert-point-636",
-        "hut-airport-shuttle",
-        "hut-airport-shuttle-635",
-        "jaunt-inc-1324",
-        "lakexpress-342",
-        "massachusetts-area-express-max",
-        "massachusetts-area-express-max-431",
-        "miami-dade-transit-331",
-        "santa-clarita-transit",
-        "santa-clarita-transit-812",
-        "staten-island-ferry-518",
-        "xpress-2355",
-    }
-)
+#: So the ratchet is now an equality with the empty set rather than a subset of
+#: a named list, which is the same rule at its end state: a published scorecard
+#: may not carry a letter for a feed nobody could read, and there is no longer
+#: any grandfathered exception to that.
+GRADED_EMPTY_FEEDS_ALLOWED: frozenset[str] = frozenset()
+
+#: The corpus is ~2,500 committed scorecards. A glob that suddenly matches a
+#: handful means the check moved, not that the corpus shrank, and an assertion
+#: over nothing passes silently -- which is the failure mode this floor exists
+#: to catch now that the expected finding count is zero.
+MIN_PUBLISHED_SCORECARDS = 2_000
 
 
 def _grades_an_empty_feed(artifact: dict[str, object]) -> bool:
@@ -294,22 +275,71 @@ def _grades_an_empty_feed(artifact: dict[str, object]) -> bool:
     return details.get("stops") == 0 and details.get("trips") == 0 and "grade" in overall
 
 
-def test_no_new_scorecard_grades_a_feed_with_no_stops_and_no_trips() -> None:
+def test_the_empty_feed_detector_fires_on_one() -> None:
+    """The positive control for the corpus check below.
+
+    That check now expects to find nothing, so on its own it would pass just as
+    happily if ``_grades_an_empty_feed`` had been broken to return False for
+    everything. This pins that it still recognises the shape it is looking for,
+    and that each clause of it is load-bearing.
+    """
+    graded_empty = {
+        "categories": {
+            "completeness": {"status": "measured", "details": {"stops": 0, "trips": 0}},
+        },
+        "overall": {"score": 26.2, "grade": "F"},
+    }
+    assert _grades_an_empty_feed(graded_empty)
+
+    # A feed with data, graded: fine, whatever the letter.
+    assert not _grades_an_empty_feed(
+        {
+            "categories": {
+                "completeness": {"status": "measured", "details": {"stops": 364, "trips": 898}},
+            },
+            "overall": {"score": 26.2, "grade": "F"},
+        }
+    )
+    # Empty, and honest about it: no grade published.
+    assert not _grades_an_empty_feed(
+        {
+            "categories": {
+                "completeness": {"status": "measured", "details": {"stops": 0, "trips": 0}},
+            },
+            "overall": {},
+        }
+    )
+    # Rider experience was not measured at all, so its details prove nothing.
+    assert not _grades_an_empty_feed(
+        {
+            "categories": {"completeness": {"status": "not_yet_measured", "details": {}}},
+            "overall": {"score": 26.2, "grade": "F"},
+        }
+    )
+
+
+def test_no_published_scorecard_grades_a_feed_with_no_stops_and_no_trips() -> None:
     """A ratchet over the committed corpus. It may only improve.
 
     The refusal stops the scorer minting another of these. This stops one
     arriving by any other route -- a hand-edited artifact, a hydrated snapshot,
-    an import -- and keeps the outstanding set counted rather than forgotten.
+    an import, a registry record brought back before its feed was fixed.
     """
     artifacts = REPO_ROOT / "data" / "artifacts"
+    published = sorted(artifacts.glob("*/latest.json"))
+    assert len(published) >= MIN_PUBLISHED_SCORECARDS, (
+        f"only {len(published)} published scorecards were read, under the "
+        f"{MIN_PUBLISHED_SCORECARDS} floor; the corpus check is not running over the corpus"
+    )
     found = {
         path.parent.name
-        for path in sorted(artifacts.glob("*/latest.json"))
+        for path in published
         if _grades_an_empty_feed(json.loads(path.read_text()))
     }
-    assert found, "no published artifacts were read; the corpus check is not running"
-    new = sorted(found - STALE_GRADED_EMPTY_FEEDS)
+    new = sorted(found - GRADED_EMPTY_FEEDS_ALLOWED)
     assert not new, (
         f"{len(new)} published scorecard(s) grade a feed with no stops and no trips, "
-        "which score_feed_content refuses to produce: " + ", ".join(new)
+        "which score_feed_content refuses to produce. Withdraw the listing "
+        '(docs/listing-policy.md, "Feeds we could not read") rather than '
+        "publishing a letter for it: " + ", ".join(new)
     )

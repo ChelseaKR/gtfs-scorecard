@@ -11,8 +11,14 @@ agencies:
     mdb_id: 208
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Withdrawn 2026-09-01: stops.txt and trips.txt in this archive carry a
+  # header row and no data rows. No grade could be
+  # measured, so the current listing is withdrawn rather than published as a
+  # letter. Restore it by removing feed_status once the feed reads again.
+  # docs/listing-policy.md, "Feeds we could not read".
   - id: beloit-transit
     name: Beloit Transit
+    feed_status: inactive
     subdivision_code: US-WI
     subdivision_name: Wisconsin
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/beloittransit-wi-us/beloittransit-wi-us.zip
