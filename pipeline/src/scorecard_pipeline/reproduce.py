@@ -174,13 +174,17 @@ def reproduce(agency: Agency, date: str) -> dict[str, Any]:
 
         as_of = _canonical_date(date)
         cats = [
-            correctness(report),
-            freshness(
-                read_feed_dates(str(reader_archive.path)),
-                today=as_of,
-                service_type=agency.service_type,
-            ),
-            completeness(str(reader_archive.path), fare_free=agency.fare_free),
+            c
+            for c in (
+                correctness(report),
+                freshness(
+                    read_feed_dates(str(reader_archive.path)),
+                    today=as_of,
+                    service_type=agency.service_type,
+                ),
+                completeness(str(reader_archive.path), fare_free=agency.fare_free),
+            )
+            if c is not None
         ]
         scorecard = build_scorecard(cats)
 

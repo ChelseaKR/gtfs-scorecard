@@ -68,6 +68,25 @@ the declared public surface).
 
 ### Fixed
 
+- **A category that measured nothing no longer publishes a number for it.**
+  Given a well-formed zip containing no GTFS files at all, the scorer published
+  `Freshness 0.0` and `Rider experience 0.0` beside `Realtime -- not yet
+  measured`, and graded the result F (31.3/100). Two categories printed a floor
+  for a measurement nobody made; the third, in the same table, printed the
+  honest thing. A 0.0 says a real feed was read and found to leave riders with
+  nothing, and no reader could tell it from an archive that had nothing to read.
+  `freshness` now returns no category when the archive carries no table that can
+  hold a service date, and `completeness` returns none when there are no stops
+  and no trips, so both drop out of the artifact and the weighted average the
+  way an unmeasured realtime feed already does. The rule is deliberately narrow:
+  a feed that ships `calendar.txt` and has no usable end date is still measured
+  and still scores 0 with its finding, and an empty-but-present `calendar.txt`
+  is still a claim the feed made. No published grade for any tracked agency
+  moves. `scorecard try` also no longer exits 0 for such an archive even when no
+  thresholds were requested -- the Action derives `passed` from that exit code,
+  so the default configuration reported `passed=true` for a feed it had read
+  nothing out of.
+
 - **The weekly discovery job no longer overwrites a curator's pinned feed
   host.** `city-of-wasco` is tracked on the Caltrans DDS ZIP; its
   `license_note` names that index and its `operating_note` records that the DDS

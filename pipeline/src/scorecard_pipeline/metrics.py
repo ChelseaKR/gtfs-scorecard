@@ -347,8 +347,21 @@ def operating_signal(status: str, consecutive_failures: int) -> str:
     return "unreachable" if consecutive_failures >= UNREACHABLE_STREAK_CHECKS else "reachable"
 
 
-def freshness(dates: FeedDates, today: dt.date, service_type: str = "fixed") -> CategoryResult:
+def freshness(
+    dates: FeedDates, today: dt.date, service_type: str = "fixed"
+) -> CategoryResult | None:
     """Score how far into the future the feed remains usable.
+
+    Returns ``None`` -- no category, no number -- when the archive carried no
+    table that can hold a service date. Scoring that 0.0 published a measurement
+    nobody made: an archive with no calendars is not a feed whose service ends
+    today, it is not a feed. ``None`` drops the category out of the artifact and
+    out of the weighted average exactly as an unmeasured realtime feed does, so
+    the page says "not yet measured" instead of a floor that reads like one.
+
+    This cannot quietly excuse a real feed. A feed that ships calendar.txt and
+    has no usable end date has been measured and still scores 0 with its
+    finding; only the total absence of every date-bearing table returns None.
 
     Rationale (rubric.md "Freshness"): the classic small-agency failure is a
     silently expiring feed. Full credit when service data covers 60+ days
@@ -366,6 +379,8 @@ def freshness(dates: FeedDates, today: dt.date, service_type: str = "fixed") -> 
     own finding code instead of a lapse alarm. A feed expired over a year
     stays serious regardless, so neither path hides a genuinely abandoned feed.
     """
+    if not dates.has_date_tables:
+        return None
     findings: list[Finding] = []
     details: dict[str, Any] = {
         "has_feed_info": dates.has_feed_info,

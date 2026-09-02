@@ -14,9 +14,18 @@ from scorecard_pipeline.cli import _try_gate
 
 
 def _artifact(grade: str, days: int | None) -> dict:  # type: ignore[type-arg]
+    """A feed the run could read. These tests are about thresholds.
+
+    `status` is load-bearing: the gate now refuses to report a pass for an
+    archive it read nothing out of, so a fixture standing in for a real feed has
+    to say it was measured (see test_unmeasurable_feed.py).
+    """
     return {
         "overall": {"grade": grade, "score": 0},
-        "categories": {"freshness": {"details": {"days_until_expiry": days}}},
+        "categories": {
+            "freshness": {"status": "measured", "details": {"days_until_expiry": days}},
+            "completeness": {"status": "measured"},
+        },
     }
 
 

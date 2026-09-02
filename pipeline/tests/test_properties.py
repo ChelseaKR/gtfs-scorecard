@@ -14,6 +14,7 @@ part of the fast `make verify` gate.
 from __future__ import annotations
 
 import datetime as dt
+from typing import Any
 
 from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
@@ -26,7 +27,9 @@ from scorecard_pipeline.metrics import (
     Finding,
     _count_multiplier,
     correctness,
-    freshness,
+)
+from scorecard_pipeline.metrics import (
+    freshness as _freshness_maybe,
 )
 from scorecard_pipeline.rt import RT_KINDS, RtSample, RtWindow, realtime
 from scorecard_pipeline.rt_drift import DriftStats, PlausibilityStats
@@ -38,6 +41,17 @@ from scorecard_pipeline.score import (
     published_overall,
 )
 from scorecard_pipeline.validate import NoticeGroup, ValidationReport
+
+
+# `freshness` returns None when the archive held no table that can carry a
+# service date. Every fixture below has one, so this wrapper keeps the existing
+# call sites unchanged while turning an unexpected "not measurable" into a loud
+# failure instead of an attribute error.
+def freshness(*args: Any, **kwargs: Any) -> CategoryResult:
+    result = _freshness_maybe(*args, **kwargs)
+    assert result is not None, "this fixture has date tables and must measure freshness"
+    return result
+
 
 # Bounded profile: enough examples to explore, small enough for `make verify`.
 # deadline=None because per-example wall-clock varies across CI machines. The

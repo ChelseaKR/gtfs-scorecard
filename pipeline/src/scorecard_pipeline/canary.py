@@ -91,9 +91,15 @@ def _scored_result(
     sees is purely validator-driven."""
     reader_path = fetched.reader_view_path
     cats = [
-        correctness(report),
-        freshness(read_feed_dates(str(reader_path)), today=date, service_type=agency.service_type),
-        completeness(str(reader_path), fare_free=agency.fare_free),
+        c
+        for c in (
+            correctness(report),
+            freshness(
+                read_feed_dates(str(reader_path)), today=date, service_type=agency.service_type
+            ),
+            completeness(str(reader_path), fare_free=agency.fare_free),
+        )
+        if c is not None
     ]
     scorecard = build_scorecard(cats)
     return agency_result(agency.id, report, scorecard.grade, scorecard.overall_score)

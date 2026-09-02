@@ -160,6 +160,13 @@ class FeedDates:
     # an undeclared seasonal feed's lapse as a planned transition. Detection
     # is conservative: a single continuous span never sets it.
     seasonal_boundary: bool = False
+    # Whether the archive contained any table that can carry a service date at
+    # all (feed_info.txt, calendar.txt, calendar_dates.txt). False means there
+    # was nothing to read, which is different from having read the calendars and
+    # found no end date -- that is a real finding about a real feed, and it still
+    # scores. Defaults True so a hand-built FeedDates keeps scoring as before;
+    # only read_feed_dates, which knows what the archive held, can set it False.
+    has_date_tables: bool = True
 
     def effective_expiry(self) -> dt.date | None:
         """The date riders lose trip planning: the earlier of feed_info's
@@ -206,7 +213,13 @@ def _detect_seasonal_boundary(
 
 def read_feed_dates(gtfs_zip_path: str) -> FeedDates:
     """Extract freshness-relevant dates from a static GTFS zip."""
+    date_tables = ("feed_info.txt", "calendar.txt", "calendar_dates.txt")
     with zipfile.ZipFile(gtfs_zip_path) as zf:
+        # Presence of the file, not of any row in it: an empty calendar.txt is a
+        # feed that says it has no service, which is a measurable claim. An
+        # archive carrying none of these tables said nothing at all.
+        present = set(zf.namelist())
+        has_date_tables = any(name in present for name in date_tables)
         feed_info_rows = _read_table(zf, "feed_info.txt")
         calendar_rows = _read_table(zf, "calendar.txt")
         calendar_date_rows = _read_table(zf, "calendar_dates.txt")
@@ -257,4 +270,5 @@ def read_feed_dates(gtfs_zip_path: str) -> FeedDates:
         seasonal_boundary=(
             spans_reliable and _detect_seasonal_boundary(_merge_spans(spans), effective_expiry)
         ),
+        has_date_tables=has_date_tables,
     )
