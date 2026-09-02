@@ -4,11 +4,25 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 import pytest
 
-from scorecard_pipeline.completeness import WEIGHTS, _is_shouty, completeness
+from scorecard_pipeline.completeness import WEIGHTS, _is_shouty
+from scorecard_pipeline.completeness import completeness as _completeness_maybe
 from scorecard_pipeline.gtfs import TableTooLargeError
+from scorecard_pipeline.metrics import CategoryResult
+
+
+# `freshness` and `completeness` return None when the archive held nothing to
+# measure at all. Every fixture below scores a feed that does have something to
+# measure, so these wrappers keep the ~190 call sites unchanged while turning an
+# unexpected "not measurable" into a loud failure instead of an attribute error.
+def completeness(*args: Any, **kwargs: Any) -> CategoryResult:
+    result = _completeness_maybe(*args, **kwargs)
+    assert result is not None, "this fixture has stops or trips and must measure completeness"
+    return result
+
 
 COMPLETE_FEED = {
     "agency.txt": (
@@ -510,6 +524,7 @@ def test_no_trips_feed_does_not_fabricate_headsign_or_wheelchair_trip_failures(
 def test_numbers_and_punctuation_names_not_flagged_as_caps(
     make_gtfs_zip: Callable[..., Path],
 ) -> None:
+
     feed = dict(COMPLETE_FEED)
     feed["stops.txt"] = "stop_id,stop_name,wheelchair_boarding\nS1,4 & B,1\n"
     result = completeness(str(make_gtfs_zip(feed)))
