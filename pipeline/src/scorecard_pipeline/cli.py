@@ -50,18 +50,16 @@ import jsonschema
 import requests
 
 from .agencies import AgencyConfigError, load_agencies
-from .completeness import completeness
 from .config import AGENCIES, Agency, current_agency_ids, raw_dir, repo_root, utc_today
 from .constants_export import GRADE_RANK
 from .fetch import FetchResult, fetch_static, prepare_reader_archive
-from .gtfs import read_feed_dates
-from .metrics import CategoryResult, correctness, freshness
+from .metrics import CategoryResult, correctness
 from .net import UnsafeURLError
 from .publish import build_artifact, publish
 from .rt import capture_window, realtime, scheduled_trip_ids_at
 from .rt_drift import compute_drift, vehicle_plausibility
 from .s3_publish import DEFAULT_PUBLISH_WORKERS, MAX_PUBLISH_WORKERS
-from .score import build_scorecard
+from .score import build_scorecard, score_feed_content
 from .validate import (
     country_scoped_output_dir,
     parse_report,
@@ -241,15 +239,13 @@ def run_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         )
 
     cats = [
-        c
-        for c in (
-            correctness(report),
-            freshness(
-                read_feed_dates(str(reader_path)), today=date, service_type=agency.service_type
-            ),
-            completeness(str(reader_path), fare_free=agency.fare_free),
-        )
-        if c is not None
+        correctness(report),
+        *score_feed_content(
+            str(reader_path),
+            today=date,
+            service_type=agency.service_type,
+            fare_free=agency.fare_free,
+        ),
     ]
     if agency.rt_urls and not skip_rt:
         cats.append(
@@ -444,15 +440,7 @@ def run_adhoc(
     reader_path = fetched.reader_view_path
     report_dir = raw_dir() / scratch_id / date.isoformat() / "validator"
     report = parse_report(run_validator(fetched.path, report_dir, country_code=country_code))
-    cats = [
-        c
-        for c in (
-            correctness(report),
-            freshness(read_feed_dates(str(reader_path)), today=date),
-            completeness(str(reader_path)),
-        )
-        if c is not None
-    ]
+    cats = [correctness(report), *score_feed_content(str(reader_path), today=date)]
     scorecard = build_scorecard(cats)
     generated_at = dt.datetime.combine(fetched.fetched_date, dt.time(), dt.UTC)
     artifact = build_artifact(agency, fetched, scorecard, generated_at=generated_at)
@@ -547,41 +535,18 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     return _try_gate(artifact, args)
 
 
-#: The categories that read the feed's own contents. If neither could be
-#: measured, the archive carried no schedule data: no stops, no trips, and no
-#: table that can hold a service date. Correctness can still score such an
-#: archive, because the validator has notices to report about what is missing,
-#: but nothing about the service itself was read.
-FEED_CONTENT_CATEGORIES = ("freshness", "completeness")
-
-
-def _nothing_was_read(artifact: dict[str, Any]) -> bool:
-    """Whether the run read no schedule content out of the archive at all."""
-    categories = artifact.get("categories", {})
-    return not any(
-        categories.get(name, {}).get("status") == "measured" for name in FEED_CONTENT_CATEGORIES
-    )
-
-
 def _try_gate(artifact: dict[str, Any], args: argparse.Namespace) -> int:
     """Return a non-zero exit code when the scored feed fails a requested
     threshold, so `scorecard try` can gate CI. No thresholds means exit 0.
 
-    One failure needs no threshold to be requested: an archive this run could
-    read nothing out of. "No thresholds means exit 0" is a statement about
-    thresholds, not a promise that an unreadable input is fine, and a caller
-    who asked for no thresholds is exactly the caller who will read `passed`
-    and ship. A well-formed zip containing no GTFS files used to exit 0 with
-    `passed=true`; the archive is still scored and still reported, but the run
-    no longer calls it a pass.
+    Every artifact that reaches here was read: an archive with no stops and no
+    trips is refused by ``score_feed_content`` before a scorecard exists, and
+    `_cmd_try` reports that the same way it reports a response body that is not
+    a zip -- "could not score <url>: ...", exit 1. The reported bug was this
+    function returning 0 with `passed=true` for such an archive; the fix is that
+    no such artifact is built, not a threshold-free failure invented here.
     """
     failures: list[str] = []
-    if _nothing_was_read(artifact):
-        failures.append(
-            "no GTFS schedule data could be read from this archive: it has no stops, "
-            "no trips, and no table carrying a service date, so freshness and rider "
-            "experience were not measured"
-        )
     if args.min_grade:
         grade = str(artifact["overall"]["grade"])
         if GRADE_RANK.get(grade, 0) < GRADE_RANK[args.min_grade]:

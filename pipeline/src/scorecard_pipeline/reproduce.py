@@ -29,7 +29,6 @@ from typing import Any
 
 from . import archive
 from .comparisons import reader_archive_profile
-from .completeness import completeness
 from .config import Agency, artifacts_dir
 from .fetch import (
     FLAT_SINGLE_ROOT_READER_ARCHIVE_PROFILE,
@@ -38,9 +37,8 @@ from .fetch import (
     _validate_gtfs_archive,
     prepare_reader_archive,
 )
-from .gtfs import read_feed_dates
-from .metrics import correctness, freshness
-from .score import build_scorecard
+from .metrics import correctness
+from .score import build_scorecard, score_feed_content
 from .validate import parse_report, run_validator
 
 
@@ -174,17 +172,13 @@ def reproduce(agency: Agency, date: str) -> dict[str, Any]:
 
         as_of = _canonical_date(date)
         cats = [
-            c
-            for c in (
-                correctness(report),
-                freshness(
-                    read_feed_dates(str(reader_archive.path)),
-                    today=as_of,
-                    service_type=agency.service_type,
-                ),
-                completeness(str(reader_archive.path), fare_free=agency.fare_free),
-            )
-            if c is not None
+            correctness(report),
+            *score_feed_content(
+                str(reader_archive.path),
+                today=as_of,
+                service_type=agency.service_type,
+                fare_free=agency.fare_free,
+            ),
         ]
         scorecard = build_scorecard(cats)
 

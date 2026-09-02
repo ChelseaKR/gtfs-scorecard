@@ -359,9 +359,18 @@ def freshness(
     out of the weighted average exactly as an unmeasured realtime feed does, so
     the page says "not yet measured" instead of a floor that reads like one.
 
+    Also ``None`` when the archive describes no service at all -- no stops and
+    no trips. Dates alone are not freshness. `boxcar` shipped a feed_info.txt
+    ending 2027-08-07 over an archive with zero stops and zero trips, and
+    published "Service data covers the next 365 days" and a 100.0 for it. There
+    was no service data; the sentence and the number were both about nothing.
+    A date read out of a feed that describes nothing is not a measurement of
+    how long riders can plan.
+
     This cannot quietly excuse a real feed. A feed that ships calendar.txt and
     has no usable end date has been measured and still scores 0 with its
-    finding; only the total absence of every date-bearing table returns None.
+    finding; only the total absence of every date-bearing table, or of every
+    stop and every trip, returns None.
 
     Rationale (rubric.md "Freshness"): the classic small-agency failure is a
     silently expiring feed. Full credit when service data covers 60+ days
@@ -379,7 +388,7 @@ def freshness(
     own finding code instead of a lapse alarm. A feed expired over a year
     stays serious regardless, so neither path hides a genuinely abandoned feed.
     """
-    if not dates.has_date_tables:
+    if not dates.has_date_tables or not dates.has_service_content:
         return None
     findings: list[Finding] = []
     details: dict[str, Any] = {

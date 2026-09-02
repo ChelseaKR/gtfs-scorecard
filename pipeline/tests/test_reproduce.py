@@ -73,7 +73,6 @@ def _wire_common(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
             validator_version="8.0.1", notices=[NoticeGroup("x", "WARNING", 1)]
         ),
     )
-    monkeypatch.setattr(reproduce, "read_feed_dates", lambda path: [])
     monkeypatch.setattr(
         reproduce,
         "prepare_reader_archive",
@@ -87,15 +86,16 @@ def _wire_categories(  # type: ignore[no-untyped-def]
     monkeypatch.setattr(
         reproduce, "correctness", lambda report: CategoryResult("correctness", correctness, "s")
     )
+    # The two feed-content categories now come back from one call, which is
+    # also where an archive that could not be read is refused outright, so the
+    # stub stands in for the pair rather than for each reader.
     monkeypatch.setattr(
         reproduce,
-        "freshness",
-        lambda dates, today, service_type: CategoryResult("freshness", freshness, "s"),
-    )
-    monkeypatch.setattr(
-        reproduce,
-        "completeness",
-        lambda path, fare_free=False: CategoryResult("completeness", completeness, "s"),
+        "score_feed_content",
+        lambda path, *, today, service_type="fixed", fare_free=False: [
+            CategoryResult("freshness", freshness, "s"),
+            CategoryResult("completeness", completeness, "s"),
+        ],
     )
 
 
@@ -198,12 +198,12 @@ def test_reproduce_validates_raw_wasco_archive_but_scores_normalized_reader_view
             seen["validator_names"] = raw.namelist()
         return Path("/tmp/fake-report.json")
 
-    def dates(reader_path: str) -> list[object]:
+    def feed_content(reader_path: str, **_kwargs: object) -> list[CategoryResult]:
         path = Path(reader_path)
         seen["reader_path"] = path.name
         with zipfile.ZipFile(path) as reader:
             seen["reader_names"] = reader.namelist()
-        return []
+        return [CategoryResult("freshness", 100.0, "s"), CategoryResult("completeness", 80.0, "s")]
 
     monkeypatch.setattr(reproduce, "run_validator", validate)
     monkeypatch.setattr(
@@ -213,8 +213,10 @@ def test_reproduce_validates_raw_wasco_archive_but_scores_normalized_reader_view
             validator_version="8.0.1", notices=[NoticeGroup("x", "WARNING", 1)]
         ),
     )
-    monkeypatch.setattr(reproduce, "read_feed_dates", dates)
-    _wire_categories(monkeypatch)
+    monkeypatch.setattr(reproduce, "score_feed_content", feed_content)
+    monkeypatch.setattr(
+        reproduce, "correctness", lambda report: CategoryResult("correctness", 95.0, "s")
+    )
 
     result = reproduce.reproduce(AGENCY, DATE)
 
@@ -261,12 +263,16 @@ def test_reproduce_without_published_flag_keeps_historical_raw_reader_behavior(
         lambda _path: ValidationReport(validator_version="8.0.1", notices=[]),
     )
 
-    def dates(path: str) -> list[object]:
+    def feed_content(path: str, **_kwargs: object) -> list[CategoryResult]:
+        # score_feed_content is now the only reader of the feed's own contents,
+        # so it is where the reader-view routing is observable.
         seen["reader"] = Path(path).name
-        return []
+        return [CategoryResult("freshness", 100.0, "s"), CategoryResult("completeness", 80.0, "s")]
 
-    monkeypatch.setattr(reproduce, "read_feed_dates", dates)
-    _wire_categories(monkeypatch)
+    monkeypatch.setattr(reproduce, "score_feed_content", feed_content)
+    monkeypatch.setattr(
+        reproduce, "correctness", lambda report: CategoryResult("correctness", 95.0, "s")
+    )
 
     result = reproduce.reproduce(AGENCY, DATE)
 

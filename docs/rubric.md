@@ -67,6 +67,17 @@ renormalized, so an agency is never penalized for a category the scorecard
 hasn't measured. The same rule will apply per-agency when an agency has no
 realtime feed: "Not yet published" is a neutral status, not a zero.
 
+Freshness and rider experience read the feed's own contents, so an archive that
+describes no service — no stops and no trips — cannot be measured for either.
+Such a feed is **not graded at all**. Correctness could still score it, because
+the validator has notices to report about what is missing, but a letter built on
+correctness alone would describe a feed nobody read: an empty archive raises few
+notices, so it would earn a *high* grade rather than a low one. "Could not be
+read" is the only true answer, and it is the one published — the same refusal a
+response body that is not a GTFS zip already gets. A feed with stops and trips
+but no calendar at all is still a feed, and is still graded on what could be
+measured.
+
 Letter grades: A ≥ 90, B ≥ 80, C ≥ 70, D ≥ 60, F below.
 
 ### Linking findings to their canonical rule

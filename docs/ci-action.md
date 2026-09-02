@@ -58,6 +58,13 @@ Leave a threshold blank to skip it. With neither `min-grade` nor
 `min-days-to-expiry` set, the action prints the scorecard and always passes,
 which is useful as an informational step.
 
+One input fails with no threshold set, because it produces no scorecard to
+gate: an archive the scorer could read no schedule data out of — no stops and
+no trips — is refused rather than graded, exactly as a response body that is not
+a zip is. The step fails with `could not score <url>: ...` and `passed` is
+`false`. Until 2026-09, such a feed was graded and the default configuration
+reported `passed=true` for it.
+
 ## Outputs and job summary
 
 The action exposes `grade`, `score`, `days-to-expiry`, `passed`, and

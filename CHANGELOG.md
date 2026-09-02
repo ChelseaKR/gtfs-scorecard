@@ -68,36 +68,69 @@ the declared public surface).
 
 ### Fixed
 
-- **A category that measured nothing no longer publishes a number for it.**
-  Given a well-formed zip containing no GTFS files at all, the scorer published
+- **A feed with no stops and no trips is no longer given a letter grade.**
+  Reported downstream against the published `gtfs-scorecard@v1.4.0` Action: a
+  well-formed zip containing no GTFS files was scored `F (31.3/100)` with
   `Freshness 0.0` and `Rider experience 0.0` beside `Realtime -- not yet
-  measured`, and graded the result F (31.3/100). Two categories printed a floor
-  for a measurement nobody made; the third, in the same table, printed the
-  honest thing. A 0.0 says a real feed was read and found to leave riders with
-  nothing, and no reader could tell it from an archive that had nothing to read.
-  `freshness` now returns no category when the archive carries no table that can
-  hold a service date, and `completeness` returns none when there are no stops
-  and no trips, so both drop out of the artifact and the weighted average the
-  way an unmeasured realtime feed already does. The rule is deliberately narrow:
-  a feed that ships `calendar.txt` and has no usable end date is still measured
-  and still scores 0 with its finding, and an empty-but-present `calendar.txt`
-  is still a claim the feed made. `scorecard try` also no longer exits 0 for such
-  an archive even when no thresholds were requested -- the Action derives
-  `passed` from that exit code, so the default configuration reported
-  `passed=true` for a feed it had read nothing out of.
+  measured`, and `scorecard try` exited 0, so the Action reported
+  `passed=true`.
 
-  **This entry is not shipped and this change is not merged.** Auditing the
-  2,515 committed artifacts found the reported condition live: 22 published
-  agency scorecards score a feed with zero stops and zero trips today, and
-  `high-desert-point` publishes the exact 31.3/F with correctness 71.5 that was
-  reported from downstream. Withdrawing the two fabricated categories therefore
-  raises all 22 grades and moves 20 of them across a letter boundary --
-  `beloit-transit` F to B (+48.7), `boxcar` C to A, thirteen F to D -- because
-  correctness alone then carries the overall, and correctness scores 60 to 99
-  for these feeds by deducting per distinct validator notice code. Publishing a
-  B for a feed with no stops is worse than the F it replaces. The absence fix is
-  correct and the correctness half is an owner decision, and they cannot land
-  separately.
+  Two of those categories printed a floor for a measurement nobody made; the
+  third, in the same table, printed the honest thing. A 0.0 says a real feed was
+  read and found to leave riders with nothing, and no reader could tell it from
+  an archive that had nothing to read. `freshness` now returns no category when
+  the archive carries no table that can hold a service date, or describes no
+  service at all, and `completeness` returns none when there are no stops and no
+  trips.
+
+  Withdrawing those two is necessary but not sufficient, and shipping it alone
+  would have been worse than the bug. Correctness starts at 100 and deducts per
+  distinct validator notice code, and an empty archive raises very few, so with
+  the other two categories gone correctness alone becomes the whole overall and
+  every such grade *rises*. Measured against the 2,515 committed artifacts: 22
+  published scorecards score a feed with zero stops and zero trips, all 22 would
+  have risen and 20 crossed a letter boundary -- `beloit-transit` F to B,
+  `boxcar` C to A. Today's F is fabricated and that B is fabricated too.
+
+  So the scorer now refuses. `score_feed_content` raises `UnreadableFeedError`
+  when neither feed-content category could be measured, and no scorecard is
+  built at all. This is the same refusal a response body that is not a zip
+  already gets -- the error subclasses `ValueError` and travels the same path,
+  so `scorecard try` reports `could not score <url>: ...` and exits 1 with no
+  new handling, and the daily run records the feed as not scored rather than
+  publishing a letter for it. One refusal, two causes.
+
+  The rule is deliberately narrow, and both directions are pinned by tests. A
+  feed that ships `calendar.txt` with no usable end date is still measured and
+  still scores 0 with its finding; an empty-but-present `calendar.txt` is still
+  a claim the feed made; and a feed with stops and trips but no calendar at all
+  is still graded on its rider experience. Only the total absence of every
+  stop and every trip is refused.
+
+  The prose went the same way as the number. `boxcar` published "Service data
+  covers the next 365 days" and "0% of stops state wheelchair accessibility"
+  about an archive whose `stops.txt` and `trips.txt` hold a header row and
+  nothing else (verified against the live feed, not inferred). Freshness read
+  that 365 out of a `feed_info.txt` end date, which is a claim about data that
+  is not in the archive; with no service to be the end of, the sentence and the
+  100.0 were both about nothing, and both are now withheld.
+
+  **Not done here, and it needs an owner decision.** The 22 already-published
+  scorecards still carry their old letters. The scorer can no longer refresh
+  them -- each daily run now refuses and keeps the last artifact -- and it
+  cannot rewrite them either, because publishing "could not be read" in place of
+  a grade means `overall` without a `score` or `grade`, which 5 JSON schemas
+  require and roughly 17 load-bearing call sites read unguarded. Three of those
+  would actively misreport: `web/src/app.js` renders a missing grade as a large
+  split-flap **F** (`String(grade || "F")`), `publish._history_entry` would
+  abort the whole reindex, and `feeddiff` defaults a missing score to `0.0` and
+  would publish a fabricated 73-point regression to Atom subscribers.
+  Withdrawing the 22 instead -- removing the current pointers and keeping the
+  dated evidence, the way a retired feed is handled today
+  (`artifact_lifecycle.MUTABLE_PUBLIC_ARTIFACT_NAMES`) -- is a listing-policy
+  call, not a scoring one. Until then the set is named and ratcheted by
+  `test_no_new_scorecard_grades_a_feed_with_no_stops_and_no_trips`, which may
+  only shrink.
 
 - **The weekly discovery job no longer overwrites a curator's pinned feed
   host.** `city-of-wasco` is tracked on the Caltrans DDS ZIP; its

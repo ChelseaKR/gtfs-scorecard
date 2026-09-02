@@ -62,6 +62,26 @@ def read_tables(gtfs_zip_path: str, names: list[str]) -> dict[str, list[dict[str
         return {name: _read_table(zf, name) for name in names}
 
 
+def _has_data_row(zf: zipfile.ZipFile, name: str) -> bool:
+    """Whether ``name`` is in the archive and carries at least one data row.
+
+    Header-only is not a row. A stops.txt holding nothing but its column names
+    describes no stops, exactly as an absent stops.txt does, and the two must
+    answer this question the same way.
+
+    Streamed, not parsed: the question is "is there a first row", not "how
+    many", so this reads a line or two and stops. That keeps it affordable to
+    ask of a national feed's trips.txt, and is why it does not apply the
+    whole-table memory cap -- it never holds the table.
+    """
+    if name not in zf.namelist():
+        return False
+    with zf.open(name) as handle:
+        if not handle.readline():  # no header means no table
+            return False
+        return any(line.strip() for line in handle)
+
+
 def iter_table_rows(
     gtfs_zip_path: str,
     name: str,
@@ -167,6 +187,13 @@ class FeedDates:
     # scores. Defaults True so a hand-built FeedDates keeps scoring as before;
     # only read_feed_dates, which knows what the archive held, can set it False.
     has_date_tables: bool = True
+    # Whether the archive describes any service at all: at least one stop or at
+    # least one trip. A feed_info.txt end date is a claim about the data in the
+    # archive, so with no stops and no trips there is no service for that date
+    # to be the end of, and "service data covers the next 365 days" is a
+    # sentence about nothing. Same default and same reason as has_date_tables:
+    # only read_feed_dates, which opened the archive, can set it False.
+    has_service_content: bool = True
 
     def effective_expiry(self) -> dt.date | None:
         """The date riders lose trip planning: the earlier of feed_info's
@@ -220,6 +247,9 @@ def read_feed_dates(gtfs_zip_path: str) -> FeedDates:
         # archive carrying none of these tables said nothing at all.
         present = set(zf.namelist())
         has_date_tables = any(name in present for name in date_tables)
+        # Rows, not presence, for the service tables: a header-only stops.txt
+        # describes no stops, and the dates would be about nothing either way.
+        has_service_content = _has_data_row(zf, "stops.txt") or _has_data_row(zf, "trips.txt")
         feed_info_rows = _read_table(zf, "feed_info.txt")
         calendar_rows = _read_table(zf, "calendar.txt")
         calendar_date_rows = _read_table(zf, "calendar_dates.txt")
@@ -271,4 +301,5 @@ def read_feed_dates(gtfs_zip_path: str) -> FeedDates:
             spans_reliable and _detect_seasonal_boundary(_merge_spans(spans), effective_expiry)
         ),
         has_date_tables=has_date_tables,
+        has_service_content=has_service_content,
     )

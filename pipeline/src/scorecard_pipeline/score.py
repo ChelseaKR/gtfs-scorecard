@@ -9,6 +9,7 @@ scorecard hasn't computed.
 
 from __future__ import annotations
 
+import datetime as dt
 from dataclasses import dataclass
 from typing import Any
 
@@ -271,6 +272,81 @@ def _fix_priority(finding: Finding) -> tuple[int, float, int]:
     """Order candidate fixes by rider impact first (tier), then by score impact
     and how widespread they are."""
     return (_fix_tier(finding), -finding.deduction, -finding.count)
+
+
+#: The categories that read the feed's own contents. Correctness is not one of
+#: them: it scores the validator's notices, and an archive with nothing in it
+#: still raises a handful, which is how an empty zip reached a correctness of
+#: 71.5 with nothing to check.
+FEED_CONTENT_CATEGORIES = ("freshness", "completeness")
+
+#: What the refusal says, in one sentence, everywhere it is said.
+NOTHING_WAS_READ = (
+    "no GTFS schedule data could be read from this archive: it has no stops and "
+    "no trips, so neither freshness nor rider experience could be measured and "
+    "there is no feed to grade"
+)
+
+
+class UnreadableFeedError(ValueError):
+    """The archive carried no schedule content, so there is no grade to publish.
+
+    Raised instead of returning a scorecard whose overall rests on correctness
+    alone. Correctness can score such an archive -- the validator has notices to
+    report about what is missing -- but a letter derived from it describes a
+    feed that was never read.
+
+    Both available answers were fabrications. Before the absence fix the
+    published grade was an F built from two 0.0s nobody measured; with the
+    absence fix and no refusal it becomes a B or an A, because correctness
+    starts at 100 and an empty archive gives it almost nothing to deduct for.
+    `beloit-transit` would have moved F to B and `boxcar` C to A. A feed with no
+    stops and no trips earning a B is a worse published claim than the F it
+    replaces, and neither letter is true. "Could not be read" is.
+
+    Subclasses ValueError deliberately. A response body that is not a zip
+    already raises ValueError out of ``fetch.fetch_static``, and every caller
+    that refuses a feed on that basis -- ``scorecard try`` prints "could not
+    score <url>: ..." and exits 1 -- refuses this one by the same path, with no
+    new handling. One refusal, two causes, not two concepts.
+    """
+
+
+def score_feed_content(
+    reader_path: str,
+    *,
+    today: dt.date,
+    service_type: str = "fixed",
+    fare_free: bool = False,
+) -> list[CategoryResult]:
+    """The categories that read the archive, and the refusal when none could.
+
+    The single place a feed's own contents are turned into categories, so the
+    rule that an unreadable archive is not graded cannot be reimplemented, or
+    forgotten, at one of the four call sites that score a feed (the daily run,
+    ``scorecard try``, the validator canary, and reproduction).
+
+    Returns whichever of freshness and rider experience were measurable, which
+    may be one of the two: a feed with stops and trips but no calendar at all
+    still has a measurable rider experience, and is still graded on it.
+    Raises :class:`UnreadableFeedError` only when neither was measurable, which
+    is to say when the archive described no service at all.
+    """
+    from .completeness import completeness
+    from .gtfs import read_feed_dates
+    from .metrics import freshness
+
+    measured = [
+        category
+        for category in (
+            freshness(read_feed_dates(reader_path), today=today, service_type=service_type),
+            completeness(reader_path, fare_free=fare_free),
+        )
+        if category is not None
+    ]
+    if not measured:
+        raise UnreadableFeedError(NOTHING_WAS_READ)
+    return measured
 
 
 def build_scorecard(categories: list[CategoryResult]) -> Scorecard:
