@@ -206,7 +206,7 @@ def _single_pattern_loop_headsign_exemptions(
     return exempt
 
 
-def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
+def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult | None:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Score rider-facing completeness of a static GTFS feed.
 
     ``fare_free`` is set for agencies that run fare-free by policy: their feed
@@ -214,6 +214,15 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
     "no fare data" finding is replaced by a neutral note rather than docking the
     score. A deliberate policy is not a gap, the same way a missing realtime feed
     is shown neutrally.
+
+    Returns ``None`` -- no category, no number -- for an archive with no stops
+    and no trips. Issue #286 already gave each component a not-measurable state;
+    this is the same rule one level up. Four of the six components already
+    returned None for such an archive, and the 0.0 that reached the page came
+    entirely from the two presence checks, contact and fares. "This feed
+    publishes no fare data" is a finding about a feed. Said of an archive that
+    describes no stops and no trips, it is a measurement of nothing, and the
+    reader cannot tell that 0.0 from an agency that really does publish no fares.
     """
     tables = read_tables(
         gtfs_zip_path,
@@ -227,6 +236,8 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult:
         ],
     )
     stops, trips, agency = tables["stops.txt"], tables["trips.txt"], tables["agency.txt"]
+    if not stops and not trips:
+        return None
 
     findings: list[Finding] = []
     # A component holds points (fraction * its weight) when measurable, or

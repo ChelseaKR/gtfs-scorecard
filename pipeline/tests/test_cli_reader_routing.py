@@ -137,27 +137,22 @@ def test_run_agency_routes_raw_archive_and_reader_view_to_their_owners(  # noqa:
         assert Path(path) == reader_path
         reader_calls.append(label)
 
-    feed_dates = object()
-
-    def read_dates(path: str) -> object:
-        expect_reader("freshness", path)
-        return feed_dates
-
-    def score_freshness(
-        dates: object,
+    def score_feed_content(
+        path: str,
         *,
         today: dt.date,
-        service_type: str,
-    ) -> CategoryResult:
-        assert dates is feed_dates
+        service_type: str = "fixed",
+        fare_free: bool = False,
+    ) -> list[CategoryResult]:
+        # One call now owns both feed-content categories and the refusal for an
+        # archive that describes no service, so the reader view has to reach it
+        # rather than each reader separately.
+        expect_reader("freshness", path)
+        expect_reader("completeness", path)
         assert today == run_date
         assert service_type == agency.service_type
-        return _category("freshness")
-
-    def score_completeness(path: str, *, fare_free: bool) -> CategoryResult:
-        expect_reader("completeness", path)
         assert fare_free is True
-        return _category("completeness")
+        return [_category("freshness"), _category("completeness")]
 
     def score_realtime(
         configured_agency: Agency,
@@ -230,9 +225,7 @@ def test_run_agency_routes_raw_archive_and_reader_view_to_their_owners(  # noqa:
     monkeypatch.setattr(cli, "parse_report", lambda _path: report)
     monkeypatch.setattr(vcache, "store_cached", store_report)
     monkeypatch.setattr(cli, "correctness", lambda checked: _category("correctness"))
-    monkeypatch.setattr(cli, "read_feed_dates", read_dates)
-    monkeypatch.setattr(cli, "freshness", score_freshness)
-    monkeypatch.setattr(cli, "completeness", score_completeness)
+    monkeypatch.setattr(cli, "score_feed_content", score_feed_content)
     monkeypatch.setattr(cli, "_realtime_category", score_realtime)
     monkeypatch.setattr(modes, "mode_profile_from_zip", read_modes)
     monkeypatch.setattr(ferry_profile, "ferry_profile_from_zip", read_ferry)

@@ -16,15 +16,28 @@ from __future__ import annotations
 
 import datetime as dt
 from pathlib import Path
+from typing import Any
 
 import pytest
 
 from scorecard_pipeline.gtfs import FeedDates, read_feed_dates
-from scorecard_pipeline.metrics import correctness, freshness
+from scorecard_pipeline.metrics import CategoryResult, correctness
+from scorecard_pipeline.metrics import freshness as _freshness_maybe
 from scorecard_pipeline.rt import RtSample, RtWindow, realtime
 from scorecard_pipeline.rt_drift import PlausibilityStats
 from scorecard_pipeline.score import Scorecard, build_scorecard
 from scorecard_pipeline.validate import NoticeGroup, ValidationReport
+
+
+# `freshness` returns None when the archive held no table that can carry a
+# service date. Every fixture below has one, so this wrapper keeps the existing
+# call sites unchanged while turning an unexpected "not measurable" into a loud
+# failure instead of an attribute error.
+def freshness(*args: Any, **kwargs: Any) -> CategoryResult:
+    result = _freshness_maybe(*args, **kwargs)
+    assert result is not None, "this fixture has date tables and must measure freshness"
+    return result
+
 
 TODAY = dt.date(2026, 6, 11)
 FIXTURE = Path(__file__).parent / "fixtures" / "unitrans_trimmed.zip"
@@ -52,6 +65,7 @@ def _rt_sample(
     lag: int | None = 30,
     trip_ids: frozenset[str] | None = None,
 ) -> RtSample:
+
     fetched = 1_760_000_000
     return RtSample(
         kind=kind,
