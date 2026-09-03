@@ -347,6 +347,26 @@ a:hover { color: var(--green-bright); }
   .support-paths { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
+/* Sponsor tiers on /support/: a definition list so each amount is announced
+   with the cost line it is sized to. Reuses the card tokens; no new colors. */
+.sponsor-tiers {
+  margin: 0 0 1rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.35rem 1rem;
+}
+.sponsor-tiers dt {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.sponsor-tiers dd { margin: 0; }
+@media (max-width: 40rem) {
+  .sponsor-tiers { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
+  .sponsor-tiers dd { margin: 0 0 0.6rem; }
+}
+
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;

@@ -32,10 +32,15 @@ The real return is the tool itself: it stays free for every agency, including th
 
 ## How to sponsor
 
-- [Sponsor on GitHub](https://github.com/sponsors/ChelseaKR), or [open a sponsorship inquiry](https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=Sponsorship%20inquiry) if you would rather talk first or need an invoice. No payment rail is advertised here until the account behind it can actually receive funds.
+- [Sponsor on GitHub](https://github.com/sponsors/ChelseaKR), or [open a sponsorship inquiry](https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=Sponsorship%20inquiry) if you would rather talk first or need an invoice. No other payment rail is advertised here until the account behind it can actually receive funds.
 
-## For programs and consultancies
+The GitHub tiers are sized to real cost lines, so a sponsor can see what a month
+buys. The money is one pot and the spending caps hold regardless of which tier
+it arrives through; nothing is earmarked.
 
-Organizations that support many agencies at once, such as state DOT programs and consultancies, sometimes need more than the public site: portfolio views across a region, or help reading results during agency check-ins. Paid services like that exist alongside the free tool and never replace it. Nothing is subtracted from the free tier to create them.
-
-See the current [consulting services and pricing](https://chelseakr.com/consulting/), or write to [Chelsea Kelly-Reif](mailto:ckellyreif@gmail.com) to start that conversation.
+| Tier | What it is sized to |
+| --- | --- |
+| $5 a month | The static core: site, daily scoring run, read API, single-digit dollars a month today. |
+| $25 a month | The dynamic edges: the subscribe API, the badge and API worker, and the MCP endpoint, which run on per-request compute at about $15 a month at plausible volume. |
+| $50 one time | About one month of on-demand scoring at demo-era volume ($20 to $60), the next capacity the project would add. |
+| $100 a month | On-demand scoring of any GTFS URL from a web form, every month ([ADR 0029](decisions/0029-instant-score-funnel.md)). Written, not switched on; this is its running cost. |

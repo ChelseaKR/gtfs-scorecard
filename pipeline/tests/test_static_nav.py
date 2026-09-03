@@ -97,20 +97,32 @@ def test_shared_social_image_has_declared_dimensions() -> None:
     assert struct.unpack(">II", png[16:24]) == (1200, 630)
 
 
-def test_consulting_offer_is_reachable_from_public_project_surfaces() -> None:
-    """The July hide was explicitly temporary; this is its inverse.
+_MONEY_PAGES = (
+    _REPO / "web" / "support" / "index.html",
+    _REPO / "README.md",
+    _REPO / "docs" / "support.md",
+    _REPO / "SUPPORT.md",
+)
 
-    A paid offer that quietly disappears from every entry point is the failure
-    this replaces, so the link is asserted present rather than absent. The
-    separation claim is asserted too: paid help never changes a grade.
+
+def test_no_public_surface_links_to_the_retired_consulting_page() -> None:
+    """The consulting offer was withdrawn (2026-09-01) and its page returns 404.
+
+    The previous test asserted the link *present*, which is how a dead link
+    survived on the one page that asks for money. A withdrawn offer must
+    disappear from every entry point at once, so the link is asserted absent.
     """
-    public_sources = (
-        _REPO / "web" / "support" / "index.html",
-        _REPO / "README.md",
-        _REPO / "docs" / "support.md",
-    )
-    for path in public_sources:
-        assert "chelseakr.com/consulting" in path.read_text(), path
+    for path in _MONEY_PAGES:
+        assert "chelseakr.com/consulting" not in path.read_text(), path
+
+
+def test_every_money_page_points_at_the_live_sponsorship_rail() -> None:
+    """The one payment rail that exists is GitHub Sponsors; each surface that
+    talks about money must reach it, and .github/FUNDING.yml must agree."""
+    for path in _MONEY_PAGES:
+        assert "https://github.com/sponsors/ChelseaKR" in path.read_text(), path
+    funding = (_REPO / ".github" / "FUNDING.yml").read_text()
+    assert "github: ChelseaKR" in funding
 
 
 def test_local_fonts_do_not_swap_after_first_paint() -> None:

@@ -38,10 +38,7 @@ To sponsor the work:
 - [open a sponsorship inquiry](https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=Sponsorship%20inquiry) if you would rather talk first, or
 - write to [Chelsea Kelly-Reif](mailto:ckellyreif@gmail.com).
 
-## Paid services
-
-Programs and consultancies that want a facilitated audit, a staff workshop, or
-implementation help can review the current
-[consulting services and pricing](https://chelseakr.com/consulting/). Paid help
-is separate from scoring. It never changes a grade, and nothing is subtracted
-from the free tier to create it.
+Each GitHub tier is sized to a real cost line (the static core, the per-request
+edges, a month of on-demand scoring); the sizing is explained on the
+[support page](https://gtfsscorecard.org/support/#how-h). Nothing is ever
+subtracted from the free tier.
