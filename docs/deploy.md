@@ -223,6 +223,14 @@ it into `web/src/config.js` like the subscribe URL. Until it is applied, the
 page's inline form stays disabled and falls back to the GitHub Issue Form
 path (`onboard.yml`).
 
+## 6. Program report bundle (`infra/program-bundle`)
+
+The paid program tier's plumbing. Its runbook, including the Stripe test-mode
+setup, the secrets, the apply, the end-to-end check, and the one file that
+turns the tier on, lives in [program-plan.md](program-plan.md) so the whole
+commercial decision reads in one place. Nothing in this section is needed to
+keep the site up.
+
 ## Scheduled jobs (GitHub Actions, no AWS needed)
 
 The runbook above covers the AWS stacks. Day-to-day operations run entirely in

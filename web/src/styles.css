@@ -2473,6 +2473,15 @@ main:focus { outline: none; }
 .form-status-err { color: var(--error); font-weight: 600; }
 .form-status-ok { color: var(--success-text); font-weight: 600; }
 
+/* Plan cards on /bundle/: the price line is the one thing the server sets.
+   No new colors; the mono face keeps amounts from reading as prose. */
+.plan-price {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+
 /* The browser's default file picker is only about 22px tall on mobile. Keep
    the pre-publish check's local-only upload control at the same target size as
    the rest of the site's form controls. */

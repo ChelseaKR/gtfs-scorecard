@@ -1,0 +1,182 @@
+name: Program report bundle
+
+# The program tier's fulfilment step (docs/program-plan.md, ADR 0049): render
+# one program's branded board reports for a cohort of agencies, zip them with
+# a manifest, put the archive behind a 30-day capability link, and email the
+# link. GitHub Actions is the on-demand compute, the same way onboard.yml
+# scores a feed on request, so the tier needs no always-on server.
+#
+# Dispatched by infra/program-bundle (the post-checkout setup Lambda, and the
+# weekly refresh Lambda for subscriptions). It can also be dispatched by hand
+# for a test-mode run or a make-good. Payment is settled before dispatch; this
+# workflow never talks to Stripe.
+#
+# Every input is untrusted. Inputs reach the pipeline through environment
+# variables and a JSON file written by Python, never interpolated into a
+# shell command, and the pipeline's parse_request validates all of them
+# (id pattern, cohort cap, accent, email, logo shape) before anything is
+# fetched or rendered.
+#
+# Delivery degrades honestly. Without an artifacts bucket, the committed
+# snapshot is used. Without the program-bundle API (BUNDLE_API_BASE) the
+# archive is kept as a run artifact and no email is sent, because an email
+# with a link that will not work is worse than no email.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bundle_id:
+        description: "32 lowercase hex characters; the download capability"
+        required: true
+        type: string
+      program_name:
+        description: "Goes on every report cover (120 characters max)"
+        required: true
+        type: string
+      accent:
+        description: "#rrggbb accent for the cover band and rules"
+        required: false
+        default: ""
+        type: string
+      logo:
+        description: "https URL or SVG/PNG/JPEG data: URI, optional"
+        required: false
+        default: ""
+        type: string
+      agency_ids:
+        description: "Comma-separated scorecard ids, up to 100"
+        required: true
+        type: string
+      deliver_to:
+        description: "Email address the download link goes to"
+        required: true
+        type: string
+      cadence:
+        description: "one_time or monthly (changes the email's wording only)"
+        required: false
+        default: "one_time"
+        type: choice
+        options: [one_time, monthly]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: report-bundle-${{ inputs.bundle_id }}
+  cancel-in-progress: false
+
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # read/write the artifacts bucket through AWS OIDC
+    defaults:
+      run:
+        working-directory: pipeline
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: uv sync --locked
+
+      - name: Write and validate the request
+        env:
+          IN_BUNDLE_ID: ${{ inputs.bundle_id }}
+          IN_PROGRAM_NAME: ${{ inputs.program_name }}
+          IN_ACCENT: ${{ inputs.accent }}
+          IN_LOGO: ${{ inputs.logo }}
+          IN_AGENCY_IDS: ${{ inputs.agency_ids }}
+          IN_DELIVER_TO: ${{ inputs.deliver_to }}
+          IN_CADENCE: ${{ inputs.cadence }}
+        run: |
+          uv run python - <<'PY'
+          import json, os
+          keys = ("bundle_id", "program_name", "accent", "logo", "agency_ids", "deliver_to", "cadence")
+          request = {k: os.environ.get(f"IN_{k.upper()}", "") for k in keys}
+          with open("request.json", "w") as fh:
+              json.dump(request, fh)
+          PY
+          uv run scorecard bundle --request request.json --plan plan.json
+          {
+            echo "## Program report bundle"
+            echo
+            echo "Fetching $(jq '.current | length' plan.json) current agencies;"
+            echo "$(jq '.refused | length' plan.json) ids refused before the build (see manifest)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Authenticate to AWS
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
+
+      # Only what the report reads: the index (history) and each requested
+      # agency's current artifact. Not the whole corpus; a bundle is a hundred
+      # files at most, and the daily run's full sync would take minutes.
+      - name: Hydrate the requested artifacts from S3
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        run: |
+          set -euo pipefail
+          aws s3 cp "s3://${ARTIFACTS_BUCKET}/data/artifacts/index.json" ../data/artifacts/index.json --only-show-errors
+          jq -r '.current[]' plan.json | while read -r id; do
+            mkdir -p "../data/artifacts/${id}"
+            aws s3 cp "s3://${ARTIFACTS_BUCKET}/data/artifacts/${id}/latest.json" \
+              "../data/artifacts/${id}/latest.json" --only-show-errors || true
+          done
+
+      - name: Render the bundle
+        run: uv run scorecard bundle --request request.json --out bundle.zip --manifest manifest.json
+
+      - name: Upload the archive behind its capability key
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+          BUNDLE_ID: ${{ inputs.bundle_id }}
+        run: |
+          set -euo pipefail
+          # program-bundles/ is outside the CloudFront allow-list and expires
+          # after 30 days (infra/artifacts lifecycle). The only way to it is
+          # the download route in infra/program-bundle, which presigns per click.
+          aws s3 cp bundle.zip "s3://${ARTIFACTS_BUCKET}/program-bundles/${BUNDLE_ID}/bundle.zip" \
+            --content-type application/zip --only-show-errors
+
+      - name: Email the download link
+        if: ${{ vars.ARTIFACTS_BUCKET != '' && vars.BUNDLE_API_BASE != '' && vars.SES_FROM != '' }}
+        env:
+          BUNDLE_API_BASE: ${{ vars.BUNDLE_API_BASE }}
+          BUNDLE_ID: ${{ inputs.bundle_id }}
+          SES_FROM: ${{ vars.SES_FROM }}
+        run: |
+          set -euo pipefail
+          expires="$(date -u -d '+30 days' +%Y-%m-%d)"
+          uv run --with boto3 python -m scorecard_pipeline.cli bundle-email \
+            --request request.json --manifest manifest.json \
+            --download-url "${BUNDLE_API_BASE%/}/download/${BUNDLE_ID}" \
+            --expires-on "$expires" --out email.txt --send --from "$SES_FROM"
+
+      - name: Say when delivery is off
+        if: ${{ vars.ARTIFACTS_BUCKET == '' || vars.BUNDLE_API_BASE == '' || vars.SES_FROM == '' }}
+        run: |
+          {
+            echo
+            echo "**No email was sent.** ARTIFACTS_BUCKET, BUNDLE_API_BASE, and SES_FROM must all be"
+            echo "set for delivery; the archive is attached to this run instead (30-day retention)."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Keep the archive on the run
+        if: ${{ always() }}
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        with:
+          name: program-bundle-${{ inputs.bundle_id }}
+          path: |
+            pipeline/bundle.zip
+            pipeline/manifest.json
+          if-no-files-found: warn
+          retention-days: 30

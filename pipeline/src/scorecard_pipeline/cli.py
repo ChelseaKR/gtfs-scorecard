@@ -3129,6 +3129,61 @@ def _cmd_report(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     return 0
 
 
+def _cmd_bundle(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Program report bundle (docs/program-plan.md): validate a request, and
+    either print the build plan (--plan) or render the zip + manifest."""
+    from .bundle import BundleError, build_bundle, parse_request, plan
+
+    try:
+        raw = json.loads(Path(args.request).read_text())
+    except (OSError, ValueError) as err:
+        print(f"error: could not read request {args.request}: {err}", file=sys.stderr)
+        return 2
+    try:
+        request = parse_request(raw if isinstance(raw, dict) else {})
+        if args.plan is not None:
+            args.plan.parent.mkdir(parents=True, exist_ok=True)
+            args.plan.write_text(json.dumps(plan(request), indent=2) + "\n")
+            print(args.plan)
+            return 0
+        if args.out is None:
+            parser.error("--out is required unless --plan is given")
+        manifest = build_bundle(request, args.out)
+    except BundleError as err:
+        print(f"error: {err}", file=sys.stderr)
+        return 2
+    if args.manifest is not None:
+        args.manifest.parent.mkdir(parents=True, exist_ok=True)
+        args.manifest.write_text(json.dumps(manifest, indent=2) + "\n")
+    print(f"{args.out}: {manifest['included']} of {manifest['requested']} agencies included")
+    return 0
+
+
+def _cmd_bundle_email(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Render (and with --send, send through SES) the delivery email for a
+    built bundle. Rendering never touches the network; --send needs boto3."""
+    from .bundle import BundleError, delivery_email, parse_request
+    from .notify import send_via_ses
+
+    try:
+        request = parse_request(json.loads(Path(args.request).read_text()))
+        manifest = json.loads(Path(args.manifest).read_text())
+    except (OSError, ValueError, BundleError) as err:
+        print(f"error: {err}", file=sys.stderr)
+        return 2
+    email = delivery_email(request, manifest, args.download_url, args.expires_on)
+    if args.out is not None:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(f"To: {email.to}\nSubject: {email.subject}\n\n{email.body}")
+        print(args.out)
+    if args.send:
+        if not args.sender:
+            parser.error("--send needs --from (a verified SES sender)")
+        send_via_ses([email], args.sender)
+        print(f"sent to {email.to}")
+    return 0
+
+
 def _cmd_canary(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .canary import run_canary
     from .validate import VALIDATOR_VERSION
@@ -3727,6 +3782,32 @@ def main(argv: list[str] | None = None) -> int:
         help="output path (default: <agency>-board-report.html in the current directory)",
     )
 
+    bundle = sub.add_parser(
+        "bundle",
+        help="render a program's branded board reports for a cohort as one zip",
+    )
+    bundle.add_argument("--request", required=True, type=Path, help="request JSON (see bundle.py)")
+    bundle.add_argument("--out", type=Path, default=None, help="zip to write")
+    bundle.add_argument("--manifest", type=Path, default=None, help="also write the manifest here")
+    bundle.add_argument(
+        "--plan",
+        type=Path,
+        default=None,
+        help="write the build plan (ids to fetch, ids refused) and stop; renders nothing",
+    )
+    bundle_email = sub.add_parser(
+        "bundle-email", help="render or send the delivery email for a built program bundle"
+    )
+    bundle_email.add_argument("--request", required=True, type=Path)
+    bundle_email.add_argument("--manifest", required=True, type=Path)
+    bundle_email.add_argument("--download-url", required=True)
+    bundle_email.add_argument("--expires-on", required=True, help="ISO date the link stops working")
+    bundle_email.add_argument(
+        "--out", type=Path, default=None, help="write the rendered email here"
+    )
+    bundle_email.add_argument("--send", action="store_true", help="send through SES (needs boto3)")
+    bundle_email.add_argument("--from", dest="sender", default="", help="verified SES sender")
+
     backfill = sub.add_parser(
         "backfill-state", help="fill missing agency state from the Mobility Database catalog"
     )
@@ -3935,6 +4016,8 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "render-site": _cmd_render_site,
         "render-constants": _cmd_render_constants,
         "report": _cmd_report,
+        "bundle": _cmd_bundle,
+        "bundle-email": _cmd_bundle_email,
         "backfill-state": _cmd_backfill_state,
         "lint": _cmd_lint,
         "identity": _cmd_identity,

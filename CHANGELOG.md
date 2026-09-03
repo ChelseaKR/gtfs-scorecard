@@ -29,6 +29,23 @@ the declared public surface).
 
 ### Added
 
+- **Program report bundle, built and not launched (2026-09-01).** The
+  program tier the sustainability plan allows (gtfs-scorecard-plans/07:
+  agency-facing stays free; only tools for the people who manage many
+  agencies may carry a price) now exists as code, behind a gate that is
+  closed. `scorecard bundle` renders one program's branded board reports for
+  a cohort of up to 100 agencies as one archive with a manifest that names
+  every id asked for and what happened to it; `report-bundle.yml` is the
+  on-demand fulfilment; `infra/program-bundle` (written, not applied) is the
+  post-checkout form, the capability download route, the Stripe webhook, and
+  the weekly refresh, with plan-failing preconditions that keep
+  `payments_enabled` at "0" until the Stripe configuration is complete;
+  `/bundle/` and `/bundle/setup/` are unlinked, `noindex`, out of the
+  sitemap, and read every price from `web/bundle/plan.json`, which says
+  `paymentsAvailable: false`. ADR 0049 records the decision: a checkout is
+  the "named user at the table" the plan required before building this
+  tier. The runbook and the day-90 gate are in `docs/program-plan.md`.
+
 - **14 French feed records from the rentrée recheck pass (2026-09-01).** The
   2026-08-30 exhaustion left 100 candidates excluded only for short
   calendars. Two days later, fourteen had refreshed past the 60-day gate and

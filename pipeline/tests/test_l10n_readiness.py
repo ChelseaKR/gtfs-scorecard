@@ -54,6 +54,11 @@ HARDCODED_STRING_BASELINE = {
     # expose four more matches in this deliberately simple whole-file heuristic,
     # so record 392 while the presenter copy remains pseudolocalizable.
     "app.js": 392,
+    # Program report bundle pages (docs/program-plan.md): unlinked and
+    # noindex, so not yet in the locale catalog. Their status and form copy
+    # is recorded here for the same ratchet as landing-scorecard.js.
+    "bundle-setup.js": 9,
+    "bundle.js": 8,
     "config.js": 1,
     "es.js": 2,
     "i18n.js": 0,
