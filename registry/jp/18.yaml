@@ -1,0 +1,210 @@
+# JP agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: keifuku-bus
+    name: Keifuku Bus (京福バス)
+    country: JP
+    subdivision_code: JP-18
+    subdivision_name: Fukui
+    is_official: true
+    static_gtfs_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp_d/fil/keifuku_bus.zip
+    license_note: >-
+      CC BY 4.0; published by Fukui Prefecture on its open data site. Credit
+      Fukui Prefecture.
+    operating_note: >-
+      Keifuku Bus is the main route-bus operator in the Fukui City area, and
+      the largest of the three private operators the prefecture publishes.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp.html
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Fukui Prefecture (福井県).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: tsuruga-city-bus
+    name: Tsuruga City Community Bus (敦賀市コミュニティバス)
+    country: JP
+    subdivision_code: JP-18
+    subdivision_name: Fukui
+    is_official: true
+    static_gtfs_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp_d/fil/tsuruga_bus.zip
+    license_note: >-
+      CC BY 4.0; published by Fukui Prefecture on its open data site. Credit
+      Fukui Prefecture.
+    operating_note: Tsuruga City's community bus network on the Wakasa coast.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp.html
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Fukui Prefecture (福井県).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: ono-city-bus-fukui
+    name: Ono City Bus (大野市営バス)
+    country: JP
+    subdivision_code: JP-18
+    subdivision_name: Fukui
+    is_official: true
+    static_gtfs_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp_d/fil/onoshiei_bus.zip
+    license_note: >-
+      CC BY 4.0; published by Fukui Prefecture on its open data site. Credit
+      Fukui Prefecture.
+    operating_note: >-
+      Ono City's municipal bus in the Okuetsu uplands of eastern Fukui. The
+      id carries a country-side suffix because the registry already lists
+      Ono City in Hyogo (小野市), a different city.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp.html
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Fukui Prefecture (福井県).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: katsuyama-city-bus
+    name: Katsuyama City Community Bus (勝山市コミュニティバス)
+    country: JP
+    subdivision_code: JP-18
+    subdivision_name: Fukui
+    is_official: true
+    static_gtfs_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp_d/fil/gtfs_katsuyamashi.zip
+    license_note: >-
+      CC BY 4.0; published by Fukui Prefecture on its open data site. Credit
+      Fukui Prefecture.
+    operating_note: Katsuyama City's community bus network in the Okuetsu area.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp.html
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Fukui Prefecture (福井県).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: echizen-city-norossa
+    name: Echizen City Citizen Bus Norossa (越前市市民バス「のろっさ」)
+    country: JP
+    subdivision_code: JP-18
+    subdivision_name: Fukui
+    is_official: true
+    static_gtfs_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp_d/fil/echizensi_bus.zip
+    license_note: >-
+      CC BY 4.0; published by Fukui Prefecture on its open data site. Credit
+      Fukui Prefecture.
+    operating_note: Echizen City's Norossa citizen bus network around Takefu.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp.html
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Fukui Prefecture (福井県).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: sakai-city-bus
+    name: Sakai City Community Bus (坂井市コミュニティバス)
+    country: JP
+    subdivision_code: JP-18
+    subdivision_name: Fukui
+    is_official: true
+    static_gtfs_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp_d/fil/sakaisi_bus.zip
+    license_note: >-
+      CC BY 4.0; published by Fukui Prefecture on its open data site. Credit
+      Fukui Prefecture.
+    operating_note: >-
+      Sakai City publishes two community bus routes in this archive, which
+      is the whole of what the prefecture carries for the city.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp.html
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Fukui Prefecture (福井県).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: ikeda-town-bus-fukui
+    name: Ikeda Town Community Bus (池田町コミュニティバス)
+    country: JP
+    subdivision_code: JP-18
+    subdivision_name: Fukui
+    is_official: true
+    static_gtfs_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp_d/fil/gtfs_fukui_ikedacho_com.zip
+    license_note: >-
+      CC BY 4.0; published by Fukui Prefecture on its open data site. Credit
+      Fukui Prefecture.
+    operating_note: >-
+      Ikeda Town's community bus in the Fukui uplands. The id carries a
+      country-side suffix because the registry already lists Ikeda Town in
+      Nagano.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp.html
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Fukui Prefecture (福井県).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: echizen-town-friendly-bus
+    name: Echizen Town Community Bus Friendly (越前町コミュニティバス フレンドリー号)
+    country: JP
+    subdivision_code: JP-18
+    subdivision_name: Fukui
+    is_official: true
+    static_gtfs_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp_d/fil/gtfs_echizenchou_com.zip
+    license_note: >-
+      CC BY 4.0; published by Fukui Prefecture on its open data site. Credit
+      Fukui Prefecture.
+    operating_note: >-
+      Echizen Town's Friendly community bus on the Echizen coast. Its
+      calendar runs to 2030, which is unusually long and worth a look at the
+      freshness panel rather than treating the far end date as current.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp.html
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Fukui Prefecture (福井県).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: wakasa-town-bus
+    name: Wakasa Town Bus (若狭町営バス)
+    country: JP
+    subdivision_code: JP-18
+    subdivision_name: Fukui
+    is_official: true
+    static_gtfs_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp_d/fil/wakasa_bus.zip
+    license_note: >-
+      CC BY 4.0; published by Fukui Prefecture on its open data site. Credit
+      Fukui Prefecture.
+    operating_note: >-
+      Wakasa Town publishes one route here, the Tsunegami-Mikata line. The
+      town runs other services that are not in this archive, so the record
+      covers what is published rather than the whole town network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.pref.fukui.lg.jp/doc/dx-suishin/opendata/gtfs_jp.html
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Fukui Prefecture (福井県).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

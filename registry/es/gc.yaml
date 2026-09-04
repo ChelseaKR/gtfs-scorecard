@@ -1,0 +1,31 @@
+# ES agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: guaguas-municipales
+    name: Guaguas Municipales
+    country: ES
+    subdivision_code: ES-GC
+    subdivision_name: Las Palmas
+    is_official: true
+    static_gtfs_url: https://www.guaguas.com/transit/google_transit.zip
+    license_note: >-
+      Las Palmas de Gran Canaria's open data reuse conditions permit
+      commercial and non-commercial reuse when the source is cited and the
+      meaning of the data is not altered.
+    operating_note: >-
+      The municipal bus network of Las Palmas de Gran Canaria. The city
+      portal publishes the same GTFS tables individually from this directory
+      and refreshes them weekly.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: http://datosabiertos.laspalmasgc.es/dataset?id=guaguas-municipales-viajes
+      terms_url: http://datosabiertos.laspalmasgc.es/condiciones-de-reutilizacion/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Guaguas Municipales, Ayuntamiento de Las Palmas de Gran Canaria.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

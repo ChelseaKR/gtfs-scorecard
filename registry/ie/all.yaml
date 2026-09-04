@@ -286,3 +286,1279 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: allens-bus-hire
+    name: Allen's Bus Hire
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_allens.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: ardcavan-coach-tours
+    name: Ardcavan Coach Tours
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_ardcavan.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: ashbourne-connect
+    name: Ashbourne Connect
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_ashbourne_connect.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself. It
+      replaces GTFS_Ashbourne_Connect.zip on the same host, which is still
+      reachable but whose calendar ran out on 2026-01-23.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: bailieboro-coach-hire
+    name: Bailieboro Car & Coach Hire
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_bailieboro.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: cork-cobh-connect
+    name: Cork Cobh Connect
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_barrys.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself. Published
+      by Barry's Coaches under the Cork Cobh Connect service name.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: burkesbus
+    name: Burkesbus
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_burkesbus.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: bus-feda
+    name: Bus Feda
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_bus_feda_teoranta.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: madigans-bus-hire
+    name: Madigan's Bus Hire
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_catherine_madigan.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: collins-coaches
+    name: Collins Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_collins_coaches.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: dohertys-travel
+    name: Doherty's Travel
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_dohertys.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: dunnes-coaches
+    name: Dunnes Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_dunnes.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: eugene-deffely
+    name: Eugene Deffely
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_e_deffely.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: eamon-mcentee
+    name: Eamon McEntee
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_e_mcentee.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: robbie-finegan-coaches
+    name: Robbie Finegan Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_f_finegan.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: farragher-travel
+    name: Farragher Travel
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_farragher.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: farrellys-coaches
+    name: Farrelly's Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_farrellys.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: flagline-coaches
+    name: Flagline Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_flagline.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: gorey-bus-links
+    name: Gorey Bus Links
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_gorey_bus.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: bife-bus
+    name: BIFE Bus
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_gorey_coach.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: halpenny-travel
+    name: Halpenny Travel
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_halpenny_trnasport.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself. The file
+      name on the host is spelled GTFS_halpenny_trnasport.zip.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: harringtons-ardgroom
+    name: Harrington's Ardgroom
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_harringtons.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: healy-bus
+    name: Healy Bus
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_healy_bus.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: joseph-foley
+    name: Joseph Foley
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_j_foley.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: joe-moroney-coach-hire
+    name: Joe Moroney Coach Hire
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_j_moroney.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: k-buggy-coaches
+    name: K Buggy Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_k_buggy.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kelly-travel
+    name: Kelly Travel
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_kelly_travel.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kennedy-coaches
+    name: Kennedy Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_kennedy_coaches.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: leydons-coaches
+    name: Leydons Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_m_leydon.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: michael-moran-coaches
+    name: Michael Moran
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_m_moran.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: matt-whelan-minibus
+    name: Matt Whelan Mini Bus Hire
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_m_whelan.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: mangan-tours
+    name: Mangan Tours
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_mangan_tours.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: mccaffrey-coaches
+    name: McCaffrey Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_mccaffery.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: mcconnon-travel
+    name: McConnon Travel
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_mcconnon.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: mcd-minibus-hire
+    name: MCD Minibus Hire
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_mcd_minibus.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: mcgeehan-coaches
+    name: McGeehan Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_mcgeehan_coaches.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: mcgill-coach-travel
+    name: McGill Coach Travel
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_mcgill.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: mcgonagle-bus-coach-hire
+    name: McGonagle Bus and Coach Hire
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_mcgonagle.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself. The
+      Authority publishes two similarly named McGonagle files. This one
+      carries route 951, Malin to Buncrana and Letterkenny.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: mcgonagle-bus-coach-ltd
+    name: McGonagle Bus and Coach Ltd
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_mcgonagle_ltd.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself. The second
+      of the Authority's two McGonagle files. It carries route 976, Buncrana
+      to Derry, and shares no routes with the McGonagle Bus and Coach Hire
+      file.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: michael-gray-coach-hire
+    name: Michael Gray Coach Hire
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_michael_gray.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nolan-coaches
+    name: Nolan Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_nolans.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: patrick-gallagher-travel
+    name: Patrick Gallagher Travel
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_p_gallagher_travel.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: pat-keenan-coach-hire
+    name: Pat Keenan Coach Hire
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_p_keenan.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: bus4u
+    name: Bus4u
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_p_naughton.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself. Published
+      by Roscommon Coaches under the Bus4u service name.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: piltown-coaches
+    name: Piltown Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_piltown_coaches.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: martleys
+    name: Martley's
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_pj_martley.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: roscommon-coaches
+    name: Roscommon Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_roscommon_coaches.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: royal-breffni-tours
+    name: Royal Breffni Tours
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_royal_breffni_tours.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: reilly-bus-hire
+    name: Reilly Bus Hire
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_s_oreilly.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: slevins-coaches
+    name: Slevins Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_slevins.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: st-kevins-bus-service
+    name: St. Kevin's Bus Service
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_st_kevins.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself. The Dublin
+      to Glendalough service, which runs across Dublin and Wicklow, so the
+      record is kept at country level.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: streamline-coaches
+    name: Streamline Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_streamline.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: tralee-peoples-bus
+    name: Tralee People's Bus Service
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_tralee_peoples.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: treacy-coaches
+    name: Treacy Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_treacy_coaches.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: west-cork-connect
+    name: West Cork Connect
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_w_cork_connect.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself. This is
+      the Authority's own file. Feed catalogs point at an AddTransit-hosted
+      copy instead, which is not first-party and returns 403 on the signed
+      redirect it issues.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: westlink-coaches
+    name: Westlink Coaches
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_westlink.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself. It
+      replaces GTFS_Westlink_Coaches.zip on the same host, which is still
+      reachable but whose calendar ran out on 2025-08-31.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: john-mcginley-coach-travel
+    name: John McGinley Coach Travel
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_McGinley_Coaches.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      One of the National Transport Authority's per-operator files. Its URL
+      is listed in the GTFS Operator Files index that the transit data page
+      links, not in the shorter download list on the page itself.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: tfi-ferries-cable-flights
+    name: TFI Ferries, Cable Cars and Regional Flights
+    country: IE
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_Ferry_Cable_Flight.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      The Authority's file for 32 island ferry, cable car and regional air
+      services, among them the Dursey Island cable car and the Aran, Clare
+      Island and Cape Clear ferries. Only one of those operators has a
+      separate per-operator file, so this is the sole GTFS source for the
+      rest, and it is listed at this grain rather than split. Two routes it
+      carries are in Northern Ireland, the Strangford and Rathlin ferries;
+      the record sits in Ireland, where the publisher and most of the
+      service are.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

@@ -1,0 +1,30 @@
+# NZ agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: gobay-hawkes-bay
+    name: goBay (Hawke's Bay Regional Council)
+    country: NZ
+    subdivision_code: NZ-HKB
+    subdivision_name: Hawke's Bay
+    is_official: true
+    static_gtfs_url: https://www.gobay.co.nz/assets/HBRC-GTFS-January-2026.zip
+    license_note: >-
+      CC BY 4.0, stated on the council's own GTFS page; credit Hawke's Bay
+      Regional Council.
+    operating_note: >-
+      Eleven bus routes across Napier, Hastings, Havelock North, Taradale
+      and Flaxmere. The council posts each release under a dated filename,
+      so this URL changes when a new export goes up; check the GTFS page
+      before treating a fetch failure as an outage.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.gobay.co.nz/general-transit-feed-specification/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Hawke's Bay Regional Council.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

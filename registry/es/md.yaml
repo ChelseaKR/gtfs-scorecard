@@ -137,3 +137,33 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: crtm-red-de-urbanos
+    name: CRTM — Red de Autobuses Urbanos (Madrid regional urban bus)
+    country: ES
+    subdivision_code: ES-MD
+    subdivision_name: Madrid, Comunidad de
+    mdb_id: "2820"
+    organization_id: crtm
+    feed_variant: Municipal urban bus networks
+    is_official: true
+    static_gtfs_url: https://www.arcgis.com/sharing/rest/content/items/357e63c2904f43aeb5d8a267a64346d8/data
+    license_note: >-
+      Licencia CRTM; commercial reuse and transformation are permitted, with
+      CRTM cited as the data source, update metadata retained, and no
+      distortion of the data's meaning.
+    operating_note: >-
+      The urban bus networks of municipalities across the Madrid region
+      other than the capital, published by the regional transport consortium
+      as one of its separately published network feeds.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://datos.crtm.es/datasets/357e63c2904f43aeb5d8a267a64346d8
+      terms_url: https://www.crtm.es/licencia-de-uso
+      scope: [gtfs_schedule]
+      attribution: >-
+        Powered by CRTM; Consorcio Regional de Transportes de Madrid cited
+        as the data source.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

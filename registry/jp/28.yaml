@@ -436,3 +436,355 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: ako-teijuro-bus
+    name: Ako City Teijuro Bus (赤穂市「ていじゅうろう」)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/akocity/feeds/teijuurou/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP; published as GTFS-JP open data by 赤穂市 through the GTFS
+      Data Repository (gtfs-data.jp). Credit 赤穂市.
+    operating_note: Ako City's Teijuro community bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/akocity.teijuurou
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        赤穂市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: ako-yuranosuke-bus
+    name: Ako City Yuranosuke Bus (赤穂市「ゆらのすけ」)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/akocity/feeds/yuranosuke/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP; published as GTFS-JP open data by 赤穂市 through the GTFS
+      Data Repository (gtfs-data.jp). Credit 赤穂市.
+    operating_note: >-
+      Ako City's Yuranosuke community bus, published alongside the Teijuro
+      archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/akocity.yuranosuke
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        赤穂市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: awaji-awakami-awahime-bus
+    name: Awaji City Awa-kami Awa-hime Bus (淡路市あわ神あわ姫バス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/awajicity/feeds/awajinawahimebus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP; published as GTFS-JP open data by 淡路市 through the GTFS
+      Data Repository (gtfs-data.jp). Credit 淡路市.
+    operating_note: >-
+      Awaji City's Awa-kami Awa-hime community bus on Awaji Island.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/awajicity.awajinawahimebus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        淡路市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kasai-neppie-happy-bus
+    name: Kasai City Neppie and Happy Bus (加西市 KASAIねっぴー号・はっぴーバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kasaicity/feeds/kasaineppihappybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP; published as GTFS-JP open data by 加西市 through the GTFS
+      Data Repository (gtfs-data.jp). Credit 加西市.
+    operating_note: Kasai City's Neppie and Happy community buses.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kasaicity.kasaineppihappybus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        加西市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kasai-uni-tomi-bus
+    name: Kasai City Uni Fureai Bus and Tomi Bus (加西市 宇仁ふれあいバス・とみバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kasaicity/feeds/unifureaitomi/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP; published as GTFS-JP open data by 加西市 through the GTFS
+      Data Repository (gtfs-data.jp). Credit 加西市.
+    operating_note: >-
+      Kasai City's Uni Fureai and Tomi district buses, published as a second
+      archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kasaicity.unifureaitomi
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        加西市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kobe-satoyama
+    name: Kobe Kita Ward Satoyama Community Transport (神戸市北区青葉台・柏尾台地区「さとやま」)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kobecity/feeds/kobe-satoyama/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 神戸市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 神戸市.
+    operating_note: >-
+      Community transport for the Aobadai and Kashiodai neighbourhoods in
+      Kobe's Kita ward, run for the city by Shintetsu Taxi. Open to the
+      public, not a private estate shuttle.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kobecity.kobe-satoyama
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        神戸市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nishinomiya-gurutto-namaze
+    name: Gurutto Namaze (ぐるっと生瀬)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nishinomiyacity/feeds/guruttonamaze/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Nishinomiya City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Nishinomiya
+      City.
+    operating_note: >-
+      The Namaze district community bus, run by a local operating council
+      and published as open data by Nishinomiya City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nishinomiyacity.guruttonamaze
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nishinomiya City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nishinomiya-koyotan-bus
+    name: Nishinomiya Koyotan Bus (甲陽地区コミュニティバス こよたんバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nishinomiyacity/feeds/koyoen/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nishinomiya City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Nishinomiya City.
+    operating_note: Nishinomiya City's community bus for the Koyo district.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nishinomiyacity.koyoen
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nishinomiya City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nishinomiya-najio-ikuno-kogen-bus
+    name: Najio and Ikuno Kogen Fureai Bus (名塩・生野高原ふれあいバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nishinomiyacity/feeds/najio-ikunokogen/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nishinomiya City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Nishinomiya City.
+    operating_note: >-
+      Nishinomiya City's hillside community bus for Najio and Ikuno Kogen.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nishinomiyacity.najio-ikunokogen
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nishinomiya City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nishinomiya-sakura-yamanami-bus
+    name: Sakura Yamanami Bus (さくらやまなみバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nishinomiyacity/feeds/sakurayamanami/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Nishinomiya City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Nishinomiya
+      City.
+    operating_note: >-
+      Nishinomiya City's cross-mountain link between the city centre and the
+      Shiose district. The published calendar runs to 2026-10-31, so the
+      archive is close to its renewal date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nishinomiyacity.sakurayamanami
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nishinomiya City. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: shiso-shitan-bus-tsutazawa-otani
+    name: Shiso City Shitan Bus, Tsutazawa and Otani lines (宍粟市しーたんバス（蔦沢線・大谷線）)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    feed_variant: Tsutazawa and Otani lines
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shisocity/feeds/shitanbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Shiso City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Shiso City.
+    operating_note: >-
+      The Tsutazawa and Otani lines of Shiso City's Shitan Bus, operated by
+      Shinyo Taxi. The city splits the network by operating company.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shisocity.shitanbus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shiso City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: shiso-shitan-bus-wing-shinki
+    name: Shiso City Shitan Bus, other lines (宍粟市しーたんバス（蔦沢線・大谷線以外）)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    feed_variant: Wing Shinki lines
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shisocity/feeds/shitanbus-wingshinki/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Shiso City through
+      the GTFS Data Repository (gtfs-data.jp). Credit Shiso City.
+    operating_note: >-
+      The remainder of Shiso City's Shitan Bus network, operated by Wing
+      Shinki.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shisocity.shitanbus-wingshinki
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shiso City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: toyooka-inacar
+    name: Toyooka City Inacar (豊岡市イナカー)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toyookacity/feeds/inacar/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Toyooka City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Toyooka City.
+    operating_note: Toyooka City's Inacar rural bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toyookacity.inacar
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyooka City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: toyooka-kobus
+    name: Toyooka City Kobus (豊岡市コバス)
+    country: JP
+    subdivision_code: JP-28
+    subdivision_name: Hyogo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toyookacity/feeds/kobus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 2.1 JP (the Japan jurisdiction port of Creative Commons
+      Attribution 2.1); published as GTFS-JP open data by Toyooka City
+      through the GTFS Data Repository (gtfs-data.jp). Credit Toyooka City.
+    operating_note: >-
+      Toyooka City's Kobus town circulator, published separately from
+      Inacar.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toyookacity.kobus
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyooka City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

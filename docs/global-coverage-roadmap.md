@@ -91,7 +91,7 @@ contains 2,574 active, keyless Schedule rows.
 contains 3,739 Schedule rows with a current, keyless URL.
 After applying the project's scheme-insensitive endpoint normalization, their
 union is about 5,092 endpoints before content, operator, aggregate, redirect,
-identity, and reuse review. The current registry contains more than 2,200 feed
+identity, and reuse review. The current registry contains more than 2,600 feed
 records.
 
 A literal 100-fold increase from that registry would require more than 200,000
@@ -343,6 +343,108 @@ among them, under the unchanged gates. Seventy-eight stay queued on short
 calendars and the queue is expected to keep clearing through the month.
 The recheck also moved the rotated-resource dedupe from hand review into
 the candidate pool builder itself.
+
+A twenty-lane parallel pass on 2026-09-01 admitted 390 reviewed records. Its
+France lane overlapped the two exhaustion passes above, which ran on the same
+portal in the same window; reconciling that overlap on 2026-09-04 left the
+registry holding 2,643 records across 48 country codes. It worked a declared
+universe of 3,148 candidates — the Mobility Database and Transitland Atlas rows
+not already tracked — and every candidate has a recorded disposition. Depth
+dominated: Japan 196, Ireland 60, France 57, Canada 16, Spain 11, Norway 10.
+Iceland and Luxembourg opened as new country codes, both on rechecks whose
+earlier failure was a stale calendar rather than a licence. Five of Japan's
+seven empty prefectures closed — Fukui, Tottori, Hiroshima, Ehime, Miyazaki —
+after the pass established that gtfs-data.jp carries no feed in any of the
+seven, so each had to come from its own prefectural portal.
+
+Three feeds entered the large-feed tier by curator decision: Transport for
+NSW's Greater Sydney bundle, whose registration wall is gone and whose 279 MiB
+download is now keyless; the Bus Open Data Service London file under OGL 3.0;
+and Naolib Nantes, which needs the tier for an oversized `stop_times.txt`
+rather than for its 25 MiB download. Sydney and London are regional bundles
+counted as one feed record each, following the Tasmania precedent, and each
+says so in an `operating_note` rather than implying one accountable publisher.
+
+The pass also recorded what stops coverage rather than only what advanced it.
+Reuse terms, not feed availability, are the binding constraint in the United
+States: of 336 candidates one lane examined, 236 were live archives inside the
+calendar horizon and 206 of those publishers state no reuse terms anywhere on
+their own domain. Two state clearinghouses decline explicitly — Virginia DRPT
+("The agencies retain full rights to the data") and Colorado CDOT, whose
+licence column reads "None" for every agency. Around 210 more candidates sit on
+National RTAP's GTFS Builder host, whose terms grant rights to National RTAP
+rather than to downstream reusers; because RTAP disclaims ownership, no
+platform-level decision by RTAP can release them, and the grant has to come
+from each uploading agency. Sweden stays closed after a full check: every
+Samtrafiken path returns 403 and the national portal carries one GTFS dataset,
+Trafiklab's, behind a key. Kosovo cannot be admitted at all — `XK` is a
+user-assigned code the validator country contract rejects.
+
+Two questions about records already in the registry came out of the pass and
+are deliberately left open rather than settled inside it. 158 French records
+cite ODbL while `docs/feeds.md` names ODbL French datasets as excluded, and
+Estonia's national register is published as CC BY-SA 3.0 although two Estonian
+records are listed. Both are the same question — share-alike records already
+published — and both are recorded here for a decision of their own. This wave
+applied the stricter reading to new admissions and changed nothing existing,
+which left roughly 84 ODbL French datasets and 19 Estonian county feeds out.
+
+A second, narrower pass on the same day worked only what the twenty lanes left
+open: countries a lane stopped short on, hosts that were unreachable at the
+time, and deferrals held for a curator. It added 6 records, taking the registry
+to 2,581, and its value is mostly in what it settled rather than what it added.
+
+Austria went from one record to two and is now understood. Its national portal
+moved to the piveau stack, so there is no CKAN API; enumerating all 73,270
+datasets through the working endpoint finds exactly three GTFS datasets. ÖBB is
+admitted on the large-feed tier from the current 2026 resource. Every regional
+Verkehrsverbund publishes instead on `data.mobilitaetsverbuende.at`, which is
+enumerable anonymously but returns 401 on the file endpoint by documented
+policy: 17 datasets, refreshed weekly, licence terms that already permit
+commercial reuse with attribution, and a registration wall that one manually
+created account would clear. That is a partnership and credential decision, and
+it also needs code, because `static_gtfs_url` assumes a keyless URL.
+
+De Lijn opens Flanders on the tier. West Midlands joins London from the Bus
+Open Data Service after the twelve regional bundles were measured rather than
+guessed: streaming each one and matching trips against the registry put
+duplicated trip share at 0.03% for West Midlands and between 7% and 35% for the
+other ten, so only the two regions that duplicate nothing were admitted. The
+Irish small-operators bundle was rejected by the same measurement at about 81%
+duplication.
+
+Two large Japanese blocks stay out, and the reasoning matters more than the
+outcome. `ckan.hoda.jp` is a real municipal venue rather than a private
+re-host, but its GTFS is one third-party dataset in which 50 of 70 archives
+name a single vendor as publisher on a manufactured uniform calendar window,
+with no terms page and only a catalog licence field. OTTOP fails on reuse
+terms, not on the local-steward gate: its terms impose indemnity, unilateral
+amendment and discretionary access restriction, which CC BY 4.0 forbids a
+licensor to add.
+
+One gap in that pass's own record is worth stating. The Iberian lane's agent
+was cut off by an infrastructure error three times and wrote its staging file
+on the third attempt but never its report, so its 15 admissions are in the
+registry and independently spot-checked, while its **rejections were never
+written down**. Spain and Portugal are therefore the one part of the wave whose
+"already looked at and refused" set does not exist. A later pass should expect
+to re-derive it rather than assume those countries were documented as
+exhaustively as the other nineteen lanes.
+
+The pass also corrected the record in three places. A Japanese restriction
+string that had looked like a licence term, and had held up two admissions, is
+an export tool's own notice: it appears byte-identical in feeds from three
+unrelated publishers on three portals, always immediately after the tool
+version, always with the tool author's address in `feed_contact_email`. Two
+hosts wave 1 recorded as NXDOMAIN resolve normally through public resolvers and
+were local resolver artifacts. And several countries recorded as "unopened"
+were reached and are now documented empty of GTFS: Panama, Peru, Mexico's
+national portal, and Malta, whose absence is confirmed against five independent
+sources including the European Commission's access-point register and an
+Internet Archive sweep of 8,000 URLs per host. Romania's national portal is
+still unreachable, but its European harvest holds 5,238 datasets and no GTFS,
+which disproves rather than defers the hypothesis that it carried the missing
+licences.
 
 ### Phase 4 — partnership-gated regions
 

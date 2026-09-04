@@ -226,3 +226,105 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: kumano-gobo-nankai-bus-gobo
+    name: Kumano Gobo Nankai Bus Gobo Area (熊野御坊南海バス 御坊エリア)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    feed_variant: Gobo area
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kumanogobobus/feeds/kumanogobobus_gobo/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 熊野御坊南海バス株式会社 through the
+      GTFS Data Repository (gtfs-data.jp). Credit 熊野御坊南海バス株式会社.
+    operating_note: >-
+      Kumano Gobo Nankai Bus's Gobo-area routes in northern Wakayama. The
+      operator publishes by area.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kumanogobobus.kumanogobobus_gobo
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        熊野御坊南海バス株式会社. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kumano-gobo-nankai-bus-kumano
+    name: Kumano Gobo Nankai Bus Kumano Area (熊野御坊南海バス 熊野エリア)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    feed_variant: Kumano area
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kumanogobobus/feeds/kumanogobobus_kumano/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 熊野御坊南海バス株式会社 through the
+      GTFS Data Repository (gtfs-data.jp). Credit 熊野御坊南海バス株式会社.
+    operating_note: >-
+      Kumano Gobo Nankai Bus's Kumano-area routes on the southern Kii coast.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kumanogobobus.kumanogobobus_kumano
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        熊野御坊南海バス株式会社. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nankai-rinkan-bus-koyasan
+    name: Nankai Rinkan Bus, Koyasan area (南海りんかんバス高野山エリア)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    feed_variant: Koyasan area
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/rinkan/feeds/koyasan/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nankai Rinkan Bus through
+      the GTFS Data Repository (gtfs-data.jp). Credit Nankai Rinkan Bus.
+    operating_note: >-
+      Nankai Rinkan Bus services on and around Mount Koya. The operator
+      publishes its network as two area archives.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/rinkan.koyasan
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nankai Rinkan Bus. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nankai-rinkan-bus-hashimoto
+    name: Nankai Rinkan Bus, Hashimoto area (南海りんかんバス橋本・林間田園都市エリア)
+    country: JP
+    subdivision_code: JP-30
+    subdivision_name: Wakayama
+    feed_variant: Hashimoto area
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/rinkan/feeds/hashimoto-rinkandenentoshi/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nankai Rinkan Bus through
+      the GTFS Data Repository (gtfs-data.jp). Credit Nankai Rinkan Bus.
+    operating_note: >-
+      Nankai Rinkan Bus services around Hashimoto and Rinkan Denentoshi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/rinkan.hashimoto-rinkandenentoshi
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nankai Rinkan Bus. Published as GTFS-JP open data through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

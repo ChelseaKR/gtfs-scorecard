@@ -178,3 +178,78 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: kimitsu-city-through-routes
+    name: Kimitsu City Through Bus Routes (君津市経由路線バス)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kimitsucity/feeds/Local_buses_via_Kimitsu_City/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      君津市 through the GTFS Data Repository (gtfs-data.jp). No attribution is
+      required.
+    operating_note: >-
+      The route buses that run through Kimitsu City, published by the city.
+      A separate archive from the city's own community bus, which is already
+      listed.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kimitsucity.Local_buses_via_Kimitsu_City
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        君津市. Published as GTFS-JP open data (CC0 1.0) through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: matsudo-yumeiro-bus
+    name: Matsudo City Yumeiro Bus (松戸市ゆめいろバス)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/matsudocity/feeds/matsudo/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 松戸市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 松戸市.
+    operating_note: Matsudo City's Yumeiro community bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/matsudocity.matsudo
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        松戸市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: matsudo-yumeiro-wagon
+    name: Matsudo City Yumeiro Wagon Bus (松戸市ゆめいろワゴンバス)
+    country: JP
+    subdivision_code: JP-12
+    subdivision_name: Chiba
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/matsudocity/feeds/matsudo-takatsuka/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 松戸市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 松戸市.
+    operating_note: >-
+      Matsudo City's Yumeiro wagon service, a smaller-vehicle companion to
+      the Yumeiro bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/matsudocity.matsudo-takatsuka
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        松戸市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

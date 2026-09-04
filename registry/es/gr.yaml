@@ -1,0 +1,32 @@
+# ES agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: transprober-granada
+    name: TranspRober (Granada)
+    country: ES
+    subdivision_code: ES-GR
+    subdivision_name: Granada
+    is_official: true
+    static_gtfs_url: http://movilidadgranada.org/gtfs/gtfs.zip
+    license_note: >-
+      CC BY 3.0 through the Ayuntamiento de Granada mobility portal, which
+      states the data may be used for commercial or non-commercial purposes
+      with the source and its last-update date cited.
+    operating_note: >-
+      Granada's urban bus network, published by the city council's Centro de
+      Gestión Integral de Movilidad. The portal serves the archive over HTTP
+      only; its HTTPS certificate chain does not validate.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: http://movilidadgranada.org/bus_planificador.php
+      terms_url: http://movilidadgranada.org/aviso.php
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ayuntamiento de Granada, Centro de Gestión Integral de Movilidad;
+        include the source data's last-update date.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

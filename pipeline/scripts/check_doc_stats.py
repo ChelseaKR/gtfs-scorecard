@@ -240,6 +240,13 @@ OPTIONAL_RULES: list[tuple[str, str, str, str]] = [
 # from becoming a place where real drift can hide.
 POINT_IN_TIME: list[tuple[str, str, str]] = [
     (
+        "docs/global-coverage-roadmap.md",
+        r"registry holding ([\d,]+) records across",
+        "the registry size on the stated day the twenty-lane pass was "
+        "reconciled with the two National Access Point exhaustion passes, "
+        "not the live registry",
+    ),
+    (
         "docs/RESEARCH-ROADMAP.md",
         r"21% of ([\d,]+) feeds",
         "sample size of a cited external study (Findings, 2024), not this registry",

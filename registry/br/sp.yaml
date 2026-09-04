@@ -1,0 +1,32 @@
+# BR agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: artesp-sao-paulo
+    name: ARTESP (Agência de Transportes do Estado de São Paulo)
+    country: BR
+    subdivision_code: BR-SP
+    subdivision_name: São Paulo
+    is_official: true
+    static_gtfs_url: https://dadosabertos.artesp.sp.gov.br/dataset/92e8bb31-df66-4700-ad9a-42a48f04fb7f/resource/4c0f3a81-b587-4ead-ab10-4584c02614e0/download/artesp_gtfs.zip
+    license_note: >-
+      Creative Commons Attribution on ARTESP's own open data portal. The
+      portal's terms of use allow free reproduction and redistribution of
+      published data provided ARTESP is credited as the source.
+    operating_note: >-
+      Scheduled road passenger services in the São Paulo state metropolitan
+      regions that ARTESP regulates. Counted as one feed record, not as a
+      count of the operators represented inside the archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://dadosabertos.artesp.sp.gov.br/dataset/gtfs
+      terms_url: https://dadosabertos.artesp.sp.gov.br/terms
+      scope: [gtfs_schedule]
+      attribution: >-
+        Portal de Dados Abertos da ARTESP (Agência de Transportes do Estado
+        de São Paulo).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

@@ -1,0 +1,32 @@
+# GB agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: translink-northern-ireland
+    name: Translink (Northern Ireland)
+    country: GB
+    subdivision_code: GB-NIR
+    subdivision_name: Northern Ireland
+    is_official: true
+    static_gtfs_url: https://www.transportforireland.ie/transitData/Data/GTFS_NI.zip
+    license_note: >-
+      CC BY 4.0 through the National Transport Authority's public transport
+      data page; credit the National Transport Authority.
+    operating_note: >-
+      Metro, Glider, Ulsterbus, Goldline, NI Railways, Foyle Metro and the
+      cross-border Enterprise service in one file. Translink's own Open Data
+      NI datasets are ATCO.CIF, CSV and GeoJSON, so Ireland's National
+      Transport Authority is the only publisher issuing these schedules as
+      GTFS. The record is placed in Northern Ireland and attributed to the
+      Authority under its CC BY 4.0 terms.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      terms_url: https://www.transportforireland.ie/transitData/PT_Data.html
+      scope: [gtfs_schedule]
+      attribution: National Transport Authority (Transport for Ireland).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

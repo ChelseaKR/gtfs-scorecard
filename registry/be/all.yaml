@@ -1,0 +1,29 @@
+# BE agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: sncb-nmbs
+    name: NMBS/SNCB
+    country: BE
+    is_official: true
+    static_gtfs_url: https://api-management-discovery-production.azure-api.net/api/gtfs/feed/nmbssncb/static
+    license_note: >-
+      CC BY 4.0 on the Belgian Mobility open data portal, which states that
+      free reuse including commercial reuse is allowed with attribution in
+      the form "Source: NMBS/SNCB, Open Data, date of dataset update".
+    operating_note: >-
+      Belgium's national railway timetable, published daily through the
+      Belgian Mobility open data portal. Anonymous download is open; the
+      portal states a rate limit of 100 requests a day for anonymous use,
+      which one daily score run stays well inside.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.belgianmobility.io/en/data.html
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: NMBS/SNCB, Open Data, with the dataset update date.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

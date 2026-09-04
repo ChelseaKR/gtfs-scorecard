@@ -47,3 +47,62 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: edmonton-transit-service
+    name: Edmonton Transit Service (ETS)
+    country: CA
+    subdivision_code: CA-AB
+    subdivision_name: Alberta
+    mdb_id: "714"
+    is_official: true
+    static_gtfs_url: https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/GTFS/GTFS.zip
+    rt_urls:
+      trip_updates: https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/TripUpdate/TripUpdates.pb
+      vehicle_positions: https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/Vehicle/VehiclePositions.pb
+      service_alerts: https://gtfs.edmonton.ca/TMGTFSRealTimeWebService/Alert/Alerts.pb
+    rt_note: >-
+      All three keyless realtime endpoints returned a valid protobuf on
+      2026-09-01.
+    license_note: >-
+      Open Government Licence – Edmonton: a worldwide, royalty-free,
+      non-exclusive licence to use, modify and distribute the datasets for
+      any lawful purpose, including commercial purposes. Derived
+      measurements by GTFS Scorecard.
+    operating_note: >-
+      One regional export covering Edmonton Transit Service plus the St.
+      Albert, Strathcona County, Spruce Grove, Fort Saskatchewan and
+      Beaumont services that connect to it. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.edmonton.ca/Transit/GTFS-Downloads/yiem-dcbw
+      terms_url: https://data.edmonton.ca/stories/s/City-of-Edmonton-Open-Data-Terms-of-Use/msh8-if28/
+      scope: [gtfs_schedule]
+      attribution: City of Edmonton (Edmonton Transit Service).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: red-deer-transit
+    name: Red Deer Transit
+    country: CA
+    subdivision_code: CA-AB
+    subdivision_name: Alberta
+    mdb_id: "1992"
+    is_official: true
+    static_gtfs_url: https://data.reddeer.ca/datasets/gtfsdatafeed/download/zip
+    license_note: >-
+      Open Government Licence – The City of Red Deer: a worldwide,
+      royalty-free, perpetual, non-exclusive licence to use the information,
+      including for commercial purposes, with attribution. Derived
+      measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.reddeer.ca/gtfsdatafeed
+      terms_url: https://data.reddeer.ca/about
+      scope: [gtfs_schedule]
+      attribution: >-
+        Contains information licensed under the Open Government Licence –
+        The City of Red Deer.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

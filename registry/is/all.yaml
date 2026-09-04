@@ -1,0 +1,29 @@
+# IS agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: straeto-iceland
+    name: Strætó bs
+    country: IS
+    is_official: true
+    static_gtfs_url: https://opendata.straeto.is/data/gtfs/gtfs.zip
+    license_note: >-
+      Strætó's open data terms allow reuse for profit as well as
+      non-commercial reuse. Credit the data with the text "Based on data
+      from Strætó bs." and link the licence where possible.
+    operating_note: >-
+      One archive covering every network Strætó operates. Its agency.txt
+      names the capital area service alongside the Reykjanesbær and Akureyri
+      town networks. Counted as one feed record, and carried at country
+      level because it reaches more than one region.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.straeto.is/en/about-straeto/open-data
+      terms_url: https://www.straeto.is/en/about-straeto/open-data/terms
+      scope: [gtfs_schedule]
+      attribution: Based on data from Strætó bs.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

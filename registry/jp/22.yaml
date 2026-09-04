@@ -82,3 +82,101 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: shizuoka-ikawa-district-bus
+    name: Shizuoka City Ikawa District Bus (静岡市井川地区自主運行バス)
+    country: JP
+    subdivision_code: JP-22
+    subdivision_name: Shizuoka
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shizuokacity/feeds/ikawa/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shizuoka City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Shizuoka City.
+    operating_note: >-
+      Shizuoka City's self-operated bus for the Ikawa district in Aoi Ward.
+      The city publishes one archive per district service.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shizuokacity.ikawa
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shizuoka City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: shizuoka-ryogochi-koko-bus
+    name: Shizuoka City Ryogochi Koko Bus (静岡市両河内地区ココバス)
+    country: JP
+    subdivision_code: JP-22
+    subdivision_name: Shizuoka
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shizuokacity/feeds/ryougouchi/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shizuoka City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Shizuoka City.
+    operating_note: >-
+      Shizuoka City's Koko Bus for the Ryogochi district in Shimizu Ward.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shizuokacity.ryougouchi
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shizuoka City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: shizuoka-yui-bus
+    name: Shizuoka City Yui Bus (静岡市由比地区ゆいばす)
+    country: JP
+    subdivision_code: JP-22
+    subdivision_name: Shizuoka
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shizuokacity/feeds/yui/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shizuoka City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Shizuoka City.
+    operating_note: >-
+      Shizuoka City's Yui Bus for the Yui district in Shimizu Ward.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shizuokacity.yui
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shizuoka City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: shizuoka-yui-kanbara-hospital-line
+    name: Shizuoka City Yui and Kanbara Hospital Line (静岡市由比・蒲原病院線)
+    country: JP
+    subdivision_code: JP-22
+    subdivision_name: Shizuoka
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shizuokacity/feeds/yui-kanbara/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shizuoka City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Shizuoka City.
+    operating_note: >-
+      Shizuoka City's hospital link serving the Yui and Kanbara districts in
+      Shimizu Ward.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shizuokacity.yui-kanbara
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shizuoka City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

@@ -149,3 +149,33 @@ agencies:
       vehicle_positions: https://cobb.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition&Debug=True
       service_alerts: https://cobb.rideralerts.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert&Debug=True
     license_note: No stated data license in the Mobility Database; verify before publishing.
+  - id: athens-clarke-county-transit
+    name: Athens-Clarke County Transit (ACC Transit)
+    country: US
+    subdivision_code: US-GA
+    subdivision_name: Georgia
+    ntd_id: "40047"
+    is_official: true
+    fare_free: true
+    static_gtfs_url: https://bustracker.accgov.com/InfoPoint/gtfs-zip.ashx
+    rt_urls:
+      trip_updates: https://bustracker.accgov.com/InfoPoint/GTFS-Realtime.ashx?Type=TripUpdate
+      vehicle_positions: https://bustracker.accgov.com/InfoPoint/GTFS-Realtime.ashx?Type=VehiclePosition
+      service_alerts: https://bustracker.accgov.com/InfoPoint/GTFS-Realtime.ashx?Type=Alert
+    license_note: >-
+      CC BY 4.0, stated by Athens-Clarke County on its own open-data record
+      for the ACC Transit GTFS dataset. Credit Athens-Clarke County Unified
+      Government.
+    operating_note: >-
+      Athens-Clarke County runs ACC Transit fare-free; the county's transit
+      page states fare-free rides for all riders.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data-athensclarke.opendata.arcgis.com/datasets/1739af21b93249bcaad33639e16341fc
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Athens-Clarke County Unified Government (ACC Transit).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

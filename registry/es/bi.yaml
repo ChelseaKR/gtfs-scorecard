@@ -76,3 +76,182 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: bilbobus
+    name: Bilbobus
+    country: ES
+    subdivision_code: ES-BI
+    subdivision_name: Bizkaia
+    is_official: true
+    static_gtfs_url: https://ctb-gtfs.s3.eu-south-2.amazonaws.com/bilbobus.zip
+    license_note: >-
+      CC BY 4.0 through the Consorcio de Transportes de Bizkaia open data
+      portal; credit the source, include the last-update date, and do not
+      distort the data's meaning.
+    operating_note: >-
+      Bilbao's city bus network, operated by the Ayuntamiento de Bilbao and
+      published as schedules by the Bizkaia transport consortium.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.ctb.eus/es/dataset/horario-lineas-bilbobus
+      terms_url: https://data.ctb.eus/en/pages/legal-notice
+      scope: [gtfs_schedule]
+      attribution: >-
+        Consorcio de Transportes de Bizkaia and Bilbobus; include the source
+        data's last-update date.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kbus-barakaldo
+    name: Kbus (Barakaldo)
+    country: ES
+    subdivision_code: ES-BI
+    subdivision_name: Bizkaia
+    is_official: true
+    static_gtfs_url: https://ctb-gtfs.s3.eu-south-2.amazonaws.com/kbus.zip
+    license_note: >-
+      CC BY 4.0 through the Consorcio de Transportes de Bizkaia open data
+      portal; credit the source, include the last-update date, and do not
+      distort the data's meaning.
+    operating_note: >-
+      Barakaldo's four-route municipal bus network in the Bilbao
+      metropolitan area.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.ctb.eus/es/dataset/kbus
+      terms_url: https://data.ctb.eus/en/pages/legal-notice
+      scope: [gtfs_schedule]
+      attribution: >-
+        Consorcio de Transportes de Bizkaia and Kbus; include the source
+        data's last-update date.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: leioabus
+    name: LeioaBus (Lejoan Busa)
+    country: ES
+    subdivision_code: ES-BI
+    subdivision_name: Bizkaia
+    is_official: true
+    static_gtfs_url: https://ctb-gtfs.s3.eu-south-2.amazonaws.com/lejoanbusa.zip
+    license_note: >-
+      CC BY 4.0 through the Consorcio de Transportes de Bizkaia open data
+      portal; credit the source, include the last-update date, and do not
+      distort the data's meaning.
+    operating_note: Leioa's three-route municipal bus network west of Bilbao.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.ctb.eus/es/dataset/horarios-lejoanbusa
+      terms_url: https://data.ctb.eus/en/pages/legal-notice
+      scope: [gtfs_schedule]
+      attribution: >-
+        Consorcio de Transportes de Bizkaia and LeioaBus; include the source
+        data's last-update date.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: bermibusa
+    name: Bermibusa (Bermeo)
+    country: ES
+    subdivision_code: ES-BI
+    subdivision_name: Bizkaia
+    is_official: true
+    static_gtfs_url: https://ctb-gtfs.s3.eu-south-2.amazonaws.com/bermibusa.zip
+    license_note: >-
+      CC BY 4.0 through the Consorcio de Transportes de Bizkaia open data
+      portal; credit the source, include the last-update date, and do not
+      distort the data's meaning.
+    operating_note: >-
+      A single urban route serving the coastal town of Bermeo, with 20
+      stops.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.ctb.eus/es/dataset/horario-bermibusa
+      terms_url: https://data.ctb.eus/en/pages/legal-notice
+      scope: [gtfs_schedule]
+      attribution: >-
+        Consorcio de Transportes de Bizkaia and Bermibusa; include the
+        source data's last-update date.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: erandiobusa
+    name: ErandioBus (Erandiobusa)
+    country: ES
+    subdivision_code: ES-BI
+    subdivision_name: Bizkaia
+    is_official: true
+    static_gtfs_url: https://ctb-gtfs.s3.eu-south-2.amazonaws.com/erandiobusa.zip
+    license_note: >-
+      CC BY 4.0 through the Consorcio de Transportes de Bizkaia open data
+      portal; credit the source, include the last-update date, and do not
+      distort the data's meaning.
+    operating_note: >-
+      Erandio's two municipal routes in the Bilbao metropolitan area.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.ctb.eus/es/dataset/horarios-erandiobus
+      terms_url: https://data.ctb.eus/en/pages/legal-notice
+      scope: [gtfs_schedule]
+      attribution: >-
+        Consorcio de Transportes de Bizkaia and ErandioBus; include the
+        source data's last-update date.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: etxebarribus
+    name: EtxebarriBus
+    country: ES
+    subdivision_code: ES-BI
+    subdivision_name: Bizkaia
+    is_official: true
+    static_gtfs_url: https://ctb-gtfs.s3.eu-south-2.amazonaws.com/etxebarribus.zip
+    license_note: >-
+      CC BY 4.0 through the Consorcio de Transportes de Bizkaia open data
+      portal; credit the source, include the last-update date, and do not
+      distort the data's meaning.
+    operating_note: >-
+      Etxebarri's two municipal routes east of Bilbao, connecting to the
+      metro.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.ctb.eus/es/dataset/etxebarribus
+      terms_url: https://data.ctb.eus/en/pages/legal-notice
+      scope: [gtfs_schedule]
+      attribution: >-
+        Consorcio de Transportes de Bizkaia and EtxebarriBus; include the
+        source data's last-update date.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: funicular-artxanda
+    name: Funicular de Artxanda (Artxandako Funikularra)
+    country: ES
+    subdivision_code: ES-BI
+    subdivision_name: Bizkaia
+    is_official: true
+    static_gtfs_url: https://ctb-gtfs.s3.eu-south-2.amazonaws.com/funicularartxanda.zip
+    license_note: >-
+      CC BY 4.0 through the Consorcio de Transportes de Bizkaia open data
+      portal; credit the source, include the last-update date, and do not
+      distort the data's meaning.
+    operating_note: >-
+      Bilbao's funicular railway to Artxanda, a two-stop municipal service
+      counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.ctb.eus/es/dataset/horarios-funicular-artxanda
+      terms_url: https://data.ctb.eus/en/pages/legal-notice
+      scope: [gtfs_schedule]
+      attribution: >-
+        Consorcio de Transportes de Bizkaia and Funicular de Artxanda;
+        include the source data's last-update date.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

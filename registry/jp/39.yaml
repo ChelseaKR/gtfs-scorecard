@@ -725,3 +725,391 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: ino-town-hongawa-bus
+    name: Ino Town Bus Hongawa District (いの町営バス「本川地区」)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/inotown/feeds/GTFS-Inotown_HongawaArea/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by いの町 through the GTFS Data
+      Repository (gtfs-data.jp). Credit いの町.
+    operating_note: Ino Town's municipal bus in the Hongawa mountain district.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/inotown.GTFS-Inotown_HongawaArea
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        いの町. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: ino-town-loop-bus
+    name: Ino Town Bus Ino Loop Line (いの町営バス「伊野循環線」)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/inotown/feeds/GTFS-Inotown_Loopbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by いの町 through the GTFS Data
+      Repository (gtfs-data.jp). Credit いの町.
+    operating_note: >-
+      Ino Town's municipal loop bus around Ino, published separately from
+      the Hongawa archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/inotown.GTFS-Inotown_Loopbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        いの町. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kami-city-bus
+    name: Kami City Bus (香美市営バス)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kamicity/feeds/GTFS-Kamicity_Bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 香美市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 香美市.
+    operating_note: Kami City's municipal bus network in eastern Kochi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kamicity.GTFS-Kamicity_Bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        香美市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kami-city-demand-bus
+    name: Kami City Demand Bus (香美市営バス デマンド)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kamicity/feeds/GTFS-Kamicity_Demandbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 香美市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 香美市.
+    operating_note: >-
+      Kami City's demand-responsive municipal service, published as its own
+      archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kamicity.GTFS-Kamicity_Demandbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        香美市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kochi-seinan-express
+    name: Kochi Seinan Kotsu Express Bus (高知西南交通 高速バス)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    feed_variant: express
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kochi-seinan-kotsu/feeds/GTFS-Seinan_Expressbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 高知西南交通株式会社 through the
+      GTFS Data Repository (gtfs-data.jp). Credit 高知西南交通株式会社.
+    operating_note: Kochi Seinan Kotsu's express coach service.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kochi-seinan-kotsu.GTFS-Seinan_Expressbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        高知西南交通株式会社. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kochi-seinan-akamego
+    name: Kochi Seinan Kotsu Nakamura Loop Bus (高知西南交通 まちなかぐるっと循環周遊バス)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kochi-seinan-kotsu/feeds/GTFS-Seinantraffic_Akamego/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 高知西南交通株式会社 through the
+      GTFS Data Repository (gtfs-data.jp). Credit 高知西南交通株式会社.
+    operating_note: >-
+      The town-centre loop bus Kochi Seinan Kotsu runs in Shimanto City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kochi-seinan-kotsu.GTFS-Seinantraffic_Akamego
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        高知西南交通株式会社. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kochi-seinan-shimanto-river-bus
+    name: Kochi Seinan Kotsu Shimanto River Bus (高知西南交通 四万十川バス)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kochi-seinan-kotsu/feeds/GTFS-Seinantraffic_Riverbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 高知西南交通株式会社 through the
+      GTFS Data Repository (gtfs-data.jp). Credit 高知西南交通株式会社.
+    operating_note: The Shimanto River bus, published as its own archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kochi-seinan-kotsu.GTFS-Seinantraffic_Riverbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        高知西南交通株式会社. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kochi-seinan-shimanto-ashizuri
+    name: Kochi Seinan Kotsu Shimanto-Ashizuri Service (高知西南交通 しまんと・あしずり号)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kochi-seinan-kotsu/feeds/GTFS-Seinantraffic_Shimaashi/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 高知西南交通株式会社 through the
+      GTFS Data Repository (gtfs-data.jp). Credit 高知西南交通株式会社.
+    operating_note: The Shimanto-Ashizuri long-distance service.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kochi-seinan-kotsu.GTFS-Seinantraffic_Shimaashi
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        高知西南交通株式会社. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: susaki-city-bus
+    name: Susaki City Bus (須崎市営バス)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kochi-suzakicity/feeds/GTFS-Susakicity_Bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 須崎市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 須崎市.
+    operating_note: Susaki City's municipal bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kochi-suzakicity.GTFS-Susakicity_Bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        須崎市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: susaki-city-ferry
+    name: Susaki City Ferry (須崎市営巡航船)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kochi-suzakicity/feeds/GTFS-Susakicity_Ferry/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 須崎市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 須崎市.
+    operating_note: >-
+      Susaki City's municipal cruise boat, published as its own archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kochi-suzakicity.GTFS-Susakicity_Ferry
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        須崎市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nankoku-city-naco-bus
+    name: Nankoku City NACO Bus (南国市コミュニティバス「NACOバス」)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nangokucity/feeds/gtfs-nankokucity_bus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nankoku City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Nankoku City.
+    operating_note: Nankoku City's NACO Bus community network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nangokucity.gtfs-nankokucity_bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nankoku City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nankoku-airport-shared-taxi
+    name: Nankoku City Airport Shared Taxi (南国市「空港乗合タクシー」)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    service_type: demand_response
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nangokucity/feeds/gtfs-nankokucity_airportshare/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nankoku City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Nankoku City.
+    operating_note: >-
+      Nankoku City's reservation-based shared taxi between Kochi Ryoma
+      Airport and Gomen. It is a separate feed from the Kochi Prefecture Air
+      Travel Promotion Council's Noichi service already listed as
+      kochi-airport-shared-taxi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nangokucity.gtfs-nankokucity_airportshare
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nankoku City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: shimanto-kotsu-local-bus
+    name: Shimanto Kotsu local bus (四万十交通 路線バス)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    feed_variant: local routes
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shimanto-kotsu/feeds/gtfs-shimantotraffic_localbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shimanto Kotsu through
+      the GTFS Data Repository (gtfs-data.jp). Credit Shimanto Kotsu.
+    operating_note: >-
+      The scheduled route network of Shimanto Kotsu in western Kochi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shimanto-kotsu.gtfs-shimantotraffic_localbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shimanto Kotsu. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: shimanto-kotsu-feeder-bus
+    name: Shimanto Kotsu feeder routes (四万十交通 路線バス フィーダー線)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    feed_variant: feeder routes
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/shimanto-kotsu/feeds/gtfs-shimantotraffic_feederbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Shimanto Kotsu through
+      the GTFS Data Repository (gtfs-data.jp). Credit Shimanto Kotsu.
+    operating_note: >-
+      Shimanto Kotsu's feeder services, published as a separate archive from
+      the local network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/shimanto-kotsu.gtfs-shimantotraffic_feederbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Shimanto Kotsu. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: sukumo-hana-chan-bus
+    name: Sukumo City Hana-chan Bus (宿毛市コミュニティバス「はなちゃんバス」)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/sukumocity/feeds/gtfs-sukumocity_hanabus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Sukumo City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Sukumo City.
+    operating_note: >-
+      Sukumo City's Hana-chan Bus community network, published separately
+      from the city's Yururin Bus.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/sukumocity.gtfs-sukumocity_hanabus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Sukumo City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: sukumo-okinoshima-ferry
+    name: Sukumo City Okinoshima Ferry (宿毛市営定期船航路「沖の島航路」)
+    country: JP
+    subdivision_code: JP-39
+    subdivision_name: Kochi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/sukumocity/feeds/gtfs-sukumocity_ferry/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Sukumo City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Sukumo City.
+    operating_note: Sukumo City's municipal boat service to Okinoshima.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/sukumocity.gtfs-sukumocity_ferry
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Sukumo City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

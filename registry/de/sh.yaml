@@ -1,0 +1,30 @@
+# DE agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: nahsh-schleswig-holstein
+    name: Nahverkehrsverbund Schleswig-Holstein (NAH.SH)
+    country: DE
+    subdivision_code: DE-SH
+    subdivision_name: Schleswig-Holstein
+    is_official: true
+    static_gtfs_url: https://opendata.schleswig-holstein.de/dataset/5e0652d8-7f59-42fc-92ab-a6358f800e1d/resource/6a30b708-ee8d-420f-8163-1b0cdcc79168/download/fahrplandaten
+    license_note: >-
+      CC BY 4.0 on Schleswig-Holstein's open data portal, where NAH.SH is
+      the publishing organisation and the required credit is nah.sh.
+    operating_note: >-
+      NAH.SH harmonises the schedules of Schleswig-Holstein's bus and rail
+      operators into one dataset; counted as one feed record, not a
+      distinct-agency count. Hamburg's adjoining hvv dataset is published
+      separately and is already tracked.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://opendata.schleswig-holstein.de/dataset/fahrplandaten
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: nah.sh.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

@@ -723,3 +723,30 @@ agencies:
       vehicle_positions: https://nywaterway.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition
       service_alerts: https://nywaterway.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/alert
     license_note: No stated data license in the Mobility Database; verify before publishing.
+  - id: nfta-metro-rail
+    name: NFTA Metro Rail
+    country: US
+    subdivision_code: US-NY
+    subdivision_name: New York
+    mdb_id: tld-6748
+    organization_id: niagara-frontier-transportation-authority
+    feed_variant: Metro Rail
+    is_official: true
+    static_gtfs_url: https://metro.nfta.com/__googletransit/rail/google_transit.zip
+    license_note: >-
+      The NFTA GTFS License Agreement grants non-exclusive rights to use,
+      reproduce and redistribute the data. NFTA trademarks may not be used
+      with it. Credit NFTA-Metro.
+    operating_note: >-
+      The Buffalo Metro Rail light rail line, published as a separate feed
+      from the NFTA bus schedule.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://metro.nfta.com/about/developer-tools
+      terms_url: https://metro.nfta.com/about/developer-tools
+      scope: [gtfs_schedule]
+      attribution: Niagara Frontier Transportation Authority (NFTA-Metro).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
