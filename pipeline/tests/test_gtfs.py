@@ -14,6 +14,7 @@ from scorecard_pipeline.gtfs import (
     read_agency_ids,
     read_feed_dates,
     read_shapes_coverage,
+    read_tables,
 )
 
 CALENDAR_HEADER = (
@@ -250,3 +251,85 @@ def test_read_shapes_coverage_no_trips(make_gtfs_zip: Callable[..., Path]) -> No
     coverage = read_shapes_coverage(str(path))
     assert coverage.total_trips == 0
     assert coverage.trips_with_shape == 0
+
+
+class TestNestedArchiveResolution:
+    def test_reads_tables_nested_in_single_subdirectory(
+        self, make_gtfs_zip: Callable[..., Path]
+    ) -> None:
+        path = make_gtfs_zip(
+            {
+                "subfolder/agency.txt": (
+                    "agency_id,agency_name,agency_url,agency_timezone\n"
+                    "A1,Sub Transit,https://example.org,UTC\n"
+                ),
+                "subfolder/stops.txt": "stop_id,stop_name\nS1,Main St\n",
+                "subfolder/calendar.txt": CALENDAR_HEADER + "WK,1,1,1,1,1,0,0,20260601,20260820\n",
+                "subfolder/feed_info.txt": (
+                    "feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,feed_end_date\n"
+                    "Sub Agency,https://example.org,en,20260601,20260820\n"
+                ),
+            }
+        )
+        tables = read_tables(str(path), ["agency.txt", "stops.txt", "missing.txt"])
+        assert len(tables["agency.txt"]) == 1
+        assert tables["agency.txt"][0]["agency_name"] == "Sub Transit"
+        assert len(tables["stops.txt"]) == 1
+        assert tables["stops.txt"][0]["stop_name"] == "Main St"
+        assert tables["missing.txt"] == []
+
+        agency_ids = read_agency_ids(str(path))
+        assert agency_ids == ["A1"]
+
+        dates = read_feed_dates(str(path))
+        assert dates.has_feed_info
+        assert dates.feed_publisher_name == "Sub Agency"
+        assert dates.effective_expiry() == dt.date(2026, 8, 20)
+
+        rows = list(iter_table_rows(str(path), "stops.txt"))
+        assert len(rows) == 1
+        assert rows[0]["stop_id"] == "S1"
+
+    def test_root_precedence_over_nested_tables(
+        self, make_gtfs_zip: Callable[..., Path]
+    ) -> None:
+        path = make_gtfs_zip(
+            {
+                "agency.txt": (
+                    "agency_id,agency_name,agency_url,agency_timezone\n"
+                    "ROOT,Root Transit,https://root.org,UTC\n"
+                ),
+                "nested/agency.txt": (
+                    "agency_id,agency_name,agency_url,agency_timezone\n"
+                    "NESTED,Nested Transit,https://nested.org,UTC\n"
+                ),
+            }
+        )
+        tables = read_tables(str(path), ["agency.txt"])
+        assert tables["agency.txt"][0]["agency_id"] == "ROOT"
+        assert read_agency_ids(str(path)) == ["ROOT"]
+
+    def test_multiple_nested_directories_are_ambiguous_and_unreadable(
+        self, make_gtfs_zip: Callable[..., Path]
+    ) -> None:
+        path = make_gtfs_zip(
+            {
+                "dir_a/agency.txt": (
+                    "agency_id,agency_name,agency_url,agency_timezone\n"
+                    "A,Transit A,https://a.org,UTC\n"
+                ),
+                "dir_b/agency.txt": (
+                    "agency_id,agency_name,agency_url,agency_timezone\n"
+                    "B,Transit B,https://b.org,UTC\n"
+                ),
+                "dir_b/stops.txt": "stop_id,stop_name\nS1,Stop 1\n",
+            }
+        )
+        tables = read_tables(str(path), ["agency.txt", "stops.txt"])
+        assert tables["agency.txt"] == []
+        assert tables["stops.txt"] == []
+        assert read_agency_ids(str(path)) == []
+        assert not read_feed_dates(str(path)).has_date_tables
+        assert not read_feed_dates(str(path)).has_service_content
+        assert list(iter_table_rows(str(path), "agency.txt")) == []
+

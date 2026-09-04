@@ -43,16 +43,78 @@ class TableTooLargeError(ValueError):
     """
 
 
+# Standard GTFS table filenames used to discover nested archive directories.
+GTFS_TABLE_NAMES = frozenset(
+    {
+        "agency.txt",
+        "stops.txt",
+        "routes.txt",
+        "trips.txt",
+        "stop_times.txt",
+        "calendar.txt",
+        "calendar_dates.txt",
+        "fare_attributes.txt",
+        "fare_rules.txt",
+        "shapes.txt",
+        "frequencies.txt",
+        "transfers.txt",
+        "pathways.txt",
+        "levels.txt",
+        "feed_info.txt",
+        "translations.txt",
+        "attributions.txt",
+    }
+)
+
+
+def _resolve_member_name(zf: zipfile.ZipFile, name: str) -> str | None:
+    """Resolve a table member name, supporting archives wrapped in a subfolder.
+
+    - If ``name`` exists at the root, returns ``name`` directly.
+    - Otherwise, scans the archive for directory prefixes that contain standard
+      GTFS tables. If exactly one directory prefix contains tables, returns
+      ``prefix + name`` if that member exists.
+    - If zero or multiple candidate directory prefixes contain GTFS tables,
+      returns None (ambiguous or absent).
+    """
+    namelist = zf.namelist()
+    if name in namelist:
+        return name
+
+    # Discover candidate directory prefixes containing standard GTFS tables.
+    # A directory prefix is everything up to the final component (e.g. 'gtfs/').
+    prefixes: set[str] = set()
+    for member in namelist:
+        if member.endswith("/"):
+            continue
+        parts = member.rsplit("/", 1)
+        if len(parts) == 2:
+            prefix, filename = parts[0] + "/", parts[1]
+            if filename in GTFS_TABLE_NAMES:
+                prefixes.add(prefix)
+
+    if len(prefixes) == 1:
+        single_prefix = next(iter(prefixes))
+        candidate = single_prefix + name
+        if candidate in namelist:
+            return candidate
+
+    return None
+
+
 def _read_table(zf: zipfile.ZipFile, name: str) -> list[dict[str, str]]:
+    resolved = _resolve_member_name(zf, name)
+    if resolved is None:
+        return []
     try:
-        info = zf.getinfo(name)
+        info = zf.getinfo(resolved)
     except KeyError:
         return []
     if info.file_size > MAX_MEMBER_BYTES:
         raise TableTooLargeError(
             f"{name} is {info.file_size} bytes uncompressed, over the safety cap"
         )
-    text = zf.read(name).decode("utf-8-sig", errors="replace")
+    text = zf.read(resolved).decode("utf-8-sig", errors="replace")
     return list(csv.DictReader(io.StringIO(text)))
 
 
@@ -74,9 +136,10 @@ def _has_data_row(zf: zipfile.ZipFile, name: str) -> bool:
     ask of a national feed's trips.txt, and is why it does not apply the
     whole-table memory cap -- it never holds the table.
     """
-    if name not in zf.namelist():
+    resolved = _resolve_member_name(zf, name)
+    if resolved is None:
         return False
-    with zf.open(name) as handle:
+    with zf.open(resolved) as handle:
         if not handle.readline():  # no header means no table
             return False
         return any(line.strip() for line in handle)
@@ -95,8 +158,11 @@ def iter_table_rows(
     decompression, and a missing table yields no rows.
     """
     with zipfile.ZipFile(gtfs_zip_path) as zf:
+        resolved = _resolve_member_name(zf, name)
+        if resolved is None:
+            return
         try:
-            info = zf.getinfo(name)
+            info = zf.getinfo(resolved)
         except KeyError:
             return
         if info.file_size > max_member_bytes:
@@ -245,8 +311,7 @@ def read_feed_dates(gtfs_zip_path: str) -> FeedDates:
         # Presence of the file, not of any row in it: an empty calendar.txt is a
         # feed that says it has no service, which is a measurable claim. An
         # archive carrying none of these tables said nothing at all.
-        present = set(zf.namelist())
-        has_date_tables = any(name in present for name in date_tables)
+        has_date_tables = any(_resolve_member_name(zf, name) is not None for name in date_tables)
         # Rows, not presence, for the service tables: a header-only stops.txt
         # describes no stops, and the dates would be about nothing either way.
         has_service_content = _has_data_row(zf, "stops.txt") or _has_data_row(zf, "trips.txt")
