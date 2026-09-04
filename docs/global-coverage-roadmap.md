@@ -346,8 +346,8 @@ the candidate pool builder itself.
 
 A twenty-lane parallel pass on 2026-09-01 admitted 390 reviewed records. Its
 France lane overlapped the two exhaustion passes above, which ran on the same
-portal in the same window; after reconciling the overlap the registry stands at
-2,643 records across 48 country codes. It worked a declared
+portal in the same window; reconciling that overlap on 2026-09-04 left the
+registry holding 2,643 records across 48 country codes. It worked a declared
 universe of 3,148 candidates — the Mobility Database and Transitland Atlas rows
 not already tracked — and every candidate has a recorded disposition. Depth
 dominated: Japan 196, Ireland 60, France 57, Canada 16, Spain 11, Norway 10.
