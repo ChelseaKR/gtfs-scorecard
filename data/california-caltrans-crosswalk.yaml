@@ -8,13 +8,13 @@
 # Do not hand-edit: record a curator decision in the script's CURATED
 # table, with its reason, and regenerate.
 schema_version: '1.0'
-directory_source: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06
-directory_month: 2026-06
-directory_retrieved_on: '2026-08-07'
-registry_records: 246
-matched_records: 197
-uncertain_records: 5
-absent_records: 44
+directory_source: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07
+directory_month: 2026-07
+directory_retrieved_on: '2026-09-05'
+registry_records: 247
+matched_records: 196
+uncertain_records: 6
+absent_records: 45
 directory_agencies: 178
 matched_directory_agencies: 149
 records:
@@ -389,6 +389,11 @@ records:
   evidence: County Connection is CCCTA's brand
   caltrans_id: 61
   caltrans_name: Central Contra Costa Transit Authority
+- id: county-connection-cccta-2421
+  name: County Connection (CCCTA)
+  status: absent
+  method: no_candidate
+  evidence: no organization in their directory shares a name
 - id: cudahy-area-rapid-transit
   name: Cudahy Area Rapid Transit
   status: matched
@@ -466,18 +471,15 @@ records:
   caltrans_name: City of El Monte
 - id: el-segundo-transportation
   name: El Segundo Transportation
-  status: matched
-  method: place_name
-  evidence: 'shared name: segundo'
-  caltrans_id: 103
-  caltrans_name: City of El Segundo
+  status: absent
+  method: no_candidate
+  evidence: no organization in their directory shares a name
 - id: el-segundo-transportation-2210
   name: El Segundo Transportation
-  status: matched
-  method: feed_url
-  evidence: their report lists this feed URL
-  caltrans_id: 103
-  caltrans_name: City of El Segundo
+  status: uncertain
+  method: name_overlap
+  evidence: 'only a partial name overlap, nearest: City of Los Angeles, Los Angeles County, Los Angeles
+    County Metropolitan Transportation Authority'
 - id: elk-grove-transit
   name: Elk Grove Transit
   status: matched
@@ -979,13 +981,6 @@ records:
   evidence: 'shared name: norwalk'
   caltrans_id: 228
   caltrans_name: City of Norwalk
-- id: norwalk-transit-system-nts-2242
-  name: Norwalk Transit System (NTS)
-  status: matched
-  method: place_name
-  evidence: 'shared name: norwalk'
-  caltrans_id: 228
-  caltrans_name: City of Norwalk
 - id: omnitrans
   name: OmniTrans
   status: matched
@@ -1099,11 +1094,6 @@ records:
   evidence: 'shared name: redwood'
   caltrans_id: 261
   caltrans_name: Redwood Coast Transit Authority
-- id: regional-transportation-commission-of-southern-nevada-rtc
-  name: Regional Transportation Commission of Southern Nevada (RTC)
-  status: absent
-  method: curated
-  evidence: this is a Nevada operator; it is in the California shard by mistake
 - id: relaxsan
   name: reLAXsan
   status: absent
@@ -1647,91 +1637,105 @@ records:
   evidence: 'shared name: sutter, yuba'
   caltrans_id: 376
   caltrans_name: Yuba-Sutter Transit Authority
+- id: yurok-tribe-river-otter-ferry
+  name: Yurok Tribe River Otter Ferry
+  status: matched
+  method: place_name
+  evidence: 'shared name: yurok'
+  caltrans_id: 377
+  caltrans_name: Yurok Tribe
+- id: yurok-tribe-transit-service
+  name: Yurok Tribe Transit Service
+  status: matched
+  method: place_name
+  evidence: 'shared name: yurok'
+  caltrans_id: 377
+  caltrans_name: Yurok Tribe
 directory_only:
 - caltrans_id: 13
   name: Amtrak
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/13/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/13/index.html
 - caltrans_id: 18
   name: City of Arcata
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/18/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/18/index.html
 - caltrans_id: 48
   name: Butte County Association of Governments
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/48/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/48/index.html
 - caltrans_id: 64
   name: Chemehuevi Indian Tribe
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/64/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/64/index.html
 - caltrans_id: 70
   name: Cloverdale Transit
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/70/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/70/index.html
 - caltrans_id: 85
   name: City of Covina
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/85/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/85/index.html
 - caltrans_id: 108
   name: City of Eureka
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/108/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/108/index.html
 - caltrans_id: 138
   name: Imperial County Transportation Commission
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/138/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/138/index.html
 - caltrans_id: 139
   name: City of Inglewood
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/139/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/139/index.html
 - caltrans_id: 165
   name: Los Angeles World Airports
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/165/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/165/index.html
 - caltrans_id: 202
   name: City of San Fernando
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/202/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/202/index.html
 - caltrans_id: 231
   name: City of Ojai
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/231/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/231/index.html
 - caltrans_id: 257
   name: Presidio Trust
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/257/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/257/index.html
 - caltrans_id: 277
   name: San Diego International Airport
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/277/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/277/index.html
+- caltrans_id: 281
+  name: San Francisco International Airport
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/281/index.html
 - caltrans_id: 320
   name: City of South Gate
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/320/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/320/index.html
 - caltrans_id: 331
   name: Tahoe Transportation District
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/331/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/331/index.html
 - caltrans_id: 361
   name: City of Visalia
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/361/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/361/index.html
 - caltrans_id: 367
   name: City of West Hollywood
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/367/index.html
-- caltrans_id: 377
-  name: Yurok Tribe
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/377/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/367/index.html
 - caltrans_id: 381
   name: Solano Transportation Authority
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/381/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/381/index.html
 - caltrans_id: 385
   name: San Bernardino County Transportation Authority
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/385/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/385/index.html
 - caltrans_id: 386
   name: Yuma County Intergovernmental Public Transportation Authority
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/386/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/386/index.html
 - caltrans_id: 412
   name: City of Alameda
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/412/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/412/index.html
 - caltrans_id: 481
   name: City of South San Francisco
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/481/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/481/index.html
 - caltrans_id: 482
   name: Tuolumne County Transit Agency
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/482/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/482/index.html
 - caltrans_id: 487
   name: POINT
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/487/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/487/index.html
 - caltrans_id: 489
   name: City of Rancho Cordova
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/489/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/489/index.html
 - caltrans_id: 491
   name: Dumbarton Bridge Regional Operations Consortium
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/491/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/491/index.html
 - caltrans_id: 493
   name: City of Irvine
-  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/06/493/index.html
+  report_url: https://reports.dds.dot.ca.gov/gtfs_schedule/2026/07/493/index.html
