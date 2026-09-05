@@ -30,6 +30,7 @@ concurrency:
 jobs:
   overlay:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
@@ -40,6 +41,7 @@ jobs:
           ssh-key: ${{ secrets.SCHEDULED_WRITER_SSH_KEY }}
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
+          enable-cache: true
           python-version: "3.12"
       - name: Compute the Canada CIMD overlay
         working-directory: pipeline
