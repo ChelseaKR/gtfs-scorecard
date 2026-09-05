@@ -23,6 +23,7 @@ jobs:
   secret-scan:
     name: Secret scan (gitleaks)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
     steps:
@@ -98,6 +99,7 @@ jobs:
   sast:
     name: SAST (Semgrep)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: read
     steps:
@@ -108,6 +110,7 @@ jobs:
       - name: Set up uv
         uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
+          enable-cache: true
           python-version: "3.12"
       - name: Semgrep scan (blocking on ERROR severity)
         # Pinned tool version; default + python + javascript registry rulesets.
@@ -134,6 +137,7 @@ jobs:
   dependency-audit:
     name: Dependency audit (pip-audit + osv-scanner)
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: pipeline
@@ -145,6 +149,7 @@ jobs:
           persist-credentials: false
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
+          enable-cache: true
           python-version: "3.12"
       # --no-emit-project: pip-audit's requirement-file collector installs
       # every line into a scratch venv to inspect it; the local editable
@@ -167,6 +172,7 @@ jobs:
     name: Dependency review (PRs only)
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -196,6 +202,7 @@ jobs:
     name: zizmor (workflow security lint)
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
@@ -204,5 +211,6 @@ jobs:
           persist-credentials: false
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
+          enable-cache: true
           python-version: "3.12"
       - run: uvx zizmor==1.26.1 -c .github/zizmor.yml .github/workflows --min-severity medium

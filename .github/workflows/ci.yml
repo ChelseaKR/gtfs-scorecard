@@ -16,6 +16,7 @@ concurrency:
 jobs:
   pipeline:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     defaults:
       run:
         working-directory: pipeline
@@ -25,6 +26,7 @@ jobs:
           persist-credentials: false
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
+          enable-cache: true
           python-version: "3.12"
       - run: uv sync --locked
       # CICD-27/OBS-22 parity: CI runs the exact same merge-blocking gate a

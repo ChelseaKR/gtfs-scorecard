@@ -25,6 +25,7 @@ concurrency:
 jobs:
   analysis:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       # Job-level permissions replace, not merge with, the workflow-level
       # block above — contents: read must be repeated here.

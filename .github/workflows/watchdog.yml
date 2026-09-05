@@ -18,6 +18,7 @@ jobs:
   watch:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '23 */6 * * *' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       actions: read # read the Daily scorecard run history
     steps:
