@@ -106,6 +106,27 @@ the declared public surface).
   being measured; those are listed as not measured, because nobody looked at
   them, which is not the same as their being fixed. Closes #361.
 
+- **SARIF output, and a refused feed that does not look clean in it
+  (2026-09-06).** `scorecard try --sarif out.sarif` writes the validator's
+  notices as SARIF 2.1.0, and the Action gains `sarif` and `sarif-base` inputs
+  plus a `sarif` output, so a maintainer who keeps GTFS in git sees each notice
+  as a code-scanning alert annotated on the line in `stops.txt` or `trips.txt`.
+  Rule metadata carries the plain-language `what`/`why` the scorecard page shows
+  and the `helpUri` from `rule_links.py`, so the Security tab says the same
+  thing the site says rather than repeating a rule id. Three deliberate
+  properties: one result per notice **code**, carrying the true instance total
+  and saying how many of them it could locate, because the validator samples its
+  examples and emitting one result per sampled row would publish "5 problems"
+  about a code with 23 instances; fingerprints built from the code, file, field
+  and first row but **not** the count, so a partly-fixed finding stays the same
+  alert instead of resurfacing as a new one; and a feed that could not be read
+  writes an `executionSuccessful: false` invocation with the reason attached
+  rather than an empty successful run — SARIF has no shape for "I did not run",
+  and an empty `results` array renders exactly like a feed with nothing wrong.
+  `cli.run_adhoc_detailed` was split out to carry the parsed validator report
+  alongside the artifact: the per-notice file and row samples exist only there,
+  because `build_artifact` aggregates each code to a count. Closes #368.
+
 ### Changed
 
 - **The money page no longer links to a page that does not exist

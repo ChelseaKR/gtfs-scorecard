@@ -139,6 +139,7 @@ def main() -> int:
     parser.add_argument("--diff-rc", default="")
     parser.add_argument("--diff-markdown", default="")
     parser.add_argument("--fail-on-regression", default="false")
+    parser.add_argument("--sarif", default="")
     args = parser.parse_args()
 
     result_path = Path(args.json)
@@ -166,6 +167,7 @@ def main() -> int:
                 f"result-json={result_path}",
                 f"comparable={comparable}",
                 f"regressed={regressed}",
+                f"sarif={args.sarif}",
                 "",
             ]
         ),

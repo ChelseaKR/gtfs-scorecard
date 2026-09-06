@@ -66,6 +66,7 @@ def test_action_declares_stable_outputs_and_json_input() -> None:
         "result-json",
         "comparable",
         "regressed",
+        "sarif",
     }
     assert action["inputs"]["json"]["required"] is False
     assert action["inputs"]["summary"]["default"] == "true"
@@ -74,8 +75,16 @@ def test_action_declares_stable_outputs_and_json_input() -> None:
     # workflow that only wants the comparison reported must not start failing.
     assert action["inputs"]["baseline"]["default"] == ""
     assert action["inputs"]["fail-on-regression"]["default"] == "false"
+    # SARIF is opt-in: a workflow that does not ask for it must not start
+    # writing one, and an unset path must not become a literal "".
+    assert action["inputs"]["sarif"]["default"] == ""
+    assert action["inputs"]["sarif-base"]["default"] == ""
     run = action["runs"]["steps"][-1]["run"]
     assert '--country "$FEED_COUNTRY"' in run
+    assert 'if [[ -n "$SARIF_OUT" ]]; then args+=(--sarif "$SARIF_OUT"); fi' in run
+    # The scorer gets --sarif before it can refuse, so a refused feed still
+    # writes an unsuccessful-invocation SARIF rather than nothing at all.
+    assert run.index("--sarif") < run.index("gate_rc=$?")
     assert '--json-out "$result_json"' in run
     assert 'uv run --project "${GITHUB_ACTION_PATH}/pipeline" --locked --no-dev' in run
     assert "git+https://" not in run
@@ -254,7 +263,16 @@ def test_cli_json_output_is_written_before_gate_result(
         },
         "top_fixes": [],
     }
-    monkeypatch.setattr(cli, "run_adhoc", lambda *_args, **_kwargs: artifact)
+    from scorecard_pipeline.validate import ValidationReport
+
+    monkeypatch.setattr(
+        cli,
+        "run_adhoc_detailed",
+        lambda *_args, **_kwargs: (
+            artifact,
+            ValidationReport(validator_version="8.0.1", notices=[]),
+        ),
+    )
     monkeypatch.setattr(
         "scorecard_pipeline.render_site._render_agency",
         lambda *_args, **_kwargs: '<link href="/app.css">',
@@ -276,6 +294,8 @@ def test_cli_json_output_is_written_before_gate_result(
         json_out=str(output),
         min_grade="B",
         min_days_to_expiry=None,
+        sarif=None,
+        sarif_base="",
     )
     assert cli._cmd_try(args, argparse.ArgumentParser()) == 1
     assert json.loads(output.read_text())["overall"]["grade"] == "C"

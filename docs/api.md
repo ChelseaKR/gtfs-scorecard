@@ -724,6 +724,14 @@ uvx --from gtfs-scorecard scorecard try "$FEED_URL" --country CA \
   --min-grade B --min-days-to-expiry 30
 ```
 
+Add `--sarif out.sarif` to also write the validator's notices as SARIF 2.1.0,
+one result per notice code, with the file and row for as many instances as the
+validator sampled and the true instance total in the message. A feed that could
+not be read writes a SARIF with an unsuccessful invocation and the reason, never
+an empty successful one — an empty SARIF is indistinguishable from a clean feed.
+`--sarif-base` prefixes the member path when the feed lives in a subdirectory of
+the repository being annotated.
+
 `--country` accepts an assigned ISO 3166-1 alpha-2 code and defaults to `US` so
 existing commands retain their behavior. It is passed to the MobilityData
 validator and written into the ad-hoc artifact. The command prints the grade,

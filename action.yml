@@ -27,6 +27,9 @@ outputs:
   regressed:
     description: "true when the comparison against baseline shows a regression; blank when no comparable baseline was available."
     value: ${{ steps.gate.outputs.regressed }}
+  sarif:
+    description: "Path to the SARIF file, when the sarif input was set. Blank otherwise."
+    value: ${{ steps.gate.outputs.sarif }}
 
 inputs:
   feed-url:
@@ -68,6 +71,14 @@ inputs:
     description: "Fail the build when the comparison against baseline shows a regression, or cannot be made because the two runs are different measurements (true or false)."
     required: false
     default: "false"
+  sarif:
+    description: "Path to also write validator notices as a SARIF 2.1.0 file, relative to the workspace. Upload it with github/codeql-action/upload-sarif to see findings in the Security tab. Leave blank to skip."
+    required: false
+    default: ""
+  sarif-base:
+    description: "Directory the feed's files sit in inside the repository being annotated (for example gtfs/). Leave blank when the feed is a zip or sits at the repository root."
+    required: false
+    default: ""
   ref:
     description: "Deprecated compatibility input. The scorer is bundled with the Action release, so its version always matches the Action ref."
     required: false
@@ -101,6 +112,8 @@ runs:
         WRITE_SUMMARY: ${{ inputs.summary }}
         BASELINE: ${{ inputs.baseline }}
         FAIL_ON_REGRESSION: ${{ inputs.fail-on-regression }}
+        SARIF_OUT: ${{ inputs.sarif }}
+        SARIF_BASE: ${{ inputs.sarif-base }}
         # Keep the downloaded Action tree immutable and all feed/validator
         # scratch data under the runner's temporary directory.
         SCORECARD_ROOT: ${{ runner.temp }}/gtfs-scorecard-work
@@ -114,6 +127,11 @@ runs:
         if [[ -n "$HTML_OUT" ]]; then args+=(--html "$HTML_OUT"); fi
         if [[ -n "$MIN_GRADE" ]]; then args+=(--min-grade "$MIN_GRADE"); fi
         if [[ -n "$MIN_DAYS" ]]; then args+=(--min-days-to-expiry "$MIN_DAYS"); fi
+        # Passed even when the scorer refuses the feed: a refused run writes a
+        # SARIF whose invocation is unsuccessful, because an empty results array
+        # is indistinguishable from a clean feed in the Security tab.
+        if [[ -n "$SARIF_OUT" ]]; then args+=(--sarif "$SARIF_OUT"); fi
+        if [[ -n "$SARIF_BASE" ]]; then args+=(--sarif-base "$SARIF_BASE"); fi
         args+=(--json-out "$result_json")
         set +e
         uv run --project "${GITHUB_ACTION_PATH}/pipeline" --locked --no-dev \
@@ -150,7 +168,8 @@ runs:
           --baseline "$BASELINE" \
           --diff-rc "$diff_rc" \
           --diff-markdown "$diff_md" \
-          --fail-on-regression "$FAIL_ON_REGRESSION"
+          --fail-on-regression "$FAIL_ON_REGRESSION" \
+          --sarif "$SARIF_OUT"
         render_rc=$?
         set -e
         if [[ "$gate_rc" -ne 0 ]]; then exit "$gate_rc"; fi
