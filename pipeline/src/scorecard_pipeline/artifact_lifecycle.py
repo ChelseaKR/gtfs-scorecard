@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import json
 import re
-from collections.abc import Mapping
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
@@ -66,13 +66,27 @@ def retirement_manifest_path(artifact_root: Path) -> Path:
 
 
 def _retired_agency_ids(
-    artifact_root: Path, registry: Mapping[str, _AgencyRecord]
+    artifact_root: Path,
+    registry: Mapping[str, _AgencyRecord],
+    withdrawn: Iterable[str] = (),
 ) -> tuple[str, ...]:
-    """Return known noncurrent ids, including stale hydrated directories."""
+    """Return known noncurrent ids, including stale hydrated directories.
+
+    ``withdrawn`` adds ids whose current grade has been retracted
+    (corrections.py). A withdrawal is not a retirement -- the agency may be
+    listed, active, and perfectly real -- but the file operation is the same
+    one, and routing both through here keeps a single deletion plan for the
+    object store rather than two that could disagree. Unlike retirement, a
+    withdrawal applies whether or not a registry is loaded: the reason it exists
+    is that some of these ids are in no registry at all.
+    """
+    withdrawn_ids = {
+        agency_id for agency_id in withdrawn if _PUBLIC_AGENCY_ID.fullmatch(agency_id)
+    } - RESERVED_ARTIFACT_DIRS
     if not registry:
         # Without a loaded registry there is no authority for declaring an id
         # retired. Library callers keep their historical behavior.
-        return ()
+        return tuple(sorted(withdrawn_ids))
 
     retired = {
         agency_id
@@ -88,7 +102,7 @@ def _retired_agency_ids(
                 path.name
             ):
                 retired.add(path.name)
-    return tuple(sorted(retired))
+    return tuple(sorted(retired | withdrawn_ids))
 
 
 def _write_manifest(path: Path, agency_ids: tuple[str, ...]) -> None:
@@ -103,7 +117,9 @@ def _write_manifest(path: Path, agency_ids: tuple[str, ...]) -> None:
 
 
 def reconcile_retired_current_artifacts(
-    artifact_root: Path, registry: Mapping[str, _AgencyRecord]
+    artifact_root: Path,
+    registry: Mapping[str, _AgencyRecord],
+    withdrawn: Iterable[str] = (),
 ) -> RetirementPlan:
     """Remove local current pointers for retired ids and write their S3 plan.
 
@@ -111,8 +127,12 @@ def reconcile_retired_current_artifacts(
     That distinction matters in CI: collect hydrates every ``latest.json`` but
     does not hydrate every badge or geometry object, while all of them may still
     exist in the additive S3 store.
+
+    ``withdrawn`` carries ids whose published grade has been retracted
+    (corrections.py); they are cleaned by the same allowlist and enter the same
+    deletion plan.
     """
-    agency_ids = _retired_agency_ids(artifact_root, registry)
+    agency_ids = _retired_agency_ids(artifact_root, registry, withdrawn)
     removed = 0
     for agency_id in agency_ids:
         agency_dir = artifact_root / agency_id

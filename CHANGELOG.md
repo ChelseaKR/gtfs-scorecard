@@ -104,6 +104,51 @@ the declared public surface).
 
 ### Fixed
 
+- **Nineteen published F grades have been withdrawn, and the site now says so.**
+  The refusal that shipped on 2026-09-01 stopped the scorer minting a grade for
+  an archive it could not read. It did nothing about the ones already published,
+  and it made them permanent: a refused agency writes no artifact, so the daily
+  run leaves the old letter exactly where it was and warns into a log. Nineteen
+  named transit agencies stayed publicly graded F on feeds nobody had read, and
+  twelve of the nineteen are in no registry at all, so no run would ever have
+  looked at them again.
+
+  The cause was established per feed rather than assumed. Eleven of the nineteen
+  carry the validator's own `invalid_input_files_in_subfolder` notice in their
+  published artifact: the archive wraps its GTFS tables in a folder and the
+  reader looked at the top level. Several of those are healthy feeds.
+  `santa-clarita-transit` was graded F on an archive holding 364 stops and 898
+  trips; `miami-dade-transit-331` on one holding 6,973 stops and 24,285 trips.
+  The other eight are archives that really do describe no service, confirmed by
+  re-reading the same bytes where the feed is still reachable.
+
+  `corrections.yaml` is the reviewed record: for each withdrawn grade, the
+  agency, the snapshot and feed hash it was computed from, what was published,
+  the period it was public, the verified cause, the evidence, and what stands in
+  its place. Neither outcome is a number. A grade taken back because nothing was
+  read is not corrected to a different reading of the same nothing; where the
+  feed cannot be read the answer is that it is not measured, and where the
+  record is no longer a current listing the scorecard is withdrawn and not
+  replaced. A later run that does read the feed supersedes the withdrawal on its
+  own and publishes its own measurement.
+
+  Deleting the files would not have held. `publish.reindex` re-derives
+  `latest.json` from the newest dated artifact beside it, so a retraction made by
+  hand comes back on the next run. The withdrawal is enforced in the pipeline:
+  reindex removes the current pointers, keeps the id out of the index, and folds
+  it into the same S3 deletion plan retirement already uses, and `publish`
+  refuses to write a current pointer for a record the file withdraws. Dated
+  artifacts are untouched.
+
+  A new `/corrections/` page carries the public record, linked from
+  `/how-to-read/` and documented in `docs/listing-policy.md`. Three more
+  published grades carry the same defect and are listed in the same file under
+  `not_yet_corrected` with the reason each is held back, so the gate cannot be
+  satisfied by narrowing what it looks at. One of them, `boxcar`, needs a
+  scoring decision first: its archive has no stops, no routes and no trips, but
+  its calendar has 89 real rows, so freshness is a genuine measurement and
+  `score_feed_content` does not refuse the feed. The next run would publish an A.
+
 - **A feed with no stops and no trips is no longer given a letter grade.**
   Reported downstream against the published `gtfs-scorecard@v1.4.0` Action: a
   well-formed zip containing no GTFS files was scored `F (31.3/100)` with
