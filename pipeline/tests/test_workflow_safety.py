@@ -548,6 +548,60 @@ def test_publish_survives_a_dead_score_shard() -> None:
     )
 
 
+def test_a_transient_s3_error_cannot_abort_a_score_shard() -> None:
+    """One socket error must not cost a whole shard its daily refresh.
+
+    The score step runs under `set -euo pipefail`. Of the four S3 calls in its
+    per-agency loop, two carried `|| true` and two did not, so either unguarded
+    call aborted the shard mid-loop and every agency after it went unscored.
+    Observed live in run 33968878878 (2026-09-05): the second of that shard's
+    agencies hit "Connection broken: ConnectionResetError(104, 'Connection
+    reset by peer')" on the artifact prefetch, the step exited 1, and roughly
+    65 records kept the previous day's scorecard. The loop's own design note
+    says the opposite -- "one agency's feed being unreachable must not abort
+    the shard".
+
+    Continuing past an exhausted retry is safe for both calls, which is why
+    they may warn rather than fail: the prefetch is a cache warm-up
+    (`_liveness_unchanged` consults `_artifact_contract_current` first, so a
+    miss re-scores the feed instead of publishing a stale number), and a
+    structure fingerprint that never reaches staging leaves collect with the
+    previous copy rather than a wrong one.
+    """
+    workflow = _workflow("scorecard.yml")
+
+    score = workflow.index("\n  score:")
+    collect = workflow.index("\n  collect:")
+    score_block = workflow[score:collect]
+
+    assert "s3_retry() {" in score_block, (
+        "the per-agency loop must route retryable S3 calls through a helper"
+    )
+    assert "for attempt in 1 2 3" in score_block
+    assert "::warning title=s3 retry exhausted::" in score_block, (
+        "an exhausted retry must be announced, not swallowed"
+    )
+
+    # Every S3 call in the loop must either go through the retry helper or
+    # already tolerate failure. A bare `aws ...` at the start of a line is
+    # unguarded; one prefixed with `if` sits inside the helper's own condition.
+    for line in score_block.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("aws s3"):
+            continue
+        assert (
+            stripped.endswith("|| true")
+            or "|| true"
+            in score_block[score_block.index(stripped) : score_block.index(stripped) + 400]
+        ), f"unguarded S3 call can abort the shard under set -e: {stripped!r}"
+
+    # Both previously-unguarded call sites now retry and tolerate exhaustion.
+    assert score_block.count('s3_retry "${id}:') == 2, (
+        "both the artifact prefetch and the structure-fingerprint upload must "
+        "retry; they were the two calls that could kill the shard"
+    )
+
+
 def test_scheduled_workflows_bound_the_validator_subprocess() -> None:
     """The memory ceiling is opt-in, so a workflow that forgets it is unprotected.
 
