@@ -104,6 +104,40 @@ the declared public surface).
 
 ### Fixed
 
+- **A validator report nobody could read is no longer scored as a clean feed.**
+  The upward twin of the fabricated F above, and the one that lasted longer,
+  because a flattering number invites no complaint. `ValidationReport` had one
+  shape for "the validator found nothing wrong" and the same shape for "there
+  was no report to read": an empty list of notices. Correctness starts at 100
+  and deducts per notice, so the second case scored `Correctness 100.0 / 100`
+  and published "The validator found no problems in this feed. That is rare and
+  worth celebrating." about a feed whose report had never been read.
+
+  Four payloads reached that sentence through `validate.parse_report_data` or
+  `vcache._report_from_json`, the only two functions in the package that build a
+  `ValidationReport`: an empty JSON object, a dict of an entirely different
+  shape, a report truncated after its `summary`, and a report whose `notices`
+  were null. Correctness was also the only scored category with no way to say
+  "not measured" at all: freshness and rider experience return no category and
+  are dropped, realtime is never appended for an agency that publishes none, and
+  all three render as "Not yet measured" with no number.
+
+  Both builders now refuse. A gtfs-validator report always carries `notices` as
+  a list, empty when the feed is clean, so the list's presence is what separates
+  the two cases; a payload without one raises `UnreadableValidatorReportError`,
+  a `ValueError` that travels the path a non-zip response body already travels.
+  A report with `"notices": []` is a real measurement of a genuinely clean feed
+  and still scores 100.
+
+  Where the same report can be obtained another way, the refusal is a miss
+  rather than a stop. An unreadable validator-cache entry re-validates, because
+  the honest cost of a cache entry we cannot read is one Java run. An unreadable
+  hosted report from the Mobility Feed API falls back to a local validator run,
+  which is what every other mismatch there already does. Only our own
+  `report.json` has no second source, and that one raises: the agency is not
+  re-scored that day and the run reports it, which is what "we could not read
+  it" looks like from outside.
+
 - **A feed with no stops and no trips is no longer given a letter grade.**
   Reported downstream against the published `gtfs-scorecard@v1.4.0` Action: a
   well-formed zip containing no GTFS files was scored `F (31.3/100)` with
