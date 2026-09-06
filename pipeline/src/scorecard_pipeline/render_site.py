@@ -6587,7 +6587,13 @@ def _ridership_impact_line(impact: dict[str, Any] | None) -> str:
     total = impact.get("total_feed_records", impact.get("total_agencies", matched))
     excluded = impact.get("duplicate_feed_records_excluded", 0)
     trips = impact.get("total_annual_trips", 0)
-    pct = impact.get("expired_trips_pct", 0)
+    pct = impact.get("expired_trips_pct")
+    # None when no weighted trips were matched, so there is no share to state.
+    expired_clause = (
+        "the matched reporters report no annual trips, so no expired share can be taken"
+        if pct is None
+        else f"<strong>{pct}%</strong> of those trips ride on a feed that has expired"
+    )
     duplicate_note = (
         f"{excluded} feed records sharing an NTD ID were excluded rather than double-counted. "
         if excluded
@@ -6598,7 +6604,7 @@ def _ridership_impact_line(impact: dict[str, Any] | None) -> str:
         "among unique, unambiguous NTD reporter matches, tracked feeds carry about "
         f"<strong>{trips:,}</strong> annual rider-trips ({matched} matches across {total} "
         f"eligible feed records), and "
-        f"<strong>{pct}%</strong> of those trips ride on a feed that has expired. "
+        f"{expired_clause}. "
         f"{duplicate_note}"
         'The same numbers are at <a href="/api/v1/ridership-impact.json">the '
         "ridership-impact API</a>.</p>"
