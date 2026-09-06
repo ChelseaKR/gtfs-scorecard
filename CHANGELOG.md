@@ -149,6 +149,173 @@ the declared public surface).
   its calendar has 89 real rows, so freshness is a genuine measurement and
   `score_feed_content` does not refuse the feed. The next run would publish an A.
 
+- **Six more places where an absence was published as a number.** The same
+  defect as the validator-report fix below, found in six other measurements the
+  site publishes. In each one a value that means "we could not measure this"
+  was written where a measured value goes, so a reader cannot tell the two
+  apart. None of them invented a new vocabulary: every fix reuses the
+  not-measured convention the project already has.
+
+  - **A realtime fetch that failed inside our own fetcher was published as the
+    agency's outage.** `rt.fetch_sample` caught every exception into
+    `ok=False`, and that flag is not neutral: it becomes an ERROR finding on the
+    agency's page, a deduction from their realtime score, and a "down" reading
+    in the uptime record `/realtime/` publishes. Our SSRF guard refusing a URL,
+    and any unexpected exception in our own code, were published under an
+    agency's name as "your feed is down". `rt.measures_the_endpoint` now decides
+    whose failure it was. A `requests` failure, `UnresolvableHostError` (which
+    `net.py` already classifies as an origin availability failure) and a body
+    that is not a parseable GTFS-Realtime protobuf remain the agency's outage.
+    Everything else marks the sample not measured; the feed kind drops out of
+    reachability and the rest renormalise, and a window with nothing measurable
+    in it publishes no realtime category and records no uptime observation. A
+    configured feed kind with no sample record at all keeps its deliberate
+    fail-closed reading.
+
+  - **A feed with no trips was failing the NTD shapes check rather than
+    unmeasurable by it.** `assess_shapes_readiness` answered `not_ready` when
+    `trips.txt` has no rows, while its own detail line beside it said the
+    coverage could not be checked. The prose was right and the status was not: a
+    stops-only feed sat in the failing bucket of `pct_ready` on every NTD rollup
+    and wore a "Not ready" badge. `NOT_CHECKED` already existed for exactly
+    this — with a rendered label, a badge class, and a deliberate absence from
+    `_RANK`, where membership is what "we measured it" means — and is now used.
+
+  - **A recommendation check that crashed read as a clean bill of health.**
+    `recommend._safe` returned `[]` for a crash, which is the value a check
+    returns when it ran and found nothing to suggest. An accessibility audit
+    that died on a malformed table published the same page as a feed with no
+    accessibility gaps at all. The sandbox stays — one broken table must not
+    cost an agency its score — but `_safe` now returns `None`, the artifact
+    carries `recommendations_not_measured` when a check could not run, and both
+    renderers say so instead of falling silent.
+
+  - **A liveness record that says nothing was counted as a healthy feed.**
+    `refresh_success_record` read `int(record.get("consecutive_failures") or 0)`,
+    so a record missing the field, or carrying null, or carrying anything that
+    is not a count, read as a zero-failure record and joined the numerator of
+    the public uptime figure on `/status/` and in `api/v1/status.json`. Only a
+    non-negative int is a streak now; the rest are reported under a new
+    `not_measured` field and leave the share's denominator, and the page names
+    the denominator it used.
+
+  - **A ridership impact with no weighted trips published a 0.0% expired
+    share.** `expired_trips_pct` returned 0.0 on a zero denominator, one line
+    above `weighted_average_score`, which returns `None` on the same
+    denominator. 0.0% reads as the best possible answer — none of these trips
+    ride on an expired feed — where the truth was that there were no trips to
+    take a share of. Both are absent together now.
+
+  - **An empty findings corpus reported 100% plain-language coverage.**
+    `plain_language_coverage` returned 100.0 for a share with no denominator and
+    called it vacuously fully covered. 100.0 is the number a fully curated
+    corpus earns, and `scorecard coverage --save` writes this figure to
+    `coverage-baseline.json` as the bar every later week is measured against, so
+    the first real reading would land as a drop from a number nobody took. Both
+    shares are `None` when there is nothing to divide by, `--save` refuses to
+    overwrite a real baseline with an unmeasured one, and the regression check
+    reports nothing when either side has no reading.
+
+- **The scoring path no longer loads `stop_times.txt` into memory, which is
+  what killed the OVapi Netherlands shard for three weeks.** The
+  `score (ovapi-netherlands)` job had been dying with "The runner has received
+  a shutdown signal" since 2026-08-07, after the validator had already
+  succeeded and the JVM had already exited. With no JVM on the box, memory
+  climbed from about 2 GB to 15.9 GB in roughly 45 seconds, swap filled,
+  available memory reached 88 MB, and the runner was killed. Disk was flat at
+  86 GB free the whole time.
+
+  The trigger was the whole-table reader's per-table cap, and specifically the
+  side of it the feed landed on. `MAX_MEMBER_BYTES` is 1 GiB: above it a table
+  is skipped, below it the table is read into `list[dict[str, str]]`. OVapi's
+  `stop_times.txt` is 1,011,976,627 bytes — 62 MB **under** the cap — and
+  17,099,889 rows. Measured on the live archive, a row of that table costs 754
+  bytes as a Python dict, so reading it whole comes to about 12.9 GB on a 15.6
+  GiB runner. Every earlier export had been *over* the cap and was therefore
+  skipped; the feed oscillates across the line, and the day it came in under,
+  the shard died. A bigger feed was safer.
+
+  So the fix is not a different number. Bytes on disk do not predict bytes in
+  memory, the multiplier moves with row width, and any fixed byte cap is a
+  cliff a feed can cross between exports. Lowering it would only skip more
+  tables, which buys safety by measuring less. Both whole-table consumers of
+  `stop_times.txt` on the daily scoring path now stream it instead, because
+  what each one takes from the table is a bounded aggregate rather than the
+  table: `routability` folds it into the trips with at least two serviced
+  locations plus the served stop and location-group ids (855 thousand trips and
+  57 thousand stops on OVapi, against 17 million rows), and `ferry_profile`
+  folds it into the stop ids the ferry trips call at — and, being handed a lazy
+  reader, returns without opening the table at all for a feed with no ferry
+  route. `iter_table_rows` now accepts `max_member_bytes=None` for exactly this
+  case: the cap is not lowered, it is inapplicable, because there is no whole
+  table in memory for it to bound. Archive-shape safety — entry count,
+  compression ratio, per-entry and whole-archive size — was always enforced in
+  `fetch.py` before any reader opens the bytes, and remains the real zip-bomb
+  guard and the ceiling on how much there can be to stream.
+
+  `MAX_MEMBER_BYTES` itself is unchanged and still governs every table read
+  whole, including these two modules' reads of `trips.txt` and `stops.txt`. If
+  one of those trips it, routability still publishes `measured: false` with
+  reason `table_too_large`; an unread table never reaches the artifact as a
+  count of zero.
+
+  Both checks now run to completion on the live OVapi archive in 68.6 seconds
+  at a peak of 1.38 GB resident — against roughly 13 GB and a killed runner —
+  and report what three weeks of shutdown signals could not: 854,910 trips, 35
+  of them with fewer than two stops, 58,953 boardable stops, 1,981 of them
+  served by no trip, and a ferry profile over 11,532 ferry trips.
+
+  **This changes published output for four feeds, and no grade.** OVapi
+  Netherlands, the Swiss national timetable, gtfs.de local transit and Carris
+  Metropolitana have all been publishing `routability: {"measured": false,
+  "reason": "table_too_large"}` and no `ferry_profile`. They will now publish
+  real routability counts, and a ferry profile where the feed has ferry routes.
+  Both blocks are zero-deduction, so no category score, overall score, grade,
+  or conformance verdict moves for any feed. Output for feeds under the cap is
+  byte-identical: verified by running the old and new readers over a
+  300-feed synthetic corpus covering flex location groups, the GeoJSON
+  `location_id` header typo, ferry and non-ferry routes, missing and
+  header-only tables, and trips with zero, one and many stops.
+
+  `gtfs.py` also logs any table of 64 MiB or more, with its uncompressed size
+  and whether it was read whole, streamed, or skipped. The three-week diagnosis
+  needed an instrumented re-run to learn which table was being read and how big
+  it was; the next incident carries that evidence in its own log.
+
+- **A validator report nobody could read is no longer scored as a clean feed.**
+  The upward twin of the fabricated F above, and the one that lasted longer,
+  because a flattering number invites no complaint. `ValidationReport` had one
+  shape for "the validator found nothing wrong" and the same shape for "there
+  was no report to read": an empty list of notices. Correctness starts at 100
+  and deducts per notice, so the second case scored `Correctness 100.0 / 100`
+  and published "The validator found no problems in this feed. That is rare and
+  worth celebrating." about a feed whose report had never been read.
+
+  Four payloads reached that sentence through `validate.parse_report_data` or
+  `vcache._report_from_json`, the only two functions in the package that build a
+  `ValidationReport`: an empty JSON object, a dict of an entirely different
+  shape, a report truncated after its `summary`, and a report whose `notices`
+  were null. Correctness was also the only scored category with no way to say
+  "not measured" at all: freshness and rider experience return no category and
+  are dropped, realtime is never appended for an agency that publishes none, and
+  all three render as "Not yet measured" with no number.
+
+  Both builders now refuse. A gtfs-validator report always carries `notices` as
+  a list, empty when the feed is clean, so the list's presence is what separates
+  the two cases; a payload without one raises `UnreadableValidatorReportError`,
+  a `ValueError` that travels the path a non-zip response body already travels.
+  A report with `"notices": []` is a real measurement of a genuinely clean feed
+  and still scores 100.
+
+  Where the same report can be obtained another way, the refusal is a miss
+  rather than a stop. An unreadable validator-cache entry re-validates, because
+  the honest cost of a cache entry we cannot read is one Java run. An unreadable
+  hosted report from the Mobility Feed API falls back to a local validator run,
+  which is what every other mismatch there already does. Only our own
+  `report.json` has no second source, and that one raises: the agency is not
+  re-scored that day and the run reports it, which is what "we could not read
+  it" looks like from outside.
+
 - **A feed with no stops and no trips is no longer given a letter grade.**
   Reported downstream against the published `gtfs-scorecard@v1.4.0` Action: a
   well-formed zip containing no GTFS files was scored `F (31.3/100)` with

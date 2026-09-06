@@ -371,9 +371,13 @@ def assess_shapes_readiness(total_trips: int, trips_with_shape: int) -> ShapesRe
     fields, the same pattern ``assess_id_alignment`` uses for agency_id.
     """
     if total_trips == 0:
+        # Not a verdict. There is no trip to carry a shape, so coverage has no
+        # denominator and the check did not run. NOT_READY here said "can't be
+        # checked" in the prose and counted the feed as a certification failure
+        # in the same breath, on the agency's page and in every pct_ready.
         return ShapesReadiness(
-            NOT_READY,
-            "trips.txt has no rows, so shape coverage can't be checked.",
+            NOT_CHECKED,
+            "trips.txt has no rows, so shape coverage could not be checked.",
             "",
             0,
             0,
@@ -473,8 +477,10 @@ def portfolio_summary(artifacts: list[dict[str, Any]]) -> PortfolioSummary:
 
 
 def shapes_status(artifact: dict[str, Any]) -> str | None:
-    """This feed's current shapes.txt readiness status, or None when the check
-    has not run for it (non-US feeds, or artifacts that predate the check).
+    """This feed's current shapes.txt readiness status, or None when there is
+    none: the check has not run for it (non-US feeds, or artifacts that predate
+    the check), or it ran and could not measure anything (a feed with no trips,
+    which has no denominator for coverage).
 
     Recomputed from the stored trip counts when they are present (the same
     pattern render_site's ``_current_shapes_readiness`` uses), so a threshold or
@@ -487,7 +493,11 @@ def shapes_status(artifact: dict[str, Any]) -> str | None:
     total = shapes.get("total_trips")
     with_shape = shapes.get("trips_with_shape")
     if isinstance(total, int) and isinstance(with_shape, int):
-        return assess_shapes_readiness(total, with_shape).status
+        status = assess_shapes_readiness(total, with_shape).status
+        # _RANK membership is what "we measured it" means, so a recomputed
+        # NOT_CHECKED leaves the population here exactly as an artifact that
+        # predates the check does.
+        return status if status in _RANK else None
     stored = str(shapes.get("status", ""))
     return stored if stored in _RANK else None
 

@@ -28,7 +28,11 @@ from typing import Any
 
 from .identity import normalized_mdb_id
 from .net import safe_get
-from .validate import ValidationReport, parse_report_data
+from .validate import (
+    UnreadableValidatorReportError,
+    ValidationReport,
+    parse_report_data,
+)
 
 log = logging.getLogger(__name__)
 
@@ -211,7 +215,15 @@ def report_from_api(
     except Exception as exc:
         log.warning("feedapi: report fetch failed, validating locally (%s)", exc)
         return None
-    return parse_report_data(data)
+    try:
+        return parse_report_data(data)
+    except UnreadableValidatorReportError as exc:
+        # A JSON body that is not a report -- an error page, a schema change --
+        # used to normalize into a report with no notices, which correctness
+        # scores 100.0. Falling back to a local run is the same answer this
+        # function already gives every other mismatch.
+        log.warning("feedapi: hosted report was not a validator report (%s)", exc)
+        return None
 
 
 def try_cached_report(

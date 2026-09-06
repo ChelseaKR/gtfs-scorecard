@@ -11,20 +11,26 @@ FIXTURE = Path(__file__).parent / "fixtures" / "unitrans_trimmed.zip"
 
 
 def test_gather_returns_serialized_findings_over_a_real_feed() -> None:
-    recs = gather_recommendations(str(FIXTURE))
-    assert isinstance(recs, list)
+    result = gather_recommendations(str(FIXTURE))
+    assert isinstance(result.rows, list)
     # Whatever the fixture yields, every item is a serialized finding dict.
-    for rec in recs:
+    for rec in result.rows:
         assert "code" in rec and "what" in rec and "fix" in rec
 
 
 def test_a_failing_check_is_skipped_not_fatal() -> None:
+    """Sandboxed, so it never aborts a score — and reported, so it is never
+    mistaken for a check that ran and found nothing. See
+    tests/test_recommendations_not_measured.py."""
+
     def boom() -> list[Finding]:
         raise RuntimeError("nope")
 
-    assert _safe("x", boom) == []
+    assert _safe("x", boom) is None
 
 
-def test_gather_on_a_missing_file_is_empty_not_an_error() -> None:
+def test_gather_on_a_missing_file_yields_no_recs_and_no_raise() -> None:
     # Each check sandboxes its own failure, so a bad path yields no recs, no raise.
-    assert gather_recommendations("/no/such/feed.zip") == []
+    result = gather_recommendations("/no/such/feed.zip")
+    assert result.rows == []
+    assert sorted(result.not_measured) == ["accessibility", "fares", "flex"]

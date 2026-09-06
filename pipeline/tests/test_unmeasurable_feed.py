@@ -263,6 +263,15 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 #: narrowness the refusal deliberately kept, and it needs a scoring decision
 #: rather than a listing one.
 #:
+#: Three of the nineteen -- `catalina-express`, `santa-clarita-transit` and
+#: `santa-clarita-transit-812` -- were healthy feeds all along. They read as
+#: empty because their archive wraps the tables two directories deep, which the
+#: reader now resolves (issue #333, tests/test_nested_archive.py). Their
+#: withdrawal is therefore the kind a later run supersedes: the next successful
+#: score publishes a real number and the correction stands beside it on the
+#: public record. The other sixteen are archives that really do describe no
+#: service.
+#:
 #: The assertion is a subset, not an equality: this set may only shrink.
 STALE_GRADED_EMPTY_FEEDS = frozenset(
     {

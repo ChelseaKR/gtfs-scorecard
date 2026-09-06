@@ -1059,6 +1059,16 @@ def _accessibility_depth_signals(artifact: dict[str, Any]) -> str:
     already treats fairly. Empty when the feed has nothing to flag or the
     checks did not run.
     """
+    if "accessibility" in (artifact.get("recommendations_not_measured") or []):
+        # The audit did not run for this feed. Saying nothing here would read
+        # as "nothing to flag", which is what a clean feed looks like.
+        return (
+            '<div class="a11y-depth">'
+            '<p class="a11y-depth-label">Accessibility depth not checked</p>'
+            '<p class="a11y-depth-note">The deeper accessibility checks could not run over '
+            "this feed, so this page has nothing to say about them. That is a gap in our "
+            "check, not a finding about your data.</p></div>"
+        )
     recs = [
         r for r in (artifact.get("recommendations") or []) if r.get("category") == "accessibility"
     ]
@@ -3488,6 +3498,18 @@ def _render_fixlog_page(
     )
 
 
+#: Reader-facing names for the beyond-the-grade checks, used when one of them
+#: could not run and the page has to say which.
+_RECOMMENDATION_CHECK_NAMES = {"fares": "fare detail", "flex": "on-demand service"}
+
+
+def _sentence_list(items: list[str]) -> str:
+    """ "a", "a and b", "a, b and c" — for naming checks in a sentence."""
+    if len(items) <= 1:
+        return items[0] if items else ""
+    return f"{', '.join(items[:-1])} and {items[-1]}"
+
+
 def _recommendations_section(artifact: dict[str, Any]) -> str:
     """Beyond-the-grade opportunities (fares, on-demand service) attached to the
     artifact at score time. These do not affect the grade; empty when there is
@@ -3498,8 +3520,23 @@ def _recommendations_section(artifact: dict[str, Any]) -> str:
     recs = [
         r for r in (artifact.get("recommendations") or []) if r.get("category") != "accessibility"
     ]
-    if not recs:
+    # Named separately from the rows: a check that could not run has no rows to
+    # show, and an empty list here would otherwise read as "nothing to suggest".
+    unmeasured = [
+        _RECOMMENDATION_CHECK_NAMES.get(c, c)
+        for c in (artifact.get("recommendations_not_measured") or [])
+        if c != "accessibility"
+    ]
+    if not recs and not unmeasured:
         return ""
+    note = ""
+    if unmeasured:
+        checks = _sentence_list(unmeasured)
+        was = "check" if len(unmeasured) == 1 else "checks"
+        note = (
+            f'<p class="rec-not-measured">The {checks} {was} could not run over this feed, '
+            "so nothing here speaks to them.</p>"
+        )
     items = []
     for rec in recs:
         what = esc(str(rec.get("what", "")))
@@ -3513,7 +3550,7 @@ def _recommendations_section(artifact: dict[str, Any]) -> str:
         "Beyond the grade</h2>"
         '<p class="page-lede">Opportunities that do not change your grade today: fare detail, '
         "on-demand service, and deeper accessibility data.</p>"
-        f'<ul class="recs">{"".join(items)}</ul></section>'
+        f'{note}<ul class="recs">{"".join(items)}</ul></section>'
     )
 
 
@@ -5921,6 +5958,32 @@ def _status_commitment_section(doc: dict[str, Any]) -> str:
     hours = record["hours_since_last_check"]
     unreachable_after = int(policy["unreachable_after_consecutive_checks"])
     clean_pct = record.get("currently_clean_pct", record.get("success_rate_pct"))
+    # Records that carry no failure count are in feeds_tracked but in none of
+    # the three buckets, so the share below is over the records that do say.
+    not_measured = int(record.get("not_measured") or 0)
+    measured = int(record["feeds_tracked"]) - not_measured
+    if clean_pct is None:
+        clean_line = (
+            "<p>No feed record carries a direct-check result yet, so there is no "
+            "current clean share to report.</p>"
+        )
+    else:
+        of_what = (
+            f"{measured} feed records with a direct-check result"
+            if not_measured
+            else "tracked feed records"
+        )
+        clean_line = (
+            f"<p>Currently checking clean: <strong>{esc(str(clean_pct))}%</strong> "
+            f"of {esc(of_what)}.</p>"
+        )
+    unmeasured_line = (
+        f"\n        <p>Not measured: <strong>{not_measured}</strong> feed record"
+        f"{'' if not_measured == 1 else 's'} carry no direct-check result yet, so "
+        "they are left out of the share above rather than counted as clean.</p>"
+        if not_measured
+        else ""
+    )
 
     as_of = str(record["as_of"])
     try:
@@ -5951,7 +6014,7 @@ def _status_commitment_section(doc: dict[str, Any]) -> str:
           <dt>Recent check failure</dt><dd><strong>{record["degraded"]}</strong> (1&ndash;{unreachable_after - 1} consecutive direct checks failed)</dd>
           <dt>Flagged unreachable</dt><dd><strong>{record["unreachable"]}</strong> ({unreachable_after} or more consecutive direct checks failed)</dd>
         </dl>
-        <p>Currently checking clean: <strong>{esc(str(clean_pct))}%</strong> of tracked feed records.</p>
+        {clean_line}{unmeasured_line}
         {check_age}
         <p class="fineprint">Direct liveness calls each configured feed URL without a mirror.
         The daily full scoring run can use the Mobility Database mirror, so the liveness counts
@@ -6619,6 +6682,26 @@ def _changes_sections(changes: list[dict[str, Any]], *, baseline_date: str | Non
     <code>/agency/&lt;id&gt;/feed.xml</code>.</p>"""
 
 
+def _coverage_shares(coverage: dict[str, Any]) -> str:
+    """The two curated-text shares, naming any that has no denominator.
+
+    A share over an empty corpus is None, never 100.0: an unmeasured corpus
+    must not read like a fully curated one.
+    """
+    parts = []
+    for key, noun in (
+        ("distinct_code_coverage", "of codes"),
+        ("instance_weighted_coverage", "of all finding instances"),
+    ):
+        value = coverage.get(key)
+        parts.append(
+            f"the share {noun} is not measured"
+            if value is None
+            else f"<strong>{esc(value)}%</strong> {noun}"
+        )
+    return " and ".join(parts)
+
+
 def _ridership_impact_line(impact: dict[str, Any] | None) -> str:
     """One United States context sentence weighting quality by rider-trips (ADR 0021).
 
@@ -6631,7 +6714,13 @@ def _ridership_impact_line(impact: dict[str, Any] | None) -> str:
     total = impact.get("total_feed_records", impact.get("total_agencies", matched))
     excluded = impact.get("duplicate_feed_records_excluded", 0)
     trips = impact.get("total_annual_trips", 0)
-    pct = impact.get("expired_trips_pct", 0)
+    pct = impact.get("expired_trips_pct")
+    # None when no weighted trips were matched, so there is no share to state.
+    expired_clause = (
+        "the matched reporters report no annual trips, so no expired share can be taken"
+        if pct is None
+        else f"<strong>{pct}%</strong> of those trips ride on a feed that has expired"
+    )
     duplicate_note = (
         f"{excluded} feed records sharing an NTD ID were excluded rather than double-counted. "
         if excluded
@@ -6642,7 +6731,7 @@ def _ridership_impact_line(impact: dict[str, Any] | None) -> str:
         "among unique, unambiguous NTD reporter matches, tracked feeds carry about "
         f"<strong>{trips:,}</strong> annual rider-trips ({matched} matches across {total} "
         f"eligible feed records), and "
-        f"<strong>{pct}%</strong> of those trips ride on a feed that has expired. "
+        f"{expired_clause}. "
         f"{duplicate_note}"
         'The same numbers are at <a href="/api/v1/ridership-impact.json">the '
         "ridership-impact API</a>.</p>"
@@ -10008,10 +10097,8 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
             '<h2 class="section-title" id="coverage-h">Plain-language coverage</h2>'
             f"<p>Of the <strong>{esc(coverage['total_codes'])}</strong> distinct problem "
             f"codes seen in the covered corpus, <strong>{esc(coverage['curated_codes'])}</strong> carry "
-            "vetted plain-language text: "
-            f"<strong>{esc(coverage['distinct_code_coverage'])}%</strong> of codes and "
-            f"<strong>{esc(coverage['instance_weighted_coverage'])}%</strong> of all finding "
-            "instances. Codes without curated text fall back to a generic line that links "
+            f"vetted plain-language text: {_coverage_shares(coverage)}. "
+            "Codes without curated text fall back to a generic line that links "
             "to the validator's rule documentation.</p>"
             f"{queue_table}</section>"
         )

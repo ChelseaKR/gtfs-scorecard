@@ -23,7 +23,8 @@ import pytest
 from scorecard_pipeline.gtfs import FeedDates, read_feed_dates
 from scorecard_pipeline.metrics import CategoryResult, correctness
 from scorecard_pipeline.metrics import freshness as _freshness_maybe
-from scorecard_pipeline.rt import RtSample, RtWindow, realtime
+from scorecard_pipeline.rt import RtSample, RtWindow
+from scorecard_pipeline.rt import realtime as _realtime_maybe
 from scorecard_pipeline.rt_drift import PlausibilityStats
 from scorecard_pipeline.score import Scorecard, build_scorecard
 from scorecard_pipeline.validate import NoticeGroup, ValidationReport
@@ -57,6 +58,15 @@ def _dates(days_until_expiry: int, with_feed_info_dates: bool = True) -> FeedDat
         feed_end_date=end if with_feed_info_dates else None,
         last_service_date=end,
     )
+
+
+# `realtime` returns None when nothing in a window is evidence about the feed.
+# Every window below holds real samples, so this wrapper keeps the call sites
+# unchanged and turns an unexpected "not measurable" into a loud failure.
+def realtime(*args: Any, **kwargs: Any) -> CategoryResult:
+    result = _realtime_maybe(*args, **kwargs)
+    assert result is not None, "this window has real samples and must be scorable"
+    return result
 
 
 def _rt_sample(

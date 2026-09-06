@@ -111,12 +111,18 @@ def test_queue_ties_break_by_agencies_then_code() -> None:
     assert [q["code"] for q in queue] == ["a_notice", "b_notice"]
 
 
-def test_empty_rollup_is_vacuously_covered() -> None:
+def test_empty_rollup_is_not_measured_rather_than_fully_covered() -> None:
+    """100.0 is what a fully curated corpus earns; an empty one earns nothing.
+
+    This asserted 100.0 for both shares, and `scorecard coverage --save` wrote
+    that figure to coverage-baseline.json as the bar later weeks are measured
+    against. See tests/test_coverage_empty_corpus.py.
+    """
     cov = plain_language_coverage(national_problems([], total_agencies=0))
     assert cov["total_codes"] == 0
     assert cov["curated_codes"] == 0
-    assert cov["distinct_code_coverage"] == 100.0
-    assert cov["instance_weighted_coverage"] == 100.0
+    assert cov["distinct_code_coverage"] is None
+    assert cov["instance_weighted_coverage"] is None
     assert cov["uncurated_queue"] == []
 
 

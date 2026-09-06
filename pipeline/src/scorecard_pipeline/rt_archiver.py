@@ -46,8 +46,12 @@ def session_plan(duration_seconds: int, interval_seconds: int) -> list[int]:
     return [i * interval for i in range(count)]
 
 
-def _poll_round(agency: Agency) -> RtObservation:
-    """One poll of every realtime endpoint, summarized as one observation."""
+def _poll_round(agency: Agency) -> RtObservation | None:
+    """One poll of every realtime endpoint, summarized as one observation.
+
+    None when not one endpoint could be sampled, so a round our own fetcher
+    lost is never recorded as an outage in the agency's uptime record.
+    """
     window = RtWindow()
     for kind, url in agency.rt_urls.items():
         window.samples.append(fetch_sample(kind, url))
@@ -80,6 +84,12 @@ def run_session(
             do_sleep(offset - previous)  # type: ignore[operator]
             previous = offset
         observation = do_poll(agency)  # type: ignore[operator]
+        if observation is None:
+            log.warning(
+                "%s: no realtime endpoint could be sampled this round; recording nothing.",
+                agency.id,
+            )
+            continue
         append_observation(agency.id, observation)
         recorded += 1
     log.info(

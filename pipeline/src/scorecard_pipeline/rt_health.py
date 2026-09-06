@@ -58,16 +58,26 @@ class RtObservation:
 
 def observe(
     window: RtWindow, *, kinds_total: int, scheduled: set[str] | None = None
-) -> RtObservation:
-    """Derive a lightweight observation from a sampled window.
+) -> RtObservation | None:
+    """Derive a lightweight observation from a sampled window, or None.
 
     ``kinds_total`` is how many realtime feeds the agency publishes, so uptime is
     measured against what exists rather than a fixed three. Coverage is recorded
     only when trips were scheduled during the window; otherwise it is None and
     drops out of the summary rather than reading as zero.
+
+    Returns None when no feed kind in the window could be sampled at all — every
+    attempt failed inside our own fetcher (``RtSample.measured`` is False). An
+    observation is a claim about the agency's uptime, and that window supports
+    none: recording it would put our outage in their record, where the site
+    publishes it as the share of checks their feed answered. The caller records
+    nothing and logs instead, so the gap is visible in the run log rather than
+    priced into somebody else's reliability figure.
     """
     from .rt import RT_KINDS
 
+    if not any(sample.measured for sample in window.samples):
+        return None
     ts = max((s.fetched_at for s in window.samples), default=0)
     kinds_reachable = sum(1 for kind in RT_KINDS if window.kind_ok(kind))
     lags = [window.worst_lag(k) for k in ("trip_updates", "vehicle_positions")]

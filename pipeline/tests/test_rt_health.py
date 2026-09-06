@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -13,7 +14,6 @@ from scorecard_pipeline.rt_health import (
     RtObservation,
     append_observation,
     load_observations,
-    observe,
     summarize,
 )
 
@@ -22,6 +22,15 @@ def _window(*samples: RtSample) -> RtWindow:
     w = RtWindow()
     w.samples.extend(samples)
     return w
+
+
+# `observe` returns None when no sample in a window is evidence about the feed;
+# tests/test_rt_not_measured.py owns that case. Every window below holds at
+# least one real sample, so this wrapper keeps the call sites unchanged.
+def observe(*args: Any, **kwargs: Any) -> RtObservation:
+    obs = rt_health.observe(*args, **kwargs)
+    assert obs is not None, "this window holds a real sample and must be observable"
+    return obs
 
 
 def test_observe_counts_reachable_feeds_and_worst_lag() -> None:
