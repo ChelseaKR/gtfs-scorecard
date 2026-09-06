@@ -5852,6 +5852,32 @@ def _status_commitment_section(doc: dict[str, Any]) -> str:
     hours = record["hours_since_last_check"]
     unreachable_after = int(policy["unreachable_after_consecutive_checks"])
     clean_pct = record.get("currently_clean_pct", record.get("success_rate_pct"))
+    # Records that carry no failure count are in feeds_tracked but in none of
+    # the three buckets, so the share below is over the records that do say.
+    not_measured = int(record.get("not_measured") or 0)
+    measured = int(record["feeds_tracked"]) - not_measured
+    if clean_pct is None:
+        clean_line = (
+            "<p>No feed record carries a direct-check result yet, so there is no "
+            "current clean share to report.</p>"
+        )
+    else:
+        of_what = (
+            f"{measured} feed records with a direct-check result"
+            if not_measured
+            else "tracked feed records"
+        )
+        clean_line = (
+            f"<p>Currently checking clean: <strong>{esc(str(clean_pct))}%</strong> "
+            f"of {esc(of_what)}.</p>"
+        )
+    unmeasured_line = (
+        f"\n        <p>Not measured: <strong>{not_measured}</strong> feed record"
+        f"{'' if not_measured == 1 else 's'} carry no direct-check result yet, so "
+        "they are left out of the share above rather than counted as clean.</p>"
+        if not_measured
+        else ""
+    )
 
     as_of = str(record["as_of"])
     try:
@@ -5882,7 +5908,7 @@ def _status_commitment_section(doc: dict[str, Any]) -> str:
           <dt>Recent check failure</dt><dd><strong>{record["degraded"]}</strong> (1&ndash;{unreachable_after - 1} consecutive direct checks failed)</dd>
           <dt>Flagged unreachable</dt><dd><strong>{record["unreachable"]}</strong> ({unreachable_after} or more consecutive direct checks failed)</dd>
         </dl>
-        <p>Currently checking clean: <strong>{esc(str(clean_pct))}%</strong> of tracked feed records.</p>
+        {clean_line}{unmeasured_line}
         {check_age}
         <p class="fineprint">Direct liveness calls each configured feed URL without a mirror.
         The daily full scoring run can use the Mobility Database mirror, so the liveness counts

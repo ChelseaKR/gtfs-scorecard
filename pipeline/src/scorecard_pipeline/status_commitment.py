@@ -94,12 +94,53 @@ def degradation_policy() -> dict[str, Any]:
     }
 
 
+def _failure_streak(record: dict[str, Any]) -> int | None:
+    """A record's consecutive-failure count, or None when it does not carry one.
+
+    Only a non-negative int counts. A missing key, a null, a string, a float or
+    a bool is a record that does not say, and this used to be read as a zero:
+    `int(record.get("consecutive_failures") or 0)` turned every one of them into
+    a clean feed, and clean feeds are the numerator of the uptime figure on
+    /status/. Silence is not zero.
+    """
+    value = record.get("consecutive_failures")
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        return None
+    return value
+
+
+def _liveness_buckets(feeds: dict[str, dict[str, Any]]) -> tuple[int, int, int]:
+    """(measured, healthy, unreachable) over the records that carry a streak.
+
+    Records without one are counted by nobody here: they are the difference
+    between ``measured`` and the number of records, and the caller publishes
+    that difference as ``not_measured``.
+    """
+    measured = healthy = unreachable = 0
+    for record in feeds.values():
+        failures = _failure_streak(record)
+        if failures is None:
+            continue
+        measured += 1
+        if failures >= UNREACHABLE_STREAK_CHECKS:
+            unreachable += 1
+        elif failures == 0:
+            healthy += 1
+    return measured, healthy, unreachable
+
+
 def refresh_success_record(feeds: dict[str, dict[str, Any]], now: dt.datetime) -> dict[str, Any]:
     """The current direct-URL liveness record computed from intraday state.
 
     ``success_rate_pct`` is retained as the v1 compatibility name for the
     current clean-feed share. It is not a historical request-success rate;
     ``currently_clean_pct`` is the accurately named additive field.
+
+    ``feeds_tracked`` counts every record. ``healthy``, ``degraded`` and
+    ``unreachable`` count only the records that carry a usable failure streak,
+    and ``not_measured`` counts the rest, so the published share always has the
+    denominator it claims. When nothing is measurable the share is None, which
+    the page renders as a sentence instead of a number.
     """
     total = len(feeds)
     if total == 0:
@@ -109,24 +150,20 @@ def refresh_success_record(feeds: dict[str, dict[str, Any]], now: dt.datetime) -
             "healthy": 0,
             "degraded": 0,
             "unreachable": 0,
+            "not_measured": 0,
             "currently_clean_pct": None,
             "success_rate_pct": None,
             "measurement_note": (
                 "Current share of feed records with no consecutive failed direct check; "
-                "not a historical request-success rate."
+                "not a historical request-success rate. Records that carry no failure "
+                "count are reported under not_measured and are left out of the share."
             ),
             "hours_since_last_check": {"min": None, "median": None, "max": None},
         }
 
-    healthy = 0
-    unreachable = 0
+    measured, healthy, unreachable = _liveness_buckets(feeds)
     hours_since: list[float] = []
     for record in feeds.values():
-        failures = int(record.get("consecutive_failures") or 0)
-        if failures >= UNREACHABLE_STREAK_CHECKS:
-            unreachable += 1
-        elif failures == 0:
-            healthy += 1
         checked_at = record.get("checked_at")
         if checked_at:
             try:
@@ -137,7 +174,7 @@ def refresh_success_record(feeds: dict[str, dict[str, Any]], now: dt.datetime) -
                 checked = checked.replace(tzinfo=dt.UTC)
             hours_since.append((now - checked).total_seconds() / 3600)
 
-    degraded = total - healthy - unreachable
+    degraded = measured - healthy - unreachable
     hours_since.sort()
     n = len(hours_since)
 
@@ -147,18 +184,20 @@ def refresh_success_record(feeds: dict[str, dict[str, Any]], now: dt.datetime) -
         idx = min(n - 1, int(fraction * n))
         return round(hours_since[idx], 1)
 
-    currently_clean_pct = round(100 * healthy / total, 1)
+    currently_clean_pct = round(100 * healthy / measured, 1) if measured else None
     return {
         "as_of": now.isoformat(timespec="seconds"),
         "feeds_tracked": total,
         "healthy": healthy,
         "degraded": degraded,
         "unreachable": unreachable,
+        "not_measured": total - measured,
         "currently_clean_pct": currently_clean_pct,
         "success_rate_pct": currently_clean_pct,
         "measurement_note": (
             "Current share of feed records with no consecutive failed direct check; "
-            "not a historical request-success rate."
+            "not a historical request-success rate. Records that carry no failure "
+            "count are reported under not_measured and are left out of the share."
         ),
         "hours_since_last_check": {
             "min": _pick(0.0),
