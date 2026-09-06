@@ -33,6 +33,42 @@ VALIDATOR_JAR_URL = (
 
 SEVERITIES = ("ERROR", "WARNING", "INFO")
 
+#: What the refusal says, in one sentence, everywhere it is said.
+NO_REPORT_WAS_READ = (
+    "this payload is not a gtfs-validator report: it carries no list of notices, "
+    "so nothing was read about this feed's correctness and there is nothing to score"
+)
+
+
+class UnreadableValidatorReportError(ValueError):
+    """The payload was not a validator report, so correctness was not measured.
+
+    ``ValidationReport`` has one shape for "the validator reported no problems"
+    and, until this refusal, the same shape for "there was no report to read":
+    an empty ``notices`` list. ``correctness`` starts at 100 and deducts per
+    notice, so the second case scored 100.0 and published "The validator found
+    no problems in this feed. That is rare and worth celebrating." about a feed
+    whose report had never been read. That is the upward twin of the fabricated
+    0.0s withdrawn on 2026-09-01 (tests/test_unmeasurable_feed.py), and it is
+    the more flattering of the two, which is what makes it harder to notice.
+
+    Three payloads reached that: an empty dict, a dict of the wrong shape
+    entirely, and a truncated report that kept its ``summary`` and lost its
+    ``notices``. A fourth, ``notices`` present but null, raised TypeError from
+    inside a comprehension.
+
+    Refusal, not a zero and not a floor. A report we could not read says nothing
+    about the feed in either direction, so no number derived from it may be
+    published.
+
+    Subclasses ValueError deliberately, for the reason
+    :class:`~scorecard_pipeline.score.UnreadableFeedError` does: a response body
+    that is not a zip already raises ValueError out of ``fetch.fetch_static``,
+    and every caller that refuses a feed on that basis refuses this one by the
+    same path with no new handling. One refusal, several causes, not several
+    concepts.
+    """
+
 
 @dataclass(frozen=True)
 class NoticeGroup:
@@ -324,10 +360,24 @@ def parse_report_data(data: dict[str, Any]) -> ValidationReport:
     identically: a local run, or MobilityData's hosted report for a dataset it
     already validated (feedapi.py). The schema is the validator's own, so the
     field names match whichever produced it.
+
+    Raises :class:`UnreadableValidatorReportError` when the payload is not a
+    report. Every gtfs-validator report carries ``notices`` as a list, empty
+    when the feed is clean, so the list's presence is what separates "the
+    validator found nothing wrong" from "there was nothing to read". Without
+    that separation both produced an empty ``ValidationReport``, and correctness
+    scored the second one 100.0.
     """
+    notices = data.get("notices") if isinstance(data, dict) else None
+    if not isinstance(notices, list):
+        raise UnreadableValidatorReportError(NO_REPORT_WAS_READ)
     version = str(data.get("summary", {}).get("validatorVersion", "unknown"))
     groups: list[NoticeGroup] = []
-    for notice in data.get("notices", []):
+    for notice in notices:
+        # Skipping a malformed entry would quietly lower the notice count, which
+        # raises the score: the same fabrication one notice at a time.
+        if not isinstance(notice, dict):
+            raise UnreadableValidatorReportError(NO_REPORT_WAS_READ)
         severity = str(notice.get("severity", "INFO")).upper()
         groups.append(
             NoticeGroup(
