@@ -238,50 +238,46 @@ def test_the_gate_no_longer_needs_a_case_for_an_unreadable_archive() -> None:
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-#: Published scorecards that grade a feed with zero stops and zero trips, as of
-#: 2026-09-01. Every one predates the refusal above: they were minted by a
-#: scorer that had no way to say "could not be read", and the daily run can no
-#: longer produce or refresh them -- ``score_feed_content`` now raises for these
-#: feeds, so each run leaves the stale record in place and warns.
+#: Published scorecards that still grade a feed with zero stops and zero trips.
+#: Every one predates the refusal above: they were minted by a scorer that had no
+#: way to say "could not be read", and the daily run can no longer produce or
+#: refresh them -- ``score_feed_content`` now raises for these feeds, so each run
+#: leaves the stale record in place and warns.
 #:
-#: Verified live, not inferred: `boxcar`'s feed at
-#: https://boxcar-gtfs.vercel.app/api/gtfs is a well-formed GTFS archive whose
-#: stops.txt and trips.txt contain a header row and nothing else.
+#: This set held 22 entries on 2026-09-01. Nineteen of them were withdrawn on
+#: 2026-09-05 and their current scorecards, badges and conformance files removed
+#: (``corrections.yaml``, ``corrections.py``); that file carries the per-feed
+#: cause, the period each grade was public, and what stands in its place, and
+#: enforces its own gate so a withdrawal cannot rot in either direction.
 #:
-#: Withdrawing them is a listing-policy call (docs/listing-policy.md), not a
-#: scoring one, so they are named here rather than deleted. The assertion is a
-#: subset, not an equality: this set may only shrink.
+#: The three that remain are named in ``corrections.yaml`` under
+#: ``not_yet_corrected``, with the reason each is held back. `boxcar` is the one
+#: worth reading: its published letter is a C, not an F, over an archive whose
+#: stops.txt, routes.txt and trips.txt each hold a header row and nothing else
+#: (verified live at https://boxcar-gtfs.vercel.app/api/gtfs on 2026-09-05).
+#: Its calendar.txt has 89 real rows, so freshness is a genuine measurement and
+#: ``score_feed_content`` does not refuse the feed at all: one measurable
+#: feed-content category is enough. The next successful run would therefore
+#: publish an A for a feed with no stops, no routes and no trips. That is the
+#: upward fabrication this file was written to prevent, arriving through the
+#: narrowness the refusal deliberately kept, and it needs a scoring decision
+#: rather than a listing one.
 #:
-#: Three of them have a different cause and a fix: `catalina-express`,
-#: `santa-clarita-transit` and `santa-clarita-transit-812` are healthy feeds
-#: that read as empty because their archive wraps the tables two directories
-#: deep (issue #333, tests/test_nested_archive.py). The reader resolves that
-#: shape now, so their next successful run replaces the stale record with a real
-#: score and they leave this set. The others are archives that really are empty.
+#: Three of the nineteen -- `catalina-express`, `santa-clarita-transit` and
+#: `santa-clarita-transit-812` -- were healthy feeds all along. They read as
+#: empty because their archive wraps the tables two directories deep, which the
+#: reader now resolves (issue #333, tests/test_nested_archive.py). Their
+#: withdrawal is therefore the kind a later run supersedes: the next successful
+#: score publishes a real number and the correction stands beside it on the
+#: public record. The other sixteen are archives that really do describe no
+#: service.
+#:
+#: The assertion is a subset, not an equality: this set may only shrink.
 STALE_GRADED_EMPTY_FEEDS = frozenset(
     {
         "anaheim-resort-transportation-art",
         "anaheim-resort-transportation-art-100",
-        "beloit-transit",
-        "beloit-transit-392",
         "boxcar",
-        "catalina-express",
-        "citrus-county-transit-630",
-        "cobb-community-transit-cct-354",
-        "detroit-people-mover-417",
-        "high-desert-point",
-        "high-desert-point-636",
-        "hut-airport-shuttle",
-        "hut-airport-shuttle-635",
-        "jaunt-inc-1324",
-        "lakexpress-342",
-        "massachusetts-area-express-max",
-        "massachusetts-area-express-max-431",
-        "miami-dade-transit-331",
-        "santa-clarita-transit",
-        "santa-clarita-transit-812",
-        "staten-island-ferry-518",
-        "xpress-2355",
     }
 )
 

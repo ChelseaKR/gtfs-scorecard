@@ -14,6 +14,7 @@ import functools
 import json
 import logging
 import sys
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
@@ -403,6 +404,19 @@ def publish(artifact: dict[str, Any]) -> Path:
         _update_index(agency_id, artifact)
         return dated
 
+    # A grade taken back stays taken back. The dated file above is written
+    # either way, because it is evidence of what was measured; the current
+    # pointers are what a reader sees, and a record corrections.yaml withdraws
+    # never becomes one again. A newer measurement is not this record and
+    # publishes normally.
+    from .corrections import load_corrections, suppresses_current
+
+    if suppresses_current(load_corrections().get(agency_id), artifact):
+        log.warning(
+            "%s: not republishing the grade corrections.yaml withdraws (%s)", agency_id, date
+        )
+        return dated
+
     _write_json(agency_dir / "latest.json", artifact)
     _write_badge(agency_dir, artifact)
     _write_mark(agency_dir, artifact)
@@ -576,6 +590,24 @@ def enrich_index_history_provenance(index: dict[str, Any], root: Path | None = N
                     point[key] = value
                     changed += 1
     return changed
+
+
+def _indexable_agency_dirs(root: Path, withdrawn: Iterable[str]) -> list[Path]:
+    """Registered agency directories, minus the ones whose grade is withdrawn.
+
+    The current pointers for a withdrawn id are removed by the reconcile pass
+    above. Leaving the agency out of the index keeps the retracted letter off
+    the directory and off the trend as well; the correction itself is published
+    at /corrections/ (corrections.py).
+    """
+    held_back = set(withdrawn)
+    keep = []
+    for agency_dir in registered_agency_dirs(root, log_skipped=True):
+        if agency_dir.name in held_back:
+            log.info("%s: current grade withdrawn (corrections.yaml)", agency_dir.name)
+        else:
+            keep.append(agency_dir)
+    return keep
 
 
 def registered_agency_dirs(root: Path, *, log_skipped: bool = False) -> list[Path]:
@@ -765,14 +797,23 @@ def rebuild_index() -> Path:
     # It strips locally hydrated current pointers for retired/unregistered ids
     # and writes an exact deletion manifest for the additive S3 publisher. Dated
     # evidence remains untouched and may continue to be fetched by date.
-    reconcile_retired_current_artifacts(root, AGENCIES)
+    #
+    # Withdrawn grades (corrections.py) are cleaned by the same pass and for the
+    # same reason: they must not be re-derived here. This loop rebuilds
+    # latest.json from the newest dated artifact, so without the suppression
+    # below a retracted letter would come straight back out of the evidence file
+    # beside it, every run, forever.
+    from .corrections import load_corrections, withdrawn_now
+
+    withdrawn = withdrawn_now(load_corrections(), root)
+    reconcile_retired_current_artifacts(root, AGENCIES, withdrawn)
 
     # Finding-clearance episodes accumulate across every agency in this one walk,
     # so the corpus-level effort-calibration.json costs no extra artifact reads
     # (effort_calibration.py). The calibration itself requires a complete,
     # unchanged producer contract and makes no claim about who changed a feed.
     all_episodes: list[Any] = []
-    for agency_dir in registered_agency_dirs(root, log_skipped=True):
+    for agency_dir in _indexable_agency_dirs(root, withdrawn):
         name = agency_dir.name
         operating_note = ""
         prior_history = (

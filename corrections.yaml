@@ -1,0 +1,390 @@
+# Published grades this project has withdrawn, and why.
+#
+# Every entry names one scorecard that was published about a named transit
+# agency and should not have been. The grade was computed from an archive whose
+# stops and trips were never read, so the two categories that read the feed both
+# printed 0.0 for a measurement nobody made, and the letter beside them was an F
+# nobody had earned. The scorer stopped producing these on 2026-09-01
+# (score.UnreadableFeedError). It could not take back the ones already out.
+#
+# Each entry records:
+#   agency_id        the published record
+#   agency_name      the agency as the scorecard named it
+#   snapshot_date    the snapshot the withdrawn grade was computed from
+#   feed_sha256      the exact feed bytes it was computed from
+#   grade, score     what was published
+#   published_from   the first day this project published a grade of this kind
+#                    for this record
+#   published_until  the day it came down
+#   cause            why the grade was wrong, verified for this feed
+#   outcome          what stands in its place
+#   evidence         what the cause rests on, in the reviewer's words
+#
+# The cause is verified per feed, not assumed. Eleven of the nineteen carry the
+# validator's own `invalid_input_files_in_subfolder` notice in the published
+# artifact: the archive wraps its tables in a folder, the reader looked at the
+# top level, and found nothing. The other eight carry no such notice and are
+# archives that really do describe no service; where the feed is still
+# reachable, that was confirmed by reading it.
+#
+# Neither outcome is a number. A grade withdrawn because nothing was read cannot
+# be corrected to a different reading of the same nothing. When a run does read
+# one of these feeds, it publishes its own measurement and supersedes the
+# withdrawal; until then the honest answer is that it is not measured.
+#
+# corrections.py enforces every direction: an entry with no artifact directory
+# is stale and fails the build, an entry whose grade is still published has not
+# taken effect and fails it, and a published latest.json that grades a feed with
+# no stops and no trips and appears nowhere in this file fails it too. The last
+# one is why `not_yet_corrected` exists at the bottom: a grade held back for a
+# reason is still accounted for, and holding one back silently is not an option
+# the check leaves open.
+
+schema_version: 1
+
+corrections:
+  - agency_id: beloit-transit
+    agency_name: Beloit Transit
+    snapshot_date: "2026-07-25"
+    feed_sha256: 2f047947b9b64e479c96d384f0d68819294658c727b61ca7e1fc363d2889241c
+    grade: F
+    score: 37.8
+    published_from: "2026-06-19"
+    published_until: "2026-09-05"
+    cause: no_schedule_tables
+    outcome: not_measured
+    evidence: >-
+      The archive has all 26 GTFS files at the top level and every one of them
+      holds a header row and nothing else: stops.txt, trips.txt, calendar.txt
+      and calendar_dates.txt each have 0 data rows. Confirmed on 2026-09-05 by
+      fetching the same bytes the grade was computed from
+      (sha256 2f047947b9b6, 5,878 bytes, unchanged). The published artifact's
+      own validator findings agree: missing_required_column and no subfolder
+      notice. There is no service here to measure, so no grade replaces this
+      one.
+
+  - agency_id: beloit-transit-392
+    agency_name: Beloit Transit
+    snapshot_date: "2026-06-30"
+    feed_sha256: 2f047947b9b64e479c96d384f0d68819294658c727b61ca7e1fc363d2889241c
+    grade: F
+    score: 37.8
+    published_from: "2026-06-30"
+    published_until: "2026-09-05"
+    cause: no_schedule_tables
+    outcome: delisted
+    evidence: >-
+      The same empty archive as beloit-transit, published a second time under a
+      catalog-derived id. This record is not in the registry, so no run will
+      revisit it and its scorecard is withdrawn rather than re-scored.
+
+  - agency_id: catalina-express
+    agency_name: Catalina Express
+    snapshot_date: "2026-07-16"
+    feed_sha256: 1c28629a293202c2a4424b1c69a1c4c6e9d84ffec3ff2e66c79492463f8f0726
+    grade: F
+    score: 26.2
+    published_from: "2026-06-30"
+    published_until: "2026-09-05"
+    cause: tables_in_a_subfolder
+    outcome: not_measured
+    evidence: >-
+      The published artifact carries the validator's own
+      invalid_input_files_in_subfolder error. The archive is a GitLab source
+      export whose tables sit two folders down, at
+      gtfs_lax-master-catalina_express/catalina_express/. Confirmed on
+      2026-09-05 against the same bytes the grade was computed from
+      (sha256 1c28629a2932): stops.txt holds 4 rows and trips.txt 28. This is a
+      real feed describing real service. The reader resolves one wrapping
+      folder, not two (issue #333), so it still cannot be read here and the
+      answer is that it is not measured.
+
+  - agency_id: citrus-county-transit-630
+    agency_name: Citrus County Transit
+    snapshot_date: "2026-06-30"
+    feed_sha256: 5180fa66c62326504806ab3fe60f15b0fde554f268d58f8da75879bb97db4183
+    grade: F
+    score: 26.2
+    published_from: "2026-06-30"
+    published_until: "2026-09-05"
+    cause: tables_in_a_subfolder
+    outcome: delisted
+    evidence: >-
+      The published artifact carries invalid_input_files_in_subfolder. The feed
+      served today wraps its tables in a single CitrusCountyTransit/ folder and
+      holds 80 stops and 24 trips, so this is a real feed that reads correctly
+      under the current reader. The grade predates that reader. This record is
+      not in the registry, so its scorecard is withdrawn rather than re-scored.
+
+  - agency_id: cobb-community-transit-cct-354
+    agency_name: Cobb Community Transit (CCT)
+    snapshot_date: "2026-06-30"
+    feed_sha256: 38aa611727c11f4ed93ecffa2ba78b4e3066ba41a34014f67f8504b214aec456
+    grade: F
+    score: 26.2
+    published_from: "2026-06-30"
+    published_until: "2026-09-05"
+    cause: tables_in_a_subfolder
+    outcome: delisted
+    evidence: >-
+      The published artifact carries invalid_input_files_in_subfolder over a
+      1.4 MB archive, which is far too large to hold no service. The source URL
+      returns 403 as of 2026-09-05, so the archive could not be re-read. This
+      record is not in the registry, so its scorecard is withdrawn.
+
+  - agency_id: detroit-people-mover-417
+    agency_name: Detroit People Mover
+    snapshot_date: "2026-06-30"
+    feed_sha256: 7181247c16cd7932bb3ac69214280a8641a0ad231121ee4ba62b1b0cd809c003
+    grade: F
+    score: 26.2
+    published_from: "2026-06-30"
+    published_until: "2026-09-05"
+    cause: tables_in_a_subfolder
+    outcome: delisted
+    evidence: >-
+      The published artifact carries invalid_input_files_in_subfolder. The
+      source URL returns 404 as of 2026-09-05, so the archive could not be
+      re-read. This record is not in the registry, so its scorecard is
+      withdrawn.
+
+  - agency_id: high-desert-point
+    agency_name: High Desert Point
+    snapshot_date: "2026-08-01"
+    feed_sha256: 8273309f39ee4ba434d9e0e8a0e3c15314f96830a714179b6f4b6d8d311262e8
+    grade: F
+    score: 31.3
+    published_from: "2026-06-19"
+    published_until: "2026-09-05"
+    cause: no_schedule_tables
+    outcome: delisted
+    evidence: >-
+      A 733-byte archive whose published findings are five missing_required_file
+      errors and one unknown file, with no subfolder notice: there are no GTFS
+      tables in it at all. The registry has since marked this record
+      deprecated, so it is no longer a current listing and its scorecard is
+      withdrawn.
+
+  - agency_id: high-desert-point-636
+    agency_name: High Desert Point
+    snapshot_date: "2026-07-10"
+    feed_sha256: 8273309f39ee4ba434d9e0e8a0e3c15314f96830a714179b6f4b6d8d311262e8
+    grade: F
+    score: 31.3
+    published_from: "2026-07-10"
+    published_until: "2026-09-05"
+    cause: no_schedule_tables
+    outcome: delisted
+    evidence: >-
+      The same 733-byte archive as high-desert-point, published a second time
+      under a catalog-derived id. Not in the registry, so its scorecard is
+      withdrawn.
+
+  - agency_id: hut-airport-shuttle
+    agency_name: HUT Airport Shuttle
+    snapshot_date: "2026-07-16"
+    feed_sha256: 14540db06e1acc63b0e88ab4789a1061e55fd725a5935665bb551b84e69bf44c
+    grade: F
+    score: 31.5
+    published_from: "2026-06-19"
+    published_until: "2026-09-05"
+    cause: no_schedule_tables
+    outcome: delisted
+    evidence: >-
+      A 1,635-byte archive whose published findings are five
+      missing_required_file errors with no subfolder notice: no GTFS tables. The
+      registry has since marked this record deprecated, so it is no longer a
+      current listing and its scorecard is withdrawn.
+
+  - agency_id: hut-airport-shuttle-635
+    agency_name: HUT Airport Shuttle
+    snapshot_date: "2026-07-10"
+    feed_sha256: 14540db06e1acc63b0e88ab4789a1061e55fd725a5935665bb551b84e69bf44c
+    grade: F
+    score: 31.5
+    published_from: "2026-07-10"
+    published_until: "2026-09-05"
+    cause: no_schedule_tables
+    outcome: delisted
+    evidence: >-
+      The same 1,635-byte archive as hut-airport-shuttle, published a second
+      time under a catalog-derived id. Not in the registry, so its scorecard is
+      withdrawn.
+
+  - agency_id: jaunt-inc-1324
+    agency_name: JAUNT Inc
+    snapshot_date: "2026-06-30"
+    feed_sha256: d1f6ff161e0d00bbe42a1a9063a3852678afd086fe847aabe468617d700435f6
+    grade: F
+    score: 26.2
+    published_from: "2026-06-30"
+    published_until: "2026-09-05"
+    cause: tables_in_a_subfolder
+    outcome: delisted
+    evidence: >-
+      The published artifact carries invalid_input_files_in_subfolder over a
+      212 KB archive. The source URL returns 404 as of 2026-09-05, so the
+      archive could not be re-read. Not in the registry, so its scorecard is
+      withdrawn.
+
+  - agency_id: lakexpress-342
+    agency_name: LakeXpress
+    snapshot_date: "2026-06-30"
+    feed_sha256: 4ac31e4ba612df4fb17d78351ac725ef4cc893effea7b90da55830fa25872035
+    grade: F
+    score: 26.2
+    published_from: "2026-06-30"
+    published_until: "2026-09-05"
+    cause: tables_in_a_subfolder
+    outcome: delisted
+    evidence: >-
+      The published artifact carries invalid_input_files_in_subfolder. The feed
+      served today wraps its tables in a single folder and holds 490 stops and
+      930 trips, so this is a real feed that reads correctly under the current
+      reader. The grade predates that reader. Not in the registry, so its
+      scorecard is withdrawn rather than re-scored.
+
+  - agency_id: massachusetts-area-express-max
+    agency_name: Massachusetts Area Express (MAX)
+    snapshot_date: "2026-07-30"
+    feed_sha256: 28e972b743f824d0f4d560891f7ae7fd0531f6349f6da38cd5295a7e799ae317
+    grade: F
+    score: 31.3
+    published_from: "2026-06-19"
+    published_until: "2026-09-05"
+    cause: no_schedule_tables
+    outcome: not_measured
+    evidence: >-
+      The archive is 192 bytes and contains exactly one file,
+      service_cancelled.txt. Confirmed on 2026-09-05 against the same bytes the
+      grade was computed from (sha256 28e972b743f8, unchanged). There is no
+      GTFS table here to read, so no grade replaces this one.
+
+  - agency_id: massachusetts-area-express-max-431
+    agency_name: Massachusetts Area Express (MAX)
+    snapshot_date: "2026-06-30"
+    feed_sha256: 28e972b743f824d0f4d560891f7ae7fd0531f6349f6da38cd5295a7e799ae317
+    grade: F
+    score: 31.3
+    published_from: "2026-06-30"
+    published_until: "2026-09-05"
+    cause: no_schedule_tables
+    outcome: delisted
+    evidence: >-
+      The same 192-byte archive as massachusetts-area-express-max, published a
+      second time under a catalog-derived id. Not in the registry, so its
+      scorecard is withdrawn.
+
+  - agency_id: miami-dade-transit-331
+    agency_name: Miami-Dade Transit
+    snapshot_date: "2026-06-30"
+    feed_sha256: 2c39b48703e903eee0d2780b43f43cc188d5bd3b4258b2dd09bf3ae5892adfe8
+    grade: F
+    score: 26.2
+    published_from: "2026-06-30"
+    published_until: "2026-09-05"
+    cause: tables_in_a_subfolder
+    outcome: delisted
+    evidence: >-
+      The published artifact carries invalid_input_files_in_subfolder over an
+      8.4 MB archive. The feed served today has its tables at the top level and
+      holds 6,973 stops and 24,285 trips, so this is one of the larger feeds in
+      the corpus and it was graded F on none of it. Not in the registry, so its
+      scorecard is withdrawn rather than re-scored.
+
+  - agency_id: santa-clarita-transit
+    agency_name: Santa Clarita Transit
+    snapshot_date: "2026-07-16"
+    feed_sha256: 8f4b6006ba4eb0742185b7c934d5596e0ddf287fd171aaa6f7c8089ba7439b16
+    grade: F
+    score: 26.2
+    published_from: "2026-06-16"
+    published_until: "2026-09-05"
+    cause: tables_in_a_subfolder
+    outcome: not_measured
+    evidence: >-
+      The published artifact carries the validator's own
+      invalid_input_files_in_subfolder error. The archive is a GitLab source
+      export whose tables sit two folders down, at
+      gtfs_lax-master-santa_clarita/santa_clarita/. Confirmed on 2026-09-05
+      against the same bytes the grade was computed from
+      (sha256 8f4b6006ba4e): stops.txt holds 364 rows and trips.txt 898. The
+      reader resolves one wrapping folder, not two (issue #333), so it still
+      cannot be read here and the answer is that it is not measured.
+
+  - agency_id: santa-clarita-transit-812
+    agency_name: Santa Clarita Transit
+    snapshot_date: "2026-06-30"
+    feed_sha256: 8f4b6006ba4eb0742185b7c934d5596e0ddf287fd171aaa6f7c8089ba7439b16
+    grade: F
+    score: 26.2
+    published_from: "2026-06-30"
+    published_until: "2026-09-05"
+    cause: tables_in_a_subfolder
+    outcome: delisted
+    evidence: >-
+      The same two-folder-deep archive as santa-clarita-transit, published a
+      second time under a catalog-derived id, and carrying 364 real stops. Not
+      in the registry, so its scorecard is withdrawn.
+
+  - agency_id: staten-island-ferry-518
+    agency_name: Staten Island Ferry
+    snapshot_date: "2026-06-30"
+    feed_sha256: 1440b73f7ebb2d9b4f2c2c65b5b9ce158ca6db7741a850ffc56380953292cae4
+    grade: F
+    score: 26.2
+    published_from: "2026-06-30"
+    published_until: "2026-09-05"
+    cause: tables_in_a_subfolder
+    outcome: delisted
+    evidence: >-
+      The published artifact carries invalid_input_files_in_subfolder.
+      Confirmed on 2026-09-05 against the same bytes the grade was computed
+      from (sha256 1440b73f7ebb): the tables sit in a single
+      siferry-gtfs_2026.1/ folder and hold 2 stops and 416 trips. A feed that
+      reads correctly under the current reader; the grade predates it. Not in
+      the registry, so its scorecard is withdrawn rather than re-scored.
+
+  - agency_id: xpress-2355
+    agency_name: Xpress
+    snapshot_date: "2026-07-16"
+    feed_sha256: 9116a4abc7d5f944c147f209b6f964011a227cb1bf3ea8621f57ebbdc8093c5a
+    grade: F
+    score: 26.2
+    published_from: "2026-06-19"
+    published_until: "2026-09-05"
+    cause: tables_in_a_subfolder
+    outcome: not_measured
+    evidence: >-
+      The published artifact carries invalid_input_files_in_subfolder over a
+      2.8 MB archive, which is far too large to hold no service. The source URL
+      returns 404 as of 2026-09-05, so the archive could not be re-read and the
+      feed cannot be measured today.
+
+# Published grades known to carry the same defect and not withdrawn in this
+# change. Named here rather than left out of the check: a gate that is satisfied
+# by narrowing what it looks at is not a gate. This list may only shrink.
+not_yet_corrected:
+  - agency_id: anaheim-resort-transportation-art
+    reason: >-
+      Published F (42.6) over an archive with no stops and no trips, so it is
+      the same defect. It is held back because the correction is not the same
+      one: rider experience scored 7.5 rather than 0.0, so the withdrawal
+      wording and the outcome need their own review, and the source URL returns
+      404 as of 2026-09-05 so the archive could not be re-read to establish the
+      cause. Withdrawing it on a guess would replace one unverified claim with
+      another.
+  - agency_id: anaheim-resort-transportation-art-100
+    reason: >-
+      The same feed as anaheim-resort-transportation-art under a
+      catalog-derived id, held back for the same reason.
+  - agency_id: boxcar
+    reason: >-
+      Published C (73.0), not an F, over an archive whose stops.txt, routes.txt
+      and trips.txt each hold a header row and nothing else. Confirmed live on
+      2026-09-05. This one needs a scoring decision before a correction, not
+      after: its calendar.txt has 89 real rows and its feed_info.txt a real
+      validity window, so freshness is a genuine measurement and
+      `score_feed_content` does not refuse the feed. Withdrawing the C without
+      that decision would let the next run publish an A for a feed with no
+      stops, no routes and no trips, which is worse than the C standing.
