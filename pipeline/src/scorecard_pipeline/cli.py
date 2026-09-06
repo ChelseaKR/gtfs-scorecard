@@ -106,15 +106,21 @@ class RunOutcome:
     cache_hit: bool
 
 
-def _realtime_category(
+def _realtime_categories(
     agency: Agency,
     static_path: Path,
     date: dt.date,
     *,
     rt_samples: int,
     rt_interval: int,
-) -> CategoryResult:
+) -> list[CategoryResult]:
     """Sample and score only the realtime capabilities an agency publishes.
+
+    A list of nothing or one, so the caller adds a scored realtime category
+    without having to branch on its absence. Empty when the sampling window
+    turned out to be evidence about our fetcher rather than about the feed:
+    an absent category renders as not yet measured, where a fabricated one
+    would render as a grade.
 
     TripUpdates analysis reads schedule tables and VehiclePositions analysis
     reads shapes. Avoiding those paths when the corresponding feed kind is not
@@ -133,13 +139,14 @@ def _realtime_category(
     plausibility = (
         vehicle_plausibility(window.samples, str(static_path)) if has_vehicle_positions else None
     )
-    return realtime(
+    category = realtime(
         window,
         scheduled or None,
         drift=drift,
         plausibility=plausibility,
         configured_kinds=agency.rt_urls,
     )
+    return [category] if category is not None else []
 
 
 def _routability_block(reader_path: Path) -> dict[str, Any]:
@@ -248,8 +255,8 @@ def run_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         ),
     ]
     if agency.rt_urls and not skip_rt:
-        cats.append(
-            _realtime_category(
+        cats.extend(
+            _realtime_categories(
                 agency,
                 reader_path,
                 date,
@@ -2169,6 +2176,15 @@ def _cmd_rt_health(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
         # The monitor stays a lightweight realtime poll: coverage needs the static
         # feed and is recorded by the daily score, not here.
         obs = observe(window, kinds_total=len(agency.rt_urls), scheduled=None)
+        if obs is None:
+            # Every sample failed inside our own fetcher, so this run is
+            # evidence about us and not about the feed. Recording it would
+            # publish our outage as theirs on /realtime/.
+            log.warning(
+                "%s: no realtime endpoint could be sampled; recording no observation.",
+                agency_id,
+            )
+            continue
         try:
             append_observation(agency_id, obs)
         except RtHealthRecordCorruptError:

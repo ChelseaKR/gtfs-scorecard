@@ -107,7 +107,7 @@ def test_cli_runs_only_analysis_for_configured_realtime_kinds(
     monkeypatch.setattr(cli, "vehicle_plausibility", plausibility)
     monkeypatch.setattr(cli, "realtime", score)
 
-    result = cli._realtime_category(
+    categories = cli._realtime_categories(
         agency,
         tmp_path / "static.zip",
         dt.date(2026, 7, 13),
@@ -115,7 +115,7 @@ def test_cli_runs_only_analysis_for_configured_realtime_kinds(
         rt_interval=30,
     )
 
-    assert result.score == 100.0
+    assert [c.score for c in categories] == [100.0]
     assert ("schedule" in calls) is expects_trip_updates
     assert ("drift" in calls) is expects_trip_updates
     assert ("plausibility" in calls) is expects_vehicle_positions

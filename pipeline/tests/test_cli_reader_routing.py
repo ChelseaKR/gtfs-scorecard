@@ -161,12 +161,12 @@ def test_run_agency_routes_raw_archive_and_reader_view_to_their_owners(  # noqa:
         *,
         rt_samples: int,
         rt_interval: int,
-    ) -> CategoryResult:
+    ) -> list[CategoryResult]:
         assert configured_agency is agency
         expect_reader("realtime", static_path)
         assert date == run_date
         assert (rt_samples, rt_interval) == (2, 7)
-        return _category("realtime")
+        return [_category("realtime")]
 
     def read_modes(path: str) -> dict[str, Any]:
         expect_reader("modes", path)
@@ -226,7 +226,7 @@ def test_run_agency_routes_raw_archive_and_reader_view_to_their_owners(  # noqa:
     monkeypatch.setattr(vcache, "store_cached", store_report)
     monkeypatch.setattr(cli, "correctness", lambda checked: _category("correctness"))
     monkeypatch.setattr(cli, "score_feed_content", score_feed_content)
-    monkeypatch.setattr(cli, "_realtime_category", score_realtime)
+    monkeypatch.setattr(cli, "_realtime_categories", score_realtime)
     monkeypatch.setattr(modes, "mode_profile_from_zip", read_modes)
     monkeypatch.setattr(ferry_profile, "ferry_profile_from_zip", read_ferry)
     monkeypatch.setattr(recommend, "gather_recommendations", read_recommendations)
@@ -343,7 +343,7 @@ def test_realtime_category_routes_the_reader_view_to_schedule_analyses(
     monkeypatch.setattr(cli, "vehicle_plausibility", plausibility)
     monkeypatch.setattr(cli, "realtime", score)
 
-    result = cli._realtime_category(
+    categories = cli._realtime_categories(
         agency,
         reader_path,
         dt.date(2026, 7, 16),
@@ -351,7 +351,7 @@ def test_realtime_category_routes_the_reader_view_to_schedule_analyses(
         rt_interval=0,
     )
 
-    assert result.name == "realtime"
+    assert [c.name for c in categories] == ["realtime"]
     assert paths == [reader_path, reader_path, reader_path]
     assert raw_path not in paths
 
