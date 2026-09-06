@@ -259,15 +259,86 @@ def test_read_shapes_coverage_no_trips(make_gtfs_zip: Callable[..., Path]) -> No
     assert coverage.trips_with_shape == 0
 
 
-def test_has_data_row_with_bom(make_gtfs_zip: Callable[..., Path]) -> None:
-    # A UTF-8 BOM must be stripped so the header is properly recognized and
-    # data rows are decoded without corruption.
-    bom = b"\xef\xbb\xbf"
-    path = make_gtfs_zip(
-        {
-            "stops.txt": bom + b"stop_id,stop_name\nS1,Main St\n",
-            "trips.txt": bom + b"route_id,service_id,trip_id\n",
-        }
-    )
-    dates = read_feed_dates(str(path))
-    assert dates.has_service_content
+# Byte sequences a producer can put in front of, or between, the rows of a
+# GTFS table. _has_data_row decides has_service_content, so a table it cannot
+# split into rows is published as a feed that describes no service -- an
+# absence written where a measurement goes.
+UTF8_BOM = b"\xef\xbb\xbf"
+
+
+@pytest.mark.parametrize(
+    ("stops", "trips"),
+    [
+        pytest.param(
+            b"stop_id,stop_name\rS1,Main St\r",
+            b"route_id,service_id,trip_id\r",
+            id="carriage-return line endings",
+        ),
+        pytest.param(
+            UTF8_BOM + b"stop_id,stop_name\rS1,Main St\r",
+            UTF8_BOM + b"route_id,service_id,trip_id\r",
+            id="a UTF-8 BOM in front of carriage-return line endings",
+        ),
+    ],
+)
+def test_a_readable_stops_table_is_service_content_whatever_ends_its_lines(
+    make_gtfs_zip: Callable[..., Path], stops: bytes, trips: bytes
+) -> None:
+    """A stop is a stop however the producer terminated the line it sits on.
+
+    Read as bytes, a table whose rows end in a bare CR is one long line, so the
+    header consumes the whole file and nothing is left to be a data row. The
+    feed then publishes has_service_content=False -- "this archive describes no
+    service" -- for an archive that describes a stop. Decoding through
+    TextIOWrapper with newline="" splits on CR, LF and CRLF alike, so the
+    question the reader answers stops depending on the producer's line endings.
+    """
+    path = make_gtfs_zip({"stops.txt": stops, "trips.txt": trips})
+    assert read_feed_dates(str(path)).has_service_content
+
+
+@pytest.mark.parametrize(
+    ("stops", "trips"),
+    [
+        pytest.param(
+            b"stop_id,stop_name\nS1,Main St\n",
+            b"route_id,service_id,trip_id\n",
+            id="no BOM",
+        ),
+        pytest.param(
+            UTF8_BOM + b"stop_id,stop_name\nS1,Main St\n",
+            UTF8_BOM + b"route_id,service_id,trip_id\n",
+            id="a UTF-8 BOM",
+        ),
+    ],
+)
+def test_a_utf8_bom_does_not_change_what_the_reader_sees(
+    make_gtfs_zip: Callable[..., Path], stops: bytes, trips: bytes
+) -> None:
+    """Narrowness, not evidence: this one passes either side of the fix.
+
+    _has_data_row reads the BOM as part of the header line it discards, so a
+    BOM never decided this answer. It is pinned anyway because utf-8-sig is now
+    what strips it, and a reader that stopped stripping it would corrupt the
+    first column name for every consumer that does parse the header.
+    """
+    path = make_gtfs_zip({"stops.txt": stops, "trips.txt": trips})
+    assert read_feed_dates(str(path)).has_service_content
+
+
+def test_a_header_only_table_is_not_service_content_with_or_without_a_bom(
+    make_gtfs_zip: Callable[..., Path],
+) -> None:
+    """The other direction: nothing here may start reading a header as a row.
+
+    A BOM-only file is the sharp case. Read as bytes its three BOM bytes strip
+    to a non-empty line; decoded as utf-8-sig they strip to nothing at all.
+    Both must answer "no rows", because a stops.txt holding a BOM and a column
+    header describes exactly as many stops as an absent one.
+    """
+    for stops in (b"stop_id,stop_name\n", UTF8_BOM + b"stop_id,stop_name\n", UTF8_BOM, b""):
+        path = make_gtfs_zip(
+            {"stops.txt": stops, "trips.txt": b"route_id,service_id,trip_id\n"},
+            name=f"gtfs-{len(stops)}.zip",
+        )
+        assert not read_feed_dates(str(path)).has_service_content
