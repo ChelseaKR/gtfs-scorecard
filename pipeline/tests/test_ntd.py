@@ -305,11 +305,17 @@ def test_shapes_not_ready_when_no_trip_has_a_shape() -> None:
     assert "Report Year 2025" in r.fix
 
 
-def test_shapes_not_ready_when_feed_has_no_trips() -> None:
+def test_shapes_not_checked_when_feed_has_no_trips() -> None:
+    """A feed with no trips has no coverage denominator, so nothing was checked.
+
+    This asserted NOT_READY while the detail beside it said the coverage could
+    not be checked, which put an unmeasurable feed in the failing bucket of
+    every pct_ready. tests/test_ntd_shapes_not_checked.py owns the rest.
+    """
     r = assess_shapes_readiness(total_trips=0, trips_with_shape=0)
-    assert r.status == NOT_READY
+    assert r.status == NOT_CHECKED
     assert not r.fix
-    assert "can't be checked" in r.detail
+    assert "could not be checked" in r.detail
 
 
 def test_shapes_at_risk_when_partially_covered() -> None:

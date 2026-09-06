@@ -163,13 +163,15 @@ def test_shapes_portfolio_counts_and_states() -> None:
         _shapes_artifact(state="CA"),  # ready (10/10)
         _shapes_artifact(state="CA", trips_with_shape=4),  # at_risk
         _shapes_artifact(state="OR", trips_with_shape=0),  # not_ready
-        _shapes_artifact(state="OR", total_trips=0, trips_with_shape=0),  # not_ready (no trips)
+        # No trips: no coverage denominator, so the check could not run and the
+        # feed is out of the population rather than counted as a failure.
+        _shapes_artifact(state="OR", total_trips=0, trips_with_shape=0),
     ]
     s = shapes_portfolio_summary(artifacts)
-    assert (s.total, s.ready, s.at_risk, s.not_ready) == (4, 1, 1, 2)
-    assert s.pct_ready == 25.0
+    assert (s.total, s.ready, s.at_risk, s.not_ready) == (3, 1, 1, 1)
+    assert s.pct_ready == 33.3
     assert s.by_state["CA"] == {"ready": 1, "at_risk": 1, "not_ready": 0, "total": 2}
-    assert s.by_state["OR"] == {"ready": 0, "at_risk": 0, "not_ready": 2, "total": 2}
+    assert s.by_state["OR"] == {"ready": 0, "at_risk": 0, "not_ready": 1, "total": 1}
 
 
 def test_shapes_portfolio_skips_non_us_and_unchecked_feeds() -> None:
