@@ -104,6 +104,20 @@ the declared public surface).
 
 ### Fixed
 
+- **A stops.txt with classic-Mac line endings read as a feed describing no
+  service.** `gtfs._has_data_row` decides `FeedDates.has_service_content`, the
+  flag that says whether an archive describes any service at all, and it read
+  the table as raw bytes. Iterating bytes splits on `\n` only, so a table whose
+  rows end in a bare carriage return is one long line: the header consumed the
+  whole file, nothing was left to be a data row, and an archive carrying stops
+  published `has_service_content: false`. It now decodes through a
+  `TextIOWrapper` with `encoding="utf-8-sig"` and `newline=""`, the same
+  decoding `_read_table` and `iter_table_rows` already use, so CR, LF and CRLF
+  all split into rows and a UTF-8 BOM is stripped rather than counted as
+  content. Reported and fixed by @ghzhost in #336; the regression test is the
+  carriage-return case, with the BOM cases kept and labelled as passing either
+  way.
+
 - **Six more places where an absence was published as a number.** The same
   defect as the validator-report fix below, found in six other measurements the
   site publishes. In each one a value that means "we could not measure this"
