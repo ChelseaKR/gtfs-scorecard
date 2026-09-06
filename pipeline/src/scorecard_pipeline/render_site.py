@@ -1059,6 +1059,16 @@ def _accessibility_depth_signals(artifact: dict[str, Any]) -> str:
     already treats fairly. Empty when the feed has nothing to flag or the
     checks did not run.
     """
+    if "accessibility" in (artifact.get("recommendations_not_measured") or []):
+        # The audit did not run for this feed. Saying nothing here would read
+        # as "nothing to flag", which is what a clean feed looks like.
+        return (
+            '<div class="a11y-depth">'
+            '<p class="a11y-depth-label">Accessibility depth not checked</p>'
+            '<p class="a11y-depth-note">The deeper accessibility checks could not run over '
+            "this feed, so this page has nothing to say about them. That is a gap in our "
+            "check, not a finding about your data.</p></div>"
+        )
     recs = [
         r for r in (artifact.get("recommendations") or []) if r.get("category") == "accessibility"
     ]
@@ -3488,6 +3498,18 @@ def _render_fixlog_page(
     )
 
 
+#: Reader-facing names for the beyond-the-grade checks, used when one of them
+#: could not run and the page has to say which.
+_RECOMMENDATION_CHECK_NAMES = {"fares": "fare detail", "flex": "on-demand service"}
+
+
+def _sentence_list(items: list[str]) -> str:
+    """ "a", "a and b", "a, b and c" — for naming checks in a sentence."""
+    if len(items) <= 1:
+        return items[0] if items else ""
+    return f"{', '.join(items[:-1])} and {items[-1]}"
+
+
 def _recommendations_section(artifact: dict[str, Any]) -> str:
     """Beyond-the-grade opportunities (fares, on-demand service) attached to the
     artifact at score time. These do not affect the grade; empty when there is
@@ -3498,8 +3520,23 @@ def _recommendations_section(artifact: dict[str, Any]) -> str:
     recs = [
         r for r in (artifact.get("recommendations") or []) if r.get("category") != "accessibility"
     ]
-    if not recs:
+    # Named separately from the rows: a check that could not run has no rows to
+    # show, and an empty list here would otherwise read as "nothing to suggest".
+    unmeasured = [
+        _RECOMMENDATION_CHECK_NAMES.get(c, c)
+        for c in (artifact.get("recommendations_not_measured") or [])
+        if c != "accessibility"
+    ]
+    if not recs and not unmeasured:
         return ""
+    note = ""
+    if unmeasured:
+        checks = _sentence_list(unmeasured)
+        was = "check" if len(unmeasured) == 1 else "checks"
+        note = (
+            f'<p class="rec-not-measured">The {checks} {was} could not run over this feed, '
+            "so nothing here speaks to them.</p>"
+        )
     items = []
     for rec in recs:
         what = esc(str(rec.get("what", "")))
@@ -3513,7 +3550,7 @@ def _recommendations_section(artifact: dict[str, Any]) -> str:
         "Beyond the grade</h2>"
         '<p class="page-lede">Opportunities that do not change your grade today: fare detail, '
         "on-demand service, and deeper accessibility data.</p>"
-        f'<ul class="recs">{"".join(items)}</ul></section>'
+        f'{note}<ul class="recs">{"".join(items)}</ul></section>'
     )
 
 

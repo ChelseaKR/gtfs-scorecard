@@ -290,7 +290,10 @@ def run_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     # any category score.
     from .recommend import gather_recommendations
 
-    artifact["recommendations"] = gather_recommendations(str(reader_path))
+    # The block carries recommendations_not_measured only when a check could not
+    # run: an empty rows list otherwise means the checks ran and found nothing,
+    # which is a different thing and must not read the same on the page.
+    artifact.update(gather_recommendations(str(reader_path)).artifact_block())
     # Conformance mark: a pass/not-yet credential over the scores just computed.
     # Attached so the badge and the page can show it without recomputing.
     from .conformance import assess as assess_conformance

@@ -183,9 +183,9 @@ def test_run_agency_routes_raw_archive_and_reader_view_to_their_owners(  # noqa:
         assert set(configured_realtime_kinds) == set(agency.rt_urls)
         return None
 
-    def read_recommendations(path: str) -> list[dict[str, object]]:
+    def read_recommendations(path: str) -> recommend.Recommendations:
         expect_reader("recommendations", path)
-        return []
+        return recommend.Recommendations([])
 
     def read_geo(path: str) -> dict[str, Any] | None:
         expect_reader("geo", path)
