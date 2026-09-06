@@ -122,6 +122,20 @@ the declared public surface).
   without `--strict` is advisory and not the gate. The walkthrough shows what a
   passing run looks like instead of implying it looks like nothing.
 
+- **A stops.txt with classic-Mac line endings read as a feed describing no
+  service.** `gtfs._has_data_row` decides `FeedDates.has_service_content`, the
+  flag that says whether an archive describes any service at all, and it read
+  the table as raw bytes. Iterating bytes splits on `\n` only, so a table whose
+  rows end in a bare carriage return is one long line: the header consumed the
+  whole file, nothing was left to be a data row, and an archive carrying stops
+  published `has_service_content: false`. It now decodes through a
+  `TextIOWrapper` with `encoding="utf-8-sig"` and `newline=""`, the same
+  decoding `_read_table` and `iter_table_rows` already use, so CR, LF and CRLF
+  all split into rows and a UTF-8 BOM is stripped rather than counted as
+  content. Reported and fixed by @ghzhost in #336; the regression test is the
+  carriage-return case, with the BOM cases kept and labelled as passing either
+  way.
+
 - **Six more places where an absence was published as a number.** The same
   defect as the validator-report fix below, found in six other measurements the
   site publishes. In each one a value that means "we could not measure this"
@@ -335,6 +349,16 @@ the declared public surface).
   that 365 out of a `feed_info.txt` end date, which is a claim about data that
   is not in the archive; with no service to be the end of, the sentence and the
   100.0 were both about nothing, and both are now withheld.
+
+  **The published Action still carries the old behaviour.** This fix is
+  unreleased. `v1.4.0` and the floating `v1` both point at `d800e0b4`
+  (2026-07-25), which predates the refusal, so a workflow on
+  `uses: ChelseaKR/gtfs-scorecard@v1` -- the form the README and
+  `docs/ci-action.md` recommend -- still scores a well-formed zip with no GTFS
+  files as `F (31.3/100)` and still reports `passed=true`. `main` refuses it,
+  and `pipeline/tests/test_action_v2.py` pins the composite action's outputs for
+  a refused feed as well as the scorer's own refusal. Closing the gap for
+  callers is a release, not a code change.
 
   **Not done here, and it needs an owner decision.** The 22 already-published
   scorecards still carry their old letters. The scorer can no longer refresh
