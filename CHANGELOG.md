@@ -104,6 +104,24 @@ the declared public surface).
 
 ### Fixed
 
+- **`scorecard lint` reported and never said whether it passed.**
+  `docs/add-your-agency.md` sends a first-time contributor to
+  `uv run scorecard lint --strict` and tells them a green result there means a
+  green check on their pull request. There was no green result to see. The two
+  advisory kinds, `non_https_url` and `missing_mdb_id`, stand at well over a
+  thousand rows across the whole registry, so adding one correct entry printed
+  a screenful of tab-separated lines about other people's agencies and then
+  exited 0 in silence. The summary that would have explained it went to
+  `log.info`, which the CLI does not display, so the only signal was an exit
+  status nobody reads. Walked from a clean checkout: every malformed entry the
+  document names does fail with exactly the one line it promises, so the failure
+  path was already right and only the success path said nothing. The report is
+  unchanged and still goes to stdout, one row per issue, so anything parsing it
+  is unaffected; the verdict now goes to stderr, naming the counts by kind and
+  either `PASSED --strict`, the blocking kinds when it failed, or that a run
+  without `--strict` is advisory and not the gate. The walkthrough shows what a
+  passing run looks like instead of implying it looks like nothing.
+
 - **Six more places where an absence was published as a number.** The same
   defect as the validator-report fix below, found in six other measurements the
   site publishes. In each one a value that means "we could not measure this"

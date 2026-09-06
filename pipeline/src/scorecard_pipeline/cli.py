@@ -2058,22 +2058,64 @@ def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser
     return 0
 
 
+#: Hygiene kinds that ``--strict`` refuses to merge over. Everything else
+#: ``lint_registry`` reports is advisory: a standing backlog about the whole
+#: registry, not a verdict on the entry in front of you.
+STRICT_LINT_KINDS = frozenset({"feed_descriptor_name", "duplicate_mdb_id", "duplicate_feed_url"})
+
+
 def _cmd_lint(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Report registry hygiene, and say plainly whether it blocks a merge.
+
+    docs/add-your-agency.md sends a first-time contributor here and tells them
+    "a green result here means a green check there". There was no green result
+    to see. The advisory kinds -- non-HTTPS feed URLs and missing Mobility
+    Database ids -- stand at well over a thousand rows across the whole
+    registry, so adding one correct entry prints a screenful of tab-separated
+    lines about other people's agencies and then exits 0 silently. The summary
+    that would have explained it went to ``log.info``, which the CLI does not
+    show by default, so the only signal was an exit status nobody looks at.
+
+    The report itself is unchanged and still goes to stdout, one row per issue,
+    so anything parsing it is unaffected. The verdict goes to stderr, where the
+    contributor reads it and a pipeline does not.
+    """
     from collections import Counter
 
     from .lint import lint_registry
 
     issues = lint_registry(AGENCIES.values())
     if not issues:
-        log.info("Registry is clean: %d agencies, no hygiene issues.", len(AGENCIES))
+        print(
+            f"Registry lint: clean. {len(AGENCIES)} agencies, no hygiene issues.", file=sys.stderr
+        )
         return 0
     for issue in issues:
         print(f"{issue.kind}\t{issue.agency_id}\t{issue.detail}")
     by_kind = Counter(i.kind for i in issues)
-    log.info("%d registry issue(s): %s", len(issues), dict(by_kind))
-    strict_kinds = {"feed_descriptor_name", "duplicate_mdb_id", "duplicate_feed_url"}
-    if args.strict and strict_kinds.intersection(by_kind):
+    blocking = sorted(STRICT_LINT_KINDS.intersection(by_kind))
+    counted = ", ".join(f"{kind} {count}" for kind, count in sorted(by_kind.items()))
+    print(
+        f"Registry lint: {len(issues)} issue(s) across {len(AGENCIES)} agencies ({counted}).",
+        file=sys.stderr,
+    )
+    if not args.strict:
+        print(
+            "Registry lint: advisory only; --strict is what the merge gate runs.",
+            file=sys.stderr,
+        )
+        return 0
+    if blocking:
+        print(
+            "Registry lint FAILED: --strict blocks on " + ", ".join(blocking) + ".",
+            file=sys.stderr,
+        )
         return 1
+    print(
+        "Registry lint PASSED --strict. Every issue above is advisory and does not "
+        "block a merge; none of them is about a single new entry.",
+        file=sys.stderr,
+    )
     return 0
 
 
