@@ -26,8 +26,21 @@ permissions:
   contents: read
 
 concurrency:
-  group: links-${{ github.ref }}
-  cancel-in-progress: true
+  # `github.ref` is `refs/pull/N/merge` on a pull request, so grouping by it cancels
+  # superseded runs of the SAME pull request. That is the intent, and the saving, and it
+  # is kept.
+  #
+  # On a push it is `refs/heads/main` for EVERY commit, so consecutive pushes to main
+  # shared one group and the second cancelled the first outright. Flipping
+  # `cancel-in-progress` to false does not fix it either: a queued run is then evicted
+  # from the pending slot by the next arrival. Both roads end with a commit on main whose
+  # only check-run is `cancelled`, and a cancelled run is no signal at all — not a pass,
+  # not a failure, and easy to misread as either. Two commits lost their verdict this way
+  # on 2026-09-06.
+  #
+  # So a push is grouped by its own SHA and cancels nothing: one commit, one verdict.
+  group: links-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   money-pages:
