@@ -12,6 +12,7 @@ import json
 import logging
 import shutil
 import zipfile
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -259,11 +260,67 @@ def _reader_members(archive: zipfile.ZipFile) -> list[ReaderMember]:
     return parsed
 
 
+#: Files whose presence in a directory marks that directory as the GTFS feed.
+#: The specification's required tables, plus the two calendar files and
+#: feed_info.txt, which is the same set the site's own "is this a feed?" check
+#: uses. A directory of producer notes, licence text, or shapefiles carries none
+#: of them, so it is never mistaken for the feed itself.
+GTFS_FEED_MARKER_TABLES = frozenset(
+    {
+        "agency.txt",
+        "stops.txt",
+        "routes.txt",
+        "trips.txt",
+        "stop_times.txt",
+        "calendar.txt",
+        "calendar_dates.txt",
+        "feed_info.txt",
+    }
+)
+
+
+def _carries_gtfs_tables(names: Iterable[str]) -> bool:
+    """Whether any of ``names`` is a GTFS table, ignoring surrounding space."""
+    return any(name.strip() in GTFS_FEED_MARKER_TABLES for name in names)
+
+
+def _table_bearing_prefixes(nested_files: list[ReaderMember]) -> set[tuple[str, ...]]:
+    """Directory prefixes that directly hold at least one GTFS table.
+
+    A prefix is the member's full parent path, so ``a/b/stops.txt`` reports
+    ``("a", "b")``. Depth is not restricted: what identifies the feed directory
+    is the tables in it, not how many folders a producer wrapped around it.
+    """
+    return {
+        parts[:-1] for _entry, parts in nested_files if parts[-1].strip() in GTFS_FEED_MARKER_TABLES
+    }
+
+
 def _reader_mapping(parsed: list[ReaderMember]) -> ReaderMapping | None:
-    """The one allowed filename mapping, or None when no view is needed."""
+    """The one allowed filename mapping, or None when no view is needed.
+
+    Three rules, in order (issue #333):
+
+    1. A GTFS table at the archive root wins, and the root is read exactly as it
+       is today. A flat archive can take no other branch.
+    2. Otherwise the tables are resolved under the single directory prefix that
+       holds them, at whatever depth that prefix sits. GitLab's archive endpoint
+       wraps a feed in ``<repo>-<ref>-<path>/<path>/``, two folders deep, and the
+       one-folder rule that preceded this read those feeds as having no tables at
+       all.
+    3. Two or more prefixes holding tables is an ambiguous archive -- most likely
+       several agencies' feeds in one bundle -- and stays unreadable rather than
+       having one of them picked for it.
+    """
     root_files = [item for item in parsed if len(item[1]) == 1]
     nested_files = [item for item in parsed if len(item[1]) > 1]
-    if root_files:
+    prefixes = _table_bearing_prefixes(nested_files)
+    root_carries_tables = _carries_gtfs_tables(parts[0] for _entry, parts in root_files)
+
+    # Rule 1. Also the branch taken when nothing anywhere in the archive looks
+    # like a GTFS table, which keeps an archive with no feed in it on exactly
+    # the path it took before: no view, nothing read, and the scorer's refusal.
+    if root_files and (root_carries_tables or not prefixes):
         if not any(parts[0].strip() != parts[0] for _, parts in root_files):
             return None
         if nested_files:
@@ -274,6 +331,18 @@ def _reader_mapping(parsed: list[ReaderMember]) -> ReaderMapping | None:
         return [(entry, parts[0].strip()) for entry, parts in root_files]
     if not nested_files:
         return None
+
+    # Rule 3, before rule 2: an ambiguous archive must not be resolved at all.
+    if len(prefixes) > 1:
+        raise ValueError("GTFS archive has multiple possible root folders carrying GTFS tables")
+    # Rule 2. Only the chosen directory's own members become the reader view;
+    # anything filed elsewhere in the archive is not this feed's table.
+    if prefixes:
+        prefix = next(iter(prefixes))
+        return [(entry, parts[-1].strip()) for entry, parts in nested_files if parts[:-1] == prefix]
+
+    # No GTFS table anywhere in the archive. Reject the shapes that were
+    # rejected before, for the same reasons and with the same wording.
     if len({parts[0] for _, parts in nested_files}) != 1:
         raise ValueError("GTFS archive has multiple possible root folders")
     if any(len(parts) != 2 for _, parts in nested_files):
@@ -321,12 +390,16 @@ def prepare_reader_archive(path: Path, limits: ArchiveLimits | None = None) -> R
     packaging errors. Our readers use a separate view so freshness,
     completeness, and descriptive features do not all become falsely empty.
 
-    Only two unambiguous transforms are allowed: strip one common root folder,
-    and trim surrounding whitespace from a root filename. Mixed roots, deeper
-    trees, unsafe components, and names that collide after trimming are rejected
-    instead of guessing. A canonical root feed with harmless nested extras needs
-    no transform and conservatively stays on ``raw-v1``; a transformable wrapped
-    root mixed with another root is rejected. ``path`` itself is never modified.
+    Only two unambiguous transforms are allowed: strip the directory prefix that
+    holds the feed's tables, and trim surrounding whitespace from a filename. The
+    prefix is found by looking for GTFS tables rather than by counting folders,
+    so a feed wrapped two directories deep resolves as readily as one wrapped in
+    a single folder (issue #333). Unsafe components, names that collide after
+    trimming, and archives where two or more directories each hold GTFS tables
+    are rejected instead of guessed at: a bundle of several agencies' feeds must
+    never be scored as if it were one agency's. A canonical root feed with
+    harmless nested extras needs no transform and conservatively stays on
+    ``raw-v1``. ``path`` itself is never modified.
     """
     # Reproduce and any future direct caller get the same zip-bomb boundary as
     # fetch_static before we stream a single member into the reader view.
