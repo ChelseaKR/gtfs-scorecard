@@ -162,6 +162,59 @@ def test_an_archive_that_describes_no_service_is_refused_not_graded(tmp_path: Pa
         score_feed_content(str(_empty_archive(tmp_path)), today=TODAY)
 
 
+def test_boxcars_own_archive_shape_is_refused(make_gtfs_zip: Callable[..., Path]) -> None:
+    """The shape a hold-back claimed was still gradeable. It is not.
+
+    ``corrections.yaml`` held boxcar's published C back from withdrawal on
+    2026-09-05 because "its calendar.txt has 89 real rows and its feed_info.txt
+    a real validity window, so freshness is a genuine measurement and
+    score_feed_content does not refuse the feed", and so "the next run would
+    publish an A". Both halves were false against the code they were written
+    beside: ``has_service_content`` (#331, 2026-09-02) already gated freshness
+    on stops and trips, not on calendars.
+
+    An empty zip could not have caught this. The refusal test above builds an
+    archive with no GTFS members at all, which fails ``has_date_tables`` and
+    ``has_service_content`` at once, so it passes either way and says nothing
+    about the case that actually reached the public site. This one is the real
+    archive's shape -- 89 calendar rows and a valid feed_info window over
+    header-only stops, routes and trips (re-fetched 2026-09-06, HTTP 200, 5,544
+    bytes) -- which is exactly the combination the hold-back reasoned about.
+    """
+    calendar = (
+        "service_id,monday,tuesday,wednesday,thursday,friday,saturday,sunday,start_date,end_date\n"
+    ) + "".join(f"svc{n},1,1,1,1,1,0,0,20240708,20270807\n" for n in range(89))
+    boxcar = {
+        "agency.txt": (
+            "agency_id,agency_name,agency_url,agency_timezone\n"
+            "boxcar,Boxcar Commuter Bus,https://example.org,America/New_York\n"
+        ),
+        "feed_info.txt": (
+            "feed_publisher_name,feed_publisher_url,feed_lang,feed_start_date,"
+            "feed_end_date,feed_version\n"
+            "Boxcar,https://example.org,en,20240708,20270807,2026-08-07\n"
+        ),
+        "calendar.txt": calendar,
+        # Header rows and no data rows, as the live archive publishes them.
+        "stops.txt": "stop_id,stop_name,wheelchair_boarding\n",
+        "routes.txt": "route_id,agency_id,route_short_name,route_type\n",
+        "trips.txt": "route_id,service_id,trip_id,trip_headsign\n",
+    }
+    path = make_gtfs_zip(boxcar)
+
+    dates = read_feed_dates(str(path))
+    # The dates really are there. That is what made the hold-back plausible.
+    assert dates.has_date_tables is True
+    assert dates.feed_end_date == dt.date(2027, 8, 7)
+    # And they are dates about nothing, which is what decides it.
+    assert dates.has_service_content is False
+    assert freshness(dates, TODAY) is None
+    assert completeness(str(path)) is None
+
+    with pytest.raises(UnreadableFeedError, match="no GTFS schedule data"):
+        score_feed_content(str(path), today=TODAY)
+
+
 def test_a_readable_feed_still_returns_its_categories(
     make_gtfs_zip: Callable[..., Path],
 ) -> None:
@@ -250,18 +303,24 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 #: cause, the period each grade was public, and what stands in its place, and
 #: enforces its own gate so a withdrawal cannot rot in either direction.
 #:
-#: The three that remain are named in ``corrections.yaml`` under
-#: ``not_yet_corrected``, with the reason each is held back. `boxcar` is the one
-#: worth reading: its published letter is a C, not an F, over an archive whose
-#: stops.txt, routes.txt and trips.txt each hold a header row and nothing else
-#: (verified live at https://boxcar-gtfs.vercel.app/api/gtfs on 2026-09-05).
-#: Its calendar.txt has 89 real rows, so freshness is a genuine measurement and
-#: ``score_feed_content`` does not refuse the feed at all: one measurable
-#: feed-content category is enough. The next successful run would therefore
-#: publish an A for a feed with no stops, no routes and no trips. That is the
-#: upward fabrication this file was written to prevent, arriving through the
-#: narrowness the refusal deliberately kept, and it needs a scoring decision
-#: rather than a listing one.
+#: `boxcar` was withdrawn on 2026-09-06 and is the one worth reading. Its
+#: published letter was a C, not an F, over an archive whose stops.txt,
+#: routes.txt and trips.txt each hold a header row and nothing else -- and a C
+#: is *higher* than the D the same feed earned on 2026-07-10 while it still had
+#: 84 stops and 94 trips. The grade went up when the feed emptied.
+#:
+#: It was held back a day longer than the other nineteen on the stated ground
+#: that ``score_feed_content`` does not refuse this feed, because its
+#: calendar.txt has 89 real rows and one measurable feed-content category is
+#: enough, so withdrawing the C would let the next run publish an A. That was
+#: not true of the code it was written against. ``FeedDates.has_service_content``
+#: (#331, merged 2026-09-02) had already made ``freshness`` return None for an
+#: archive with no stops and no trips whatever its calendars say, and the
+#: ``freshness`` docstring names this very feed as the case it was added for.
+#: The scoring decision the hold-back was waiting on had already shipped; only
+#: the withdrawal was outstanding. ``test_boxcars_own_archive_shape_is_refused``
+#: below pins that against boxcar's exact archive shape, so the next reader does
+#: not have to take either claim on trust.
 #:
 #: Three of the nineteen -- `catalina-express`, `santa-clarita-transit` and
 #: `santa-clarita-transit-812` -- were healthy feeds all along. They read as
@@ -277,7 +336,6 @@ STALE_GRADED_EMPTY_FEEDS = frozenset(
     {
         "anaheim-resort-transportation-art",
         "anaheim-resort-transportation-art-100",
-        "boxcar",
     }
 )
 

@@ -104,6 +104,35 @@ the declared public surface).
 
 ### Fixed
 
+- **`boxcar`'s published C is withdrawn; the reason it was held back was not
+  true of the code it was written beside.** The 2026-09-05 withdrawal left three
+  grades standing under `not_yet_corrected`, and `boxcar` was held back on the
+  stated ground that its 89 calendar rows make freshness a genuine measurement,
+  that `score_feed_content` therefore does not refuse the feed, and that
+  withdrawing the C would let the next run publish an A for a feed with no stops,
+  no routes and no trips. Checked on 2026-09-06 against the same commit: it does
+  refuse. `FeedDates.has_service_content` had already landed four days earlier
+  (2026-09-02) and gates freshness on stops and trips, not on calendars — the
+  `freshness` docstring names this exact feed as the case it was added for. So no
+  run could publish an A here, or anything else; the scoring decision the
+  hold-back was waiting on had already shipped, and only the withdrawal was
+  outstanding. Because the scorer refuses the archive it writes no artifact, so
+  the stale letter would have stood indefinitely — the same permanence the
+  nineteen withdrawals were about. What was published is worth naming: the same
+  feed scored D (70.0) on 2026-07-10 with 84 stops and 94 trips, and on
+  2026-08-06 its tables emptied and the grade went **up**, to C (73.0), because an
+  archive with nothing in it gives the deduction rules almost nothing to deduct
+  for. Re-fetched from the agency's own URL on 2026-09-06 to confirm the archive
+  is still header-only (HTTP 200, 5,544 bytes). `corrections.yaml` carries the
+  entry with its evidence, the current pointers and the `index.json` entry are
+  removed, and the 23 dated artifacts are kept, so a run that reads a real feed
+  here supersedes the withdrawal on its own. A regression test now pins the
+  refusal against `boxcar`'s exact archive shape — 89 calendar rows and a valid
+  `feed_info` window over header-only tables. The existing refusal test could not
+  have caught the false claim: it uses a zip with no GTFS members at all, which
+  trips `has_date_tables` and `has_service_content` together and so says nothing
+  about the combination that actually reached the public site.
+
 - **`scorecard lint` reported and never said whether it passed.**
   `docs/add-your-agency.md` sends a first-time contributor to
   `uv run scorecard lint --strict` and tells them a green result there means a
