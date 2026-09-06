@@ -202,13 +202,21 @@ feed, prints the grade and the top fixes in the job log, and fails the build if
 the feed drops below `min-grade` or expires within `min-days-to-expiry`:
 
 ```yaml
-- uses: ChelseaKR/gtfs-scorecard@v1
+- uses: ChelseaKR/gtfs-scorecard@v1.4.0
   with:
     feed-url: https://your-agency.example/google_transit.zip
     country: CA
     min-grade: C
     min-days-to-expiry: 14
 ```
+
+Pin a full release tag or a commit SHA, as above. The floating major `@v1`
+still exists for consumers who already use it, but it is not recommended here
+and these examples no longer use it: it is one mutable pointer that moves to
+the newest `v1.x.y` on release day, so it changes what your workflow runs
+without a commit or a diff on your side. `v1.4.0` is the newest published
+Action release, and [docs/ci-action.md](docs/ci-action.md#which-ref-to-pin)
+says what it does and does not yet do.
 
 `country` is the feed's assigned ISO 3166-1 alpha-2 code; it defaults to `US`
 for existing workflows. Both thresholds are optional; leave one blank to skip that check. Full input

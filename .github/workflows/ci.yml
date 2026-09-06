@@ -24,6 +24,11 @@ jobs:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           persist-credentials: false
+          # tests/test_documented_action_ref.py checks that the release tag the
+          # public `uses:` examples pin actually exists. A default checkout
+          # fetches no tags, so that assertion would skip here and the gate
+          # would quietly stop covering the case it was written for.
+          fetch-tags: true
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
           enable-cache: true
