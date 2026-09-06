@@ -319,7 +319,11 @@ def test_fetch_static_preserves_wasco_raw_bytes_and_builds_deterministic_reader_
     "members, message",
     [
         ({"A/agency.txt": "x", "B/stops.txt": "x"}, "multiple possible root"),
-        ({"A/nested/agency.txt": "x"}, "nested deeper"),
+        # Depth alone is no longer a rejection: a feed two folders deep resolves
+        # to the directory that holds its tables (issue #333, and
+        # tests/test_nested_archive.py). What is still rejected is a deep tree
+        # with no GTFS table anywhere to resolve to.
+        ({"A/nested/notes.txt": "x"}, "nested deeper"),
         ({" agency.txt": "x", "A/stops.txt": "x"}, "mixes root and nested"),
     ],
 )
