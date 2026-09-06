@@ -115,6 +115,23 @@ at deploy time. Committed as `.github/rulesets/main.json`:
   reviewable, reproducible configuration. Verification includes reading the
   live rulesets back and running the intraday refresh through its S3 score and
   liveness publish plus Pages deployment path.
+- **Correction, 2026-09-06: `tags.json` shipped with an empty
+  `bypass_actors`, and `main.json` next to it did not.** Two files, one
+  convention, and only one of them followed it. An empty list is not a
+  stricter version of the rule — it means *nobody* can move or delete a tag
+  matching `refs/tags/v*.*.*`, the repository owner included, with an admin
+  token, from the web UI. `v1.4.0` matches that pattern and points at a
+  2026-07-25 commit `main` has since left hundreds of commits behind, so a
+  mistagged release here has no remedy short of burning the version number or
+  a support ticket. The floating `v1` tag is unaffected either way: the glob
+  requires two literal dots and never matched it. `tags.json` now carries the
+  same repository-admin bypass `main.json` has, and
+  `pipeline/tests/test_ruleset_bypass.py` fails the build if either file loses
+  it or if the two disagree. **The corrected file is not the live ruleset**
+  — applying it needs
+  `gh api repos/ChelseaKR/gtfs-scorecard/rulesets/{id} -X PUT --input
+  .github/rulesets/tags.json`, which is the owner's action, exactly as the
+  required-checks note below already says of `main.json`.
 - Every future PR now needs the nine listed checks green and one approval
   before merge — including the author's own future PRs, which is the point.
 - If `infra/compute`, CodeQL, dependency-audit, zizmor, or container-scan
