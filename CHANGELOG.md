@@ -104,6 +104,30 @@ the declared public surface).
 
 ### Fixed
 
+- **Ten workflows cancelled the previous commit's CI run on every push to `main`.**
+  Each was keyed `<name>-${{ github.ref }}` with `cancel-in-progress: true`. On a pull
+  request `github.ref` is `refs/pull/N/merge`, so that cancels superseded runs of the
+  same pull request, which is the intent and the saving. On a push it is
+  `refs/heads/main` for *every* commit, so two pushes in quick succession shared one
+  group and the second cancelled the first outright. Flipping `cancel-in-progress` to
+  `false` does not fix it and is the trap worth naming: the second run then queues, and a
+  third evicts the queued one from the pending slot. Both roads end at a commit on `main`
+  whose only check-run is `cancelled`. Two commits reached `main` that way on 2026-09-06.
+
+  What makes it worse than a missing tick is that `cancelled` is *no signal at all* — not
+  a pass, not a failure — and it renders in `gh run list` beside real conclusions, so a
+  reader reconstructing whether a commit was ever tested gets a confident wrong answer in
+  either direction. A push is now grouped by its own `github.sha` and cancels nothing:
+  one commit, one verdict. Pull-request cancellation is unchanged.
+
+  Affected: `a11y`, `ci`, `codeql`, `container-scan`, `e2e`, `iac`, `links`,
+  `openssf-scorecard`, `security`, `standards-pin`. `codeql` has no `push` trigger today
+  (CICD §11e) but carried the same key and is fixed with the rest, so the defect cannot
+  come back with the trigger. Fixed-name groups — `artifacts-publish`, `pages`,
+  `rt-monitor` and the other publish serialisers — are deliberately untouched: queueing is
+  the point of those. `tests/test_workflow_concurrency.py` holds the rule, and was checked
+  by putting the defect back and watching it fail.
+
 - **`scorecard lint` reported and never said whether it passed.**
   `docs/add-your-agency.md` sends a first-time contributor to
   `uv run scorecard lint --strict` and tells them a green result there means a
