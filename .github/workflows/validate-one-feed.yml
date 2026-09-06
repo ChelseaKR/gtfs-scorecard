@@ -166,14 +166,28 @@ jobs:
           # die at 6.4 GiB peak RSS on a 15 GiB box; without /proc/pressure
           # that is invisible. Disk is included because it has never been
           # measured mid-run, only at job start.
+          #
+          # `set +e` first, and it is load-bearing. The Actions default shell is
+          # `bash -e {0}`, and the `set -uo pipefail` at the top of this script
+          # does not clear the -e the runner already applied. Under -e a bare
+          # assignment from a failing command substitution exits the shell, and
+          # `pgrep -x java` returns 1 on every tick before the JVM starts — which
+          # is every tick before `uv run` has resolved its environment. Observed
+          # live in run 34008578163: the sampler died at t=0 without printing a
+          # line, the job produced the usual bare "shutdown signal" and nothing
+          # else, and the instrumentation added to diagnose a silent failure
+          # failed silently in the same way. `probe &` runs the function in a
+          # subshell, so relaxing errexit here does not weaken the step itself.
           probe() {
+            set +e
             local out_off=0 gc_off=0 mem psi jpid jrss jvsz avail cur stamp
+            echo "[probe] sampler started (pid $BASHPID), 5s period"
             while :; do
               stamp=$(date -u +%H:%M:%S)
               mem=$(free -m | awk '/^Mem:/{printf "mem_total=%s used=%s free=%s buffcache=%s avail=%s", $2, $3, $4, $6, $7} /^Swap:/{printf " swap_used=%s", $3}')
               psi=$(awk '{printf "%s(%s,%s) ", $1, $2, $3}' /proc/pressure/memory 2>/dev/null) || psi="psi=unavailable "
               avail=$(df -m --output=avail / 2>/dev/null | tail -1 | tr -d ' ')
-              jpid=$(pgrep -x java 2>/dev/null | head -1)
+              jpid=$(pgrep -x java 2>/dev/null | head -1) || jpid=""
               if [ -n "${jpid:-}" ] && [ -r "/proc/${jpid}/status" ]; then
                 jrss=$(awk '/^VmRSS:/{print $2}' "/proc/${jpid}/status" 2>/dev/null)
                 jvsz=$(awk '/^VmSize:/{print $2}' "/proc/${jpid}/status" 2>/dev/null)
@@ -200,14 +214,21 @@ jobs:
           probe_pid=$!
           trap 'pkill -P "$probe_pid" 2>/dev/null; kill "$probe_pid" 2>/dev/null; true' EXIT
 
+          # `|| status=$?` rather than a bare call followed by `status=$?`. The
+          # runner's `bash -e` aborts the step the moment the validation exits
+          # non-zero, so the Result and GC blocks below never ran on exactly the
+          # runs worth summarising — visible in run 33264844507 (2026-08-29),
+          # which reported `Process completed with exit code 1` and no Result
+          # section at all. The old `status=$?` could therefore only ever
+          # observe 0.
+          status=0
           if command -v /usr/bin/time >/dev/null; then
             /usr/bin/time -v uv run scorecard run --agency "$AGENCY" --force-fetch --skip-rt \
-              2> >(tee "$RUNNER_TEMP/time.log" >&2)
+              2> >(tee "$RUNNER_TEMP/time.log" >&2) || status=$?
           else
             uv run scorecard run --agency "$AGENCY" --force-fetch --skip-rt \
-              2>&1 | tee "$RUNNER_TEMP/time.log"
+              2>&1 | tee "$RUNNER_TEMP/time.log" || status=$?
           fi
-          status=$?
           {
             echo "## Result"
             echo "exit status: $status"
