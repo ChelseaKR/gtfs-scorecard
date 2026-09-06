@@ -375,20 +375,34 @@ def withdrawn_now(withdrawn: Mapping[str, Correction], artifact_root: Path) -> t
 def correction_problems(record: CorrectionsRecord, artifact_root: Path) -> list[str]:
     """Everything about the corrections file that a build must not merge past.
 
-    Three directions, because any one alone would rot. An entry that names no
-    artifact directory is a withdrawal with nothing to withdraw and should be
-    removed. An entry whose withdrawn record is still published has not taken
-    effect. And a published ``latest.json`` that grades a feed with no stops and
-    no trips, with nothing said about it anywhere in this file, is the state the
-    file exists to end.
+    Three directions, because any one alone would rot. An entry whose withdrawn
+    record is still published has not taken effect. A published ``latest.json``
+    that grades a feed with no stops and no trips, with nothing said about it
+    anywhere in this file, is the state the file exists to end. And a
+    ``not_measured`` entry with no artifact directory has lost the dated
+    evidence it is a correction to.
+
+    The directory check is deliberately not asked of a ``delisted`` entry.
+    Twelve of the nineteen withdrawn records are in no registry, and their
+    directories held nothing but the four current pointers this withdrawal
+    removes -- no dated artifact was ever written for them -- so a completed
+    withdrawal takes the directory with it. Git does not carry an empty
+    directory, so those ids leave the tree entirely. Asked of them, this check
+    fires on exactly the state the file exists to produce, and it does so only
+    in a fresh checkout: an empty directory left behind locally makes it pass on
+    the machine the change was written on. A ``not_measured`` record is
+    different. It is still a listing, its dated artifacts were kept on purpose,
+    and their absence means something was deleted that should not have been.
     """
     problems: list[str] = []
     for agency_id, entry in sorted(record.withdrawn.items()):
         if not (artifact_root / agency_id).is_dir():
-            problems.append(
-                f"{CORRECTIONS_FILENAME} withdraws {agency_id}, which has no artifact "
-                "directory. Remove the entry."
-            )
+            if entry.outcome == NOT_MEASURED:
+                problems.append(
+                    f"{CORRECTIONS_FILENAME} withdraws {agency_id} as {NOT_MEASURED}, but its "
+                    "artifact directory is gone. A record that is still a listing keeps its "
+                    "dated evidence."
+                )
             continue
         current = artifact_root / agency_id / "latest.json"
         if current.is_file():

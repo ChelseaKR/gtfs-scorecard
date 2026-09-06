@@ -303,10 +303,34 @@ def test_the_corpus_check_is_actually_reading_artifacts() -> None:
     assert sum(1 for _ in artifacts.glob("*/latest.json")) > 1000
 
 
-def test_a_withdrawn_entry_with_no_artifact_directory_is_reported(tmp_path: Path) -> None:
-    """A stale entry rots the record, so the build says so."""
+def test_a_not_measured_entry_that_lost_its_evidence_is_reported(tmp_path: Path) -> None:
+    """A record that is still a listing keeps its dated artifacts.
+
+    `not_measured` says the feed cannot be read *yet*: the listing stands and a
+    later run supersedes the withdrawal. Its dated artifacts are the evidence of
+    what was published while it was wrong, and they are deliberately not deleted,
+    so their absence means something removed them that should not have.
+    """
     problems = correction_problems(parse_corrections(ONE_ENTRY), tmp_path)
-    assert problems and "no artifact directory" in problems[0]
+    assert problems and "artifact directory is gone" in problems[0]
+
+
+def test_a_delisted_entry_may_have_no_artifact_directory_left(tmp_path: Path) -> None:
+    """The completed state of the twelve, and it must not read as a stale entry.
+
+    Twelve of the nineteen withdrawn records are in no registry, and their
+    directories held nothing but the four current pointers the withdrawal
+    removes: no dated artifact was ever written for them. So a completed
+    withdrawal takes the directory with it, and git does not carry an empty
+    directory, so the id leaves the tree.
+
+    This is the shape that passed on the machine the change was written on and
+    failed in CI, because the local checkout still had the emptied directories
+    sitting on disk. `tmp_path` has no directory at all, which is what a fresh
+    clone sees.
+    """
+    delisted = ONE_ENTRY.replace("outcome: not_measured", "outcome: delisted")
+    assert correction_problems(parse_corrections(delisted), tmp_path) == []
 
 
 def test_grades_a_feed_with_nothing_in_it_is_narrow() -> None:
