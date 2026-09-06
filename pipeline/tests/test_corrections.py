@@ -259,6 +259,44 @@ def test_every_withdrawn_grade_is_actually_gone_from_the_published_corpus() -> N
     assert problems == []
 
 
+def test_the_index_does_not_still_list_a_withdrawn_grade() -> None:
+    """Deleting latest.json is only half a withdrawal; the index is the other half.
+
+    ``rebuild_index`` leaves a withdrawn id out of ``index.json`` on purpose
+    (``publish._indexable_agency_dirs``), so the committed snapshot must agree.
+    An id that stays in the index with its current pointers gone is not a
+    quieter version of a withdrawal, it is a corpus that contradicts itself:
+    ``activation.materialize_local_current_artifacts`` walks the index and reads
+    each id's ``latest.json``, so a stale entry aborts the site build with
+    "authoritative current artifact is malformed" -- the deploy and
+    accessibility workflows both run that materializer before rendering.
+    """
+    artifacts = REPO_ROOT / "data" / "artifacts"
+    indexed = set(json.loads((artifacts / "index.json").read_text())["agencies"])
+    still_listed = sorted(indexed & set(read_corrections(REPO_ROOT).withdrawn))
+    assert not still_listed, (
+        f"{len(still_listed)} withdrawn grade(s) are still in index.json: "
+        + ", ".join(still_listed)
+    )
+
+
+def test_every_indexed_agency_still_has_a_current_scorecard() -> None:
+    """The same parity, stated without reference to why an id might be missing.
+
+    Whatever removed the file -- a withdrawal, a retirement, a hand edit -- an
+    index entry with no ``latest.json`` behind it fails the materializer, and it
+    fails it in a job that runs long after the change that caused it.
+    """
+    artifacts = REPO_ROOT / "data" / "artifacts"
+    indexed = json.loads((artifacts / "index.json").read_text())["agencies"]
+    assert len(indexed) > 1000, "the index was not read; this check is not running"
+    orphaned = sorted(a for a in indexed if not (artifacts / a / "latest.json").exists())
+    assert not orphaned, (
+        f"{len(orphaned)} agency id(s) are in index.json with no latest.json beside "
+        "them: " + ", ".join(orphaned)
+    )
+
+
 def test_the_corpus_check_is_actually_reading_artifacts() -> None:
     """Guard on the two ratchets above: neither can pass by reading nothing."""
     artifacts = REPO_ROOT / "data" / "artifacts"
