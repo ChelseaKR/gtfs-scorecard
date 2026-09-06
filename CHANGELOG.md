@@ -318,6 +318,16 @@ the declared public surface).
   is not in the archive; with no service to be the end of, the sentence and the
   100.0 were both about nothing, and both are now withheld.
 
+  **The published Action still carries the old behaviour.** This fix is
+  unreleased. `v1.4.0` and the floating `v1` both point at `d800e0b4`
+  (2026-07-25), which predates the refusal, so a workflow on
+  `uses: ChelseaKR/gtfs-scorecard@v1` -- the form the README and
+  `docs/ci-action.md` recommend -- still scores a well-formed zip with no GTFS
+  files as `F (31.3/100)` and still reports `passed=true`. `main` refuses it,
+  and `pipeline/tests/test_action_v2.py` pins the composite action's outputs for
+  a refused feed as well as the scorer's own refusal. Closing the gap for
+  callers is a release, not a code change.
+
   **Not done here, and it needs an owner decision.** The 22 already-published
   scorecards still carry their old letters. The scorer can no longer refresh
   them -- each daily run now refuses and keeps the last artifact -- and it
