@@ -115,10 +115,18 @@ def _has_data_row(zf: zipfile.ZipFile, name: str) -> bool:
     """
     if name not in zf.namelist():
         return False
-    with zf.open(name) as handle:
-        if not handle.readline():  # no header means no table
+    with (
+        zf.open(name) as raw,
+        io.TextIOWrapper(
+            raw,
+            encoding="utf-8-sig",
+            errors="replace",
+            newline="",
+        ) as text,
+    ):
+        if not text.readline():  # no header means no table
             return False
-        return any(line.strip() for line in handle)
+        return any(line.strip() for line in text)
 
 
 def iter_table_rows(

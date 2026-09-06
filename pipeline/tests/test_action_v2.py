@@ -146,6 +146,80 @@ def test_result_script_writes_outputs_summary_and_annotation(tmp_path: Path) -> 
     assert "::error title=GTFS Scorecard gate::" in run.stdout
 
 
+@pytest.mark.parametrize(
+    "gate_rc",
+    [
+        pytest.param(1, id="the scorer reported the refusal"),
+        pytest.param(0, id="the refusal did not reach the exit code"),
+    ],
+)
+def test_a_refused_feed_never_reports_a_passing_gate_or_a_grade(
+    tmp_path: Path, gate_rc: int
+) -> None:
+    """The downstream shape: the scorer refused, so there is no result file.
+
+    `score_feed_content` raises for an archive that describes no service, and
+    `_cmd_try` reports it and exits 1 before `--json-out` is written
+    (tests/test_unmeasurable_feed.py). The action still runs this script, with a
+    `--json` path that does not exist, and what it prints is what a caller acts
+    on. Three things have to hold and each one was reported wrong against
+    `gtfs-scorecard@v1.4.0`:
+
+    * `passed` is false. Someone pointing the action at a broken export must not
+      be told the gate passed.
+    * `grade` and `score` are empty rather than defaulted. A blank is the only
+      honest output for a feed nobody read; a letter here would be the same
+      fabrication one layer further out.
+    * no job summary is written. The summary renders "grade —" for an empty
+      artifact, which reads as a scorecard with a missing field rather than as
+      no scorecard at all.
+
+    The script itself still exits 0: the action's own exit code is the scorer's
+    `$gate_rc`, so a crash here would replace a clean gate failure with a broken
+    step.
+
+    Run for a refusal the scorer reported and for one it did not. `passed` is
+    two conditions, `gate_rc == 0 and bool(artifact)`, and only the second case
+    exercises the second half: an absent result must be a failed gate even if
+    the exit code says otherwise, because the artifact is the evidence and the
+    exit code is only a report about it.
+    """
+    missing = tmp_path / "never-written.json"
+    output = tmp_path / "output.txt"
+    summary = tmp_path / "summary.md"
+    env = os.environ | {"GITHUB_OUTPUT": str(output), "GITHUB_STEP_SUMMARY": str(summary)}
+
+    run = subprocess.run(  # noqa: S603 - fixed interpreter and repository-owned script
+        [
+            sys.executable,
+            str(ROOT / "action/render_result.py"),
+            "--json",
+            str(missing),
+            "--gate-rc",
+            str(gate_rc),
+            "--min-grade",
+            "B",
+            "--write-summary",
+            "true",
+        ],
+        env=env,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    outputs = output.read_text()
+    assert "passed=false" in outputs
+    assert "grade=\n" in outputs, "a refused feed must not be given a letter"
+    assert "score=\n" in outputs
+    assert "days-to-expiry=\n" in outputs
+    assert not summary.exists(), "nothing was scored, so there is nothing to summarize"
+    assert "::error title=GTFS Scorecard gate::GTFS feed could not be scored" in run.stdout
+    assert "did not pass: grade" not in run.stdout, (
+        "a refusal is not a threshold failure and must not be reported as one"
+    )
+
+
 def test_cli_json_output_is_written_before_gate_result(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
