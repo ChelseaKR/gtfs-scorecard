@@ -104,6 +104,73 @@ the declared public surface).
 
 ### Fixed
 
+- **Six more places where an absence was published as a number.** The same
+  defect as the validator-report fix below, found in six other measurements the
+  site publishes. In each one a value that means "we could not measure this"
+  was written where a measured value goes, so a reader cannot tell the two
+  apart. None of them invented a new vocabulary: every fix reuses the
+  not-measured convention the project already has.
+
+  - **A realtime fetch that failed inside our own fetcher was published as the
+    agency's outage.** `rt.fetch_sample` caught every exception into
+    `ok=False`, and that flag is not neutral: it becomes an ERROR finding on the
+    agency's page, a deduction from their realtime score, and a "down" reading
+    in the uptime record `/realtime/` publishes. Our SSRF guard refusing a URL,
+    and any unexpected exception in our own code, were published under an
+    agency's name as "your feed is down". `rt.measures_the_endpoint` now decides
+    whose failure it was. A `requests` failure, `UnresolvableHostError` (which
+    `net.py` already classifies as an origin availability failure) and a body
+    that is not a parseable GTFS-Realtime protobuf remain the agency's outage.
+    Everything else marks the sample not measured; the feed kind drops out of
+    reachability and the rest renormalise, and a window with nothing measurable
+    in it publishes no realtime category and records no uptime observation. A
+    configured feed kind with no sample record at all keeps its deliberate
+    fail-closed reading.
+
+  - **A feed with no trips was failing the NTD shapes check rather than
+    unmeasurable by it.** `assess_shapes_readiness` answered `not_ready` when
+    `trips.txt` has no rows, while its own detail line beside it said the
+    coverage could not be checked. The prose was right and the status was not: a
+    stops-only feed sat in the failing bucket of `pct_ready` on every NTD rollup
+    and wore a "Not ready" badge. `NOT_CHECKED` already existed for exactly
+    this — with a rendered label, a badge class, and a deliberate absence from
+    `_RANK`, where membership is what "we measured it" means — and is now used.
+
+  - **A recommendation check that crashed read as a clean bill of health.**
+    `recommend._safe` returned `[]` for a crash, which is the value a check
+    returns when it ran and found nothing to suggest. An accessibility audit
+    that died on a malformed table published the same page as a feed with no
+    accessibility gaps at all. The sandbox stays — one broken table must not
+    cost an agency its score — but `_safe` now returns `None`, the artifact
+    carries `recommendations_not_measured` when a check could not run, and both
+    renderers say so instead of falling silent.
+
+  - **A liveness record that says nothing was counted as a healthy feed.**
+    `refresh_success_record` read `int(record.get("consecutive_failures") or 0)`,
+    so a record missing the field, or carrying null, or carrying anything that
+    is not a count, read as a zero-failure record and joined the numerator of
+    the public uptime figure on `/status/` and in `api/v1/status.json`. Only a
+    non-negative int is a streak now; the rest are reported under a new
+    `not_measured` field and leave the share's denominator, and the page names
+    the denominator it used.
+
+  - **A ridership impact with no weighted trips published a 0.0% expired
+    share.** `expired_trips_pct` returned 0.0 on a zero denominator, one line
+    above `weighted_average_score`, which returns `None` on the same
+    denominator. 0.0% reads as the best possible answer — none of these trips
+    ride on an expired feed — where the truth was that there were no trips to
+    take a share of. Both are absent together now.
+
+  - **An empty findings corpus reported 100% plain-language coverage.**
+    `plain_language_coverage` returned 100.0 for a share with no denominator and
+    called it vacuously fully covered. 100.0 is the number a fully curated
+    corpus earns, and `scorecard coverage --save` writes this figure to
+    `coverage-baseline.json` as the bar every later week is measured against, so
+    the first real reading would land as a drop from a number nobody took. Both
+    shares are `None` when there is nothing to divide by, `--save` refuses to
+    overwrite a real baseline with an unmeasured one, and the regression check
+    reports nothing when either side has no reading.
+
 - **A validator report nobody could read is no longer scored as a clean feed.**
   The upward twin of the fabricated F above, and the one that lasted longer,
   because a flattering number invites no complaint. `ValidationReport` had one
