@@ -158,16 +158,57 @@ jobs:
           rm -rf "$stage" "$outcomes"
           mkdir -p "$stage"
           echo "shard_started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_ENV"
+          # RELIABILITY: two of this loop's S3 calls carried `|| true` and two
+          # did not, and under `set -euo pipefail` the unguarded pair could
+          # abort the shard mid-loop. Observed 2026-09-05 in run 33968878878:
+          # the second of this shard's agencies hit "Connection broken:
+          # ConnectionResetError(104, 'Connection reset by peer')" on the
+          # artifact prefetch, the step exited 1, and the shard's remaining
+          # agencies were never attempted — about 65 records lost their daily
+          # refresh to one transient socket error. That is exactly what the
+          # design note below forbids: "one agency's feed being unreachable
+          # must not abort the shard".
+          #
+          # Neither call is a correctness input, so continuing past an
+          # exhausted retry degrades the run without inventing anything:
+          #
+          #   - the artifact prefetch is a cache warm-up. `_liveness_unchanged`
+          #     consults `_artifact_contract_current` first and returns False
+          #     when the prior artifact is missing, so a miss re-scores the feed
+          #     from scratch: more work, same answer, never a published number
+          #     standing in for absent data.
+          #   - the structure-fingerprint upload feeds collect's staging sync.
+          #     A file that never arrives leaves that agency's previous
+          #     fingerprint in place to be re-derived, rather than a wrong one.
+          #
+          # Retries use the same 1/2/3 backoff shape as `tag_dated_artifact`
+          # below. The AWS CLI's own retries sit underneath this; these are for
+          # the case where those are already exhausted. Both call sites tolerate
+          # exhaustion explicitly, and every exhaustion is announced.
+          s3_retry() {
+            local what="$1"
+            shift
+            local attempt
+            for attempt in 1 2 3; do
+              if "$@"; then
+                return 0
+              fi
+              sleep $((attempt * 2))
+            done
+            echo "::warning title=s3 retry exhausted::${what}"
+            return 1
+          }
           echo "$MATRIX_SHARD" | jq -r '.[]' | while read -r id; do
             echo "::group::$id"
             if [ -n "$ARTIFACTS_BUCKET" ]; then
               today=$(date -u +%Y-%m-%d)
               yesterday=$(date -u -d yesterday +%Y-%m-%d)
-              aws s3 sync "s3://${ARTIFACTS_BUCKET}/data/artifacts/${id}" \
+              s3_retry "${id}: prior artifacts could not be fetched after 3 attempts; scoring the feed from scratch" \
+                aws s3 sync "s3://${ARTIFACTS_BUCKET}/data/artifacts/${id}" \
                 "$GITHUB_WORKSPACE/data/artifacts/${id}" \
                 --exclude "*" --include "latest.json" \
                 --include "${today}.json" --include "${yesterday}.json" \
-                --only-show-errors
+                --only-show-errors || true
               aws s3 cp "s3://${ARTIFACTS_BUCKET}/cache/fixlog/${id}/fixlog.json" \
                 "$GITHUB_WORKSPACE/data/artifacts/${id}/fixlog.json" \
                 --only-show-errors || true
@@ -185,9 +226,10 @@ jobs:
               # holds the serialized publish lock.
               if [ -n "$ARTIFACTS_BUCKET" ] && \
                  [ -f "$GITHUB_WORKSPACE/data/cache/structure/${id}.json" ]; then
-                aws s3 cp "$GITHUB_WORKSPACE/data/cache/structure/${id}.json" \
+                s3_retry "${id}: structure fingerprint not staged after 3 attempts; collect keeps the previous copy" \
+                  aws s3 cp "$GITHUB_WORKSPACE/data/cache/structure/${id}.json" \
                   "s3://${ARTIFACTS_BUCKET}/cache/structure-staging/${GITHUB_RUN_ID}/${GITHUB_RUN_ATTEMPT}/${id}.json" \
-                  --only-show-errors
+                  --only-show-errors || true
               fi
               mkdir -p "$stage/$id"
               cp -a "$GITHUB_WORKSPACE/data/artifacts/$id/." "$stage/$id/"
