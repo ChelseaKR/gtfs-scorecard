@@ -89,11 +89,33 @@ cache.
 
    This is the same registry gate CI runs on your pull request, so a green
    result here means a green check there. It reads the YAML and nothing else:
-   a missing `static_gtfs_url`, an unassigned `country`, a `subdivision_code`
-   whose country prefix disagrees with `country`, or an `id` already in the
-   registry each fail with one line naming the file, your entry, and the
-   field. Run this first — it is seconds, and it catches the mistakes that are
+   a missing `static_gtfs_url`, a missing `name`, an unassigned `country`, a
+   `subdivision_code` whose country prefix disagrees with `country`, or an `id`
+   already in the registry each fail with one line naming the file, your entry,
+   and the field, like this:
+
+   ```
+   scorecard: registry/intake.yaml, agency 'my-agency': subdivision_code country prefix must match country
+   ```
+
+   Run this first — it is seconds, and it catches the mistakes that are
    actually common.
+
+   **What a passing run looks like.** It is not silence. The command also
+   prints a standing hygiene report about the *whole* registry — one
+   tab-separated row per issue, almost all `missing_mdb_id` and
+   `non_https_url` on entries other people added. Those are advisory and block
+   nothing. Your verdict is the last line, on stderr:
+
+   ```
+   Registry lint: N issue(s) across M agencies (missing_mdb_id ..., non_https_url ...).
+   Registry lint PASSED --strict. Every issue above is advisory and does not block a merge; none of them is about a single new entry.
+   ```
+
+   If your entry is the problem you will not see that line at all — the run
+   stops at the one-line message above and exits non-zero, before any of the
+   report. To see only the verdict, send the report elsewhere:
+   `uv run scorecard lint --strict > /dev/null`.
 
 4. Score your feed locally if you like (additionally needs Java 17+, and
    downloads your zip):

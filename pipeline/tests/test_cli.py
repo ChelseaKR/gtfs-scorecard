@@ -1433,6 +1433,103 @@ def test_lint_strict_rejects_each_duplicate_canonical_identity(
     assert main(["lint", "--strict"]) == 1
 
 
+def _lint_registry_file(root: Path, body: str) -> None:
+    root.mkdir(parents=True, exist_ok=True)
+    (root / "agencies.yaml").write_text("agencies:\n" + body)
+
+
+ADVISORY_ONLY = (
+    "  - id: first\n    name: First Transit\n    static_gtfs_url: http://first.example/feed.zip\n"
+)
+BLOCKING = (
+    "  - id: first\n"
+    "    name: First Transit\n"
+    "    static_gtfs_url: https://first.example/feed.zip\n"
+    "    mdb_id: same\n"
+    "  - id: second\n"
+    "    name: Second Transit\n"
+    "    static_gtfs_url: https://second.example/feed.zip\n"
+    "    mdb_id: same\n"
+)
+
+
+def test_lint_says_on_stderr_whether_strict_passed(
+    isolated_repo_root: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A report is not a verdict, and the contributor needs the verdict.
+
+    docs/add-your-agency.md sends a first-time contributor to
+    `scorecard lint --strict` and tells them a green result here means a green
+    check on their pull request. The advisory kinds stand at over a thousand
+    rows across the whole registry, so a correct new entry printed a screenful
+    of tab-separated lines about other people's agencies and then exited 0
+    without a word. The summary that would have explained it went to log.info,
+    which the CLI does not show, so the only signal was an exit status.
+    """
+    from scorecard_pipeline.cli import main
+
+    _lint_registry_file(isolated_repo_root, ADVISORY_ONLY)
+    assert main(["lint", "--strict"]) == 0
+    captured = capsys.readouterr()
+
+    assert "PASSED --strict" in captured.err
+    assert "non_https_url 1" in captured.err
+    # The report is the contract stdout carries; the verdict must not join it.
+    assert captured.out == (
+        "non_https_url\tfirst\thttp://first.example/feed.zip\nmissing_mdb_id\tfirst\t\n"
+    )
+
+
+def test_lint_names_the_kind_that_blocks_the_merge(
+    isolated_repo_root: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Failing is only useful if it says which of the kinds did it."""
+    from scorecard_pipeline.cli import main
+
+    _lint_registry_file(isolated_repo_root, BLOCKING)
+    assert main(["lint", "--strict"]) == 1
+    err = capsys.readouterr().err
+
+    assert "FAILED" in err
+    assert "duplicate_mdb_id" in err
+    assert "PASSED" not in err
+
+
+def test_lint_without_strict_says_it_is_not_the_gate(
+    isolated_repo_root: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """The same rows, a blocking kind among them, and exit 0. Say why."""
+    from scorecard_pipeline.cli import main
+
+    _lint_registry_file(isolated_repo_root, BLOCKING)
+    assert main(["lint"]) == 0
+    err = capsys.readouterr().err
+
+    assert "advisory only" in err
+    assert "--strict is what the merge gate runs" in err
+    assert "PASSED" not in err and "FAILED" not in err
+
+
+def test_lint_on_a_clean_registry_still_says_so(
+    isolated_repo_root: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """Silence and success looked identical; only one of them is a result."""
+    from scorecard_pipeline.cli import main
+
+    _lint_registry_file(
+        isolated_repo_root,
+        "  - id: first\n"
+        "    name: First Transit\n"
+        "    static_gtfs_url: https://first.example/feed.zip\n"
+        "    mdb_id: one\n",
+    )
+    assert main(["lint", "--strict"]) == 0
+    captured = capsys.readouterr()
+
+    assert "clean" in captured.err
+    assert captured.out == ""
+
+
 def test_ntd_crosswalk_applies_only_to_the_owning_manifest_shard(
     isolated_repo_root: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
