@@ -145,10 +145,12 @@ def _realtime_category(
 def _routability_block(reader_path: Path) -> dict[str, Any]:
     """Build the ungraded routability block without failing a national feed.
 
-    National aggregates can safely clear archive validation while carrying a
-    stop_times.txt too large for Scorecard's whole-table reader. Routability is
-    descriptive and zero-deduction, so report that it was not measured rather
-    than withholding the feed's graded scorecard.
+    stop_times.txt is streamed, so its size no longer decides whether this block
+    can be measured; the remaining way to get here is a trips.txt or stops.txt
+    over the whole-table reader's cap. Routability is descriptive and
+    zero-deduction, so report that it was not measured rather than withholding
+    the feed's graded scorecard, and never let an unread table reach the
+    artifact as a count of zero.
     """
     from .gtfs import TableTooLargeError
     from .routability import assess_routability

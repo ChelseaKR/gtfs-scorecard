@@ -81,29 +81,58 @@ See `docs/decisions/0003-fan-out-compute.md` for the original design.
 
 ## Streaming reader for national-scale feeds
 
-**Status: deferred; scoring is unblocked with an explicit measurement gap.** The
-gtfs.de Germany-wide aggregate and the Swiss national timetable have a
-`stop_times.txt` of 1.9 GiB and 2.4 GiB. Scorecard's whole-table reader
-(`gtfs.py`) caps a single table at 1 GiB (`MAX_MEMBER_BYTES`). Raising the cap is
-not safe: loading a 2.4 GiB table whole risks a Python out-of-memory even on a
-16 GiB runner. The daily pipeline now publishes the graded scorecard and marks
-the zero-deduction routability block unmeasured with reason `table_too_large`.
+**Status: done 2026-09-05 for the scoring path, after the deferral caused an
+outage.** Both whole-table consumers of `stop_times.txt` in the daily scoring
+path now stream it.
 
-Consumers of `stop_times.txt` in the daily scoring path: `ferry_profile`
-(already made to skip an oversized table), `routability`, and the realtime
-readers `rt_drift` and `rt` (only for feeds that publish realtime). All are
-zero-deduction and descriptive, so none changes a grade.
+The deferral rested on an assumption that turned out to be backwards. The note
+below used to say the cap kept a national feed safe by skipping its
+`stop_times.txt`. It did — right up until a feed came in *under* it. The OVapi
+Netherlands aggregate's `stop_times.txt` was 1,011,976,627 bytes, 62 MB under
+the 1 GiB cap, and 17,099,889 rows. Measured on the live archive, those rows
+cost 754 bytes each as `dict[str, str]`: about 12.9 GB on a 15.6 GiB runner.
+The `score (ovapi-netherlands)` shard was killed with "The runner has received
+a shutdown signal" for three weeks, after the validator had already succeeded
+and the JVM had already exited. A bigger feed was safer, because a bigger feed
+was skipped.
 
-The remaining improvement is:
+That is the property of a fixed byte cap, not a mistake in where it was set:
+bytes on disk do not predict bytes in memory, the multiplier moves with row
+width, and the feed oscillates across whatever line is drawn. Lowering the cap
+buys safety by measuring less, which is the wrong trade for a tool whose product
+is measurement.
 
-1. **Stream the table.** Give `gtfs.py` a row-iterating reader for the large
-   tables and move each consumer above to the aggregates it actually needs
-   (counts, per-trip first/last stop). Memory-safe and accurate. Raises the
-   tool's ceiling so it can score a national feed. The larger change.
+What each consumer actually needed from the table was a bounded aggregate, not
+the table:
 
-Until streaming ships, these aggregates are scored but do not claim the two
-router-free checks over `stop_times.txt`. Verkehrsverbund Rhein-Neckar, whose
-largest table fits the cap, continues to receive those checks.
+- `routability` needs the trips that have at least two serviced locations, the
+  stop ids some trip calls at, and the location group ids some trip calls at —
+  three sets keyed by trip and stop. On OVapi that is 855 thousand trips and 57
+  thousand stops, and it does not grow with the 17 million rows.
+- `ferry_profile` needs the stop ids the *ferry* trips call at, and returns
+  before reading a row at all when the feed has no ferry route.
+
+Both now call `iter_table_rows` with `max_member_bytes=None`. The size check is
+not lowered, it is inapplicable: there is no whole table in memory for it to
+bound. Archive-shape safety (entry count, compression ratio, per-entry and
+whole-archive size) was always enforced upstream in `fetch.py` before any reader
+opens the bytes, and still is — that, not `MAX_MEMBER_BYTES`, is the zip-bomb
+guard and the ceiling on how much there can be to stream.
+
+`MAX_MEMBER_BYTES` is unchanged and still governs every table read whole,
+including `routability`'s and `ferry_profile`'s reads of `trips.txt` and
+`stops.txt`. When one of those trips it, routability still publishes
+`measured: false` with reason `table_too_large` rather than a count of zero.
+
+Remaining, and deliberately not done here:
+
+1. **The realtime readers.** `rt._trip_time_spans` and `rt_drift._schedule_lookup`
+   still read `stop_times.txt` whole. Neither is reachable for any large feed
+   today — none of the 15 `large_feed: true` records publishes realtime — and
+   `_schedule_lookup`'s index is one entry per stop time, so streaming alone
+   would not bound it. Fix them when a large feed first publishes realtime.
+2. **`scorecard otp`.** The manual routing-QA command reads the table whole to
+   sample stop pairs. It is interactive and not on the daily path.
 
 ## Reduce `/compare/`, then tighten its Lighthouse aggregation
 
