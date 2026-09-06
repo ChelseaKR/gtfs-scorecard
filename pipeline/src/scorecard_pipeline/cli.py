@@ -4,6 +4,8 @@ operational commands the rollout roadmap (docs/roadmap.md) needs.
 scorecard run --all
 scorecard run --agency unitrans [--date 2026-06-11] [--force-fetch]
 scorecard try <gtfs-zip-url-or-path> [--country CA] [--name "Agency"]  # ad-hoc, unpublished
+scorecard try <feed> --sarif out.sarif             # notices as SARIF 2.1.0 for code scanning
+scorecard diff OLD NEW [--format markdown|json]   # what changed between two artifacts
 scorecard sync --country US --state California   # propose registry entries
 scorecard discover --expired [--apply]            # find feeds whose URL moved
 scorecard vendors [--rollup <id>]                 # expiry status by feed host
@@ -61,6 +63,7 @@ from .rt_drift import compute_drift, vehicle_plausibility
 from .s3_publish import DEFAULT_PUBLISH_WORKERS, MAX_PUBLISH_WORKERS
 from .score import build_scorecard, score_feed_content
 from .validate import (
+    ValidationReport,
     country_scoped_output_dir,
     parse_report,
     run_validator,
@@ -401,6 +404,24 @@ def run_adhoc(
 ) -> dict[str, Any]:
     """Score an arbitrary GTFS Schedule URL or local zip without publishing.
 
+    The artifact only. :func:`run_adhoc_detailed` additionally hands back the
+    parsed validator report, which carries the per-notice file and row samples
+    the artifact does not.
+    """
+    artifact, _report = run_adhoc_detailed(source, name, date, country, large_feed=large_feed)
+    return artifact
+
+
+def run_adhoc_detailed(
+    source: str,
+    name: str | None,
+    date: dt.date,
+    country: str = "US",
+    *,
+    large_feed: bool = False,
+) -> tuple[dict[str, Any], ValidationReport]:
+    """Score an arbitrary feed and return both the artifact and the raw report.
+
     For live, exploratory use: point it at a public feed or a local corrected
     copy and get the same grade, category scores, and plain-language fixes a
     tracked agency gets. Nothing is written to the public artifacts or index;
@@ -479,7 +500,12 @@ def run_adhoc(
         artifact["ferry_profile"] = ferry_profile
     from .mode_language import adapt_artifact_language
 
-    return adapt_artifact_language(artifact)
+    # The report goes back with the artifact because it is the only place the
+    # per-notice file and row samples exist: `build_artifact` aggregates each
+    # notice code to a count and drops the samples. SARIF needs them, and
+    # re-reading report.json off disk would depend on a scratch path that is an
+    # implementation detail of this function.
+    return adapt_artifact_language(artifact), report
 
 
 _SUMMARY_LABELS = {
@@ -515,9 +541,31 @@ def _print_scorecard_summary(artifact: dict[str, Any]) -> None:
     print()
 
 
+def _write_sarif(path_text: str, payload: dict[str, Any]) -> None:
+    out = Path(path_text)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+
+
+def _finding_copy(artifact: dict[str, Any]) -> dict[str, dict[str, str]]:
+    """Each finding code's plain-language wording, for the SARIF rule metadata."""
+    copy: dict[str, dict[str, str]] = {}
+    for category in artifact.get("categories", {}).values():
+        if not isinstance(category, dict):
+            continue
+        for finding in category.get("findings", []) or []:
+            code = str(finding.get("code") or "")
+            if code and code not in copy:
+                copy[code] = {
+                    "what": str(finding.get("what") or ""),
+                    "why": str(finding.get("why") or ""),
+                }
+    return copy
+
+
 def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     try:
-        artifact = run_adhoc(
+        artifact, report = run_adhoc_detailed(
             args.url,
             args.name,
             args.date,
@@ -526,6 +574,13 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         )
     except Exception as exc:
         log.error("could not score %s: %s", args.url, exc)
+        if getattr(args, "sarif", None):
+            # Not an empty successful run. A zero-result SARIF renders exactly
+            # like a clean feed, so a feed nobody could read gets an explicit
+            # unsuccessful invocation with the reason attached.
+            from .sarif import unreadable_feed_sarif
+
+            _write_sarif(args.sarif, unreadable_feed_sarif(f"{args.url}: {exc}"))
         return 1
     _print_scorecard_summary(artifact)
     if args.html:
@@ -555,6 +610,19 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n")
         print(f"  Scorecard JSON written to {out}\n")
+
+    if getattr(args, "sarif", None):
+        from .sarif import build_sarif
+
+        _write_sarif(
+            args.sarif,
+            build_sarif(
+                report,
+                findings=_finding_copy(artifact),
+                base=getattr(args, "sarif_base", "") or "",
+            ),
+        )
+        print(f"  SARIF written to {args.sarif}\n")
 
     # CI gating: a feed-deployment repo can run `scorecard try <url> --min-grade B
     # --min-days-to-expiry 30` and fail the build before publishing a bad feed.
@@ -590,6 +658,109 @@ def _try_gate(artifact: dict[str, Any], args: argparse.Namespace) -> int:
     for f in failures:
         log.error("gate failed: %s", f)
     return 1 if failures else 0
+
+
+#: Exit codes for ``scorecard diff``. Kept distinct on purpose: "the feed got
+#: worse" and "I cannot tell you whether the feed got worse" are different
+#: answers, and a CI gate that collapses them fails closed on the wrong thing.
+DIFF_EXIT_OK = 0
+DIFF_EXIT_REGRESSED = 1
+DIFF_EXIT_NOT_COMPARABLE = 2
+#: An operand could not be read at all. Distinct from NOT_COMPARABLE on purpose:
+#: "these two artifacts are different measurements" is a verdict about two
+#: artifacts, and "I never got one of them" is not a verdict at all. Reporting a
+#: fetch failure as a contract boundary would attribute a broken configuration to
+#: the feed's methodology, which is the wrong thing to tell a maintainer and the
+#: wrong thing for a CI gate to act on.
+DIFF_EXIT_UNREADABLE = 3
+
+
+class ArtifactReferenceError(ValueError):
+    """A diff operand could not be resolved to a scorecard artifact."""
+
+
+def _load_artifact_reference(reference: str) -> dict[str, Any]:
+    """Resolve one ``scorecard diff`` operand to a parsed artifact.
+
+    Three forms, in the order they are tried:
+
+    * an ``http(s)`` URL, fetched through the same SSRF and size guards every
+      other network read in this project uses;
+    * an existing local path;
+    * ``agency@YYYY-MM-DD`` or ``agency@latest``, resolved against the local
+      artifacts directory.
+
+    An unreadable operand raises. It is never resolved to an empty artifact:
+    scoring an absence as a comparable zero is exactly the failure the
+    comparability check below exists to prevent, and it must not be reintroduced
+    one directory lookup earlier.
+    """
+    if reference.startswith(("http://", "https://")):
+        from .net import safe_get
+
+        body = safe_get(reference, timeout=(10, 60))
+        try:
+            payload = json.loads(body)
+        except json.JSONDecodeError as exc:
+            raise ArtifactReferenceError(
+                f"{reference} did not return JSON: {exc}. An HTTP 200 carrying an error "
+                f"page is not an artifact."
+            ) from exc
+    else:
+        path = Path(reference)
+        if not path.exists() and "@" in reference:
+            from .config import artifacts_dir
+
+            agency_id, _, when = reference.rpartition("@")
+            name = "latest.json" if when == "latest" else f"{when}.json"
+            path = artifacts_dir() / agency_id / name
+        if not path.exists():
+            raise ArtifactReferenceError(
+                f"no artifact at {reference!r}: expected a file path, an http(s) URL, or "
+                f"agency@YYYY-MM-DD / agency@latest resolvable under the artifacts directory"
+            )
+        try:
+            payload = json.loads(path.read_text())
+        except json.JSONDecodeError as exc:
+            raise ArtifactReferenceError(f"{path} is not valid JSON: {exc}") from exc
+    if not isinstance(payload, dict) or "categories" not in payload:
+        raise ArtifactReferenceError(
+            f"{reference} is not a scorecard artifact: it carries no 'categories' object, "
+            f"so there is nothing to compare"
+        )
+    return payload
+
+
+def _cmd_diff(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Compare two scorecard artifacts, refusing across a contract boundary."""
+    from .feeddiff import compare_contract, diff_json, render_diff_markdown, render_diff_text
+
+    try:
+        prev = _load_artifact_reference(args.old)
+        curr = _load_artifact_reference(args.new)
+    except (ArtifactReferenceError, UnsafeURLError, OSError) as exc:
+        log.error("could not read an artifact to diff: %s", exc)
+        return DIFF_EXIT_UNREADABLE
+
+    if args.format == "json":
+        rendered = json.dumps(diff_json(prev, curr), indent=2, sort_keys=True) + "\n"
+    elif args.format == "markdown":
+        rendered = render_diff_markdown(prev, curr)
+    else:
+        rendered = render_diff_text(prev, curr)
+    if args.out:
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(rendered)
+    else:
+        print(rendered, end="")
+
+    check = compare_contract(prev, curr)
+    if not check.comparable:
+        return DIFF_EXIT_NOT_COMPARABLE
+    from .feeddiff import diff_artifacts
+
+    return DIFF_EXIT_REGRESSED if diff_artifacts(prev, curr).regressed else DIFF_EXIT_OK
 
 
 def _country_arg(value: str) -> str:
@@ -3393,6 +3564,35 @@ def main(argv: list[str] | None = None) -> int:
         type=int,
         help="exit non-zero if the feed expires within this many days (for CI gating)",
     )
+    adhoc.add_argument(
+        "--sarif",
+        help="write validator notices as SARIF 2.1.0 to this path, for upload-sarif",
+    )
+    adhoc.add_argument(
+        "--sarif-base",
+        default="",
+        help=(
+            "directory the feed's files sit in inside the repository being annotated "
+            "(e.g. gtfs/); leave blank when the feed is a zip or sits at the root"
+        ),
+    )
+
+    diff = sub.add_parser(
+        "diff",
+        help="compare two scorecard artifacts, refusing across a measurement-contract boundary",
+    )
+    diff.add_argument(
+        "old",
+        help="older artifact: a file path, an http(s) URL, or agency@YYYY-MM-DD / agency@latest",
+    )
+    diff.add_argument("new", help="newer artifact, in any of the same three forms")
+    diff.add_argument(
+        "--format",
+        choices=["text", "markdown", "json"],
+        default="text",
+        help="output format (default: text)",
+    )
+    diff.add_argument("--out", help="write the rendered diff to this path instead of stdout")
 
     onboard = sub.add_parser(
         "onboard", help="parse a feed URL and name from a score-a-feed issue body"
@@ -4073,10 +4273,11 @@ def main(argv: list[str] | None = None) -> int:
 def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     """Load the registry (except for the registry-free commands) and run the subcommand.
 
-    `try` scores one supplied URL and `otp-build-check` reads one log file;
-    neither looks an agency up, so neither pays for the registry.
+    `try` scores one supplied URL, `otp-build-check` reads one log file, and
+    `diff` reads two artifacts it was handed; none looks an agency up, so none
+    pays for the registry.
     """
-    if args.command not in {"try", "otp-build-check"}:
+    if args.command not in {"try", "otp-build-check", "diff"}:
         load_agencies()
         agency_id = getattr(args, "agency", None)
         if agency_id and agency_id not in AGENCIES:
@@ -4085,6 +4286,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     handlers = {
         "run": _cmd_run,
         "try": _cmd_try,
+        "diff": _cmd_diff,
         "sync": _cmd_sync,
         "discover": _cmd_discover,
         "supersessions": _cmd_supersessions,

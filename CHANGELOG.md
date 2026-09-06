@@ -83,6 +83,50 @@ the declared public surface).
   largest-country ceiling, which that gate continues to report honestly as
   unmet.
 
+- **`scorecard diff`, and an Action baseline that fails closed
+  (2026-09-06).** `scorecard diff OLD NEW` compares any two scorecard
+  artifacts — file paths, `https` URLs, or `agency@YYYY-MM-DD` /
+  `agency@latest` — and decides whether the pair is the same measurement
+  before it reports anything. Two artifacts that disagree on rubric version,
+  scoring profile, validator version, reader archive profile, or measured
+  category set are different measurements, so the difference between them is
+  not a statement about the feed: the command says `NOT COMPARABLE`, names
+  the field, and its JSON carries no `overall` and no `findings` object at
+  all, because an empty findings object reads as "nothing changed". A field an
+  artifact does not state is not read as agreement. Exit codes are `0` no
+  regression, `1` regressed, `2` not comparable, and `3` an operand could not
+  be read — `3` kept apart because "I never got one of them" is not a verdict
+  about two artifacts, and a gate that files a broken input under the feed's
+  methodology is reporting a fabricated cause. The Marketplace Action gains
+  `baseline` and `fail-on-regression` inputs plus `comparable` and
+  `regressed` outputs; an unreadable baseline fails the build whatever
+  `fail-on-regression` says, and a non-comparable pair fails a regression gate
+  rather than passing it. Alongside it, `feeddiff.diff_artifacts` no longer
+  reports a finding as *cleared* when the category it lived in simply stopped
+  being measured; those are listed as not measured, because nobody looked at
+  them, which is not the same as their being fixed. Closes #361.
+
+- **SARIF output, and a refused feed that does not look clean in it
+  (2026-09-06).** `scorecard try --sarif out.sarif` writes the validator's
+  notices as SARIF 2.1.0, and the Action gains `sarif` and `sarif-base` inputs
+  plus a `sarif` output, so a maintainer who keeps GTFS in git sees each notice
+  as a code-scanning alert annotated on the line in `stops.txt` or `trips.txt`.
+  Rule metadata carries the plain-language `what`/`why` the scorecard page shows
+  and the `helpUri` from `rule_links.py`, so the Security tab says the same
+  thing the site says rather than repeating a rule id. Three deliberate
+  properties: one result per notice **code**, carrying the true instance total
+  and saying how many of them it could locate, because the validator samples its
+  examples and emitting one result per sampled row would publish "5 problems"
+  about a code with 23 instances; fingerprints built from the code, file, field
+  and first row but **not** the count, so a partly-fixed finding stays the same
+  alert instead of resurfacing as a new one; and a feed that could not be read
+  writes an `executionSuccessful: false` invocation with the reason attached
+  rather than an empty successful run — SARIF has no shape for "I did not run",
+  and an empty `results` array renders exactly like a feed with nothing wrong.
+  `cli.run_adhoc_detailed` was split out to carry the parsed validator report
+  alongside the artifact: the per-notice file and row samples exist only there,
+  because `build_artifact` aggregates each code to a count. Closes #368.
+
 ### Changed
 
 - **The money page no longer links to a page that does not exist

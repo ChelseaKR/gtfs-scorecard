@@ -724,12 +724,56 @@ uvx --from gtfs-scorecard scorecard try "$FEED_URL" --country CA \
   --min-grade B --min-days-to-expiry 30
 ```
 
+Add `--sarif out.sarif` to also write the validator's notices as SARIF 2.1.0,
+one result per notice code, with the file and row for as many instances as the
+validator sampled and the true instance total in the message. A feed that could
+not be read writes a SARIF with an unsuccessful invocation and the reason, never
+an empty successful one — an empty SARIF is indistinguishable from a clean feed.
+`--sarif-base` prefixes the member path when the feed lives in a subdirectory of
+the repository being annotated.
+
 `--country` accepts an assigned ISO 3166-1 alpha-2 code and defaults to `US` so
 existing commands retain their behavior. It is passed to the MobilityData
 validator and written into the ad-hoc artifact. The command prints the grade,
 category bars, and top fixes, and exits non-zero
 when a threshold is not met. `--min-grade` and `--min-days-to-expiry` are
 optional; with neither, it just reports.
+
+## Compare two artifacts (`scorecard diff`)
+
+Two dated artifacts can be compared directly, and the comparison decides
+whether the pair is the same measurement before it reports anything:
+
+```bash
+uvx --from gtfs-scorecard scorecard diff \
+  https://gtfsscorecard.org/data/artifacts/yolobus/2026-06-01.json \
+  https://gtfsscorecard.org/data/artifacts/yolobus/latest.json \
+  --format json
+```
+
+Each operand is a file path, an `https` URL, or `agency@YYYY-MM-DD` /
+`agency@latest` resolved against a local artifacts directory.
+
+A pair is comparable only when both artifacts agree on **all** of
+`rubric_version`, `scoring_profile.id`, the scoring profile's own
+`rubric_version`, `validator_version`, the reader archive profile, and the set
+of categories whose `status` is `measured`. This is the same producer contract
+`changes/latest.json` and the site's "What changed" section use, and it is
+stated in prose in `docs/comparison-policy.md`. A field an artifact does not
+state is **not** treated as agreement: absent is not equal, and reading it as
+equal is how a methodology change gets published as a change in a feed.
+
+Exit codes: `0` no regression, `1` regressed, `2` not comparable, `3` an operand
+could not be read. `3` is deliberately separate from `2`, because "these are
+different measurements" is a verdict about two artifacts and "I never got one of
+them" is not a verdict at all.
+
+The JSON payload always carries `comparable`, `reasons`, `explanations`, `prev`,
+and `curr`. When `comparable` is `false` it carries **no** `overall` and **no**
+`findings` object — an empty findings object would read as "nothing changed",
+which is the one thing that must not be said across a contract boundary. It
+carries `no_longer_measured` instead, listing findings whose category the newer
+run did not measure. Those did not clear; nobody looked at them.
 
 ## HTTP contract
 

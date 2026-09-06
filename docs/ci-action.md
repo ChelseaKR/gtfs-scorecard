@@ -52,6 +52,10 @@ tag (`@v1.5.0`) or a commit SHA when you want an exact, unchanging contract.
 | `html` | no | _(skip)_ | Path to also write a standalone HTML scorecard, relative to the workspace. |
 | `json` | no | runner temporary file | Path for the complete machine-readable scorecard artifact. |
 | `summary` | no | `true` | Write a plain-language scorecard to the GitHub job summary. |
+| `baseline` | no | _(skip)_ | A prior scorecard artifact to compare this run against: a file path, an `https` URL, or `agency@YYYY-MM-DD` / `agency@latest`. |
+| `fail-on-regression` | no | `false` | Fail the build when the comparison shows a regression, or cannot be made because the two runs are different measurements. |
+| `sarif` | no | _(skip)_ | Path to also write validator notices as SARIF 2.1.0, relative to the workspace. |
+| `sarif-base` | no | _(root)_ | Directory the feed's files sit in inside the repository being annotated, for example `gtfs/`. |
 | `ref` | no | _(ignored)_ | Deprecated compatibility input. The scorer is bundled with the Action release and always matches the selected Action ref. |
 
 Leave a threshold blank to skip it. With neither `min-grade` nor
@@ -67,9 +71,11 @@ reported `passed=true` for it.
 
 ## Outputs and job summary
 
-The action exposes `grade`, `score`, `days-to-expiry`, `passed`, and
-`result-json`. The complete JSON is written before thresholds are applied, so
-later steps can upload or inspect it even when the gate fails.
+The action exposes `grade`, `score`, `days-to-expiry`, `passed`,
+`result-json`, `comparable`, `regressed`, and `sarif`. The complete JSON is
+written before thresholds are applied, so later steps can upload or inspect it
+even when the gate fails. `comparable` and `regressed` are blank unless you set
+`baseline`; `sarif` is blank unless you set `sarif`.
 
 ```yaml
       - id: gtfs
@@ -89,6 +95,88 @@ later steps can upload or inspect it even when the gate fails.
 By default the job summary includes the grade, service days remaining, and the
 top three fixes. Set `summary: "false"` to suppress it. A failed gate also emits
 a concise workflow annotation while preserving the full result file.
+
+## Comparing against a baseline
+
+Set `baseline` to compare this run with a previous scorecard, so a pull request
+cannot quietly regress a published feed:
+
+```yaml
+      - uses: ChelseaKR/gtfs-scorecard@v1
+        with:
+          feed-url: https://example.org/gtfs/feed.zip
+          baseline: example-transit@latest
+          fail-on-regression: true
+```
+
+The comparison runs `scorecard diff`, which decides whether the two runs are the
+same measurement **before** it reports anything. Two artifacts scored under
+different rubric versions, scoring profiles, validator versions, reader archive
+profiles, or measured categories are different measurements, and the difference
+between them is not a statement about the feed. The job summary names which of
+those differs.
+
+What each result does to the build:
+
+| Result | `comparable` | `regressed` | Build |
+|---|---|---|---|
+| No regression | `true` | `false` | Passes. |
+| Regressed: grade dropped, or a finding appeared or grew | `true` | `true` | Fails when `fail-on-regression` is `true`. |
+| Not comparable: the two runs are different measurements | `false` | _(blank)_ | Fails when `fail-on-regression` is `true`. |
+| The baseline could not be read at all | _(blank)_ | _(blank)_ | **Always fails.** |
+
+The last two rows are the point. "I cannot tell you whether this regressed" is
+not a pass, so a regression gate fails closed on it. And a `baseline` the action
+could not read is a broken input rather than a fact about the feed, so it fails
+whatever `fail-on-regression` is set to: a gate that shrugs at its own missing
+baseline is a gate that cannot fail.
+
+When a run stops measuring a category — realtime, say, because the endpoint
+stopped answering — the findings in that category disappear from the artifact.
+They are listed as **not measured in the newer artifact**, never as cleared.
+Nobody looked at them, which is not the same as their being fixed.
+## Findings in the Security tab (SARIF)
+
+Set `sarif` and upload the file to see each validator notice as a code-scanning
+alert, annotated on the line in `stops.txt` or `trips.txt` when the feed's text
+files are committed:
+
+```yaml
+    permissions:
+      contents: read
+      security-events: write     # upload-sarif only
+    steps:
+      - uses: actions/checkout@v5
+      - uses: ChelseaKR/gtfs-scorecard@v1
+        with:
+          feed-url: https://example.org/gtfs/feed.zip
+          sarif: gtfs.sarif
+          sarif-base: gtfs/       # where the feed's .txt files live in this repo
+      - if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: gtfs.sarif
+```
+
+`sarif-base` maps a validator notice's `stops.txt` onto `gtfs/stops.txt` in your
+checkout. Leave it blank when the feed is only a zip; results then attach at the
+file level and the alert still carries the rule link and the fix.
+
+Three things about the file are worth knowing:
+
+- **One result per notice code, not per row.** The gtfs-validator samples its
+  examples, so a code with 23 instances comes back with a handful of rows. The
+  result carries the true total in its message and says how many of them it
+  could point at. Emitting one result per sampled row would publish "5 problems"
+  about a feed with 23.
+- **Fingerprints are stable across runs and do not move with the count.** Two
+  runs of the same feed dedupe rather than doubling, and a finding you have
+  partly fixed stays the same alert instead of resurfacing as a new one.
+- **A feed that could not be read is not a clean feed.** SARIF has no way to say
+  "I did not run", and an empty `results` array looks exactly like a feed with
+  nothing wrong. So a refused feed writes a SARIF whose invocation is
+  `executionSuccessful: false` with the reason attached. Keep the `if: always()`
+  on the upload step so that file actually reaches the Security tab.
 
 ## Saving the HTML report
 
