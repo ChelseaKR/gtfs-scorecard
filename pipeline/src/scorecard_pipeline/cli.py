@@ -4,6 +4,7 @@ operational commands the rollout roadmap (docs/roadmap.md) needs.
 scorecard run --all
 scorecard run --agency unitrans [--date 2026-06-11] [--force-fetch]
 scorecard try <gtfs-zip-url-or-path> [--country CA] [--name "Agency"]  # ad-hoc, unpublished
+scorecard try <feed> --sarif out.sarif             # notices as SARIF 2.1.0 for code scanning
 scorecard diff OLD NEW [--format markdown|json]   # what changed between two artifacts
 scorecard sync --country US --state California   # propose registry entries
 scorecard discover --expired [--apply]            # find feeds whose URL moved
@@ -62,6 +63,7 @@ from .rt_drift import compute_drift, vehicle_plausibility
 from .s3_publish import DEFAULT_PUBLISH_WORKERS, MAX_PUBLISH_WORKERS
 from .score import build_scorecard, score_feed_content
 from .validate import (
+    ValidationReport,
     country_scoped_output_dir,
     parse_report,
     run_validator,
@@ -402,6 +404,24 @@ def run_adhoc(
 ) -> dict[str, Any]:
     """Score an arbitrary GTFS Schedule URL or local zip without publishing.
 
+    The artifact only. :func:`run_adhoc_detailed` additionally hands back the
+    parsed validator report, which carries the per-notice file and row samples
+    the artifact does not.
+    """
+    artifact, _report = run_adhoc_detailed(source, name, date, country, large_feed=large_feed)
+    return artifact
+
+
+def run_adhoc_detailed(
+    source: str,
+    name: str | None,
+    date: dt.date,
+    country: str = "US",
+    *,
+    large_feed: bool = False,
+) -> tuple[dict[str, Any], ValidationReport]:
+    """Score an arbitrary feed and return both the artifact and the raw report.
+
     For live, exploratory use: point it at a public feed or a local corrected
     copy and get the same grade, category scores, and plain-language fixes a
     tracked agency gets. Nothing is written to the public artifacts or index;
@@ -480,7 +500,12 @@ def run_adhoc(
         artifact["ferry_profile"] = ferry_profile
     from .mode_language import adapt_artifact_language
 
-    return adapt_artifact_language(artifact)
+    # The report goes back with the artifact because it is the only place the
+    # per-notice file and row samples exist: `build_artifact` aggregates each
+    # notice code to a count and drops the samples. SARIF needs them, and
+    # re-reading report.json off disk would depend on a scratch path that is an
+    # implementation detail of this function.
+    return adapt_artifact_language(artifact), report
 
 
 _SUMMARY_LABELS = {
@@ -516,9 +541,31 @@ def _print_scorecard_summary(artifact: dict[str, Any]) -> None:
     print()
 
 
+def _write_sarif(path_text: str, payload: dict[str, Any]) -> None:
+    out = Path(path_text)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
+
+
+def _finding_copy(artifact: dict[str, Any]) -> dict[str, dict[str, str]]:
+    """Each finding code's plain-language wording, for the SARIF rule metadata."""
+    copy: dict[str, dict[str, str]] = {}
+    for category in artifact.get("categories", {}).values():
+        if not isinstance(category, dict):
+            continue
+        for finding in category.get("findings", []) or []:
+            code = str(finding.get("code") or "")
+            if code and code not in copy:
+                copy[code] = {
+                    "what": str(finding.get("what") or ""),
+                    "why": str(finding.get("why") or ""),
+                }
+    return copy
+
+
 def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     try:
-        artifact = run_adhoc(
+        artifact, report = run_adhoc_detailed(
             args.url,
             args.name,
             args.date,
@@ -527,6 +574,13 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         )
     except Exception as exc:
         log.error("could not score %s: %s", args.url, exc)
+        if getattr(args, "sarif", None):
+            # Not an empty successful run. A zero-result SARIF renders exactly
+            # like a clean feed, so a feed nobody could read gets an explicit
+            # unsuccessful invocation with the reason attached.
+            from .sarif import unreadable_feed_sarif
+
+            _write_sarif(args.sarif, unreadable_feed_sarif(f"{args.url}: {exc}"))
         return 1
     _print_scorecard_summary(artifact)
     if args.html:
@@ -556,6 +610,19 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n")
         print(f"  Scorecard JSON written to {out}\n")
+
+    if getattr(args, "sarif", None):
+        from .sarif import build_sarif
+
+        _write_sarif(
+            args.sarif,
+            build_sarif(
+                report,
+                findings=_finding_copy(artifact),
+                base=getattr(args, "sarif_base", "") or "",
+            ),
+        )
+        print(f"  SARIF written to {args.sarif}\n")
 
     # CI gating: a feed-deployment repo can run `scorecard try <url> --min-grade B
     # --min-days-to-expiry 30` and fail the build before publishing a bad feed.
@@ -3496,6 +3563,18 @@ def main(argv: list[str] | None = None) -> int:
         "--min-days-to-expiry",
         type=int,
         help="exit non-zero if the feed expires within this many days (for CI gating)",
+    )
+    adhoc.add_argument(
+        "--sarif",
+        help="write validator notices as SARIF 2.1.0 to this path, for upload-sarif",
+    )
+    adhoc.add_argument(
+        "--sarif-base",
+        default="",
+        help=(
+            "directory the feed's files sit in inside the repository being annotated "
+            "(e.g. gtfs/); leave blank when the feed is a zip or sits at the root"
+        ),
     )
 
     diff = sub.add_parser(
