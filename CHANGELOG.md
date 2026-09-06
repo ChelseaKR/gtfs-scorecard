@@ -83,6 +83,29 @@ the declared public surface).
   largest-country ceiling, which that gate continues to report honestly as
   unmet.
 
+- **`scorecard diff`, and an Action baseline that fails closed
+  (2026-09-06).** `scorecard diff OLD NEW` compares any two scorecard
+  artifacts — file paths, `https` URLs, or `agency@YYYY-MM-DD` /
+  `agency@latest` — and decides whether the pair is the same measurement
+  before it reports anything. Two artifacts that disagree on rubric version,
+  scoring profile, validator version, reader archive profile, or measured
+  category set are different measurements, so the difference between them is
+  not a statement about the feed: the command says `NOT COMPARABLE`, names
+  the field, and its JSON carries no `overall` and no `findings` object at
+  all, because an empty findings object reads as "nothing changed". A field an
+  artifact does not state is not read as agreement. Exit codes are `0` no
+  regression, `1` regressed, `2` not comparable, and `3` an operand could not
+  be read — `3` kept apart because "I never got one of them" is not a verdict
+  about two artifacts, and a gate that files a broken input under the feed's
+  methodology is reporting a fabricated cause. The Marketplace Action gains
+  `baseline` and `fail-on-regression` inputs plus `comparable` and
+  `regressed` outputs; an unreadable baseline fails the build whatever
+  `fail-on-regression` says, and a non-comparable pair fails a regression gate
+  rather than passing it. Alongside it, `feeddiff.diff_artifacts` no longer
+  reports a finding as *cleared* when the category it lived in simply stopped
+  being measured; those are listed as not measured, because nobody looked at
+  them, which is not the same as their being fixed. Closes #361.
+
 ### Changed
 
 - **The money page no longer links to a page that does not exist
