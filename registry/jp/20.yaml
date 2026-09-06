@@ -548,3 +548,518 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: matsumoto-station-bus
+    name: Matsumoto Station and Bus Terminal Services (松本市 松本駅・バスターミナル発着バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/matsumotocity/feeds/guruttomatsumotobus1/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 松本市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 松本市.
+    operating_note: >-
+      The services Matsumoto City publishes for routes starting or ending at
+      Matsumoto Station and its bus terminal.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/matsumotocity.guruttomatsumotobus1
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        松本市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: matsumoto-regional-bus
+    name: Matsumoto Regional Link Bus (松本市 地域連携バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/matsumotocity/feeds/guruttomatsumotobus2/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 松本市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 松本市.
+    operating_note: >-
+      Matsumoto City's regional link buses, published as a second archive
+      alongside the station services.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/matsumotocity.guruttomatsumotobus2
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        松本市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: minamishinshu-achi
+    name: Minamishinshu Achi Village Circulators (南信州広域連合 阿智村巡回バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamishinshu/feeds/Minamishinshu-achi-1/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 南信州地域交通問題協議会（南信州広域連合）
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      南信州地域交通問題協議会（南信州広域連合）.
+    operating_note: >-
+      Achi Village's circulator routes, published by the Minamishinshu
+      regional council, which posts one archive per member municipality.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamishinshu.Minamishinshu-achi-1
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        南信州地域交通問題協議会（南信州広域連合）. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: minamishinshu-iida-pucchi
+    name: Minamishinshu Iida Electric Minibus Pucchi (南信州広域連合 電気小型バス「プッチー」)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamishinshu/feeds/Minamishinshu-iida-2/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 南信州地域交通問題協議会（南信州広域連合）
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      南信州地域交通問題協議会（南信州広域連合）.
+    operating_note: >-
+      The Pucchi electric minibus in central Iida, published by the
+      Minamishinshu regional council.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamishinshu.Minamishinshu-iida-2
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        南信州地域交通問題協議会（南信州広域連合）. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: minamishinshu-iida-city
+    name: Minamishinshu Iida City Citizen Buses (南信州広域連合 飯田市市民バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamishinshu/feeds/Minamishinshu-Iidacity-1/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 南信州地域交通問題協議会（南信州広域連合）
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      南信州地域交通問題協議会（南信州広域連合）.
+    operating_note: >-
+      Iida City's citizen bus routes, published by the Minamishinshu
+      regional council.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamishinshu.Minamishinshu-Iidacity-1
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        南信州地域交通問題協議会（南信州広域連合）. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: minamishinshu-matsukawa
+    name: Minamishinshu Matsukawa Fruit Bus (南信州広域連合 まつかわフルーツバス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamishinshu/feeds/Minamishinshu-Matsukawa-1/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 南信州地域交通問題協議会（南信州広域連合）
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      南信州地域交通問題協議会（南信州広域連合）.
+    operating_note: >-
+      Matsukawa Town's Fruit Bus routes, published by the Minamishinshu
+      regional council.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamishinshu.Minamishinshu-Matsukawa-1
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        南信州地域交通問題協議会（南信州広域連合）. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: minamishinshu-nanbu
+    name: Minamishinshu Nanbu Public Bus (南信州広域連合 南部公共バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamishinshu/feeds/Minamishinshu-Nanbu-1/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 南信州地域交通問題協議会（南信州広域連合）
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      南信州地域交通問題協議会（南信州広域連合）.
+    operating_note: >-
+      The Nanbu public bus on the Anan and Onda lines, published by the
+      Minamishinshu regional council.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamishinshu.Minamishinshu-Nanbu-1
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        南信州地域交通問題協議会（南信州広域連合）. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: minamishinshu-oshika
+    name: Minamishinshu Oshika Village Line (南信州広域連合 大鹿線)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamishinshu/feeds/Minamishinshu-Ooshika-1/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 南信州地域交通問題協議会（南信州広域連合）
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      南信州地域交通問題協議会（南信州広域連合）.
+    operating_note: >-
+      The Oshika village line, published by the Minamishinshu regional
+      council.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamishinshu.Minamishinshu-Ooshika-1
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        南信州地域交通問題協議会（南信州広域連合）. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: minamishinshu-seibu
+    name: Minamishinshu Western Community Bus (南信州広域連合 西部コミュニティバス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamishinshu/feeds/Minamishinshu-seibu-1/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 南信州地域交通問題協議会（南信州広域連合）
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      南信州地域交通問題協議会（南信州広域連合）.
+    operating_note: >-
+      The western community bus serving Achi, Neba, and Hiraya villages,
+      published by the Minamishinshu regional council.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamishinshu.Minamishinshu-seibu-1
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        南信州地域交通問題協議会（南信州広域連合）. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: minamishinshu-shinnan-kotsu
+    name: Minamishinshu Shinnan Kotsu Routes (南信州広域連合 信南交通 駒場・阿島・遠山郷線)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamishinshu/feeds/Minamishinshu-Shinnan-1/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 南信州地域交通問題協議会（南信州広域連合）
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      南信州地域交通問題協議会（南信州広域連合）.
+    operating_note: >-
+      Shinnan Kotsu's Komaba, Ajima, and Toyamago routes, published by the
+      Minamishinshu regional council.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamishinshu.Minamishinshu-Shinnan-1
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        南信州地域交通問題協議会（南信州広域連合）. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: minamishinshu-takagi
+    name: Minamishinshu Takagi Village Community Bus (南信州広域連合 喬木村コミュニティバス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamishinshu/feeds/Minamishinshu-takagi-1/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 南信州地域交通問題協議会（南信州広域連合）
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      南信州地域交通問題協議会（南信州広域連合）.
+    operating_note: >-
+      Takagi Village's community bus routes, published by the Minamishinshu
+      regional council.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamishinshu.Minamishinshu-takagi-1
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        南信州地域交通問題協議会（南信州広域連合）. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: minamishinshu-takamori
+    name: Minamishinshu Takamori Town Buses (南信州広域連合 高森町 柿丸あったかバス・おはようバス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamishinshu/feeds/Minamishinshu-takamori-1/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 南信州地域交通問題協議会（南信州広域連合）
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      南信州地域交通問題協議会（南信州広域連合）.
+    operating_note: >-
+      Takamori Town's Attaka and Ohayo buses, published by the Minamishinshu
+      regional council.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamishinshu.Minamishinshu-takamori-1
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        南信州地域交通問題協議会（南信州広域連合）. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: minamishinshu-toyooka
+    name: Minamishinshu Toyooka Village Bus (南信州広域連合 豊丘村村営バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/minamishinshu/feeds/Minamishinshu-toyooka-1/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 南信州地域交通問題協議会（南信州広域連合）
+      through the GTFS Data Repository (gtfs-data.jp). Credit
+      南信州地域交通問題協議会（南信州広域連合）.
+    operating_note: >-
+      Toyooka Village's municipal bus routes, published by the Minamishinshu
+      regional council.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/minamishinshu.Minamishinshu-toyooka-1
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        南信州地域交通問題協議会（南信州広域連合）. Published as GTFS-JP open data through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nagaden-bus-nagano
+    name: Nagaden Bus, Nagano depot area (長電バス長野営業所管内)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    feed_variant: Nagano depot area
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nagadenbus/feeds/nagadenbus-nagano/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nagaden Bus through the
+      GTFS Data Repository (gtfs-data.jp). Credit Nagaden Bus.
+    operating_note: >-
+      The Nagano depot network of Nagaden Bus. The operator publishes its
+      route network as separate depot-area archives; this record covers the
+      Nagano area.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nagadenbus.nagadenbus-nagano
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nagaden Bus. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nagaden-bus-iizuna
+    name: Nagaden Bus, Iizuna depot area (長電バス飯綱営業所管内)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    feed_variant: Iizuna depot area
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nagadenbus/feeds/nagadenbus-iizuna/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nagaden Bus through the
+      GTFS Data Repository (gtfs-data.jp). Credit Nagaden Bus.
+    operating_note: >-
+      The Iizuna depot network of Nagaden Bus, covering the northern Nagano
+      hills.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nagadenbus.nagadenbus-iizuna
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nagaden Bus. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nagaden-bus-nakano
+    name: Nagaden Bus, Nakano lines (長電バス中野３路線)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    feed_variant: Nakano lines
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nagadenbus/feeds/nagadenbus-nakano/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nagaden Bus through the
+      GTFS Data Repository (gtfs-data.jp). Credit Nagaden Bus.
+    operating_note: >-
+      Nagaden Bus services around Nakano, published by the operator as its
+      own archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nagadenbus.nagadenbus-nakano
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nagaden Bus. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nagaden-bus-express
+    name: Nagaden Bus express services (長電バス急行)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    feed_variant: express services
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nagadenbus/feeds/nagadenbus-exp/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nagaden Bus through the
+      GTFS Data Repository (gtfs-data.jp). Credit Nagaden Bus.
+    operating_note: >-
+      Nagaden Bus limited-stop express services, published by the operator
+      as its own archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nagadenbus.nagadenbus-exp
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nagaden Bus. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: obuse-roman-go
+    name: Obuse Roman-go (おぶせロマン号)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nagadenbus/feeds/obuse-romango/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Nagaden Bus through the
+      GTFS Data Repository (gtfs-data.jp). Credit Nagaden Bus.
+    operating_note: >-
+      The Obuse town circulator operated by Nagaden Bus; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nagadenbus.obuse-romango
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nagaden Bus. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: omachi-city-bus
+    name: Omachi City Bus (大町市民バス)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/omachicity/feeds/omachisiminbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Omachi City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Omachi City.
+    operating_note: >-
+      Omachi City's municipal bus network in the northern Japanese Alps.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/omachicity.omachisiminbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Omachi City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: omachi-raicho-liner
+    name: Omachi Raicho Liner (特急バス「雷鳥ライナー」)
+    country: JP
+    subdivision_code: JP-20
+    subdivision_name: Nagano
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/omachicity/feeds/omachiraicholiner/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Omachi City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Omachi City.
+    operating_note: >-
+      Omachi City's limited-express link toward Nagano, published as its own
+      archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/omachicity.omachiraicholiner
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Omachi City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

@@ -439,7 +439,7 @@ agencies:
       reviewed_on: '2026-08-30'
       identity_reviewed: true
   - id: fr-pan-81907
-    name: Réseau urbain TEDbus
+    name: TEDbus (Dracénie Provence Verdon)
     country: FR
     subdivision_code: FR-PAC
     subdivision_name: Provence-Alpes-Côte-d’Azur
@@ -448,23 +448,24 @@ agencies:
     rt_urls:
       trip_updates: https://www.data.gouv.fr/api/1/datasets/r/f32c61d5-30b7-4e06-a05e-a2fc934ba7d9
       vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/f32c61d5-30b7-4e06-a05e-a2fc934ba7d9
-      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/f32c61d5-30b7-4e06-a05e-a2fc934ba7d9
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to Dracénie Provence Verdon Agglomération and the update
-      date.
+    rt_note: >-
+      One combined stream carries both trip updates and vehicle positions.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Dracénie Provence Verdon Agglomération and the update date.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/reseau-tedbus-lignes-regulieres-dracenie-provence-verdon-agglomeration
-      terms_url: https://transport.data.gouv.fr/datasets/reseau-tedbus-lignes-regulieres-dracenie-provence-verdon-agglomeration
-      scope:
-      - gtfs_schedule
-      attribution: Dracénie Provence Verdon Agglomération
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Dracénie Provence Verdon Agglomération.
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-08-30'
+      reviewed_on: "2026-09-01"
       identity_reviewed: true
   - id: fr-pan-82294
-    name: Réseau urbain Le Bus (Estérel Côte d'Azur)
+    name: Le Bus (Estérel Côte d'Azur)
     country: FR
     subdivision_code: FR-PAC
     subdivision_name: Provence-Alpes-Côte-d’Azur
@@ -473,19 +474,25 @@ agencies:
     rt_urls:
       trip_updates: https://www.data.gouv.fr/api/1/datasets/r/24e2ecf9-82a3-4bfc-bf86-db6ec81c480f
       vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/24e2ecf9-82a3-4bfc-bf86-db6ec81c480f
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to Estérel Côte d'Azur Agglomération and the update
-      date.
+    rt_note: >-
+      One combined stream carries both trip updates and vehicle positions.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Estérel Côte d'Azur Agglomération and the update date.
+    operating_note: >-
+      The urban network of Fréjus, Saint-Raphaël and the surrounding
+      communes. A different network from the Le Bus records already in the
+      registry for Grand Est (fr-pan-80465) and Amboise (fr-pan-83528).
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/reseau-transport-urbain-le-bus
-      terms_url: https://transport.data.gouv.fr/datasets/reseau-transport-urbain-le-bus
-      scope:
-      - gtfs_schedule
-      attribution: Estérel Côte d'Azur Agglomération
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Estérel Côte d'Azur Agglomération.
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-08-30'
+      reviewed_on: "2026-09-01"
       identity_reviewed: true
   - id: fr-pan-83739
     name: Téléphérique du Mont Faron
@@ -529,4 +536,79 @@ agencies:
       attribution: Provence-Alpes-Côte d’Azur
       reviewed_by: ChelseaKR
       reviewed_on: '2026-08-30'
+      identity_reviewed: true
+  - id: fr-pan-82874
+    name: Le TACO (Coeur du Var)
+    country: FR
+    subdivision_code: FR-PAC
+    subdivision_name: Provence-Alpes-Côte-d’Azur
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/5b2dfdce-8ab2-41b2-a318-65f884e3ead2
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/807dd36f-5813-487a-b410-20032bfbe3ad
+      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/807dd36f-5813-487a-b410-20032bfbe3ad
+    rt_note: >-
+      One combined stream carries both trip updates and vehicle positions.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to the Communauté de communes Coeur du Var and the update date.
+    operating_note: >-
+      agency.txt names the operator Transdev Var. Identity was confirmed
+      from the Ligne TACO route and stops in Le Cannet-des-Maures.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/le-taco-1
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté de communes Coeur du Var (réseau Le TACO).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-mouvenbus-provence-verte
+    name: Mouv'enBus (Provence Verte)
+    country: FR
+    subdivision_code: FR-PAC
+    subdivision_name: "Provence-Alpes-Côte-d’Azur"
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83429/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'Agglomération Provence
+      Verte, réseau Mouv'enBus and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-transport-mouv-enbus-agglomeration-provence-verte
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'Agglomération Provence Verte, réseau Mouv'enBus.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-telepherique-mont-faron
+    name: Téléphérique du Mont Faron (Toulon)
+    country: FR
+    subdivision_code: FR-PAC
+    subdivision_name: "Provence-Alpes-Côte-d’Azur"
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83739/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Métropole Toulon Provence Méditerranée,
+      téléphérique du Faron and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/telepherique-du-mont-faron
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Métropole Toulon Provence Méditerranée, téléphérique du Faron.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
       identity_reviewed: true

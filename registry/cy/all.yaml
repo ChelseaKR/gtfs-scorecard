@@ -136,3 +136,27 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: emel-lemesos
+    name: ΕΜΕΛ (Lemesos)
+    country: CY
+    subdivision_code: CY-02
+    subdivision_name: Lemesos
+    is_official: true
+    static_gtfs_url: https://www.motionbuscard.org.cy/opendata/downloadfile?file=GTFS%5C6_google_transit.zip&rel=True
+    license_note: >-
+      CC BY 4.0 through the Republic of Cyprus open-data portal; credit the
+      Cyprus Public Works Department.
+    operating_note: >-
+      The Lemesos district bus network. This is the seventh and last GTFS
+      resource on the Cyprus open-data dataset; the other six are already in
+      the registry.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.data.gov.cy/index.php/en/dataset/1069
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Republic of Cyprus, Public Works Department.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

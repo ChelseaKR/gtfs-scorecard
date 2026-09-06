@@ -630,3 +630,102 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: nagoya-srt
+    name: Nagoya SRT (名古屋市 SRT)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/NagoyaHousingCityPlanningBureau/NagoyaSRT_AllLines.zip?date=latest
+    license_note: >-
+      CC BY 4.0, published by the City of Nagoya Housing and City Planning
+      Bureau through the Public Transportation Open Data Center (ODPT).
+      Credit the City of Nagoya and ODPT.
+    operating_note: >-
+      Nagoya's SRT service. The published calendar starts 2026-09-11, so the
+      first scoring runs will see a feed that has not begun service yet.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/nagoya_housing_city_planning_bureau_nagoya_srt_all_lines
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        名古屋市住宅都市局 (City of Nagoya, Housing and City Planning Bureau),
+        published through the Public Transportation Open Data Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nishio-rokumangoku-kururin-bus
+    name: Nishio City Rokumangoku Kururin Bus (西尾市六万石くるりんバス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/nishiocity/feeds/rokumangokukururinbus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Nishio City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: Nishio City's Rokumangoku Kururin Bus community network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/nishiocity.rokumangokukururinbus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nishio City. Published as GTFS-JP open data (CC0 1.0) through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: toyota-city-community-bus
+    name: Toyota City Community Bus (豊田市地域バス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    feed_variant: district community bus
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toyotacity/feeds/chiikibus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Toyota City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Toyota City.
+    operating_note: >-
+      Toyota City's district community bus network, published separately
+      from the Oiden Bus trunk network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toyotacity.chiikibus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyota City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: toyota-oiden-bus
+    name: Toyota Oiden Bus (とよたおいでんバス)
+    country: JP
+    subdivision_code: JP-23
+    subdivision_name: Aichi
+    feed_variant: trunk network
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/toyotacity/feeds/kikanbus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Toyota City through the
+      GTFS Data Repository (gtfs-data.jp). Credit Toyota City.
+    operating_note: Toyota City's Oiden Bus trunk network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/toyotacity.kikanbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Toyota City. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

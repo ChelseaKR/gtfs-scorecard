@@ -173,3 +173,112 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: akaiwa-city-bus
+    name: Akaiwa City Bus (赤磐市広域路線バス・市民バス)
+    country: JP
+    subdivision_code: JP-33
+    subdivision_name: Okayama
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/AkaiwaCity/AllLines.zip?date=latest
+    license_note: >-
+      CC0 1.0 public domain dedication, published by Akaiwa City through the
+      Public Transportation Open Data Center (ODPT). Attribution is not
+      required; the scorecard credits Akaiwa City and ODPT anyway.
+    operating_note: >-
+      Akaiwa City's wide-area route bus and community bus, published as one
+      GTFS-JP export and counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/akaiwa_city_all_lines
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        赤磐市 (Akaiwa City), published as GTFS-JP open data through the Public
+        Transportation Open Data Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: ikasa-bus
+    name: Ikasa Bus Company (井笠バスカンパニー)
+    country: JP
+    subdivision_code: JP-33
+    subdivision_name: Okayama
+    is_official: true
+    static_gtfs_url: https://bus-vision.jp/gtfs_v2/ikasabus/gtfsFeed
+    rt_urls:
+      trip_updates: https://bus-vision.jp/realtime/ikasabus_trip_update_v2.bin
+      vehicle_positions: https://bus-vision.jp/realtime/ikasabus_vpos_update_v2.bin
+      service_alerts: https://bus-vision.jp/realtime/ikasabus_alrt_update_v2.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required.
+    operating_note: >-
+      Ikasa Bus Company is based in Kasaoka, Okayama, and most of its 680
+      stops sit in the Kasaoka and Ibara area, so the record is filed under
+      Okayama. Some routes cross into Fukuyama in Hiroshima, which is why
+      the feed is published on the Hiroshima Bus Association site.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ikasa Bus Company, published through the Hiroshima Bus Association
+        GTFS open data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: ibara-aiai-bus
+    name: Ibara Ai-Ai Bus (井原あいあいバス)
+    country: JP
+    subdivision_code: JP-33
+    subdivision_name: Okayama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/hokushin-bus/feeds/ibaraaiaibus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      北振バス株式会社 through the GTFS Data Repository (gtfs-data.jp). No
+      attribution is required.
+    operating_note: >-
+      Ibara City's Ai-Ai community bus in western Okayama, operated by
+      Hokushin Bus. Every stop in the archive is in the Ibara area.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/hokushin-bus.ibaraaiaibus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        北振バス株式会社. Published as GTFS-JP open data (CC0 1.0) through the GTFS
+        Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: setouchi-osafune-dagashi-line
+    name: Setouchi City Osafune Dagashi Line (瀬戸内市長船だがし線)
+    country: JP
+    subdivision_code: JP-33
+    subdivision_name: Okayama
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/setouchicity/feeds/setouchicitykankobus/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      Setouchi City through the GTFS Data Repository (gtfs-data.jp).
+    operating_note: >-
+      Setouchi City's Osafune Dagashi line, published separately from the
+      city bus network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/setouchicity.setouchicitykankobus
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Setouchi City. Published as GTFS-JP open data (CC0 1.0) through the
+        GTFS Data Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

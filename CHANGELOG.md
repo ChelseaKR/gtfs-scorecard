@@ -29,6 +29,23 @@ the declared public surface).
 
 ### Added
 
+- **Program report bundle, built and not launched (2026-09-01).** The
+  program tier the sustainability plan allows (gtfs-scorecard-plans/07:
+  agency-facing stays free; only tools for the people who manage many
+  agencies may carry a price) now exists as code, behind a gate that is
+  closed. `scorecard bundle` renders one program's branded board reports for
+  a cohort of up to 100 agencies as one archive with a manifest that names
+  every id asked for and what happened to it; `report-bundle.yml` is the
+  on-demand fulfilment; `infra/program-bundle` (written, not applied) is the
+  post-checkout form, the capability download route, the Stripe webhook, and
+  the weekly refresh, with plan-failing preconditions that keep
+  `payments_enabled` at "0" until the Stripe configuration is complete;
+  `/bundle/` and `/bundle/setup/` are unlinked, `noindex`, out of the
+  sitemap, and read every price from `web/bundle/plan.json`, which says
+  `paymentsAvailable: false`. ADR 0049 records the decision: a checkout is
+  the "named user at the table" the plan required before building this
+  tier. The runbook and the day-90 gate are in `docs/program-plan.md`.
+
 - **14 French feed records from the rentrée recheck pass (2026-09-01).** The
   2026-08-30 exhaustion left 100 candidates excluded only for short
   calendars. Two days later, fourteen had refreshed past the 60-day gate and
@@ -66,7 +83,126 @@ the declared public surface).
   largest-country ceiling, which that gate continues to report honestly as
   unmet.
 
+### Changed
+
+- **The money page no longer links to a page that does not exist
+  (2026-09-01).** `/support/`, `docs/support.md`, `SUPPORT.md`, and the
+  README all pointed at `chelseakr.com/consulting/`, which returns 404; the
+  consulting offer is withdrawn and every reference to it is gone. The
+  featured "Professional help" card on `/support/` is now a free card for the
+  board report the site already ships. The GitHub Sponsors tiers are now
+  explained on the page and in the docs, each sized to a real cost line from
+  the sustainability plan (the static core, the per-request edges, a month of
+  on-demand scoring) with the caveat that the money is one pot and the caps
+  hold regardless. A Sponsor badge joins the README header. The test that
+  asserted the consulting link *present* on every public surface, which is
+  how the dead link survived, is replaced by its inverse plus a check that
+  every money page reaches the one payment rail that exists. A new
+  `links.yml` workflow (lychee) checks the external links on those four
+  files on every pull request and weekly, so the next dead link fails a
+  build instead of waiting for a reader.
+
 ### Fixed
+
+- **The scoring path no longer loads `stop_times.txt` into memory, which is
+  what killed the OVapi Netherlands shard for three weeks.** The
+  `score (ovapi-netherlands)` job had been dying with "The runner has received
+  a shutdown signal" since 2026-08-07, after the validator had already
+  succeeded and the JVM had already exited. With no JVM on the box, memory
+  climbed from about 2 GB to 15.9 GB in roughly 45 seconds, swap filled,
+  available memory reached 88 MB, and the runner was killed. Disk was flat at
+  86 GB free the whole time.
+
+  The trigger was the whole-table reader's per-table cap, and specifically the
+  side of it the feed landed on. `MAX_MEMBER_BYTES` is 1 GiB: above it a table
+  is skipped, below it the table is read into `list[dict[str, str]]`. OVapi's
+  `stop_times.txt` is 1,011,976,627 bytes — 62 MB **under** the cap — and
+  17,099,889 rows. Measured on the live archive, a row of that table costs 754
+  bytes as a Python dict, so reading it whole comes to about 12.9 GB on a 15.6
+  GiB runner. Every earlier export had been *over* the cap and was therefore
+  skipped; the feed oscillates across the line, and the day it came in under,
+  the shard died. A bigger feed was safer.
+
+  So the fix is not a different number. Bytes on disk do not predict bytes in
+  memory, the multiplier moves with row width, and any fixed byte cap is a
+  cliff a feed can cross between exports. Lowering it would only skip more
+  tables, which buys safety by measuring less. Both whole-table consumers of
+  `stop_times.txt` on the daily scoring path now stream it instead, because
+  what each one takes from the table is a bounded aggregate rather than the
+  table: `routability` folds it into the trips with at least two serviced
+  locations plus the served stop and location-group ids (855 thousand trips and
+  57 thousand stops on OVapi, against 17 million rows), and `ferry_profile`
+  folds it into the stop ids the ferry trips call at — and, being handed a lazy
+  reader, returns without opening the table at all for a feed with no ferry
+  route. `iter_table_rows` now accepts `max_member_bytes=None` for exactly this
+  case: the cap is not lowered, it is inapplicable, because there is no whole
+  table in memory for it to bound. Archive-shape safety — entry count,
+  compression ratio, per-entry and whole-archive size — was always enforced in
+  `fetch.py` before any reader opens the bytes, and remains the real zip-bomb
+  guard and the ceiling on how much there can be to stream.
+
+  `MAX_MEMBER_BYTES` itself is unchanged and still governs every table read
+  whole, including these two modules' reads of `trips.txt` and `stops.txt`. If
+  one of those trips it, routability still publishes `measured: false` with
+  reason `table_too_large`; an unread table never reaches the artifact as a
+  count of zero.
+
+  Both checks now run to completion on the live OVapi archive in 68.6 seconds
+  at a peak of 1.38 GB resident — against roughly 13 GB and a killed runner —
+  and report what three weeks of shutdown signals could not: 854,910 trips, 35
+  of them with fewer than two stops, 58,953 boardable stops, 1,981 of them
+  served by no trip, and a ferry profile over 11,532 ferry trips.
+
+  **This changes published output for four feeds, and no grade.** OVapi
+  Netherlands, the Swiss national timetable, gtfs.de local transit and Carris
+  Metropolitana have all been publishing `routability: {"measured": false,
+  "reason": "table_too_large"}` and no `ferry_profile`. They will now publish
+  real routability counts, and a ferry profile where the feed has ferry routes.
+  Both blocks are zero-deduction, so no category score, overall score, grade,
+  or conformance verdict moves for any feed. Output for feeds under the cap is
+  byte-identical: verified by running the old and new readers over a
+  300-feed synthetic corpus covering flex location groups, the GeoJSON
+  `location_id` header typo, ferry and non-ferry routes, missing and
+  header-only tables, and trips with zero, one and many stops.
+
+  `gtfs.py` also logs any table of 64 MiB or more, with its uncompressed size
+  and whether it was read whole, streamed, or skipped. The three-week diagnosis
+  needed an instrumented re-run to learn which table was being read and how big
+  it was; the next incident carries that evidence in its own log.
+
+- **A validator report nobody could read is no longer scored as a clean feed.**
+  The upward twin of the fabricated F above, and the one that lasted longer,
+  because a flattering number invites no complaint. `ValidationReport` had one
+  shape for "the validator found nothing wrong" and the same shape for "there
+  was no report to read": an empty list of notices. Correctness starts at 100
+  and deducts per notice, so the second case scored `Correctness 100.0 / 100`
+  and published "The validator found no problems in this feed. That is rare and
+  worth celebrating." about a feed whose report had never been read.
+
+  Four payloads reached that sentence through `validate.parse_report_data` or
+  `vcache._report_from_json`, the only two functions in the package that build a
+  `ValidationReport`: an empty JSON object, a dict of an entirely different
+  shape, a report truncated after its `summary`, and a report whose `notices`
+  were null. Correctness was also the only scored category with no way to say
+  "not measured" at all: freshness and rider experience return no category and
+  are dropped, realtime is never appended for an agency that publishes none, and
+  all three render as "Not yet measured" with no number.
+
+  Both builders now refuse. A gtfs-validator report always carries `notices` as
+  a list, empty when the feed is clean, so the list's presence is what separates
+  the two cases; a payload without one raises `UnreadableValidatorReportError`,
+  a `ValueError` that travels the path a non-zip response body already travels.
+  A report with `"notices": []` is a real measurement of a genuinely clean feed
+  and still scores 100.
+
+  Where the same report can be obtained another way, the refusal is a miss
+  rather than a stop. An unreadable validator-cache entry re-validates, because
+  the honest cost of a cache entry we cannot read is one Java run. An unreadable
+  hosted report from the Mobility Feed API falls back to a local validator run,
+  which is what every other mismatch there already does. Only our own
+  `report.json` has no second source, and that one raises: the agency is not
+  re-scored that day and the run reports it, which is what "we could not read
+  it" looks like from outside.
 
 - **A feed with no stops and no trips is no longer given a letter grade.**
   Reported downstream against the published `gtfs-scorecard@v1.4.0` Action: a

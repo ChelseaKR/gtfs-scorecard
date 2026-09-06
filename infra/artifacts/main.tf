@@ -120,6 +120,21 @@ resource "aws_s3_bucket_lifecycle_configuration" "artifacts" {
   # Daily score shards hand private export fingerprints to the serialized
   # collect job through a run-scoped prefix. A failed run can strand that
   # staging data, so expire it independently of successful cleanup.
+  # Program report bundles (infra/program-bundle, docs/program-plan.md):
+  # each archive lives behind a 128-bit capability link that expires with
+  # the object. 30 days, in step with bundle.DOWNLOAD_DAYS and the DynamoDB
+  # TTL on the capability row. The prefix is outside the CloudFront
+  # allow-list, so the only way to an archive is the download route.
+  rule {
+    id     = "expire-program-bundles"
+    status = "Enabled"
+    filter {
+      prefix = "program-bundles/"
+    }
+    expiration {
+      days = 30
+    }
+  }
   rule {
     id     = "expire-structure-staging"
     status = "Enabled"

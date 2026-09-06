@@ -350,3 +350,147 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: stq-traversiers
+    name: Société des traversiers du Québec (STQ)
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    is_official: true
+    static_gtfs_url: https://gtfs.traversiers.com/api/gtfs.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 through Données Québec and the
+      federated record on open.canada.ca. Credit the Société des traversiers
+      du Québec.
+    operating_note: >-
+      One export covering the provincial ferry crossings, counted as one
+      feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://open.canada.ca/data/en/dataset/33befa4d-c037-4d8f-8ac5-5a4c329f9e19
+      terms_url: https://www.donneesquebec.ca/fr/licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Société des traversiers du Québec, via Données Québec under the
+        Creative Commons Attribution 4.0 licence.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: transcollines
+    name: Transcollines (Régie intermunicipale de transport des Collines)
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    is_official: true
+    static_gtfs_url: https://raw.githubusercontent.com/transcollines/GTFS/master/transcollines-qc-ca.zip
+    license_note: >-
+      The MRC des Collines-de-l'Outaouais grants free, non-exclusive use,
+      reproduction and redistribution of this data for personal or
+      commercial purposes, with a required source mention. Terms are in
+      LICENCE.MD in the operator's own GTFS repository.
+    operating_note: >-
+      The schedule export named on the operator's open data page. The same
+      repository also carries a Fares v2 file and a Cityway variant of the
+      same network, which are not listed separately.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://transcollines.ca/information/open-data/
+      terms_url: https://github.com/transcollines/GTFS/blob/master/LICENCE.MD
+      scope: [gtfs_schedule]
+      attribution: >-
+        Le présent service intègre des données ouvertes du réseau
+        Transcollines de la MRC des Collines-de-l'Outaouais. La MRC des
+        Collines-de-l'Outaouais n'est pas responsable de l'exactitude de
+        l'information générée par cette application.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: exo-le-richelain-roussillon
+    name: exo Le Richelain / Roussillon
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    mdb_id: "2142"
+    is_official: true
+    static_gtfs_url: https://exo.quebec/xdata/lrrs/google_transit.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0); exo open data published
+      through Données Québec. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://exo.quebec/fr/a-propos/donnees-ouvertes
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: exo (Réseau de transport métropolitain).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: sttr-trois-rivieres
+    name: Société de transport de Trois-Rivières
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    is_official: true
+    static_gtfs_url: https://www.donneesquebec.ca/recherche/dataset/a2d3c9de-4045-41e3-b2ea-5bb64bd8c50f/resource/71d94f75-5a36-4789-b581-a21d49dcd5f5/download/gtfs_sttr_aut26_v2.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0) as recorded by Données
+      Québec for the Société de transport de Trois-Rivières dataset. Derived
+      measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.donneesquebec.ca/recherche/dataset/a2d3c9de-4045-41e3-b2ea-5bb64bd8c50f
+      terms_url: https://www.donneesquebec.ca/licence/#cc-by
+      scope: [gtfs_schedule]
+      attribution: Société de transport de Trois-Rivières.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: stsv-salaberry-de-valleyfield
+    name: Société de transport de Salaberry-de-Valleyfield
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    is_official: true
+    static_gtfs_url: https://www.donneesquebec.ca/recherche/dataset/2c84537c-0a2f-4e6f-aae8-1664bd92d90b/resource/0e4c9cb4-7ab3-40d2-a3d8-a0ecf5d3165c/download/gtfs.zip
+    license_note: >-
+      Creative Commons Attribution 4.0 (CC BY 4.0) as recorded by Données
+      Québec for the Société de transport de Salaberry-de-Valleyfield
+      dataset. Derived measurements by GTFS Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.donneesquebec.ca/recherche/dataset/2c84537c-0a2f-4e6f-aae8-1664bd92d90b
+      terms_url: https://www.donneesquebec.ca/licence/#cc-by
+      scope: [gtfs_schedule]
+      attribution: Société de transport de Salaberry-de-Valleyfield.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: ville-de-drummondville
+    name: Ville de Drummondville
+    country: CA
+    subdivision_code: CA-QC
+    subdivision_name: Québec
+    is_official: true
+    static_gtfs_url: https://geomatique.drummondville.ca/GTFS/DoneesOuverts/GTFS_DMV.zip
+    license_note: >-
+      CC BY 4.0. The city's adopted Politique de données ouvertes names the
+      Creative Commons Attribution 4.0 International licence and states that
+      the city's open data is subject to it. Credit Ville de Drummondville.
+    operating_note: >-
+      Drummondville runs its bus network as a municipal service, so the city
+      is both the transit operator and the data publisher; agency.txt
+      carries one agency, Ville de Drummondville, over 79 routes.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://donnees-vdrummondville.opendata.arcgis.com/
+      terms_url: https://www.drummondville.ca/wp-content/uploads/2019/02/Politique_donnees_ouvertes.pdf
+      scope: [gtfs_schedule]
+      attribution: Ville de Drummondville.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

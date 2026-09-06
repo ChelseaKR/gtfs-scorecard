@@ -14,11 +14,12 @@ and are labelled that way in the public contract.
 from __future__ import annotations
 
 import logging
-from collections.abc import Collection
+from collections.abc import Collection, Iterable
+from contextlib import closing
 from typing import Any
 
 from .fares import detect_fares
-from .gtfs import TableTooLargeError, read_tables
+from .gtfs import TableTooLargeError, iter_table_rows, read_tables
 from .modes import route_type_mode
 
 log = logging.getLogger(__name__)
@@ -60,14 +61,21 @@ def _realtime_kinds(configured: Collection[str]) -> list[str]:
 def build_ferry_profile(
     routes: list[dict[str, str]],
     trips: list[dict[str, str]],
-    stop_times: list[dict[str, str]],
+    stop_times: Iterable[dict[str, str]],
     stops: list[dict[str, str]],
     *,
     fare_profile: dict[str, Any],
     fare_free: bool = False,
     configured_realtime_kinds: Collection[str] = (),
 ) -> dict[str, Any] | None:
-    """Build a zero-deduction profile for the ferry subset of a GTFS feed."""
+    """Build a zero-deduction profile for the ferry subset of a GTFS feed.
+
+    ``stop_times`` is read once and only for the ferry trips' stop ids, so it
+    may be any iterable of rows -- a list in tests, a streamed reader in the
+    pipeline. It is also read last: a feed with no ferry routes returns before
+    touching it, which is what keeps a lazy reader from opening the largest
+    table in the archive for the feeds that have no ferry to describe.
+    """
     ferry_route_ids = {
         (row.get("route_id") or "").strip()
         for row in routes
@@ -167,25 +175,33 @@ def ferry_profile_from_zip(
     """Read the ferry-relevant GTFS tables and return the ungraded profile.
 
     Returns None when there is no ferry profile to report, including the case
-    where a table is too large to read: a national aggregate's stop_times.txt
-    can exceed the reader's per-table memory cap, and the ferry profile is a
+    where one of the small tables is too large to read: the ferry profile is a
     descriptive add-on, so it is skipped rather than failing the whole score.
+
+    stop_times.txt is streamed rather than read whole, and with no byte cap.
+    The only thing this profile takes from it is the set of stop ids the ferry
+    trips call at, so the memory cost is the size of that set. Reading it whole
+    cost about 750 bytes a row, which is how a 1.01 GB stop_times.txt -- 62 MB
+    *under* the whole-table cap -- became roughly 13 GB of dicts and killed the
+    Dutch national aggregate's shard for three weeks.
     """
     try:
-        tables = read_tables(
-            gtfs_zip_path,
-            ["routes.txt", "trips.txt", "stop_times.txt", "stops.txt"],
-        )
+        tables = read_tables(gtfs_zip_path, ["routes.txt", "trips.txt", "stops.txt"])
     except TableTooLargeError as exc:
         log.warning("ferry profile skipped: %s", exc)
         return None
     fares = detect_fares(gtfs_zip_path).to_details()
-    return build_ferry_profile(
-        tables["routes.txt"],
-        tables["trips.txt"],
-        tables["stop_times.txt"],
-        tables["stops.txt"],
-        fare_profile=fares,
-        fare_free=fare_free,
-        configured_realtime_kinds=configured_realtime_kinds,
-    )
+    stop_times = iter_table_rows(gtfs_zip_path, "stop_times.txt", max_member_bytes=None)
+    # closing() because build_ferry_profile returns before reading a row when
+    # the feed has no ferry routes, and an abandoned generator should release
+    # its open archive at a point this function chooses.
+    with closing(stop_times):
+        return build_ferry_profile(
+            tables["routes.txt"],
+            tables["trips.txt"],
+            stop_times,
+            tables["stops.txt"],
+            fare_profile=fares,
+            fare_free=fare_free,
+            configured_realtime_kinds=configured_realtime_kinds,
+        )

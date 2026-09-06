@@ -211,3 +211,387 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: higashiyamato-chokobus
+    name: Higashiyamato City Community Bus Choco Bus (東大和市コミュニティバス「ちょこバス」)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/HigashiyamatoCity/AllLines_CCBY4.zip?date=latest
+    license_note: >-
+      CC BY 4.0, published by Higashiyamato City Hall through the Public
+      Transportation Open Data Center (ODPT). Credit Higashiyamato City and
+      ODPT.
+    operating_note: >-
+      ODPT publishes this community bus under three licences; this record
+      uses the CC BY 4.0 export, which is the one the URL names.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/higashiyamato_city_all_lines_ccby4
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        東大和市 (Higashiyamato City), published as GTFS-JP open data through
+        the Public Transportation Open Data Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: bunkyo-b-guru
+    name: Bunkyo City Community Bus B-guru (文京区コミュニティバス「Bーぐる」)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    organization_id: hitachi-automobile-transportation
+    feed_variant: Bunkyo City network
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/HitachiAutomobileTransportation/AllLines.zip?date=current
+    license_note: >-
+      CC BY 4.0, published by Hitachi Automobile Transportation through the
+      Public Transportation Open Data Center (ODPT). Credit the operator and
+      ODPT.
+    operating_note: >-
+      Bunkyo City's B-ぐる community bus. The archive is published under the
+      operator, Hitachi Jidosha Kotsu (日立自動車交通株式会社), whose agency.txt and
+      agency_url name the B-ぐる service; all three routes run in Bunkyo.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/hitachi_automobile_transportation_all_lines
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        日立自動車交通株式会社 (Hitachi Automobile Transportation) and 文京区 (Bunkyo
+        City), published through the Public Transportation Open Data Center
+        (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kita-k-bus
+    name: Kita City Community Bus K-bus (北区コミュニティバス「Kバス」)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    organization_id: hitachi-automobile-transportation
+    feed_variant: Kita City network
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/HitachiAutomobileTransportation/KitaAllLines.zip?date=latest
+    license_note: >-
+      CC BY 4.0, published by Hitachi Automobile Transportation through the
+      Public Transportation Open Data Center (ODPT). Credit the operator and
+      ODPT.
+    operating_note: >-
+      Kita City's community bus, run under contract by Hitachi Automobile
+      Transportation and published as a separate export from the operator's
+      Bunkyo City network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/hitachi_automobile_transportation_kita_all_lines
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        日立自動車交通株式会社 (Hitachi Automobile Transportation) and 北区 (Kita City),
+        published through the Public Transportation Open Data Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: machida-city-bus
+    name: Machida City Community Bus (町田市コミュニティバス・市民バス)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/MachidaCity/AllLines.zip?date=current
+    license_note: >-
+      CC0 public domain dedication, stated on the dataset page Machida City
+      publishes through the Public Transportation Open Data Center (ODPT).
+      No attribution is required.
+    operating_note: >-
+      Machida City's community and citizen bus network in western Tokyo.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/machida_city_all_lines
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Machida City, published through the Public Transportation Open Data
+        Center (ODPT) under CC0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nishitokyo-city-bus
+    name: Nishitokyo City Community Bus (西東京市コミュニティバス「はなバス」)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/NishitokyoCity/AllLines.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by Nishitokyo City through the Public
+      Transportation Open Data Center (ODPT). Credit Nishitokyo City and
+      ODPT.
+    operating_note: Nishitokyo City's Hana Bus community network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/nishitokyo_city_all_lines
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Nishitokyo City, published through the Public Transportation Open
+        Data Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kokubunji-bun-bus
+    name: Kokubunji City Bun Bus (国分寺市地域バス「ぶんバス」)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/KokubunjiCity/kokubunji_city_bunbus.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by Kokubunji City through the Public
+      Transportation Open Data Center (ODPT). Credit Kokubunji City and
+      ODPT.
+    operating_note: Kokubunji City's Bun Bus local network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/kokubunji_city_kokubunji_city_bunbus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kokubunji City, published through the Public Transportation Open
+        Data Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kiyose-kiyo-bus
+    name: Kiyose City Kiyo Bus (清瀬市「きよバス」)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/KiyoseCity/KiyoBus.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by Kiyose City through the Public Transportation
+      Open Data Center (ODPT). Credit Kiyose City and ODPT.
+    operating_note: Kiyose City's Kiyo Bus community service.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/kiyose_city_kiyo_bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kiyose City, published through the Public Transportation Open Data
+        Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: higashimurayama-city-bus
+    name: Higashimurayama City Community Bus (東村山市コミュニティバス「グリーンバス」)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/HigashiMurayamaCity/Alllines.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by Higashimurayama City through the Public
+      Transportation Open Data Center (ODPT). Credit Higashimurayama City
+      and ODPT.
+    operating_note: Higashimurayama City's Green Bus community network.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/higashi_murayama_city_alllines
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Higashimurayama City, published through the Public Transportation
+        Open Data Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: taito-megurin
+    name: Taito City Megurin (台東区「めぐりん」)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/TokyoTaitoCity/megurinCCBY40.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by Taito City through the Public Transportation
+      Open Data Center (ODPT). Credit Taito City and ODPT.
+    operating_note: >-
+      Taito City's Megurin circulator network in the Asakusa and Ueno area.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/tokyo_taito_city_megurin_ccby40
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Taito City, published through the Public Transportation Open Data
+        Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: chiyoda-kazaguruma
+    name: Chiyoda City Kazaguruma (千代田区「風ぐるま」)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    organization_id: hitachi-jidosha-kotsu
+    feed_variant: Chiyoda City circulator
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/HitachiAutomobileTransportation/Chiyoda_ALLLINES.zip?date=current
+    license_note: >-
+      CC BY 4.0; published through the Public Transportation Open Data
+      Center (ODPT) by Hitachi Jidosha Kotsu, which runs the service for
+      Chiyoda City. Credit Chiyoda City and ODPT.
+    operating_note: >-
+      Chiyoda City's Kazaguruma community circulator, operated under
+      contract by Hitachi Jidosha Kotsu.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/hitachi_automobile_transportation_chiyoda_alllines
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chiyoda City and Hitachi Jidosha Kotsu, published through the Public
+        Transportation Open Data Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: miyake-village-bus
+    name: Miyake Village Bus (三宅村営バス)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/MiyakeVill/AllLine.zip?date=current
+    license_note: >-
+      CC BY 4.0; published by Miyake Village through the Public
+      Transportation Open Data Center (ODPT). Credit Miyake Village and
+      ODPT.
+    operating_note: >-
+      Miyake Village's municipal bus on Miyakejima in the Izu Islands.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/miyake_vill_all_line
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Miyake Village, published through the Public Transportation Open
+        Data Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: suginami-green-slow-mobility
+    name: Suginami City Green Slow Mobility (杉並区グリーンスローモビリティ)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    is_official: true
+    static_gtfs_url: https://api-public.odpt.org/api/v4/files/odpt/TokyoSuginamiCity/GreenSlowMobility.zip?date=current
+    license_note: >-
+      CC BY 4.0; published for Suginami City through the Public
+      Transportation Open Data Center (ODPT). Credit Suginami City and ODPT.
+    operating_note: >-
+      Suginami City's green slow mobility service, one low-speed route with
+      24 daily trips. Small by design, not an incomplete extract.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://ckan.odpt.org/dataset/tokyo_suginami_city_green_slow_mobility
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Suginami City, published through the Public Transportation Open Data
+        Center (ODPT).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kunitachi-aoyagikko
+    name: Kunitachi City Community Wagon Aoyagikko (国立市コミュニティワゴン「あおやぎっこ」)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kunitachicity/feeds/aoyagikko/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 国立市 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 国立市.
+    operating_note: >-
+      Kunitachi City's Aoyagikko community wagon. The same data is also
+      posted on the ODPT catalog; this record uses the GTFS Data Repository
+      copy.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kunitachicity.aoyagikko
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        国立市. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kunitachi-kunikko
+    name: Kunitachi City Community Bus Kunikko (国立市コミュニティバス「くにっこ」)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/kunitachicity/feeds/kunikko/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      国立市 through the GTFS Data Repository (gtfs-data.jp). No attribution is
+      required.
+    operating_note: >-
+      Kunitachi City's Kunikko community bus. The same data is also posted
+      on the ODPT catalog; this record uses the GTFS Data Repository copy.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/kunitachicity.kunikko
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        国立市. Published as GTFS-JP open data (CC0 1.0) through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: mizuho-town-community-bus
+    name: Mizuho Town Community Bus (瑞穂町コミュニティバス)
+    country: JP
+    subdivision_code: JP-13
+    subdivision_name: Tokyo
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/mizuhotown/feeds/communitybus/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by 瑞穂町 through the GTFS Data
+      Repository (gtfs-data.jp). Credit 瑞穂町.
+    operating_note: >-
+      Mizuho Town's community bus in western Tokyo. The registry already
+      lists the town's Choi-Soko demand service separately.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/mizuhotown.communitybus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        瑞穂町. Published as GTFS-JP open data through the GTFS Data Repository
+        (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

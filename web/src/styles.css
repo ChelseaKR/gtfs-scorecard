@@ -347,6 +347,26 @@ a:hover { color: var(--green-bright); }
   .support-paths { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
+/* Sponsor tiers on /support/: a definition list so each amount is announced
+   with the cost line it is sized to. Reuses the card tokens; no new colors. */
+.sponsor-tiers {
+  margin: 0 0 1rem;
+  padding: 0;
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.35rem 1rem;
+}
+.sponsor-tiers dt {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.sponsor-tiers dd { margin: 0; }
+@media (max-width: 40rem) {
+  .sponsor-tiers { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
+  .sponsor-tiers dd { margin: 0 0 0.6rem; }
+}
+
 :focus-visible {
   outline: 3px solid var(--focus);
   outline-offset: 2px;
@@ -2452,6 +2472,15 @@ main:focus { outline: none; }
 .form-status { margin-top: 0.4rem; font-size: 0.9rem; }
 .form-status-err { color: var(--error); font-weight: 600; }
 .form-status-ok { color: var(--success-text); font-weight: 600; }
+
+/* Plan cards on /bundle/: the price line is the one thing the server sets.
+   No new colors; the mono face keeps amounts from reading as prose. */
+.plan-price {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
 
 /* The browser's default file picker is only about 22px tall on mobile. Keep
    the pre-publish check's local-only upload control at the same target size as

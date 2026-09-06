@@ -33,3 +33,30 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: ugo-kotsu-honjo
+    name: Ugo Kotsu, Honjo area (羽後交通（本荘地区）)
+    country: JP
+    subdivision_code: JP-05
+    subdivision_name: Akita
+    feed_variant: Honjo area
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/ugokotsu/feeds/ugokotsu_honjo/files/feed.zip?rid=current
+    license_note: >-
+      CC BY 4.0; published as GTFS-JP open data by Ugo Kotsu through the
+      GTFS Data Repository (gtfs-data.jp). Credit Ugo Kotsu.
+    operating_note: >-
+      The Honjo-area route network of Ugo Kotsu, a regional bus operator in
+      southern Akita. The company publishes its network as separate area
+      archives; this record covers the Honjo area.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/ugokotsu.ugokotsu_honjo
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Ugo Kotsu. Published as GTFS-JP open data through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

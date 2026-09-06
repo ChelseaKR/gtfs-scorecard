@@ -33,6 +33,13 @@ def test_iter_table_rows_streams_and_respects_a_task_cap(
     with pytest.raises(TableTooLargeError, match="analysis cap"):
         list(iter_table_rows(str(path), "stop_times.txt", max_member_bytes=1))
 
+    # None means no size check at all. A streamed table's memory cost is set by
+    # what the caller keeps, not by the table, so a caller folding it into a
+    # bounded aggregate has nothing to protect and every reason to measure the
+    # feed it was handed.
+    rows = list(iter_table_rows(str(path), "stop_times.txt", max_member_bytes=None))
+    assert [row["stop_id"] for row in rows] == ["S1", "S2"]
+
 
 def test_reads_feed_info_and_calendar(make_gtfs_zip: Callable[..., Path]) -> None:
     path = make_gtfs_zip(

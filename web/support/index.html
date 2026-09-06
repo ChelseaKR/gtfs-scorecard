@@ -46,8 +46,8 @@
     <a class="backlink" href="/about/">&larr; About</a>
     <h1 class="page-title">Get help or support the project</h1>
     <p class="page-lede">The scorecard is free for every transit agency, and it will stay that
-    way. Choose the path that matches what you need: use the public tools, get hands-on help,
-    or fund the shared infrastructure.</p>
+    way. Choose the path that matches what you need: use the public tools, take a scorecard
+    to your board, or fund the shared infrastructure.</p>
 
     <div class="support-paths">
       <section class="support-path" aria-labelledby="path-free-h">
@@ -56,13 +56,13 @@
         <p>Find an agency, check a zip before publishing, or request a full one-off score.</p>
         <p><a class="report-action" href="/tools/">Open the tool directory</a></p>
       </section>
-      <section class="support-path support-path-featured" aria-labelledby="path-help-h">
-        <p class="support-path-kicker">Professional help</p>
-        <h2 id="path-help-h">Implement the fixes with Chelsea</h2>
-        <p>Fixed-scope feed audits, practical staff workshops, and implementation support.
-        Review the scope, rates, and public work samples before getting in touch.</p>
-        <p><a class="report-action report-action-primary" href="https://chelseakr.com/consulting/">See consulting and workshops</a></p>
-        <p class="fineprint"><a href="/agency/unitrans/board/">See a live board-report example.</a></p>
+      <section class="support-path" aria-labelledby="path-board-h">
+        <p class="support-path-kicker">Free</p>
+        <h2 id="path-board-h">Take a scorecard to your board</h2>
+        <p>Every agency page has a printable board one-pager, and the same report ships as a
+        single self-contained file for a board packet or a grant application.</p>
+        <p><a class="report-action" href="/agency/unitrans/board/">See a live board-report example</a></p>
+        <p class="fineprint"><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/board-report.md">Generate the offline file yourself.</a></p>
       </section>
       <section class="support-path" aria-labelledby="path-sponsor-h">
         <p class="support-path-kicker">Public infrastructure</p>
@@ -84,7 +84,7 @@
         <li><strong>Hosting and bandwidth</strong> for the site, the read API, and the grade
         badges the project publishes.</li>
         <li><strong>The scheduled daily data refresh</strong>: fetching and validating more than
-        2,200 configured feed records in the current worldwide coverage, still mostly in the US
+        2,600 configured feed records in the current worldwide coverage, still mostly in the US
         and Canada. The <a href="/status/">status page</a> reports the exact current count and
         records when each run completed.</li>
         <li><strong>Release monitoring and evidence reliability</strong>, including the private
@@ -105,10 +105,7 @@
       <p>Everything an agency touches: the scorecards, the plain-language fix guidance, the
       open data and API, the badges, local pre-publish check, request-backed one-off scoring,
       and feed-health alerts. Sponsorship adds capacity. It never moves an existing feature
-      behind a paywall.</p>
-      <p>Paid <a href="https://chelseakr.com/consulting/">consulting services</a> are an
-      optional addition for programs and agencies that want a facilitated audit, workshop, or
-      implementation help. Nothing is subtracted from the free tier to create them.</p>
+      behind a paywall. Nothing is subtracted from the free tier to create anything else.</p>
     </section>
 
     <section aria-labelledby="independence-h">
@@ -136,11 +133,31 @@
         <a class="submit-button" href="https://github.com/sponsors/ChelseaKR">Sponsor on GitHub</a>
         <a class="submit-button" href="https://github.com/ChelseaKR/gtfs-scorecard/issues/new?title=Sponsorship%20inquiry">Start a sponsorship conversation</a>
       </p>
-      <!-- PLACEHOLDER(owner): add further channels here once those accounts exist,
-           e.g. https://opencollective.com/gtfs-scorecard. Add the matching key to
-           .github/FUNDING.yml at the same time. Never link a checkout that is not live. -->
+      <!-- PLACEHOLDER(owner): add further channels here once those accounts exist
+           (an Open Collective page, for example). Add the matching key to
+           .github/FUNDING.yml at the same time. Never link a checkout that is not live;
+           links.yml checks this page's links on every pull request. -->
       <p>Prefer email? Write to
       <a href="mailto:ckellyreif@gmail.com">Chelsea Kelly-Reif</a>.</p>
+      <h3 id="tiers-h">What each tier is sized to</h3>
+      <p>The GitHub tiers are sized to real cost lines, so a sponsor can see what a month buys.
+      The money is one pot and the spending caps hold whichever tier it arrives through;
+      nothing is earmarked.</p>
+      <dl class="sponsor-tiers">
+        <dt>$5 a month</dt>
+        <dd>The static core: the site, the daily scoring run, and the read API, which together
+        cost single-digit dollars a month today.</dd>
+        <dt>$25 a month</dt>
+        <dd>The dynamic edges: the subscribe API, the badge and API worker, and the MCP
+        endpoint. They run on per-request compute, about $15 a month at plausible volume.</dd>
+        <dt>$50 one time</dt>
+        <dd>About one month of on-demand scoring at demo-era volume ($20 to $60), the next
+        capacity the project would add.</dd>
+        <dt>$100 a month</dt>
+        <dd>On-demand scoring of any GTFS URL from a web form, every month
+        (<a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/decisions/0029-instant-score-funnel.md">ADR 0029</a>).
+        It is written and not switched on; this is its running cost.</dd>
+      </dl>
       <p class="fineprint">No sponsors yet. The first ones will be listed here, with what their
       support pays for.</p>
     </section>

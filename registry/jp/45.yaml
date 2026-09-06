@@ -1,0 +1,49 @@
+# JP agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: hyuga-city-community-bus
+    name: Hyuga City Community Bus (日向市コミュニティバス)
+    country: JP
+    subdivision_code: JP-45
+    subdivision_name: Miyazaki
+    is_official: true
+    static_gtfs_url: https://data.bodik.jp/dataset/07c454f3-9594-4dd6-b7e0-a9b49107464a/resource/81c1400e-a72b-4abd-a702-28cb1eae1f87/download/452068_community_bus.zip
+    license_note: >-
+      CC BY 4.0 on the BODIK open-data catalog, published by Hyuga City.
+      Credit Hyuga City.
+    operating_note: >-
+      Hyuga City's community bus network. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.bodik.jp/dataset/452068_sougou2211_001_bus
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Hyuga City (日向市).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: tsuno-town-community-bus
+    name: Tsuno Town Community Bus (都農町コミュニティバス)
+    country: JP
+    subdivision_code: JP-45
+    subdivision_name: Miyazaki
+    is_official: true
+    static_gtfs_url: https://data.bodik.jp/dataset/130b7f5f-d6e0-493d-a6cf-dae8184a65e5/resource/22040e40-88a9-4bdc-9f20-0caef084f086/download
+    license_note: >-
+      CC BY 4.0 on the BODIK open-data catalog, published by Tsuno Town.
+      Credit Tsuno Town.
+    operating_note: >-
+      Tsuno Town's community welfare bus. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.bodik.jp/dataset/454061_
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Tsuno Town (都農町).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

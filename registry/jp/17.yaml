@@ -79,3 +79,54 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: komatsu-loop-north
+    name: Komatsu City Loop Line North Course (小松市 市内循環線北コース)
+    country: JP
+    subdivision_code: JP-17
+    subdivision_name: Ishikawa
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/komatsucity/feeds/blue/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      小松市 through the GTFS Data Repository (gtfs-data.jp). No attribution is
+      required.
+    operating_note: >-
+      Komatsu City's north city loop. The city publishes each loop course as
+      its own archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/komatsucity.blue
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        小松市. Published as GTFS-JP open data (CC0 1.0) through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: komatsu-loop-south
+    name: Komatsu City Loop Line South Course (小松市 市内循環線南コース)
+    country: JP
+    subdivision_code: JP-17
+    subdivision_name: Ishikawa
+    is_official: true
+    static_gtfs_url: https://api.gtfs-data.jp/v2/organizations/komatsucity/feeds/orange/files/feed.zip?rid=current
+    license_note: >-
+      CC0 1.0 (public domain dedication); published as GTFS-JP open data by
+      小松市 through the GTFS Data Repository (gtfs-data.jp). No attribution is
+      required.
+    operating_note: >-
+      Komatsu City's south city loop, published as its own archive.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://gtfs-data.jp/feed/komatsucity.orange
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        小松市. Published as GTFS-JP open data (CC0 1.0) through the GTFS Data
+        Repository (gtfs-data.jp), operated by AIGID.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

@@ -32,3 +32,34 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: saga-pref-route-bus
+    name: Saga Prefecture Route Bus (佐賀県 路線バス)
+    country: JP
+    subdivision_code: JP-41
+    subdivision_name: Saga
+    is_official: true
+    static_gtfs_url: http://opendata.sagabus.info/saga-current.zip
+    rt_urls:
+      trip_updates: http://opendata.sagabus.info/route.pb
+      vehicle_positions: http://opendata.sagabus.info/vehicle.pb
+      service_alerts: http://opendata.sagabus.info/alert.pb
+    rt_note: >-
+      All three realtime files return GTFS-RT protobuf. The site serves
+      plain HTTP only; a request to port 443 is refused.
+    license_note: >-
+      CC BY 4.0 stated on the Saga bus open-data site, whose feed_info names
+      Saga Prefecture as publisher. Credit Saga Prefecture.
+    operating_note: >-
+      One archive covering Saga City Transportation Bureau, Showa Jidosha,
+      Yutoku Jidosha and Saga City. It does not repackage the separately
+      listed Imari City feed.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: http://opendata.sagabus.info/
+      terms_url: http://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Saga Prefecture (佐賀県) and the publishing operators.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

@@ -472,24 +472,28 @@ agencies:
       reviewed_on: '2026-08-30'
       identity_reviewed: true
   - id: fr-pan-11492
-    name: Réseau urbain TUB (Decazeville)
+    name: Transports Urbains du Bassin (Decazeville)
     country: FR
     subdivision_code: FR-OCC
     subdivision_name: Occitanie
     is_official: true
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/0163a7b9-f4b1-4d9b-9af1-dcc0e583c3b4
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to CC Decazeville Communauté and the update date.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Decazeville Communauté and the update date.
+    operating_note: >-
+      A different network from the TUB record already in the registry for
+      Bar-le-Duc (fr-tub) in Grand Est.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/transport-urbain-du-bassin
-      terms_url: https://transport.data.gouv.fr/datasets/transport-urbain-du-bassin
-      scope:
-      - gtfs_schedule
-      attribution: CC Decazeville Communauté
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Decazeville Communauté.
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-08-30'
+      reviewed_on: "2026-09-01"
       identity_reviewed: true
   - id: fr-pan-84089
     name: Réseau urbain de Saint-Sulpice-la-Pointe
@@ -500,40 +504,51 @@ agencies:
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/e1633c9d-2d18-47cf-96c3-eccedd445060
     rt_urls:
       service_alerts: https://www.data.gouv.fr/api/1/datasets/r/3577ce0e-7581-455c-81ec-f50008b7d6c0
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to Région Occitanie (CC Tarn-Agout) and the update
-      date.
+    rt_note: >-
+      One combined stream is published. Only service alerts were present in
+      it on 2026-09-01, so only that key is recorded.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Tarn Mobilité and the update date.
+    operating_note: >-
+      agency.txt names Tarn Mobilité, the departmental brand. Identity was
+      confirmed from stop coordinates inside Saint-Sulpice-la-Pointe.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/reseau-de-transport-urbain-de-la-ville-de-st-sulpice-la-pointe
-      terms_url: https://transport.data.gouv.fr/datasets/reseau-de-transport-urbain-de-la-ville-de-st-sulpice-la-pointe
-      scope:
-      - gtfs_schedule
-      attribution: Région Occitanie (CC Tarn-Agout)
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Tarn Mobilité (réseau urbain de Saint-Sulpice-la-Pointe).
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-09-01'
+      reviewed_on: "2026-09-01"
       identity_reviewed: true
   - id: fr-pan-82196
-    name: Réseau urbain Le Passe Pont
+    name: Le Passe Pont (Couffouleux et Rabastens)
     country: FR
     subdivision_code: FR-OCC
     subdivision_name: Occitanie
     is_official: true
-    organization_id: fr-pan-5ee28a82a4726888290c20c4
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/6f4deabd-1cad-435c-8915-235132d74291
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to CA Gaillac-Graulhet and the update date.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to the Communauté d'agglomération Gaillac-Graulhet and the update
+      date.
+    operating_note: >-
+      agency.txt carries the regional liO brand. Identity was confirmed from
+      the Couffouleux Urbain route and from stop coordinates inside
+      Couffouleux.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-le-passe-pont-communes-de-couffouleux-et-de-rabastens
-      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-le-passe-pont-communes-de-couffouleux-et-de-rabastens
-      scope:
-      - gtfs_schedule
-      attribution: CA Gaillac-Graulhet
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté d'agglomération Gaillac-Graulhet.
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-09-01'
+      reviewed_on: "2026-09-01"
       identity_reviewed: true
   - id: fr-pan-81535
     name: Réseau urbain Lislenbus
@@ -578,23 +593,234 @@ agencies:
       reviewed_on: '2026-09-01'
       identity_reviewed: true
   - id: fr-pan-82584
-    name: Réseau urbain La Navette (Graulhet)
+    name: La Navette (Graulhet)
     country: FR
     subdivision_code: FR-OCC
     subdivision_name: Occitanie
     is_official: true
-    organization_id: fr-pan-5ee28a82a4726888290c20c4
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/257e5818-a7cc-49a4-8ad1-3e84827e6458
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to CA Gaillac-Graulhet and the update date.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to the Communauté d'agglomération Gaillac-Graulhet and the update
+      date.
+    operating_note: >-
+      agency.txt carries the regional liO brand rather than the local
+      network name. Identity was confirmed from the routes (Graulhet Urbain
+      Transversale 1 and 2) and from stop coordinates inside Graulhet.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-la-navette-commune-de-graulhet
-      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-la-navette-commune-de-graulhet
-      scope:
-      - gtfs_schedule
-      attribution: CA Gaillac-Graulhet
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté d'agglomération Gaillac-Graulhet.
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-09-01'
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-capbus
+    name: Cap'Bus (Hérault Méditerranée)
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/8ce8ad14-836e-427d-bb43-a6ce0ab5ecda
+    rt_urls:
+      trip_updates: https://zenbus.net/gtfs/rt/poll.proto?dataset=agdecapbus68429531
+      vehicle_positions: https://zenbus.net/gtfs/rt/poll.proto?dataset=agdecapbus68429531
+    rt_note: >-
+      One keyless Zenbus endpoint carries trip updates and vehicle positions
+      in the same feed, so both keys point at it. Checked 2026-09-01: valid
+      GTFS-RT 2.0 protobuf with 14 entities.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'Agglomération Hérault
+      Méditerranée and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-capbus
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'Agglomération Hérault Méditerranée (réseau Cap'Bus).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-pan-83735
+    name: Sankéo (Perpignan Méditerranée Métropole)
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    feed_variant: regular and school lines
+    is_official: true
+    static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/2afffa1f-aa4a-4fe4-9802-4b5f82bb96c6
+    rt_urls:
+      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/19990c8d-e56f-4a13-afbb-795cddd1a6da
+    rt_note: >-
+      The publisher exposes trip updates for the Perpignan network. A
+      separate school-service stream is published but is not recorded here
+      because it does not match this archive's scope.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Perpignan Méditerranée Métropole and the update date.
+    operating_note: >-
+      The same dataset also publishes a regular-lines-only export. That
+      export ran only to 2026-09-14 when checked on 2026-09-01, so this
+      combined resource is the one recorded.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-sankeo
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté urbaine Perpignan Méditerranée Métropole.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-capbus-agde
+    name: Cap'Bus (Hérault Méditerranée)
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/64163/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'Agglomération Hérault
+      Méditerranée, réseau Cap'Bus and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-capbus
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'Agglomération Hérault Méditerranée, réseau Cap'Bus.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-la-navette-gaillac
+    name: La Navette (Gaillac)
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    organization_id: fr-pan-5ee28a82a4726888290c20c4
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/82583/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'Agglomération
+      Gaillac-Graulhet, réseau La Navette de Gaillac and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-la-navette-commune-de-gaillac
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'Agglomération Gaillac-Graulhet, réseau La Navette de
+        Gaillac.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-lislenbus
+    name: Lislenbus (Lisle-sur-Tarn)
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    organization_id: fr-pan-5ee28a82a4726888290c20c4
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/81535/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Communauté d'Agglomération
+      Gaillac-Graulhet, réseau Lislenbus and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-lislenbus-commune-de-lisle-sur-tarn
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Communauté d'Agglomération Gaillac-Graulhet, réseau Lislenbus.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-lisatis-lavaur
+    name: LISATIS (Lavaur)
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    organization_id: fr-pan-6a3b78968b3d24d33d1b1118
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/84087/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to SPL D'un Point à l'Autre, réseau LISATIS
+      and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-de-transport-urbain-lisatis
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: SPL D'un Point à l'Autre, réseau LISATIS.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-saint-sulpice-la-pointe
+    name: Réseau urbain de Saint-Sulpice-la-Pointe
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    organization_id: fr-pan-6a3b78968b3d24d33d1b1118
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/84089/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to SPL D'un Point à l'Autre, réseau urbain
+      de Saint-Sulpice-la-Pointe and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/reseau-de-transport-urbain-de-la-ville-de-st-sulpice-la-pointe
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        SPL D'un Point à l'Autre, réseau urbain de Saint-Sulpice-la-Pointe.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fr-sankeo-scolaire
+    name: Sankéo lignes scolaires (Perpignan)
+    country: FR
+    subdivision_code: FR-OCC
+    subdivision_name: Occitanie
+    organization_id: fr-pan-5c18fad8634f4130048f1ea1
+    feed_variant: Lignes scolaires
+    is_official: true
+    static_gtfs_url: https://transport.data.gouv.fr/resources/83734/download
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab) as recorded on the French national access
+      point transport.data.gouv.fr; reuse including commercial reuse is
+      permitted with attribution to Sankéo, lignes scolaires de Perpignan
+      Méditerranée Métropole and the update date.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://transport.data.gouv.fr/datasets/gtfs-sankeo
+      terms_url: https://www.etalab.gouv.fr/licence-ouverte-open-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Sankéo, lignes scolaires de Perpignan Méditerranée Métropole.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
       identity_reviewed: true

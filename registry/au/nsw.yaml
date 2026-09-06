@@ -1,0 +1,34 @@
+# AU agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: transport-for-nsw-greater-sydney
+    name: Transport for NSW (Greater Sydney)
+    country: AU
+    subdivision_code: AU-NSW
+    subdivision_name: New South Wales
+    is_official: true
+    large_feed: true
+    static_gtfs_url: https://opendata.transport.nsw.gov.au/data/dataset/d1f68d4f-b778-44df-9823-cf2fa922e47f/resource/67974f14-01bf-47b7-bfa5-c7f2f8a950ca/download/full_greater_sydney_gtfs_static_0.zip
+    license_note: >-
+      CC BY 4.0 through the Transport Open Data Hub; credit Transport for
+      NSW as the source.
+    operating_note: >-
+      The complete Greater Sydney schedule bundle: 10,179 routes and 199,757
+      trips across light rail, metro, rail, bus and ferry. It is one
+      regional file covering many operators, counted here as one feed record
+      rather than as separate agencies. At 279 MiB it needs the large-feed
+      ingestion tier. The per-mode Transport for NSW API feeds still require
+      an API key; this bundle does not, which is what changed since the
+      2026-07 review deferred Sydney on its registration wall.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://opendata.transport.nsw.gov.au/data/dataset/d1f68d4f-b778-44df-9823-cf2fa922e47f
+      terms_url: https://opendata.transport.nsw.gov.au/datalicence
+      scope: [gtfs_schedule]
+      attribution: Transport for NSW.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

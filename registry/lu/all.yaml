@@ -1,0 +1,28 @@
+# LU agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: luxembourg-national-transport
+    name: Luxembourg national public transport
+    country: LU
+    is_official: true
+    static_gtfs_url: https://download.data.public.lu/resources/horaires-et-arrets-des-transport-publics-gtfs/20260821-055311/gtfs-20260819-20261212.zip
+    license_note: >-
+      CC BY 4.0 through Luxembourg's national open data portal; credit the
+      Administration des transports publics.
+    operating_note: >-
+      One national feed covering RGTR, Ville de Luxembourg buses, CFL, TICE
+      and Luxtram; counted as one feed record, not a distinct-agency count.
+      The portal publishes a new dated resource each week, so the download
+      path changes and needs a periodic refresh.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.public.lu/en/datasets/horaires-et-arrets-des-transport-publics-gtfs/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Administration des transports publics, Luxembourg.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

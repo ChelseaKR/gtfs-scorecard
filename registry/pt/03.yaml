@@ -24,3 +24,105 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: cim-cavado-lote-1
+    name: Mov Cávado (CIM Cávado, lote 1)
+    country: PT
+    subdivision_code: PT-03
+    subdivision_name: Braga
+    organization_id: cim-cavado
+    feed_variant: Lote 1
+    is_official: true
+    static_gtfs_url: https://minhoaccesspoint.eu/dataset/332cc43a-5567-4521-88aa-6a0fc8d11eaa/resource/b42515d8-f6c6-44dd-bba4-1756d675340a/download/gtfs_cav_9.4.2_20251120_l1.zip
+    license_note: >-
+      CC BY through the Minho Access Point, the public mobility data portal
+      run by the Associação Quadrilátero Urbano for its member
+      municipalities and intermunicipal communities.
+    operating_note: >-
+      The first of two operating lots of the CIM Cávado intermunicipal bus
+      network in Braga district, with 27 routes.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://minhoaccesspoint.eu/dataset/rede-de-transporte-publico-cim-cavado
+      terms_url: http://opendefinition.org/licenses/cc-by/
+      scope: [gtfs_schedule]
+      attribution: CIM Cávado, via the Minho Access Point.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: cim-cavado-lote-2
+    name: Transdev & Avic Cávado (CIM Cávado, lote 2)
+    country: PT
+    subdivision_code: PT-03
+    subdivision_name: Braga
+    organization_id: cim-cavado
+    feed_variant: Lote 2
+    is_official: true
+    static_gtfs_url: https://minhoaccesspoint.eu/dataset/332cc43a-5567-4521-88aa-6a0fc8d11eaa/resource/655b4bec-3a0b-45ee-9805-89c0d9cacaab/download/gtfs_cav_v9.4.1_20251120_l2.zip
+    license_note: >-
+      CC BY through the Minho Access Point, the public mobility data portal
+      run by the Associação Quadrilátero Urbano for its member
+      municipalities and intermunicipal communities.
+    operating_note: >-
+      The second operating lot of the CIM Cávado intermunicipal bus network
+      in Braga district, with 48 routes.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://minhoaccesspoint.eu/dataset/rede-de-transporte-publico-cim-cavado
+      terms_url: http://opendefinition.org/licenses/cc-by/
+      scope: [gtfs_schedule]
+      attribution: CIM Cávado, via the Minho Access Point.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: tuba-barcelos
+    name: TUBA (Transportes Urbanos de Barcelos)
+    country: PT
+    subdivision_code: PT-03
+    subdivision_name: Braga
+    is_official: true
+    static_gtfs_url: https://minhoaccesspoint.eu/dataset/1842a15c-1aec-4f65-8e29-e57c8b4cbd74/resource/6221b66c-f160-45be-810d-0fb16aa7ab6f/download/11_gtfs_bcl_v4.4.1_20251120-tuba.zip
+    license_note: >-
+      CC BY through the Minho Access Point, the public mobility data portal
+      run by the Associação Quadrilátero Urbano for its member
+      municipalities and intermunicipal communities.
+    operating_note: >-
+      The municipal transport network of Barcelos, published by the city
+      council as 60 routes.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://minhoaccesspoint.eu/dataset/paragem-de-passageiros-de-barcelos
+      terms_url: http://opendefinition.org/licenses/cc-by/
+      scope: [gtfs_schedule]
+      attribution: Câmara Municipal de Barcelos, via the Minho Access Point.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: mobiave-famalicao
+    name: MobiAve (Vila Nova de Famalicão)
+    country: PT
+    subdivision_code: PT-03
+    subdivision_name: Braga
+    is_official: true
+    static_gtfs_url: https://minhoaccesspoint.eu/dataset/fe6015e4-86c7-437a-8d31-10759fe21a1d/resource/f4c4f4c2-0397-41dc-98d3-6afd52bae32e/download/opengtfs_famalicao.zip
+    license_note: >-
+      CC BY through the Minho Access Point, the public mobility data portal
+      run by the Associação Quadrilátero Urbano for its member
+      municipalities and intermunicipal communities.
+    operating_note: >-
+      The municipal transport network of Vila Nova de Famalicão, published
+      by the city council as 90 routes.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://minhoaccesspoint.eu/dataset/veiculo-de-transporte-de-passageiros-de-vila-nova-de-famalicao
+      terms_url: http://opendefinition.org/licenses/cc-by/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Câmara Municipal de Vila Nova de Famalicão, via the Minho Access
+        Point.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

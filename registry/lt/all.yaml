@@ -1253,3 +1253,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: lithuania-ltsa-national-routes
+    name: Lietuvos transporto saugos administracija national routes
+    country: LT
+    is_official: true
+    static_gtfs_url: https://www.visimarsrutai.lt/gtfs/LTSAR.zip
+    license_note: >-
+      CC BY 4.0 through Lithuania's official open-data portal; credit the
+      Lithuanian Transport Safety Administration.
+    operating_note: >-
+      The intercity and long-distance layer of the national GTFS directory,
+      licensed by the Lithuanian Transport Safety Administration. Distinct
+      from the municipal exports already listed, and not the site's combined
+      national archive, which repackages feeds the registry already carries.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://data.gov.lt/datasets/1929/
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Lithuanian Transport Safety Administration, via data.gov.lt.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

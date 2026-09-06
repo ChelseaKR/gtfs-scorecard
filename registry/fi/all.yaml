@@ -1,0 +1,30 @@
+# FI agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: fintraffic-rail-finland
+    name: Finnish passenger rail (Fintraffic)
+    country: FI
+    is_official: true
+    static_gtfs_url: https://rata.digitraffic.fi/api/v1/trains/gtfs-passenger.zip
+    license_note: >-
+      CC BY 4.0 under Fintraffic's Digitraffic terms of service, which allow
+      commercial reuse. Credit "Source: Fintraffic / digitraffic.fi, license
+      CC 4.0 BY", link the licence, and note any changes.
+    operating_note: >-
+      National passenger rail timetables published by Fintraffic through the
+      Digitraffic service. The archive covers VR services and the museum
+      railways that share the network. Counted as one feed record. The
+      endpoint answers only when the client sends an Accept-Encoding header
+      that allows gzip.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.digitraffic.fi/en/railway-traffic/
+      terms_url: https://www.digitraffic.fi/en/terms-of-service/
+      scope: [gtfs_schedule]
+      attribution: "Source: Fintraffic / digitraffic.fi, license CC 4.0 BY."
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

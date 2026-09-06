@@ -177,9 +177,9 @@ def test_repo_registry_matches_documented_feed_record_counts(
     agencies = read_agencies()
     european = [agency for agency in agencies if agency.country in EUROPE_BETA_COUNTRY_CODES]
 
-    assert len(agencies) == 2_275
-    assert len(european) == 618
-    assert len({agency.country for agency in european}) == 26
+    assert len(agencies) == 2_643
+    assert len(european) == 760
+    assert len({agency.country for agency in european}) == 28
 
 
 def test_repo_registry_carries_reviewed_coverage_recovery_updates(
@@ -208,9 +208,13 @@ def test_repo_registry_includes_france_pan_and_new_country_code_wave(
 ) -> None:
     monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
     by_id = {agency.id: agency for agency in read_agencies()}
+    # The `fr-pan-` prefix says where a record came from, not which wave
+    # brought it in, so every National Access Point pass lands in this list.
+    # The whole-cohort assertions below hold for all of them; the per-wave
+    # counts are scoped by reviewed_on further down.
     france_pan = [agency for agency in by_id.values() if agency.id.startswith("fr-pan-")]
 
-    assert len(france_pan) == 226
+    assert len(france_pan) == 234
     assert {agency.country for agency in france_pan} == {"FR"}
     assert {agency.subdivision_code for agency in france_pan} >= {
         "FR-20R",
@@ -230,25 +234,29 @@ def test_repo_registry_includes_france_pan_and_new_country_code_wave(
         )
         assert agency.reuse_evidence.reviewed_on in {"2026-07-23", "2026-08-30", "2026-09-01"}
         assert agency.reuse_evidence.identity_reviewed is True
-    # The 2026-08-30 second exhaustion pass added 76 reviewed records,
+    # The 2026-08-30 second exhaustion pass holds 56 reviewed records,
     # including the first French large-feed-tier record (Naolib, Nantes).
+    # It was 76 before the coverage-expansion pass re-reviewed 20 of them
+    # on 2026-09-01, which moved those into the third-pass cohort below.
     second_pass = [
         agency
         for agency in france_pan
         if agency.reuse_evidence is not None and agency.reuse_evidence.reviewed_on == "2026-08-30"
     ]
-    assert len(second_pass) == 76
+    assert len(second_pass) == 56
     naolib = by_id["fr-pan-84101"]
     assert naolib.large_feed is True
     assert naolib.subdivision_code == "FR-PDL"
-    # The 2026-09-01 rentrée recheck pass added 14 records whose calendars
-    # refreshed past the 60-day gate, SETRAM (Le Mans) among them.
+    # The 2026-09-01 cohort is the 14 rentrée recheck records whose calendars
+    # refreshed past the 60-day gate, SETRAM (Le Mans) among them, plus 20
+    # second-pass records the coverage-expansion pass re-reviewed on that
+    # date and 8 it added outright.
     third_pass = [
         agency
         for agency in france_pan
         if agency.reuse_evidence is not None and agency.reuse_evidence.reviewed_on == "2026-09-01"
     ]
-    assert len(third_pass) == 14
+    assert len(third_pass) == 42
     setram = by_id["fr-pan-79601"]
     assert setram.subdivision_code == "FR-PDL"
     assert setram.reuse_evidence is not None

@@ -26,3 +26,30 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: red-group-buckinghamshire
+    name: Red Group
+    country: GB
+    subdivision_code: GB-BKM
+    subdivision_name: Buckinghamshire
+    is_official: true
+    static_gtfs_url: https://data.discoverpassenger.com/operator/redgroup/dataset/current/download/gtfs
+    license_note: >-
+      Open Government Licence v3.0 through the operator's Passenger open
+      data feed; credit Red Group as the source and do not imply
+      endorsement.
+    operating_note: >-
+      One file covering the group's Red Rose Travel and Red Line services
+      around Aylesbury and the Chilterns. The separate redrose and redline
+      slugs on the same platform publish no GTFS.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://data.discoverpassenger.com/operator/redgroup
+      terms_url: https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Red Group; contains public sector information licensed under the
+        Open Government Licence v3.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

@@ -1,0 +1,30 @@
+# BG agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: aytos-avtotransport
+    name: Айтос Автотранспорт ЕООД
+    country: BG
+    subdivision_code: BG-02
+    subdivision_name: Burgas
+    mdb_id: "3155"
+    is_official: true
+    static_gtfs_url: https://transport.aytos.bg/gtfs/AytosGTFS.zip
+    license_note: >-
+      CC BY 4.0 on the operator's own open-data page, which states the data
+      may be used, modified and redistributed including for commercial
+      purposes. Credit Айтос Автотранспорт ЕООД.
+    operating_note: >-
+      Municipal bus service for Aytos and its surrounding villages in Burgas
+      Province. Bulgaria's second reviewed feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://transport.aytos.bg/20260301-20281231/opendata.html
+      terms_url: https://creativecommons.org/licenses/by/4.0/
+      scope: [gtfs_schedule]
+      attribution: Айтос Автотранспорт ЕООД (Aytos Avtotransport EOOD).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

@@ -1,0 +1,301 @@
+# JP agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: nihon-kotsu-tottori
+    name: Nihon Kotsu (日本交通)
+    country: JP
+    subdivision_code: JP-31
+    subdivision_name: Tottori
+    is_official: true
+    static_gtfs_url: https://odp-pref-tottori.tori-info.co.jp/bus_data/1.zip
+    license_note: >-
+      CC BY 2.1 Japan through the Tottori Prefecture open-data portal.
+      Credit Tottori Prefecture and Nihon Kotsu.
+    operating_note: >-
+      Nihon Kotsu's scheduled bus routes across Tottori Prefecture. The
+      portal also publishes vehicle positions as JSON rather than protobuf,
+      so no realtime endpoint is recorded here.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://odp-pref-tottori.tori-info.co.jp/bus.html
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: Nihon Kotsu, published by Tottori Prefecture.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: hinomaru-jidosha
+    name: Hinomaru Jidosha (日ノ丸自動車)
+    country: JP
+    subdivision_code: JP-31
+    subdivision_name: Tottori
+    is_official: true
+    static_gtfs_url: https://odp-pref-tottori.tori-info.co.jp/bus_data/2.zip
+    license_note: >-
+      CC BY 2.1 Japan through the Tottori Prefecture open-data portal.
+      Credit Tottori Prefecture and Hinomaru Jidosha.
+    operating_note: >-
+      Hinomaru Jidosha's scheduled bus routes across Tottori Prefecture. The
+      portal publishes this operator's vehicle positions as JSON rather than
+      protobuf, so no realtime endpoint is recorded here.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://odp-pref-tottori.tori-info.co.jp/bus.html
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: Hinomaru Jidosha, published by Tottori Prefecture.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: tottori-city-bus
+    name: Tottori City Bus (鳥取市 循環バス「くる梨」ほか)
+    country: JP
+    subdivision_code: JP-31
+    subdivision_name: Tottori
+    is_official: true
+    static_gtfs_url: https://odp-pref-tottori.tori-info.co.jp/bus_data/3.zip
+    rt_urls:
+      vehicle_positions: https://odp-pref-tottori.tori-info.co.jp/bus_data/3_rt.bin
+    rt_note: >-
+      Vehicle positions only, as GTFS-RT protobuf. The prefecture asks for
+      no more than one request every 30 seconds.
+    license_note: >-
+      CC BY 2.1 Japan through the Tottori Prefecture open-data portal.
+      Credit Tottori Prefecture and Tottori City.
+    operating_note: >-
+      Tottori City's Kururi loop bus, Loop Kirin Shishi, the Ketaka loop,
+      the Kinumi line and the Racchan bus in one feed.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://odp-pref-tottori.tori-info.co.jp/bus.html
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: Tottori City, published by Tottori Prefecture.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: iwami-town-bus
+    name: Iwami Town Bus (岩美町営バス)
+    country: JP
+    subdivision_code: JP-31
+    subdivision_name: Tottori
+    is_official: true
+    static_gtfs_url: https://odp-pref-tottori.tori-info.co.jp/bus_data/4.zip
+    license_note: >-
+      CC BY 2.1 Japan through the Tottori Prefecture open-data portal.
+      Credit Tottori Prefecture and Iwami Town.
+    operating_note: Iwami Town's municipal bus. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://odp-pref-tottori.tori-info.co.jp/bus.html
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: Iwami Town, published by Tottori Prefecture.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: wakasa-town-onikko-bus
+    name: Wakasa Town Onikko Bus (若桜町営バス「おにっこバス」)
+    country: JP
+    subdivision_code: JP-31
+    subdivision_name: Tottori
+    is_official: true
+    static_gtfs_url: https://odp-pref-tottori.tori-info.co.jp/bus_data/5.zip
+    license_note: >-
+      CC BY 2.1 Japan through the Tottori Prefecture open-data portal.
+      Credit Tottori Prefecture and Wakasa Town.
+    operating_note: >-
+      Wakasa Town (若桜町, Tottori) municipal bus, branded Onikko. A different
+      Wakasa Town (若狭町) in Fukui runs its own service.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://odp-pref-tottori.tori-info.co.jp/bus.html
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: Wakasa Town, published by Tottori Prefecture.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: yazu-town-bus
+    name: Yazu Bus (八頭町営バス「やずバス」)
+    country: JP
+    subdivision_code: JP-31
+    subdivision_name: Tottori
+    is_official: true
+    static_gtfs_url: https://odp-pref-tottori.tori-info.co.jp/bus_data/6.zip
+    license_note: >-
+      CC BY 2.1 Japan through the Tottori Prefecture open-data portal.
+      Credit Tottori Prefecture and Yazu Town.
+    operating_note: >-
+      Yazu Town's municipal bus, branded Yazu Bus. Counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://odp-pref-tottori.tori-info.co.jp/bus.html
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: Yazu Town, published by Tottori Prefecture.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: misasa-town-sunsun-bus
+    name: Misasa Sun Sun Bus (三朝町営バス「みささサンサンバス」)
+    country: JP
+    subdivision_code: JP-31
+    subdivision_name: Tottori
+    is_official: true
+    static_gtfs_url: https://odp-pref-tottori.tori-info.co.jp/bus_data/7.zip
+    license_note: >-
+      CC BY 2.1 Japan through the Tottori Prefecture open-data portal.
+      Credit Tottori Prefecture and Misasa Town.
+    operating_note: >-
+      Misasa Town's municipal bus. A small feed; counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://odp-pref-tottori.tori-info.co.jp/bus.html
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: Misasa Town, published by Tottori Prefecture.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kotoura-town-bus
+    name: Kotoura Town Bus (琴浦町営バス「ことうらバス」)
+    country: JP
+    subdivision_code: JP-31
+    subdivision_name: Tottori
+    is_official: true
+    static_gtfs_url: https://odp-pref-tottori.tori-info.co.jp/bus_data/8.zip
+    license_note: >-
+      CC BY 2.1 Japan through the Tottori Prefecture open-data portal.
+      Credit Tottori Prefecture and Kotoura Town.
+    operating_note: Kotoura Town's municipal bus. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://odp-pref-tottori.tori-info.co.jp/bus.html
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: Kotoura Town, published by Tottori Prefecture.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: yonago-city-dandan-bus
+    name: Yonago City Dandan Bus (米子市「だんだんバス」「どんぐりコロコロ」)
+    country: JP
+    subdivision_code: JP-31
+    subdivision_name: Tottori
+    is_official: true
+    static_gtfs_url: https://odp-pref-tottori.tori-info.co.jp/bus_data/9.zip
+    license_note: >-
+      CC BY 2.1 Japan through the Tottori Prefecture open-data portal.
+      Credit Tottori Prefecture and Yonago City.
+    operating_note: >-
+      Yonago City's Dandan loop bus and the Yodoe district Donguri Korokoro
+      loop in one feed.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://odp-pref-tottori.tori-info.co.jp/bus.html
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: Yonago City, published by Tottori Prefecture.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nanbu-town-fureai-bus
+    name: Nanbu Town Fureai Bus (南部町営ふれあいバス)
+    country: JP
+    subdivision_code: JP-31
+    subdivision_name: Tottori
+    is_official: true
+    static_gtfs_url: https://odp-pref-tottori.tori-info.co.jp/bus_data/11.zip
+    license_note: >-
+      CC BY 2.1 Japan through the Tottori Prefecture open-data portal.
+      Credit Tottori Prefecture and Nanbu Town.
+    operating_note: >-
+      Nanbu Town's municipal Fureai bus. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://odp-pref-tottori.tori-info.co.jp/bus.html
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: Nanbu Town, published by Tottori Prefecture.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: nichinan-town-tattamo-bus
+    name: Nichinan Town Tattamo Bus (日南町巡回バス「たったもバス」)
+    country: JP
+    subdivision_code: JP-31
+    subdivision_name: Tottori
+    is_official: true
+    static_gtfs_url: https://odp-pref-tottori.tori-info.co.jp/bus_data/12.zip
+    license_note: >-
+      CC BY 2.1 Japan through the Tottori Prefecture open-data portal.
+      Credit Tottori Prefecture and Nichinan Town.
+    operating_note: >-
+      Nichinan Town's circulating bus, branded Tattamo. Counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://odp-pref-tottori.tori-info.co.jp/bus.html
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: Nichinan Town, published by Tottori Prefecture.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: hino-town-bus
+    name: Hino Town Bus (日野町営バス)
+    country: JP
+    subdivision_code: JP-31
+    subdivision_name: Tottori
+    is_official: true
+    static_gtfs_url: https://odp-pref-tottori.tori-info.co.jp/bus_data/13.zip
+    license_note: >-
+      CC BY 2.1 Japan through the Tottori Prefecture open-data portal.
+      Credit Tottori Prefecture and Hino Town.
+    operating_note: Hino Town's municipal bus. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://odp-pref-tottori.tori-info.co.jp/bus.html
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: Hino Town, published by Tottori Prefecture.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kofu-town-bus
+    name: Kofu Town Bus (江府町営バス)
+    country: JP
+    subdivision_code: JP-31
+    subdivision_name: Tottori
+    is_official: true
+    static_gtfs_url: https://odp-pref-tottori.tori-info.co.jp/bus_data/14.zip
+    license_note: >-
+      CC BY 2.1 Japan through the Tottori Prefecture open-data portal.
+      Credit Tottori Prefecture and Kofu Town.
+    operating_note: Kofu Town's municipal bus. Counted as one feed record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://odp-pref-tottori.tori-info.co.jp/bus.html
+      terms_url: https://creativecommons.org/licenses/by/2.1/jp/
+      scope: [gtfs_schedule]
+      attribution: Kofu Town, published by Tottori Prefecture.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

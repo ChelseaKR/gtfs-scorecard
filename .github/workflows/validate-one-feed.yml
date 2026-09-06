@@ -62,6 +62,7 @@ jobs:
           java-version: "17"
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
+          enable-cache: true
           python-version: "3.12"
 
       - name: Runner resources (ground truth for sizing SCORECARD_VALIDATOR_MEMORY_MB)
@@ -71,6 +72,13 @@ jobs:
             echo '```'
             free -h
             nproc
+            # Azure mixes hardware generations across regions and even within
+            # one, and a validation that finishes in 82s on one runner and is
+            # still going at 450s on another is the central unexplained fact of
+            # issue #297. The CPU model is one line and it was not being
+            # recorded, so "the fast runs are on faster silicon" could not be
+            # told apart from "the fast runs got a lucky GC".
+            grep -m1 'model name' /proc/cpuinfo || true
             df -h /
             echo '```'
           } | tee -a "$GITHUB_STEP_SUMMARY"
@@ -91,22 +99,167 @@ jobs:
           echo "agency=$AGENCY"
           echo "SCORECARD_VALIDATOR_MEMORY_MB=${SCORECARD_VALIDATOR_MEMORY_MB:-<unbounded>}"
           echo "SCORECARD_LARGE_FEED_HEAP=${SCORECARD_LARGE_FEED_HEAP:-<default>}"
+
+          # ------------------------------------------------------------------
+          # Instrumentation for issue #297's runner death. Read this before
+          # changing any of it; each piece exists because of a specific way the
+          # evidence was lost.
+          #
+          # Everything below goes to THIS STEP'S STDOUT, which is the job log.
+          # Nothing is written only to a file for a later upload step, because
+          # `actions/upload-artifact` never runs when the runner is killed —
+          # which is the failure mode being investigated. The Actions service
+          # streams the job log as it is produced, so a line printed here is on
+          # the server before the kill, and that is the whole point.
+          #
+          # `run_validator` calls `subprocess.run(..., capture_output=True)`,
+          # which buffers the validator's stdout and stderr inside the Python
+          # parent until the child returns. On a killed runner there is no
+          # return, so the buffer dies with the process. That is why three
+          # weeks of these deaths produced no Java output at all — the absence
+          # is a property of the instrumentation, not evidence that the JVM was
+          # healthy.
+          # ------------------------------------------------------------------
+          export SCORECARD_JVM_TEE="$RUNNER_TEMP/jvm-stdio.log"
+          export SCORECARD_JVM_GCLOG="$RUNNER_TEMP/jvm-gc.log"
+          SCORECARD_REAL_JAVA="$(command -v java)"
+          export SCORECARD_REAL_JAVA
+          : > "$SCORECARD_JVM_TEE"
+          : > "$SCORECARD_JVM_GCLOG"
+
+          # `validate.py:_java_binary()` already honours a SCORECARD_JAVA
+          # override, so the validator subprocess can be wrapped from here
+          # without touching production code — no change to validate.py,
+          # scorecard.yml or refresh.yml, and the scheduled tiers keep logging
+          # exactly as they do today.
+          #
+          # The wrapper still delivers both streams to the pipes
+          # `subprocess.run` created, so the labelled both-streams RuntimeError
+          # from #326 keeps reporting an ordinary validator failure unchanged;
+          # it additionally copies them to a file the sampler drains into the
+          # job log. Handing the wrapper an inherited descriptor instead was
+          # not available: `subprocess.run` defaults to `close_fds=True`, so
+          # anything above fd 2 is closed in the child.
+          #
+          # -Xlog:gc is injected here rather than in validate.py for the same
+          # reason. One line per collection is what distinguishes "the JVM is
+          # in a G1 spiral at its -Xmx ceiling" from "the platform killed a
+          # healthy runner", and no run has ever carried it. It is identical
+          # across every dispatch in this experiment, so it cannot skew a
+          # comparison between them; it does mean none of these runs is
+          # byte-identical to a production shard.
+          cat > "$RUNNER_TEMP/java-tee" <<'WRAPPER'
+          #!/usr/bin/env bash
+          exec "$SCORECARD_REAL_JAVA" \
+            "-Xlog:gc:file=$SCORECARD_JVM_GCLOG:time,uptime,level" \
+            "$@" \
+            > >(tee -a "$SCORECARD_JVM_TEE") \
+            2> >(tee -a "$SCORECARD_JVM_TEE" >&2)
+          WRAPPER
+          chmod +x "$RUNNER_TEMP/java-tee"
+          export SCORECARD_JAVA="$RUNNER_TEMP/java-tee"
+
+          # 5-second sampler: host memory, kernel memory-pressure stalls, the
+          # JVM's own RSS and address space, free disk, and whatever the JVM
+          # has printed since the last tick. `systemd-oomd` kills on sustained
+          # PSI pressure rather than on absolute exhaustion, so a runner can
+          # die at 6.4 GiB peak RSS on a 15 GiB box; without /proc/pressure
+          # that is invisible. Disk is included because it has never been
+          # measured mid-run, only at job start.
+          #
+          # `set +e` first, and it is load-bearing. The Actions default shell is
+          # `bash -e {0}`, and the `set -uo pipefail` at the top of this script
+          # does not clear the -e the runner already applied. Under -e a bare
+          # assignment from a failing command substitution exits the shell, and
+          # `pgrep -x java` returns 1 on every tick before the JVM starts — which
+          # is every tick before `uv run` has resolved its environment. Observed
+          # live in run 34008578163: the sampler died at t=0 without printing a
+          # line, the job produced the usual bare "shutdown signal" and nothing
+          # else, and the instrumentation added to diagnose a silent failure
+          # failed silently in the same way. `probe &` runs the function in a
+          # subshell, so relaxing errexit here does not weaken the step itself.
+          probe() {
+            set +e
+            local out_off=0 gc_off=0 mem psi jpid jrss jvsz avail cur stamp
+            echo "[probe] sampler started (pid $BASHPID), 5s period"
+            while :; do
+              stamp=$(date -u +%H:%M:%S)
+              mem=$(free -m | awk '/^Mem:/{printf "mem_total=%s used=%s free=%s buffcache=%s avail=%s", $2, $3, $4, $6, $7} /^Swap:/{printf " swap_used=%s", $3}')
+              psi=$(awk '{printf "%s(%s,%s) ", $1, $2, $3}' /proc/pressure/memory 2>/dev/null) || psi="psi=unavailable "
+              avail=$(df -m --output=avail / 2>/dev/null | tail -1 | tr -d ' ')
+              jpid=$(pgrep -x java 2>/dev/null | head -1) || jpid=""
+              if [ -n "${jpid:-}" ] && [ -r "/proc/${jpid}/status" ]; then
+                jrss=$(awk '/^VmRSS:/{print $2}' "/proc/${jpid}/status" 2>/dev/null)
+                jvsz=$(awk '/^VmSize:/{print $2}' "/proc/${jpid}/status" 2>/dev/null)
+                printf '[probe %s] %s | jvm pid=%s rss=%sM vsz=%sM | pressure %s| rootfs_avail=%sM\n' \
+                  "$stamp" "$mem" "$jpid" "$(( ${jrss:-0} / 1024 ))" "$(( ${jvsz:-0} / 1024 ))" "$psi" "${avail:-?}"
+              else
+                printf '[probe %s] %s | jvm not running | pressure %s| rootfs_avail=%sM\n' \
+                  "$stamp" "$mem" "$psi" "${avail:-?}"
+              fi
+              cur=$(stat -c %s "$SCORECARD_JVM_TEE" 2>/dev/null || echo 0)
+              if [ "${cur:-0}" -gt "$out_off" ]; then
+                tail -c "+$(( out_off + 1 ))" "$SCORECARD_JVM_TEE" | sed 's/^/[jvm-stdio] /'
+                out_off=$cur
+              fi
+              cur=$(stat -c %s "$SCORECARD_JVM_GCLOG" 2>/dev/null || echo 0)
+              if [ "${cur:-0}" -gt "$gc_off" ]; then
+                tail -c "+$(( gc_off + 1 ))" "$SCORECARD_JVM_GCLOG" | sed 's/^/[gc] /'
+                gc_off=$cur
+              fi
+              sleep 5
+            done
+          }
+          probe &
+          probe_pid=$!
+          trap 'pkill -P "$probe_pid" 2>/dev/null; kill "$probe_pid" 2>/dev/null; true' EXIT
+
+          # `|| status=$?` rather than a bare call followed by `status=$?`. The
+          # runner's `bash -e` aborts the step the moment the validation exits
+          # non-zero, so the Result and GC blocks below never ran on exactly the
+          # runs worth summarising — visible in run 33264844507 (2026-08-29),
+          # which reported `Process completed with exit code 1` and no Result
+          # section at all. The old `status=$?` could therefore only ever
+          # observe 0.
+          status=0
           if command -v /usr/bin/time >/dev/null; then
             /usr/bin/time -v uv run scorecard run --agency "$AGENCY" --force-fetch --skip-rt \
-              2> >(tee "$RUNNER_TEMP/time.log" >&2)
+              2> >(tee "$RUNNER_TEMP/time.log" >&2) || status=$?
           else
             uv run scorecard run --agency "$AGENCY" --force-fetch --skip-rt \
-              2>&1 | tee "$RUNNER_TEMP/time.log"
+              2>&1 | tee "$RUNNER_TEMP/time.log" || status=$?
           fi
-          status=$?
           {
             echo "## Result"
             echo "exit status: $status"
             echo '```'
             grep -E "Maximum resident set size|Elapsed \(wall clock\)|Exit status" "$RUNNER_TEMP/time.log" || true
             echo '```'
+            echo "## GC"
+            echo "collections: $(grep -c 'Pause' "$SCORECARD_JVM_GCLOG" 2>/dev/null || echo 0)"
+            echo "full pauses: $(grep -c 'Pause Full' "$SCORECARD_JVM_GCLOG" 2>/dev/null || echo 0)"
+            echo '```'
+            tail -n 25 "$SCORECARD_JVM_GCLOG" 2>/dev/null || true
+            echo '```'
           } | tee -a "$GITHUB_STEP_SUMMARY"
           exit "$status"
+
+      # Runs only when the runner survived. A killed runner never reaches this
+      # step, which is exactly why the sampler above streams to the job log
+      # instead of relying on anything post-hoc. Kept because a kernel OOM kill
+      # of the validator alone (rather than of the runner agent) would leave a
+      # message here and nowhere else.
+      - name: Kernel post-mortem (only reachable if the runner survived)
+        if: ${{ always() }}
+        run: |
+          set -uo pipefail
+          echo "## dmesg, memory-related lines"
+          sudo dmesg -T 2>/dev/null | grep -iE 'oom|killed process|out of memory|memory cgroup' | tail -40 || echo "none"
+          echo "## systemd-oomd"
+          journalctl -u systemd-oomd --no-pager -n 40 2>/dev/null || echo "unavailable"
+          echo "## final free / df"
+          free -m || true
+          df -m / || true
 
       - name: Retain the validator report for inspection
         if: ${{ always() }}

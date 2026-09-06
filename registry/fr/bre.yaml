@@ -461,29 +461,33 @@ agencies:
       reviewed_on: '2026-08-30'
       identity_reviewed: true
   - id: fr-pan-82555
-    name: Réseau urbain MAT
+    name: MAT (Saint-Malo Agglomération)
     country: FR
     subdivision_code: FR-BRE
     subdivision_name: Bretagne
     is_official: true
     static_gtfs_url: https://www.data.gouv.fr/api/1/datasets/r/3bd31fbe-93f4-432d-ade7-ee8d69897880
     rt_urls:
-      trip_updates: https://www.data.gouv.fr/api/1/datasets/r/82da1b06-3337-44ca-9146-d70537231a11
-      vehicle_positions: https://www.data.gouv.fr/api/1/datasets/r/82da1b06-3337-44ca-9146-d70537231a11
-      service_alerts: https://www.data.gouv.fr/api/1/datasets/r/82da1b06-3337-44ca-9146-d70537231a11
-    license_note: Licence Ouverte 2.0 (Etalab), recorded by France's National Access Point; reuse including
-      commercial reuse is permitted with attribution to CA du Pays de Saint Malo Agglomération and the update
-      date.
+      trip_updates: https://proxy.transport.data.gouv.fr/resource/mat-st-malo-gtfs-rt
+      vehicle_positions: https://proxy.transport.data.gouv.fr/resource/mat-st-malo-gtfs-rt
+    rt_note: >-
+      One combined stream carries both trip updates and vehicle positions.
+    license_note: >-
+      Licence Ouverte 2.0 (Etalab), recorded by France's National Access
+      Point; reuse including commercial reuse is permitted with attribution
+      to Saint- Malo Agglomération and the update date.
+    operating_note: >-
+      Operated by Transdev SMA Mobilités for the Communauté d'agglomération
+      du Pays de Saint-Malo.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
       provider_source_url: https://transport.data.gouv.fr/datasets/reseau-urbain-mat
-      terms_url: https://transport.data.gouv.fr/datasets/reseau-urbain-mat
-      scope:
-      - gtfs_schedule
-      attribution: CA du Pays de Saint Malo Agglomération
+      terms_url: https://www.data.gouv.fr/pages/legal/licences/etalab-2.0
+      scope: [gtfs_schedule]
+      attribution: Communauté d'agglomération du Pays de Saint-Malo.
       reviewed_by: ChelseaKR
-      reviewed_on: '2026-08-30'
+      reviewed_on: "2026-09-01"
       identity_reviewed: true
   - id: fr-pan-72361
     name: Réseau urbain et scolaire Guingamp-Paimpol Mobilité

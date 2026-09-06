@@ -7,6 +7,7 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-GTFS%20Scorecard%20gate-2ea44f?logo=github)](https://github.com/marketplace/actions/gtfs-scorecard-gate)
 [![Live site](https://img.shields.io/badge/live-gtfsscorecard.org-2ea44f)](https://gtfsscorecard.org)
+[![Sponsor](https://img.shields.io/badge/Sponsor-GitHub%20Sponsors-ea4aaa?logo=githubsponsors)](https://github.com/sponsors/ChelseaKR)
 
 [![GTFS Scorecard: plain-language GTFS quality and prioritized fixes](https://gtfsscorecard.org/og.png)](https://gtfsscorecard.org)
 
@@ -76,7 +77,7 @@ Scorecard is independent and is not an official compliance determination.
 
 Pilot agencies: [Unitrans](https://unitrans.ucdavis.edu) (ASUCD / City of
 Davis) and [Yolobus](https://yolobus.com) (Yolo County Transportation
-District). Beyond the pilots, the registry contains more than 2,200 curated
+District). Beyond the pilots, the registry contains more than 2,600 curated
 feed records, mostly in the United States and Canada, plus reviewed canaries
 across Europe, Asia-Pacific, and South America. Scoring is scheduled daily for
 every registered feed, and the public status page reports the exact current
@@ -269,8 +270,8 @@ current deployment status.
 
 The cohort drafted from the Mobility Database has grown well past the first
 California pass: the manifest-backed [`registry`](registry/README.md) now
-carries more than 2,200 curated feed records, mostly across the US and Canada,
-with a 618-record reviewed European cohort across 26 countries.
+carries more than 2,600 curated feed records, mostly across the US and Canada,
+with a 760-record reviewed European cohort across 28 countries.
 It now includes a geographically diverse reviewed canary cohort, scored daily
 (a 2026-07 dedupe pass removed ~350 records that duplicated an already-listed
 feed).
@@ -284,17 +285,14 @@ Any agency with a public GTFS feed can be added with one YAML block in
 deployed `infra/submit` endpoint; every submission still opens a pull request
 for human review before publication.
 
-## Support and services
+## Support and sponsorship
 
 The public scorecards, data, API, local pre-publish check, and request-backed
 one-off scoring remain free. The [support page](https://gtfsscorecard.org/support/)
-explains the project's infrastructure needs and accepts sponsorship inquiries;
-it does not advertise a payment rail that is not ready.
-
-Programs and agencies that want a facilitated audit, workshop, or implementation
-help can review the current [consulting services and pricing](https://chelseakr.com/consulting/).
-Paid help is separate from scoring and never changes a grade or removes anything
-from the free tier.
+explains the project's infrastructure needs, what each
+[GitHub Sponsors](https://github.com/sponsors/ChelseaKR) tier is sized to, and
+what sponsorship never buys; it does not advertise a payment rail that is not
+ready. Nothing is subtracted from the free tier to create anything else.
 
 ## Standards conformance
 

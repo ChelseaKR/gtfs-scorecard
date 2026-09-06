@@ -1,0 +1,31 @@
+# CA agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: regina-transit
+    name: Regina Transit
+    country: CA
+    subdivision_code: CA-SK
+    subdivision_name: Saskatchewan
+    mdb_id: "715"
+    is_official: true
+    static_gtfs_url: https://opengis.regina.ca/reginagtfs/google_transit.zip
+    license_note: >-
+      Open Government Licence – City of Regina, based on version 2.0 of the
+      Open Government Licence – Canada: a worldwide, royalty-free,
+      perpetual, non-exclusive licence to use the data, including
+      commercially, with attribution. Derived measurements by GTFS
+      Scorecard.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.regina.ca/city-government/open-data/
+      terms_url: https://www.regina.ca/city-government/open-data/open-government-licence/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Contains information licensed under the Open Government Licence –
+        City of Regina.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

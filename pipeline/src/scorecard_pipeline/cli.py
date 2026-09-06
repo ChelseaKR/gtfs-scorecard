@@ -145,10 +145,12 @@ def _realtime_category(
 def _routability_block(reader_path: Path) -> dict[str, Any]:
     """Build the ungraded routability block without failing a national feed.
 
-    National aggregates can safely clear archive validation while carrying a
-    stop_times.txt too large for Scorecard's whole-table reader. Routability is
-    descriptive and zero-deduction, so report that it was not measured rather
-    than withholding the feed's graded scorecard.
+    stop_times.txt is streamed, so its size no longer decides whether this block
+    can be measured; the remaining way to get here is a trips.txt or stops.txt
+    over the whole-table reader's cap. Routability is descriptive and
+    zero-deduction, so report that it was not measured rather than withholding
+    the feed's graded scorecard, and never let an unread table reach the
+    artifact as a count of zero.
     """
     from .gtfs import TableTooLargeError
     from .routability import assess_routability
@@ -384,6 +386,8 @@ def run_adhoc(
     name: str | None,
     date: dt.date,
     country: str = "US",
+    *,
+    large_feed: bool = False,
 ) -> dict[str, Any]:
     """Score an arbitrary GTFS Schedule URL or local zip without publishing.
 
@@ -392,6 +396,11 @@ def run_adhoc(
     tracked agency gets. Nothing is written to the public artifacts or index;
     scratch bytes and validator output land in the gitignored data/raw cache.
     Realtime is not sampled because an ad-hoc source carries no RT endpoints.
+
+    ``large_feed`` applies the same opted-in ceilings a registry record gets
+    from ``large_feed: true``. Without it a curator cannot preflight the very
+    feeds that need the large-feed decision: the standard caps reject them, so
+    the answer to "should this be admitted?" was unobtainable from this command.
     """
     country_code = validator_country_code(country)
     candidate = Path(source).expanduser()
@@ -401,7 +410,13 @@ def run_adhoc(
         raise FileNotFoundError(f"local GTFS zip not found: {candidate}")
     source_ref = candidate.resolve().as_uri() if is_local else source
     label = name or (candidate.stem if is_local else parsed.netloc) or "Ad-hoc feed"
-    agency = Agency(id="_adhoc", name=label, static_gtfs_url=source_ref, country=country_code)
+    agency = Agency(
+        id="_adhoc",
+        name=label,
+        static_gtfs_url=source_ref,
+        country=country_code,
+        large_feed=large_feed,
+    )
     # Keep the public artifact identity stable while isolating scratch files by
     # URL and validator country. Several local/worker invocations can score
     # different feeds at once; a shared `_adhoc/<date>` path lets one download
@@ -497,6 +512,7 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             args.name,
             args.date,
             country=getattr(args, "country", "US"),
+            large_feed=getattr(args, "large_feed", False),
         )
     except Exception as exc:
         log.error("could not score %s: %s", args.url, exc)
@@ -3129,6 +3145,61 @@ def _cmd_report(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     return 0
 
 
+def _cmd_bundle(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Program report bundle (docs/program-plan.md): validate a request, and
+    either print the build plan (--plan) or render the zip + manifest."""
+    from .bundle import BundleError, build_bundle, parse_request, plan
+
+    try:
+        raw = json.loads(Path(args.request).read_text())
+    except (OSError, ValueError) as err:
+        print(f"error: could not read request {args.request}: {err}", file=sys.stderr)
+        return 2
+    try:
+        request = parse_request(raw if isinstance(raw, dict) else {})
+        if args.plan is not None:
+            args.plan.parent.mkdir(parents=True, exist_ok=True)
+            args.plan.write_text(json.dumps(plan(request), indent=2) + "\n")
+            print(args.plan)
+            return 0
+        if args.out is None:
+            parser.error("--out is required unless --plan is given")
+        manifest = build_bundle(request, args.out)
+    except BundleError as err:
+        print(f"error: {err}", file=sys.stderr)
+        return 2
+    if args.manifest is not None:
+        args.manifest.parent.mkdir(parents=True, exist_ok=True)
+        args.manifest.write_text(json.dumps(manifest, indent=2) + "\n")
+    print(f"{args.out}: {manifest['included']} of {manifest['requested']} agencies included")
+    return 0
+
+
+def _cmd_bundle_email(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Render (and with --send, send through SES) the delivery email for a
+    built bundle. Rendering never touches the network; --send needs boto3."""
+    from .bundle import BundleError, delivery_email, parse_request
+    from .notify import send_via_ses
+
+    try:
+        request = parse_request(json.loads(Path(args.request).read_text()))
+        manifest = json.loads(Path(args.manifest).read_text())
+    except (OSError, ValueError, BundleError) as err:
+        print(f"error: {err}", file=sys.stderr)
+        return 2
+    email = delivery_email(request, manifest, args.download_url, args.expires_on)
+    if args.out is not None:
+        args.out.parent.mkdir(parents=True, exist_ok=True)
+        args.out.write_text(f"To: {email.to}\nSubject: {email.subject}\n\n{email.body}")
+        print(args.out)
+    if args.send:
+        if not args.sender:
+            parser.error("--send needs --from (a verified SES sender)")
+        send_via_ses([email], args.sender)
+        print(f"sent to {email.to}")
+    return 0
+
+
 def _cmd_canary(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .canary import run_canary
     from .validate import VALIDATOR_VERSION
@@ -3217,6 +3288,11 @@ def main(argv: list[str] | None = None) -> int:
         type=dt.date.fromisoformat,
         default=utc_today(),
         help="snapshot date (default: today in UTC)",
+    )
+    adhoc.add_argument(
+        "--large-feed",
+        action="store_true",
+        help="apply the large-feed ingestion ceilings, as a record with large_feed: true gets",
     )
     adhoc.add_argument("--html", help="also write a standalone HTML scorecard to this path")
     adhoc.add_argument(
@@ -3727,6 +3803,32 @@ def main(argv: list[str] | None = None) -> int:
         help="output path (default: <agency>-board-report.html in the current directory)",
     )
 
+    bundle = sub.add_parser(
+        "bundle",
+        help="render a program's branded board reports for a cohort as one zip",
+    )
+    bundle.add_argument("--request", required=True, type=Path, help="request JSON (see bundle.py)")
+    bundle.add_argument("--out", type=Path, default=None, help="zip to write")
+    bundle.add_argument("--manifest", type=Path, default=None, help="also write the manifest here")
+    bundle.add_argument(
+        "--plan",
+        type=Path,
+        default=None,
+        help="write the build plan (ids to fetch, ids refused) and stop; renders nothing",
+    )
+    bundle_email = sub.add_parser(
+        "bundle-email", help="render or send the delivery email for a built program bundle"
+    )
+    bundle_email.add_argument("--request", required=True, type=Path)
+    bundle_email.add_argument("--manifest", required=True, type=Path)
+    bundle_email.add_argument("--download-url", required=True)
+    bundle_email.add_argument("--expires-on", required=True, help="ISO date the link stops working")
+    bundle_email.add_argument(
+        "--out", type=Path, default=None, help="write the rendered email here"
+    )
+    bundle_email.add_argument("--send", action="store_true", help="send through SES (needs boto3)")
+    bundle_email.add_argument("--from", dest="sender", default="", help="verified SES sender")
+
     backfill = sub.add_parser(
         "backfill-state", help="fill missing agency state from the Mobility Database catalog"
     )
@@ -3935,6 +4037,8 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "render-site": _cmd_render_site,
         "render-constants": _cmd_render_constants,
         "report": _cmd_report,
+        "bundle": _cmd_bundle,
+        "bundle-email": _cmd_bundle_email,
         "backfill-state": _cmd_backfill_state,
         "lint": _cmd_lint,
         "identity": _cmd_identity,

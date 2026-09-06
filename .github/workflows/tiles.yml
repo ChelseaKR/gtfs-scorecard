@@ -21,6 +21,7 @@ permissions:
 jobs:
   build-tiles:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       # zizmor(artipacked): this checkout's persisted credential is what the
       # later `git push` (committing the rebuilt PMTiles archive) uses.
@@ -37,6 +38,7 @@ jobs:
 
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
+          enable-cache: true
           python-version: "3.12"
 
       - name: Install the pipeline

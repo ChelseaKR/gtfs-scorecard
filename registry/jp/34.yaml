@@ -1,0 +1,484 @@
+# JP agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: hiroden-bus
+    name: Hiroden Bus (広島電鉄バス)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://ajt-mobusta-gtfs.mcapps.jp/static/8/current_data.zip
+    rt_urls:
+      trip_updates: https://ajt-mobusta-gtfs.mcapps.jp/realtime/8/trip_updates.bin
+      vehicle_positions: https://ajt-mobusta-gtfs.mcapps.jp/realtime/8/vehicle_position.bin
+      service_alerts: https://ajt-mobusta-gtfs.mcapps.jp/realtime/8/alerts.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required; the association asks readers to note that completeness is
+      not guaranteed.
+    operating_note: >-
+      Hiroshima Electric Railway's bus network in and around Hiroshima City.
+      The feed also carries Fuchu Town's contracted service. The portal
+      publishes the current-data archive alongside a future-data archive for
+      a pending timetable revision; this record scores the current data.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Hiroshima Electric Railway, published through the Hiroshima Bus
+        Association GTFS open data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: hiroshima-bus
+    name: Hiroshima Bus (広島バス)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://ajt-mobusta-gtfs.mcapps.jp/static/9/current_data.zip
+    rt_urls:
+      trip_updates: https://ajt-mobusta-gtfs.mcapps.jp/realtime/9/trip_updates.bin
+      vehicle_positions: https://ajt-mobusta-gtfs.mcapps.jp/realtime/9/vehicle_position.bin
+      service_alerts: https://ajt-mobusta-gtfs.mcapps.jp/realtime/9/alerts.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required.
+    operating_note: >-
+      Hiroshima Bus's route network in Hiroshima City; counted as one feed
+      record.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Hiroshima Bus, published through the Hiroshima Bus Association GTFS
+        open data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: hiroshima-kotsu
+    name: Hiroshima Kotsu (広島交通)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://ajt-mobusta-gtfs.mcapps.jp/static/10/current_data.zip
+    rt_urls:
+      trip_updates: https://ajt-mobusta-gtfs.mcapps.jp/realtime/10/trip_updates.bin
+      vehicle_positions: https://ajt-mobusta-gtfs.mcapps.jp/realtime/10/vehicle_position.bin
+      service_alerts: https://ajt-mobusta-gtfs.mcapps.jp/realtime/10/alerts.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required.
+    operating_note: >-
+      Hiroshima Kotsu's route network north of Hiroshima City. The archive
+      also carries its affiliate Hirokou Kanko (広交観光), including the Ibara
+      line.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Hiroshima Kotsu, published through the Hiroshima Bus Association
+        GTFS open data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: geiyo-bus
+    name: Geiyo Bus (芸陽バス)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://ajt-mobusta-gtfs.mcapps.jp/static/11/current_data.zip
+    rt_urls:
+      trip_updates: https://ajt-mobusta-gtfs.mcapps.jp/realtime/11/trip_updates.bin
+      vehicle_positions: https://ajt-mobusta-gtfs.mcapps.jp/realtime/11/vehicle_position.bin
+      service_alerts: https://ajt-mobusta-gtfs.mcapps.jp/realtime/11/alerts.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required. Geiyo Bus separately offers the same data under CC BY 4.0 on
+      its own site; the association terms govern this endpoint.
+    operating_note: >-
+      Geiyo Bus's route network around Higashihiroshima, Takehara, and Kure.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Geiyo Bus, published through the Hiroshima Bus Association GTFS open
+        data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: bihoku-kotsu
+    name: Bihoku Kotsu (備北交通)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://ajt-mobusta-gtfs.mcapps.jp/static/12/current_data.zip
+    rt_urls:
+      trip_updates: https://ajt-mobusta-gtfs.mcapps.jp/realtime/12/trip_updates.bin
+      vehicle_positions: https://ajt-mobusta-gtfs.mcapps.jp/realtime/12/vehicle_position.bin
+      service_alerts: https://ajt-mobusta-gtfs.mcapps.jp/realtime/12/alerts.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required.
+    operating_note: >-
+      Bihoku Kotsu's local bus network in the Shobara and Miyoshi area of
+      northern Hiroshima Prefecture.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Bihoku Kotsu, published through the Hiroshima Bus Association GTFS
+        open data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: hd-nishi-hiroshima-bonbus
+    name: Bonbus (ボンバス / エイチ・ディー西広島)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://ajt-mobusta-gtfs.mcapps.jp/static/13/current_data.zip
+    rt_urls:
+      trip_updates: https://ajt-mobusta-gtfs.mcapps.jp/realtime/13/trip_updates.bin
+      vehicle_positions: https://ajt-mobusta-gtfs.mcapps.jp/realtime/13/vehicle_position.bin
+      service_alerts: https://ajt-mobusta-gtfs.mcapps.jp/realtime/13/alerts.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required.
+    operating_note: >-
+      Bonbus, operated by HD Nishi-Hiroshima in the western hill suburbs of
+      Hiroshima City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        HD Nishi-Hiroshima, published through the Hiroshima Bus Association
+        GTFS open data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: forble-bus
+    name: Forble (フォーブル)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://ajt-mobusta-gtfs.mcapps.jp/static/14/current_data.zip
+    rt_urls:
+      trip_updates: https://ajt-mobusta-gtfs.mcapps.jp/realtime/14/trip_updates.bin
+      vehicle_positions: https://ajt-mobusta-gtfs.mcapps.jp/realtime/14/vehicle_position.bin
+      service_alerts: https://ajt-mobusta-gtfs.mcapps.jp/realtime/14/alerts.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required.
+    operating_note: Forble's contracted bus service in Hiroshima Prefecture.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Forble, published through the Hiroshima Bus Association GTFS open
+        data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: jr-bus-chugoku
+    name: JR Bus Chugoku (JRバス中国)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://ajt-mobusta-gtfs.mcapps.jp/static/15/current_data.zip
+    rt_urls:
+      trip_updates: https://ajt-mobusta-gtfs.mcapps.jp/realtime/15/trip_updates.bin
+      vehicle_positions: https://ajt-mobusta-gtfs.mcapps.jp/realtime/15/vehicle_position.bin
+      service_alerts: https://ajt-mobusta-gtfs.mcapps.jp/realtime/15/alerts.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required.
+    operating_note: >-
+      JR Bus Chugoku, headquartered in Hiroshima. The published archive
+      covers its local and regional routes; some lines run into neighbouring
+      prefectures.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        JR Bus Chugoku, published through the Hiroshima Bus Association GTFS
+        open data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: ono-heart-bus
+    name: Ono Heart Bus (おおのハートバス)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://ajt-mobusta-gtfs.mcapps.jp/static/17/current_data.zip
+    rt_urls:
+      trip_updates: https://ajt-mobusta-gtfs.mcapps.jp/realtime/17/trip_updates.bin
+      vehicle_positions: https://ajt-mobusta-gtfs.mcapps.jp/realtime/17/vehicle_position.bin
+      service_alerts: https://ajt-mobusta-gtfs.mcapps.jp/realtime/17/alerts.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required.
+    operating_note: >-
+      The Ono Heart Bus community service in the Ono district of
+      Hatsukaichi, operated by Sasaki Kanko.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Sasaki Kanko, published through the Hiroshima Bus Association GTFS
+        open data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: kure-city-life-bus
+    name: Kure City Life Bus (呉市生活バス)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://ajt-mobusta-gtfs.mcapps.jp/static/18/current_data.zip
+    rt_urls:
+      trip_updates: https://ajt-mobusta-gtfs.mcapps.jp/realtime/18/trip_updates.bin
+      vehicle_positions: https://ajt-mobusta-gtfs.mcapps.jp/realtime/18/vehicle_position.bin
+      service_alerts: https://ajt-mobusta-gtfs.mcapps.jp/realtime/18/alerts.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required.
+    operating_note: >-
+      Kure City's contracted life-line bus network, published by the city.
+      The portal notes that a few of these routes have no realtime coverage.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Kure City, published through the Hiroshima Bus Association GTFS open
+        data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: hatsukaichi-city-bus
+    name: Hatsukaichi City Bus (廿日市市自主運行バス)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://ajt-mobusta-gtfs.mcapps.jp/static/19/current_data.zip
+    rt_urls:
+      trip_updates: https://ajt-mobusta-gtfs.mcapps.jp/realtime/19/trip_updates.bin
+      vehicle_positions: https://ajt-mobusta-gtfs.mcapps.jp/realtime/19/vehicle_position.bin
+      service_alerts: https://ajt-mobusta-gtfs.mcapps.jp/realtime/19/alerts.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required.
+    operating_note: >-
+      Hatsukaichi City's own-operation bus routes, including services in the
+      Yoshiwa and Sera uplands.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Hatsukaichi City, published through the Hiroshima Bus Association
+        GTFS open data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: onomichi-bus
+    name: Onomichi Bus (おのみちバス)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://ajt-mobusta-gtfs.mcapps.jp/static/53/current_data.zip
+    rt_urls:
+      trip_updates: https://ajt-mobusta-gtfs.mcapps.jp/realtime/53/trip_updates.bin
+      vehicle_positions: https://ajt-mobusta-gtfs.mcapps.jp/realtime/53/vehicle_position.bin
+      service_alerts: https://ajt-mobusta-gtfs.mcapps.jp/realtime/53/alerts.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required.
+    operating_note: Onomichi Bus's city and suburban network in Onomichi.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Onomichi Bus, published through the Hiroshima Bus Association GTFS
+        open data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: asahi-kotsu-ato-line
+    name: Asahi Kotsu Ato Line (朝日交通 阿戸熊野線)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://ajt-mobusta-gtfs.mcapps.jp/static/54/current_data.zip
+    rt_urls:
+      trip_updates: https://ajt-mobusta-gtfs.mcapps.jp/realtime/54/trip_updates.bin
+      vehicle_positions: https://ajt-mobusta-gtfs.mcapps.jp/realtime/54/vehicle_position.bin
+      service_alerts: https://ajt-mobusta-gtfs.mcapps.jp/realtime/54/alerts.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required.
+    operating_note: >-
+      Asahi Kotsu's Ato-Kumano route between Aki-ku in Hiroshima City and
+      Kumano Town; the whole of what this operator publishes on the portal.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Asahi Kotsu, published through the Hiroshima Bus Association GTFS
+        open data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: chugoku-bus
+    name: Chugoku Bus (中国バス)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://bus-vision.jp/gtfs_v2/chugokubus/gtfsFeed
+    rt_urls:
+      trip_updates: https://bus-vision.jp/realtime/chugokubus_trip_update_v2.bin
+      vehicle_positions: https://bus-vision.jp/realtime/chugokubus_vpos_update_v2.bin
+      service_alerts: https://bus-vision.jp/realtime/chugokubus_alrt_update_v2.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required.
+    operating_note: >-
+      Chugoku Bus's route network based on Fukuyama, reaching west toward
+      Hiroshima City.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Chugoku Bus, published through the Hiroshima Bus Association GTFS
+        open data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: tomotetsu-bus
+    name: Tomotetsu Bus (鞆鉄道)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://bus-vision.jp/gtfs_v2/tomotetsubus/gtfsFeed
+    rt_urls:
+      trip_updates: https://bus-vision.jp/realtime/tomotetsubus_trip_update_v2.bin
+      vehicle_positions: https://bus-vision.jp/realtime/tomotetsubus_vpos_update_v2.bin
+      service_alerts: https://bus-vision.jp/realtime/tomotetsubus_alrt_update_v2.bin
+    license_note: >-
+      CC0 public domain dedication, stated on the Hiroshima Bus Association
+      GTFS open data site that publishes the feed. No attribution is
+      required.
+    operating_note: >-
+      Tomotetsu's bus network around Fukuyama and the Tomonoura coast.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Tomotetsu, published through the Hiroshima Bus Association GTFS open
+        data site (CC0, no attribution required).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: etajima-bus
+    name: Etajima Bus (江田島バス)
+    country: JP
+    subdivision_code: JP-34
+    subdivision_name: Hiroshima
+    is_official: true
+    static_gtfs_url: https://gtfs-st.busit.jp/api/etajimabus
+    rt_urls:
+      trip_updates: https://gtfs-rt.busit.jp/api/Etajimabus/TripUpdates
+    license_note: >-
+      CC0 1.0 through the Hiroshima Prefecture Bus Association GTFS
+      open-data site. Credit is not required; Etajima Bus is named for
+      clarity.
+    operating_note: >-
+      Etajima Bus serves Etajima and Kure. Its feed comes from a different
+      bus location vendor than the rest of the association's list, and only
+      trip updates are published as realtime.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://www.bus-kyo.or.jp/gtfs-open-data
+      terms_url: https://creativecommons.org/publicdomain/zero/1.0/
+      scope: [gtfs_schedule]
+      attribution: >-
+        Etajima Bus (江田島バス), published by the Hiroshima Prefecture Bus
+        Association.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

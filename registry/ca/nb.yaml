@@ -26,3 +26,29 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-23"
       identity_reviewed: true
+  - id: codiac-transpo
+    name: Codiac Transpo
+    country: CA
+    subdivision_code: CA-NB
+    subdivision_name: New Brunswick
+    mdb_id: "1111"
+    is_official: true
+    static_gtfs_url: https://www7.moncton.ca/opendata/google_transit.zip
+    license_note: >-
+      City of Moncton Open Data Terms of Use: a world-wide, royalty-free,
+      non-exclusive licence to use and distribute the datasets in any medium
+      for any lawful purpose. Credit is invited rather than required.
+      Derived measurements by GTFS Scorecard.
+    operating_note: >-
+      The Greater Moncton service covering Moncton, Dieppe and Riverview,
+      published by the City of Moncton.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://open.moncton.ca/documents/moncton::transit-files-gtfs
+      terms_url: https://www5.moncton.ca/docs/Open_Data_Terms_of_Use.pdf
+      scope: [gtfs_schedule]
+      attribution: City of Moncton (Codiac Transpo).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

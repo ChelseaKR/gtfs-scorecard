@@ -35,7 +35,12 @@ from typing import Any
 
 from .config import cache_dir
 from .location import normalize_country_code
-from .validate import NoticeGroup, ValidationReport
+from .validate import (
+    NO_REPORT_WAS_READ,
+    NoticeGroup,
+    UnreadableValidatorReportError,
+    ValidationReport,
+)
 
 log = logging.getLogger(__name__)
 
@@ -56,6 +61,17 @@ def _report_to_json(report: ValidationReport) -> dict[str, Any]:
 
 
 def _report_from_json(data: dict[str, Any]) -> ValidationReport:
+    """Rebuild a stored report, or refuse a cache entry that is not one.
+
+    An entry written by an older schema, truncated mid-write, or corrupted in
+    transit used to rebuild as a report with no notices, which correctness
+    scores 100.0 and describes as a feed the validator found no problems in.
+    The same refusal ``validate.parse_report_data`` makes, for the same reason;
+    ``_matching_report`` turns it into a cache miss so the validator runs again.
+    """
+    stored = data.get("notices")
+    if not isinstance(stored, list) or not all(isinstance(n, dict) for n in stored):
+        raise UnreadableValidatorReportError(NO_REPORT_WAS_READ)
     notices = [
         NoticeGroup(
             code=str(n.get("code", "unknown")),
@@ -63,7 +79,7 @@ def _report_from_json(data: dict[str, Any]) -> ValidationReport:
             total=int(n.get("total", 0)),
             sample_notices=list(n.get("sample_notices", [])),
         )
-        for n in data.get("notices", [])
+        for n in stored
     ]
     return ValidationReport(
         validator_version=str(data.get("validator_version", "unknown")), notices=notices
@@ -109,7 +125,13 @@ def _matching_report(
     report = data.get("report")
     if not isinstance(report, dict):
         return None
-    return _report_from_json(report)
+    try:
+        return _report_from_json(report)
+    except UnreadableValidatorReportError:
+        # A miss, not a failure. The cache exists to skip a Java run; the honest
+        # cost of an entry we cannot read is one re-validation.
+        log.warning("validator cache entry for a stale or corrupt report; re-validating")
+        return None
 
 
 def _write_local(path: Path, payload: dict[str, Any]) -> None:

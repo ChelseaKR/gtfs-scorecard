@@ -25,3 +25,26 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: waltti-salo
+    name: Waltti (Salo)
+    country: FI
+    subdivision_code: FI-19
+    subdivision_name: Varsinais-Suomi
+    is_official: true
+    static_gtfs_url: https://tvv.fra1.digitaloceanspaces.com/239.zip
+    license_note: >-
+      CC BY 4.0; credit Waltti, link the licence, and indicate any changes
+      made to the source data.
+    operating_note: >-
+      Salo in eastern Varsinais-Suomi. A separate authority from Föli, which
+      covers the Turku region in the same subdivision.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://opendata.waltti.fi/
+      terms_url: https://opendata.waltti.fi/docs
+      scope: [gtfs_schedule]
+      attribution: Waltti Solutions (TVV) and the City of Salo.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

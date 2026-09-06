@@ -23,3 +23,28 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-17"
       identity_reviewed: true
+  - id: eav-campania
+    name: EAV (Ente Autonomo Volturno)
+    country: IT
+    subdivision_code: IT-72
+    subdivision_name: Campania
+    is_official: true
+    static_gtfs_url: https://www.wimob.it/cfile/download.php?file=google-transit.zip
+    license_note: >-
+      Italian Open Data Licence 2.0 through EAV's own open data page, which
+      allows commercial reuse with attribution; credit EAV srl.
+    operating_note: >-
+      EAV runs the Circumvesuviana, Cumana and Circumflegrea railways and
+      regional bus services in Campania, a different operator from ANM
+      Napoli. One archive covers both the rail and the road divisions. The
+      download host is the platform EAV's own open data page links to.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://www.eavsrl.it/open-data/
+      terms_url: https://www.dati.gov.it/iodl/2.0/
+      scope: [gtfs_schedule]
+      attribution: EAV srl (Ente Autonomo Volturno).
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

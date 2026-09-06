@@ -149,3 +149,140 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+  - id: hurtigruten-coastal
+    name: Hurtigruten
+    country: "NO"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_hur-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports, covering the Hurtigruten
+      coastal route between Bergen and Kirkenes.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: Hurtigruten; published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: havila-coastal
+    name: Havila Voyages
+    country: "NO"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_hav-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports, covering Havila's half of
+      the Bergen to Kirkenes coastal route. A separate concession from
+      Hurtigruten on the same corridor.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: Havila Kystruten AS; published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fjord-line-ferry
+    name: Fjord Line
+    country: "NO"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_fjl-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports, covering Fjord Line's car
+      ferry network. Terminals are in Bergen, Stavanger, Kristiansand and
+      Langesund, with the Danish end of each crossing at Hirtshals.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: Fjord Line AS; published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: torghatten-sor-ferry
+    name: Torghatten Sør
+    country: "NO"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_bfo-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports, covering the Horten to Moss
+      car ferry across the Oslofjord. The crossing links two counties, so
+      the record carries no subdivision.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: Torghatten Sør AS; published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: fjord-tours-norway
+    name: Fjord Tours
+    country: "NO"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_fjt-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports. The services call at Voss,
+      Gudvangen, Geiranger and Åndalsnes, so they span Vestland and Møre og
+      Romsdal and the record carries no subdivision.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: Fjord Tours AS; published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true
+  - id: flixbus-norway
+    name: FlixBus (Norway)
+    country: "NO"
+    is_official: true
+    static_gtfs_url: https://storage.googleapis.com/marduk-production/outbound/gtfs/rb_fli-aggregated-gtfs.zip
+    license_note: >-
+      Norwegian Licence for Open Government Data (NLOD) 2.0; free reuse
+      including commercial use and adaptation with attribution. Published
+      through Entur's national public transport data platform.
+    operating_note: >-
+      One of Entur's per-operator GTFS exports. Every route in the archive
+      starts or ends in Norway; several continue to Sweden, Denmark, Germany
+      and the Czech Republic, so the stop list reaches beyond Norway.
+    reuse_evidence:
+      decision: approved
+      source_kind: official_portal
+      provider_source_url: https://developer.entur.org/stops-and-timetable-data/
+      terms_url: https://data.norge.no/nlod/en/2.0
+      scope: [gtfs_schedule]
+      attribution: FlixBus (Flix SE); published through Entur under NLOD 2.0.
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

@@ -1,0 +1,34 @@
+# AT agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: oebb-personenverkehr
+    name: ÖBB-Personenverkehr AG
+    country: AT
+    mdb_id: "2138"
+    is_official: true
+    large_feed: true
+    static_gtfs_url: https://static.web.oebb.at/open-data/soll-fahrplan-gtfs/GTFS_Fahrplan_2026.zip
+    license_note: >-
+      CC BY 4.0. The ÖBB Open Data dataset page states "Dieser Datensatz
+      wird bereitgestellt unter der Lizenz Creative Commons Attribution 4.0
+      International (CC BY 4.0)", and the portal terms allow commercial and
+      non-commercial reuse. Credit ÖBB-Personenverkehr AG.
+    operating_note: >-
+      Austria's national rail timetable for the 2025/2026 period, valid
+      2025-12-14 to 2026-12-12. ÖBB publishes the City Air Terminal
+      Betriebsgesellschaft and Montafonerbahn services in the same archive,
+      so three agency rows count as one feed record. The tables sit inside a
+      GTFS_Fahrplan_2026/ folder, which the validator reports as files in a
+      subfolder.
+    reuse_evidence:
+      decision: approved
+      source_kind: provider
+      provider_source_url: https://data.oebb.at/de/datensaetze~soll-fahrplan-gtfs~
+      terms_url: https://data.oebb.at/de/nutzungsbedingungen
+      scope: [gtfs_schedule]
+      attribution: "Datenquelle: ÖBB-Personenverkehr AG (CC BY 4.0)."
+      reviewed_by: ChelseaKR
+      reviewed_on: "2026-09-01"
+      identity_reviewed: true

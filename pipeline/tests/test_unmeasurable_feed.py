@@ -251,6 +251,13 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 #: Withdrawing them is a listing-policy call (docs/listing-policy.md), not a
 #: scoring one, so they are named here rather than deleted. The assertion is a
 #: subset, not an equality: this set may only shrink.
+#:
+#: Three of them have a different cause and a fix: `catalina-express`,
+#: `santa-clarita-transit` and `santa-clarita-transit-812` are healthy feeds
+#: that read as empty because their archive wraps the tables two directories
+#: deep (issue #333, tests/test_nested_archive.py). The reader resolves that
+#: shape now, so their next successful run replaces the stale record with a real
+#: score and they leave this set. The others are archives that really are empty.
 STALE_GRADED_EMPTY_FEEDS = frozenset(
     {
         "anaheim-resort-transportation-art",
