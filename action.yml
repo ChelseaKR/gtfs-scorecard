@@ -21,6 +21,12 @@ outputs:
   result-json:
     description: "Path to the complete scorecard JSON artifact for later workflow steps."
     value: ${{ steps.gate.outputs.result-json }}
+  comparable:
+    description: "true when a baseline was supplied and the two runs are the same measurement; false when they are not; blank when no baseline was supplied."
+    value: ${{ steps.gate.outputs.comparable }}
+  regressed:
+    description: "true when the comparison against baseline shows a regression; blank when no comparable baseline was available."
+    value: ${{ steps.gate.outputs.regressed }}
 
 inputs:
   feed-url:
@@ -54,6 +60,14 @@ inputs:
     description: "Write a plain-language scorecard to the GitHub job summary (true or false)."
     required: false
     default: "true"
+  baseline:
+    description: "Prior scorecard artifact to compare this run against: a file path, an http(s) URL, or agency@YYYY-MM-DD / agency@latest. Leave blank to skip the comparison."
+    required: false
+    default: ""
+  fail-on-regression:
+    description: "Fail the build when the comparison against baseline shows a regression, or cannot be made because the two runs are different measurements (true or false)."
+    required: false
+    default: "false"
   ref:
     description: "Deprecated compatibility input. The scorer is bundled with the Action release, so its version always matches the Action ref."
     required: false
@@ -85,6 +99,8 @@ runs:
         HTML_OUT: ${{ inputs.html }}
         JSON_OUT: ${{ inputs.json }}
         WRITE_SUMMARY: ${{ inputs.summary }}
+        BASELINE: ${{ inputs.baseline }}
+        FAIL_ON_REGRESSION: ${{ inputs.fail-on-regression }}
         # Keep the downloaded Action tree immutable and all feed/validator
         # scratch data under the runner's temporary directory.
         SCORECARD_ROOT: ${{ runner.temp }}/gtfs-scorecard-work
@@ -104,10 +120,38 @@ runs:
           scorecard try "${args[@]}"
         gate_rc=$?
         set -e
+
+        # The baseline comparison. `scorecard diff` decides comparability before
+        # it reports any change, so a baseline scored under a different rubric,
+        # validator, scoring profile, reader profile, or measured-category set
+        # produces "not comparable" and never a change claim. Exit codes: 0 no
+        # regression, 1 regressed, 2 not comparable, 3 the baseline could not be
+        # read at all. 3 is kept apart because a missing baseline is a broken
+        # configuration, not a fact about the feed -- and a gate that treats it
+        # as one is a gate that cannot fail.
+        diff_rc=""
+        diff_md=""
+        if [[ -n "$BASELINE" && "$gate_rc" -eq 0 ]]; then
+          diff_md="${RUNNER_TEMP}/gtfs-scorecard-diff.md"
+          set +e
+          uv run --project "${GITHUB_ACTION_PATH}/pipeline" --locked --no-dev \
+            scorecard diff "$BASELINE" "$result_json" --format markdown --out "$diff_md"
+          diff_rc=$?
+          set -e
+        fi
+
+        set +e
         python "${GITHUB_ACTION_PATH}/action/render_result.py" \
           --json "$result_json" \
           --gate-rc "$gate_rc" \
           --min-grade "$MIN_GRADE" \
           --min-days "$MIN_DAYS" \
-          --write-summary "$WRITE_SUMMARY"
-        exit "$gate_rc"
+          --write-summary "$WRITE_SUMMARY" \
+          --baseline "$BASELINE" \
+          --diff-rc "$diff_rc" \
+          --diff-markdown "$diff_md" \
+          --fail-on-regression "$FAIL_ON_REGRESSION"
+        render_rc=$?
+        set -e
+        if [[ "$gate_rc" -ne 0 ]]; then exit "$gate_rc"; fi
+        exit "$render_rc"

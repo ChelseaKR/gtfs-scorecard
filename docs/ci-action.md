@@ -52,6 +52,8 @@ tag (`@v1.5.0`) or a commit SHA when you want an exact, unchanging contract.
 | `html` | no | _(skip)_ | Path to also write a standalone HTML scorecard, relative to the workspace. |
 | `json` | no | runner temporary file | Path for the complete machine-readable scorecard artifact. |
 | `summary` | no | `true` | Write a plain-language scorecard to the GitHub job summary. |
+| `baseline` | no | _(skip)_ | A prior scorecard artifact to compare this run against: a file path, an `https` URL, or `agency@YYYY-MM-DD` / `agency@latest`. |
+| `fail-on-regression` | no | `false` | Fail the build when the comparison shows a regression, or cannot be made because the two runs are different measurements. |
 | `ref` | no | _(ignored)_ | Deprecated compatibility input. The scorer is bundled with the Action release and always matches the selected Action ref. |
 
 Leave a threshold blank to skip it. With neither `min-grade` nor
@@ -67,9 +69,11 @@ reported `passed=true` for it.
 
 ## Outputs and job summary
 
-The action exposes `grade`, `score`, `days-to-expiry`, `passed`, and
-`result-json`. The complete JSON is written before thresholds are applied, so
-later steps can upload or inspect it even when the gate fails.
+The action exposes `grade`, `score`, `days-to-expiry`, `passed`,
+`result-json`, `comparable`, and `regressed`. The complete JSON is written
+before thresholds are applied, so later steps can upload or inspect it even
+when the gate fails. `comparable` and `regressed` are blank unless you set
+`baseline`.
 
 ```yaml
       - id: gtfs
@@ -89,6 +93,46 @@ later steps can upload or inspect it even when the gate fails.
 By default the job summary includes the grade, service days remaining, and the
 top three fixes. Set `summary: "false"` to suppress it. A failed gate also emits
 a concise workflow annotation while preserving the full result file.
+
+## Comparing against a baseline
+
+Set `baseline` to compare this run with a previous scorecard, so a pull request
+cannot quietly regress a published feed:
+
+```yaml
+      - uses: ChelseaKR/gtfs-scorecard@v1
+        with:
+          feed-url: https://example.org/gtfs/feed.zip
+          baseline: example-transit@latest
+          fail-on-regression: true
+```
+
+The comparison runs `scorecard diff`, which decides whether the two runs are the
+same measurement **before** it reports anything. Two artifacts scored under
+different rubric versions, scoring profiles, validator versions, reader archive
+profiles, or measured categories are different measurements, and the difference
+between them is not a statement about the feed. The job summary names which of
+those differs.
+
+What each result does to the build:
+
+| Result | `comparable` | `regressed` | Build |
+|---|---|---|---|
+| No regression | `true` | `false` | Passes. |
+| Regressed: grade dropped, or a finding appeared or grew | `true` | `true` | Fails when `fail-on-regression` is `true`. |
+| Not comparable: the two runs are different measurements | `false` | _(blank)_ | Fails when `fail-on-regression` is `true`. |
+| The baseline could not be read at all | _(blank)_ | _(blank)_ | **Always fails.** |
+
+The last two rows are the point. "I cannot tell you whether this regressed" is
+not a pass, so a regression gate fails closed on it. And a `baseline` the action
+could not read is a broken input rather than a fact about the feed, so it fails
+whatever `fail-on-regression` is set to: a gate that shrugs at its own missing
+baseline is a gate that cannot fail.
+
+When a run stops measuring a category — realtime, say, because the endpoint
+stopped answering — the findings in that category disappear from the artifact.
+They are listed as **not measured in the newer artifact**, never as cleared.
+Nobody looked at them, which is not the same as their being fixed.
 
 ## Saving the HTML report
 
