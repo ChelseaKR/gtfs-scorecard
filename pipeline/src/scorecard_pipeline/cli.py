@@ -3054,8 +3054,14 @@ def _cmd_coverage_check(args: argparse.Namespace, parser: argparse.ArgumentParse
         previous = json.loads(baseline_path.read_text())
 
     message = coverage_regression(previous, current)
+    measured = current["instance_weighted_coverage"] is not None
     if message:
         print(message)
+    elif not measured:
+        print(
+            f"NOT MEASURED  no finding instances in the covered corpus "
+            f"({scored} scored agencies), so there is no coverage share to report"
+        )
     else:
         print(
             f"OK  instance-weighted plain-language coverage "
@@ -3063,21 +3069,31 @@ def _cmd_coverage_check(args: argparse.Namespace, parser: argparse.ArgumentParse
             f"({current['curated_codes']}/{current['total_codes']} codes curated, "
             f"{scored} scored agencies)"
         )
-    if args.save:
-        baseline_path.parent.mkdir(parents=True, exist_ok=True)
-        baseline_path.write_text(
-            json.dumps(
-                {
-                    "as_of": args.date.isoformat(),
-                    "distinct_code_coverage": current["distinct_code_coverage"],
-                    "instance_weighted_coverage": current["instance_weighted_coverage"],
-                },
-                indent=2,
-                sort_keys=True,
-            )
-            + "\n"
-        )
+    if args.save and not measured:
+        # Refused rather than swallowed. Saving would replace a real bar with a
+        # reading nobody took, and every later week would be measured against
+        # it. Same instinct as refusing to overwrite a corrupt rt-health record.
+        print("NOT SAVED  refusing to overwrite the baseline with an unmeasured reading")
+    elif args.save:
+        _save_coverage_baseline(baseline_path, current, args.date)
     return 0
+
+
+def _save_coverage_baseline(path: Path, current: dict[str, Any], as_of: dt.date) -> None:
+    """Persist the coverage baseline every later week is measured against."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(
+            {
+                "as_of": as_of.isoformat(),
+                "distinct_code_coverage": current["distinct_code_coverage"],
+                "instance_weighted_coverage": current["instance_weighted_coverage"],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n"
+    )
 
 
 def _cmd_rollups(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:

@@ -6575,6 +6575,26 @@ def _changes_sections(changes: list[dict[str, Any]], *, baseline_date: str | Non
     <code>/agency/&lt;id&gt;/feed.xml</code>.</p>"""
 
 
+def _coverage_shares(coverage: dict[str, Any]) -> str:
+    """The two curated-text shares, naming any that has no denominator.
+
+    A share over an empty corpus is None, never 100.0: an unmeasured corpus
+    must not read like a fully curated one.
+    """
+    parts = []
+    for key, noun in (
+        ("distinct_code_coverage", "of codes"),
+        ("instance_weighted_coverage", "of all finding instances"),
+    ):
+        value = coverage.get(key)
+        parts.append(
+            f"the share {noun} is not measured"
+            if value is None
+            else f"<strong>{esc(value)}%</strong> {noun}"
+        )
+    return " and ".join(parts)
+
+
 def _ridership_impact_line(impact: dict[str, Any] | None) -> str:
     """One United States context sentence weighting quality by rider-trips (ADR 0021).
 
@@ -9970,10 +9990,8 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
             '<h2 class="section-title" id="coverage-h">Plain-language coverage</h2>'
             f"<p>Of the <strong>{esc(coverage['total_codes'])}</strong> distinct problem "
             f"codes seen in the covered corpus, <strong>{esc(coverage['curated_codes'])}</strong> carry "
-            "vetted plain-language text: "
-            f"<strong>{esc(coverage['distinct_code_coverage'])}%</strong> of codes and "
-            f"<strong>{esc(coverage['instance_weighted_coverage'])}%</strong> of all finding "
-            "instances. Codes without curated text fall back to a generic line that links "
+            f"vetted plain-language text: {_coverage_shares(coverage)}. "
+            "Codes without curated text fall back to a generic line that links "
             "to the validator's rule documentation.</p>"
             f"{queue_table}</section>"
         )
