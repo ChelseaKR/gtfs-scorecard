@@ -104,22 +104,6 @@ the declared public surface).
 
 ### Fixed
 
-- **The release-tag ruleset locked everyone out, including the owner.**
-  `.github/rulesets/tags.json` shipped with `"bypass_actors": []` while
-  `.github/rulesets/main.json`, in the same directory, carried the repository-admin
-  bypass. An empty list is not a stricter version of the rule; it is a different one.
-  Applied, nobody can move or delete a tag matching `refs/tags/v*.*.*` — not the owner,
-  not with an admin token, not from the web UI. That is live rather than theoretical here:
-  `v1.4.0` matches the pattern and points at a 2026-07-25 commit `main` has since left
-  hundreds of commits behind, so a mistagged release has no remedy short of burning the
-  version number or opening a support ticket. The floating `v1` tag is unaffected either
-  way — the glob needs two literal dots and never matched it. `tags.json` now carries the
-  same admin bypass `main.json` has, ADR 0033 records the correction, and
-  `pipeline/tests/test_ruleset_bypass.py` fails the build if either file loses its bypass
-  or if the two stop agreeing. **The committed file is not the live ruleset:** applying it
-  is `gh api repos/ChelseaKR/gtfs-scorecard/rulesets/{id} -X PUT`, an owner action, the
-  same as for `main.json`'s required-checks list.
-
 - **`scorecard lint` reported and never said whether it passed.**
   `docs/add-your-agency.md` sends a first-time contributor to
   `uv run scorecard lint --strict` and tells them a green result there means a
@@ -263,6 +247,22 @@ the declared public surface).
     shares are `None` when there is nothing to divide by, `--save` refuses to
     overwrite a real baseline with an unmeasured one, and the regression check
     reports nothing when either side has no reading.
+
+- **The release-tag ruleset locked everyone out, including the owner.**
+  `.github/rulesets/tags.json` shipped with `"bypass_actors": []` while
+  `.github/rulesets/main.json`, in the same directory, carried the repository-admin
+  bypass. An empty list is not a stricter version of the rule; it is a different one.
+  Applied, nobody can move or delete a tag matching `refs/tags/v*.*.*` — not the owner,
+  not with an admin token, not from the web UI. That is live rather than theoretical here:
+  `v1.4.0` matches the pattern and points at a 2026-07-25 commit `main` has since left
+  hundreds of commits behind, so a mistagged release has no remedy short of burning the
+  version number or opening a support ticket. The floating `v1` tag is unaffected either
+  way — the glob needs two literal dots and never matched it. `tags.json` now carries the
+  same admin bypass `main.json` has, ADR 0033 records the correction, and
+  `pipeline/tests/test_ruleset_bypass.py` fails the build if either file loses its bypass
+  or if the two stop agreeing. **The committed file is not the live ruleset:** applying it
+  is `gh api repos/ChelseaKR/gtfs-scorecard/rulesets/{id} -X PUT`, an owner action, the
+  same as for `main.json`'s required-checks list.
 
 - **The scoring path no longer loads `stop_times.txt` into memory, which is
   what killed the OVapi Netherlands shard for three weeks.** The
