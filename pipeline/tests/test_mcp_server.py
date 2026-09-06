@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import copy
 import json
+from pathlib import Path
 from typing import Any
 
 from scorecard_pipeline.mcp_server import TOOLS, call_tool, handle_request
@@ -275,3 +276,288 @@ def test_search_rows_carry_the_documented_readiness_fields() -> None:
         assert field in row, field
     assert row["national_percentile"] is None
     assert row["peer_percentile"] is None
+
+
+# --- history, fix recipes, rollups, packets, and coverage ----------------------
+
+
+def _point(
+    date: str,
+    *,
+    grade: str = "C",
+    score: float = 72.0,
+    validator: str = "8.0.1",
+    rubric: str = "1.3",
+    realtime: float | None = None,
+) -> dict[str, Any]:
+    categories: dict[str, Any] = {"correctness": 76.0, "freshness": 80.0, "completeness": 60.0}
+    if realtime is not None:
+        categories["realtime"] = realtime
+    return {
+        "date": date,
+        "grade": grade,
+        "score": score,
+        "categories": categories,
+        "days_until_expiry": 40,
+        "rubric_version": rubric,
+        "scoring_profile_id": "gtfs-scorecard-1.3",
+        "scoring_profile_rubric_version": rubric,
+        "validator_version": validator,
+        "reader_archive_profile": "raw-v1",
+    }
+
+
+def _dated_artifact(findings: list[str]) -> dict[str, Any]:
+    return {
+        "categories": {
+            "correctness": {
+                "status": "measured",
+                "score": 76.0,
+                "findings": [
+                    {"code": code, "count": 1, "severity": "WARNING", "what": f"{code} happened"}
+                    for code in findings
+                ],
+            }
+        }
+    }
+
+
+_INDEX: dict[str, Any] = {
+    "agencies": {
+        "unitrans": {
+            "name": "Unitrans",
+            "history": [
+                _point("2026-06-01", grade="D", score=64.0, validator="7.0.0"),
+                _point("2026-06-02", grade="C", score=72.0),
+                _point("2026-06-03", grade="C", score=73.0),
+            ],
+        },
+        "one-shot": {"name": "One Shot", "history": [_point("2026-06-01")]},
+        "boundary-last": {
+            "name": "Boundary Last",
+            "history": [_point("2026-06-01"), _point("2026-06-02", rubric="1.4")],
+        },
+    }
+}
+
+_ROLLUP: dict[str, Any] = {
+    "rollup": {"id": "california", "name": "California"},
+    "agency_count": 2,
+    "average_score": 70.0,
+    "grade_distribution": {"A": 0, "B": 1, "C": 1, "D": 0, "F": 0},
+    "expired": 0,
+    "needs_attention": 1,
+    "common_fixes": [
+        {"code": "scorecard_wheelchair_boarding_unknown", "agencies": 2, "fix": "Set it."}
+    ],
+    "members": [
+        {
+            "id": "unitrans",
+            "name": "Unitrans",
+            "grade": "B",
+            "score": 80.8,
+            "expiry_status": "ok",
+            "needs_attention": False,
+            "top_fix": "Re-snap stops.",
+        }
+    ],
+}
+
+_BY_LOCATION: dict[str, Any] = {
+    "countries": [
+        {
+            "country_code": "US",
+            "country_name": "United States",
+            "count": 2,
+            "median_score": 74.0,
+            "grade_distribution": {"A": 0, "B": 1, "C": 1, "D": 0, "F": 0},
+            "comparison_eligible_count": 2,
+            "subdivisions": [
+                {
+                    "subdivision_code": "US-CA",
+                    "subdivision_name": "California",
+                    "count": 2,
+                    "median_score": 74.0,
+                    "grade_distribution": {"A": 0, "B": 1, "C": 1, "D": 0, "F": 0},
+                    "comparison_eligible_count": 2,
+                }
+            ],
+        }
+    ]
+}
+
+_DATED: dict[str, list[str]] = {
+    "2026-06-01": ["expired_calendar"],
+    "2026-06-02": ["expired_calendar", "unused_shape"],
+    "2026-06-03": ["unused_shape"],
+}
+
+
+def _fetch2(url: str) -> Any:
+    """The harness above plus the documents the new tools read."""
+    if url.endswith("/data/artifacts/index.json"):
+        return copy.deepcopy(_INDEX)
+    if url.endswith("/data/artifacts/rollups/california.json"):
+        return copy.deepcopy(_ROLLUP)
+    if url.endswith("/api/v1/by-location.json"):
+        return copy.deepcopy(_BY_LOCATION)
+    for date, codes in _DATED.items():
+        if url.endswith(f"/{date}.json"):
+            return _dated_artifact(codes)
+    return _fetch(url)
+
+
+def test_every_declared_tool_is_dispatchable_and_vice_versa() -> None:
+    """A tool listed but not dispatchable is a promise the server cannot keep."""
+    from scorecard_pipeline.mcp_server import _HANDLERS
+
+    assert {t["name"] for t in TOOLS} == set(_HANDLERS)
+    assert {
+        "get_history",
+        "explain_finding",
+        "get_rollup",
+        "get_evidence_packet",
+        "coverage_for",
+    } <= set(_HANDLERS)
+    assert all("inputSchema" in t and t["description"] for t in TOOLS)
+
+
+def test_get_history_marks_the_contract_boundary() -> None:
+    history = call_tool("get_history", {"agency_id": "unitrans"}, _fetch2)
+    rows = history["history"]
+    assert [r["date"] for r in rows] == ["2026-06-01", "2026-06-02", "2026-06-03"]
+    assert rows[0]["comparable_with_previous"] is None
+    # 7.0.0 -> 8.0.1 across the first pair: a different measurement.
+    assert rows[1]["comparable_with_previous"] is False
+    assert rows[2]["comparable_with_previous"] is True
+    assert "not a change in the feed" in history["note"]
+
+
+def test_get_history_reports_findings_only_across_a_comparable_pair() -> None:
+    history = call_tool("get_history", {"agency_id": "unitrans"}, _fetch2)
+    change = history["latest_change"]
+    assert change["comparable"] is True
+    assert change["from_date"] == "2026-06-02"
+    assert [f["code"] for f in change["cleared"]] == ["expired_calendar"]
+    assert change["appeared"] == []
+
+
+def test_get_history_makes_no_change_claim_across_a_rubric_change() -> None:
+    """The refusal, and it names why rather than returning an empty list."""
+    history = call_tool("get_history", {"agency_id": "boundary-last"}, _fetch2)
+    change = history["latest_change"]
+    assert change["comparable"] is False
+    assert "different measurements" in change["reason"]
+    assert "appeared" not in change
+    assert "cleared" not in change
+
+
+def test_get_history_with_one_snapshot_says_so_rather_than_reporting_nothing() -> None:
+    history = call_tool("get_history", {"agency_id": "one-shot"}, _fetch2)
+    assert history["latest_change"]["comparable"] is False
+    assert "only one dated snapshot" in history["latest_change"]["reason"]
+
+
+def test_get_history_filters_by_since_and_bounds_the_window() -> None:
+    since = call_tool("get_history", {"agency_id": "unitrans", "since": "2026-06-02"}, _fetch2)
+    assert [r["date"] for r in since["history"]] == ["2026-06-02", "2026-06-03"]
+    limited = call_tool("get_history", {"agency_id": "unitrans", "limit": 2}, _fetch2)
+    assert limited["returned"] == 2
+    assert limited["available"] == 3
+    assert limited["truncated"] is True
+
+
+def test_get_history_refuses_an_untracked_agency() -> None:
+    import pytest
+
+    with pytest.raises(ValueError, match="no tracked feed record"):
+        call_tool("get_history", {"agency_id": "nope"}, _fetch2)
+
+
+def test_explain_finding_returns_the_written_recipe_and_the_rule() -> None:
+    out = call_tool("explain_finding", {"code": "expired_calendar"}, _fetch2)
+    assert out["has_recipe"] is True
+    assert out["recipe"]["fix"]
+    assert out["rule"]["url"].endswith("#expired_calendar-rule")
+    assert out["fix_guide_url"].endswith("/fix/expired_calendar/")
+
+
+def test_explain_finding_invents_nothing_for_an_unknown_code() -> None:
+    """`notices.translate` has a generated fallback. It must not be used here."""
+    out = call_tool("explain_finding", {"code": "not_a_real_notice"}, _fetch2)
+    assert out["has_recipe"] is False
+    assert out["recipe"] is None
+    assert "No fix recipe is written for this code" in out["note"]
+    # The rule link is still the honest answer: rules.html anchors every notice.
+    assert out["rule"]["url"].endswith("#not_a_real_notice-rule")
+    assert out["fix_guide_url"] is None
+
+
+def test_explain_finding_adds_the_tool_fix_path_and_refuses_an_unknown_tool() -> None:
+    known = call_tool("explain_finding", {"code": "expired_calendar", "tool": "trillium"}, _fetch2)
+    assert known["tool_guidance"]["name"] == "Trillium"
+    assert known["known_tools"] is None
+    unknown = call_tool(
+        "explain_finding", {"code": "expired_calendar", "tool": "some_vendor"}, _fetch2
+    )
+    assert unknown["tool_guidance"] is None
+    assert "trillium" in unknown["known_tools"]
+
+
+def test_get_rollup_returns_shared_fixes_and_bounds_members() -> None:
+    out = call_tool("get_rollup", {"rollup_id": "california"}, _fetch2)
+    assert out["rollup"]["id"] == "california"
+    assert out["shared_fixes"][0]["code"] == "scorecard_wheelchair_boarding_unknown"
+    assert out["members_returned"] == 1
+    assert out["members_truncated"] is False
+    assert "not a ranking" in out["note"]
+
+
+def test_get_evidence_packet_builds_the_deterministic_packet() -> None:
+    out = call_tool("get_evidence_packet", {"agency_id": "unitrans"}, _fetch2)
+    again = call_tool("get_evidence_packet", {"agency_id": "unitrans"}, _fetch2)
+    assert out == again
+    assert out["note"]
+
+
+def test_coverage_for_reports_a_country_and_its_subdivision() -> None:
+    country = call_tool("coverage_for", {"country": "us"}, _fetch2)
+    assert country["covered"] is True
+    assert country["count"] == 2
+    assert country["subdivisions"][0]["subdivision_code"] == "US-CA"
+    sub = call_tool("coverage_for", {"country": "US", "subdivision": "California"}, _fetch2)
+    assert sub["covered"] is True
+    assert sub["subdivision_code"] == "US-CA"
+
+
+def test_an_uncovered_place_is_labelled_not_covered_rather_than_zero() -> None:
+    """ "We track no feeds here" and "there are no feeds here" are different claims."""
+    country = call_tool("coverage_for", {"country": "ZZ"}, _fetch2)
+    assert country["covered"] is False
+    assert "count" not in country
+    assert "not about whether transit" in country["note"]
+    sub = call_tool("coverage_for", {"country": "US", "subdivision": "Atlantis"}, _fetch2)
+    assert sub["covered"] is False
+    assert "count" not in sub
+
+
+def test_every_new_tool_repeats_the_lens_framing() -> None:
+    """An assistant paraphrases what it is given; framing not in the payload is lost."""
+    payloads = [
+        call_tool("get_history", {"agency_id": "unitrans"}, _fetch2),
+        call_tool("explain_finding", {"code": "expired_calendar"}, _fetch2),
+        call_tool("get_rollup", {"rollup_id": "california"}, _fetch2),
+        call_tool("get_evidence_packet", {"agency_id": "unitrans"}, _fetch2),
+        call_tool("coverage_for", {"country": "US"}, _fetch2),
+        call_tool("coverage_for", {"country": "ZZ"}, _fetch2),
+    ]
+    assert all("not an official compliance determination" in p["note"] for p in payloads)
+
+
+def test_the_new_tools_introduce_no_language_model() -> None:
+    """The AI Evaluation standard row stays N/A only while this holds."""
+    source = (
+        Path(__file__).resolve().parents[1] / "src/scorecard_pipeline/mcp_server.py"
+    ).read_text()
+    for forbidden in ("anthropic", "openai", "langchain", "llm", "boto3", "bedrock"):
+        assert forbidden not in source.lower()

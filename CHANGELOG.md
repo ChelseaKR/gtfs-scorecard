@@ -83,6 +83,29 @@ the declared public surface).
   largest-country ceiling, which that gate continues to report honestly as
   unmet.
 
+- **Five more MCP tools, and three things they refuse to say (2026-09-06).**
+  `scorecard-mcp` exposed search, one scorecard, and coverage stats; the
+  question `docs/mcp.md` opens with — *"why did my grade drop and what do I tell
+  my vendor"* — needed history, the fix knowledge base, and packets, so
+  `get_history`, `explain_finding`, `get_rollup`, `get_evidence_packet` and
+  `coverage_for` are added. Still read-only, still stdlib-only, still no
+  language model anywhere in the server. The refusals are carried in the
+  payloads rather than in the docs, because an assistant paraphrases what it is
+  handed and a caveat that is not in the data does not survive the paraphrase:
+  `get_history` marks every measurement-contract boundary and makes no change
+  claim across one, returning a stated reason rather than an empty change list
+  so "nothing moved" cannot be read off a refusal; `explain_finding` returns the
+  rule link alone for a code with no written recipe, deliberately not the
+  generated fallback wording that is honest beside a real count on a scorecard
+  page but would be a made-up sentence handed to an assistant as knowledge, and
+  an unrecognised producing tool gets no guidance and a list of the keys that
+  are recognised rather than the nearest vendor's name; and `coverage_for`
+  reports an untracked place as not covered rather than as zero feeds, because
+  "this scorecard tracks nothing here" and "there is nothing here" are different
+  statements. Every response is bounded and says so (`returned`, `available`,
+  `truncated`). `call_tool` now dispatches through a table, and a test asserts
+  that table and the advertised `TOOLS` name the same set. Closes #369.
+
 ### Changed
 
 - **The money page no longer links to a page that does not exist
