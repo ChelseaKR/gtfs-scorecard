@@ -19,11 +19,10 @@ separate decision. The checks are pure over the feed's tables and unit-tested.
 
 from __future__ import annotations
 
-from collections import Counter
 from dataclasses import dataclass
 from typing import Any
 
-from .gtfs import read_tables
+from .gtfs import iter_table_rows, read_tables
 from .metrics import Finding
 
 # GTFS location_type values that a rider boards at. 1 (station), 2 (entrance),
@@ -32,23 +31,74 @@ from .metrics import Finding
 _BOARDABLE_LOCATION_TYPES = {"", "0"}
 
 
-def _location_id(row: dict[str, str]) -> str:
-    """Read the Flex GeoJSON key, tolerating one known producer header typo.
+def _location_id_key(row: dict[str, str]) -> str | None:
+    """The header this row spells ``location_id`` with, tolerating one known
+    producer header typo, or None when the row carries no such column.
 
     This normalization stays inside the ungraded routability check. Graded
     freshness/completeness readers continue to see producer headers exactly as
     published, while the canonical validator reports the malformed header.
+
+    Resolved from one row and reused for the rest of the table: a CSV reader
+    gives every row the same header, and re-deriving it per row costs a scan of
+    every column of every row -- 188 million of them on the Dutch national
+    aggregate, for an answer that cannot change.
     """
     if "location_id" in row:
-        return (row.get("location_id") or "").strip()
+        return "location_id"
     return next(
-        (
-            (value or "").strip()
-            for key, value in row.items()
-            if isinstance(key, str) and key.strip() == "location_id"
-        ),
-        "",
+        (key for key in row if isinstance(key, str) and key.strip() == "location_id"),
+        None,
     )
+
+
+def _stop_time_facts(gtfs_zip_path: str) -> tuple[set[str], set[str], set[str]]:
+    """Fold stop_times.txt into the three bounded facts this check needs.
+
+    Streamed, never materialized. The whole table as ``list[dict[str, str]]``
+    costs about 750 bytes a row, so the Dutch national aggregate's 17 million
+    rows come to roughly 13 GB -- more than the runner has, from a file that
+    sits under the whole-table byte cap. What the check actually reads out of
+    those rows is three sets keyed by trip and by stop, so the cost that matters
+    is the number of distinct trips and stops (855 thousand and 57 thousand
+    there), and it does not grow with the row count at all.
+
+    Returns the trips with at least two serviced locations, the stop ids some
+    trip calls at, and the location group ids some trip calls at.
+    """
+    # A trip is only interesting until it has a second location, so the two sets
+    # partition trips by "seen once" and "seen twice or more" rather than
+    # counting rows per trip.
+    seen_once: set[str] = set()
+    trips_with_a_leg: set[str] = set()
+    served_stop_ids: set[str] = set()
+    served_location_group_ids: set[str] = set()
+    location_key: str | None = None
+    header_read = False
+    # max_member_bytes=None: the byte cap exists to bound a whole-table read,
+    # and there is no whole table here to bound.
+    for row in iter_table_rows(gtfs_zip_path, "stop_times.txt", max_member_bytes=None):
+        if not header_read:
+            location_key = _location_id_key(row)
+            header_read = True
+        trip_id = row.get("trip_id", "").strip()
+        stop_id = row.get("stop_id", "").strip()
+        location_group_id = row.get("location_group_id", "").strip()
+        location_id = (row.get(location_key) or "").strip() if location_key else ""
+        # GTFS Schedule uses exactly one of these three fields to identify a
+        # serviced location. A GeoJSON location is a rideable trip location but
+        # has no implied relationship to an ordinary stop_id.
+        if trip_id and (stop_id or location_group_id or location_id):
+            if trip_id in seen_once:
+                seen_once.discard(trip_id)
+                trips_with_a_leg.add(trip_id)
+            elif trip_id not in trips_with_a_leg:
+                seen_once.add(trip_id)
+        if stop_id:
+            served_stop_ids.add(stop_id)
+        if location_group_id:
+            served_location_group_ids.add(location_group_id)
+    return trips_with_a_leg, served_stop_ids, served_location_group_ids
 
 
 @dataclass(frozen=True)
@@ -77,27 +127,11 @@ def assess_routability(gtfs_zip_path: str) -> RoutabilityProfile:
     """
     tables = read_tables(
         gtfs_zip_path,
-        ["stop_times.txt", "trips.txt", "stops.txt", "location_group_stops.txt"],
+        ["trips.txt", "stops.txt", "location_group_stops.txt"],
     )
-    stop_times, trips, stops = tables["stop_times.txt"], tables["trips.txt"], tables["stops.txt"]
+    trips, stops = tables["trips.txt"], tables["stops.txt"]
 
-    stops_per_trip: Counter[str] = Counter()
-    served_stop_ids: set[str] = set()
-    served_location_group_ids: set[str] = set()
-    for row in stop_times:
-        trip_id = row.get("trip_id", "").strip()
-        stop_id = row.get("stop_id", "").strip()
-        location_group_id = row.get("location_group_id", "").strip()
-        location_id = _location_id(row)
-        # GTFS Schedule uses exactly one of these three fields to identify a
-        # serviced location. A GeoJSON location is a rideable trip location but
-        # has no implied relationship to an ordinary stop_id.
-        if trip_id and (stop_id or location_group_id or location_id):
-            stops_per_trip[trip_id] += 1
-        if stop_id:
-            served_stop_ids.add(stop_id)
-        if location_group_id:
-            served_location_group_ids.add(location_group_id)
+    trips_with_a_leg, served_stop_ids, served_location_group_ids = _stop_time_facts(gtfs_zip_path)
 
     # A referenced location group serves each stop explicitly assigned to it.
     # Expand only that declared relationship; GeoJSON location_id values have
@@ -110,7 +144,7 @@ def assess_routability(gtfs_zip_path: str) -> RoutabilityProfile:
 
     trip_ids = [row.get("trip_id", "").strip() for row in trips if row.get("trip_id", "").strip()]
     # A trip with no stop_times at all, or only one, has no rideable leg.
-    single_stop_trips = sum(1 for tid in trip_ids if stops_per_trip.get(tid, 0) < 2)
+    single_stop_trips = sum(1 for tid in trip_ids if tid not in trips_with_a_leg)
 
     boardable = [
         row

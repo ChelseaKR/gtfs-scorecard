@@ -104,6 +104,72 @@ the declared public surface).
 
 ### Fixed
 
+- **The scoring path no longer loads `stop_times.txt` into memory, which is
+  what killed the OVapi Netherlands shard for three weeks.** The
+  `score (ovapi-netherlands)` job had been dying with "The runner has received
+  a shutdown signal" since 2026-08-07, after the validator had already
+  succeeded and the JVM had already exited. With no JVM on the box, memory
+  climbed from about 2 GB to 15.9 GB in roughly 45 seconds, swap filled,
+  available memory reached 88 MB, and the runner was killed. Disk was flat at
+  86 GB free the whole time.
+
+  The trigger was the whole-table reader's per-table cap, and specifically the
+  side of it the feed landed on. `MAX_MEMBER_BYTES` is 1 GiB: above it a table
+  is skipped, below it the table is read into `list[dict[str, str]]`. OVapi's
+  `stop_times.txt` is 1,011,976,627 bytes — 62 MB **under** the cap — and
+  17,099,889 rows. Measured on the live archive, a row of that table costs 754
+  bytes as a Python dict, so reading it whole comes to about 12.9 GB on a 15.6
+  GiB runner. Every earlier export had been *over* the cap and was therefore
+  skipped; the feed oscillates across the line, and the day it came in under,
+  the shard died. A bigger feed was safer.
+
+  So the fix is not a different number. Bytes on disk do not predict bytes in
+  memory, the multiplier moves with row width, and any fixed byte cap is a
+  cliff a feed can cross between exports. Lowering it would only skip more
+  tables, which buys safety by measuring less. Both whole-table consumers of
+  `stop_times.txt` on the daily scoring path now stream it instead, because
+  what each one takes from the table is a bounded aggregate rather than the
+  table: `routability` folds it into the trips with at least two serviced
+  locations plus the served stop and location-group ids (855 thousand trips and
+  57 thousand stops on OVapi, against 17 million rows), and `ferry_profile`
+  folds it into the stop ids the ferry trips call at — and, being handed a lazy
+  reader, returns without opening the table at all for a feed with no ferry
+  route. `iter_table_rows` now accepts `max_member_bytes=None` for exactly this
+  case: the cap is not lowered, it is inapplicable, because there is no whole
+  table in memory for it to bound. Archive-shape safety — entry count,
+  compression ratio, per-entry and whole-archive size — was always enforced in
+  `fetch.py` before any reader opens the bytes, and remains the real zip-bomb
+  guard and the ceiling on how much there can be to stream.
+
+  `MAX_MEMBER_BYTES` itself is unchanged and still governs every table read
+  whole, including these two modules' reads of `trips.txt` and `stops.txt`. If
+  one of those trips it, routability still publishes `measured: false` with
+  reason `table_too_large`; an unread table never reaches the artifact as a
+  count of zero.
+
+  Both checks now run to completion on the live OVapi archive in 68.6 seconds
+  at a peak of 1.38 GB resident — against roughly 13 GB and a killed runner —
+  and report what three weeks of shutdown signals could not: 854,910 trips, 35
+  of them with fewer than two stops, 58,953 boardable stops, 1,981 of them
+  served by no trip, and a ferry profile over 11,532 ferry trips.
+
+  **This changes published output for four feeds, and no grade.** OVapi
+  Netherlands, the Swiss national timetable, gtfs.de local transit and Carris
+  Metropolitana have all been publishing `routability: {"measured": false,
+  "reason": "table_too_large"}` and no `ferry_profile`. They will now publish
+  real routability counts, and a ferry profile where the feed has ferry routes.
+  Both blocks are zero-deduction, so no category score, overall score, grade,
+  or conformance verdict moves for any feed. Output for feeds under the cap is
+  byte-identical: verified by running the old and new readers over a
+  300-feed synthetic corpus covering flex location groups, the GeoJSON
+  `location_id` header typo, ferry and non-ferry routes, missing and
+  header-only tables, and trips with zero, one and many stops.
+
+  `gtfs.py` also logs any table of 64 MiB or more, with its uncompressed size
+  and whether it was read whole, streamed, or skipped. The three-week diagnosis
+  needed an instrumented re-run to learn which table was being read and how big
+  it was; the next incident carries that evidence in its own log.
+
 - **A validator report nobody could read is no longer scored as a clean feed.**
   The upward twin of the fabricated F above, and the one that lasted longer,
   because a flattering number invites no complaint. `ValidationReport` had one

@@ -10,9 +10,12 @@ from __future__ import annotations
 import csv
 import datetime as dt
 import io
+import logging
 import zipfile
-from collections.abc import Iterator
+from collections.abc import Generator
 from dataclasses import dataclass
+
+log = logging.getLogger(__name__)
 
 
 def _parse_gtfs_date(value: str) -> dt.date | None:
@@ -25,13 +28,31 @@ def _parse_gtfs_date(value: str) -> dt.date | None:
         return None
 
 
-# Cap a single uncompressed table to guard against zip bombs in untrusted feeds
-# and to bound the memory a table costs when read whole into Python. Most GTFS
-# tables are comfortably under this, but a national aggregate's stop_times.txt
-# can exceed it (the Swiss national timetable's is 2.4 GiB). Readers that hit
-# the cap raise TableTooLargeError so a caller can skip that one table rather
-# than fail the whole score.
+# Cap a single uncompressed table when it is read WHOLE into a list of dicts.
+#
+# This is not the zip-bomb guard. Archive shape -- entry count, compression
+# ratio, per-entry size, whole-archive size -- is checked in fetch.py before any
+# reader opens the bytes, and an admitted archive is already bounded there
+# (512 MiB per entry, or 3 GiB for a curator-approved large feed). What is left
+# for this constant to do is bound the memory one materialized table costs.
+#
+# It is a poor bound on that, and it must not be the only one. Bytes on disk
+# under-report the cost of the same rows as Python dicts by more than an order
+# of magnitude, and the multiplier moves with row width, so no fixed byte number
+# is both safe on a wide table and generous on a narrow one -- it is a cliff,
+# and which side of it a feed lands on can change from one export to the next.
+# Readers that hit the cap raise TableTooLargeError so a caller can skip that
+# one table rather than fail the whole score. A reader that needs only an
+# aggregate should not be here at all: stream the table with iter_table_rows,
+# where memory is bounded by the aggregate and not by the row count.
 MAX_MEMBER_BYTES = 1024 * 1024 * 1024
+
+# Report a table's uncompressed size at INFO from here up, whichever way it is
+# read, and always report one that is skipped. A table read whole is the largest
+# single memory commitment the pipeline makes, and when a shard dies inside one
+# the log should already say which table it was and how big -- not require a
+# re-run under instrumentation to find out.
+LOG_MEMBER_BYTES = 64 * 1024 * 1024
 
 
 class TableTooLargeError(ValueError):
@@ -43,15 +64,28 @@ class TableTooLargeError(ValueError):
     """
 
 
+def _log_member(name: str, size: int, how: str) -> None:
+    """Leave the size of a big table in the log, whichever way it was handled."""
+    if size >= LOG_MEMBER_BYTES:
+        log.info("%s: %d bytes uncompressed, %s", name, size, how)
+
+
 def _read_table(zf: zipfile.ZipFile, name: str) -> list[dict[str, str]]:
     try:
         info = zf.getinfo(name)
     except KeyError:
         return []
     if info.file_size > MAX_MEMBER_BYTES:
+        log.warning(
+            "%s: %d bytes uncompressed, not read (over the %d-byte whole-table cap)",
+            name,
+            info.file_size,
+            MAX_MEMBER_BYTES,
+        )
         raise TableTooLargeError(
             f"{name} is {info.file_size} bytes uncompressed, over the safety cap"
         )
+    _log_member(name, info.file_size, "reading whole")
     text = zf.read(name).decode("utf-8-sig", errors="replace")
     # restval="" because a data row with fewer fields than the header
     # otherwise yields None for the missing trailing columns, and every
@@ -91,24 +125,38 @@ def iter_table_rows(
     gtfs_zip_path: str,
     name: str,
     *,
-    max_member_bytes: int = MAX_MEMBER_BYTES,
-) -> Iterator[dict[str, str]]:
+    max_member_bytes: int | None = MAX_MEMBER_BYTES,
+) -> Generator[dict[str, str], None, None]:
     """Yield one GTFS table without materializing its decoded CSV.
 
     ``max_member_bytes`` lets a caller set a lower, task-specific analysis
     budget than the general whole-table reader. The size check happens before
     decompression, and a missing table yields no rows.
+
+    ``None`` removes the size check. A streamed row is released as soon as the
+    consumer is done with it, so a caller that folds the table into a bounded
+    aggregate pays a memory cost set by the aggregate, not by the table -- and
+    for that caller a byte ceiling buys nothing but a refusal to measure a large
+    feed. fetch.py's per-entry ceiling remains the bound on how much there can
+    be to read.
     """
     with zipfile.ZipFile(gtfs_zip_path) as zf:
         try:
             info = zf.getinfo(name)
         except KeyError:
             return
-        if info.file_size > max_member_bytes:
+        if max_member_bytes is not None and info.file_size > max_member_bytes:
+            log.warning(
+                "%s: %d bytes uncompressed, not read (over the %d-byte analysis cap)",
+                name,
+                info.file_size,
+                max_member_bytes,
+            )
             raise TableTooLargeError(
                 f"{name} is {info.file_size} bytes uncompressed, over the "
                 f"{max_member_bytes}-byte analysis cap"
             )
+        _log_member(name, info.file_size, "streaming")
         with (
             zf.open(info) as raw,
             io.TextIOWrapper(
