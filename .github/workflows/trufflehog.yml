@@ -1,8 +1,15 @@
-# SEC-19: weekly full-history scan for *verified* live credentials.
-# Complements the existing blocking gitleaks diff gate in security.yml
-# (SEC-18, pattern-based on each push/PR) with a slower, broader,
-# verification-based sweep across the whole repo history.
-name: TruffleHog verified-secrets scan
+# SEC-19: weekly full-history secret scan, over every result tier TruffleHog
+# reports. Complements the existing blocking gitleaks diff gate in security.yml
+# (SEC-18, pattern-based on each push/PR) with a slower, broader sweep across
+# the whole repo history.
+#
+# The job id stays `trufflehog`, so the check context this reports under is
+# unchanged. `main`'s ruleset (main-required-checks-and-review, id 18791704)
+# does not list it among its required contexts; checked 2026-09-06 before this
+# edit, because renaming a required check retires the context the ruleset asks
+# for and leaves every future pull request waiting on a check that never
+# reports.
+name: TruffleHog full-history secret scan
 
 on:
   schedule:
@@ -25,22 +32,86 @@ jobs:
       # and picks BASE/HEAD for this trigger type (both empty on schedule/
       # workflow_dispatch, which scans the full default-branch history).
       #
-      # One detector is excluded, and only one. TruffleHog's Lob detector keys
+      # LANE 1 -- every result tier, with the detectors that match this
+      # repository's own committed artefacts switched off.
+      #
+      # `--results=verified` reports a finding only when TruffleHog asked the
+      # provider and the provider said the credential is live. A credential that
+      # leaked and was then REVOKED -- the normal end state of a real incident,
+      # and the exact case a weekly full-history sweep exists to catch --
+      # answers "no", which TruffleHog files under `unverified`. So this job
+      # could not fail on the thing it exists for. Measured 2026-09-06 on a
+      # throwaway clone with a real-shaped AWS key (deliberately not a vendor's
+      # documented example, which is filtered under every tier) planted in one
+      # commit and deleted in the next, confirmed present in history and absent
+      # at HEAD:
+      #
+      #   --only-verified                        exit 0,   0 reported
+      #   --results=verified                     exit 0,   0 reported
+      #   --results=verified,unknown             exit 0,   0 reported
+      #   --results=verified,unknown,unverified  exit 183, unverified_secrets: 1
+      #
+      # Lob is excluded from BOTH lanes and always has been. Its detector keys
       # on `\b((live|test)_[a-zA-Z0-9_]{35})\b`, so it matches any pytest
-      # function named `test_` plus exactly 35 more word characters. This repo
-      # has dozens of those under pipeline/tests. Its verifier then reads an
-      # HTTP 403 from api.lob.com as proof of a live key, so those function
-      # names come back `Verified: true` and fail the job. Run 31359367918
-      # (2026-08-10) reported 94 verified secrets, all of them from this
-      # detector. Reproduced locally with trufflehog 3.96.0: every raw match
-      # was a Python test identifier such as
-      # `test_distinct_grades_get_distinct_colors`, and none was a credential.
-      # Rationale and the check that other detectors stay live:
+      # function named `test_` plus exactly 35 more word characters, and this
+      # repo has dozens under pipeline/tests. Its verifier reads an HTTP 403
+      # from api.lob.com as proof of a live key, so those function names come
+      # back `Verified: true`. Run 31359367918 (2026-08-10) reported 94 verified
+      # secrets, every one of them this detector. See
       # docs/decisions/0044-trufflehog-lob-detector-exclusion.md.
       #
-      # Keep the scan blocking. Do not widen this to path exclusions, do not
-      # relax --results, and do not add `|| true`.
-      - name: TruffleHog (verified only, full history)
-        uses: trufflesecurity/trufflehog@00155c9dc586f34d189adc83d3ac2698c2ec551f # v3.95.8
+      # URI, AWSSessionKey, AzureSasToken and RailwayApp are excluded from THIS
+      # LANE ONLY, and only because the widened tier surfaces committed data and
+      # committed test fixtures rather than credentials of ours. Re-scanning all
+      # 931 commits of `main` on 2026-09-06 with trufflehog 3.97.1 reported 34
+      # unverified findings and no verified ones:
+      #
+      #   * 31 in `data/artifacts/**`, every one inside a `fetch.final_url` that
+      #     the pipeline records as provenance for a public GTFS feed it
+      #     downloaded. They are OTHER parties' presigned download URLs from
+      #     Japan's open-data portals -- `AWSAccessKeyId=ASIA...` from
+      #     gtfs-data.jp on S3, `sig=...` from odpt.org on Azure Blob, with SAS
+      #     windows as short as two minutes -- plus feed UUIDs that RailwayApp's
+      #     detector mistakes for tokens. They are expired by construction, they
+      #     are not ours, and nothing this project does could rotate them.
+      #   * 3 URI findings in `pipeline/tests/`, all synthetic DSNs on
+      #     `example.org`: `https://alice:password@example.org/feeds`,
+      #     `https://alice:secret@example.org/feed`,
+      #     `https://user:secret@example.org/feed`.
+      #
+      # LANE 2 below keeps all four armed for verified results over every path,
+      # so this costs no coverage: the two lanes together are a strict superset
+      # of what this job checked before. See
+      # docs/decisions/0053-secret-scan-reports-every-result-tier.md.
+      #
+      # Keep the scan blocking. Do not widen this to path exclusions -- ADR 0044
+      # rejected that axis and it is still the right call -- do not NARROW
+      # --results, and do not add `|| true`.
+      - name: TruffleHog (full history, all result tiers)
+        uses: trufflesecurity/trufflehog@20652fbbdefffcdaa493a5bf57ab2ac6b1db715b # v3.97.1
         with:
+          # `./` is the action's own default; stating it makes the guarantee
+          # assertable from the file and stops a future edit changing the scan
+          # root without anything noticing.
+          path: ./
+          # Pinned, and it must equal the version comment on the ref above. The
+          # action's `version:` input defaults to "latest" and it runs
+          # `ghcr.io/trufflesecurity/trufflehog:${VERSION}`, so the SHA pin
+          # bound only the wrapper: this gate was pinned at v3.95.8 and running
+          # whatever upstream had published most recently. Resolved forward
+          # rather than back, so nothing is downgraded.
+          version: "3.97.1"
+          extra_args: --results=verified,unknown,unverified --exclude-detectors=Lob,URI,AWSSessionKey,AzureSasToken,RailwayApp
+
+      # LANE 2 -- the gate exactly as it stood before lane 1 was added: verified
+      # results only, every detector but Lob, over every path. This is what
+      # keeps lane 1's four extra exclusions from costing coverage. It runs
+      # under `!cancelled()` so a lane 1 failure does not hide this verdict,
+      # while a cancelled run still stops both.
+      - name: TruffleHog (full history, verified results, every detector but Lob)
+        if: ${{ !cancelled() }}
+        uses: trufflesecurity/trufflehog@20652fbbdefffcdaa493a5bf57ab2ac6b1db715b # v3.97.1
+        with:
+          path: ./
+          version: "3.97.1"
           extra_args: --results=verified --exclude-detectors=Lob
