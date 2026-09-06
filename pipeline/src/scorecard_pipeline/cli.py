@@ -106,15 +106,21 @@ class RunOutcome:
     cache_hit: bool
 
 
-def _realtime_category(
+def _realtime_categories(
     agency: Agency,
     static_path: Path,
     date: dt.date,
     *,
     rt_samples: int,
     rt_interval: int,
-) -> CategoryResult:
+) -> list[CategoryResult]:
     """Sample and score only the realtime capabilities an agency publishes.
+
+    A list of nothing or one, so the caller adds a scored realtime category
+    without having to branch on its absence. Empty when the sampling window
+    turned out to be evidence about our fetcher rather than about the feed:
+    an absent category renders as not yet measured, where a fabricated one
+    would render as a grade.
 
     TripUpdates analysis reads schedule tables and VehiclePositions analysis
     reads shapes. Avoiding those paths when the corresponding feed kind is not
@@ -133,13 +139,14 @@ def _realtime_category(
     plausibility = (
         vehicle_plausibility(window.samples, str(static_path)) if has_vehicle_positions else None
     )
-    return realtime(
+    category = realtime(
         window,
         scheduled or None,
         drift=drift,
         plausibility=plausibility,
         configured_kinds=agency.rt_urls,
     )
+    return [category] if category is not None else []
 
 
 def _routability_block(reader_path: Path) -> dict[str, Any]:
@@ -250,8 +257,8 @@ def run_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         ),
     ]
     if agency.rt_urls and not skip_rt:
-        cats.append(
-            _realtime_category(
+        cats.extend(
+            _realtime_categories(
                 agency,
                 reader_path,
                 date,
@@ -285,7 +292,10 @@ def run_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     # any category score.
     from .recommend import gather_recommendations
 
-    artifact["recommendations"] = gather_recommendations(str(reader_path))
+    # The block carries recommendations_not_measured only when a check could not
+    # run: an empty rows list otherwise means the checks ran and found nothing,
+    # which is a different thing and must not read the same on the page.
+    artifact.update(gather_recommendations(str(reader_path)).artifact_block())
     # Conformance mark: a pass/not-yet credential over the scores just computed.
     # Attached so the badge and the page can show it without recomputing.
     from .conformance import assess as assess_conformance
@@ -2171,6 +2181,15 @@ def _cmd_rt_health(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
         # The monitor stays a lightweight realtime poll: coverage needs the static
         # feed and is recorded by the daily score, not here.
         obs = observe(window, kinds_total=len(agency.rt_urls), scheduled=None)
+        if obs is None:
+            # Every sample failed inside our own fetcher, so this run is
+            # evidence about us and not about the feed. Recording it would
+            # publish our outage as theirs on /realtime/.
+            log.warning(
+                "%s: no realtime endpoint could be sampled; recording no observation.",
+                agency_id,
+            )
+            continue
         try:
             append_observation(agency_id, obs)
         except RtHealthRecordCorruptError:
@@ -3037,8 +3056,14 @@ def _cmd_coverage_check(args: argparse.Namespace, parser: argparse.ArgumentParse
         previous = json.loads(baseline_path.read_text())
 
     message = coverage_regression(previous, current)
+    measured = current["instance_weighted_coverage"] is not None
     if message:
         print(message)
+    elif not measured:
+        print(
+            f"NOT MEASURED  no finding instances in the covered corpus "
+            f"({scored} scored agencies), so there is no coverage share to report"
+        )
     else:
         print(
             f"OK  instance-weighted plain-language coverage "
@@ -3046,21 +3071,31 @@ def _cmd_coverage_check(args: argparse.Namespace, parser: argparse.ArgumentParse
             f"({current['curated_codes']}/{current['total_codes']} codes curated, "
             f"{scored} scored agencies)"
         )
-    if args.save:
-        baseline_path.parent.mkdir(parents=True, exist_ok=True)
-        baseline_path.write_text(
-            json.dumps(
-                {
-                    "as_of": args.date.isoformat(),
-                    "distinct_code_coverage": current["distinct_code_coverage"],
-                    "instance_weighted_coverage": current["instance_weighted_coverage"],
-                },
-                indent=2,
-                sort_keys=True,
-            )
-            + "\n"
-        )
+    if args.save and not measured:
+        # Refused rather than swallowed. Saving would replace a real bar with a
+        # reading nobody took, and every later week would be measured against
+        # it. Same instinct as refusing to overwrite a corrupt rt-health record.
+        print("NOT SAVED  refusing to overwrite the baseline with an unmeasured reading")
+    elif args.save:
+        _save_coverage_baseline(baseline_path, current, args.date)
     return 0
+
+
+def _save_coverage_baseline(path: Path, current: dict[str, Any], as_of: dt.date) -> None:
+    """Persist the coverage baseline every later week is measured against."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(
+        json.dumps(
+            {
+                "as_of": as_of.isoformat(),
+                "distinct_code_coverage": current["distinct_code_coverage"],
+                "instance_weighted_coverage": current["instance_weighted_coverage"],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n"
+    )
 
 
 def _cmd_rollups(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:

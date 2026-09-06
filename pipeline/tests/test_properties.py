@@ -206,8 +206,14 @@ def test_realtime_score_bounded_and_deductions_non_negative(
     plausibility: PlausibilityStats | None,
 ) -> None:
     """The realtime component weighting stays in [0,100] for any window shape,
-    including windows where components drop out and renormalize."""
+    including windows where components drop out and renormalize.
+
+    None is the fifth legal answer: a window with nothing measurable in it is
+    not scored at all rather than scored at some default.
+    """
     result = realtime(window, scheduled, drift=drift, plausibility=plausibility)
+    if result is None:
+        return
     assert 0.0 <= result.score <= 100.0
     assert all(f.deduction >= 0.0 for f in result.findings)
 

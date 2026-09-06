@@ -25,13 +25,15 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .rt_drift import DriftStats, PlausibilityStats
+import requests
+from google.protobuf.message import DecodeError
 from google.transit import gtfs_realtime_pb2
 
 from .config import Agency, raw_dir
 from .fetch import USER_AGENT
 from .gtfs import _parse_gtfs_date, read_tables
 from .metrics import CategoryResult, Finding
-from .net import safe_get
+from .net import UnresolvableHostError, UnsafeURLError, safe_get
 
 log = logging.getLogger(__name__)
 
@@ -120,6 +122,11 @@ class RtSample:
     kind: str
     fetched_at: int  # unix seconds
     ok: bool
+    # Whether this fetch is evidence about the agency's endpoint at all. False
+    # means the attempt failed inside our own machinery, so `ok=False` here
+    # says nothing about the feed and must not be scored or counted as
+    # downtime. See `fetch_sample` for where the two are told apart.
+    measured: bool = True
     header_timestamp: int | None = None
     entity_count: int = 0
     trip_ids: frozenset[str] = frozenset()
@@ -145,8 +152,34 @@ class RtWindow:
         return [s for s in self.samples if s.kind == kind]
 
     def kind_ok(self, kind: str) -> bool:
-        ok = [s.ok for s in self.for_kind(kind)]
+        """Whether every sample we could actually take of this kind succeeded.
+
+        Samples we could not take are skipped rather than counted as failures:
+        an unmeasured sample is neither up nor down. A kind with no measured
+        sample at all is not ok, and ``kind_measured`` is what separates that
+        case from a kind that was checked and found down.
+        """
+        ok = [s.ok for s in self.for_kind(kind) if s.measured]
         return bool(ok) and all(ok)
+
+    def kind_measured(self, kind: str) -> bool:
+        """Whether this kind can be judged from the samples in this window.
+
+        False only when the window holds samples of this kind and not one of
+        them is evidence about the feed: we tried and every attempt died inside
+        our own fetcher.
+
+        A kind with no sample record at all stays True, and so stays assessed.
+        That is the deliberate fail-closed reading a configured endpoint has
+        always had here (``_assessed_kinds``, and
+        ``test_explicit_configuration_marks_an_unsampled_endpoint_unreachable``):
+        a configured feed that the sampler never recorded at all must not be
+        able to vanish from its own scorecard. This method narrows nothing
+        there; it only stops a recorded failure of ours from being read as
+        theirs.
+        """
+        samples = self.for_kind(kind)
+        return not samples or any(s.measured for s in samples)
 
     def worst_lag(self, kind: str) -> int | None:
         lags = [s.lag_seconds for s in self.for_kind(kind) if s.lag_seconds is not None]
@@ -217,15 +250,70 @@ def parse_alerts(msg: gtfs_realtime_pb2.FeedMessage) -> tuple[AlertObs, ...]:
     return tuple(observations)
 
 
+def measures_the_endpoint(exc: BaseException) -> bool:
+    """Whether a failed realtime fetch is evidence about the agency's endpoint.
+
+    A realtime sample's failure is published under the agency's name: it becomes
+    an ERROR finding on their page, a deduction from their realtime score, and a
+    "down" reading in the uptime record /realtime/ publishes. So the question
+    this answers is whose failure it was, and only a True answer is scored.
+
+    True — the endpoint failed:
+
+    * any ``requests`` failure: connection refused, a timeout, an error status;
+    * ``UnresolvableHostError``, which net.py already classifies as "an origin
+      availability failure" and is the one guard rejection that is about them;
+    * ``DecodeError``: the host answered, and what it served is not the
+      GTFS-Realtime protobuf it promises.
+
+    False — we failed:
+
+    * every other ``UnsafeURLError``, which is our guard refusing the URL on our
+      own policy (a bad scheme, a private address, our size cap, our redirect
+      cap);
+    * anything else at all, which by construction came out of our own code and
+      says nothing whatever about the agency's feed.
+
+    The fallback direction is the point. Before this, an unrecognised exception
+    fell into "the feed is down"; now it falls into "we did not measure it", so
+    a bug of ours costs us a gap in our own coverage rather than costing an
+    agency points in public.
+    """
+    if isinstance(exc, UnresolvableHostError):
+        return True
+    if isinstance(exc, UnsafeURLError):
+        return False
+    return isinstance(exc, requests.exceptions.RequestException | DecodeError)
+
+
+def _failed_sample(kind: str, url: str, fetched_at: int, exc: BaseException) -> RtSample:
+    """Record one failed fetch, attributed by :func:`measures_the_endpoint`."""
+    measured = measures_the_endpoint(exc)
+    if not measured:
+        log.exception("%s sample of %s failed on our side; not scoring it", kind, url)
+    return RtSample(
+        kind=kind,
+        fetched_at=fetched_at,
+        ok=False,
+        measured=measured,
+        error=str(exc)[:200],
+    )
+
+
 def fetch_sample(kind: str, url: str, archive_to: str | None = None) -> RtSample:
-    """Fetch and parse one protobuf snapshot of one realtime endpoint."""
+    """Fetch and parse one protobuf snapshot of one realtime endpoint.
+
+    A failure is recorded as the agency's outage only when
+    :func:`measures_the_endpoint` says the failure is about them; otherwise the
+    sample is marked not measured and drops out of the score and of uptime.
+    """
     fetched_at = int(time.time())
     try:
         body = safe_get(url, headers={"User-Agent": USER_AGENT}, timeout=30)
         msg = gtfs_realtime_pb2.FeedMessage()
         msg.ParseFromString(body)
     except Exception as exc:
-        return RtSample(kind=kind, fetched_at=fetched_at, ok=False, error=str(exc)[:200])
+        return _failed_sample(kind, url, fetched_at, exc)
 
     if archive_to:
         path = Path(archive_to)
@@ -415,9 +503,37 @@ def _assessed_kinds(window: RtWindow, configured_kinds: Collection[str] | None) 
 
 def _reachability(
     window: RtWindow, assessed_kinds: tuple[str, ...]
-) -> tuple[list[str], float, list[Finding]]:
-    """Reachability of the configured feed kinds (``WEIGHT_REACHABLE``)."""
-    reachable_kinds = [kind for kind in assessed_kinds if window.kind_ok(kind)]
+) -> tuple[list[str], tuple[str, ...], float | None, list[Finding]]:
+    """Reachability of the configured feed kinds (``WEIGHT_REACHABLE``).
+
+    Scored over the kinds we could actually sample, not over the kinds the
+    agency configured. A kind whose every sample failed inside our own fetcher
+    is reported as unchecked and left out of the fraction, so it renormalizes
+    away exactly as an unmeasurable freshness or coverage reading does. When no
+    configured kind could be sampled the fraction is None and reachability is
+    not scored at all.
+    """
+    measured_kinds = tuple(kind for kind in assessed_kinds if window.kind_measured(kind))
+    unchecked_kinds = tuple(kind for kind in assessed_kinds if kind not in measured_kinds)
+    notes = [
+        Finding(
+            code=f"scorecard_rt_{kind}_not_checked",
+            severity="INFO",
+            count=1,
+            what=f"We could not check your {kind.replace('_', ' ')} feed on this run.",
+            why="The fetch failed on our side. That is a gap in our check, "
+            "not a fault in your feed.",
+            fix="Nothing to do. The feed is left out of this score rather "
+            "than counted as an outage.",
+            effort="None.",
+            deduction=0.0,
+        )
+        for kind in unchecked_kinds
+    ]
+    if not measured_kinds:
+        return [], (), None, notes
+
+    reachable_kinds = [kind for kind in measured_kinds if window.kind_ok(kind)]
     findings = [
         Finding(
             code=f"scorecard_rt_{kind}_unreachable",
@@ -429,12 +545,17 @@ def _reachability(
             fix=f"Check the {kind.replace('_', ' ')} endpoint with your AVL vendor; it "
             "should return a fresh GTFS-Realtime protobuf on every request.",
             effort="Usually a vendor support ticket.",
-            deduction=WEIGHT_REACHABLE / len(assessed_kinds),
+            deduction=WEIGHT_REACHABLE / len(measured_kinds),
         )
-        for kind in assessed_kinds
+        for kind in measured_kinds
         if not window.kind_ok(kind)
     ]
-    return reachable_kinds, len(reachable_kinds) / len(assessed_kinds), findings
+    return (
+        reachable_kinds,
+        measured_kinds,
+        len(reachable_kinds) / len(measured_kinds),
+        [*findings, *notes],
+    )
 
 
 def _freshness(
@@ -698,6 +819,7 @@ def _drift_component(
 def _realtime_summary(
     window: RtWindow,
     assessed_kinds: tuple[str, ...],
+    measured_kinds: tuple[str, ...],
     kinds_ok: int,
     details: dict[str, object],
     scheduled: set[str] | None,
@@ -705,18 +827,26 @@ def _realtime_summary(
     plausible_fraction: float | None,
     drift: DriftStats | None,
 ) -> str:
-    """The plain-language one-liner shown above the realtime findings."""
-    feed_word = "feed" if len(assessed_kinds) == 1 else "feeds"
+    """The plain-language one-liner shown above the realtime findings.
+
+    The denominator is the feeds we could check, never the feeds the agency
+    configured, so a feed our fetcher could not reach is never counted in the
+    sentence as one of theirs that was unhealthy. When the two differ, the
+    sentence says how many went unchecked.
+    """
+    feed_word = "feed" if len(measured_kinds) == 1 else "feeds"
+    unchecked = len(assessed_kinds) - len(measured_kinds)
+    tail = f" ({unchecked} not checked)" if unchecked else ""
     bits = [
         f"Sampled {len(window.samples)} times: {kinds_ok} of "
-        f"{len(assessed_kinds)} configured {feed_word} healthy"
+        f"{len(measured_kinds)} configured {feed_word} healthy{tail}"
     ]
     if coverage_fraction is not None:
         bits.append(f"{details['coverage_pct']}% of scheduled trips had live predictions")
     elif "trip_updates" in assessed_kinds and not scheduled:
         bits[0] = (
             f"Sampled {len(window.samples)} times outside service hours: "
-            f"{kinds_ok} of {len(assessed_kinds)} configured {feed_word} healthy"
+            f"{kinds_ok} of {len(measured_kinds)} configured {feed_word} healthy{tail}"
         )
     if plausible_fraction is not None:
         bits.append(f"{details['vehicles_on_route_pct']}% of vehicles on their route")
@@ -736,8 +866,8 @@ def realtime(
     drift: DriftStats | None = None,
     plausibility: PlausibilityStats | None = None,
     configured_kinds: Collection[str] | None = None,
-) -> CategoryResult:
-    """Score a sampled realtime window.
+) -> CategoryResult | None:
+    """Score a sampled realtime window, or None when nothing could be measured.
 
     Rationale (rubric.md "Realtime quality"): four weighted components —
     reachability of the feed kinds the agency configured (25), header freshness
@@ -755,10 +885,18 @@ def realtime(
     window. An entirely empty legacy window retains the former fail-closed
     three-feed interpretation; the collect path never calls this function for
     an agency with no realtime configuration.
+
+    Returns None when not one of the four components could be measured: the
+    case where every sample failed inside our own fetcher. There is no honest
+    number for that window, so the category is omitted, and the artifact
+    renders it as not yet measured. That is the convention completeness and
+    freshness already use for a category they cannot measure.
     """
     assessed_kinds = _assessed_kinds(window, configured_kinds)
 
-    reachable_kinds, reachable_fraction, reach_findings = _reachability(window, assessed_kinds)
+    reachable_kinds, measured_kinds, reachable_fraction, reach_findings = _reachability(
+        window, assessed_kinds
+    )
     kinds_ok = len(reachable_kinds)
     worst, fresh_fraction, rt_freshness, fresh_findings = _freshness(window, assessed_kinds)
     alert_summary, alert_findings = _alerts(window, assessed_kinds)
@@ -779,6 +917,12 @@ def realtime(
         "worst_lag_seconds": worst,
         "rt_freshness": rt_freshness,
     }
+    # Present only when something went unchecked, so a normal run's artifact is
+    # byte-for-byte what it was, and a reader who does see the key knows it
+    # means something.
+    unchecked_kinds = [kind for kind in assessed_kinds if kind not in measured_kinds]
+    if unchecked_kinds:
+        details["kinds_not_measured"] = unchecked_kinds
     if alert_summary is not None:
         details["alerts_content"] = alert_summary
     details.update(coverage_details)
@@ -803,6 +947,12 @@ def realtime(
         (WEIGHT_PLAUSIBLE, plausible_fraction),
     ]
     measurable = [(w, f) for w, f in components if f is not None]
+    if not measurable:
+        # Nothing in this window is evidence about the feed. A score here would
+        # be arithmetic over an empty set, so the category is dropped and the
+        # site renders it as not yet measured.
+        log.warning("realtime not scored: none of %s could be sampled", ", ".join(assessed_kinds))
+        return None
     measurable_weight = sum(w for w, _ in measurable)
     score = sum(w * f for w, f in measurable) / measurable_weight * 100.0
 
@@ -824,6 +974,7 @@ def realtime(
         summary=_realtime_summary(
             window,
             assessed_kinds,
+            measured_kinds,
             kinds_ok,
             details,
             scheduled,
