@@ -5839,6 +5839,112 @@ def _render_accessibility() -> str:
     )
 
 
+def _correction_rows(withdrawn: list[Any]) -> str:
+    """One row per withdrawn grade: who, what was published, when, why, what now."""
+    rows = []
+    for entry in withdrawn:
+        period = (
+            f"{entry.published_from} to {entry.published_until}"
+            if entry.published_until
+            else f"from {entry.published_from}"
+        )
+        score = f" ({entry.score} out of 100)" if entry.score is not None else ""
+        rows.append(
+            "<tr>"
+            # Two records can carry the same agency name (a catalog duplicate
+            # published beside the listing), so the row shows the record id too.
+            f'<th scope="row">{esc(entry.agency_name)}'
+            f'<span class="std-score">{esc(entry.agency_id)}</span></th>'
+            f"<td>{esc(entry.grade)}{esc(score)}</td>"
+            f"<td>{esc(period)}</td>"
+            f"<td>{esc(entry.cause_text)}</td>"
+            f"<td>{esc(entry.outcome_text)}</td>"
+            "</tr>"
+        )
+    return "".join(rows)
+
+
+def _render_corrections(withdrawn: list[Any]) -> str:
+    """The public record of grades this project published and has taken back.
+
+    An agency graded in public is owed the correction in public. This page names
+    each withdrawn grade, what was published, over what period, why it was
+    wrong, and what stands in its place, so a reader who saw the old letter can
+    find out what happened to it rather than meeting a missing page.
+    """
+    canonical = f"{BASE_URL}/corrections/"
+    if not withdrawn:
+        table = (
+            "<p>No published grade has been withdrawn. If one is, it will be listed "
+            "here with what it said and why it was wrong.</p>"
+        )
+    else:
+        table = (
+            '<div class="table-wrap"><table>'
+            "<caption>Withdrawn grades, by agency</caption>"
+            '<thead><tr><th scope="col">Agency</th><th scope="col">Grade published</th>'
+            '<th scope="col">Period</th><th scope="col">Why it was wrong</th>'
+            '<th scope="col">What stands in its place</th></tr></thead>'
+            f"<tbody>{_correction_rows(withdrawn)}</tbody></table></div>"
+        )
+    details = "".join(
+        f'<dt>{esc(entry.agency_name)} <span class="std-score">{esc(entry.agency_id)}</span></dt>'
+        f"<dd>{esc(entry.evidence)}</dd>"
+        for entry in withdrawn
+    )
+    evidence_block = (
+        f'<section><h2 class="section-title">What each one rests on</h2>'
+        f'<dl class="standards-list">{details}</dl></section>'
+        if details
+        else ""
+    )
+    body = f"""    {_breadcrumb([("Home", "/"), ("Corrections", None)])}
+    <a class="backlink" href="/">&larr; Home</a>
+    <h1 class="page-title">Corrections</h1>
+    <p class="page-lede">Grades this scorecard published and has taken back. Each one
+    is listed with what it said, how long it was up, why it was wrong, and what
+    replaces it.</p>
+
+    {_route_rule()}
+    <section><h2 class="section-title">What went wrong</h2>
+    <p>A grade is built from four categories. Two of them read the feed's own tables.
+    When an archive could not be read, those two reported 0.0 rather than reporting
+    that they had read nothing, and the letter beside them was computed from those
+    zeros. The result was a public F for agencies whose feeds had never actually been
+    opened. Some of those feeds are healthy and describe real service.</p>
+    <p>The scorer was fixed on 1 September 2026 and no longer produces a grade from an
+    archive it cannot read. That stopped the next one. It did not take back the ones
+    already published, which is what this page is for.</p></section>
+
+    {_route_rule()}
+    <section><h2 class="section-title">The withdrawn grades</h2>
+    {table}
+    <p>Dated score records from those days stay available as the historical record of
+    what this project published, including when it was wrong. They are not presented
+    as any agency's current condition.</p></section>
+
+    {_route_rule()}
+    {evidence_block}
+
+    {_route_rule()}
+    <section><h2 class="section-title">If your agency is on this list</h2>
+    <p>Nothing is required of you. Where a feed wraps its files in a folder, that is a
+    packaging detail the scorecard should have handled, not a fault in your data. If
+    anything here is wrong, or you would rather not be listed at all, the
+    <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">listing
+    and removal policy</a> says how to correct or remove an entry, and we act on those
+    without argument.</p></section>"""
+    return _page(
+        title="Corrections | GTFS Scorecard",
+        description=(
+            "Grades this scorecard published and has withdrawn: what each one said, "
+            "how long it was up, why it was wrong, and what replaces it."
+        ),
+        canonical=canonical,
+        body=body,
+    )
+
+
 def _status_commitment_section(doc: dict[str, Any]) -> str:
     """The monitoring commitment half of /status/ (EXP-10): what
     `api/v1/status.json` says, in prose, so a consumer does not have to parse
@@ -6298,7 +6404,8 @@ def _render_guide() -> str:
     <p>This is a data-quality lens to help you improve the feed. It is not an official compliance
     determination from any transit program, and a low grade does not mean your service is bad. See the
     <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">listing
-    and removal policy</a> for how a listing can be corrected or removed.</p></section>
+    and removal policy</a> for how a listing can be corrected or removed. Grades we have
+    published and taken back are listed on the <a href="/corrections/">corrections page</a>.</p></section>
 
 {_methodology_versions_section()}
 
@@ -10359,6 +10466,18 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # stale design language or indexing duplicate guidance.
     write("concept/index.html", _redirect_page("/how-to-read/", "Design concept"))
     write("accessibility/index.html", _render_accessibility(), f"{BASE_URL}/accessibility/")
+    # Published grades this project has taken back (corrections.py). Rendered
+    # whether or not any exist, so the page is a standing commitment rather than
+    # something that appears only after a bad enough mistake.
+    from .corrections import load_corrections
+
+    write(
+        "corrections/index.html",
+        _render_corrections(
+            sorted(load_corrections().values(), key=lambda entry: entry.agency_name)
+        ),
+        f"{BASE_URL}/corrections/",
+    )
     write("claim/index.html", _render_claim_page(), f"{BASE_URL}/claim/")
     validate_catalogs()
     write("es/index.html", _render_spanish_rider_page(), f"{BASE_URL}/es/")

@@ -64,6 +64,26 @@ endorse the grade, override the rubric, or prevent other people from reporting
 errors. Registry changes still go through a reviewed pull request so the public
 record shows what changed and why.
 
+## Grades we have taken back
+
+A grade is only as good as the data behind it. When we find that a published
+grade was computed from an archive we never actually read, we withdraw it and
+say so, rather than replacing the number quietly or leaving the page to
+disappear. The [corrections page](https://gtfsscorecard.org/corrections/) lists
+every withdrawn grade with what it said, how long it was public, why it was
+wrong, and what stands in its place. The machine-readable record is
+`corrections.yaml` at the repository root, and it is reviewed in a pull request
+like any other change.
+
+Where the feed can be read, the next successful run publishes a real grade and
+the correction stays on record beside it. Where it cannot, the answer is that
+the feed is not measured; we do not substitute a different number for one we
+could not compute. Dated score records from the affected days remain available
+as the historical record of what this project published, including when it was
+wrong. They are not presented as an agency's current condition.
+
+Nothing is required of an agency on that list.
+
 ## Long-expired feeds
 
 A feed whose calendar ran out over a year ago is shown in its own group on the
