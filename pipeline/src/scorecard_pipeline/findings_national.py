@@ -162,15 +162,21 @@ def plain_language_coverage(rollup: dict[str, Any]) -> dict[str, Any]:
     plain-language promise holds where people actually look. Also returns the
     curation queue: uncurated codes ranked by national instance count (then
     agencies affected, then code for stability), so editorial effort goes to the
-    most-encountered gap first. An empty rollup is vacuously fully covered.
+    most-encountered gap first.
+
+    A share with no denominator is None, not 100.0. An empty corpus is not
+    fully covered, it is not measured, and 100.0 is the number a fully curated
+    corpus earns. The two must not print the same, above all because
+    ``scorecard coverage --save`` writes this figure to coverage-baseline.json
+    as the bar every later week is measured against.
     """
     by_code: dict[str, Any] = rollup.get("prevalence_by_code", {})
     curated = {code for code in by_code if _is_curated(code)}
     total_instances = sum(int(by_code[c].get("instances") or 0) for c in by_code)
     curated_instances = sum(int(by_code[c].get("instances") or 0) for c in curated)
 
-    def _pct(part: int, whole: int) -> float:
-        return round(part / whole * 100, 1) if whole else 100.0
+    def _pct(part: int, whole: int) -> float | None:
+        return round(part / whole * 100, 1) if whole else None
 
     queue: list[dict[str, Any]] = [
         {
@@ -200,12 +206,18 @@ def coverage_regression(previous: dict[str, Any] | None, current: dict[str, Any]
     where the next editorial effort should go. Pure over the saved baseline
     and a fresh ``plain_language_coverage`` result; persisting the baseline is
     the caller's decision, the same split the portfolio digest uses. Returns
-    None when there is no baseline yet or nothing regressed.
+    None when there is no baseline yet, when either side has no measured
+    reading, or when nothing regressed.
     """
     if not previous:
         return None
-    prev = float(previous.get("instance_weighted_coverage", 0.0))
-    cur = float(current["instance_weighted_coverage"])
+    prev = previous.get("instance_weighted_coverage")
+    cur = current["instance_weighted_coverage"]
+    # A missing or unmeasured reading on either side is not a bar and not a
+    # fall. A baseline that never carried the field is not a baseline of zero,
+    # and a week that measured nothing has not regressed from anything.
+    if prev is None or cur is None:
+        return None
     if cur >= prev:
         return None
     return (

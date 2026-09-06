@@ -207,6 +207,10 @@ def weighted_impact(
     legacy ``matched_agencies`` and ``total_agencies`` keys remain as compatibility
     aliases; their precise replacements are ``matched_ntd_reporters`` and
     ``total_feed_records``.
+
+    ``expired_trips_pct`` and ``weighted_average_score`` are both None when no
+    weighted trips were matched: neither share has a denominator, and a zero
+    would read as a measured result.
     """
     ntd_counts = Counter(normalize_ntd_id(r.get("ntd_id")) for r in records)
     ntd_counts.pop("", None)
@@ -250,7 +254,11 @@ def weighted_impact(
         "duplicate_ntd_ids_excluded": sorted(present_duplicate_ids),
         "total_annual_trips": total_trips,
         "trips_on_expired_feeds": expired_trips,
-        "expired_trips_pct": (round(expired_trips / total_trips * 100, 1) if total_trips else 0.0),
+        # None, not 0.0, on a zero denominator: 0.0% reads as "none of these
+        # trips ride on an expired feed", the best possible answer, where the
+        # truth is that there were no trips to take a share of.
+        # weighted_average_score on the next line has always answered this way.
+        "expired_trips_pct": (round(expired_trips / total_trips * 100, 1) if total_trips else None),
         "weighted_average_score": (
             round(weighted_score_num / total_trips, 1) if total_trips else None
         ),

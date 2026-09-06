@@ -535,7 +535,10 @@ record; the endpoint's CC BY notice applies to the derived gate output.
 In `api/v1/status.json`, `currently_clean_pct` is the current share of feed
 records with no consecutive failed direct check. The legacy
 `success_rate_pct` field remains as an equal-valued compatibility alias; it is
-not a historical request-success rate. Direct liveness never uses a mirror,
+not a historical request-success rate. Its denominator is the records that
+carry a direct-check result: a record with no failure count is reported under
+`not_measured` and left out of the share, rather than counted as clean. When no
+record carries one, the share is `null`. Direct liveness never uses a mirror,
 while the daily scoring run may use the Mobility Database mirror.
 
 Per-agency detail stays the published artifact (`<agency>/latest.json`); the API

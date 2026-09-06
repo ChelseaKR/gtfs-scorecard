@@ -7,11 +7,13 @@ import time
 import zoneinfo
 from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 import pytest
 from google.transit import gtfs_realtime_pb2
 
 from scorecard_pipeline import rt
+from scorecard_pipeline.metrics import CategoryResult
 from scorecard_pipeline.rt import (
     FRESH_FULL_SECONDS,
     FRESH_ZERO_SECONDS,
@@ -23,10 +25,21 @@ from scorecard_pipeline.rt import (
     _human_duration,
     _trip_time_spans,
     fetch_sample,
-    realtime,
     scheduled_trip_ids_at,
 )
+from scorecard_pipeline.rt import realtime as _realtime_maybe
 from scorecard_pipeline.rt_drift import DriftStats, PlausibilityStats
+
+
+# `realtime` returns None when nothing in a window is evidence about the feed;
+# tests/test_rt_not_measured.py owns that case. Every window below is
+# measurable, so this wrapper keeps the call sites unchanged and turns an
+# unexpected "not measurable" into a loud failure.
+def realtime(*args: Any, **kwargs: Any) -> CategoryResult:
+    result = _realtime_maybe(*args, **kwargs)
+    assert result is not None, "this window is measurable and must be scored"
+    return result
+
 
 NOW = 1_770_000_000  # arbitrary unix time used consistently below
 

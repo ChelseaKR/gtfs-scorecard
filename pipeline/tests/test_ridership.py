@@ -69,7 +69,9 @@ def test_weighted_impact_empty_when_no_matches() -> None:
     assert imp["matched_agencies"] == 0
     assert imp["total_annual_trips"] == 0
     assert imp["weighted_average_score"] is None
-    assert imp["expired_trips_pct"] == 0.0
+    # Both shares share a denominator of zero, so both are absent. This
+    # asserted 0.0, which reads as a measured "no expired trips".
+    assert imp["expired_trips_pct"] is None
 
 
 def test_weighted_impact_quarantines_duplicate_ntd_reporters() -> None:

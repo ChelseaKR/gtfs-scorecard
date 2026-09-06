@@ -34,7 +34,7 @@ from .config import artifacts_dir, current_agency_ids, repo_root
 from .identity import resolve_published_agency_name
 from .location import country_name, normalize_country_code
 from .metrics import expiry_status
-from .ntd import assess_shapes_readiness
+from .ntd import _RANK, assess_shapes_readiness
 from .publish import _write_json, registered_agency_dirs
 from .ridership import annual_trips_for, duplicate_ntd_reporter_ids, normalize_ntd_id
 
@@ -191,7 +191,8 @@ def resolve_member_ids(rollup: Rollup) -> list[str]:
 def _shapes_status(latest: dict[str, Any]) -> str | None:
     """This agency's current shapes.txt (NTD RY2026) readiness status, or None
     when it does not apply: a non-US agency (NTD is a US-federal FTA program,
-    ADR 0026) or an artifact that predates the check. Recomputed from the
+    ADR 0026), an artifact that predates the check, or a feed with no trips,
+    where coverage has no denominator and the check could not run. Recomputed from the
     stored trip counts rather than trusting the stored status/prose directly,
     the same pattern render_site.py's _current_shapes_readiness uses, so a
     wording or threshold fix reaches every rollup without a rescore."""
@@ -203,7 +204,11 @@ def _shapes_status(latest: dict[str, Any]) -> str | None:
     total = shapes.get("total_trips")
     with_shape = shapes.get("trips_with_shape")
     if isinstance(total, int) and isinstance(with_shape, int):
-        return assess_shapes_readiness(total, with_shape).status
+        status = assess_shapes_readiness(total, with_shape).status
+        # A feed with no trips has no coverage denominator, so the check could
+        # not run and the member counts under "not_measured" rather than
+        # against the cohort's readiness.
+        return status if status in _RANK else None
     status = shapes.get("status")
     return str(status) if status is not None else None
 

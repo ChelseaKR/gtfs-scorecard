@@ -48,7 +48,8 @@
       "median": 33.0,
       "min": 2.0
     },
-    "measurement_note": "Current share of feed records with no consecutive failed direct check; not a historical request-success rate.",
+    "measurement_note": "Current share of feed records with no consecutive failed direct check; not a historical request-success rate. Records that carry no failure count are reported under not_measured and are left out of the share.",
+    "not_measured": 0,
     "success_rate_pct": 100.0,
     "unreachable": 0
   },
