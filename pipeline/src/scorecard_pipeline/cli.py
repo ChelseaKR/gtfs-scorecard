@@ -3809,6 +3809,34 @@ def _cmd_reproduce(args: argparse.Namespace, parser: argparse.ArgumentParser) ->
     return 1
 
 
+def _cmd_explain(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Print the deduction-by-deduction trail behind one artifact's grade.
+
+    Exit 2 covers everything this command could not judge: an unreadable file
+    and an artifact from a rubric version whose constants this build does not
+    carry. Both are refusals rather than verdicts, so neither shares exit 1
+    with a real disagreement.
+    """
+    from .explain import RENDERERS, UnknownRubricVersion, build_trail
+
+    path = Path(args.artifact)
+    try:
+        artifact = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError) as exc:
+        log.error("could not read %s: %s", path, exc)
+        return 2
+    if not isinstance(artifact, dict):
+        log.error("%s is not a scorecard artifact", path)
+        return 2
+    try:
+        trail = build_trail(artifact)
+    except UnknownRubricVersion as exc:
+        log.error("%s", exc)
+        return 2
+    print(RENDERERS[args.format](trail), end="")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="scorecard", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -4690,6 +4718,22 @@ def main(argv: list[str] | None = None) -> int:
     reproduce.add_argument("agency", help="agency id, e.g. unitrans")
     reproduce.add_argument("date", help="published snapshot date, YYYY-MM-DD")
 
+    explain = sub.add_parser(
+        "explain",
+        help=(
+            "print the deduction-by-deduction arithmetic behind a published artifact's "
+            "grade, reading the artifact only (#364)"
+        ),
+    )
+    explain.add_argument("artifact", help="path to a scorecard artifact JSON file")
+    explain.add_argument(
+        "--format",
+        choices=("text", "markdown", "json"),
+        default="text",
+        help="output format (default: text)",
+    )
+    explain.set_defaults(registry_free=True)
+
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
@@ -4798,6 +4842,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "rt-health": _cmd_rt_health,
         "rt-archive": _cmd_rt_archive,
         "reproduce": _cmd_reproduce,
+        "explain": _cmd_explain,
     }
     handler = handlers.get(args.command)
     if handler is None:
