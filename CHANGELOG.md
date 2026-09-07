@@ -46,6 +46,35 @@ the declared public surface).
   the "named user at the table" the plan required before building this
   tier. The runbook and the day-90 gate are in `docs/program-plan.md`.
 
+- **`scorecard explain`: the arithmetic behind a published grade (#364).** A
+  reader who wants to contest a score can now see every step that produced it
+  rather than reading `score.py`. `scorecard explain ARTIFACT
+  [--format text|markdown|json]` reads one artifact and prints each category's
+  published score, the line items behind it, the rubric weight and the weight
+  actually applied after renormalisation, each category's contribution, the
+  total, the published rounding, and the grade band edges. It is pure: no
+  fetch, no rescoring, and no published value changes.
+
+  Two refusals rather than approximations. An artifact from a rubric version
+  this build has no constants for is refused with exit 2 instead of being
+  scored with today's constants, and a leftover the trail cannot attribute to
+  a documented cause is printed as `unexplained` instead of being rounded
+  away. Exit 2 also covers an unreadable file, keeping "could not judge"
+  distinct from a real disagreement.
+
+  Writing it measured something worth recording. Over the 2,166 rubric-1.3
+  artifacts in `data/artifacts` carrying a measured category, 36 (1.66%) have
+  an `overall.score` that cannot be reproduced by applying the published
+  weights to the published category scores: the pipeline weights the unrounded
+  category scores while the artifact publishes them rounded to one decimal.
+  None of those 36 crosses a grade band. Counting the 320 artifacts still on
+  rubric 1.1 as well, the figure is 45 of 2,494, and one of those does cross a
+  band — `cape-ann-transportation-authority-cata-447` publishes 80.0 and a B
+  where the published category scores give 79.9, a C. `explain` reports the
+  gap wherever it occurs and names the cause; whether the overall should
+  instead be derived from the published category scores is a scoring decision
+  and is not taken here.
+
 - **14 French feed records from the rentrée recheck pass (2026-09-01).** The
   2026-08-30 exhaustion left 100 candidates excluded only for short
   calendars. Two days later, fourteen had refreshed past the 60-day gate and
