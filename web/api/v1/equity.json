@@ -1,22 +1,22 @@
 {
   "comparison": {
     "absolute_rankings_published": false,
-    "eligible_count": 1614,
-    "excluded_count": 395,
+    "eligible_count": 1612,
+    "excluded_count": 392,
     "exclusion_counts": {
       "duplicate_feed_identity": 8,
       "measured_category_set_mismatch": 143,
       "reader_archive_profile_mismatch": 5,
-      "rubric_version_mismatch": 10,
-      "scoring_profile_mismatch": 9,
+      "rubric_version_mismatch": 7,
+      "scoring_profile_mismatch": 6,
       "scoring_profile_missing": 1,
-      "scoring_profile_rubric_mismatch": 9,
+      "scoring_profile_rubric_mismatch": 6,
       "scoring_profile_rubric_missing": 1,
       "service_data_long_expired": 237
     },
     "individual_percentiles_published": false,
     "measured_category_cohorts": {
-      "correctness+freshness+completeness": 1614,
+      "correctness+freshness+completeness": 1612,
       "correctness+freshness+completeness+realtime": 143
     },
     "note": "Score aggregates and named changes use one current producer contract, raw reader archive profile, and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
@@ -133,9 +133,9 @@
       "state": "Arkansas"
     },
     {
-      "agency_count": 148,
+      "agency_count": 147,
       "comparison_eligible_count": 79,
-      "feed_record_count": 148,
+      "feed_record_count": 147,
       "indicators": {
         "disability_pct": 11.0,
         "poverty_pct": 12.1,
@@ -217,9 +217,9 @@
       "state": "Florida"
     },
     {
-      "agency_count": 12,
+      "agency_count": 11,
       "comparison_eligible_count": 1,
-      "feed_record_count": 12,
+      "feed_record_count": 11,
       "indicators": {
         "disability_pct": 12.7,
         "poverty_pct": 13.5,
@@ -371,16 +371,16 @@
       "state": "Maryland"
     },
     {
-      "agency_count": 37,
-      "comparison_eligible_count": 26,
-      "feed_record_count": 37,
+      "agency_count": 36,
+      "comparison_eligible_count": 25,
+      "feed_record_count": 36,
       "indicators": {
         "disability_pct": 11.9,
         "poverty_pct": 9.9,
         "zero_vehicle_pct": 11.9
       },
-      "low_grade_share": 34.6,
-      "median_score": 73.2,
+      "low_grade_share": 32.0,
+      "median_score": 73.5,
       "need_tier": "lower",
       "state": "Massachusetts"
     },
@@ -763,16 +763,16 @@
       "state": "West Virginia"
     },
     {
-      "agency_count": 11,
-      "comparison_eligible_count": 7,
-      "feed_record_count": 11,
+      "agency_count": 10,
+      "comparison_eligible_count": 6,
+      "feed_record_count": 10,
       "indicators": {
         "disability_pct": 11.9,
         "poverty_pct": 10.7,
         "zero_vehicle_pct": 6.3
       },
-      "low_grade_share": 28.6,
-      "median_score": 78.4,
+      "low_grade_share": 16.7,
+      "median_score": 80.3,
       "need_tier": "lower",
       "state": "Wisconsin"
     }
