@@ -606,6 +606,10 @@ the declared public surface).
 
 ## [1.5.0] - 2026-08-18
 
+> **Not yet tagged.** These changes are on `main`, but no `v1.5.0` tag or
+> GitHub release exists; the newest tag is `v1.4.0`. Do not pin
+> `ChelseaKR/gtfs-scorecard@v1.5.0` — it will not resolve.
+
 ### Added
 
 - **The repository now says how to support the project.** A root `SUPPORT.md`
