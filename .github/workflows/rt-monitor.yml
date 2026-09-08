@@ -24,7 +24,32 @@ concurrency:
 jobs:
   monitor:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    # RELIABILITY: this bound has to sit above the job's real runtime and below
+    # the cron interval, and it was set to 45 without either being measured.
+    # Every recorded successful run of this workflow took longer than that: the
+    # burst walks every configured realtime endpoint one at a time, so the run
+    # grows with the registry. Measured from the run history on 2026-09-08 —
+    # ~117 min (2026-08-30/31), ~141-153 min (2026-09-01..04), 160-163 min
+    # (2026-09-05). So from the moment the 45-minute bound landed, every
+    # scheduled run was killed part-way through "Sample realtime feeds",
+    # "Commit observations" was skipped, and no observation was recorded:
+    # data/rt-health's newest commit is 2026-09-05 and the eleven runs since
+    # are 11 of 11 `cancelled`, which is how GitHub records a job timeout and
+    # is exactly the conclusion a sweep reads as "no signal".
+    #
+    # 170 sits above every observed run and below the 180-minute cron interval.
+    # That interval is the real ceiling, not a comfort margin: the concurrency
+    # group below is serial with `cancel-in-progress: false`, so a run that
+    # outlives its own cadence makes the next one queue behind it, and a third
+    # arrival evicts the queued one. A run that has taken longer than 170
+    # minutes has already lost the schedule and should be stopped.
+    #
+    # The trend is not flat, so this bound is a repair and not a resting
+    # place: 117 to 163 minutes in six days, on a 180-minute cadence. Raising
+    # it past 180 is not the answer, because that is the cadence itself;
+    # sharding the burst or lengthening the cron is, and which one is an
+    # owner decision.
+    timeout-minutes: 170
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:

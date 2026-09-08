@@ -825,3 +825,102 @@ def test_the_tiles_size_ceiling_stops_the_commit_it_exists_to_stop() -> None:
         "an archive that trips the ceiling still has to be downloadable; it is "
         "the file ADR 0023 says to move to S3"
     )
+
+
+# The realtime monitor's runtime, read off its own run history on 2026-09-08
+# rather than estimated: 116.8 minutes was the shortest recorded successful
+# run (2026-08-30) and 162.9 the longest (2026-09-05). The figure grows with
+# the registry because the sampling burst walks every configured realtime
+# endpoint, so it is an observation with a date on it, not a derived count --
+# nothing recomputes it, so it cannot jam a merge queue the way a
+# hand-maintained counter gated on equality does.
+REALTIME_MONITOR_OBSERVED_RUNTIME_CEILING_MINUTES = 163
+
+
+def test_the_realtime_monitor_bound_sits_between_its_runtime_and_its_cadence() -> None:
+    """`timeout-minutes: 45` killed eleven consecutive scheduled runs.
+
+    The bound landed with the portfolio-wide job-timeout pass and was never
+    measured against this job. Every recorded successful run of this workflow
+    has taken longer than 45 minutes -- the shortest was 117 -- so from that
+    commit onward every scheduled run was stopped part-way through "Sample
+    realtime feeds", "Commit observations" was skipped, and nothing was
+    recorded. `data/rt-health`'s newest commit is 2026-09-05 and the eleven
+    runs after it are 11 of 11 `cancelled`, which is how GitHub records a job
+    hitting its own bound and is the conclusion every sweep reads as "no
+    signal rather than a failure".
+
+    Both directions are asserted, because both mistakes are available:
+
+    * **Below the runtime** is the defect above: the job never finishes.
+    * **At or above the cadence** is the opposite one. The concurrency group
+      is serial (`cancel-in-progress: false`), so a run allowed to outlive its
+      own 180-minute cron makes the next run queue behind it, and a third
+      arrival evicts the queued one -- the same silent drop, reached from the
+      other side. A run that has already lost the schedule should be stopped,
+      not given more room.
+
+    The concurrency shape is asserted here too, because it is the premise that
+    makes the cadence a ceiling. If it ever stops being serial, this test's
+    reasoning is wrong and should be re-read rather than quietly still passing.
+    """
+    workflow = _workflow("rt-monitor.yml")
+
+    every_n_hours = re.search(r'- cron: "\d+ \*/(\d+) \* \* \*"', workflow)
+    assert every_n_hours, "rt-monitor.yml no longer declares an every-N-hours cron"
+    cadence_minutes = int(every_n_hours.group(1)) * 60
+
+    monitor = workflow[workflow.index("  monitor:") :]
+    bound = re.search(r"^    timeout-minutes: (\d+)$", monitor, re.MULTILINE)
+    assert bound, "the monitor job declares no timeout-minutes"
+    timeout_minutes = int(bound.group(1))
+
+    assert timeout_minutes > REALTIME_MONITOR_OBSERVED_RUNTIME_CEILING_MINUTES, (
+        f"timeout-minutes: {timeout_minutes} is at or below the longest recorded run "
+        f"({REALTIME_MONITOR_OBSERVED_RUNTIME_CEILING_MINUTES} min). A bound under the "
+        "job's real runtime does not catch a hang, it guarantees one: every run is "
+        "killed part-way and GitHub records it as `cancelled`, not as a failure."
+    )
+    assert timeout_minutes < cadence_minutes, (
+        f"timeout-minutes: {timeout_minutes} is at or above the {cadence_minutes}-minute "
+        "cron interval. With a serial concurrency group a run that outlives its cadence "
+        "queues the next one and the one after that evicts it. Shard the burst or "
+        "lengthen the cron instead of raising this."
+    )
+
+    assert "group: rt-monitor" in workflow
+    assert "cancel-in-progress: false" in workflow
+
+
+def test_the_watchdog_reads_a_job_timeout_as_a_failure_not_as_silence() -> None:
+    """A job killed by its own `timeout-minutes` concludes `cancelled`.
+
+    Not `timed_out`. Measured 2026-09-08 against Realtime monitor run
+    34162993774: the job started at 21:24:06 and completed at 22:09:20 --
+    forty-five minutes to the second, against `timeout-minutes: 45` -- and
+    both the job and the run concluded `cancelled`. So a watchdog that reads
+    only `failure` and `timed_out` is blind to a workflow dying on its own
+    bound, and every sweep in this campaign treats `cancelled` as no signal at
+    all. That is why eleven dead runs went unremarked for three days.
+    """
+    workflow = _workflow("watchdog.yml")
+    watch = workflow[workflow.index("  watch:") : workflow.index("  production-lighthouse:")]
+
+    for check in ("Daily scorecard", "Realtime monitor"):
+        step_at = watch.index(f"most recent completed {check} run")
+        step = watch[step_at : step_at + 1200]
+        assert '"$conclusion" = "cancelled"' in step, (
+            f"the {check} check cannot see a job killed by its own timeout"
+        )
+        assert '"$conclusion" = "failure"' in step, check
+        assert '"$conclusion" = "timed_out"' in step, check
+
+    # A check that could not get an answer is not a check that passed. The
+    # realtime step refuses an empty conclusion rather than falling through it.
+    realtime_at = watch.index("The most recent realtime monitor run did not fail")
+    realtime = watch[realtime_at:]
+    assert "--workflow rt-monitor.yml" in realtime
+    assert '[ -z "$conclusion" ]' in realtime, (
+        "an unreadable run list must be an error, not an implied pass"
+    )
+    assert "set -euo pipefail" in realtime

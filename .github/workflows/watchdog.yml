@@ -105,8 +105,46 @@ jobs:
           status=$(echo "$latest" | jq -r '.[0].status // empty')
           event=$(echo "$latest" | jq -r '.[0].event // empty')
           echo "most recent completed Daily scorecard run: event=$event status=$status conclusion=$conclusion"
-          if [ "$conclusion" = "failure" ] || [ "$conclusion" = "timed_out" ]; then
+          # `cancelled` is in this list because that is what GitHub records
+          # when a job hits its own `timeout-minutes`, not `timed_out`.
+          # Measured on 2026-09-08 against Realtime monitor run 34162993774:
+          # the job started 21:24:06 and completed 22:09:20 — 45 minutes to
+          # the second, against `timeout-minutes: 45` — and both the job and
+          # the run concluded `cancelled`. A check that reads only `failure`
+          # and `timed_out` therefore cannot see a workflow that is dying on
+          # its own bound, which is the shape that ran unnoticed for three
+          # days in rt-monitor.yml.
+          if [ "$conclusion" = "failure" ] || [ "$conclusion" = "timed_out" ] || [ "$conclusion" = "cancelled" ]; then
             echo "::error::The most recent completed Daily scorecard run ended '$conclusion'. Investigate before the published data goes stale."
+            exit 1
+          fi
+
+      # The realtime monitor publishes no page of its own, so nothing else in
+      # this repository notices when it stops. Its record (data/rt-health) is
+      # read by every agency page's reliability section and by /realtime/, and
+      # a run that records nothing leaves those surfaces describing an older
+      # window while the page around them is rebuilt today. Ask the same
+      # question as the step above, about the workflow whose silence is the
+      # hardest to see.
+      - name: The most recent realtime monitor run did not fail
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          latest=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow rt-monitor.yml \
+            --branch main --status completed --limit 1 \
+            --json conclusion,status,event 2>/dev/null || echo '[]')
+          conclusion=$(echo "$latest" | jq -r '.[0].conclusion // empty')
+          status=$(echo "$latest" | jq -r '.[0].status // empty')
+          event=$(echo "$latest" | jq -r '.[0].event // empty')
+          echo "most recent completed Realtime monitor run: event=$event status=$status conclusion=$conclusion"
+          if [ -z "$conclusion" ]; then
+            echo "::error::Could not read a completed Realtime monitor run. This check says nothing about the monitor until it can."
+            exit 1
+          fi
+          if [ "$conclusion" = "failure" ] || [ "$conclusion" = "timed_out" ] || [ "$conclusion" = "cancelled" ]; then
+            echo "::error::The most recent completed Realtime monitor run ended '$conclusion', so no realtime observation was recorded. The reliability figures on every agency page and on /realtime/ describe an older window than the page says."
             exit 1
           fi
 
