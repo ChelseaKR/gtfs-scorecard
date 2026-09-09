@@ -28,7 +28,7 @@ jobs:
   gtfs-quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: ChelseaKR/gtfs-scorecard@v1
+      - uses: ChelseaKR/gtfs-scorecard@v1.4.0
         with:
           feed-url: https://example.org/gtfs/feed.zip
           name: Example Transit
@@ -37,8 +37,27 @@ jobs:
           min-days-to-expiry: 14
 ```
 
-`@v1` follows the latest compatible v1 release. Pin the current full version
-tag (`@v1.5.0`) or a commit SHA when you want an exact, unchanging contract.
+### Which ref to pin
+
+Name a full release tag, as the example does, or a commit SHA. `v1.4.0` is the
+newest published Action release, so a workflow that pins it runs a build whose
+behaviour is written down on this page and cannot change underneath it.
+
+**The floating major `@v1` is not recommended.** The Marketplace convention
+offers it, and this repository keeps it for the consumers who already use it,
+but it is a single mutable pointer: it moves to the newest `v1.x.y` on release
+day, so a workflow naming it changes what it runs with no commit, no review and
+no diff on your side. It has not moved since 2026-07-25, while `main` has taken
+on hundreds of commits since, so its next move will be a large jump made
+silently in every workflow that names it. Pin a release and upgrade on purpose.
+
+**What `v1.4.0` does not yet include.** The refusal of an unreadable archive
+described under [Inputs](#inputs) is on `main` and is in no published release.
+`@v1.4.0` — and `@v1`, which points at the same commit today — still grade an
+archive that carries no schedule data rather than refusing it. Version 1.5.0
+has a `CHANGELOG.md` entry but no tag and no release, so there is nothing newer
+to pin to yet. Tag namespaces and what each one promises are in
+[docs/release-checklist.md](release-checklist.md#tag-namespaces).
 
 ## Inputs
 
@@ -62,8 +81,11 @@ One input fails with no threshold set, because it produces no scorecard to
 gate: an archive the scorer could read no schedule data out of — no stops and
 no trips — is refused rather than graded, exactly as a response body that is not
 a zip is. The step fails with `could not score <url>: ...` and `passed` is
-`false`. Until 2026-09, such a feed was graded and the default configuration
-reported `passed=true` for it.
+`false`. Before that change such a feed was graded and the default
+configuration reported `passed=true` for it.
+
+**This behaviour is on `main` only.** It is in no published release, so it is
+not what `@v1.4.0` or `@v1` do today. See [Which ref to pin](#which-ref-to-pin).
 
 ## Outputs and job summary
 
@@ -73,7 +95,7 @@ later steps can upload or inspect it even when the gate fails.
 
 ```yaml
       - id: gtfs
-        uses: ChelseaKR/gtfs-scorecard@v1
+        uses: ChelseaKR/gtfs-scorecard@v1.4.0
         with:
           feed-url: https://example.org/gtfs/feed.zip
           min-grade: B
@@ -95,7 +117,7 @@ a concise workflow annotation while preserving the full result file.
 Set `html` to keep the rendered scorecard as a build artifact:
 
 ```yaml
-      - uses: ChelseaKR/gtfs-scorecard@v1
+      - uses: ChelseaKR/gtfs-scorecard@v1.4.0
         with:
           feed-url: https://example.org/gtfs/feed.zip
           min-grade: C

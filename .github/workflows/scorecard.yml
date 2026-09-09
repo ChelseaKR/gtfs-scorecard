@@ -487,6 +487,20 @@ jobs:
       # (which set no variable) skip it entirely and keep serving from Pages.
       - name: Publish artifacts to S3
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        # `shell: bash` is `bash --noprofile --norc -eo pipefail {0}`. The default
+        # `run:` shell is `bash -e {0}` — errexit WITHOUT pipefail — so the
+        # `jq ... | while read` below reported the `while` loop's status, which is
+        # zero however the jq ended. An index.json that jq could not read (a
+        # different top-level shape, a truncated hydrate, an error document) staged
+        # ZERO fix logs, the step carried on, and `aws s3 sync "$fixlog_stage"
+        # ... /cache/fixlog --delete` further down deleted every private fix log in
+        # the bucket to match an empty directory — exit 0, no failed step, the
+        # comparison memory gone. The structurally identical `jq | sort -u | while`
+        # in "Hydrate the authoritative current corpus" IS guarded, by its own
+        # `set -euo pipefail`; this one, which gates a `--delete`, was not.
+        # Set per step, not job-wide: several steps here (the weekly digest, the
+        # coverage check) pipe deliberately tolerantly and would change behaviour.
+        shell: bash
         run: |
           # Dated history is additive: S3 is the durable record of artifacts a
           # fresh collect checkout does not carry. The retirement manifest is
