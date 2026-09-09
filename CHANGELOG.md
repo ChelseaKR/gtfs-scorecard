@@ -27,6 +27,54 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Fixed
+
+- **The weekly history secret scan could not fail on a credential that had
+  been revoked (2026-09-06).** `trufflehog.yml` ran `--results=verified`,
+  which reports a finding only when TruffleHog presents the credential to the
+  provider and the provider says it is live. A credential that leaked and was
+  then revoked answers "no", so it is filed under `unverified` and never under
+  `verified` -- and revocation is the normal end state of a real incident.
+  A sweep whose whole purpose is to find what was committed and later taken
+  back out therefore could not fail on the one case it exists for, and went
+  green for it every week. Measured on a throwaway clone with a real-shaped
+  AWS key planted in one commit and deleted in the next (present in history,
+  absent at HEAD, both confirmed first; the key was deliberately not AWS's
+  documented example, which is filtered under every tier): `--only-verified`,
+  `--results=verified` and `--results=verified,unknown` all exited 0 reporting
+  nothing, and `--results=verified,unknown,unverified` exited 183.
+
+  The job now runs two lanes over the full history. Lane 1 reports every tier
+  with `Lob,URI,AWSSessionKey,AzureSasToken,RailwayApp` excluded; lane 2 is the
+  previous gate unchanged -- verified results, every detector but Lob, over
+  every path -- under `if: ${{ !cancelled() }}`. The pair is a strict superset
+  of what the job checked before, which is what makes lane 1's four extra
+  exclusions free.
+
+  Those four are excluded because re-scanning all 931 commits of `main` under
+  the widened tier reported 34 unverified findings and no verified ones, and
+  every one is somebody else's fact or a synthetic fixture: 31 are presigned
+  download URLs recorded verbatim as `fetch.final_url` provenance under
+  `data/artifacts/` when the pipeline fetched a public feed from Japan's
+  open-data portals (`AWSAccessKeyId=ASIA...` on S3, `sig=...` on Azure Blob
+  with SAS windows as short as two minutes, plus feed UUIDs RailwayApp reads as
+  tokens), and 3 are synthetic `example.org` DSNs in `pipeline/tests/`. Path
+  exclusion was rejected again, on ADR 0044's reasoning.
+
+  Neither step had a `version:` input. That input selects the image that scans
+  (`ghcr.io/trufflesecurity/trufflehog:${VERSION}`) and defaults to `latest`,
+  so the `uses:` SHA pinned only the wrapper: the gate was pinned at v3.95.8
+  and running whatever upstream had published most recently. The ref is
+  resolved **forward** to v3.97.1 and both lanes pin `version: "3.97.1"`, so
+  nothing is downgraded.
+
+  `pipeline/tests/test_trufflehog_workflow.py` holds the tier contract, the
+  pin contract, `fetch-depth: 0`, the scan root, and the property that every
+  detector lane 1 excludes stays armed in lane 2. Run against the pre-change
+  workflow it fails four of its six assertions. Rationale and the full finding
+  table: `docs/decisions/0053-secret-scan-reports-every-result-tier.md`;
+  the SEC-19 declaration is updated in `docs/standards-conformance-gaps.md`.
+
 ### Added
 
 - **Program report bundle, built and not launched (2026-09-01).** The
