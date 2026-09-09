@@ -41,3 +41,12 @@ stays a thin renderer of precomputed JSON.
 
 The full project guide is in [CLAUDE.md](CLAUDE.md), and design decisions are
 recorded as ADRs under [docs/decisions/](docs/decisions/).
+
+## Commercial solicitation
+
+Issues here are not open to bids. They are design records — written so a decision is
+reconstructable later — not scope documents for outside quoting, and unsolicited offers to
+implement one for a fee will be declined.
+
+Contributions through the normal fork-and-PR process are welcome, and `good first issue` is the
+place to start.
