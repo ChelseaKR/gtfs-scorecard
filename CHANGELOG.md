@@ -104,6 +104,28 @@ the declared public surface).
 
 ### Fixed
 
+- **The realtime monitor had been killed by its own timeout on every run
+  since 2026-09-05, and nothing said so.** `rt-monitor.yml` was given
+  `timeout-minutes: 45` by the portfolio-wide job-timeout pass, without that
+  number being measured against this job. It has never been achievable: the
+  sampling burst walks every configured realtime endpoint in turn, so the run
+  grows with the registry, and its own history reads 116.8 minutes at the
+  shortest (2026-08-30) and 162.9 at the longest (2026-09-05). Every
+  scheduled run since was stopped part-way through `Sample realtime feeds`,
+  `Commit observations` was skipped, and no observation was recorded:
+  `data/rt-health`'s newest commit is 2026-09-05 and the eleven runs after it
+  are eleven of eleven `cancelled`. That conclusion is the reason it went
+  unnoticed — GitHub records a job hitting its own bound as `cancelled`, not
+  as `timed_out` or `failure`, and a cancelled run reads as no verdict rather
+  than as a broken one. The bound is now 170 minutes, above every run this
+  workflow has recorded and below its own 180-minute cron interval, which is
+  the real ceiling because the concurrency group is serial. `Watchdog` now
+  asks the same question about the realtime monitor that it already asks
+  about the daily run, and both questions now count `cancelled` as an answer.
+  The runtime is not flat — 117 to 163 minutes in six days — so the next
+  decision is whether to shard the burst or lengthen the cron, and that is
+  the owner's.
+
 - **`scorecard lint` reported and never said whether it passed.**
   `docs/add-your-agency.md` sends a first-time contributor to
   `uv run scorecard lint --strict` and tells them a green result there means a
