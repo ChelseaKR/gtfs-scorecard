@@ -6312,6 +6312,97 @@ def test_rt_health_section_survives_a_corrupt_record_file(isolated_repo_root: Pa
     assert _rt_health_section("demo") == ""
 
 
+def _write_rt_record(root: Path, agency_id: str, timestamps: list[int]) -> None:
+    """Write a record whose observations sit at the given capture times."""
+    import json
+
+    rt_dir = root / "data" / "rt-health"
+    rt_dir.mkdir(parents=True, exist_ok=True)
+    (rt_dir / f"{agency_id}.json").write_text(
+        json.dumps(
+            {
+                "agency_id": agency_id,
+                "observations": [
+                    {
+                        "ts": ts,
+                        "kinds_reachable": 1,
+                        "kinds_total": 1,
+                        "worst_lag_seconds": 10,
+                        "coverage_pct": None,
+                    }
+                    for ts in timestamps
+                ],
+            }
+        )
+    )
+
+
+def test_the_reliability_window_names_the_day_it_ends_not_today(
+    isolated_repo_root: Path,
+) -> None:
+    """ "over the last N days" was a claim about now, from a span that is not.
+
+    ``summarize`` reports the first and last capture times of whatever the
+    monitor recorded; the page is rebuilt on the intraday cadence regardless.
+    So the moment the monitor stops -- as it did between 2026-09-05 and
+    2026-09-08, when every scheduled run was killed by a timeout below its own
+    runtime -- every agency page went on saying "the last N days" about a
+    window that had already closed. The repository's own golden fixture is the
+    unarranged demonstration: its newest yolobus observation is 2026-07-01 and
+    the committed golden page reads "over the last 9 days".
+
+    Naming the end date needs no threshold and reads no clock, so it cannot
+    drift and it cannot be wrong.
+    """
+    # 2026-06-23T03:35:07Z to 2026-07-01T23:00:18Z: the golden fixture's own
+    # window, nine days wide and long past.
+    _write_rt_record(isolated_repo_root, "demo", [1782185707, 1782946818])
+
+    html = _rt_health_section("demo")
+
+    assert "in the 9 days to 2026-07-01" in html
+    assert "over the last" not in html, (
+        "the window must not be described relative to the reader's today"
+    )
+    # Paired with a presence assertion, so the absence above cannot be
+    # satisfied by a fixture that renders no window at all.
+    assert "checks in the" in html
+
+
+def test_a_single_observation_is_dated_rather_than_given_a_span(
+    isolated_repo_root: Path,
+) -> None:
+    """One capture has no span, and the old code printed no date either.
+
+    The section then read "responded on 100.0% of 1 checks, with 10s median
+    lag" -- a reliability figure with nothing at all to place it in time.
+    """
+    _write_rt_record(isolated_repo_root, "demo", [1782946818])
+
+    html = _rt_health_section("demo")
+
+    assert "1 checks on 2026-07-01" in html
+    assert " day" not in html.split("</p>")[0], "one observation spans no days"
+
+
+def test_the_fineprint_says_the_window_does_not_follow_the_page(
+    isolated_repo_root: Path,
+) -> None:
+    """The date alone is only half of it.
+
+    A reader who does not already know the monitor exists has no reason to
+    read an end date as anything but a formatting choice. The fineprint is
+    where the page says that this window is the record's and not the build's,
+    so a stopped monitor is legible rather than merely dated.
+    """
+    _write_rt_record(isolated_repo_root, "demo", [1782185707, 1782946818])
+
+    html = _rt_health_section("demo")
+
+    assert "The window ends at the newest observation" in html
+    assert "if the monitor stops, this window stops with it" in html
+
+
 def test_status_page_names_the_shard_denominator_when_the_run_recorded_one() -> None:
     """ "across 31 shards" reads as a fact about the size of the run. It is only
     a fact about how many shards came back. A reader cannot see that 31 is short

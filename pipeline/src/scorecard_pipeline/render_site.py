@@ -3912,7 +3912,20 @@ def _rt_health_section(agency_id: str) -> str:
     (logged, not raised) when the agency's record file exists but is corrupt —
     the site must still build; the corruption itself is not silently erased,
     since only ``append_observation`` writes this file and it refuses to treat
-    corruption as an empty history to overwrite."""
+    corruption as an empty history to overwrite.
+
+    The window names the date it **ends**, and that is the point of it. This
+    read "over the last N days", which is a claim about now, computed from a
+    span that need not end now: the page is rebuilt on the intraday cadence
+    whether or not the monitor recorded anything, so a monitor that stops
+    leaves every agency page saying "the last N days" about a window that
+    closed whenever the last observation landed. It is not hypothetical --
+    ``rt-monitor.yml`` recorded nothing between 2026-09-05 and 2026-09-08, and
+    this repository's own golden fixture renders "over the last 9 days" for a
+    record whose newest observation is 2026-07-01. Naming the end date is
+    threshold-free and clock-free: it needs no judgement about how stale is
+    too stale, it cannot drift, and a reader can compare it against the build
+    date the page already carries."""
     from .rt_health import RtHealthRecordCorruptError, load_observations, summarize
 
     try:
@@ -3924,9 +3937,13 @@ def _rt_health_section(agency_id: str) -> str:
         return ""
     s = summarize(observations)
     span = ""
-    if s.first_ts and s.last_ts and s.last_ts > s.first_ts:
-        days = max(1, round((s.last_ts - s.first_ts) / 86400))
-        span = f" over the last {days} day{'s' if days != 1 else ''}"
+    if s.last_ts:
+        ended = dt.datetime.fromtimestamp(s.last_ts, dt.UTC).date().isoformat()
+        if s.first_ts and s.last_ts > s.first_ts:
+            days = max(1, round((s.last_ts - s.first_ts) / 86400))
+            span = f" in the {days} day{'s' if days != 1 else ''} to {ended}"
+        else:
+            span = f" on {ended}"
     lag = (
         f"{s.median_lag_seconds}s median lag"
         if s.median_lag_seconds is not None
@@ -3943,7 +3960,9 @@ def _rt_health_section(agency_id: str) -> str:
         f'<p class="page-lede">The realtime feed responded on {s.uptime_pct}% of '
         f"{s.observations} checks{span}, with {esc(lag)}.{esc(cov)}</p>"
         '<p class="fineprint">Sampled on a schedule between full scores, so this '
-        "tracks uptime and freshness over time rather than at a single moment.</p></section>"
+        "tracks uptime and freshness over time rather than at a single moment. "
+        "The window ends at the newest observation, which is not always today: "
+        "if the monitor stops, this window stops with it.</p></section>"
     )
 
 

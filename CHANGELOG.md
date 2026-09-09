@@ -144,6 +144,23 @@ the declared public surface).
   without `--strict` is advisory and not the gate. The walkthrough shows what a
   passing run looks like instead of implying it looks like nothing.
 
+- **"Over the last N days" was a claim about now, from a window that need not
+  end now.** Every agency page with a realtime record carries a "Realtime
+  reliability" section reading "the realtime feed responded on X% of N checks
+  over the last D days". `D` is the span between the oldest and newest recorded
+  observation; the page is rebuilt on the intraday cadence whether or not the
+  monitor recorded anything. So a monitor that stops leaves the sentence
+  standing, on a page dated today, about a window that closed whenever the last
+  observation landed. It is not hypothetical: `rt-monitor.yml` recorded nothing
+  between 2026-09-05 and 2026-09-08, and this repository's own committed golden
+  renders "over the last 9 days" for a record whose newest observation is
+  2026-07-01. The window now names the day it ends -- "in the 9 days to
+  2026-07-01" -- and the fineprint says the window belongs to the record rather
+  than to the build. A single observation is dated instead of being given no
+  time reference at all, which is what it had. Naming the end date needs no
+  staleness threshold and reads no clock, so it cannot drift and there is no
+  judgement in it to get wrong.
+
 - **Nineteen published F grades have been withdrawn, and the site now says so.**
   The refusal that shipped on 2026-09-01 stopped the scorer minting a grade for
   an archive it could not read. It did nothing about the ones already published,
