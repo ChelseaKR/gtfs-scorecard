@@ -88,13 +88,44 @@ jobs:
       - name: Build the release manifest
         env:
           RELEASE_TAG: ${{ steps.release_tag.outputs.tag }}
+        shell: bash
         run: |
+          set -euo pipefail
+          # The digests used to be written as `$(sha256sum X | cut -d' ' -f1)`
+          # inside an `echo`. A sha256sum that failed — a missing or unreadable
+          # file — printed its error to stderr and contributed the empty string,
+          # `echo` exited 0, and the step wrote `sbom_sha256=` and carried on.
+          # The next steps then signed and attested that manifest: a signature
+          # asserting a BLANK hash, which verifies, publishes, and claims nothing.
+          # `pipefail` is not the repair. The status that gets discarded here is
+          # the command substitution's, thrown away by the assignment/`echo`
+          # around it, not the pipeline's — so `set -o pipefail` changes nothing.
+          # Each digest is therefore captured on its own, its exit status checked
+          # explicitly, and its shape checked, before any file is written. A
+          # release that cannot hash its own artifacts now fails closed.
+          digest_of() {
+            local path="$1"
+            local line
+            if ! line="$(sha256sum -- "$path")"; then
+              echo "::error::sha256sum failed for ${path}; refusing to build a release manifest" >&2
+              return 1
+            fi
+            line="${line%% *}"
+            if [ "${#line}" -ne 64 ] || [ -n "${line//[0-9a-f]/}" ]; then
+              echo "::error::sha256sum produced no usable digest for ${path} (got '${line}')" >&2
+              return 1
+            fi
+            printf '%s' "$line"
+          }
+          sbom_sha256="$(digest_of sbom.cdx.json)"
+          vex_sha256="$(digest_of vex.json)"
+          commit="$(git rev-parse HEAD)"
           {
             echo "repo=${GITHUB_REPOSITORY}"
             echo "tag=${RELEASE_TAG}"
-            echo "commit=$(git rev-parse HEAD)"
-            echo "sbom_sha256=$(sha256sum sbom.cdx.json | cut -d' ' -f1)"
-            echo "vex_sha256=$(sha256sum vex.json | cut -d' ' -f1)"
+            echo "commit=${commit}"
+            echo "sbom_sha256=${sbom_sha256}"
+            echo "vex_sha256=${vex_sha256}"
           } > release-manifest.txt
           cat release-manifest.txt
 
