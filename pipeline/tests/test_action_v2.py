@@ -4,12 +4,10 @@ from __future__ import annotations
 
 import json
 import os
-import re
 import shutil
 import subprocess
 import sys
 import tarfile
-import tomllib
 from io import BytesIO
 from pathlib import Path
 
@@ -19,19 +17,19 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def test_marketplace_metadata_and_documented_refs_match_release_version() -> None:
+def test_marketplace_metadata_is_complete() -> None:
+    # The two assertions this test used to carry about `docs/ci-action.md` moved
+    # to tests/test_documented_action_ref.py on 2026-09-06, inverted. They
+    # required the documented `uses:` form to name the floating major `@v1` and
+    # to name `pipeline/pyproject.toml`'s version -- which is bumped when the
+    # changelog section is written, not when the tag is cut, so the docs
+    # advertised `@v1.5.0`, a tag that has never existed. Both are now failures.
     action = yaml.safe_load((ROOT / "action.yml").read_text())
-    project = tomllib.loads((ROOT / "pipeline/pyproject.toml").read_text())
-    version = project["project"]["version"]
-    major = version.split(".", maxsplit=1)[0]
-    docs = (ROOT / "docs/ci-action.md").read_text()
 
     assert action["name"] == "GTFS Scorecard gate"
     assert action["description"]
     assert action["author"]
     assert action["branding"] == {"icon": "check-circle", "color": "green"}
-    assert set(re.findall(r"ChelseaKR/gtfs-scorecard@(v\d+)", docs)) == {f"v{major}"}
-    assert f"@v{version}" in docs
 
 
 def test_release_sign_validates_the_actual_tag_before_release_operations() -> None:
