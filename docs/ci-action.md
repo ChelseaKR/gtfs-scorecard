@@ -124,7 +124,7 @@ Set `baseline` to compare this run with a previous scorecard, so a pull request
 cannot quietly regress a published feed:
 
 ```yaml
-      - uses: ChelseaKR/gtfs-scorecard@v1
+      - uses: ChelseaKR/gtfs-scorecard@v1.4.0
         with:
           feed-url: https://example.org/gtfs/feed.zip
           baseline: example-transit@latest
@@ -169,7 +169,7 @@ files are committed:
       security-events: write     # upload-sarif only
     steps:
       - uses: actions/checkout@v5
-      - uses: ChelseaKR/gtfs-scorecard@v1
+      - uses: ChelseaKR/gtfs-scorecard@v1.4.0
         with:
           feed-url: https://example.org/gtfs/feed.zip
           sarif: gtfs.sarif
