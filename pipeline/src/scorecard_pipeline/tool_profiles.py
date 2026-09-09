@@ -276,6 +276,21 @@ _NAME_SUFFIXES = (
 _SNAPSHOT = Path("data") / "feed-publishers.json"
 
 
+#: Every producing-tool profile, by its key. ``detect_tool`` answers from a feed
+#: URL; a caller who already knows which tool an agency uses (the MCP server's
+#: ``explain_finding``, say) needs the same guidance without one. An unknown key
+#: returns None rather than the nearest match: naming the wrong vendor in a fix
+#: path is worse than being generic.
+PROFILES_BY_KEY: dict[str, ToolProfile] = {
+    profile.key: profile for profile in (_TRILLIUM, _GTFS_BUILDER, _REMIX, _PASSIO, _REPO, _ARCHIVE)
+}
+
+
+def profile_for_key(key: str) -> ToolProfile | None:
+    """The tool profile for a key, or None when the key is not one we profile."""
+    return PROFILES_BY_KEY.get(str(key).strip().casefold())
+
+
 def _host(url: str) -> str:
     netloc = urlparse(url).netloc.lower()
     netloc = netloc.split("@")[-1].split(":")[0]
