@@ -15,6 +15,7 @@ from jsonschema.exceptions import ValidationError
 
 from scorecard_pipeline import RUBRIC_VERSION, SCORING_PROFILE_ID, cli
 from scorecard_pipeline.alerts import AlertItem, build_digest
+from scorecard_pipeline.comparisons import producer_contract
 from scorecard_pipeline.config import artifacts_dir
 from scorecard_pipeline.fetch import FetchResult
 from scorecard_pipeline.publish import _history_entry
@@ -29,6 +30,8 @@ from scorecard_pipeline.workspace import (
     SAME_BYTES,
     UNCHANGED,
     WorkspaceError,
+    _finding_counts,
+    _freshness_facts,
     append_run,
     build_record,
     build_trend,
@@ -204,6 +207,39 @@ def test_a_record_measured_differently_is_shown_and_never_compared(
     assert [row.step.kind for row in feed.rows] == [FIRST, BOUNDARY]
     # A 35-point fall across the boundary is neither a regression nor a cliff.
     assert [item.kind for item in feed.alerts] == []
+
+
+def test_a_change_in_what_was_measured_is_a_named_boundary() -> None:
+    before = build_record(_artifact("2026-06-11", 84.0), source=SOURCE)
+    unmeasured = _artifact("2026-06-12", 84.0)
+    unmeasured["categories"]["freshness"] = {"status": "not_yet_measured", "findings": []}
+    after = build_record(unmeasured, source=SOURCE)
+    old, new = (", ".join(producer_contract(r)[5]) for r in (before, after))
+
+    step = compare_step(before, after)
+    assert step.kind == BOUNDARY
+    assert f"measured categories {old} to {new}" in step.sentence
+    assert "freshness" in old and "freshness" not in new
+
+
+def test_a_malformed_artifact_contributes_no_invented_counts() -> None:
+    artifact: dict[str, Any] = {
+        "categories": {
+            "correctness": {
+                "status": "measured",
+                "findings": [
+                    "not an object",
+                    {"code": "", "count": 2},
+                    {"code": "flagged", "count": True},
+                    {"code": "kept", "count": 4},
+                ],
+            },
+            "completeness": {"status": "not_yet_measured", "findings": [{"code": "x", "count": 1}]},
+        }
+    }
+    assert _finding_counts(artifact) == {"kept": 4}
+    assert _freshness_facts(artifact) == {"finding_codes": []}
+    assert _finding_counts({"categories": ["not", "a", "mapping"]}) == {}
 
 
 def test_records_that_do_not_say_how_they_were_measured_are_not_compared() -> None:
