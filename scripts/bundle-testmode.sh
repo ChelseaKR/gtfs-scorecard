@@ -104,6 +104,8 @@ TFVARS=""
 ARTIFACTS_BUCKET="${BUNDLE_ARTIFACTS_BUCKET:-gtfs-scorecard-artifacts-ckr}"
 SITE="${BUNDLE_SITE:-https://gtfsscorecard.org}"
 GH_REPO="ChelseaKR/gtfs-scorecard"
+# The one resource the artifacts-lifecycle phase owns in infra/artifacts.
+ARTIFACTS_LIFECYCLE_ADDR="aws_s3_bucket_lifecycle_configuration.artifacts"
 
 # ---------------------------------------------------------------------------
 # Output, assertions, masking
@@ -280,6 +282,34 @@ plan_destroy_list() {
          | "  - \(.address) [\(.change.actions | join(","))]"' "$1"
 }
 
+# Prints every change in a plan other than a create or update of one address.
+# Empty output means the plan touches only that resource (or nothing). A
+# targeted plan still reaches whatever the target depends on, so this is the
+# check that makes a -target apply safe on a module with other pending work.
+plan_changes_outside_target() {
+  jq -r --arg target "$2" '.resource_changes // [] | .[]
+         | select(.change.actions != ["no-op"] and .change.actions != ["read"])
+         | select(.address != $target
+                  or (.change.actions != ["update"] and .change.actions != ["create"]))
+         | "  - \(.address) [\(.change.actions | join(","))]"' "$1"
+}
+
+plan_change_count() {
+  jq '[.resource_changes // [] | .[]
+       | select(.change.actions != ["no-op"] and .change.actions != ["read"])] | length' "$1"
+}
+
+# True when this AWS account already holds the GitHub Actions OIDC provider.
+# A failed read is treated as "exists": the safe error is to reuse, because a
+# wrong "false" is a plan error, while a wrong "true" plans a duplicate of an
+# account-wide identity resource other projects depend on.
+oidc_provider_exists() {
+  local arns
+  arns="$(aws iam list-open-id-connect-providers \
+            --query 'OpenIDConnectProviderList[].Arn' --output text 2>/dev/null)" || return 0
+  printf '%s' "$arns" | grep -q 'token.actions.githubusercontent.com'
+}
+
 plan_counts() {
   jq -r '[.resource_changes // [] | .[] | .change.actions] as $a
          | "add=\($a | map(select(index("create")) | select(index("delete") | not)) | length)"
@@ -375,6 +405,23 @@ http_code() {
   shift
   curl --silent --show-error --output /dev/null --max-time 30 \
     --write-out '%{http_code}' "$@" "$url" 2>/dev/null || printf '000'
+}
+
+# Like http_code, but for a route created a moment ago. API Gateway and a
+# freshly updated Lambda can answer 404 for a few seconds after an apply, and
+# open-gate once read that rollout as a failure. Only the not-there-yet 404 is
+# retried, and only briefly; any other answer is returned the first time.
+HTTP_SETTLE_TRIES="${HTTP_SETTLE_TRIES:-10}"
+HTTP_SETTLE_SLEEP="${HTTP_SETTLE_SLEEP:-3}"
+http_code_settled() {
+  local code tries=1
+  code="$(http_code "$@")"
+  while [ "$code" = "404" ] && [ "$tries" -lt "$HTTP_SETTLE_TRIES" ]; do
+    sleep "$HTTP_SETTLE_SLEEP"
+    tries=$((tries + 1))
+    code="$(http_code "$@")"
+  done
+  printf '%s' "$code"
 }
 
 # ---------------------------------------------------------------------------
@@ -827,16 +874,21 @@ existing_webhook_line() {
 }
 
 terraform_plan_apply() {
-  local dir="$1" label="$2" allow_destroy="$3"
+  # $4, when given, is the one resource address this phase owns. The plan is
+  # targeted at it and refused if it would change anything else, so a module
+  # with other merged-but-unapplied work cannot ride along on this apply.
+  local dir="$1" label="$2" allow_destroy="$3" only_target="${4:-}"
   local plan_bin plan_json
   plan_bin="${STATE_DIR}/$(basename "$dir").tfplan"
   plan_json="${plan_bin}.json"
+  local -a plan_args=(plan -input=false -no-color -out="$plan_bin")
+  [ -n "$only_target" ] && plan_args+=(-target="$only_target")
 
   run_checked "${label}: terraform init" "Terraform has been" \
     terraform -chdir="$dir" init -input=false -no-color || return 1
 
   ( umask 077
-    terraform -chdir="$dir" plan -input=false -no-color -out="$plan_bin" >/dev/null ) || {
+    terraform -chdir="$dir" "${plan_args[@]}" >/dev/null ) || {
     bad "${label}: terraform plan failed"
     terraform -chdir="$dir" plan -input=false -no-color 2>&1 | tail -30 | sed 's/^/        | /'
     return 1
@@ -864,6 +916,25 @@ terraform_plan_apply() {
     fi
   else
     ok "${label}: plan destroys nothing"
+  fi
+
+  if [ -n "$only_target" ]; then
+    local outside
+    outside="$(plan_changes_outside_target "$plan_json" "$only_target")"
+    if [ -n "$outside" ]; then
+      bad "${label}: the plan changes more than ${only_target}. Stopping without applying."
+      printf '%s\n' "$outside"
+      note "Those changes belong to someone else's work on this module; apply them"
+      note "deliberately, after reading them, not as a side effect of this walkthrough."
+      rm -f "$plan_bin" "$plan_json"
+      return 1
+    fi
+    if [ "$(plan_change_count "$plan_json")" = "0" ]; then
+      ok "${label}: ${only_target} is already in place; nothing to apply"
+      rm -f "$plan_bin" "$plan_json"
+      return 0
+    fi
+    ok "${label}: the plan changes only ${only_target}"
   fi
 
   run_checked "${label}: terraform apply" "Apply complete" \
@@ -951,25 +1022,41 @@ phase_artifacts_lifecycle() {
   elif [ "$DRY_RUN" -eq 1 ]; then
     would "create ${vars} from terraform.tfvars.example with bucket_name = \"${ARTIFACTS_BUCKET}\""
   else
+    # The GitHub OIDC provider is one per AWS account, and this account may
+    # already hold it for another project's deploys. The example leaves
+    # create_oidc_provider at its default of true, which plans a second
+    # provider and rewrites the trust policy of both deploy roles. Read the
+    # account instead of assuming.
+    local create_oidc="true"
+    if oidc_provider_exists; then
+      create_oidc="false"
+      ok "the account already has a GitHub OIDC provider; writing create_oidc_provider = false"
+    fi
     say "  ${vars} does not exist; writing it from terraform.tfvars.example."
     {
       printf '# Written by scripts/bundle-testmode.sh from terraform.tfvars.example.\n'
-      printf 'bucket_name = "%s"\n' "$ARTIFACTS_BUCKET"
-      printf 'project     = "gtfs-scorecard"\n'
-      printf 'region      = "us-west-2"\n'
-      printf 'github_repo = "%s"\n' "$GH_REPO"
+      printf 'bucket_name          = "%s"\n' "$ARTIFACTS_BUCKET"
+      printf 'project              = "gtfs-scorecard"\n'
+      printf 'region               = "us-west-2"\n'
+      printf 'github_repo          = "%s"\n' "$GH_REPO"
+      printf 'create_oidc_provider = %s\n' "$create_oidc"
     } > "$vars"
     ok "wrote ${vars} (no secrets; gitignored)"
   fi
 
   if [ "$DRY_RUN" -eq 1 ]; then
-    would "terraform -chdir=infra/artifacts init && plan -out (never -var)"
-    would "abort without applying if the plan deletes ANYTHING"
+    would "terraform -chdir=infra/artifacts init && plan -out -target=${ARTIFACTS_LIFECYCLE_ADDR} (never -var)"
+    would "abort without applying if the plan deletes ANYTHING or changes anything but that one resource"
     would "apply, then assert the expire-program-bundles rule has Expiration.Days == 30"
     return 0
   fi
 
-  terraform_plan_apply "$dir" "artifacts" refuse || return 1
+  # Targeted, and refused if it reaches past the lifecycle resource. On
+  # 2026-09-10 an untargeted plan here also carried the www redirect bucket, a
+  # Route 53 record, and a CDN function update, all merged work that had never
+  # been applied; applying them from a payment walkthrough would have shipped
+  # them to production unreviewed.
+  terraform_plan_apply "$dir" "artifacts" refuse "$ARTIFACTS_LIFECYCLE_ADDR" || return 1
 
   local rule
   rule="$(aws s3api get-bucket-lifecycle-configuration --bucket "$ARTIFACTS_BUCKET" 2>&1 \
@@ -1291,9 +1378,11 @@ phase_open_gate() {
   fi
   write_tfvars "1" "$(existing_webhook_line)" || return 1
   terraform_plan_apply "$dir" "program-bundle (gate open)" refuse || return 1
-  assert_eq "OPTIONS /setup" "204" "$(http_code "${api}/setup" -X OPTIONS)"
+  # The /setup routes were created by the apply a moment ago; give them the few
+  # seconds a rollout takes before reading a 404 as "route absent".
+  assert_eq "OPTIONS /setup" "204" "$(http_code_settled "${api}/setup" -X OPTIONS)"
   assert_eq "POST /setup with no body (route present, form rejected)" "400" \
-    "$(http_code "${api}/setup" -X POST -H 'Content-Type: application/json' -d '{}')"
+    "$(http_code_settled "${api}/setup" -X POST -H 'Content-Type: application/json' -d '{}')"
   return 0
 }
 

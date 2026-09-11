@@ -141,8 +141,18 @@ description of what has to be true; the script is how it is done and checked.
    module's state holds the PAT, the restricted key, and the webhook secret
    as Lambda environment variables, so it is never allowed to land in a local
    `terraform.tfstate` on one laptop.
-   Re-apply `infra/artifacts` so the `expire-program-bundles` lifecycle rule
-   exists.
+   Apply the `expire-program-bundles` lifecycle rule in `infra/artifacts`
+   **as a targeted apply of that one resource**:
+   `terraform -chdir=infra/artifacts apply -target=aws_s3_bucket_lifecycle_configuration.artifacts`.
+   Do not apply the whole module from this runbook. On 2026-09-10 an untargeted
+   plan also carried a `www` redirect bucket, a Route 53 record, and a CDN
+   function update, merged work that had never been applied, and a payment
+   walkthrough is the wrong place to ship it. The module's `terraform.tfvars`
+   must also set `create_oidc_provider = false`, because this AWS account
+   already holds the GitHub OIDC provider; left at its default of `true`, the
+   plan adds a second one and rewrites both deploy roles' trust policies.
+   `scripts/bundle-testmode.sh` does both, and refuses a plan that reaches past
+   the lifecycle resource.
 4. **Webhook.** In Stripe (test mode) add one webhook endpoint at the
    `webhook_url` output with the events `checkout.session.completed`,
    `customer.subscription.created`, `customer.subscription.updated`,
