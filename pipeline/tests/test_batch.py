@@ -500,7 +500,18 @@ def test_the_expiring_section_orders_by_days_and_counts_unknown_expiry() -> None
     assert rollup["expiry_unknown"] == 1
     markdown = render_rollup_markdown(rollup)
     assert "- Ended: -5 days (lapsed)" in markdown
-    assert "1 scored feeds publish no date their service ends." in markdown
+    assert "1 scored feed publishes no date for the end of its service." in markdown
+    assert "<p>1 scored feed publishes no date for the end of its service.</p>" in (
+        render_rollup_html(rollup)
+    )
+    two = build_cohort_rollup(
+        [_scored("A", ["x"], days=None), _scored("B", ["y"], days=None)],
+        as_of=DATE,
+        cohort_name="t",
+    )
+    assert "2 scored feeds publish no date for the end of their service." in (
+        render_rollup_markdown(two)
+    )
 
 
 def test_renderings_handle_an_empty_cohort_section_and_escape_text() -> None:

@@ -467,6 +467,12 @@ def build_cohort_rollup(
 # --- rendering -----------------------------------------------------------------------------
 
 
+def _undated_sentence(count: int) -> str:
+    if count == 1:
+        return "1 scored feed publishes no date for the end of its service."
+    return f"{count} scored feeds publish no date for the end of their service."
+
+
 def _md(value: Any) -> str:
     return str(value).replace("|", "\\|").replace("\n", " ")
 
@@ -514,9 +520,7 @@ def render_rollup_markdown(rollup: dict[str, Any]) -> str:
     else:
         lines.append("No scored feed ends its service within 30 days.")
     if rollup["expiry_unknown"]:
-        lines.extend(
-            ["", f"{rollup['expiry_unknown']} scored feeds publish no date their service ends."]
-        )
+        lines.extend(["", _undated_sentence(rollup["expiry_unknown"])])
     lines.extend(["", "## Fixes shared across the cohort", ""])
     if rollup["shared_fixes"]:
         lines.extend(["| Fix | Code | Feeds |", "| --- | --- | ---: |"])
@@ -561,10 +565,7 @@ def render_rollup_html(rollup: dict[str, Any]) -> str:
         else "<p>No scored feed ends its service within 30 days.</p>"
     )
     if rollup["expiry_unknown"]:
-        expiring += (
-            f"<p>{_h(rollup['expiry_unknown'])} scored feeds publish no date their service "
-            "ends.</p>"
-        )
+        expiring += f"<p>{_h(_undated_sentence(rollup['expiry_unknown']))}</p>"
     shared = (
         "<table><caption>Fixes that appear in more than one scored feed's top fixes"
         '</caption><thead><tr><th scope="col">Fix</th><th scope="col">Code</th>'
