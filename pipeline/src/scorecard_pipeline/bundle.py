@@ -110,7 +110,7 @@ def _text(raw: Mapping[str, object], key: str) -> str:
     return value.strip() if isinstance(value, str) else ""
 
 
-def _agency_ids(raw: object) -> tuple[str, ...]:
+def _agency_ids(raw: object, limit: int = MAX_AGENCIES) -> tuple[str, ...]:
     if isinstance(raw, str):
         parts = raw.replace("\n", ",").split(",")
     elif isinstance(raw, list | tuple):
@@ -131,10 +131,10 @@ def _agency_ids(raw: object) -> tuple[str, ...]:
             seen.append(agency_id)
     if not seen:
         raise BundleError("agency_ids must name at least one agency")
-    if len(seen) > MAX_AGENCIES:
-        raise BundleError(
-            f"a bundle covers at most {MAX_AGENCIES} agencies; {len(seen)} were given"
-        )
+    if len(seen) > limit:
+        if limit < MAX_AGENCIES:
+            raise BundleError(f"your plan covers at most {limit} agencies; {len(seen)} were given")
+        raise BundleError(f"a bundle covers at most {limit} agencies; {len(seen)} were given")
     return tuple(seen)
 
 
@@ -161,12 +161,18 @@ def _logo(raw: str) -> str | None:
     return raw
 
 
-def parse_request(raw: Mapping[str, object]) -> BundleRequest:
+def parse_request(raw: Mapping[str, object], *, max_agencies: int = MAX_AGENCIES) -> BundleRequest:
     """Validate a raw request (form body, workflow inputs, or a stored row).
 
     Raises BundleError with one plain sentence on the first problem, so the
     setup form can show it and a workflow log can be read without the code.
+
+    ``max_agencies`` narrows the cohort cap to what the buyer's plan covers
+    (the setup route passes 25 for a ``bundle_25`` purchase). It can only
+    narrow: anything above MAX_AGENCIES is held to MAX_AGENCIES.
     """
+    if max_agencies < 1:
+        raise ValueError("max_agencies must be at least 1")
     bundle_id = _text(raw, "bundle_id").lower()
     if not BUNDLE_ID_RE.match(bundle_id):
         raise BundleError("bundle_id must be 32 lowercase hex characters")
@@ -190,7 +196,7 @@ def parse_request(raw: Mapping[str, object]) -> BundleRequest:
         program_name=program_name,
         accent=accent,
         logo=_logo(_text(raw, "logo")),
-        agency_ids=_agency_ids(raw.get("agency_ids")),
+        agency_ids=_agency_ids(raw.get("agency_ids"), min(max_agencies, MAX_AGENCIES)),
         deliver_to=deliver_to,
         cadence=cadence,
     )
