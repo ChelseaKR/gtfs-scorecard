@@ -131,6 +131,20 @@ def test_acceptance_still_passes_when_the_notice_is_gone() -> None:
     assert acceptance_test_passes(acceptance, _corrected())
 
 
+def test_an_agreed_exception_passes_only_at_exactly_its_count() -> None:
+    """The nonzero branch keeps its equality rule; `retest` refuses such packets."""
+    acceptance = deepcopy(build_evidence_packet(_artifact())["work_items"][0]["acceptance_test"])
+    acceptance["expected_instances"] = 3
+    at_three = _corrected()
+    at_three["categories"]["completeness"]["findings"] = [{"code": WHEELCHAIR, "count": 3}]
+    at_two = deepcopy(at_three)
+    at_two["categories"]["completeness"]["findings"] = [{"code": WHEELCHAIR, "count": 2}]
+
+    assert acceptance_test_passes(acceptance, at_three)
+    assert not acceptance_test_passes(acceptance, at_two)
+    assert not acceptance_test_passes(acceptance, _corrected())
+
+
 def test_an_absent_notice_is_cleared() -> None:
     record = _record(_artifact(), _corrected())
 
