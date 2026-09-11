@@ -65,5 +65,7 @@ _site/
 # repo root and matches neither of these.
 infra/submit/build/
 infra/program-bundle/build/
+
+# saved terraform plans
 infra/submit/submit.tfplan
 *.tfplan
