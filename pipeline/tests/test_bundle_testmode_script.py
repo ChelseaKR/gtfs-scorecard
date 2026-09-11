@@ -3,10 +3,12 @@
 The script drives Stripe, Terraform, AWS and a browser, so almost none of it
 can be tested here. What can be, and is, is the part that decides *whether* to
 do any of that: the phase sequence, `--only`/`--from`, the masking function,
-the guard that stops a second set of Stripe objects being created, and the
-guard that refuses a Terraform plan containing a destroy. Those five are where
-a bug costs the owner real cleanup: duplicate Payment Links to archive by hand,
-a destroyed artifacts bucket, or a credential in a log.
+the guard that stops a second set of Stripe objects being created, the guard
+that refuses a Terraform plan containing a destroy, and the guard that refuses
+a targeted plan reaching past the one resource a phase owns. Those are where a
+bug costs the owner real cleanup: duplicate Payment Links to archive by hand, a
+destroyed artifacts bucket, someone else's infrastructure shipped as a side
+effect, or a credential in a log.
 
 Nothing here needs a credential, a network, or an AWS account. The script is
 sourced rather than run, which defines its functions and executes nothing (the
@@ -403,6 +405,162 @@ def test_terraform_plan_apply_refuses_a_destroying_plan() -> None:
     apply = body.index('run_checked "${label}: terraform apply"')
     assert guard < apply, "the destroy check must run before the apply, not after"
     assert 'bad "${label}: the plan destroys something. Stopping without applying."' in body
+
+
+# ---------------------------------------------------------------------------
+# The target guard: a phase changes only the resource it owns
+# ---------------------------------------------------------------------------
+#
+# On 2026-09-10 the first real run planned infra/artifacts for the 30-day
+# lifecycle rule and got nine changes. One was the rule. The others were a www
+# redirect bucket, a Route 53 record, a CDN function, a second GitHub OIDC
+# provider, and both deploy roles' trust policies. The destroy guard passed all
+# of it, because none of it was a delete.
+
+LIFECYCLE = "aws_s3_bucket_lifecycle_configuration.artifacts"
+
+
+def _plan_at(tmp_path: Path, *changes: tuple[str, list[str]]) -> Path:
+    plan = {
+        "resource_changes": [
+            {"address": address, "change": {"actions": actions}} for address, actions in changes
+        ]
+    }
+    path = tmp_path / "plan.json"
+    path.write_text(json.dumps(plan), encoding="utf-8")
+    return path
+
+
+def _outside(path: Path, target: str = LIFECYCLE) -> str:
+    return _bash(f'plan_changes_outside_target "{path}" "{target}"').stdout.strip()
+
+
+@pytest.mark.parametrize("actions", [["update"], ["create"]])
+def test_a_plan_that_changes_only_the_target_passes(tmp_path: Path, actions: list[str]) -> None:
+    path = _plan_at(tmp_path, (LIFECYCLE, actions), ("data.aws_iam_policy_document.x", ["read"]))
+    assert _outside(path) == ""
+
+
+def test_the_plan_that_arrived_on_2026_09_10_is_refused(tmp_path: Path) -> None:
+    path = _plan_at(
+        tmp_path,
+        (LIFECYCLE, ["update"]),
+        ("aws_cloudfront_function.public_artifacts_only", ["update"]),
+        ("aws_route53_record.com_www", ["update"]),
+        ("aws_s3_bucket.redirect_com_www", ["create"]),
+        ("aws_iam_openid_connect_provider.github[0]", ["create"]),
+        ("aws_iam_role.deploy", ["update"]),
+    )
+    out = _outside(path)
+    for address in (
+        "aws_cloudfront_function.public_artifacts_only",
+        "aws_route53_record.com_www",
+        "aws_s3_bucket.redirect_com_www",
+        "aws_iam_openid_connect_provider.github[0]",
+        "aws_iam_role.deploy",
+    ):
+        assert address in out
+    assert LIFECYCLE not in out
+
+
+def test_replacing_the_target_is_not_an_update_of_it(tmp_path: Path) -> None:
+    """A delete-and-recreate of the lifecycle resource drops every rule on the
+    live bucket for the moment between the two; the guard must name it."""
+    assert LIFECYCLE in _outside(_plan_at(tmp_path, (LIFECYCLE, ["delete", "create"])))
+
+
+def test_an_already_applied_target_counts_as_zero_changes(tmp_path: Path) -> None:
+    path = _plan_at(tmp_path, (LIFECYCLE, ["no-op"]), ("data.aws_caller_identity.x", ["read"]))
+    assert _outside(path) == ""
+    assert _bash(f'plan_change_count "{path}"').stdout.strip() == "0"
+
+
+def test_terraform_plan_apply_checks_the_target_before_applying() -> None:
+    body = SCRIPT.read_text(encoding="utf-8")
+    fn = body[body.index("terraform_plan_apply() {") :]
+    fn = fn[: fn.index("\n}\n")]
+    guard = fn.index('plan_changes_outside_target "$plan_json" "$only_target"')
+    apply = fn.index('run_checked "${label}: terraform apply"')
+    assert guard < apply, "the target check must run before the apply, not after"
+    assert 'plan_args+=(-target="$only_target")' in fn
+
+
+def test_the_artifacts_phase_targets_only_the_lifecycle_resource() -> None:
+    body = SCRIPT.read_text(encoding="utf-8")
+    assert f'ARTIFACTS_LIFECYCLE_ADDR="{LIFECYCLE}"' in body
+    assert 'terraform_plan_apply "$dir" "artifacts" refuse "$ARTIFACTS_LIFECYCLE_ADDR"' in body
+    assert 'terraform_plan_apply "$dir" "artifacts" refuse ||' not in body
+
+
+# ---------------------------------------------------------------------------
+# The shared GitHub OIDC provider
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize(
+    ("fake_aws", "expected"),
+    [
+        (
+            'aws() { echo "arn:aws:iam::1:oidc-provider/token.actions.githubusercontent.com"; }',
+            "exists",
+        ),
+        ('aws() { printf ""; }', "absent"),
+        # A failed read must not become "create one": a duplicate of an
+        # account-wide identity resource is the worse mistake.
+        ("aws() { return 255; }", "exists"),
+    ],
+)
+def test_oidc_provider_exists_reads_the_account(fake_aws: str, expected: str) -> None:
+    snippet = f"{fake_aws}\nif oidc_provider_exists; then echo exists; else echo absent; fi"
+    assert _bash(snippet).stdout.strip() == expected
+
+
+def test_the_artifacts_tfvars_records_the_oidc_decision() -> None:
+    body = SCRIPT.read_text(encoding="utf-8")
+    assert "printf 'create_oidc_provider = %s\\n' \"$create_oidc\"" in body
+    assert "if oidc_provider_exists; then" in body
+
+
+# ---------------------------------------------------------------------------
+# A freshly created route is given a moment to roll out
+# ---------------------------------------------------------------------------
+
+
+def _settled(tmp_path: Path, answers: list[str], tries: int = 10) -> tuple[str, int]:
+    """Fake http_code answering from a list, one per call; return the result
+    and how many calls were made."""
+    answers_file = tmp_path / "answers"
+    answers_file.write_text("\n".join(answers) + "\n", encoding="utf-8")
+    calls = tmp_path / "calls"
+    snippet = (
+        f"HTTP_SETTLE_SLEEP=0\nHTTP_SETTLE_TRIES={tries}\n"
+        f'http_code() {{ echo x >> "{calls}"; '
+        f'sed -n "$(wc -l < "{calls}" | tr -d " ")p" "{answers_file}"; }}\n'
+        'http_code_settled "https://example.invalid/setup" -X POST'
+    )
+    result = _bash(snippet).stdout.strip()
+    made = len(calls.read_text(encoding="utf-8").splitlines()) if calls.exists() else 0
+    return result, made
+
+
+def test_a_route_that_answers_404_then_400_settles_on_400(tmp_path: Path) -> None:
+    assert _settled(tmp_path, ["404", "404", "400"]) == ("400", 3)
+
+
+def test_a_non_404_answer_is_returned_the_first_time(tmp_path: Path) -> None:
+    """Only the not-there-yet 404 is retried; a 500 is a real answer."""
+    assert _settled(tmp_path, ["500", "400"]) == ("500", 1)
+
+
+def test_a_route_that_never_appears_gives_up_and_reports_404(tmp_path: Path) -> None:
+    assert _settled(tmp_path, ["404"] * 20, tries=4) == ("404", 4)
+
+
+def test_open_gate_uses_the_settled_check_for_both_routes() -> None:
+    body = SCRIPT.read_text(encoding="utf-8")
+    assert '"$(http_code_settled "${api}/setup" -X OPTIONS)"' in body
+    post = '"$(http_code_settled "${api}/setup" -X POST -H \'Content-Type: application/json\''
+    assert post in body
 
 
 def test_artifacts_lifecycle_never_passes_a_var_flag() -> None:
