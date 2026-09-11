@@ -154,6 +154,32 @@ the declared public surface).
   largest-country ceiling, which that gate continues to report honestly as
   unmet.
 
+- **An OpenAPI 3.1 description of the static read API (part of #370).**
+  `web/api/v1/openapi.yaml`, which `pages.yml` already copies to
+  `/api/v1/openapi.yaml` with the rest of `web/`, describes 51 paths: the 46
+  in `docs/api.md`'s two endpoint tables and the 5 its prose names. Each is a
+  `GET` of a static file. The 9 operations with a published JSON Schema
+  reference it; the rest say only that the response is a JSON object and leave
+  `docs/api.md` as the contract for their fields, rather than carrying a schema
+  written for the occasion. The one server entry is relative, so a fork's copy
+  describes the fork.
+
+  Nothing generates the file, so `tests/test_openapi_contract.py` is what keeps
+  it true. It checks the document against the official OpenAPI 3.1
+  meta-schema, vendored and pinned by digest, and holds it to `docs/api.md` in
+  both directions with a floor under each. It resolves 45 of the 51 paths to a
+  file in the golden site and names why the other 6 cannot be there, a list
+  that must equal the unresolved set. It also validates each schema-backed
+  path's golden file against the schema the description names, so a reference
+  to the wrong schema fails. The PyPI and npm clients #370 also asks for need a
+  publishing credential and are not part of this change.
+
+  Writing it corrected two places where `docs/api.md` put a path under the
+  wrong base. `catalog.json` and `catalog.csv` are served from the site root,
+  and their `data/artifacts/` paths return 404. The Atom feed is at
+  `/changes/feed.xml`, and the artifact base does not serve it either. The
+  schema row now lists all eight published schemas rather than four.
+
 - **`scorecard diff`, and an Action baseline that fails closed
   (2026-09-06).** `scorecard diff OLD NEW` compares any two scorecard
   artifacts — file paths, `https` URLs, or `agency@YYYY-MM-DD` /
