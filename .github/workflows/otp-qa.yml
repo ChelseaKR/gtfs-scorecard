@@ -79,7 +79,7 @@ jobs:
           FEED_URL: ${{ matrix.feed.feed_url }}
         run: |
           mkdir -p otp-work
-          if curl -fsSL --retry 3 "$FEED_URL" -o otp-work/feed.gtfs.zip; then
+          if curl -fsSL --retry 3 --retry-all-errors "$FEED_URL" -o otp-work/feed.gtfs.zip; then
             jq -n '{transitFeeds: [{type: "gtfs", source: "feed.gtfs.zip", feedId: "qa"}]}' \
               > otp-work/build-config.json
             echo "available=true" >> "$GITHUB_OUTPUT"

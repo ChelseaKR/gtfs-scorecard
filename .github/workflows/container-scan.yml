@@ -98,7 +98,7 @@ jobs:
           fi
           echo "staging $jar_rel (version $version)"
           mkdir -p data/cache
-          curl -fsSL --retry 3 -o "$jar_rel" \
+          curl -fsSL --retry 3 --retry-all-errors -o "$jar_rel" \
             "https://github.com/MobilityData/gtfs-validator/releases/download/v${version}/gtfs-validator-${version}-cli.jar"
           echo "${jar_sha256}  ${jar_rel}" | sha256sum -c -
 
