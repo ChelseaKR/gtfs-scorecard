@@ -62,6 +62,14 @@ const SUBMIT_CANDIDATES = [
   "button.SubmitButton",
 ];
 
+// The "Card" entry in Checkout's payment-method accordion, as it rendered on
+// 2026-09-10 (data-testid, the radio's id, and the accessible label).
+const CARD_METHOD_CANDIDATES = [
+  "[data-testid='card-accordion-item-button']",
+  "#payment-method-accordion-item-title-card",
+  "button[aria-label='Pay with card']",
+];
+
 function parseArgs(argv) {
   const args = { artifacts: "/tmp/bundle-testmode" };
   for (let i = 0; i < argv.length; i += 1) {
@@ -148,15 +156,50 @@ async function payHostedCheckout(page, args) {
   await page.goto(args.url, { waitUntil: "domcontentloaded", timeout: 60000 });
   await page.waitForLoadState("networkidle", { timeout: 30000 }).catch(() => {});
 
-  // A Payment Link may show a "card" tab alongside wallets; the card fields
-  // are only rendered once it is selected.
-  const cardTab = page.locator("button:has-text('Card'), [data-testid='card-accordion-item-button']").first();
-  if ((await cardTab.count()) > 0 && (await cardTab.isVisible().catch(() => false))) {
-    await cardTab.click().catch(() => {});
-    log("selected the card payment method");
+  await fillField(page, "email", CARD_FIELDS.email, args.email, { required: false });
+
+  // Checkout lists payment methods as a collapsed accordion (card, Cash App,
+  // Affirm, Klarna, bank), and the card fields do not exist in the page until
+  // "Card" is chosen. It renders after load, so wait for either the fields or
+  // the accordion rather than looking once: the first real run looked once,
+  // found nothing yet, skipped the click, and then failed on cardNumber.
+  const cardReady = await firstVisible(page, [...CARD_FIELDS.cardNumber, ...CARD_METHOD_CANDIDATES]);
+  if (!cardReady) {
+    throw new Error(
+      `neither the card fields nor a card payment option appeared: tried ${[
+        ...CARD_FIELDS.cardNumber,
+        ...CARD_METHOD_CANDIDATES,
+      ].join(", ")}`,
+    );
+  }
+  if (CARD_METHOD_CANDIDATES.includes(cardReady.selector)) {
+    // The accordion item is covered by a full-width button that takes the
+    // click; the radio underneath never receives one, and Playwright refuses a
+    // plain click on the radio because that button "intercepts pointer
+    // events". A person's click lands on the button, but Playwright cannot
+    // synthesise it by coordinates either: a forced click is refused as
+    // "outside of the viewport" because the cover has no box of its own. So
+    // invoke the button's own click, which runs the handler a real click
+    // reaches. The second and third real runs failed on those two attempts.
+    const cover = page.locator("[data-testid='card-accordion-item-button']").first();
+    const target = (await cover.count()) > 0 ? cover : cardReady.locator;
+    await target.evaluate((el) => el.click());
+    const radio = page.locator("#payment-method-accordion-item-title-card");
+    if ((await radio.count()) > 0 && !(await radio.isChecked().catch(() => true))) {
+      await radio.evaluate((el) => el.click());
+    }
+    log(`selected the card payment method via ${cardReady.selector}`);
   }
 
-  await fillField(page, "email", CARD_FIELDS.email, args.email, { required: false });
+  // "Save my information for faster checkout" (Link) is ticked by default and
+  // asks for a phone number before Pay will go through. A test purchase has no
+  // reason to enrol in Link, so untick it rather than invent a phone number.
+  const linkOptIn = page.locator("#enableStripePass");
+  if ((await linkOptIn.count()) > 0 && (await linkOptIn.isChecked().catch(() => false))) {
+    await linkOptIn.uncheck({ force: true });
+    log("unticked the Link opt-in so no phone number is required");
+  }
+
   await fillField(page, "cardNumber", CARD_FIELDS.cardNumber, args.card);
   await fillField(page, "cardExpiry", CARD_FIELDS.cardExpiry, futureExpiry());
   await fillField(page, "cardCvc", CARD_FIELDS.cardCvc, "123");
