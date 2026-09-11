@@ -5,13 +5,6 @@
       "coverage_pct": null,
       "kinds_reachable": 3,
       "kinds_total": 3,
-      "ts": 1786478227,
-      "worst_lag_seconds": 18
-    },
-    {
-      "coverage_pct": null,
-      "kinds_reachable": 3,
-      "kinds_total": 3,
       "ts": 1786487789,
       "worst_lag_seconds": 14
     },
@@ -1400,11 +1393,18 @@
       "kinds_total": 3,
       "ts": 1789090167,
       "worst_lag_seconds": 30
+    },
+    {
+      "coverage_pct": null,
+      "kinds_reachable": 3,
+      "kinds_total": 3,
+      "ts": 1789110725,
+      "worst_lag_seconds": 24
     }
   ],
   "summary": {
-    "first_ts": 1786478227,
-    "last_ts": 1789090167,
+    "first_ts": 1786487789,
+    "last_ts": 1789110725,
     "median_coverage_pct": null,
     "median_lag_seconds": 16,
     "observations": 200,
