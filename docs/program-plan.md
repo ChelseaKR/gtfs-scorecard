@@ -62,6 +62,13 @@ site never carries a price of its own.
 | `refresh_mo` | $49 a month | A fresh archive every month, up to 100 agencies, cancel any time |
 | `refresh_yr` | $490 a year | The same, billed yearly |
 
+The "up to" is enforced, not advisory. The setup route reads the Checkout
+Session's line item, refuses any price that is not one of these four, and
+holds the agency list to that price's cap: a `bundle_25` buyer who lists 26
+ids is told so and can resend the same checkout with 25. Without that check
+a paid checkout for anything else on the same Stripe account would pass the
+form, which is also why the account this runs on matters.
+
 Commitments on the page, which the operator has to be able to keep:
 
 - The download link arrives normally within the hour and **always within two
@@ -103,13 +110,28 @@ Nothing before step 7 can charge anyone. Steps 1 to 6 are all in test mode.
 2. **A restricted key for the Lambda.** In the Stripe dashboard create a
    *restricted* key with read access to Checkout Sessions only. That is
    `stripe_secret_key`. The full secret key is never given to anything
-   deployed.
-3. **Apply the module.** From `infra/program-bundle/`:
-   `pip install ../../pipeline -t build && cp *.py build/`, then
+   deployed, and the module refuses anything that is not an `rk_` key.
+   The setup route reads the session *and* its line items
+   (`GET /v1/checkout/sessions/{id}/line_items`), because what was bought
+   decides whether a build happens at all; line items are a sub-resource of
+   the session, so Checkout Sessions: Read is the permission for both. Check
+   it rather than trust it: the endpoint answers 403 with a body naming the
+   missing permission, and a key that cannot read line items refuses every
+   purchase.
+3. **Apply the module.** From the repository root:
+   `scripts/build-lambda-package.sh infra/program-bundle`, which vendors the
+   pipeline as Linux wheels and refuses a package holding a binary built for
+   anything else. A plain `pip install ../../pipeline -t build` on a Mac
+   produces a package that unpacks, deploys, and then dies on the first
+   request with `ModuleNotFoundError: No module named 'rpds.rpds'`. Then
    `terraform init && terraform apply` with `github_token` (a fine-grained
    PAT with **actions: write** on this repo and nothing else),
    `artifacts_bucket`, `stripe_secret_key`, and the price ids. Leave
-   `payments_enabled = "0"` for this apply. Note the two outputs.
+   `payments_enabled = "0"` for this apply. Note the two outputs. The
+   `terraform init` is what wires up the S3 backend in `backend.tf`: this
+   module's state holds the PAT, the restricted key, and the webhook secret
+   as Lambda environment variables, so it is never allowed to land in a local
+   `terraform.tfstate` on one laptop.
    Re-apply `infra/artifacts` so the `expire-program-bundles` lifecycle rule
    exists.
 4. **Webhook.** In Stripe (test mode) add one webhook endpoint at the
@@ -118,18 +140,31 @@ Nothing before step 7 can charge anyone. Steps 1 to 6 are all in test mode.
    `customer.subscription.deleted`. Its signing secret is
    `stripe_webhook_secret`; apply again with it set.
 5. **Actions variables.** Set `BUNDLE_API_BASE` to the `api_base` output.
-   `ARTIFACTS_BUCKET`, `AWS_ROLE_ARN`, and `SES_FROM` already exist for the
-   daily run; the workflow reuses them. Confirm the OIDC role can `PutObject`
-   under `program-bundles/` in the artifacts bucket.
+   `ARTIFACTS_BUCKET` and `SES_FROM` already exist as repository *variables*
+   for the daily run, and `AWS_ROLE_ARN` as a repository *secret*
+   (`report-bundle.yml` reads it as `secrets.AWS_ROLE_ARN`); the workflow
+   reuses all three. Confirm the OIDC role can `PutObject` under
+   `program-bundles/` in the artifacts bucket.
 6. **End-to-end, test mode.** Apply once more with `payments_enabled = "1"`
-   (the preconditions now pass), set `window.SCORECARD_BUNDLE_URL` in
-   `web/src/config.js` to `api_base`, deploy, and buy a `bundle_25` with a
+   (the preconditions now pass), then set `window.SCORECARD_BUNDLE_URL` in
+   `web/src/config.js` to `api_base`. That value only exists once the module
+   is applied, so it cannot ride the launch branch: it is its own small commit
+   to `main`, merged and deployed by `pages.yml` before the purchase below.
+   The form stays invisible while it lands, because `/bundle/setup/` is
+   unlinked and `noindex`. Then buy a `bundle_25` with a
    Stripe test card through the Payment Link. Walk the loop: Payment Link →
    `/bundle/setup/` → form → workflow run → email → download link → archive
    with the right cover and a manifest that names every id. Then cancel a
    test subscription from the Stripe customer portal and confirm the row
    reads `canceled`. Run `report-bundle.yml` by hand once with a deliberately
-   bad id to see it listed in the manifest, not dropped.
+   bad id to see it listed in the manifest, not dropped. Dispatch it with
+   `--ref main`: the OIDC role trusts `refs/heads/main` and nothing
+   else (`infra/artifacts/github_oidc.tf`), so a run dispatched on any other
+   ref cannot assume the role and fails at the upload.
+   Buy a `bundle_25` and try 26 agency ids as well: the plan's cap is
+   enforced by the setup route from the price that was actually paid for, so
+   that purchase is refused in the form with the reason, not quietly trimmed
+   and not quietly upgraded.
 7. **The live decision.** Record it here with the date and the reviews it
    rests on (tax, refund policy, the two-business-day commitment). Then, in
    live mode: `scripts/stripe-setup.sh` again with a *live* key, a live
@@ -137,12 +172,22 @@ Nothing before step 7 can charge anyone. Steps 1 to 6 are all in test mode.
    = true`. The precondition refuses a live key paired with unconfirmed
    prices.
 8. **Turn the page on.** Edit `web/bundle/plan.json`: `paymentsAvailable:
-   true` and the `products` block from step 7. Link `/bundle/` from
-   `/support/` ("For programs and consultancies", the card that used to hold
-   the consulting link) and from the board one-pager's footer. Remove
-   `/bundle/` and `/bundle/setup/` from `site-seo.json`'s
-   `noindex_path_patterns` and drop the `robots` meta from both pages so the
-   sitemap and the SEO gate agree. Not before early October: the TechCA
+   true` *and* the `products` block from step 7, in the same branch and
+   before the merge. `paymentsAvailable: true` with the null placeholder
+   still in `products` publishes a page that announces checkout is open and
+   then prices every plan "Not yet available" (`web/src/bundle.js`).
+   Link `/bundle/` from `/support/` and from the board one-pager's footer.
+   That `/support/` link needs a new card: the "For programs and
+   consultancies" one this step used to name was removed in #332, along with
+   the dead consulting link it held.
+   Remove `/bundle/` from `site-seo.json`'s `noindex_path_patterns`, drop the
+   `robots` meta from that page, and add it to the hand-maintained `urls`
+   list at the top of `render_site.py`'s site render, which is what the
+   sitemap is built from; the SEO gate compares the three and fails if they
+   disagree. `/bundle/setup/` stays `noindex` and out of the sitemap: it is a
+   post-checkout form that says nothing to a reader who arrives without a
+   session, and an indexed one would collect search traffic it can only turn
+   away. Not before early October: the TechCA
    review window (`gtfs-scorecard-plans/10-next-60-days-2026-08.md`) freezes
    the public surface until then.
 9. **Ninety days later**, the gate table above.
