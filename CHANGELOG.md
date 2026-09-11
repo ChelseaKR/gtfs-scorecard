@@ -77,6 +77,26 @@ the declared public surface).
 
 ### Added
 
+- **`scorecard retest`: check a new export against an evidence packet
+  (#366).** `scorecard retest PACKET FEED --country CC` scores the feed the
+  way `scorecard try` does and reports each packet finding as cleared, still
+  present, or not comparable, in a record carrying both feed hashes and both
+  producer contracts (`--json-out`, `--markdown-out`). Exit 0 when every
+  finding is cleared, 1 when any is still present, 2 when it could not judge.
+  The packet is validated before anything is fetched. A different rubric,
+  scoring profile, validator or reader archive profile makes every finding not
+  comparable; a category the retest did not measure makes only its own
+  finding not comparable.
+
+  Building it found the packet's acceptance test passing on unchanged bytes.
+  Over the committed `data/artifacts` snapshot (2,496 packets, 7,412 work
+  items), 8 work items name a notice raised with a count of 0, such as "0 of
+  0 stops don't say whether a wheelchair user can board there", and
+  `acceptance_test_passes` compared that count with the expected 0 and
+  passed. It now requires the notice to be absent, which is what the packet's
+  own method text says. The Action input and the closure receipt are not
+  part of this change.
+
 - **Five more MCP tools, and three things they refuse to say (2026-09-06).**
   `scorecard-mcp` exposed search, one scorecard, and coverage stats; the
   question `docs/mcp.md` opens with — *"why did my grade drop and what do I tell
