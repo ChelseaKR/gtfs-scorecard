@@ -100,6 +100,15 @@ starts at launch.
 
 Nothing before step 7 can charge anyone. Steps 1 to 6 are all in test mode.
 
+Steps 1 to 6 also run as one command: `scripts/bundle-testmode.sh`. It walks
+the test-mode rehearsal as a sequence of phases, each idempotent and each
+resumable with `--from`, checks every assertion below rather than trusting an
+exit code, and stops at the `web/src/config.js` commit because that is a change
+to a public site. It reads its three credentials from the environment, prints
+at most four characters of any of them, and refuses a live key. `--dry-run`
+runs every read-only check and creates nothing. The steps below stay the
+description of what has to be true; the script is how it is done and checked.
+
 1. **Stripe, test mode.** With a *test* secret key exported:
    `scripts/stripe-setup.sh`. It creates the two products, four prices, and
    four Payment Links (success URL
