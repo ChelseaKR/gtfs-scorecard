@@ -30,3 +30,4 @@ This index is the handoff point for the documentation sweep last reviewed on 202
 - [Conformance](conformance.md)
 - [Governance Ledger](governance-ledger.md)
 - [Support this project](support.md)
+- [Workspace History](workspace-history.md)

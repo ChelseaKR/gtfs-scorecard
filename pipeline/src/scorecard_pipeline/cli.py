@@ -611,6 +611,18 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n")
         print(f"  Scorecard JSON written to {out}\n")
 
+    if getattr(args, "history", None):
+        from .workspace import WorkspaceError, append_run, describe_source
+
+        try:
+            ledger, step = append_run(
+                Path(args.history), artifact, source=describe_source(args.url)
+            )
+        except WorkspaceError as exc:
+            log.error("not recording this run in the history: %s", exc)
+            return 2
+        print(f"  History appended to {ledger}. {step.sentence}\n")
+
     if getattr(args, "sarif", None):
         from .sarif import build_sarif
 
@@ -3138,6 +3150,33 @@ def _cmd_alerts(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     return 0
 
 
+def _cmd_trend(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Read a private workspace history as a trend, with its alerts (#362).
+
+    Exit 2 when there is nothing to read: no history under the directory, or a
+    named feed without one. A line the history cannot read is named in the
+    output and in the log, never dropped silently.
+    """
+    from .workspace import RENDERERS, WorkspaceError, build_trend
+
+    try:
+        trend = build_trend(Path(args.history), feeds=args.feed, expiry_days=args.expiry_days)
+    except WorkspaceError as exc:
+        log.error("%s", exc)
+        return 2
+    for skipped in trend.skipped:
+        log.warning("%s", skipped.message())
+    text = RENDERERS[args.format](trend)
+    if args.out:
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(text)
+        log.info("Wrote the workspace trend for %d feed(s) to %s", len(trend.feeds), out)
+    else:
+        print(text, end="")
+    return 0
+
+
 def _cmd_notify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .alerts import build_digest
     from .notify import (
@@ -3550,6 +3589,14 @@ def main(argv: list[str] | None = None) -> int:
     adhoc.add_argument(
         "--json-out",
         help="write the complete scorecard artifact as JSON before applying CI thresholds",
+    )
+    adhoc.add_argument(
+        "--history",
+        metavar="DIR",
+        help=(
+            "append this run to a private history at DIR/<feed>/history.jsonl, read back "
+            "with `scorecard trend --history DIR`; counts and codes only, nothing published"
+        ),
     )
     adhoc.add_argument(
         "--page-url", help="link to the full scorecard, included in the --comment markdown"
@@ -3990,6 +4037,37 @@ def main(argv: list[str] | None = None) -> int:
     alerts.add_argument("--expiry-days", type=int, default=60, help="warn within this many days")
     alerts.add_argument("--out", help="write the digest here instead of stdout")
 
+    trend = sub.add_parser(
+        "trend",
+        help=(
+            "read a private history written by `try --history` as a trend, with the "
+            "alerts `scorecard alerts` would raise (#362)"
+        ),
+    )
+    trend.add_argument(
+        "--history", required=True, metavar="DIR", help="the directory given to `try --history`"
+    )
+    trend.add_argument(
+        "--feed",
+        action="append",
+        metavar="NAME",
+        help="only this feed's history (its folder name under DIR); repeat for more",
+    )
+    trend.add_argument(
+        "--format",
+        choices=["text", "markdown", "html"],
+        default="text",
+        help="output format (default: text)",
+    )
+    trend.add_argument(
+        "--expiry-days",
+        type=int,
+        default=60,
+        help="warn within this many days, as `scorecard alerts` does (default: 60)",
+    )
+    trend.add_argument("--out", help="write the trend here instead of stdout")
+    trend.set_defaults(registry_free=True)
+
     notify = sub.add_parser("notify", help="build per-subscriber feed-health emails")
     notify.add_argument("--subscriptions", help="path to subscriptions.yaml")
     notify.add_argument(
@@ -4277,7 +4355,11 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     `diff` reads two artifacts it was handed; none looks an agency up, so none
     pays for the registry.
     """
-    if args.command not in {"try", "otp-build-check", "diff"}:
+    # A subcommand that never looks an agency up can also say so on its own
+    # parser, with ``set_defaults(registry_free=True)``.
+    if args.command not in {"try", "otp-build-check", "diff"} and not getattr(
+        args, "registry_free", False
+    ):
         load_agencies()
         agency_id = getattr(args, "agency", None)
         if agency_id and agency_id not in AGENCIES:
@@ -4307,6 +4389,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "activation-hydrate": _cmd_activation_hydrate,
         "run-summary": _cmd_run_summary,
         "alerts": _cmd_alerts,
+        "trend": _cmd_trend,
         "notify": _cmd_notify,
         "portfolio-digest": _cmd_portfolio_digest,
         "coverage-check": _cmd_coverage_check,

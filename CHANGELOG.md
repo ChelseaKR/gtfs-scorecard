@@ -100,6 +100,20 @@ the declared public surface).
   `truncated`). `call_tool` now dispatches through a table, and a test asserts
   that table and the advertised `TOOLS` name the same set. Closes #369.
 
+- **Workspace history: `scorecard try --history DIR` and `scorecard trend`
+  (#362).** A feed that is not in the public registry can now keep a private
+  history. Each `try --history` run appends one record to
+  `DIR/<feed>/history.jsonl`, counts and codes only, in the published
+  `workspace-history.schema.json` shape, and `scorecard trend --history DIR`
+  renders it as text, Markdown or a self-contained HTML file, with the alerts
+  `scorecard alerts` would raise for a registered feed. Both call one
+  function, `alerts.feed_alert_items`, which `build_digest` now uses for every
+  registered feed, so the two cannot drift apart. A record measured
+  differently from the one before it is shown as a boundary and never
+  compared, a line the history cannot read is skipped and named, and a run is
+  refused rather than added to a folder that already holds a different feed.
+  The Action gains a `history-path` input on `main`; it is not in `v1.4.0`.
+
 - **Program report bundle, built and not launched (2026-09-01).** The
   program tier the sustainability plan allows (gtfs-scorecard-plans/07:
   agency-facing stays free; only tools for the people who manage many
