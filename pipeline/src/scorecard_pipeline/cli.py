@@ -563,7 +563,98 @@ def _finding_copy(artifact: dict[str, Any]) -> dict[str, dict[str, str]]:
     return copy
 
 
+def _standalone_scorecard_html(artifact: dict[str, Any]) -> str:
+    """One scorecard page that renders when opened straight from disk (file://)."""
+    import re
+
+    from .instance import BASE_URL
+    from .render_site import _render_agency
+
+    # Rewrite root-absolute asset and nav links to the live domain so the
+    # page renders correctly opened straight from disk (file://).
+    return re.sub(r'(href|src)="/', rf'\1="{BASE_URL}/', _render_agency(artifact, []))
+
+
+# Single-feed `try` options. A batch row carries its own name, country and
+# large-feed flag, and the output files are per row, so a batch refuses these
+# rather than silently ignoring them.
+_SINGLE_FEED_ONLY = (
+    ("--name", "name"),
+    ("--html", "html"),
+    ("--comment", "comment"),
+    ("--json-out", "json_out"),
+    ("--page-url", "page_url"),
+    ("--min-grade", "min_grade"),
+    ("--sarif", "sarif"),
+    ("--sarif-base", "sarif_base"),
+    ("--large-feed", "large_feed"),
+)
+
+
+def _cmd_try_batch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """`scorecard try --batch CSV --out DIR`: a private cohort rollup (#363).
+
+    The CSV and the output folder are checked before anything is fetched. A
+    feed that cannot be scored is listed with its reason and never graded; the
+    run still exits 0 so the rest of the rollup is usable, unless ``--strict``.
+    """
+    from .batch import (
+        BatchInputError,
+        build_cohort_rollup,
+        prepare_output_dir,
+        read_batch_csv,
+        score_batch,
+        write_batch_outputs,
+    )
+
+    if getattr(args, "url", None):
+        parser.error("give either one feed or --batch CSV, not both")
+    if not getattr(args, "out", None):
+        parser.error("--batch needs --out DIR")
+    refused = [flag for flag, attr in _SINGLE_FEED_ONLY if getattr(args, attr, None)]
+    if getattr(args, "min_days_to_expiry", None) is not None:
+        refused.append("--min-days-to-expiry")
+    if getattr(args, "country", "US") != "US":
+        refused.append("--country")
+    if refused:
+        parser.error(
+            f"{', '.join(refused)} apply to one feed; with --batch each CSV row carries "
+            "its own values"
+        )
+    csv_path = Path(args.batch)
+    out_dir = Path(args.out)
+    try:
+        rows = read_batch_csv(csv_path)
+        prepare_output_dir(out_dir)
+    except BatchInputError as exc:
+        log.error("refusing %s before fetching anything: %s", csv_path.name, exc)
+        return 2
+    results = score_batch(
+        rows, date=args.date, score=run_adhoc_detailed, workers=args.batch_workers
+    )
+    rollup = build_cohort_rollup(results, as_of=args.date, cohort_name=csv_path.stem)
+    write_batch_outputs(out_dir, results, rollup, render_html=_standalone_scorecard_html)
+    for member in rollup["members"]:
+        if member["status"] == "scored":
+            print(f"  scored      {member['name']} -> {member['scorecard_html']}")
+        else:
+            print(f"  not scored  {member['name']}: {member['reason']}")
+    print(
+        f"\n  {rollup['feeds_scored']} of {rollup['feeds_listed']} feeds scored; "
+        f"rollup written to {out_dir / 'rollup.html'}\n"
+    )
+    if getattr(args, "strict", False) and rollup["feeds_not_scored"]:
+        return 1
+    return 0
+
+
 def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    if getattr(args, "batch", None):
+        return _cmd_try_batch(args, parser)
+    if not getattr(args, "url", None):
+        parser.error("try needs a feed URL or local zip, or --batch CSV")
+    if getattr(args, "out", None) or getattr(args, "strict", False):
+        parser.error("--out and --strict apply only with --batch")
     try:
         artifact, report = run_adhoc_detailed(
             args.url,
@@ -584,14 +675,7 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         return 1
     _print_scorecard_summary(artifact)
     if args.html:
-        import re
-
-        from .instance import BASE_URL
-        from .render_site import _render_agency
-
-        # Rewrite root-absolute asset and nav links to the live domain so the
-        # page renders correctly opened straight from disk (file://).
-        page = re.sub(r'(href|src)="/', rf'\1="{BASE_URL}/', _render_agency(artifact, []))
+        page = _standalone_scorecard_html(artifact)
         out = Path(args.html)
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(page)
@@ -3523,7 +3607,11 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     adhoc = sub.add_parser("try", help="score any GTFS feed URL or local zip (not published)")
-    adhoc.add_argument("url", help="direct link or local path to a GTFS Schedule zip")
+    adhoc.add_argument(
+        "url",
+        nargs="?",
+        help="direct link or local path to a GTFS Schedule zip (leave out with --batch)",
+    )
     adhoc.add_argument("--name", help="agency name to show (default: the feed host)")
     adhoc.add_argument(
         "--country",
@@ -3575,6 +3663,32 @@ def main(argv: list[str] | None = None) -> int:
             "directory the feed's files sit in inside the repository being annotated "
             "(e.g. gtfs/); leave blank when the feed is a zip or sits at the root"
         ),
+    )
+    adhoc.add_argument(
+        "--batch",
+        metavar="CSV",
+        help=(
+            "score every feed listed in this CSV (columns name, url, country, and optionally "
+            "ntd_id and large_feed) and write a private cohort rollup; see docs/batch-scoring.md"
+        ),
+    )
+    adhoc.add_argument(
+        "--out",
+        metavar="DIR",
+        help="with --batch: a new or empty directory for the per-feed scorecards and the rollup",
+    )
+    adhoc.add_argument(
+        "--batch-workers",
+        type=int,
+        choices=range(1, 5),
+        default=2,
+        metavar="N",
+        help="with --batch: how many feeds to score at once, 1 to 4 (default: 2)",
+    )
+    adhoc.add_argument(
+        "--strict",
+        action="store_true",
+        help="with --batch: exit 1 when any listed feed could not be scored",
     )
 
     diff = sub.add_parser(
