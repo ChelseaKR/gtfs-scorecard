@@ -183,7 +183,24 @@ def test_workflow_inputs_flatten_ids_and_default_the_optional_fields() -> None:
         "agency_ids": "x,y",
         "deliver_to": "p@example.org",
         "cadence": "one_time",
+        "dispatch_key": common.dispatch_key("a" * 32),
     }
+
+
+def test_the_dispatch_key_names_a_bundle_without_naming_it() -> None:
+    """report-bundle.yml's artifact name and concurrency group are rendered on
+    a public run page, and the bundle id is the download credential. This is
+    what they carry instead: stable per bundle, different for every bundle,
+    and no way back to the id it came from."""
+    first, second = "a" * 32, "b" * 32
+    key = common.dispatch_key(first)
+
+    assert key == common.dispatch_key(first), "the same bundle must group with itself"
+    assert key != common.dispatch_key(second), "two bundles must not share a group"
+    assert first not in key and key not in first, "the key must not contain the id, or vice versa"
+    assert len(key) == 16 and all(c in "0123456789abcdef" for c in key)
+    # A truncated digest of a 128-bit token, so it is a name and not a hint.
+    assert key == hashlib.sha256(first.encode()).hexdigest()[:16]
 
 
 def test_dispatch_posts_to_the_workflow_dispatch_endpoint(monkeypatch: pytest.MonkeyPatch) -> None:

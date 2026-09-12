@@ -162,19 +162,40 @@ def dispatch_bundle_workflow(inputs: dict[str, str]) -> None:
     )
 
 
+def dispatch_key(bundle_id: str) -> str:
+    """A public, one-way name for one bundle's workflow runs.
+
+    The bundle id is the download capability, and this repository is public, so
+    it cannot be the artifact name or the concurrency group in
+    report-bundle.yml. Those two strings need something that is stable per
+    bundle and safe to render, and a GitHub concurrency expression cannot hash
+    anything, so the derivation happens here and travels as an input.
+
+    sha256 over a 128-bit token, truncated to 64 bits: enough to separate every
+    bundle this product will ever sell, and no help at all to somebody trying
+    to recover the id it came from.
+    """
+    return hashlib.sha256(bundle_id.encode()).hexdigest()[:16]
+
+
 def workflow_inputs(request: dict[str, Any]) -> dict[str, str]:
     """The workflow_dispatch inputs for a stored or validated request dict."""
     agency_ids = request.get("agency_ids") or []
     if isinstance(agency_ids, list | tuple):
         agency_ids = ",".join(str(a) for a in agency_ids)
+    bundle_id = str(request["bundle_id"])
     return {
-        "bundle_id": str(request["bundle_id"]),
+        "bundle_id": bundle_id,
         "program_name": str(request["program_name"]),
         "accent": str(request.get("accent") or ""),
         "logo": str(request.get("logo") or ""),
         "agency_ids": str(agency_ids),
         "deliver_to": str(request["deliver_to"]),
         "cadence": str(request.get("cadence") or "one_time"),
+        # Declared in report-bundle.yml with a default, so the workflow change
+        # can reach main before this Lambda is redeployed. The reverse order
+        # would be a 422 on every dispatch.
+        "dispatch_key": dispatch_key(bundle_id),
     }
 
 
