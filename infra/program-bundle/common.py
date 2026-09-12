@@ -11,7 +11,9 @@ The deploy bundles the scorecard_pipeline package alongside these files
 request validation is the pipeline's own parse_request and not a second copy.
 
 Environment (set by Terraform):
-  GITHUB_TOKEN          fine-scoped token with actions: write on the repo
+  GITHUB_TOKEN          fine-scoped token: actions: write to dispatch the
+                        fulfilment workflow, issues: write for the daily
+                        reconciler's standing report (reconcile_handler.py)
   GITHUB_REPO           owner/name, e.g. ChelseaKR/gtfs-scorecard
   WORKFLOW_FILE         report-bundle.yml
   WORKFLOW_REF          branch to dispatch on, default main
@@ -176,6 +178,24 @@ def dispatch_key(bundle_id: str) -> str:
     to recover the id it came from.
     """
     return hashlib.sha256(bundle_id.encode()).hexdigest()[:16]
+
+
+def github_request(method: str, path: str, payload: dict[str, Any] | None = None) -> Any:
+    """One authenticated call against this repository's GitHub API.
+
+    Shares the workflow_dispatch token. Raises UpstreamError on any non-2xx,
+    so a caller that cannot reach GitHub fails rather than carrying on.
+    """
+    repo = os.environ["GITHUB_REPO"]
+    return _request(
+        method,
+        f"{GITHUB_API}/repos/{repo}{path}",
+        {
+            "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+            "Accept": "application/vnd.github+json",
+        },
+        payload,
+    )
 
 
 def workflow_inputs(request: dict[str, Any]) -> dict[str, str]:

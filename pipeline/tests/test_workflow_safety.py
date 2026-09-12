@@ -1092,33 +1092,40 @@ def test_the_watchdog_watches_the_workflow_that_delivers_paid_orders() -> None:
 
 
 def test_a_failed_paid_bundle_run_says_so_without_naming_the_order() -> None:
-    """The other half of the same gap, inside report-bundle.yml.
+    """The failure of a paid fulfilment run has to be visible, and the way it
+    is made visible has to be one that works.
 
     A failed render used to leave no trace anybody reads: the setup form had
     already told the buyer the build was starting, the delivery email only
-    exists on the success path, and the capability row is deleted by its
+    exists on the success path, and the capability row is removed by its
     30-day TTL.
 
-    The split matters. The annotation and summary are public, so they say
-    only that an order failed; the identity goes by SES to the operator. The
-    generic rules above already forbid the capability in either public field,
-    and this pins the arrangement that keeps the failure legible anyway.
+    Two rules hold the repair. The annotation and summary are public, so they
+    carry no bundle id -- the generic rules above forbid it and this pins the
+    arrangement. And there is no alert email: the address this step used to
+    mail is on a domain with no MX record, so it was delivered nowhere, and a
+    notification that cannot arrive is the same defect as no notification. The
+    channels that do work are watchdog.yml, which reads this workflow's
+    conclusion every six hours, and the daily reconciler's issue.
     """
     workflow = _workflow("report-bundle.yml")
     assert "if: ${{ failure() }}" in workflow, (
         "a run that fulfils a paid order must say so when it fails"
     )
     say_at = workflow.index("Say that a paid order failed")
-    say = workflow[say_at : workflow.index("Mail the operator that an order failed")]
+    say = workflow[say_at : workflow.index("      - name: Keep the archive on the run")]
     assert "::error::" in say
     assert "$GITHUB_STEP_SUMMARY" in say
     assert "this log is public" in say, "the reason the order is not named belongs next to it"
-
-    mail = workflow[workflow.index("Mail the operator that an order failed") :]
-    assert "aws ses send-email" in mail
-    assert "BUNDLE_ID" in mail, "the private channel is where the order may be named"
-    assert "continue-on-error: true" in mail, (
-        "a notification that cannot be sent must not replace the failure it reports"
+    assert "aws ses send-email" not in say, (
+        "the alert address has no MX record, so mailing it is alerting that reaches nobody"
     )
-    # The annotation is written first, so a broken SES cannot hide the order.
-    assert say_at < workflow.index("aws ses send-email")
+
+    # And nowhere else in this workflow either. The one send that remains is
+    # the delivery email, which goes to the buyer's own address on the success
+    # path; an alert to the sending identity is the shape this forbids.
+    for block in workflow.split("      - name: "):
+        if "send-email" in block or "bundle-email" in block:
+            assert '--to "$SES_FROM"' not in block, (
+                "mailing the sending identity is a send that succeeds and a delivery that does not"
+            )

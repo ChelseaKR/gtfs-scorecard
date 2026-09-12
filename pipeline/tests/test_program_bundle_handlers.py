@@ -22,6 +22,7 @@ import hashlib
 import hmac
 import importlib.util
 import json
+import re
 import sys
 import time
 from pathlib import Path
@@ -1292,21 +1293,45 @@ class _ClientError(Exception):
         self.response = response
 
 
-class _FakeSES:
-    def __init__(self) -> None:
-        self.sent: list[dict[str, Any]] = []
+class _FakeIssues:
+    """The issues half of this repository's API, as `github_request` uses it."""
 
-    def send_email(self, **kwargs: Any) -> None:
-        self.sent.append(kwargs)
+    def __init__(self, fail: bool = False) -> None:
+        self.open: list[dict[str, Any]] = []
+        self.calls: list[tuple[str, str]] = []
+        self.patches: list[dict[str, Any]] = []
+        self.fail = fail
+        self._next = 1
+
+    def request(self, method: str, path: str, payload: dict[str, Any] | None = None) -> Any:
+        self.calls.append((method, path))
+        if self.fail:
+            raise common.UpstreamError(f"{method} {path} -> HTTP 403", status=403)
+        if method == "GET":
+            return list(self.open)
+        if method == "POST":
+            assert payload is not None
+            issue = {"number": self._next, **payload}
+            self._next += 1
+            self.open.append(issue)
+            return issue
+        if method == "PATCH":
+            assert payload is not None
+            number = int(path.rsplit("/", 1)[1])
+            self.patches.append({"number": number, **payload})
+            for issue in self.open:
+                if issue["number"] == number:
+                    issue.update(payload)
+            return {}
+        raise AssertionError(method)
 
 
 class _FakeBoto3:
-    def __init__(self, s3: _ReconcileS3, ses: _FakeSES | None = None) -> None:
+    def __init__(self, s3: _ReconcileS3) -> None:
         self._s3 = s3
-        self.ses = ses or _FakeSES()
 
     def client(self, service: str, **_: Any) -> Any:
-        return self.ses if service == "ses" else self._s3
+        return self._s3
 
 
 def _hours_ago(hours: float) -> str:
@@ -1489,32 +1514,123 @@ def test_the_reconciler_names_the_order_a_failed_dispatch_left_behind(
 
     findings = _reconcile(tables, _ReconcileS3())["findings"]
     assert sorted(f["kind"] for f in findings) == ["never_started", "undelivered"]
-    body = reconcile_handler.digest(findings)
-    assert "Paid, no archive" in body
-    assert "Claimed, never dispatched" in body
-    assert "liaison@example.org" in body
-    assert bundle_id in body
+    counts = reconcile_handler.counts_by_kind(findings)
+    assert counts == {
+        "undelivered": 1,
+        "never_started": 1,
+        "abandoned_checkout": 0,
+        "unreadable": 0,
+    }
 
 
-def test_reconcile_handler_refuses_to_find_orders_with_nowhere_to_report(
+def test_the_public_issue_carries_counts_and_nothing_that_identifies_anybody(
+    tables: dict[str, FakeTable],
+) -> None:
+    """The leak test. This repository is public and so are its issues.
+
+    Every identifying field the reconciler holds is either a credential or a
+    customer's own details: a bundle id IS the download capability, and
+    `deliver_to`, `program_name` and the agency list describe a paying buyer.
+    The findings below are stuffed with all of them, in every field the
+    walker produces, so this fails if any of it can reach the body.
+
+    The structural reason it cannot is that `issue_body` is given counts and
+    never sees a finding. This is the test that keeps that true: the artifact
+    name in report-bundle.yml was careful once too.
+    """
+    secrets = {
+        "bundle_id": "d4f1a9c7e2b06835a1c4d9e7f2b60853",
+        "deliver_to": "liaison@example.org",
+        "email": "buyer@example.org",
+        "program_name": "Yolo County Transportation District",
+        "key": "session#cs_test_51QexampleSessionReference",
+        "plan": "bundle_100",
+        "action": "agency_ids unitrans,yolobus; customer cus_example; price price_example",
+    }
+    # `source` is deliberately not in that list: it is one of two constants
+    # ("checkout" or "refresh"), identifies nobody, and "checkout" is a
+    # substring of the `abandoned_checkout` count label the body must print.
+    # A leak test that fires on a non-secret is one somebody weakens later.
+    findings = [
+        {"kind": kind, "age_hours": 42.0, "source": "checkout", **secrets}
+        for kind in reconcile_handler.KINDS
+    ]
+
+    counts = reconcile_handler.counts_by_kind(findings)
+    body = reconcile_handler.issue_body(counts)
+    title = reconcile_handler.issue_title(counts)
+    published = f"{title}\n{body}"
+
+    for field, value in secrets.items():
+        assert value not in published, f"{field} reached a public issue"
+    # And the shapes, not just these literals: a 32-hex capability, an email
+    # address, a Stripe reference.
+    assert not re.search(r"\b[0-9a-f]{32}\b", published), "a capability-shaped id reached the issue"
+    assert "@" not in published, "an address-shaped string reached the issue"
+    assert not re.search(r"\b(cs|cus|sub|price|pi|ch)_[A-Za-z0-9]{6,}", published), (
+        "a Stripe-shaped reference reached the issue"
+    )
+    # What it does carry.
+    assert title == "4 program orders need attention"
+    for kind in reconcile_handler.KINDS:
+        assert f"{kind:<20}1" in body, kind
+    assert reconcile_handler.LOG_GROUP in body
+
+
+def test_the_reconciler_keeps_one_standing_issue_and_never_closes_it(
     monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
 ) -> None:
-    """A digest nobody receives is indistinguishable from a clean run."""
-    tables["BUNDLES_TABLE"].items["a" * 32] = _capability("a" * 32)
-    monkeypatch.delenv("SES_FROM", raising=False)
-    monkeypatch.setitem(sys.modules, "boto3", _FakeBoto3(_ReconcileS3()))
+    """A daily schedule over a standing problem must not open an issue every
+    morning, and must not edit the same one every morning either: an issue
+    that churns daily stops being read. So the body is compared, and written
+    only when it differs. Nothing is ever closed; a human decides that."""
+    issues = _FakeIssues()
+    monkeypatch.setattr(reconcile_handler, "github_request", issues.request)
 
-    with pytest.raises(RuntimeError, match="SES_FROM is not set"):
+    findings = [{"kind": "undelivered", "age_hours": 9.0}]
+    assert reconcile_handler.report_findings(findings) == "opened"
+    assert len(issues.open) == 1
+    assert issues.open[0]["labels"] == [reconcile_handler.ISSUE_LABEL]
+
+    # Same findings tomorrow: nothing is written at all.
+    assert reconcile_handler.report_findings(findings) == "unchanged"
+    assert len(issues.open) == 1 and issues.patches == []
+
+    # A changed count edits the one issue rather than opening a second.
+    assert reconcile_handler.report_findings(findings * 3) == "updated"
+    assert len(issues.open) == 1
+    assert issues.patches[0]["title"] == "3 program orders need attention"
+    assert [m for m, _ in issues.calls if m == "DELETE"] == []
+    assert not any("state" in patch for patch in issues.patches), "nothing closes an issue"
+
+    # An issue somebody else labelled is not ours to overwrite.
+    issues.open = [{"number": 99, "title": "unrelated", "body": "no marker here"}]
+    assert reconcile_handler.report_findings(findings) == "opened"
+    assert len(issues.open) == 2
+
+
+def test_the_reconciler_fails_loudly_when_it_cannot_file_the_report(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """Alerting that silently cannot reach anyone is the defect this module
+    exists to close, so it must not be reintroduced one layer up. A run that
+    found paid orders and could not report them fails, and says which
+    permission is the likely cause rather than making somebody guess."""
+    tables["BUNDLES_TABLE"].items["a" * 32] = _capability("a" * 32)
+    monkeypatch.setitem(sys.modules, "boto3", _FakeBoto3(_ReconcileS3()))
+    monkeypatch.setattr(reconcile_handler, "github_request", _FakeIssues(fail=True).request)
+
+    with pytest.raises(RuntimeError, match="Issues: Read and write"):
         reconcile_handler.handler({}, None)
 
 
-def test_reconcile_handler_mails_the_digest_and_honours_the_gates(
+def test_reconcile_handler_files_the_report_and_honours_the_gates(
     monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
 ) -> None:
     tables["BUNDLES_TABLE"].items["a" * 32] = _capability("a" * 32)
-    boto3 = _FakeBoto3(_ReconcileS3())
-    monkeypatch.setitem(sys.modules, "boto3", boto3)
-    monkeypatch.setenv("SES_FROM", "reports@example.org")
+    issues = _FakeIssues()
+    monkeypatch.setitem(sys.modules, "boto3", _FakeBoto3(_ReconcileS3()))
+    monkeypatch.setattr(reconcile_handler, "github_request", issues.request)
 
     out = reconcile_handler.handler({}, None)
     assert out == {
@@ -1522,17 +1638,15 @@ def test_reconcile_handler_mails_the_digest_and_honours_the_gates(
         "payments_enabled": True,
         "scanned": 1,
         "findings": 1,
-        "emailed": True,
+        "reported": "opened",
         "dry_run": False,
     }
-    assert boto3.ses.sent[0]["Source"] == "reports@example.org"
-    assert boto3.ses.sent[0]["Destination"] == {"ToAddresses": ["reports@example.org"]}
-    assert "a" * 32 in boto3.ses.sent[0]["Message"]["Body"]["Text"]["Data"]
+    assert len(issues.open) == 1
 
-    # A dry run looks and sends nothing.
+    # A dry run looks and files nothing.
     dry = reconcile_handler.handler({"dry_run": True}, None)
-    assert dry["emailed"] is False and dry["dry_run"] is True
-    assert len(boto3.ses.sent) == 1
+    assert dry["reported"] == "dry_run" and dry["dry_run"] is True
+    assert len(issues.open) == 1
 
     # And the commercial gate closes it entirely.
     monkeypatch.setenv("PAYMENTS_ENABLED", "0")
@@ -1541,7 +1655,7 @@ def test_reconcile_handler_mails_the_digest_and_honours_the_gates(
         "payments_enabled": False,
         "dry_run": False,
     }
-    assert len(boto3.ses.sent) == 1
+    assert len(issues.open) == 1
 
 
 def test_reconcile_handler_raises_when_the_bucket_would_not_answer(
@@ -1551,11 +1665,56 @@ def test_reconcile_handler_raises_when_the_bucket_would_not_answer(
     as a delivered order either. The run fails so somebody sees it."""
     tables["BUNDLES_TABLE"].items["a" * 32] = _capability("a" * 32)
     s3 = _ReconcileS3(unreadable={f"program-bundles/{'a' * 32}/bundle.zip"})
-    boto3 = _FakeBoto3(s3)
-    monkeypatch.setitem(sys.modules, "boto3", boto3)
-    monkeypatch.setenv("SES_FROM", "reports@example.org")
+    issues = _FakeIssues()
+    monkeypatch.setitem(sys.modules, "boto3", _FakeBoto3(s3))
+    monkeypatch.setattr(reconcile_handler, "github_request", issues.request)
 
     with pytest.raises(RuntimeError, match="could not be read"):
         reconcile_handler.handler({}, None)
-    # The digest still went out: the orders it could read are still reported.
-    assert len(boto3.ses.sent) == 1
+    # The report still went out: the orders it could read are still filed.
+    assert len(issues.open) == 1
+
+
+# ---------------------------------------------------------------------------
+# the reconciler's schedule, read from terraform
+# ---------------------------------------------------------------------------
+
+
+def test_the_reconcile_schedule_cannot_be_enabled_with_no_way_to_report() -> None:
+    """A job that finds paid orders and cannot tell anyone is the defect this
+    module exists to close, so the schedule must not be able to run in that
+    state.
+
+    The gate it replaced was `ses_from != ""`, a non-blank string that named
+    an address on a domain with no MX record. **Non-blank is not reachable**,
+    and that is the whole lesson: what gates the rule now is an explicit
+    readiness switch, defaulting off, whose description carries the two
+    things to confirm before it is flipped.
+    """
+    terraform = (MODULE_DIR / "main.tf").read_text(encoding="utf-8")
+    rule = terraform[terraform.index('resource "aws_cloudwatch_event_rule" "daily_reconcile"') :]
+    rule = rule[: rule.index("resource ", 1)]
+    state = next(line for line in rule.splitlines() if line.strip().startswith("state"))
+
+    assert "var.reconciler_reporting_ready" in state, (
+        "the schedule must be gated on a reporting channel confirmed reachable"
+    )
+    assert 'var.payments_enabled == "1"' in state, "the commercial gate still applies"
+    assert "ENABLED" in state and "DISABLED" in state
+
+    # Default off: a plain apply leaves it disabled, so switching it on is a
+    # deliberate act and not a surprise from an unrelated apply.
+    declaration = terraform[terraform.index('variable "reconciler_reporting_ready"') :]
+    declaration = declaration[: declaration.index("\n}")]
+    assert "default     = false" in declaration
+    assert "Issues: Read and write" in declaration, (
+        "the exact permission the design depends on belongs where the operator reads it"
+    )
+    assert "program-bundle-reconciler" in declaration, (
+        "the label has to exist before the first report, so say so here"
+    )
+
+    # And the dead email configuration is gone rather than left wired to
+    # nothing, so nobody sets it and expects an alert.
+    assert "ses_from" not in terraform
+    assert "ses:SendEmail" not in terraform

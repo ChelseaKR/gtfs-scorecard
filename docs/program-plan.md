@@ -235,12 +235,25 @@ workflow's most recent conclusion every six hours as the backstop, and counts
 **Nobody comes back.** The buyer pays and closes the tab before the setup
 form, or hits a failed dispatch and never retries. The daily reconciler
 (`infra/program-bundle/reconcile_handler.py`) walks the bundles table and
-mails `SES_FROM` about any capability row older than six hours with no
+reports any capability row older than six hours with no
 `program-bundles/<id>/bundle.zip`, any claim that never dispatched, and any
 `checkout#` row with no matching `session#` row. It refuses rather than
 reports clean when it cannot read a row's timestamp or the bucket will not
-answer, and its EventBridge rule stays disabled while `ses_from` is blank,
-because a reconciler with nowhere to report finds things and tells nobody.
+answer.
+
+It reports by keeping one GitHub issue up to date, not by email. The
+operator's own domain has no MX record, so an emailed alert would have been
+delivered nowhere, and a notification that cannot arrive is the same defect
+as no notification. This repository is public, so that issue carries the
+counts and a CloudWatch pointer and nothing else: a bundle id is a download
+capability, and the delivery address, the program name and the agency list
+all describe a paying customer. The detail stays in CloudWatch, which is
+private to the account. The schedule stays disabled until
+`reconciler_reporting_ready` is set, because a reconciler with nowhere to
+report finds things and tells nobody. The dispatch token already carries the
+`Issues: Read and write` permission the design needs; what that switch records
+is that somebody checked, and that the label the report is filed under
+exists.
 
 ## Closing it again
 

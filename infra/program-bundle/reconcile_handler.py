@@ -26,8 +26,18 @@ Three shapes, and each is a real path a paid order can take to silence:
     The buyer paid and closed the tab before filling in the setup form.
     Nothing is broken and nobody is coming: they need an email from a person.
 
-The findings go to SES_FROM in one message. Nobody watches a dashboard here,
-and the buyer has already been told their build was starting.
+Findings are reported by opening one GitHub issue and keeping it up to date.
+Nobody watches a dashboard here, and the operator's own mail domain has no MX
+record, so an emailed alert would have been delivered nowhere; the issue
+tracker is a channel that is demonstrably read.
+
+**The issue carries counts and nothing else.** This repository is public, so
+its issues are world-readable, and every identifying field this module holds
+is either a credential or personal data: a bundle id IS the download
+capability, and `deliver_to`, `program_name` and the agency list all describe
+a paying customer. ``issue_body`` is therefore given the counts alone and
+never sees a finding, so it cannot leak one by oversight or by a later edit.
+The detail stays in CloudWatch, which is private to the account.
 
 Two refusals, because a reconciler that cannot fail is worse than none:
 
@@ -50,6 +60,8 @@ from typing import Any
 
 from common import (
     DOWNLOAD_DAYS,
+    UpstreamError,
+    github_request,
     now_iso,
     payments_enabled,
     table,
@@ -277,47 +289,89 @@ def reconcile(
     return {"scanned": len(rows), "findings": findings}
 
 
-def digest(findings: list[dict[str, Any]]) -> str:
-    """The message body. One section per kind, oldest first inside each."""
-    lines = [
-        "The program-bundle reconciler found orders that bought nothing.",
+# The issue is found again by this label, and confirmed by the marker in its
+# body. The label is the cheap server-side filter; the marker is what proves
+# the issue we found is the one this Lambda wrote, and not one somebody else
+# happened to label.
+ISSUE_LABEL = "program-bundle-reconciler"
+ISSUE_MARKER = "<!-- gtfs-scorecard:program-bundle-reconciler -->"
+LOG_GROUP = "/aws/lambda/gtfs-scorecard-program-bundle-reconcile"
+# Every kind the walk above can produce, so a kind that drops to zero is
+# printed as zero rather than vanishing from the report.
+KINDS = ("undelivered", "never_started", "abandoned_checkout", "unreadable")
+
+
+def counts_by_kind(findings: list[dict[str, Any]]) -> dict[str, int]:
+    """How many of each kind. The only thing that reaches a public issue."""
+    return {kind: sum(1 for f in findings if f.get("kind") == kind) for kind in KINDS}
+
+
+def issue_title(counts: dict[str, int]) -> str:
+    total = sum(counts.values())
+    return f"{total} program order{'' if total == 1 else 's'} need attention"
+
+
+def issue_body(counts: dict[str, int]) -> str:
+    """The whole public report.
+
+    Takes counts, not findings. That is deliberate and is the only reason
+    this function is safe to point at a public repository: there is no
+    identifying value in scope for it to print, so no future edit can reach
+    one. Everything a responder needs beyond these numbers is in CloudWatch,
+    which is private.
+    """
+    lines = [ISSUE_MARKER, ""]
+    lines += [f"{kind:<20}{counts.get(kind, 0)}" for kind in KINDS]
+    lines += [
         "",
-        f"Checked at {now_iso()}. {len(findings)} to look at.",
+        f"Details: CloudWatch {LOG_GROUP}",
+        "",
+        "Counts only. This repository is public, and every identifying field "
+        "behind these numbers is a download capability or a customer's own "
+        "details, so none of it is printed here.",
     ]
-    titles = {
-        "undelivered": "Paid, no archive",
-        "never_started": "Claimed, never dispatched",
-        "abandoned_checkout": "Paid, never filled in the setup form",
-        "unreadable": "Could not be checked",
-    }
-    for kind, title in titles.items():
-        group = [f for f in findings if f["kind"] == kind]
-        if not group:
-            continue
-        group.sort(key=lambda f: (f["age_hours"] is not None, f["age_hours"] or 0), reverse=True)
-        lines += ["", f"## {title} ({len(group)})", ""]
-        for found in group:
-            age = found["age_hours"]
-            when = f"{age:.0f}h old" if age is not None else "age unreadable"
-            lines.append(f"- {found['key']} ({when})")
-            for field in ("bundle_id", "program_name", "deliver_to", "email", "plan", "source"):
-                if found.get(field):
-                    lines.append(f"    {field}: {found[field]}")
-            lines.append(f"    {found['action']}")
     return "\n".join(lines) + "\n"
 
 
-def send_digest(findings: list[dict[str, Any]], sender: str, region: str) -> None:
-    import boto3
+def _standing_issue() -> dict[str, Any] | None:
+    """The open issue this Lambda maintains, or None.
 
-    boto3.client("ses", region_name=region).send_email(
-        Source=sender,
-        Destination={"ToAddresses": [sender]},
-        Message={
-            "Subject": {"Data": f"GTFS Scorecard: {len(findings)} program orders need a look"},
-            "Body": {"Text": {"Data": digest(findings)}},
-        },
-    )
+    Filtered server-side by label, then confirmed by the marker: a label
+    somebody else applied to their own issue must not make this Lambda
+    overwrite it.
+    """
+    found = github_request("GET", f"/issues?state=open&labels={ISSUE_LABEL}&per_page=20")
+    if not isinstance(found, list):
+        return None
+    for issue in found:
+        if isinstance(issue, dict) and ISSUE_MARKER in str(issue.get("body") or ""):
+            return issue
+    return None
+
+
+def report_findings(findings: list[dict[str, Any]]) -> str:
+    """Open or update the standing issue. Returns what it did.
+
+    Idempotent by content, not by date: a daily schedule over a standing
+    problem must not open a new issue every morning, and must not edit the
+    same issue every morning either, because an issue that churns daily stops
+    being read. So the body is compared and written only when it differs.
+
+    Nothing is ever closed. A human decides when a finding is handled; a job
+    that closes its own report can close one somebody was still working on.
+    """
+    counts = counts_by_kind(findings)
+    body = issue_body(counts)
+    title = issue_title(counts)
+    issue = _standing_issue()
+    if issue is None:
+        github_request("POST", "/issues", {"title": title, "body": body, "labels": [ISSUE_LABEL]})
+        return "opened"
+    number = int(issue["number"])
+    if str(issue.get("body") or "") == body and str(issue.get("title") or "") == title:
+        return "unchanged"
+    github_request("PATCH", f"/issues/{number}", {"title": title, "body": body})
+    return "updated"
 
 
 def handler(event: dict[str, Any], context: Any = None) -> dict[str, Any]:
@@ -342,22 +396,30 @@ def handler(event: dict[str, Any], context: Any = None) -> dict[str, Any]:
     findings = result["findings"]
     print(json.dumps({"reconcile": result, "dry_run": dry_run, "at": now_iso()}))
 
-    sender = os.environ.get("SES_FROM", "")
-    sent = False
+    reported = "dry_run" if dry_run else "nothing to report"
     if findings and not dry_run:
-        # No address configured is not "nothing to report". It is this job
-        # quietly not doing the one thing it exists to do, so it fails.
-        if not sender:
+        # Raised, not swallowed. If the report cannot be filed then this run
+        # found paid orders and told nobody, which is the failure this whole
+        # module exists to prevent; a green invocation would be a lie.
+        #
+        # The token was verified on 2026-09-12 to carry `Issues: Read and
+        # write` on this repository, so a 403 here means it was narrowed or
+        # rotated since. The message names that rather than making somebody
+        # re-derive it. A 422 is more likely the missing label.
+        try:
+            reported = report_findings(findings)
+        except UpstreamError as err:
             raise RuntimeError(
-                f"{len(findings)} program orders need attention and SES_FROM is not set, "
-                "so nobody can be told. Set it on the reconcile Lambda."
-            )
-        send_digest(findings, sender, region)
-        sent = True
+                f"{len(findings)} program orders need attention and the report could not "
+                f"be filed ({err}). A 403 means the dispatch token no longer carries the "
+                "fine-grained repository permission 'Issues: Read and write' on this repo; "
+                f"a 422 usually means the '{ISSUE_LABEL}' label does not exist yet."
+            ) from err
 
     # An S3 read that did not answer leaves this run unable to vouch for those
     # orders. Raising is what puts that in front of somebody; returning a
-    # count nobody reads is the failure mode this module is about.
+    # count nobody reads is the failure mode this module is about. It happens
+    # after the report so the orders it COULD read are still filed.
     unreadable = [f for f in findings if f["kind"] == "unreadable"]
     if unreadable:
         raise RuntimeError(
@@ -369,6 +431,6 @@ def handler(event: dict[str, Any], context: Any = None) -> dict[str, Any]:
         "payments_enabled": True,
         "scanned": result["scanned"],
         "findings": len(findings),
-        "emailed": sent,
+        "reported": reported,
         "dry_run": dry_run,
     }
