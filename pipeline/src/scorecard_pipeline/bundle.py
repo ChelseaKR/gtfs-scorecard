@@ -100,6 +100,16 @@ class BundleRequest:
         }
 
 
+def archive_key(bundle_id: str) -> str:
+    """Where a built bundle lives in the artifacts bucket.
+
+    One definition, because three things have to agree on it or a buyer's
+    link 404s: the workflow that uploads, the download route that presigns,
+    and the reconciler that decides whether an order was delivered.
+    """
+    return f"program-bundles/{bundle_id}/bundle.zip"
+
+
 def new_bundle_id() -> str:
     """A fresh 128-bit hex token; the bundle's download capability."""
     return secrets.token_hex(16)
@@ -402,12 +412,20 @@ def delivery_email(
     manifest: Mapping[str, Any],
     download_url: str,
     expires_on: str,
+    promised_by: str = "",
 ) -> Email:
     """The plain-text email that carries the download link.
 
     Says what was included and, per id, what was not. The link is a
     capability that expires; the date is stated so nobody discovers that by
     clicking a dead link.
+
+    ``promised_by`` is the date this order was committed to at checkout. It is
+    stated here so the commitment is checkable by the person it was made to:
+    /bundle/ promises a refund if delivery is late, and a buyer holding a
+    late archive should not have to take our word for when it was due. Blank
+    when the caller does not know it, which is the case for a subscription
+    refresh, where no two-business-day promise was made.
     """
     included = int(manifest["included"])
     requested = int(manifest["requested"])
@@ -417,6 +435,10 @@ def delivery_email(
         f"Download (valid until {expires_on}):",
         f"  {download_url}",
         "",
+    ]
+    if promised_by:
+        lines += [f"This order was promised by {promised_by}.", ""]
+    lines += [
         f"{included} of {requested} requested agencies are included, one self-contained",
         "HTML file each. Open any of them in a browser and print to PDF.",
     ]

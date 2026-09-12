@@ -247,6 +247,40 @@ description of what has to be true; the script is how it is done and checked.
    the public surface until then.
 9. **Ninety days later**, the gate table above.
 
+## The two-business-day promise, and what backs it
+
+`/bundle/` tells a buyer the archive arrives "always within two business days.
+If it is later than that, the purchase is refunded." That is a refund
+liability, so the date behind it is computed rather than believed.
+
+`scorecard_pipeline/deadline.py` is the only thing that decides it. The clock
+starts at Stripe's own record of the payment, not at the moment the setup form
+is submitted, so a buyer who pays on Friday and returns on Monday keeps the
+two days they were promised. Weekends and US federal holidays are not business
+days, and the holidays are computed from their rules rather than listed, so
+there is no year at which the table quietly runs out. The zone is
+America/Los_Angeles, end of day: the buyer's zone is unknown, and choosing one
+and saying so is better than guessing theirs.
+
+The date is computed once, at checkout, and stored on the order. The
+confirmation page prints the sentence the server sends rather than working the
+date out again, and the delivery email states the date the order was promised
+by, so the commitment is checkable by the person it was made to. One
+computation, in one language: a promise worked out twice is a promise that
+will eventually disagree with itself.
+
+An order past that date with no archive is reported by the reconciler as
+`deadline_breached` rather than as `undelivered`, and the issue title says
+`REFUND DUE`. One is a slow build and the other is money owed; they need
+different actions and must not arrive as one number.
+
+Refunds stay manual, by design. The deployed restricted key reads Checkout
+Sessions and cannot refund, and that is the right posture: a credential that
+can move money should not sit in a scheduled job. `scorecard program-refunds`
+runs on the operator's machine with her own AWS credentials, reads the table,
+and prints each breached order with its Stripe reference and the commands that
+would refund it. It runs none of them.
+
 ## When an order does not get built
 
 Payment and fulfilment are separate systems, so there is a gap between them

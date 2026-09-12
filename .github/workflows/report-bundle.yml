@@ -62,6 +62,11 @@ on:
         required: false
         default: ""
         type: string
+      promised_by:
+        description: "The delivery date this order was committed to, as the buyer was told it"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
@@ -225,6 +230,7 @@ jobs:
         env:
           BUNDLE_API_BASE: ${{ vars.BUNDLE_API_BASE }}
           BUNDLE_ID: ${{ inputs.bundle_id }}
+          PROMISED_BY: ${{ inputs.promised_by }}
           SES_FROM: ${{ vars.SES_FROM }}
         run: |
           set -euo pipefail
@@ -232,7 +238,8 @@ jobs:
           uv run --with boto3 python -m scorecard_pipeline.cli bundle-email \
             --request request.json --manifest manifest.json \
             --download-url "${BUNDLE_API_BASE%/}/download/${BUNDLE_ID}" \
-            --expires-on "$expires" --out email.txt --send --from "$SES_FROM"
+            --expires-on "$expires" --promised-by "$PROMISED_BY" \
+            --out email.txt --send --from "$SES_FROM"
 
       - name: Say when delivery is off
         if: ${{ vars.ARTIFACTS_BUCKET == '' || vars.BUNDLE_API_BASE == '' || vars.SES_FROM == '' }}

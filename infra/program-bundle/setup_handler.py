@@ -33,6 +33,7 @@ is "1", the same Terraform gate that decides whether the route exists.
 
 from __future__ import annotations
 
+import datetime as dt
 import json
 import os
 import time
@@ -55,7 +56,13 @@ from common import (
     workflow_inputs,
 )
 
-from scorecard_pipeline.bundle import BundleError, new_bundle_id, parse_request
+from scorecard_pipeline import deadline
+from scorecard_pipeline.bundle import (
+    BundleError,
+    archive_key,
+    new_bundle_id,
+    parse_request,
+)
 
 PRESIGN_SECONDS = 15 * 60
 _SESSION_ID_MAX = 200
@@ -302,12 +309,38 @@ def setup(event: dict[str, Any]) -> dict[str, Any]:
         # Finish the earlier order under its own bundle id, so one payment
         # still yields exactly one bundle and one download link.
         request = replace(request, bundle_id=unfinished)
-    bundles.put_item(Item=bundle_row(request.as_dict(), source="checkout", session_id=session_id))
+    # The promise, computed once, here, from Stripe's own record of when the
+    # money moved. Not from the moment this form was submitted: a buyer who
+    # pays on Friday and fills the form in on Monday was promised two business
+    # days from Friday, and anchoring on the form would quietly hand us the
+    # weekend. Stripe has always set `created`; if it ever does not, falling
+    # back to now can only make the promise later than it should be, so the
+    # row records which anchor was used rather than leaving that unanswerable.
+    checkout_epoch = session.get("created")
+    anchored = "checkout" if isinstance(checkout_epoch, int | float) else "received"
+    checkout_at = (
+        deadline.from_epoch(int(checkout_epoch))
+        if anchored == "checkout"
+        else dt.datetime.now(dt.UTC)
+    )
+    row = bundle_row(
+        request.as_dict(),
+        source="checkout",
+        session_id=session_id,
+        deliver_by_epoch=deadline.deadline_epoch(checkout_at),
+    )
+    row["deliver_by_anchor"] = anchored
+    bundles.put_item(Item=row)
 
     _record_subscription(session, request, price=price, plan=plan)
 
     try:
-        dispatch_bundle_workflow(workflow_inputs(request.as_dict()))
+        # The workflow carries the promised date so the delivery email can
+        # state the commitment it is meeting. Carried, not recomputed there:
+        # one function decides this date, and it has already decided.
+        dispatch = request.as_dict()
+        dispatch["promised_by"] = deadline.spoken_date(deadline.deadline_date(checkout_at))
+        dispatch_bundle_workflow(workflow_inputs(dispatch))
     except UpstreamError as err:
         # A paid order that never started a build is the one failure nobody
         # else can see: the workflow leaves no run, and the buyer is told to
@@ -338,7 +371,19 @@ def setup(event: dict[str, Any]) -> dict[str, Any]:
             },
         )
     _mark_dispatched(bundles, session_id)
-    return json_response(200, {"ok": True, "bundle_id": request.bundle_id})
+    # The date travels to the page rather than being recomputed there. The
+    # promise is one function in one language; a browser working it out again
+    # would be a second implementation of a refund liability, and the two
+    # would disagree the first time a public holiday fell between them.
+    return json_response(
+        200,
+        {
+            "ok": True,
+            "bundle_id": request.bundle_id,
+            "deliver_by": deadline.deadline_date(checkout_at).isoformat(),
+            "promise": deadline.promise_sentence(checkout_at),
+        },
+    )
 
 
 def download(bundle_id: str) -> dict[str, Any]:
@@ -365,7 +410,7 @@ def download(bundle_id: str) -> dict[str, Any]:
     import boto3
 
     bucket = os.environ["ARTIFACTS_BUCKET"]
-    key = f"program-bundles/{bundle_id}/bundle.zip"
+    key = archive_key(bundle_id)
     s3 = boto3.client("s3", region_name=os.environ.get("AWS_REGION", "us-west-2"))
     try:
         s3.head_object(Bucket=bucket, Key=key)
