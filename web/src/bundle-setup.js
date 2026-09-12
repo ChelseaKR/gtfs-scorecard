@@ -67,8 +67,14 @@ if (!form) {
       setStatus("Please give the program name and at least one agency id.", "err");
       return;
     }
+    // A ceiling across every plan, not a promise about the plan this buyer
+    // paid for. The page does not know which price was paid; the server does.
+    // It answers a list over that cap with the limit of the plan bought, before
+    // it consumes the checkout, so the buyer can trim and resend. This number
+    // must equal the largest value in PLAN_AGENCY_CAPS
+    // (infra/program-bundle/common.py); test_bundle_setup_ceiling.py holds it.
     if (ids.split(/[\s,]+/).filter(Boolean).length > 100) {
-      setStatus("A bundle covers at most 100 agencies. Trim the list or buy a second bundle.", "err");
+      setStatus("No bundle covers more than 100 agencies. Trim the list and send it again.", "err");
       return;
     }
     enable(false);
