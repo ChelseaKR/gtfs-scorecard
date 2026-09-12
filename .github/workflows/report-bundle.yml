@@ -142,6 +142,22 @@ jobs:
       # Only what the report reads: the index (history) and each requested
       # agency's current artifact. Not the whole corpus; a bundle is a hundred
       # files at most, and the daily run's full sync would take minutes.
+      #
+      # The checkout already carries a committed snapshot of data/artifacts,
+      # which is the fallback when no bucket is configured. It must not be the
+      # fallback when a bucket IS configured: that snapshot is re-materialised
+      # by hand and runs weeks behind, so a `cp` that failed for one agency
+      # would leave a stale grade in place and the report would print it as
+      # today's, dressed in a fresh history from the index that was fetched
+      # successfully. Delete each requested agency's copy first, so a failed
+      # fetch becomes an id the manifest names rather than a wrong number
+      # nobody can see is wrong.
+      #
+      # And retry, the way pages.yml retries its own sync. The free site gets
+      # three attempts at the same objects; a paid bundle was getting one, so
+      # a blip that costs the site nothing cost a buyer an agency. A 404 is
+      # not a blip -- that agency has no published artifact -- so it is taken
+      # at its word and not retried.
       - name: Hydrate the requested artifacts from S3
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         env:
@@ -149,11 +165,44 @@ jobs:
         run: |
           set -euo pipefail
           aws s3 cp "s3://${ARTIFACTS_BUCKET}/data/artifacts/index.json" ../data/artifacts/index.json --only-show-errors
+          fetch_latest() {
+            local id="$1" attempt err
+            for attempt in 1 2 3; do
+              if err=$(aws s3 cp \
+                  "s3://${ARTIFACTS_BUCKET}/data/artifacts/${id}/latest.json" \
+                  "../data/artifacts/${id}/latest.json" --only-show-errors 2>&1); then
+                return 0
+              fi
+              case "$err" in
+                *"(404)"*|*"Not Found"*|*"does not exist"*)
+                  echo "no published artifact in S3 for ${id}" >&2
+                  return 1
+                  ;;
+              esac
+              if [ "$attempt" -eq 3 ]; then
+                echo "S3 read failed three times for ${id}: ${err}" >&2
+                return 1
+              fi
+              echo "S3 read failed for ${id}; retrying (${attempt}/3)." >&2
+              sleep $((attempt * 5))
+            done
+          }
+          : > unhydrated.txt
           jq -r '.current[]' plan.json | while read -r id; do
             mkdir -p "../data/artifacts/${id}"
-            aws s3 cp "s3://${ARTIFACTS_BUCKET}/data/artifacts/${id}/latest.json" \
-              "../data/artifacts/${id}/latest.json" --only-show-errors || true
+            rm -f "../data/artifacts/${id}/latest.json"
+            if ! fetch_latest "$id"; then
+              printf '%s\n' "$id" >> unhydrated.txt
+            fi
           done
+          if [ -s unhydrated.txt ]; then
+            {
+              echo
+              echo "**Not hydrated from S3** (no current artifact was fetched; each is named in"
+              echo "the manifest as not published):"
+              sed 's/^/  - /' unhydrated.txt
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Render the bundle
         run: uv run scorecard bundle --request request.json --out bundle.zip --manifest manifest.json

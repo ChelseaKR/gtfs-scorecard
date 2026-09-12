@@ -20,6 +20,13 @@ a row left over from test mode once live price ids are configured. And the
 whole run does nothing unless PAYMENTS_ENABLED is "1"; the EventBridge rule
 is disabled with the same gate, so this only matters for a hand invoke.
 
+``not_on_plan`` is a claim about a subscription, so it is only ever reported
+when the configuration is good enough to make it. If no refresh price is
+configured at all -- a blank, unparseable, or dropped ``STRIPE_PRICE_IDS`` --
+every row would fall into it and the tick would answer ``ok`` while no
+subscriber was ever refreshed again. That case raises ``ConfigurationError``
+and fails the invocation instead.
+
 Dry run: with DRY_RUN=1 in the environment, or ``{"dry_run": true}`` as the
 invoke payload, the run scans and logs what it would dispatch (subscription
 id and agency count) and changes nothing: no dispatch, no capability row, no
@@ -48,6 +55,14 @@ from common import (
 from scorecard_pipeline.bundle import new_bundle_id
 
 REFRESH_DAYS = 28
+
+
+class ConfigurationError(RuntimeError):
+    """The run cannot tell a subscription's plan from its price, because no
+    refresh price is configured. Raised rather than reported per row: an
+    unreadable or blank ``STRIPE_PRICE_IDS`` would otherwise make every
+    subscriber look like one that had left the plan, and the tick would say
+    ``ok`` while nobody was ever refreshed again."""
 
 
 def _due(row: dict[str, Any], *, now: dt.datetime) -> bool:
@@ -90,11 +105,23 @@ def refresh(
         "scanned": 0,
         "due": 0,
         "not_on_plan": 0,
+        "no_request": 0,
         "dispatched": 0,
         "would_dispatch": 0,
         "failed": 0,
     }
     plans = price_plans()
+    if not any(plan in SUBSCRIPTION_PLANS for plan in plans.values()):
+        # Every row would now be counted `not_on_plan`, which is a statement
+        # about the subscription. It would not be true: the configuration is
+        # what is missing, and reporting a config failure as a per-row fact
+        # would silently and permanently stop every paying subscriber while
+        # the run still answered ok. Refuse the whole run instead.
+        raise ConfigurationError(
+            "STRIPE_PRICE_IDS configures no refresh price, so no subscription "
+            "can be matched to a plan; refusing the run rather than reporting "
+            "every subscriber as not on a plan"
+        )
     for row in _scan_all(subscriptions):
         counts["scanned"] += 1
         if not _due(row, now=current):
@@ -108,7 +135,14 @@ def refresh(
         except ValueError:
             request = {}
         if not isinstance(request, dict) or not request.get("agency_ids"):
-            counts["failed"] += 1
+            # A subscription with nothing to build: the webhook created the
+            # row at checkout and the buyer never finished the setup form, so
+            # they are being billed for nothing. Counted apart from `failed`,
+            # which now means only that GitHub refused the dispatch; the two
+            # need different answers, and rolling them together hid a paying
+            # customer inside a retry statistic.
+            print(f"refresh {row.get('id')}: billed, but no setup request was ever stored")
+            counts["no_request"] += 1
             continue
         if dry_run:
             ids = request["agency_ids"]
@@ -118,13 +152,18 @@ def refresh(
             continue
         request["bundle_id"] = new_bundle_id()
         request["cadence"] = "monthly"
+        # The capability row first. The workflow uploads the archive and emails
+        # the link on its own clock; if this Lambda times out between the
+        # dispatch and the put, the buyer gets a link to a row that does not
+        # exist and reads "expired or never issued" for a bundle sitting in
+        # the bucket. A row with no archive behind it is the harmless order.
+        bundles.put_item(Item=bundle_row(request, source="refresh"))
         try:
             dispatch_bundle_workflow(workflow_inputs(request))
         except UpstreamError as err:
             print(f"refresh {row.get('id')}: dispatch failed: {err}")
             counts["failed"] += 1
             continue
-        bundles.put_item(Item=bundle_row(request, source="refresh"))
         subscriptions.update_item(
             Key={"id": str(row["id"])},
             UpdateExpression="SET last_refresh = :t, last_bundle_id = :b",
@@ -143,10 +182,17 @@ def handler(event: dict[str, Any], context: Any = None) -> dict[str, Any]:
     if not payments_enabled():
         print(json.dumps({"refresh": "skipped: PAYMENTS_ENABLED is not 1", "at": now_iso()}))
         return {"ok": True, "payments_enabled": False, "dry_run": dry_run}
-    counts = refresh(
-        subscriptions=table("SUBSCRIPTIONS_TABLE"),
-        bundles=table("BUNDLES_TABLE"),
-        dry_run=dry_run,
-    )
+    try:
+        counts = refresh(
+            subscriptions=table("SUBSCRIPTIONS_TABLE"),
+            bundles=table("BUNDLES_TABLE"),
+            dry_run=dry_run,
+        )
+    except ConfigurationError as err:
+        # Raised, not returned: a failed invocation is the only signal
+        # EventBridge and CloudWatch can alarm on. Returning ok here is how a
+        # broken price map would refresh nobody, quietly, for months.
+        print(json.dumps({"refresh": "refused", "reason": str(err), "at": now_iso()}))
+        raise
     print(json.dumps({"refresh": counts, "dry_run": dry_run, "at": now_iso()}))
     return {"ok": True, "payments_enabled": True, **counts, "dry_run": dry_run}

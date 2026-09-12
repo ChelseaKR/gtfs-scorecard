@@ -213,8 +213,17 @@ resource "aws_dynamodb_table" "subscriptions" {
 
 # Bundle capabilities: one row per download link, plus `session#` and
 # `checkout#` rows the setup and webhook handlers use for idempotency. TTL
-# expires each row 30 days after creation, in step with the S3 lifecycle rule
-# on program-bundles/ (infra/artifacts) and bundle.DOWNLOAD_DAYS.
+# expires a *capability* row 30 days after creation, in step with the S3
+# lifecycle rule on program-bundles/ (infra/artifacts) and
+# bundle.DOWNLOAD_DAYS. It expires neither of the other two, because neither
+# carries `expires_at`, and the earlier wording here said it expired all
+# three. For `session#` that is deliberate and load-bearing: the claim has to
+# outlive the capability or a replay after 30 days would build a second
+# bundle from one payment (setup_handler._session_row). For `checkout#` it is
+# not deliberate. Those rows hold a buyer's email address and are kept so a
+# checkout with no setup form can be found and helped by hand, which is a
+# support decision with a retention consequence, not an oversight to paper
+# over with a TTL nobody chose; see the note in webhook_handler.
 resource "aws_dynamodb_table" "bundles" {
   name         = "${var.project}-program-bundles"
   billing_mode = "PAY_PER_REQUEST"
