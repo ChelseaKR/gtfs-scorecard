@@ -9,7 +9,8 @@
 #                               302 to a fifteen-minute presigned S3 URL
 #   POST /webhook               Stripe events -> subscription state
 #   (weekly)                    re-dispatch for active subscriptions
-#   (daily)                     reconcile paid orders that bought nothing
+#   (daily)                     reconcile paid orders that bought nothing and
+#                               report the counts in one GitHub issue
 #
 # Status: written, not yet applied (same posture as infra/compute and
 # infra/instant-score; see infra/README.md). Everything that can charge
@@ -78,7 +79,7 @@ variable "github_repo" {
 }
 
 variable "github_token" {
-  description = "Fine-scoped token with actions: write on the repo (workflow_dispatch only)."
+  description = "Fine-scoped token on this repository. Needs Actions: Read and write to dispatch the fulfilment workflow, and Issues: Read and write for the daily reconciler's standing report. Widening it is an owner action; github_token_can_write_issues is where that is attested."
   type        = string
   sensitive   = true
 }
@@ -151,10 +152,27 @@ variable "stripe_price_ids" {
   }
 }
 
-variable "ses_from" {
-  description = "Verified SES identity the daily reconciler mails its findings to (and from). Blank disables the reconciler's schedule outright rather than letting it run with nowhere to report; it is the same address as the SES_FROM Actions variable report-bundle.yml delivers from."
-  type        = string
-  default     = ""
+variable "reconciler_reporting_ready" {
+  description = <<-EOT
+    Turns the daily reconciler's schedule on. False keeps it DISABLED, because a job that
+    finds paid orders and cannot tell anyone is the defect it exists to close, and Terraform
+    cannot check a reporting channel for itself. Before setting it true, confirm both halves:
+
+      1. github_token still carries the fine-grained repository permission
+         "Issues: Read and write" on this repository.
+         Verified present on 2026-09-12 by a differential probe:
+         POST /repos/ChelseaKR/gtfs-scorecard/issues with an empty body answered 422 ("title"
+         wasn't supplied), while the identical request against two other repositories answered
+         403 ("Resource not accessible by personal access token"). The permission gate is
+         checked before the payload on that endpoint, so the 422 is a pass and not merely a
+         malformed request. A bare 422 on its own would have proved nothing.
+      2. The label "program-bundle-reconciler" exists, or the first report fails on it.
+
+    Named for readiness rather than for the token, so the default does not read as a claim
+    that the permission is missing. It is not.
+  EOT
+  type        = bool
+  default     = false
 }
 
 variable "stripe_price_ids_are_live" {
@@ -294,16 +312,6 @@ resource "aws_iam_role_policy" "lambda" {
         Effect   = "Allow"
         Action   = ["s3:GetObject"]
         Resource = "${data.aws_s3_bucket.artifacts.arn}/program-bundles/*"
-      },
-      {
-        # The reconciler's digest, and nothing else. The condition pins the
-        # From address to the one verified identity, so a token loose in this
-        # role cannot send mail as anyone else.
-        Sid       = "ReconcilerDigest"
-        Effect    = var.ses_from == "" ? "Deny" : "Allow"
-        Action    = ["ses:SendEmail"]
-        Resource  = "*"
-        Condition = var.ses_from == "" ? {} : { StringEquals = { "ses:FromAddress" = var.ses_from } }
       }
     ]
   })
@@ -320,7 +328,6 @@ locals {
     ARTIFACTS_BUCKET      = var.artifacts_bucket
     ALLOW_ORIGIN          = var.allow_origin
     PAYMENTS_ENABLED      = var.payments_enabled
-    SES_FROM              = var.ses_from
     STRIPE_SECRET_KEY     = var.stripe_secret_key
     STRIPE_WEBHOOK_SECRET = var.stripe_webhook_secret
     STRIPE_PRICE_IDS      = jsonencode(var.stripe_price_ids)
@@ -500,14 +507,20 @@ resource "aws_lambda_permission" "events" {
 
 # The only thing in this stack that looks for orders nobody is handling: a
 # capability row with no archive, a claim that never dispatched, a checkout
-# that never reached the setup form. Disabled unless there is somewhere to
-# report to, because a reconciler with no SES_FROM finds things and tells
-# nobody, which reads exactly like finding nothing.
+# that never reached the setup form. It reports by opening one GitHub issue
+# carrying counts and a CloudWatch pointer, and nothing identifying, because
+# this repository is public.
+#
+# Disabled until the reporting path is confirmed ready. Terraform cannot check
+# a channel for itself, so the switch is the gate; without it the job would run
+# daily, find paid orders, fail to file them and be exactly the unreachable
+# alerting it was built to replace. The variable's own description carries the
+# two things to confirm before flipping it.
 resource "aws_cloudwatch_event_rule" "daily_reconcile" {
   name                = "${var.project}-program-bundle-reconcile"
   description         = "Report paid program orders with no delivered bundle."
   schedule_expression = "cron(10 15 * * ? *)"
-  state               = var.payments_enabled == "1" && var.ses_from != "" ? "ENABLED" : "DISABLED"
+  state               = var.payments_enabled == "1" && var.reconciler_reporting_ready ? "ENABLED" : "DISABLED"
 }
 
 resource "aws_cloudwatch_event_target" "daily_reconcile" {
