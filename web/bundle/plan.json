@@ -1,13 +1,33 @@
 {
   "schema_version": "1",
-  "paymentsAvailable": false,
+  "paymentsAvailable": true,
   "currency": "USD",
   "provisioning_business_days": 2,
   "max_agencies": 100,
   "products": {
-    "bundle_25": { "label": "One bundle, up to 25 agencies", "price": null, "interval": null, "checkout_url": null },
-    "bundle_100": { "label": "One bundle, up to 100 agencies", "price": null, "interval": null, "checkout_url": null },
-    "refresh_mo": { "label": "Monthly refresh", "price": null, "interval": "month", "checkout_url": null },
-    "refresh_yr": { "label": "Monthly refresh, billed yearly", "price": null, "interval": "year", "checkout_url": null }
+    "bundle_25": {
+      "label": "One bundle, up to 25 agencies",
+      "price": 149,
+      "interval": null,
+      "checkout_url": "https://buy.stripe.com/28E14m6Yz3Zd9mxeVpgQE00"
+    },
+    "bundle_100": {
+      "label": "One bundle, up to 100 agencies",
+      "price": 349,
+      "interval": null,
+      "checkout_url": "https://buy.stripe.com/4gMfZg4QrbrF7ep14zgQE01"
+    },
+    "refresh_mo": {
+      "label": "Monthly refresh",
+      "price": 49,
+      "interval": "month",
+      "checkout_url": "https://buy.stripe.com/3cI6oG1EfbrFgOZfZtgQE02"
+    },
+    "refresh_yr": {
+      "label": "Monthly refresh, billed yearly",
+      "price": 490,
+      "interval": "year",
+      "checkout_url": "https://buy.stripe.com/14A00iaaLanBcyJ3cHgQE03"
+    }
   }
 }

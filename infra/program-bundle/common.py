@@ -11,7 +11,9 @@ The deploy bundles the scorecard_pipeline package alongside these files
 request validation is the pipeline's own parse_request and not a second copy.
 
 Environment (set by Terraform):
-  GITHUB_TOKEN          fine-scoped token with actions: write on the repo
+  GITHUB_TOKEN          fine-scoped token: actions: write to dispatch the
+                        fulfilment workflow, issues: write for the daily
+                        reconciler's standing report (reconcile_handler.py)
   GITHUB_REPO           owner/name, e.g. ChelseaKR/gtfs-scorecard
   WORKFLOW_FILE         report-bundle.yml
   WORKFLOW_REF          branch to dispatch on, default main
@@ -162,19 +164,62 @@ def dispatch_bundle_workflow(inputs: dict[str, str]) -> None:
     )
 
 
+def dispatch_key(bundle_id: str) -> str:
+    """A public, one-way name for one bundle's workflow runs.
+
+    The bundle id is the download capability, and this repository is public, so
+    it cannot be the artifact name or the concurrency group in
+    report-bundle.yml. Those two strings need something that is stable per
+    bundle and safe to render, and a GitHub concurrency expression cannot hash
+    anything, so the derivation happens here and travels as an input.
+
+    sha256 over a 128-bit token, truncated to 64 bits: enough to separate every
+    bundle this product will ever sell, and no help at all to somebody trying
+    to recover the id it came from.
+    """
+    return hashlib.sha256(bundle_id.encode()).hexdigest()[:16]
+
+
+def github_request(method: str, path: str, payload: dict[str, Any] | None = None) -> Any:
+    """One authenticated call against this repository's GitHub API.
+
+    Shares the workflow_dispatch token. Raises UpstreamError on any non-2xx,
+    so a caller that cannot reach GitHub fails rather than carrying on.
+    """
+    repo = os.environ["GITHUB_REPO"]
+    return _request(
+        method,
+        f"{GITHUB_API}/repos/{repo}{path}",
+        {
+            "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
+            "Accept": "application/vnd.github+json",
+        },
+        payload,
+    )
+
+
 def workflow_inputs(request: dict[str, Any]) -> dict[str, str]:
     """The workflow_dispatch inputs for a stored or validated request dict."""
     agency_ids = request.get("agency_ids") or []
     if isinstance(agency_ids, list | tuple):
         agency_ids = ",".join(str(a) for a in agency_ids)
+    bundle_id = str(request["bundle_id"])
     return {
-        "bundle_id": str(request["bundle_id"]),
+        "bundle_id": bundle_id,
         "program_name": str(request["program_name"]),
         "accent": str(request.get("accent") or ""),
         "logo": str(request.get("logo") or ""),
         "agency_ids": str(agency_ids),
         "deliver_to": str(request["deliver_to"]),
         "cadence": str(request.get("cadence") or "one_time"),
+        # Declared in report-bundle.yml with a default, so the workflow change
+        # can reach main before this Lambda is redeployed. The reverse order
+        # would be a 422 on every dispatch.
+        "dispatch_key": dispatch_key(bundle_id),
+        # The date this order was committed to, as the buyer was told it,
+        # carried rather than recomputed in the workflow. Blank for a
+        # subscription refresh, which made no such promise.
+        "promised_by": str(request.get("promised_by") or ""),
     }
 
 
@@ -200,11 +245,17 @@ def price_plans() -> dict[str, str]:
     plans is dropped rather than guessed: a half-configured deploy refuses a
     purchase it cannot place, and never sells more than was paid for.
     """
+    raw = os.environ.get("STRIPE_PRICE_IDS") or "{}"
     try:
-        configured = json.loads(os.environ.get("STRIPE_PRICE_IDS") or "{}")
+        configured = json.loads(raw)
     except ValueError:
+        # Refusing everything is the right behaviour, but doing it silently is
+        # not: from the outside a mangled price map is indistinguishable from
+        # nobody having bought anything. Say so, once per call, in the log.
+        print("STRIPE_PRICE_IDS is not readable JSON; no price is recognised")
         return {}
     if not isinstance(configured, dict):
+        print("STRIPE_PRICE_IDS is not a JSON object; no price is recognised")
         return {}
     plans: dict[str, str] = {}
     ambiguous: set[str] = set()
@@ -215,6 +266,8 @@ def price_plans() -> dict[str, str]:
         if price in plans:
             ambiguous.add(price)
         plans[price] = plan
+    if ambiguous:
+        print(f"STRIPE_PRICE_IDS maps {len(ambiguous)} price id(s) to two plans; dropping them")
     return {price: plan for price, plan in plans.items() if price not in ambiguous}
 
 
@@ -306,9 +359,24 @@ def table(env_name: str) -> Any:
     return boto3.resource("dynamodb", region_name=region).Table(os.environ[env_name])
 
 
-def bundle_row(request: dict[str, Any], *, source: str, session_id: str = "") -> dict[str, Any]:
-    """The capability row for one bundle: who it is for, when it expires."""
-    return {
+def bundle_row(
+    request: dict[str, Any],
+    *,
+    source: str,
+    session_id: str = "",
+    deliver_by_epoch: int | None = None,
+) -> dict[str, Any]:
+    """The capability row for one bundle: who it is for, when it expires, and
+    when it was promised by.
+
+    ``deliver_by_epoch`` is written once, at checkout, and never recomputed.
+    A promise recalculated later is a promise that moves, and this one carries
+    a refund. It is absent on a refresh row on purpose: the two-business-day
+    commitment is made at a purchase, and a subscription's monthly archive is
+    a different promise. A row without it can still be reported undelivered;
+    it simply cannot breach a deadline nobody made.
+    """
+    row = {
         "bundle_id": request["bundle_id"],
         "deliver_to": request["deliver_to"],
         "program_name": request["program_name"],
@@ -317,3 +385,6 @@ def bundle_row(request: dict[str, Any], *, source: str, session_id: str = "") ->
         "created_at": now_iso(),
         "expires_at": epoch_in(DOWNLOAD_DAYS),
     }
+    if deliver_by_epoch is not None:
+        row["deliver_by_epoch"] = int(deliver_by_epoch)
+    return row

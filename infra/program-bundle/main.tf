@@ -9,6 +9,8 @@
 #                               302 to a fifteen-minute presigned S3 URL
 #   POST /webhook               Stripe events -> subscription state
 #   (weekly)                    re-dispatch for active subscriptions
+#   (daily)                     reconcile paid orders that bought nothing and
+#                               report the counts in one GitHub issue
 #
 # Status: written, not yet applied (same posture as infra/compute and
 # infra/instant-score; see infra/README.md). Everything that can charge
@@ -77,7 +79,7 @@ variable "github_repo" {
 }
 
 variable "github_token" {
-  description = "Fine-scoped token with actions: write on the repo (workflow_dispatch only)."
+  description = "Fine-scoped token on this repository. Needs Actions: Read and write to dispatch the fulfilment workflow, and Issues: Read and write for the daily reconciler's standing report. Widening it is an owner action; github_token_can_write_issues is where that is attested."
   type        = string
   sensitive   = true
 }
@@ -150,6 +152,29 @@ variable "stripe_price_ids" {
   }
 }
 
+variable "reconciler_reporting_ready" {
+  description = <<-EOT
+    Turns the daily reconciler's schedule on. False keeps it DISABLED, because a job that
+    finds paid orders and cannot tell anyone is the defect it exists to close, and Terraform
+    cannot check a reporting channel for itself. Before setting it true, confirm both halves:
+
+      1. github_token still carries the fine-grained repository permission
+         "Issues: Read and write" on this repository.
+         Verified present on 2026-09-12 by a differential probe:
+         POST /repos/ChelseaKR/gtfs-scorecard/issues with an empty body answered 422 ("title"
+         wasn't supplied), while the identical request against two other repositories answered
+         403 ("Resource not accessible by personal access token"). The permission gate is
+         checked before the payload on that endpoint, so the 422 is a pass and not merely a
+         malformed request. A bare 422 on its own would have proved nothing.
+      2. The label "program-bundle-reconciler" exists, or the first report fails on it.
+
+    Named for readiness rather than for the token, so the default does not read as a claim
+    that the permission is missing. It is not.
+  EOT
+  type        = bool
+  default     = false
+}
+
 variable "stripe_price_ids_are_live" {
   description = "Set true only after confirming the price ids above were created in live mode. A live key paired with test-mode prices sells nothing and looks like it does."
   type        = bool
@@ -206,8 +231,17 @@ resource "aws_dynamodb_table" "subscriptions" {
 
 # Bundle capabilities: one row per download link, plus `session#` and
 # `checkout#` rows the setup and webhook handlers use for idempotency. TTL
-# expires each row 30 days after creation, in step with the S3 lifecycle rule
-# on program-bundles/ (infra/artifacts) and bundle.DOWNLOAD_DAYS.
+# expires a *capability* row 30 days after creation, in step with the S3
+# lifecycle rule on program-bundles/ (infra/artifacts) and
+# bundle.DOWNLOAD_DAYS. It expires neither of the other two, because neither
+# carries `expires_at`, and the earlier wording here said it expired all
+# three. For `session#` that is deliberate and load-bearing: the claim has to
+# outlive the capability or a replay after 30 days would build a second
+# bundle from one payment (setup_handler._session_row). For `checkout#` it is
+# not deliberate. Those rows hold a buyer's email address and are kept so a
+# checkout with no setup form can be found and helped by hand, which is a
+# support decision with a retention consequence, not an oversight to paper
+# over with a TTL nobody chose; see the note in webhook_handler.
 resource "aws_dynamodb_table" "bundles" {
   name         = "${var.project}-program-bundles"
   billing_mode = "PAY_PER_REQUEST"
@@ -272,7 +306,8 @@ resource "aws_iam_role_policy" "lambda" {
       },
       {
         # Read only, and only the bundle prefix: the download route presigns
-        # exactly one object per capability and nothing else in the bucket.
+        # exactly one object per capability and nothing else in the bucket,
+        # and the reconciler heads one object per capability row.
         Sid      = "Bundles"
         Effect   = "Allow"
         Action   = ["s3:GetObject"]
@@ -347,6 +382,24 @@ resource "aws_lambda_function" "refresh" {
 # ---------------------------------------------------------------------------
 # Front door
 # ---------------------------------------------------------------------------
+
+resource "aws_lambda_function" "reconcile" {
+  function_name    = "${var.project}-program-bundle-reconcile"
+  role             = aws_iam_role.lambda.arn
+  runtime          = "python3.12"
+  handler          = "reconcile_handler.handler"
+  filename         = data.archive_file.package.output_path
+  source_code_hash = data.archive_file.package.output_base64sha256
+  # It heads one S3 object per capability row. A scan of a table this size
+  # plus a few hundred HEADs fits inside a minute; the timeout is there to
+  # stop a wedged call, not to bound the work.
+  timeout     = 120
+  memory_size = 128
+
+  environment {
+    variables = local.common_env
+  }
+}
 
 resource "aws_apigatewayv2_api" "api" {
   name          = "${var.project}-program-bundle"
@@ -446,6 +499,46 @@ resource "aws_lambda_permission" "events" {
   function_name = aws_lambda_function.refresh.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.weekly.arn
+}
+
+# ---------------------------------------------------------------------------
+# Daily reconciliation
+# ---------------------------------------------------------------------------
+
+# The only thing in this stack that looks for orders nobody is handling: a
+# capability row with no archive, a claim that never dispatched, a checkout
+# that never reached the setup form. It reports by opening one GitHub issue
+# carrying counts and a CloudWatch pointer, and nothing identifying, because
+# this repository is public.
+#
+# Disabled until the reporting path is confirmed ready. Terraform cannot check
+# a channel for itself, so the switch is the gate; without it the job would run
+# daily, find paid orders, fail to file them and be exactly the unreachable
+# alerting it was built to replace. The variable's own description carries the
+# two things to confirm before flipping it.
+resource "aws_cloudwatch_event_rule" "daily_reconcile" {
+  name                = "${var.project}-program-bundle-reconcile"
+  description         = "Report paid program orders with no delivered bundle."
+  schedule_expression = "cron(10 15 * * ? *)"
+  state               = var.payments_enabled == "1" && var.reconciler_reporting_ready ? "ENABLED" : "DISABLED"
+}
+
+resource "aws_cloudwatch_event_target" "daily_reconcile" {
+  rule = aws_cloudwatch_event_rule.daily_reconcile.name
+  arn  = aws_lambda_function.reconcile.arn
+}
+
+resource "aws_lambda_permission" "events_reconcile" {
+  statement_id  = "AllowEventBridgeInvokeReconcile"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.reconcile.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.daily_reconcile.arn
+}
+
+output "reconcile_function" {
+  description = "Invoke by hand with {\"dry_run\": true} to see what the daily reconciler would report."
+  value       = aws_lambda_function.reconcile.function_name
 }
 
 output "api_base" {

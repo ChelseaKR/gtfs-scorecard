@@ -148,6 +148,63 @@ jobs:
             exit 1
           fi
 
+      # report-bundle.yml is the program tier's fulfilment step, and every run
+      # of it is an order somebody paid between $149 and $490 for. It is
+      # dispatched, never scheduled, so it has no cadence to go stale against
+      # and no page that looks wrong when it stops: a failed run is invisible
+      # unless someone opens the Actions tab. This asks the only question
+      # that matters about it -- did the last order fail -- and stays red
+      # until a later run succeeds, because an undelivered paid order does
+      # not stop being one after six hours.
+      #
+      # Two shapes this must not confuse:
+      #   * NO completed runs at all is the normal state before the first
+      #     sale, and is not a failure. It is read from an empty list, not
+      #     from an error, which is why the `gh` call is tested for its own
+      #     exit status instead of being wrapped in `|| echo '[]'` -- that
+      #     idiom turns "I could not ask" into "nothing to report".
+      #   * `cancelled` IS a failure here. A job killed by its own
+      #     `timeout-minutes` concludes `cancelled`, never `timed_out` (the
+      #     measurement is in the Daily check above), and this job carries
+      #     `timeout-minutes: 30`. A hundred-agency bundle that outgrows that
+      #     bound is exactly the failure this check exists for, and reading
+      #     only `failure`/`timed_out` would be blind to it. Nothing else
+      #     cancels these runs: report-bundle.yml's concurrency group is
+      #     per-bundle and `cancel-in-progress: false`.
+      #
+      # No `--branch main` filter, unlike the two checks above. The ref these
+      # runs are dispatched on is the setup Lambda's WORKFLOW_REF, which is a
+      # Terraform variable; pinning `main` here would quietly stop watching
+      # paid orders the day that variable changed.
+      - name: The most recent program report bundle run did not fail
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          # stderr goes to its own file rather than into "$latest": merging it
+          # would corrupt the JSON on any call gh decides to warn about.
+          if ! latest=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow report-bundle.yml \
+            --status completed --limit 1 --json conclusion,createdAt 2>"$RUNNER_TEMP/gh-run-list.err"); then
+            echo "::error::Could not read the Program report bundle run list: $(cat "$RUNNER_TEMP/gh-run-list.err"). This check says nothing about paid orders until it can."
+            exit 1
+          fi
+          if [ "$(echo "$latest" | jq 'length')" -eq 0 ]; then
+            echo "no completed Program report bundle runs yet; nothing has been ordered."
+            exit 0
+          fi
+          conclusion=$(echo "$latest" | jq -r '.[0].conclusion // empty')
+          created=$(echo "$latest" | jq -r '.[0].createdAt // empty')
+          echo "most recent completed Program report bundle run: created=$created conclusion=$conclusion"
+          if [ -z "$conclusion" ]; then
+            echo "::error::A completed Program report bundle run reported no conclusion. This check says nothing about paid orders until it can."
+            exit 1
+          fi
+          if [ "$conclusion" = "failure" ] || [ "$conclusion" = "timed_out" ] || [ "$conclusion" = "cancelled" ]; then
+            echo "::error::The most recent completed Program report bundle run ended '$conclusion'. A paid order was not delivered, and the buyer was told the build had started. Re-dispatch report-bundle.yml with that run's inputs."
+            exit 1
+          fi
+
   production-lighthouse:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.schedule == '41 7 * * 0' }}
     runs-on: ubuntu-latest

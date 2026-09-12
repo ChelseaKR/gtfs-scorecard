@@ -22,7 +22,7 @@
     }
   },
   "urls": [
-    "http://127.0.0.1:8080/",
+    {"url": "http://127.0.0.1:8080/", "wait": 2500},
     {"url": "http://127.0.0.1:8080/agencies/", "timeout": 120000},
     "http://127.0.0.1:8080/agency/unitrans/",
     "http://127.0.0.1:8080/agency/unitrans/brief/",
@@ -46,6 +46,11 @@
     "http://127.0.0.1:8080/subscribe.html",
     "http://127.0.0.1:8080/try.html",
     "http://127.0.0.1:8080/fetcher/",
+    {"url": "http://127.0.0.1:8080/bundle/", "wait": 2500},
+    "http://127.0.0.1:8080/bundle/setup/",
+    {"url": "http://127.0.0.1:8080/support/", "wait": 2500},
+    "http://127.0.0.1:8080/tools/",
+    "http://127.0.0.1:8080/program/california/",
     {
       "url": "http://127.0.0.1:8080/app/",
       "wait": 6000

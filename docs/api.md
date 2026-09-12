@@ -10,7 +10,8 @@ file is the start of that.
 
 On the deployed site, artifacts are served under `data/artifacts/`. When the
 CloudFront origin is configured (ADR 0002), the same paths sit under the CDN
-domain. Every path below is relative to that base.
+domain. A path below without a leading slash is relative to that base; a path
+with one is served from the site root.
 
 | Path | What it is |
 | --- | --- |
@@ -24,11 +25,11 @@ domain. Every path below is relative to that base.
 | `rollups/index.json` | Every published program rollup, summarized. |
 | `rollups/<id>.json` | One rollup across many agencies. |
 | `rollups/<id>.csv` | The same rollup's members as a spreadsheet (grade, score, expiry status, top fix) for a liaison's report. |
-| `catalog.json` | Flat list of every agency with grade, feed URL, freshness, identity, and provenance, in one request. |
-| `catalog.csv` | The same catalog as CSV. |
+| `/catalog.json` | Flat list of every agency with grade, feed URL, freshness, identity, and provenance, in one request. |
+| `/catalog.csv` | The same catalog as CSV. |
 | `scoring.json` | Machine-readable methodology: category weights, grade bands, and the correctness severity deductions. |
 | `/api/v1/coverage.json` | Separately named registry, organization-key, published-page, and scored-row counts. |
-| `/schemas/artifact.schema.json`, `/schemas/catalog.schema.json`, `/schemas/directory.schema.json`, `/schemas/coverage.schema.json` | JSON Schemas (Draft 2020-12) for validating the per-agency artifact, catalog, directory, and coverage counts in CI. |
+| `/schemas/artifact.schema.json`, `/schemas/catalog.schema.json`, `/schemas/directory.schema.json`, `/schemas/coverage.schema.json`, `/schemas/rollup.schema.json`, `/schemas/rollup-index.schema.json`, `/schemas/by-location.schema.json`, `/schemas/global-coverage.schema.json` | JSON Schemas (Draft 2020-12) for validating, in CI, the per-agency artifact, the catalog, the directory, the coverage counts, one rollup, the rollup index, the location rollups, and the global-coverage gate. |
 | `/schemas/sync-source-metadata-1.1.schema.json`, `/schemas/sync-source-metadata-1.2.schema.json` | Immutable contracts for catalog-sync provenance sidecars. The original unversioned path remains the frozen 1.1 compatibility schema; new sidecars carry their exact versioned URL and schema digest. |
 
 ## License and attribution
@@ -466,6 +467,7 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | Path | What it is |
 | --- | --- |
 | `api/v1/index.json` | The API's self-description: version, endpoint list, license, attribution. |
+| `api/v1/openapi.yaml` | An OpenAPI 3.1 description of the paths in this document, referencing the JSON Schemas above where one exists. See the OpenAPI section below. |
 | `api/v1/agencies.json` | Every published feed record's latest check in one list (id, name, date, grade, score, rubric and scoring-profile fields, validator version, reader archive profile, feed hash, category scores, days to expiry, and service-horizon review status). `realtime` is null when not measured. |
 | `api/v1/leaderboard.json` | Compatibility path for named changes. `top` and `bottom` are always empty; `most_improved` and `most_declined` compare a canonical feed only with its own prior check under the same rubric, scoring profile, validator, reader archive profile, and measured category set. |
 | `api/v1/by-state.json` | Legacy U.S.-state rollups. `count` covers every U.S. published row in the state; `comparison_eligible_count`, median score, and grade distribution use the guarded comparison cohort. U.S. feeds without a known state group under `Unlocated`. |
@@ -598,6 +600,30 @@ server (ADR 0013). A managed database follows only if interactive multi-tenant
 queries genuinely appear. The decision and trigger are in
 `docs/decisions/0013-static-public-api.md`.
 
+### OpenAPI description (`api/v1/openapi.yaml`)
+
+`api/v1/openapi.yaml` describes the paths in this document in OpenAPI 3.1, so a
+client generator or an API catalogue can read them without parsing prose. It
+describes files, not a server: every operation is a `GET` of a static file,
+and its one server entry is relative, so a fork's copy describes the fork.
+Where a path has a JSON Schema under `/schemas/`, the operation references it
+rather than repeating it. Where none exists, the operation says only that the
+response is a JSON object, and this page stays the contract for its fields.
+
+CI holds the description to this page in both directions: a path documented
+here and not described there fails, and so does a path described there and
+not documented here. CI also checks the description against the official
+OpenAPI 3.1 schema, and checks the golden site's copy of each schema-backed
+path against the schema the description names for it.
+
+Deprecation follows the `v1` rule above, applied to paths. A path the
+description lists is not removed within `v1`. A path being retired is first
+marked `deprecated: true` in the description, with a note naming what
+replaces it, and its removal is a breaking change that lands at `api/v2`. A
+single file under a templated path can still disappear for the reasons the
+HTTP contract below gives, such as a retired agency alias; that is not a
+deprecation.
+
 ## Change feed (`changes/latest.json`)
 
 For consumers that ingest transitions rather than diffing the whole catalog each
@@ -611,7 +637,7 @@ moves could not be audited against rubric, scoring-profile, validator, reader-
 archive-profile, measured-category, and canonical-identity boundaries.
 
 This JSON contract covers grade and score moves only. The Atom feed at
-`changes/feed.xml` is deliberately wider: it also carries `export_change`
+`/changes/feed.xml` (the site root, not the artifact base) is deliberately wider: it also carries `export_change`
 entries, meaning the feed file's own structure moved (a route left the export,
 stops moved past 100 m, the service span shifted) whether or not that changed
 the grade. Those entries are not in this JSON, so a consumer ingesting

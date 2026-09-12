@@ -3,6 +3,18 @@
 **Status:** Accepted (2026-09-01). Infrastructure written, not applied; the
 purchase surface is built, unlinked, and closed.
 
+**Status log, 2026-09-12.** The tier is open: `web/bundle/plan.json` carries
+`paymentsAvailable: true` and four live Stripe Payment Links, and `/bundle/` is
+linked from the shared footer, the landing page, `/about/`, `/data/`,
+`/support/`, `/tools/`, and every `/program/<id>/` rollup. This records what
+happened; it re-decides nothing. The last Consequence below ("the page stays
+unlinked until early October") described a window that the launch and the
+instruction to make the paid options visible have already overtaken, so read it
+as history rather than as a live constraint. Everything the decision itself
+holds fixed — agency-facing free, no price in a template, purchase buys no
+influence, no shaming surface — is unchanged and is now asserted by
+`pipeline/tests/test_paid_tier_visibility.py`.
+
 ## Context
 
 The sustainability plan (`gtfs-scorecard-plans/07-monetization-sustainability.md`)

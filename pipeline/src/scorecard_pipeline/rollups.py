@@ -20,6 +20,7 @@ import io
 import json
 import logging
 from collections import Counter
+from collections.abc import Iterable
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -225,6 +226,25 @@ def _rollup_identity(rollup: Rollup) -> dict[str, Any]:
     return identity
 
 
+def count_shared_fixes(fix_lists: Iterable[Iterable[dict[str, Any]]]) -> list[dict[str, Any]]:
+    """Fixes named in more than one member's top fixes, most shared first.
+
+    Each list is one member's ``top_fixes``; a (code, fix) pair counts once for
+    every entry that names it. Ties keep the order the lists arrive in, so an
+    ordered input gives an ordered output. ``scorecard try --batch`` counts a
+    private cohort with this same function, so the two cannot drift apart.
+    """
+    counter: Counter[tuple[str, str]] = Counter()
+    for fixes in fix_lists:
+        for fix in fixes:
+            counter[(fix.get("code", ""), fix.get("fix", ""))] += 1
+    return [
+        {"code": code, "fix": fix, "agencies": n}
+        for (code, fix), n in counter.most_common()
+        if n > 1
+    ]
+
+
 def build_rollup(
     rollup: Rollup,
     generated_at: dt.datetime,
@@ -360,17 +380,9 @@ def build_rollup(
         agencies=AGENCIES.values() if AGENCIES else None,
     )
     comparable_ids = {str(record["id"]) for record in comparable_records}
-    fix_counter: Counter[tuple[str, str]] = Counter()
-    for agency_id in comparable_ids:
-        for fix in fixes_by_id.get(agency_id, []):
-            fix_counter[(fix.get("code", ""), fix.get("fix", ""))] += 1
+    common = count_shared_fixes(fixes_by_id.get(agency_id, []) for agency_id in comparable_ids)
     scores = [float(m["score"]) for m in comparable_records]
     grades = Counter(str(m["grade"]) for m in comparable_records)
-    common = [
-        {"code": code, "fix": fix, "agencies": n}
-        for (code, fix), n in fix_counter.most_common()
-        if n > 1
-    ]
 
     # Expired feeds are the program's clearest worklist, split the same way the
     # public directory splits them: lapsed (expired within a year, likely still

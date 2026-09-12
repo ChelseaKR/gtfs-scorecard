@@ -30,14 +30,34 @@ function enable(on) {
   }
 }
 
+// The two disabled states say different things depending on whether Stripe
+// put an order reference in the address of this page, because that reference
+// is the evidence that a payment happened. Telling a buyer who has just paid
+// that nothing was charged is the one sentence this page must never say:
+// it is false, and it is the sentence most likely to stop them chasing an
+// order that did go through.
+//
+// Each message is one literal and carries no apostrophes. The l10n ratchet in
+// pipeline/tests/test_l10n_readiness.py counts quoted literals with a regex
+// that an apostrophe inside a double-quoted string derails, and copy split
+// across concatenated fragments can slip past it: written this way the count
+// is honest and the baseline moves on purpose.
 if (!form) {
   // Nothing to wire.
 } else if (!endpoint) {
   enable(false);
-  setStatus("The setup service is not deployed yet, so this form cannot submit. Nothing was charged.", "info");
+  setStatus(
+    sessionId
+      ? "Your payment went through, but the setup service cannot be reached, so this form cannot submit yet. Nothing is lost. Keep the full web address of this page, which carries your order reference, and send it through gtfsscorecard.org/support, or reply to the receipt Stripe emailed you, and the bundle will be set up by hand."
+      : "The setup service is not deployed yet, so this form cannot submit. Nothing has been charged.",
+    "info",
+  );
 } else if (!/^cs_[A-Za-z0-9_]+$/.test(sessionId)) {
   enable(false);
-  setStatus("Open this page from the link Stripe sent you after checkout; it carries your order reference.", "info");
+  setStatus(
+    "This page needs the order reference Stripe adds to its address after checkout, and this address does not carry one. If you have already paid and lost that page, reply to the receipt Stripe emailed you, or write through gtfsscorecard.org/support, and the bundle will be set up by hand. Do not pay again.",
+    "info",
+  );
 } else {
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -47,8 +67,14 @@ if (!form) {
       setStatus("Please give the program name and at least one agency id.", "err");
       return;
     }
+    // A ceiling across every plan, not a promise about the plan this buyer
+    // paid for. The page does not know which price was paid; the server does.
+    // It answers a list over that cap with the limit of the plan bought, before
+    // it consumes the checkout, so the buyer can trim and resend. This number
+    // must equal the largest value in PLAN_AGENCY_CAPS
+    // (infra/program-bundle/common.py); test_bundle_setup_ceiling.py holds it.
     if (ids.split(/[\s,]+/).filter(Boolean).length > 100) {
-      setStatus("A bundle covers at most 100 agencies. Trim the list or buy a second bundle.", "err");
+      setStatus("No bundle covers more than 100 agencies. Trim the list and send it again.", "err");
       return;
     }
     enable(false);
@@ -68,8 +94,14 @@ if (!form) {
       });
       const body = await resp.json().catch(() => ({}));
       if (resp.ok && body.ok) {
+        // `body.promise` is the server's sentence, carrying the date it
+        // computed and stored against this order. It is deliberately not
+        // recomputed here: the two-business-day commitment carries a refund,
+        // and a second implementation of it in another language would
+        // disagree the first time a public holiday fell between them.
+        const promise = typeof body.promise === "string" ? body.promise : "";
         setStatus(
-          "Thank you. Your reports are being generated; the download link goes to the address you gave, and it stays valid for 30 days.",
+          `Thank you. Your reports are being generated and the download link goes to the address you gave. ${promise} The link stays valid for 30 days.`.replace(/\s+/g, " ").trim(),
           "ok",
         );
         return;

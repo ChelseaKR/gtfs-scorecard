@@ -1,6 +1,6 @@
 # Program report bundle: what it is, what it costs, how it turns on
 
-The program tier's first product, built 2026-09-01 and **not launched**. The
+The program tier's first product, built 2026-09-01 and **launched 2026-09-12**. The
 decision behind it is [ADR 0049](decisions/0049-a-checkout-is-the-named-user.md);
 the money rules it lives under are the sustainability plan's
 (`gtfs-scorecard-plans/07-monetization-sustainability.md`, summarized in the
@@ -23,7 +23,7 @@ metric and no new grade. It is packaging, branding, and delivery.
 | --- | --- | --- |
 | Core: validate a request, classify ids against the registry, render each current one through `report.generate_report`, zip with a manifest | `pipeline/src/scorecard_pipeline/bundle.py`; `scorecard bundle`, `scorecard bundle-email` | Built, tested |
 | Fulfilment: on-demand render, upload behind a capability key, email the link | `.github/workflows/report-bundle.yml` | Built; delivery steps gated on Actions variables |
-| Purchase plumbing: post-checkout form (confirms the session is paid, dispatches), download route (presigns per click), Stripe webhook, weekly refresh | `infra/program-bundle/` | Written, **not applied**; `payments_enabled = "0"` |
+| Purchase plumbing: post-checkout form (confirms the session is paid, dispatches), download route (presigns per click), Stripe webhook, weekly refresh, daily reconciler | `infra/program-bundle/` | **Applied and live** 2026-09-12; `payments_enabled = "1"`, `stripe_price_ids_are_live = true`. The daily reconciler is deployed but its schedule is `DISABLED` until its reporting channel lands. |
 | Storage: `program-bundles/<id>/bundle.zip` expires after 30 days | `infra/artifacts/main.tf` lifecycle rule | Written; needs a re-apply of `infra/artifacts` |
 | Pages: plans read from `web/bundle/plan.json`; setup form posts to the API | `web/bundle/`, `web/src/bundle.js`, `web/src/bundle-setup.js` | Built; unlinked, `noindex`, out of the sitemap; `paymentsAvailable: false` |
 | Stripe objects: two products, four prices, four Payment Links | `scripts/stripe-setup.sh` | Script only; nothing created |
@@ -184,8 +184,44 @@ description of what has to be true; the script is how it is done and checked.
    enforced by the setup route from the price that was actually paid for, so
    that purchase is refused in the form with the reason, not quietly trimmed
    and not quietly upgraded.
-7. **The live decision.** Record it here with the date and the reviews it
-   rests on (tax, refund policy, the two-business-day commitment). Then, in
+7. **The live decision.** *Recorded 2026-09-12.* Live mode was opened on this
+   date on Stripe account `acct_1UEJ7fAJdYOJsO05` (verified activated:
+   `charges_enabled`, `payouts_enabled`, `details_submitted`, no outstanding
+   requirements). Four live prices and four Payment Links were created, a
+   restricted key scoped to Checkout Sessions: Read was deployed, a live
+   webhook endpoint was registered, and `infra/program-bundle` was applied
+   with `payments_enabled = "1"` and `stripe_price_ids_are_live = true`.
+   `/bundle/` was published the same day (PR #393, merge `865a6d6e173`).
+
+   **What the date turned on, and what it did not.** The 2026-10-01 date this
+   branch was named for existed to protect a TechCA Emerging Technologies
+   Forum submission that used gtfsscorecard.org as its supporting URL. That
+   submission is not being filed (a work conflict, decided 2026-09-12), so the
+   "no paywall" non-goal it protected was withdrawn rather than overridden.
+   Agency-facing scoring staying free is a separate commitment and is
+   untouched.
+
+   **The three reviews this decision is supposed to rest on are NOT yet
+   recorded**, and this paragraph does not pretend otherwise:
+
+   | Review | State |
+   |---|---|
+   | Tax treatment of the revenue | outstanding |
+   | Refund policy, written down | outstanding |
+   | The two-business-day delivery commitment, reviewed against what the pipeline actually guarantees | outstanding |
+
+   The third is the one with teeth. `/bundle/` tells a buyer delivery is
+   "always within two business days. If it is later than that, the purchase is
+   refunded." As of this date nothing computes that deadline, nothing detects a
+   breach, and refunds are entirely manual: the deployed restricted key cannot
+   issue one by design. The daily reconciler (deployed, `DISABLED`) is what
+   would surface an undelivered order; until its reporting channel lands, a
+   failed delivery is found by a buyer complaining. Treat the commitment as a
+   promise currently kept by hand.
+
+   For reference, the original instruction for this step was: record the date
+   and the reviews it rests on (tax, refund policy, the two-business-day
+   commitment). Then, in
    live mode: `scripts/stripe-setup.sh` again with a *live* key, a live
    restricted key, a live webhook, and an apply with `stripe_price_ids_are_live
    = true`. The precondition refuses a live key paired with unconfirmed
@@ -211,11 +247,89 @@ description of what has to be true; the script is how it is done and checked.
    the public surface until then.
 9. **Ninety days later**, the gate table above.
 
+## The two-business-day promise, and what backs it
+
+`/bundle/` tells a buyer the archive arrives "always within two business days.
+If it is later than that, the purchase is refunded." That is a refund
+liability, so the date behind it is computed rather than believed.
+
+`scorecard_pipeline/deadline.py` is the only thing that decides it. The clock
+starts at Stripe's own record of the payment, not at the moment the setup form
+is submitted, so a buyer who pays on Friday and returns on Monday keeps the
+two days they were promised. Weekends and US federal holidays are not business
+days, and the holidays are computed from their rules rather than listed, so
+there is no year at which the table quietly runs out. The zone is
+America/Los_Angeles, end of day: the buyer's zone is unknown, and choosing one
+and saying so is better than guessing theirs.
+
+The date is computed once, at checkout, and stored on the order. The
+confirmation page prints the sentence the server sends rather than working the
+date out again, and the delivery email states the date the order was promised
+by, so the commitment is checkable by the person it was made to. One
+computation, in one language: a promise worked out twice is a promise that
+will eventually disagree with itself.
+
+An order past that date with no archive is reported by the reconciler as
+`deadline_breached` rather than as `undelivered`, and the issue title says
+`REFUND DUE`. One is a slow build and the other is money owed; they need
+different actions and must not arrive as one number.
+
+Refunds stay manual, by design. The deployed restricted key reads Checkout
+Sessions and cannot refund, and that is the right posture: a credential that
+can move money should not sit in a scheduled job. `scorecard program-refunds`
+runs on the operator's machine with her own AWS credentials, reads the table,
+and prints each breached order with its Stripe reference and the commands that
+would refund it. It runs none of them.
+
+## When an order does not get built
+
+Payment and fulfilment are separate systems, so there is a gap between them
+where a paid order can go quiet. Three ways it happens, and what answers each.
+
+**The dispatch fails.** GitHub is down, the token has lost `actions: write`,
+the workflow file was renamed. The claim records whether a build was ever
+started separately from whether the payment is spoken for, so an order in this
+state is still open: the buyer is told to submit the form again, and the retry
+finishes the same bundle id rather than opening a second order. One payment
+can still only ever produce one bundle.
+
+**The build fails.** `report-bundle.yml` writes an annotation and a run
+summary naming the bundle id, and mails the same facts to `SES_FROM`.
+Re-dispatching with the same inputs is the repair: the archive and the
+download link are both keyed on the bundle id, so the re-run fills the object
+the buyer's existing link already points at. `watchdog.yml` reads that
+workflow's most recent conclusion every six hours as the backstop, and counts
+`cancelled` as a failure because that is what a job killed by its own
+`timeout-minutes` records.
+
+**Nobody comes back.** The buyer pays and closes the tab before the setup
+form, or hits a failed dispatch and never retries. The daily reconciler
+(`infra/program-bundle/reconcile_handler.py`) walks the bundles table and
+reports any capability row older than six hours with no
+`program-bundles/<id>/bundle.zip`, any claim that never dispatched, and any
+`checkout#` row with no matching `session#` row. It refuses rather than
+reports clean when it cannot read a row's timestamp or the bucket will not
+answer.
+
+It reports by keeping one GitHub issue up to date, not by email. The
+operator's own domain has no MX record, so an emailed alert would have been
+delivered nowhere, and a notification that cannot arrive is the same defect
+as no notification. This repository is public, so that issue carries the
+counts and a CloudWatch pointer and nothing else: a bundle id is a download
+capability, and the delivery address, the program name and the agency list
+all describe a paying customer. The detail stays in CloudWatch, which is
+private to the account. The schedule stays disabled until
+`reconciler_reporting_ready` is set, because a reconciler with nowhere to
+report finds things and tells nobody. The dispatch token already carries the
+`Issues: Read and write` permission the design needs; what that switch records
+is that somebody checked, and that the label the report is filed under
+exists.
+
 ## Closing it again
 
 Set `payments_enabled = "0"` and apply: the `/setup` route disappears, the
-weekly refresh rule is disabled, and the download route keeps serving links
-already issued until they expire. Set `paymentsAvailable: false` in
+weekly refresh and daily reconcile rules are disabled, and the download route
+keeps serving links already issued until they expire. Set `paymentsAvailable: false` in
 `plan.json`: the page shows "Not yet available" and no checkout link. Both
 halves are independent and fail closed, the same two-gate shape
 family-greenhouse uses.

@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
+from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -906,7 +907,7 @@ def test_the_watchdog_reads_a_job_timeout_as_a_failure_not_as_silence() -> None:
     workflow = _workflow("watchdog.yml")
     watch = workflow[workflow.index("  watch:") : workflow.index("  production-lighthouse:")]
 
-    for check in ("Daily scorecard", "Realtime monitor"):
+    for check in ("Daily scorecard", "Realtime monitor", "Program report bundle"):
         step_at = watch.index(f"most recent completed {check} run")
         step = watch[step_at : step_at + 1200]
         assert '"$conclusion" = "cancelled"' in step, (
@@ -918,9 +919,213 @@ def test_the_watchdog_reads_a_job_timeout_as_a_failure_not_as_silence() -> None:
     # A check that could not get an answer is not a check that passed. The
     # realtime step refuses an empty conclusion rather than falling through it.
     realtime_at = watch.index("The most recent realtime monitor run did not fail")
-    realtime = watch[realtime_at:]
+    realtime = watch[realtime_at : watch.index("The most recent program report bundle run")]
     assert "--workflow rt-monitor.yml" in realtime
     assert '[ -z "$conclusion" ]' in realtime, (
         "an unreadable run list must be an error, not an implied pass"
     )
     assert "set -euo pipefail" in realtime
+
+
+# ---------------------------------------------------------------------------
+# report-bundle.yml: the download capability must not reach a public surface
+# ---------------------------------------------------------------------------
+
+# The bundle id IS the download credential: infra/program-bundle/setup_handler.py
+# says so in terms ("the capability in the email is the credential"), and its
+# download route checks the id's shape and nothing else. This repository is
+# public, so anything GitHub renders about a run is a publication.
+#
+# `deliver_to` rides along because it is a buyer's email address.
+CAPABILITY_INPUTS = ("bundle_id", "deliver_to")
+
+# Measured unauthenticated on 2026-09-12, which is why this list is these
+# entries and not a guess:
+#   * artifact name  -- LEAKED. GET /repos/.../actions/runs/<id>/artifacts with
+#     no token returned `program-bundle-<32 hex>` for both existing runs, the
+#     same string renders on the run page, and the id worked as a download
+#     credential against the live API (302 vs 404 for a never-issued id).
+#   * dispatch inputs -- not exposed. Absent from the run object, the jobs and
+#     steps API, the run page HTML and the job page HTML.
+#   * run logs -- not exposed. The REST logs endpoint answers 403 "Must have
+#     admin rights to Repository" even on this public repository.
+# Annotations, step summaries, job and step names and the concurrency group are
+# in the list because they are rendered surfaces, whether or not a particular
+# one was observable on a run that never produced them.
+
+
+def _steps(workflow: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
+    return [(job, step) for job, spec in workflow["jobs"].items() for step in spec.get("steps", [])]
+
+
+def _protected_env(step: dict[str, Any]) -> set[str]:
+    """Shell variable names in this step that carry a capability input."""
+    return {
+        name
+        for name, value in (step.get("env") or {}).items()
+        if any(f"inputs.{field}" in str(value) for field in CAPABILITY_INPUTS)
+    }
+
+
+def _rendered_lines(run: str) -> list[str]:
+    """Lines of a run block whose text GitHub shows on the run page.
+
+    A workflow command becomes an annotation; an `echo` inside a step that
+    writes `$GITHUB_STEP_SUMMARY` becomes the run summary. Both are read by
+    anybody who can open the run, which for a public repository is anybody.
+    """
+    lines = run.splitlines()
+    writes_summary = any("$GITHUB_STEP_SUMMARY" in line for line in lines)
+    return [
+        line
+        for line in lines
+        if any(cmd in line for cmd in ("::error", "::warning", "::notice"))
+        or (writes_summary and re.search(r"\b(echo|printf)\b", line))
+    ]
+
+
+def _report_bundle() -> dict[str, Any]:
+    import yaml
+
+    loaded: dict[str, Any] = yaml.safe_load(_workflow("report-bundle.yml"))
+    return loaded
+
+
+def test_the_concurrency_group_does_not_name_the_download_capability() -> None:
+    """Part of the regression guard for the leak found on 2026-09-12.
+
+    A concurrency expression cannot hash anything, so the only way to keep
+    per-bundle grouping without naming the bundle is a key derived by the
+    dispatcher. Grouping has to stay per bundle: one shared group would make
+    two buyers' builds queue, and GitHub keeps a single pending run per group,
+    so a third arrival would evict a queued paid order.
+    """
+    workflow = _report_bundle()
+    for field in ("name", "run-name"):
+        value = str(workflow.get(field) or "")
+        for capability in CAPABILITY_INPUTS:
+            assert f"inputs.{capability}" not in value, f"{field} publishes {capability}"
+
+    group = str((workflow.get("concurrency") or {}).get("group") or "")
+    assert group, "report-bundle.yml must keep a concurrency group"
+    for capability in CAPABILITY_INPUTS:
+        assert f"inputs.{capability}" not in group, f"the concurrency group names {capability}"
+    assert "inputs.dispatch_key" in group, "grouping must stay per bundle, via the derived key"
+
+
+def test_no_rendered_field_of_a_step_names_the_download_capability() -> None:
+    """The artifact name is a `with:` value, and that is how this leaked:
+    every run published `program-bundle-<the 32-hex capability>` to anyone
+    reading the Actions tab."""
+    workflow = _report_bundle()
+    for job, step in _steps(workflow):
+        rendered = [str(step.get("name") or ""), str(step.get("if") or "")]
+        rendered += [str(value) for value in (step.get("with") or {}).values()]
+        for value in rendered:
+            for capability in CAPABILITY_INPUTS:
+                assert f"inputs.{capability}" not in value, (
+                    f"{job}/{step.get('name')} publishes {capability} in a rendered field: {value}"
+                )
+
+
+def test_a_capability_reaches_a_shell_only_through_env() -> None:
+    """So that the check below has a variable name to look for. An input
+    interpolated straight into a command can be echoed by accident and no
+    rule can see it coming."""
+    workflow = _report_bundle()
+    for job, step in _steps(workflow):
+        run = str(step.get("run") or "")
+        for capability in CAPABILITY_INPUTS:
+            assert f"inputs.{capability}" not in run, (
+                f"{job}/{step.get('name')} interpolates {capability} into a shell command; "
+                "pass it through env:"
+            )
+
+
+def test_nothing_the_run_prints_carries_the_download_capability() -> None:
+    """Annotations and the run summary are rendered on the run page, which on
+    a public repository means published. This is the rule that stops the leak
+    coming back through a helpful error message rather than through a name."""
+    workflow = _report_bundle()
+    for job, step in _steps(workflow):
+        protected = _protected_env(step)
+        for line in _rendered_lines(str(step.get("run") or "")):
+            for name in protected:
+                assert name not in line, (
+                    f"{job}/{step.get('name')} writes {name} into an annotation or the run "
+                    f"summary, which is public: {line.strip()}"
+                )
+
+
+def test_the_watchdog_watches_the_workflow_that_delivers_paid_orders() -> None:
+    """report-bundle.yml fulfils a purchase, and nothing else notices it fail.
+
+    It is dispatched rather than scheduled, so there is no cadence for a
+    staleness check to bite on and no published page that looks wrong when it
+    stops. A failed run means a buyer paid, was told the build had started,
+    and will receive nothing -- visible only to somebody who opens the
+    Actions tab.
+
+    The two conclusions this check has to keep apart are the point of it:
+    an empty run list is the normal state before the first sale and must
+    pass, while a `gh` call that could not answer must fail. The
+    `|| echo '[]'` idiom the other two steps use cannot tell them apart, so
+    this one reads `gh`'s own exit status instead.
+    """
+    workflow = _workflow("watchdog.yml")
+    watch = workflow[workflow.index("  watch:") : workflow.index("  production-lighthouse:")]
+    step_at = watch.index("The most recent program report bundle run did not fail")
+    step = watch[step_at:]
+
+    assert "--workflow report-bundle.yml" in step
+    assert "set -euo pipefail" in step
+    assert "if ! latest=$(gh run list" in step, (
+        "the call's own failure must be distinguishable from an empty result"
+    )
+    assert "Could not read the Program report bundle run list" in step
+    assert "jq 'length'" in step and "-eq 0" in step, (
+        "a repository with no completed bundle runs has sold nothing and is healthy"
+    )
+    assert '[ -z "$conclusion" ]' in step, (
+        "an unreadable run list must be an error, not an implied pass"
+    )
+
+
+def test_a_failed_paid_bundle_run_says_so_without_naming_the_order() -> None:
+    """The failure of a paid fulfilment run has to be visible, and the way it
+    is made visible has to be one that works.
+
+    A failed render used to leave no trace anybody reads: the setup form had
+    already told the buyer the build was starting, the delivery email only
+    exists on the success path, and the capability row is removed by its
+    30-day TTL.
+
+    Two rules hold the repair. The annotation and summary are public, so they
+    carry no bundle id -- the generic rules above forbid it and this pins the
+    arrangement. And there is no alert email: the address this step used to
+    mail is on a domain with no MX record, so it was delivered nowhere, and a
+    notification that cannot arrive is the same defect as no notification. The
+    channels that do work are watchdog.yml, which reads this workflow's
+    conclusion every six hours, and the daily reconciler's issue.
+    """
+    workflow = _workflow("report-bundle.yml")
+    assert "if: ${{ failure() }}" in workflow, (
+        "a run that fulfils a paid order must say so when it fails"
+    )
+    say_at = workflow.index("Say that a paid order failed")
+    say = workflow[say_at : workflow.index("      - name: Keep the archive on the run")]
+    assert "::error::" in say
+    assert "$GITHUB_STEP_SUMMARY" in say
+    assert "this log is public" in say, "the reason the order is not named belongs next to it"
+    assert "aws ses send-email" not in say, (
+        "the alert address has no MX record, so mailing it is alerting that reaches nobody"
+    )
+
+    # And nowhere else in this workflow either. The one send that remains is
+    # the delivery email, which goes to the buyer's own address on the success
+    # path; an alert to the sending identity is the shape this forbids.
+    for block in workflow.split("      - name: "):
+        if "send-email" in block or "bundle-email" in block:
+            assert '--to "$SES_FROM"' not in block, (
+                "mailing the sending identity is a send that succeeds and a delivery that does not"
+            )
