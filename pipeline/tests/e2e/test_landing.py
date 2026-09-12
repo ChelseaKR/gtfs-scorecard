@@ -300,6 +300,10 @@ def test_landing_shows_every_plan_price_read_from_plan_json(page: Page, base_url
     assert plan["paymentsAvailable"] is True, "this test describes the tier while it is open"
     page.goto(f"{base_url}/")
 
+    # plan-summary.js stamps the root element when it has finished reading the
+    # plan, which is what tells "the tier is off" apart from "the fetch has not
+    # landed yet" — two states that look identical in a screenshot.
+    expect(page.locator("html")).to_have_attribute("data-plan-summary", "rendered")
     tiles = page.locator("#programs .plan-tile")
     expect(tiles).to_have_count(len(plan["products"]))
     for key, product in plan["products"].items():
@@ -336,6 +340,7 @@ def test_landing_never_shows_a_stale_price_when_the_plan_cannot_be_read(
     """An unreadable plan must leave no amount standing anywhere on the page."""
     page.route("**/bundle/plan.json", lambda route: route.fulfill(status=500, body=""))
     page.goto(f"{base_url}/")
+    expect(page.locator("html")).to_have_attribute("data-plan-summary", "unavailable")
     expect(page.locator("#programs [data-plan-status]")).to_contain_text(
         "Paid bundles are not available right now"
     )
