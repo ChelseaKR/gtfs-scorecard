@@ -128,6 +128,10 @@ be added through `registry/intake.yaml`.
   both. Scoring is free for every agency and stays that way; the
   [support page](https://gtfsscorecard.org/support/) explains what running the
   service costs, what sponsorship would pay for, and what it never buys.
+- **Report on every agency you support:** the program rollups
+  (`/program/<state>/`) are free; the paid
+  [program report bundle](https://gtfsscorecard.org/bundle/) packages a branded
+  board report per agency into one archive.
 
 ## What an agency gets
 
@@ -292,6 +296,25 @@ Any agency with a public GTFS feed can be added with one YAML block in
 [`web/submit.html`](web/submit.html) does the same without YAML through the
 deployed `infra/submit` endpoint; every submission still opens a pull request
 for human review before publication.
+
+## What is free, and the one paid thing
+
+Everything an agency needs for its own feed is free and stays free: its
+scorecard, the prioritized fixes, the history, the printable board one-pager,
+the self-contained board report it can hand to a board or attach to a grant
+application, the badge, the open data, and the read API. No account and no
+payment is involved anywhere in that path.
+
+One thing costs money. A program that prepares packets for many agencies at
+once (a state DOT, a technical-assistance center, a feed vendor, a consultancy)
+can buy the **program report bundle**: a single archive holding a board report
+for every agency id it names, carrying the program's own name, logo, and accent
+color on each cover, refreshed monthly if it wants. Plan sizes, prices,
+delivery terms, and the refund commitment live on the
+[bundle page](https://gtfsscorecard.org/bundle/), which reads them from the
+live plan data; they are not copied into this file, where they would go stale.
+A purchase buys no influence over grades, methodology, or which agencies are
+listed, and nothing was subtracted from the free tier to create the bundle.
 
 ## Support and sponsorship
 
