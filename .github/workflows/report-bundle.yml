@@ -57,12 +57,35 @@ on:
         default: "one_time"
         type: choice
         options: [one_time, monthly]
+      dispatch_key:
+        description: "sha256(bundle_id) truncated; groups this bundle's runs without naming it"
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
 
+# `bundle_id` is the download capability (see infra/program-bundle/setup_handler.py:
+# "the capability in the email is the credential"), and this repository is public.
+# It must not appear in any string GitHub may render on a run page. That rules it
+# out here and in the artifact name below, and a concurrency expression cannot
+# hash anything, so the dispatcher supplies `dispatch_key` -- sha256 of the bundle
+# id, truncated -- instead.
+#
+# Grouping still has to be per bundle rather than global. A single group would
+# make two buyers' builds queue, and GitHub keeps only ONE pending run per group:
+# a third arrival evicts the queued one, which here is a paid order dropped in
+# silence. Scoped to one bundle, that eviction can only ever drop a duplicate run
+# of the same build.
+#
+# The `|| github.run_id` fallback is for a hand dispatch, and for the window
+# between this workflow reaching main and the Lambda being redeployed to send the
+# key. It degrades to "no grouping", never to "one shared group": no grouping
+# risks two identical runs writing one S3 key, which is harmless, while a shared
+# group risks losing an order.
 concurrency:
-  group: report-bundle-${{ inputs.bundle_id }}
+  group: report-bundle-${{ inputs.dispatch_key || github.run_id }}
   cancel-in-progress: false
 
 jobs:
@@ -220,11 +243,18 @@ jobs:
             echo "set for delivery; the archive is attached to this run instead (30-day retention)."
           } >> "$GITHUB_STEP_SUMMARY"
 
+      # The artifact name is public. Measured 2026-09-12 against the two runs
+      # that existed: an unauthenticated GET of
+      # /repos/ChelseaKR/gtfs-scorecard/actions/runs/<id>/artifacts returned
+      # `program-bundle-<the 32-hex bundle id>`, the same string renders on the
+      # run page, and GET <api>/download/<that id> answered 302 to a presigned
+      # S3 URL while a never-issued id answered 404. The name was a working
+      # download credential for anyone reading the Actions tab.
       - name: Keep the archive on the run
         if: ${{ always() }}
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
-          name: program-bundle-${{ inputs.bundle_id }}
+          name: program-bundle-${{ inputs.dispatch_key || github.run_id }}
           path: |
             pipeline/bundle.zip
             pipeline/manifest.json
