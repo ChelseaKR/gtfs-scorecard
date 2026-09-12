@@ -41,7 +41,7 @@
 </head>
 <body>
     <a class="skip-link" href="#main">Skip to main content</a>
-  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/app/#/?view=features"><span class="pip" aria-hidden="true"></span>Feed features</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
+  <header class="site-header"><div class="wrap"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">GTFS&nbsp;Scorecard</span></a><button class="nav-menu-btn" type="button" aria-expanded="false" aria-controls="nav-cluster"><span aria-hidden="true">☰</span> Menu</button><div class="nav-cluster" id="nav-cluster"><nav class="nav-stops" aria-label="Primary"><a class="nav-stop" href="/agencies/"><span class="pip" aria-hidden="true"></span>Find an agency</a><a class="nav-stop" href="/pulse/"><span class="pip" aria-hidden="true"></span>Coverage</a><a class="nav-stop" href="/app/#/?view=features"><span class="pip" aria-hidden="true"></span>Feed features</a><a class="nav-stop" href="/tools/"><span class="pip" aria-hidden="true"></span>Tools</a><a class="nav-stop" href="/how-to-read/"><span class="pip" aria-hidden="true"></span>How it works</a><a class="nav-stop" href="/about/" aria-current="true"><span class="pip" aria-hidden="true"></span>About</a></nav><div id="theme-control"></div></div></div></header>
 
   <main id="main" class="wrap wrap-wide" tabindex="-1">
     <a class="backlink" href="/support/">&larr; Support</a>
@@ -54,7 +54,22 @@
 
     <p id="plan-notice" class="form-status" role="status" aria-live="polite" hidden></p>
 
-    <div id="plan-grid" class="support-paths" role="group" aria-label="Plans">
+    <ul class="buy-terms">
+      <li><strong>What arrives:</strong> one self-contained board report per agency id you name,
+      in a single archive, with a manifest that accounts for every id you asked for.</li>
+      <li><strong>Your branding:</strong> your program's name, logo, and accent color on every
+      cover.</li>
+      <li><strong>When it arrives:</strong> normally within the hour, always within two
+      business days. If it is later than that, the purchase is refunded. That is a commitment,
+      not an estimate.</li>
+      <li><strong>How long the link lives:</strong> 30 days. A monthly plan sends a fresh archive
+      and a fresh link each month until you cancel from the receipt Stripe emailed you.</li>
+      <li><strong>What it does not change:</strong> nothing. Grades, methodology, and which
+      agencies are listed are not for sale, and an agency's own report stays free.</li>
+    </ul>
+
+    <h2 class="section-title" id="plans-h">Plans and prices</h2>
+    <div id="plan-grid" class="support-paths" role="group" aria-labelledby="plans-h">
       <noscript><p>Plans are read from the server. Enable scripting to see whether any are
       available; nothing is for sale from this page without it.</p></noscript>
     </div>
@@ -150,6 +165,14 @@
             <li><a href="/query/">Query the dataset</a></li>
             <li><a href="/data/">Open data</a></li>
           </ul>
+        </section>
+        <section aria-labelledby="footer-programs-h">
+          <h2 id="footer-programs-h">For programs</h2>
+          <ul>
+            <li><a href="/program/all/">Program rollups</a></li>
+            <li><a href="/bundle/">Board report bundle (paid)</a></li>
+          </ul>
+          <p class="footer-aside">Scoring an agency is free. A purchase buys no influence over grades, methodology, or which agencies are listed.</p>
         </section>
         <section aria-labelledby="footer-project-h">
           <h2 id="footer-project-h">Project</h2>

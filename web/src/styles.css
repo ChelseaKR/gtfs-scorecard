@@ -343,8 +343,14 @@ a:hover { color: var(--green-bright); }
 }
 .support-path p { margin-block: 0 0.75rem; }
 .support-path > :last-child { margin-bottom: 0; }
+/* The plan grid is the one place these cards are a set of like things, so its
+   buy buttons sit on one baseline instead of staggering by how long each
+   plan's label wrapped. Scoped to that grid: on /support/ the paths differ in
+   length on purpose, and bottom-aligning them strands a control in white space. */
+#plan-grid .support-path { display: flex; flex-direction: column; }
+#plan-grid .support-path > :last-child { margin-top: auto; }
 @media (min-width: 64rem) {
-  .support-paths { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .support-paths { grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); }
 }
 
 /* Sponsor tiers on /support/: a definition list so each amount is announced
@@ -627,8 +633,14 @@ a:hover { color: var(--green-bright); }
 }
 .footer-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.5rem clamp(1.4rem, 3vw, 3rem);
+}
+/* Five sections since "For programs" joined the footer. Below this width three
+   columns read better than five squeezed ones; the 760px and 340px rules below
+   step it down further and, not overlapping this query, are unaffected by it. */
+@media (min-width: 64rem) {
+  .footer-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); }
 }
 .footer-grid section { min-width: 0; }
 .footer-grid h2 {
@@ -648,6 +660,12 @@ a:hover { color: var(--green-bright); }
   font-size: 0.68rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+.footer-grid .footer-aside {
+  margin: 0.7rem 0 0;
+  color: #bcccbd;
+  font-size: 0.78rem;
+  line-height: 1.45;
 }
 .footer-grid a {
   width: fit-content;
@@ -2480,6 +2498,58 @@ main:focus { outline: none; }
   font-family: var(--font-mono);
   font-weight: 600;
 }
+
+/* The compact tier summary plan-summary.js renders on pages that are not
+   /bundle/. Text only, no checkout control: the buy links stay on the page
+   that states delivery, refund, and what a purchase does not buy. */
+.plan-tiles {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0 0 0.9rem;
+  padding: 0;
+  list-style: none;
+}
+.plan-tile {
+  min-width: 0;
+  padding: 0.8rem 0.9rem;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+}
+.plan-tile-kicker {
+  margin: 0 0 0.2rem;
+  color: var(--green);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.plan-tile-name {
+  margin: 0 0 0.3rem;
+  font-size: 0.92rem;
+  line-height: 1.3;
+}
+.plan-tile-price {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.plan-summary-status { margin: 0 0 0.75rem; font-size: 0.88rem; }
+
+/* The terms a buyer needs before the checkout links, not after them. */
+.buy-terms {
+  margin: 0 0 1.5rem;
+  padding: 1rem 1.15rem;
+  background: var(--card);
+  border: 1.5px solid var(--line);
+  border-inline-start: 5px solid var(--green);
+  border-radius: var(--radius);
+  list-style: none;
+}
+.buy-terms li { margin: 0 0 0.55rem; }
+.buy-terms li:last-child { margin-bottom: 0; }
 
 
 /* The browser's default file picker is only about 22px tall on mobile. Keep

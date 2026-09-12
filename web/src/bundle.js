@@ -95,7 +95,7 @@ function render(plan) {
   }
   if (plan.paymentsAvailable === true) {
     setNotice(
-      `Checkout is open. After paying you set the program name, accent, logo, and the agency ids your plan covers, and the archive is emailed within ${plan.provisioning_business_days || 2} business days.`,
+      `Checkout is open. After paying you set the program name, accent, logo, and the agency ids your plan covers, and the archive is emailed within ${plan.provisioning_business_days || 2} business days — refunded if it is later than that.`,
       "info",
     );
   } else {
