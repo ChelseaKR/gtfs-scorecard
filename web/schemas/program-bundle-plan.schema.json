@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gtfsscorecard.org/schemas/program-bundle-plan.schema.json",
+  "title": "GTFS Scorecard program report bundle plan",
+  "description": "What /bundle/plan.json may say. This is the only document on the site that carries a price and a checkout link, and web/src/bundle.js renders the buy controls from it client-side, so nothing in the served HTML shows a malformed plan. Top level is closed (additionalProperties: false) so a new field cannot reach the page without a schema update, the same enforcement point as artifact.schema.json. The prices themselves are not pinned here: they are a hand-set hypothesis recorded in docs/program-plan.md and scripts/stripe-setup.sh, and their agreement across those three files is gated by pipeline/tests/test_bundle_plan_contract.py rather than by this contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "paymentsAvailable",
+    "currency",
+    "provisioning_business_days",
+    "max_agencies",
+    "products"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "paymentsAvailable": {
+      "description": "Whether the page may offer checkout at all. False renders every plan as \"Not yet available\"; true is a claim that each product below can actually be bought, which the conditional at the foot of this schema enforces.",
+      "type": "boolean"
+    },
+    "currency": {
+      "description": "ISO 4217 alphabetic code, upper case. bundle.js hands it to Intl.NumberFormat, which throws on anything else and silently falls back to \"<amount> <currency>\".",
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "provisioning_business_days": {
+      "description": "The refund-backed delivery promise the page prints. A zero or a negative would publish a promise nobody can keep.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "max_agencies": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "products": {
+      "description": "Exactly the four knobs docs/program-plan.md names and scripts/stripe-setup.sh creates. Closed in both directions: a missing key is a plan the page cannot render, and an extra key is a product nothing on the Stripe side backs.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bundle_25",
+        "bundle_100",
+        "refresh_mo",
+        "refresh_yr"
+      ],
+      "properties": {
+        "bundle_25": {
+          "$ref": "#/$defs/oneTimeProduct"
+        },
+        "bundle_100": {
+          "$ref": "#/$defs/oneTimeProduct"
+        },
+        "refresh_mo": {
+          "$ref": "#/$defs/monthlyProduct"
+        },
+        "refresh_yr": {
+          "$ref": "#/$defs/yearlyProduct"
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "description": "paymentsAvailable: true is a claim about every product, not about the page. bundle.js renders a buy control only where price is a number and checkout_url is truthy, so a null in either field ships a card reading \"Not yet available\" under a banner reading \"Checkout is open\" — an absence rendered as an offer. Either every product is sellable or the tier is off.",
+      "if": {
+        "properties": {
+          "paymentsAvailable": {
+            "const": true
+          }
+        },
+        "required": [
+          "paymentsAvailable"
+        ]
+      },
+      "then": {
+        "properties": {
+          "products": {
+            "$ref": "#/$defs/everyProductSellable"
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "label": {
+      "type": "string",
+      "minLength": 1
+    },
+    "price": {
+      "description": "Whole units of the plan currency, not cents: bundle.js formats it with Intl.NumberFormat. Null means the product is not for sale, which paymentsAvailable: true forbids.",
+      "type": [
+        "number",
+        "null"
+      ],
+      "exclusiveMinimum": 0
+    },
+    "checkoutUrl": {
+      "description": "A Stripe Payment Link, or null when the product is not for sale. Restricted to buy.stripe.com because bundle.js accepts any https URL, so a typo'd or substituted host would render as a working buy button. Test-mode links (buy.stripe.com/test_...) are refused: the committed file is what the live page serves, and a test link there collects nothing.",
+      "type": [
+        "string",
+        "null"
+      ],
+      "pattern": "^https://buy\\.stripe\\.com/[A-Za-z0-9_-]+$",
+      "not": {
+        "type": "string",
+        "pattern": "^https://buy\\.stripe\\.com/test_"
+      }
+    },
+    "oneTimeProduct": {
+      "description": "A one-off archive. interval must be null: bundle.js prints \"per <interval>\" whenever the field is truthy, so a stray value here advertises a subscription the Stripe price does not create.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "price",
+        "interval",
+        "checkout_url"
+      ],
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/label"
+        },
+        "price": {
+          "$ref": "#/$defs/price"
+        },
+        "interval": {
+          "const": null
+        },
+        "checkout_url": {
+          "$ref": "#/$defs/checkoutUrl"
+        }
+      }
+    },
+    "monthlyProduct": {
+      "description": "Pinned to \"month\" rather than merely \"a non-empty string\": the interval is what the page bills the buyer, and swapping it for \"year\" on a monthly Stripe price prints $49 a year over a subscription that charges monthly.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "price",
+        "interval",
+        "checkout_url"
+      ],
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/label"
+        },
+        "price": {
+          "$ref": "#/$defs/price"
+        },
+        "interval": {
+          "const": "month"
+        },
+        "checkout_url": {
+          "$ref": "#/$defs/checkoutUrl"
+        }
+      }
+    },
+    "yearlyProduct": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "price",
+        "interval",
+        "checkout_url"
+      ],
+      "properties": {
+        "label": {
+          "$ref": "#/$defs/label"
+        },
+        "price": {
+          "$ref": "#/$defs/price"
+        },
+        "interval": {
+          "const": "year"
+        },
+        "checkout_url": {
+          "$ref": "#/$defs/checkoutUrl"
+        }
+      }
+    },
+    "everyProductSellable": {
+      "description": "Applied to products as a whole, with no properties of its own, so additionalProperties reaches all four keys rather than only unlisted ones.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "price",
+          "checkout_url"
+        ],
+        "properties": {
+          "price": {
+            "type": "number"
+          },
+          "checkout_url": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

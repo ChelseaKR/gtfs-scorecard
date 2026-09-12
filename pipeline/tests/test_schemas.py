@@ -152,6 +152,9 @@ def test_a_schema_exists_for_every_published_document_type() -> None:
         "sync-source-metadata.schema.json",
         "sync-source-metadata-1.1.schema.json",
         "sync-source-metadata-1.2.schema.json",
+        # /bundle/plan.json: the only published document that carries a price and a
+        # checkout link. Its own invariants live in tests/test_bundle_plan_contract.py.
+        "program-bundle-plan.schema.json",
     } <= names
 
 
