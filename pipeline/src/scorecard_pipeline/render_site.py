@@ -4984,8 +4984,40 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     )
 
 
-# Program rollups are the one generated page family that names the paid tier in
-# its body, and the reasoning is the placement rule, not the conversion rate.
+# The independence promise, in the words /support/, /bundle/, the shared footer,
+# and ADR 0049 already use. Every surface that names the paid tier repeats this
+# sentence rather than paraphrasing it, so a reader who meets the offer on a
+# second page meets the same promise, and changing the promise stays one edit.
+_BUNDLE_INDEPENDENCE = (
+    "A purchase buys no influence over grades, methodology, or which agencies are listed."
+)
+
+# The other half of that promise: what stays free however much anyone spends.
+_BUNDLE_FREE_NOTE = (
+    "Scoring is free for every agency, and each agency keeps a free, printable board "
+    "one-pager on its own page."
+)
+
+
+def _bundle_pointer(lead: str, anchor: str) -> str:
+    """One paragraph pointing a program-audience page at the paid bundle.
+
+    Placement rule, same as ``_ROLLUP_BUNDLE_SECTION`` below: this belongs on a
+    page about a group of feeds, or about setting a standard for one, and never
+    beside a single agency's grade. ``lead`` says why the reader of that page
+    would want it and ``anchor`` is the link text, varied per page so the site
+    does not repeat one sentence at every turn. Both are authored markup, not
+    data, and the price stays on /bundle/ where plan.json owns it.
+    """
+    return (
+        f'<p class="fineprint">{lead} A program can '
+        f'<a href="/bundle/">{anchor}</a>, with prices on that page. '
+        f"{_BUNDLE_FREE_NOTE} {_BUNDLE_INDEPENDENCE}</p>"
+    )
+
+
+# Program rollups are the generated page family that names the paid tier most
+# fully, and the reasoning is the placement rule, not the conversion rate.
 # The tier is for people who manage many agencies at once; this page is the view
 # those people already use. An agency's own scorecard, its call brief, and its
 # board report are the free product and stay clean: no price appears beside a
@@ -4997,9 +5029,8 @@ _ROLLUP_BUNDLE_SECTION = (
     "<p>Every agency listed above has a free, printable board one-pager on its own page, and "
     "always will. A program that needs all of them at once can "
     '<a href="/bundle/">buy them as one archive</a>, branded with its own name and logo and '
-    "refreshed monthly if it wants. Prices are on that page. A purchase buys no influence over "
-    "grades, methodology, or which agencies are listed, and the archive contains the same "
-    "numbers published here.</p>"
+    "refreshed monthly if it wants. Prices are on that page. "
+    f"{_BUNDLE_INDEPENDENCE} The archive contains the same numbers published here.</p>"
     "</section>"
 )
 
@@ -6822,6 +6853,14 @@ def _render_pulse_page(
         '<a href="#changes">What changed</a> · '
         '<a href="#trend">The trend</a> · <a href="/problems/">Common problems</a></nav>'
     )
+    # This page reads the corpus rather than one feed, so the reader is usually
+    # someone who supports a set of agencies. Send them to the free per-program
+    # view first, and name the paid archive after it.
+    program_pointer = _bundle_pointer(
+        "Following a group of agencies rather than one? The "
+        '<a href="/program/all/">program rollups</a> group these same numbers by program.',
+        "collect that group's board reports into one archive",
+    )
     body = f"""    {_breadcrumb([("Home", "/"), ("Coverage overview", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Coverage overview.</h1>
@@ -6849,7 +6888,8 @@ def _render_pulse_page(
     <p class="plain-summary"><strong>In plain words:</strong> this page tracks the covered
     corpus at once, not any single agency. The <a href="/problems/">most common
     problems</a> page names the recurring fixes behind these numbers. Writing about
-    this data? <a href="/press/">Start with the reporter's page.</a></p>"""
+    this data? <a href="/press/">Start with the reporter's page.</a></p>
+    {program_pointer}"""
     body = "\n".join(line.rstrip() for line in body.splitlines())
     return _page(
         title="Coverage overview — GTFS Scorecard",
@@ -9808,6 +9848,14 @@ def _render_procurement() -> str:
     rather than a failure to catch after the fact."""
     canonical = f"{BASE_URL}/procurement/"
     repo = "https://github.com/ChelseaKR/gtfs-scorecard"
+    # The reader who writes one contract often writes several: this page is a
+    # standard-setting surface for state programs and the consultancies they
+    # hire, which is the bundle's audience rather than a single agency's.
+    program_pointer = _bundle_pointer(
+        "Setting this bar for more than one agency, as a state program, a "
+        "technical-assistance center, or a consultancy?",
+        "order every agency's board report as one archive",
+    )
     clause = (
         "The vendor shall deliver a GTFS Schedule feed that produces zero errors from the "
         "current MobilityData canonical GTFS validator; includes a feed_info.txt with a "
@@ -9865,6 +9913,8 @@ def _render_procurement() -> str:
     where the feed stands today, add a <a href="{repo}/blob/main/docs/ci-action.md">GTFS
     Scorecard check</a> to a build so a bad feed fails before it publishes, or
     <a href="/try.html">request a one-off score</a> through the GitHub-backed path.</p></section>
+
+    {program_pointer}
 
     <p class="fineprint">This is sample language to adapt, not legal advice. Check it against
     your agency's procurement rules.</p>""",
@@ -10445,6 +10495,17 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # the causally neutral band purely additive (EXP-03).
     effort_bands = _load_effort_bands()
     written: list[Path] = []
+    # The hand-authored pages, which this render lists but does not write. They
+    # carry no <lastmod>, and that is a decision rather than an omission: a
+    # truthful one would have to come from when the file last changed, and no
+    # source for that is deterministic here. Their mtime is checkout time, the
+    # publish workflows check out at depth 1 so `git log -- <path>` is empty for
+    # almost every file, and the render date would restate "today" on pages that
+    # have not changed in months. Each of those either churns the committed
+    # sitemap on every run or disagrees between a local render and CI, which is
+    # worse than the absent-and-honest field a crawler already handles. Pages
+    # generated below pass a real one (a fix guide's authored date, an agency's
+    # snapshot date) through `write(..., lastmod=...)`.
     urls: list[str] = [
         f"{BASE_URL}/",
         f"{BASE_URL}/about/",
