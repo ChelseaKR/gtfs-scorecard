@@ -212,12 +212,15 @@ description of what has to be true; the script is how it is done and checked.
 
    The third is the one with teeth. `/bundle/` tells a buyer delivery is
    "always within two business days. If it is later than that, the purchase is
-   refunded." As of this date nothing computes that deadline, nothing detects a
-   breach, and refunds are entirely manual: the deployed restricted key cannot
-   issue one by design. The daily reconciler (deployed, `DISABLED`) is what
-   would surface an undelivered order; until its reporting channel lands, a
-   failed delivery is found by a buyer complaining. Treat the commitment as a
-   promise currently kept by hand.
+   refunded." That deadline is now computed at checkout from Stripe's own
+   payment timestamp, stored on the order, and shown to the buyer as a date;
+   an order past it with no archive is reported as a breach rather than as a
+   late build. Refunds remain manual by design: the deployed restricted key
+   reads Checkout Sessions and cannot issue one, and `scorecard
+   program-refunds` prints the Stripe reference and the commands for a person
+   to run. What is still outstanding is that the reconciler which detects the
+   breach is deployed `DISABLED`; until it is switched on, the commitment is
+   backed by the watchdog and by somebody looking.
 
    For reference, the original instruction for this step was: record the date
    and the reviews it rests on (tax, refund policy, the two-business-day
