@@ -23,7 +23,7 @@ metric and no new grade. It is packaging, branding, and delivery.
 | --- | --- | --- |
 | Core: validate a request, classify ids against the registry, render each current one through `report.generate_report`, zip with a manifest | `pipeline/src/scorecard_pipeline/bundle.py`; `scorecard bundle`, `scorecard bundle-email` | Built, tested |
 | Fulfilment: on-demand render, upload behind a capability key, email the link | `.github/workflows/report-bundle.yml` | Built; delivery steps gated on Actions variables |
-| Purchase plumbing: post-checkout form (confirms the session is paid, dispatches), download route (presigns per click), Stripe webhook, weekly refresh | `infra/program-bundle/` | Written, **not applied**; `payments_enabled = "0"` |
+| Purchase plumbing: post-checkout form (confirms the session is paid, dispatches), download route (presigns per click), Stripe webhook, weekly refresh, daily reconciler | `infra/program-bundle/` | Written, **not applied**; `payments_enabled = "0"` |
 | Storage: `program-bundles/<id>/bundle.zip` expires after 30 days | `infra/artifacts/main.tf` lifecycle rule | Written; needs a re-apply of `infra/artifacts` |
 | Pages: plans read from `web/bundle/plan.json`; setup form posts to the API | `web/bundle/`, `web/src/bundle.js`, `web/src/bundle-setup.js` | Built; unlinked, `noindex`, out of the sitemap; `paymentsAvailable: false` |
 | Stripe objects: two products, four prices, four Payment Links | `scripts/stripe-setup.sh` | Script only; nothing created |
@@ -211,11 +211,42 @@ description of what has to be true; the script is how it is done and checked.
    the public surface until then.
 9. **Ninety days later**, the gate table above.
 
+## When an order does not get built
+
+Payment and fulfilment are separate systems, so there is a gap between them
+where a paid order can go quiet. Three ways it happens, and what answers each.
+
+**The dispatch fails.** GitHub is down, the token has lost `actions: write`,
+the workflow file was renamed. The claim records whether a build was ever
+started separately from whether the payment is spoken for, so an order in this
+state is still open: the buyer is told to submit the form again, and the retry
+finishes the same bundle id rather than opening a second order. One payment
+can still only ever produce one bundle.
+
+**The build fails.** `report-bundle.yml` writes an annotation and a run
+summary naming the bundle id, and mails the same facts to `SES_FROM`.
+Re-dispatching with the same inputs is the repair: the archive and the
+download link are both keyed on the bundle id, so the re-run fills the object
+the buyer's existing link already points at. `watchdog.yml` reads that
+workflow's most recent conclusion every six hours as the backstop, and counts
+`cancelled` as a failure because that is what a job killed by its own
+`timeout-minutes` records.
+
+**Nobody comes back.** The buyer pays and closes the tab before the setup
+form, or hits a failed dispatch and never retries. The daily reconciler
+(`infra/program-bundle/reconcile_handler.py`) walks the bundles table and
+mails `SES_FROM` about any capability row older than six hours with no
+`program-bundles/<id>/bundle.zip`, any claim that never dispatched, and any
+`checkout#` row with no matching `session#` row. It refuses rather than
+reports clean when it cannot read a row's timestamp or the bucket will not
+answer, and its EventBridge rule stays disabled while `ses_from` is blank,
+because a reconciler with nowhere to report finds things and tells nobody.
+
 ## Closing it again
 
 Set `payments_enabled = "0"` and apply: the `/setup` route disappears, the
-weekly refresh rule is disabled, and the download route keeps serving links
-already issued until they expire. Set `paymentsAvailable: false` in
+weekly refresh and daily reconcile rules are disabled, and the download route
+keeps serving links already issued until they expire. Set `paymentsAvailable: false` in
 `plan.json`: the page shows "Not yet available" and no checkout link. Both
 halves are independent and fail closed, the same two-gate shape
 family-greenhouse uses.

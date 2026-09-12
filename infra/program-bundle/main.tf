@@ -9,6 +9,7 @@
 #                               302 to a fifteen-minute presigned S3 URL
 #   POST /webhook               Stripe events -> subscription state
 #   (weekly)                    re-dispatch for active subscriptions
+#   (daily)                     reconcile paid orders that bought nothing
 #
 # Status: written, not yet applied (same posture as infra/compute and
 # infra/instant-score; see infra/README.md). Everything that can charge
@@ -150,6 +151,12 @@ variable "stripe_price_ids" {
   }
 }
 
+variable "ses_from" {
+  description = "Verified SES identity the daily reconciler mails its findings to (and from). Blank disables the reconciler's schedule outright rather than letting it run with nowhere to report; it is the same address as the SES_FROM Actions variable report-bundle.yml delivers from."
+  type        = string
+  default     = ""
+}
+
 variable "stripe_price_ids_are_live" {
   description = "Set true only after confirming the price ids above were created in live mode. A live key paired with test-mode prices sells nothing and looks like it does."
   type        = bool
@@ -281,11 +288,22 @@ resource "aws_iam_role_policy" "lambda" {
       },
       {
         # Read only, and only the bundle prefix: the download route presigns
-        # exactly one object per capability and nothing else in the bucket.
+        # exactly one object per capability and nothing else in the bucket,
+        # and the reconciler heads one object per capability row.
         Sid      = "Bundles"
         Effect   = "Allow"
         Action   = ["s3:GetObject"]
         Resource = "${data.aws_s3_bucket.artifacts.arn}/program-bundles/*"
+      },
+      {
+        # The reconciler's digest, and nothing else. The condition pins the
+        # From address to the one verified identity, so a token loose in this
+        # role cannot send mail as anyone else.
+        Sid       = "ReconcilerDigest"
+        Effect    = var.ses_from == "" ? "Deny" : "Allow"
+        Action    = ["ses:SendEmail"]
+        Resource  = "*"
+        Condition = var.ses_from == "" ? {} : { StringEquals = { "ses:FromAddress" = var.ses_from } }
       }
     ]
   })
@@ -302,6 +320,7 @@ locals {
     ARTIFACTS_BUCKET      = var.artifacts_bucket
     ALLOW_ORIGIN          = var.allow_origin
     PAYMENTS_ENABLED      = var.payments_enabled
+    SES_FROM              = var.ses_from
     STRIPE_SECRET_KEY     = var.stripe_secret_key
     STRIPE_WEBHOOK_SECRET = var.stripe_webhook_secret
     STRIPE_PRICE_IDS      = jsonencode(var.stripe_price_ids)
@@ -356,6 +375,24 @@ resource "aws_lambda_function" "refresh" {
 # ---------------------------------------------------------------------------
 # Front door
 # ---------------------------------------------------------------------------
+
+resource "aws_lambda_function" "reconcile" {
+  function_name    = "${var.project}-program-bundle-reconcile"
+  role             = aws_iam_role.lambda.arn
+  runtime          = "python3.12"
+  handler          = "reconcile_handler.handler"
+  filename         = data.archive_file.package.output_path
+  source_code_hash = data.archive_file.package.output_base64sha256
+  # It heads one S3 object per capability row. A scan of a table this size
+  # plus a few hundred HEADs fits inside a minute; the timeout is there to
+  # stop a wedged call, not to bound the work.
+  timeout     = 120
+  memory_size = 128
+
+  environment {
+    variables = local.common_env
+  }
+}
 
 resource "aws_apigatewayv2_api" "api" {
   name          = "${var.project}-program-bundle"
@@ -455,6 +492,40 @@ resource "aws_lambda_permission" "events" {
   function_name = aws_lambda_function.refresh.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.weekly.arn
+}
+
+# ---------------------------------------------------------------------------
+# Daily reconciliation
+# ---------------------------------------------------------------------------
+
+# The only thing in this stack that looks for orders nobody is handling: a
+# capability row with no archive, a claim that never dispatched, a checkout
+# that never reached the setup form. Disabled unless there is somewhere to
+# report to, because a reconciler with no SES_FROM finds things and tells
+# nobody, which reads exactly like finding nothing.
+resource "aws_cloudwatch_event_rule" "daily_reconcile" {
+  name                = "${var.project}-program-bundle-reconcile"
+  description         = "Report paid program orders with no delivered bundle."
+  schedule_expression = "cron(10 15 * * ? *)"
+  state               = var.payments_enabled == "1" && var.ses_from != "" ? "ENABLED" : "DISABLED"
+}
+
+resource "aws_cloudwatch_event_target" "daily_reconcile" {
+  rule = aws_cloudwatch_event_rule.daily_reconcile.name
+  arn  = aws_lambda_function.reconcile.arn
+}
+
+resource "aws_lambda_permission" "events_reconcile" {
+  statement_id  = "AllowEventBridgeInvokeReconcile"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.reconcile.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.daily_reconcile.arn
+}
+
+output "reconcile_function" {
+  description = "Invoke by hand with {\"dry_run\": true} to see what the daily reconciler would report."
+  value       = aws_lambda_function.reconcile.function_name
 }
 
 output "api_base" {

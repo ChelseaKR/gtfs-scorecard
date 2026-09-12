@@ -1,7 +1,8 @@
 """Unit tests for the program-bundle Lambdas (infra/program-bundle): the
 Stripe signature check, the post-checkout setup route (paid gate, what was
 actually bought, the plan's agency cap, idempotent session claim, dispatch),
-the download route, the webhook's event handling, and the weekly refresh.
+the download route, the webhook's event handling, the weekly refresh, and
+the daily reconciler that looks for orders which bought nothing.
 Same harness as test_infra_handlers.py: the modules load from their files,
 boto3 stays lazy, tables are fakes, and the two network calls (GitHub
 dispatch, Stripe session read) are monkeypatched.
@@ -62,6 +63,92 @@ common = _load("common")
 setup_handler = _load("setup_handler")
 webhook_handler = _load("webhook_handler")
 refresh_handler = _load("refresh_handler")
+reconcile_handler = _load("reconcile_handler")
+
+
+class _ConditionExpression:
+    """Evaluate one DynamoDB condition expression against the existing item.
+
+    The handlers' idempotency is a condition expression, so a fake that
+    ignores the expression and answers "the key is present" proves nothing
+    about it: the whole `_claim_session` argument would pass with the
+    condition deleted. This reads the real string instead.
+
+    The grammar is exactly what these handlers write and no more:
+    ``attribute_exists(a)``, ``attribute_not_exists(a)``, ``a = :v``,
+    ``a <> :v``, ``AND``, ``OR`` and parentheses, with ``#n`` names resolved
+    through ExpressionAttributeNames. ``item`` is None when the row does not
+    exist. A comparison against an absent attribute is false, as DynamoDB
+    evaluates it -- which is why a `session#` row written before
+    `dispatch_state` existed refuses a retry rather than allowing one.
+    """
+
+    def __init__(
+        self,
+        expression: str,
+        item: dict[str, Any] | None,
+        values: dict[str, Any] | None,
+        names: dict[str, str] | None,
+    ) -> None:
+        self.tokens = expression.replace("(", " ( ").replace(")", " ) ").split()
+        self.at = 0
+        self.item = item
+        self.values = values or {}
+        self.names = names or {}
+
+    def evaluate(self) -> bool:
+        result = self._or()
+        assert self.at == len(self.tokens), f"unparsed tokens: {self.tokens[self.at :]}"
+        return result
+
+    def _next(self) -> str:
+        token = self.tokens[self.at]
+        self.at += 1
+        return token
+
+    def _peek(self) -> str:
+        return self.tokens[self.at] if self.at < len(self.tokens) else ""
+
+    def _or(self) -> bool:
+        value = self._and()
+        while self._peek() == "OR":
+            self.at += 1
+            # Both sides are always evaluated: the right side has to consume
+            # its tokens whatever the left side answered.
+            value = self._and() or value
+        return value
+
+    def _and(self) -> bool:
+        value = self._term()
+        while self._peek() == "AND":
+            self.at += 1
+            value = self._term() and value
+        return value
+
+    def _term(self) -> bool:
+        token = self._next()
+        if token == "(":
+            value = self._or()
+            assert self._next() == ")"
+            return value
+        if token in ("attribute_exists", "attribute_not_exists"):
+            assert self._next() == "("
+            attribute = self.names.get(self._next(), self.tokens[self.at - 1])
+            assert self._next() == ")"
+            present = self.item is not None and attribute in self.item
+            return present if token == "attribute_exists" else not present
+        attribute = self.names.get(token, token)
+        operator = self._next()
+        placeholder = self._next()
+        assert placeholder in self.values, f"no value for {placeholder}"
+        if self.item is None or attribute not in self.item:
+            return False
+        actual, expected = self.item[attribute], self.values[placeholder]
+        if operator == "=":
+            return bool(actual == expected)
+        if operator == "<>":
+            return bool(actual != expected)
+        raise AssertionError(f"unsupported operator {operator}")
 
 
 class FakeTable:
@@ -73,9 +160,20 @@ class FakeTable:
         self.items: dict[str, dict[str, Any]] = dict(items or {})
         self.updates: list[dict[str, Any]] = []
 
-    def put_item(self, Item: dict[str, Any], ConditionExpression: str | None = None) -> None:
-        if ConditionExpression and Item[self.key] in self.items:
-            raise ConditionalCheckFailedException("exists")
+    def _allows(self, key_value: str, kwargs: dict[str, Any]) -> bool:
+        condition = kwargs.get("ConditionExpression")
+        if not condition:
+            return True
+        return _ConditionExpression(
+            condition,
+            self.items.get(key_value),
+            kwargs.get("ExpressionAttributeValues"),
+            kwargs.get("ExpressionAttributeNames"),
+        ).evaluate()
+
+    def put_item(self, Item: dict[str, Any], **kwargs: Any) -> None:
+        if not self._allows(Item[self.key], kwargs):
+            raise ConditionalCheckFailedException(kwargs.get("ConditionExpression", ""))
         self.items[Item[self.key]] = dict(Item)
 
     def get_item(self, Key: dict[str, Any]) -> dict[str, Any]:
@@ -85,13 +183,11 @@ class FakeTable:
     def update_item(self, **kwargs: Any) -> None:
         self.updates.append(kwargs)
         key_value = kwargs["Key"][self.key]
-        # The only conditional update these handlers use: "write this only if
-        # the row already exists". Honouring it here is the difference between
-        # a test that proves a foreign subscription creates no row and one
-        # that would pass either way.
-        condition = kwargs.get("ConditionExpression")
-        if condition and condition.startswith("attribute_exists") and key_value not in self.items:
-            raise ConditionalCheckFailedException(condition)
+        # Honouring the condition here is the difference between a test that
+        # proves a foreign subscription creates no row and one that would
+        # pass either way.
+        if not self._allows(key_value, kwargs):
+            raise ConditionalCheckFailedException(kwargs.get("ConditionExpression", ""))
         row = self.items.setdefault(key_value, {self.key: key_value})
         values = kwargs.get("ExpressionAttributeValues", {})
         names = kwargs.get("ExpressionAttributeNames", {})
@@ -133,7 +229,7 @@ def _env(monkeypatch: pytest.MonkeyPatch) -> None:
 @pytest.fixture
 def tables(monkeypatch: pytest.MonkeyPatch) -> dict[str, FakeTable]:
     fakes = {"SUBSCRIPTIONS_TABLE": FakeTable(key="id"), "BUNDLES_TABLE": FakeTable()}
-    for mod in (common, setup_handler, webhook_handler, refresh_handler):
+    for mod in (common, setup_handler, webhook_handler, refresh_handler, reconcile_handler):
         monkeypatch.setattr(mod, "table", lambda env, fakes=fakes: fakes[env])
     return fakes
 
@@ -1164,3 +1260,302 @@ def test_refresh_handler_entrypoint_reports_counts(
     out = refresh_handler.handler({}, None)
     assert out["ok"] is True
     assert out["scanned"] == 0
+
+
+# ---------------------------------------------------------------------------
+# daily reconciler
+# ---------------------------------------------------------------------------
+
+
+class _ReconcileS3:
+    """head_object over a set of keys, with the three answers that matter:
+    the object is there, S3 says 404, or S3 did not answer."""
+
+    def __init__(self, present: set[str] | None = None, unreadable: set[str] | None = None):
+        self.present = set(present or ())
+        self.unreadable = set(unreadable or ())
+        self.asked: list[str] = []
+
+    def head_object(self, Bucket: str, Key: str) -> None:
+        self.asked.append(Key)
+        if Key in self.unreadable:
+            raise _ClientError({"Error": {"Code": "SlowDown"}})
+        if Key not in self.present:
+            raise _ClientError({"Error": {"Code": "404"}})
+
+
+class _ClientError(Exception):
+    """Shaped like botocore's: the code is read off `.response`, not the type."""
+
+    def __init__(self, response: dict[str, Any]) -> None:
+        super().__init__(str(response))
+        self.response = response
+
+
+class _FakeSES:
+    def __init__(self) -> None:
+        self.sent: list[dict[str, Any]] = []
+
+    def send_email(self, **kwargs: Any) -> None:
+        self.sent.append(kwargs)
+
+
+class _FakeBoto3:
+    def __init__(self, s3: _ReconcileS3, ses: _FakeSES | None = None) -> None:
+        self._s3 = s3
+        self.ses = ses or _FakeSES()
+
+    def client(self, service: str, **_: Any) -> Any:
+        return self.ses if service == "ses" else self._s3
+
+
+def _hours_ago(hours: float) -> str:
+    return (dt.datetime.now(dt.UTC) - dt.timedelta(hours=hours)).replace(microsecond=0).isoformat()
+
+
+def _capability(bundle_id: str, *, hours: float = 48, **overrides: Any) -> dict[str, Any]:
+    row = {
+        "bundle_id": bundle_id,
+        "deliver_to": "liaison@example.org",
+        "program_name": "Example Program",
+        "source": "checkout",
+        "created_at": _hours_ago(hours),
+        "expires_at": int(time.time()) + 86400,
+    }
+    row.update(overrides)
+    return row
+
+
+def _reconcile(tables: dict[str, FakeTable], s3: _ReconcileS3) -> dict[str, Any]:
+    result: dict[str, Any] = reconcile_handler.reconcile(
+        bundles=tables["BUNDLES_TABLE"], s3=s3, bucket="example-artifacts"
+    )
+    return result
+
+
+def test_reconcile_reports_a_paid_order_whose_archive_never_arrived(
+    tables: dict[str, FakeTable],
+) -> None:
+    """The dispatch dead-end and a fulfilment run that died look the same
+    from here, which is the point: the capability row is written before
+    report-bundle.yml is dispatched, so one question covers both."""
+    rows = tables["BUNDLES_TABLE"].items
+    rows["a" * 32] = _capability("a" * 32)  # paid, no archive
+    rows["b" * 32] = _capability("b" * 32)  # paid, delivered
+    rows["c" * 32] = _capability("c" * 32, hours=1)  # still rendering
+
+    s3 = _ReconcileS3(present={f"program-bundles/{'b' * 32}/bundle.zip"})
+    result = _reconcile(tables, s3)
+
+    assert result["scanned"] == 3
+    assert [(f["kind"], f["key"]) for f in result["findings"]] == [("undelivered", "a" * 32)]
+    found = result["findings"][0]
+    assert found["deliver_to"] == "liaison@example.org"
+    assert 47 < found["age_hours"] < 49
+    assert "Re-dispatch report-bundle.yml" in found["action"]
+    # A row inside the window is not headed at all; the check costs a request.
+    assert f"program-bundles/{'c' * 32}/bundle.zip" not in s3.asked
+
+
+def test_reconcile_reports_a_claim_that_never_dispatched_and_ignores_one_that_did(
+    tables: dict[str, FakeTable],
+) -> None:
+    """The claim the setup route leaves behind when GitHub refuses the
+    dispatch. It is deliberately left unfinished so the buyer can retry and
+    resume the same bundle; this is what notices when they never come back.
+
+    A claim written before `dispatched` existed says nothing either way, and
+    is not reported on a guess. Those orders still reach the digest through
+    their capability row, which asks S3 rather than a field nobody wrote.
+    """
+    rows = tables["BUNDLES_TABLE"].items
+    rows["d" * 32] = _capability("d" * 32, hours=30)
+    rows["session#cs_stuck"] = {
+        "bundle_id": "session#cs_stuck",
+        "consumed_by": "d" * 32,
+        "plan": "bundle_25",
+        "dispatched": False,
+    }
+    rows["e" * 32] = _capability("e" * 32, hours=30)
+    rows["session#cs_built"] = {
+        "bundle_id": "session#cs_built",
+        "consumed_by": "e" * 32,
+        "plan": "bundle_25",
+        "dispatched": True,
+    }
+    rows["f" * 32] = _capability("f" * 32, hours=0.2)
+    rows["session#cs_fresh"] = {
+        "bundle_id": "session#cs_fresh",
+        "consumed_by": "f" * 32,
+        "plan": "bundle_25",
+        "dispatched": False,
+    }
+    rows["session#cs_legacy"] = {
+        "bundle_id": "session#cs_legacy",
+        "consumed_by": "0" * 32,
+        "plan": "bundle_25",
+    }
+
+    s3 = _ReconcileS3(
+        present={
+            f"program-bundles/{'e' * 32}/bundle.zip",
+            f"program-bundles/{'f' * 32}/bundle.zip",
+        }
+    )
+    findings = _reconcile(tables, s3)["findings"]
+    claims = [f for f in findings if f["kind"] == "never_started"]
+    assert [f["key"] for f in claims] == ["session#cs_stuck"]
+    assert claims[0]["bundle_id"] == "d" * 32
+    assert "the claim is still open" in claims[0]["action"]
+    # The claim carries no timestamp of its own, so it borrowed the capability
+    # row's. Without that a claim caught mid-flight would read as abandoned.
+    assert 29 < claims[0]["age_hours"] < 31
+
+
+def test_reconcile_reports_a_checkout_that_never_reached_the_setup_form(
+    tables: dict[str, FakeTable],
+) -> None:
+    """The webhook notes every paid checkout; the setup route writes a
+    `session#` row when the buyer finishes the form. A `checkout#` with no
+    sibling is somebody who paid and closed the tab."""
+    rows = tables["BUNDLES_TABLE"].items
+    rows["checkout#cs_gone"] = {
+        "bundle_id": "checkout#cs_gone",
+        "plan": "bundle_100",
+        "email": "buyer@example.org",
+        "seen_at": _hours_ago(72),
+    }
+    rows["checkout#cs_done"] = {
+        "bundle_id": "checkout#cs_done",
+        "plan": "bundle_25",
+        "email": "other@example.org",
+        "seen_at": _hours_ago(72),
+    }
+    rows["session#cs_done"] = {
+        "bundle_id": "session#cs_done",
+        "consumed_by": "0" * 32,
+        "plan": "bundle_25",
+        "dispatch_state": "sent",
+        "claimed_at": _hours_ago(72),
+    }
+
+    findings = _reconcile(tables, _ReconcileS3())["findings"]
+    assert [(f["kind"], f["key"]) for f in findings] == [("abandoned_checkout", "checkout#cs_gone")]
+    assert findings[0]["email"] == "buyer@example.org"
+
+
+def test_reconcile_treats_what_it_could_not_read_as_a_finding_not_as_a_pass(
+    tables: dict[str, FakeTable],
+) -> None:
+    """Two ways this job could quietly report nothing while orders rot: a
+    row whose timestamp will not parse, and a bucket that will not answer.
+    Neither is allowed to read as "delivered"."""
+    rows = tables["BUNDLES_TABLE"].items
+    rows["a" * 32] = _capability("a" * 32, created_at="")  # no timestamp at all
+    rows["b" * 32] = _capability("b" * 32, created_at="whenever")  # unparseable
+    rows["c" * 32] = _capability("c" * 32)  # readable, and S3 will not answer
+
+    s3 = _ReconcileS3(unreadable={f"program-bundles/{'c' * 32}/bundle.zip"})
+    findings = _reconcile(tables, s3)["findings"]
+    by_key = {f["key"]: f for f in findings}
+
+    assert by_key["a" * 32]["kind"] == "undelivered"
+    assert by_key["a" * 32]["age_hours"] is None
+    assert by_key["b" * 32]["age_hours"] is None
+    assert by_key["c" * 32]["kind"] == "unreadable"
+    assert "cannot vouch" in by_key["c" * 32]["action"]
+
+
+def test_the_reconciler_names_the_order_a_failed_dispatch_left_behind(
+    tables: dict[str, FakeTable],
+) -> None:
+    """The two rows a failed dispatch leaves, read together.
+
+    This is the shape `setup` writes when it has claimed the checkout and
+    GitHub then refuses: a capability row with no archive behind it, and a
+    claim that never flipped to dispatched. Seeded here rather than driven
+    through the handler, so this test describes the reconciler's contract
+    with the table and not one particular version of the writer.
+    """
+    rows = tables["BUNDLES_TABLE"].items
+    bundle_id = "a" * 32
+    rows[bundle_id] = _capability(bundle_id, hours=24)
+    rows["session#cs_test_example"] = {
+        "bundle_id": "session#cs_test_example",
+        "consumed_by": bundle_id,
+        "plan": "bundle_25",
+        "dispatched": False,
+    }
+
+    findings = _reconcile(tables, _ReconcileS3())["findings"]
+    assert sorted(f["kind"] for f in findings) == ["never_started", "undelivered"]
+    body = reconcile_handler.digest(findings)
+    assert "Paid, no archive" in body
+    assert "Claimed, never dispatched" in body
+    assert "liaison@example.org" in body
+    assert bundle_id in body
+
+
+def test_reconcile_handler_refuses_to_find_orders_with_nowhere_to_report(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """A digest nobody receives is indistinguishable from a clean run."""
+    tables["BUNDLES_TABLE"].items["a" * 32] = _capability("a" * 32)
+    monkeypatch.delenv("SES_FROM", raising=False)
+    monkeypatch.setitem(sys.modules, "boto3", _FakeBoto3(_ReconcileS3()))
+
+    with pytest.raises(RuntimeError, match="SES_FROM is not set"):
+        reconcile_handler.handler({}, None)
+
+
+def test_reconcile_handler_mails_the_digest_and_honours_the_gates(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    tables["BUNDLES_TABLE"].items["a" * 32] = _capability("a" * 32)
+    boto3 = _FakeBoto3(_ReconcileS3())
+    monkeypatch.setitem(sys.modules, "boto3", boto3)
+    monkeypatch.setenv("SES_FROM", "reports@example.org")
+
+    out = reconcile_handler.handler({}, None)
+    assert out == {
+        "ok": True,
+        "payments_enabled": True,
+        "scanned": 1,
+        "findings": 1,
+        "emailed": True,
+        "dry_run": False,
+    }
+    assert boto3.ses.sent[0]["Source"] == "reports@example.org"
+    assert boto3.ses.sent[0]["Destination"] == {"ToAddresses": ["reports@example.org"]}
+    assert "a" * 32 in boto3.ses.sent[0]["Message"]["Body"]["Text"]["Data"]
+
+    # A dry run looks and sends nothing.
+    dry = reconcile_handler.handler({"dry_run": True}, None)
+    assert dry["emailed"] is False and dry["dry_run"] is True
+    assert len(boto3.ses.sent) == 1
+
+    # And the commercial gate closes it entirely.
+    monkeypatch.setenv("PAYMENTS_ENABLED", "0")
+    assert reconcile_handler.handler({}, None) == {
+        "ok": True,
+        "payments_enabled": False,
+        "dry_run": False,
+    }
+    assert len(boto3.ses.sent) == 1
+
+
+def test_reconcile_handler_raises_when_the_bucket_would_not_answer(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """An outage must not be filed as an all-clear, and it must not be filed
+    as a delivered order either. The run fails so somebody sees it."""
+    tables["BUNDLES_TABLE"].items["a" * 32] = _capability("a" * 32)
+    s3 = _ReconcileS3(unreadable={f"program-bundles/{'a' * 32}/bundle.zip"})
+    boto3 = _FakeBoto3(s3)
+    monkeypatch.setitem(sys.modules, "boto3", boto3)
+    monkeypatch.setenv("SES_FROM", "reports@example.org")
+
+    with pytest.raises(RuntimeError, match="could not be read"):
+        reconcile_handler.handler({}, None)
+    # The digest still went out: the orders it could read are still reported.
+    assert len(boto3.ses.sent) == 1
