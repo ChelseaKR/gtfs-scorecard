@@ -94,6 +94,19 @@ the declared public surface).
   table: `docs/decisions/0053-secret-scan-reports-every-result-tier.md`;
   the SEC-19 declaration is updated in `docs/standards-conformance-gaps.md`.
 
+- **A connection reset while downloading a scanner failed a required check
+  before anything was scanned (2026-09-11).** `security.yml` fetches the
+  gitleaks release and `container-scan.yml` fetches the validator jar with
+  `curl --retry 3`, and curl retries only what it counts as transient: a
+  timeout, an FTP 4xx, or HTTP 408, 429, 500, 502, 503 or 504. A TLS
+  connection reset (exit 35) is none of those. On PR #395 that failed
+  `Secret scan (gitleaks)`, one of the 15 required checks on `main`, on the
+  first attempt and before gitleaks ran, so a merge would have waited on a
+  manual re-run. All three `curl --retry` commands in `.github/workflows/`
+  (the third is `otp-qa.yml`'s feed download) now also pass
+  `--retry-all-errors`, and `test_workflow_download_retry.py` holds that for
+  every workflow.
+
 ### Added
 
 - **`scorecard retest`: check a new export against an evidence packet
