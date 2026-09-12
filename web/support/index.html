@@ -28,6 +28,7 @@
   </script>
   <script src="/src/theme.js" defer></script>
   <script src="/src/nav.js" defer></script>
+  <script src="/src/plan-summary.js" defer></script>
   <noscript><style>
     /* Without JS the menu button cannot expand the collapsed nav, so show the
        stacked nav permanently and hide the button (content stays operable
@@ -61,11 +62,21 @@
         <h2 id="path-board-h">Take a scorecard to your board</h2>
         <p>Every agency page has a printable board one-pager, and the same report ships as a
         single self-contained file for a board packet or a grant application.</p>
-        <p>A program or consultancy that prepares packets for many agencies can
-        <a href="/bundle/">buy every agency's board report as one branded archive</a>; purchase
-        buys no influence over grades, methodology, or which agencies are listed.</p>
+        <p>Free for every agency, for its own feed, with no account.</p>
         <p><a class="report-action" href="/agency/unitrans/board/">See a live board-report example</a></p>
         <p class="fineprint"><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/board-report.md">Generate the offline file yourself.</a></p>
+      </section>
+      <section class="support-path" aria-labelledby="path-bundle-h">
+        <p class="support-path-kicker">Paid</p>
+        <h2 id="path-bundle-h">Board reports for a whole program</h2>
+        <p>A state program, a technical-assistance center, a vendor, or a consultancy that
+        prepares packets for many agencies can get every agency's board report in one archive,
+        branded with its own name and logo, and refreshed monthly if it wants.</p>
+        <div class="plan-summary" data-plan-summary>
+          <p class="plan-summary-status" data-plan-status>Prices, delivery, and the refund
+          commitment are on the bundle page.</p>
+          <p><a class="report-action" href="/bundle/">See the plans and what each one includes</a></p>
+        </div>
       </section>
       <section class="support-path" aria-labelledby="path-sponsor-h">
         <p class="support-path-kicker">Public infrastructure</p>
@@ -209,6 +220,14 @@
             <li><a href="/query/">Query the dataset</a></li>
             <li><a href="/data/">Open data</a></li>
           </ul>
+        </section>
+        <section aria-labelledby="footer-programs-h">
+          <h2 id="footer-programs-h">For programs</h2>
+          <ul>
+            <li><a href="/program/all/">Program rollups</a></li>
+            <li><a href="/bundle/">Board report bundle (paid)</a></li>
+          </ul>
+          <p class="footer-aside">Scoring an agency is free. A purchase buys no influence over grades, methodology, or which agencies are listed.</p>
         </section>
         <section aria-labelledby="footer-project-h">
           <h2 id="footer-project-h">Project</h2>

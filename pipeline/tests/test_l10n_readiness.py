@@ -77,6 +77,12 @@ HARDCODED_STRING_BASELINE = {
     "landing-scorecard.js": 121,
     "locale.js": 0,
     "nav.js": 4,
+    # The compact paid-tier summary the landing page and /support/ render from
+    # web/bundle/plan.json. New module, so this is its first recorded baseline
+    # rather than an increase: six English literals, all of them the same
+    # status and tier copy the /bundle/ pages above carry, to move into the
+    # catalog with them when the tier joins it.
+    "plan-summary.js": 6,
     "submit.js": 17,
     "subscribe.js": 8,
     "theme.js": 4,
