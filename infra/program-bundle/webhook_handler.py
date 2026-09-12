@@ -16,6 +16,12 @@ has told us the program's details, and from the weekly refresh
   else on the same Stripe account is ignored. If Stripe cannot be read the
   session is noted as ``unverified`` rather than failing the delivery, so an
   outage never gets this endpoint disabled.
+  The row carries no ``expires_at``, so the table's TTL never reaches it and
+  the buyer's email address is kept indefinitely. That is what makes the
+  help-by-hand above possible at all, and it is the only place this product
+  keeps an address outside Stripe; how long it should be kept is a retention
+  decision for the operator, recorded here so it is a choice rather than an
+  accident of which rows happened to get the field.
 - ``customer.subscription.created`` / ``updated``: upsert the subscription's
   status and price. A status other than ``active`` or ``trialing`` stops the
   refresh, and so does a price that is not one of the two refresh prices.
