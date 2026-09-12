@@ -29,6 +29,25 @@ the declared public surface).
 
 ### Fixed
 
+- **The documented baseline example pinned a floating major, and it had `main`
+  red since it merged (2026-09-09).** `docs/ci-action.md`'s "Comparing against
+  a baseline" snippet read `uses: ChelseaKR/gtfs-scorecard@v1`. That section
+  arrived on a branch cut 28 minutes before the gate forbidding the floating
+  form landed, so it carried the older convention past a check that did not yet
+  exist when it was written. From the merge onward, three tests in
+  `pipeline/tests/test_documented_action_ref.py` failed on `main`
+  (`test_no_public_example_names_a_floating_major`,
+  `test_every_documented_ref_agrees`,
+  `test_the_documented_pin_has_a_changelog_entry`), and because the branch
+  protection here requires branches to be current with `main`, every open pull
+  request inherited the failure with nothing wrong in its own diff. Measured on
+  unmodified `main`: 3 failed, 4 passed on that file; with the pin corrected,
+  7 passed. The pin is `v1.4.0` and not the higher `1.5.0`, which has a
+  changelog section dated 2026-08-18 and no tag: it would satisfy the
+  changelog check and fail `test_the_documented_pin_is_a_tag_that_exists`.
+  The other three examples in the file were already pinned; only this one
+  was not.
+
 - **The weekly history secret scan could not fail on a credential that had
   been revoked (2026-09-06).** `trufflehog.yml` ran `--results=verified`,
   which reports a finding only when TruffleHog presents the credential to the
