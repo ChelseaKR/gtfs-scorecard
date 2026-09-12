@@ -21,9 +21,15 @@
 # API Gateway, not Lambda function URLs, for the same account-level reason
 # as infra/alerts and infra/submit.
 #
-# Build the deployment package before applying:
-#   pip install ../../pipeline -t build && cp *.py build/
-#   terraform init && terraform apply
+# Build the deployment package before applying, from the repository root:
+#   scripts/build-lambda-package.sh infra/program-bundle
+# It vendors the pipeline as Linux x86_64 / CPython 3.12 wheels and refuses a
+# package holding any other platform's binaries. A plain
+# `pip install ../../pipeline -t build` on a Mac vendors macOS binaries, and
+# the setup and refresh handlers then fail to import in the Lambda runtime
+# (rpds, under jsonschema). State lives in S3 (backend.tf), because it holds
+# the GitHub token and both Stripe secrets; `terraform init` wires it up:
+#   cd infra/program-bundle && terraform init && terraform apply
 
 terraform {
   required_version = ">= 1.5"
@@ -41,6 +47,9 @@ locals {
     managed-by = "terraform"
   }
   price_ids_missing = [for k, v in var.stripe_price_ids : k if v == ""]
+  # Either live prefix counts, so the consistency check below still holds if
+  # the restricted-key validation on stripe_secret_key is ever loosened.
+  stripe_key_is_live = startswith(var.stripe_secret_key, "rk_live_") || startswith(var.stripe_secret_key, "sk_live_")
 }
 
 provider "aws" {
@@ -96,10 +105,18 @@ variable "payments_enabled" {
 }
 
 variable "stripe_secret_key" {
-  description = "Restricted Stripe key: read Checkout Sessions only. Test-mode until the live decision is recorded."
+  description = "Restricted Stripe key (rk_test_... or rk_live_...) with Checkout Sessions: Read and nothing else. Test-mode until the live decision is recorded."
   type        = string
   default     = ""
   sensitive   = true
+
+  # Only a restricted key is ever deployed. A full secret key (sk_...) can
+  # charge, refund, and read every customer on the account; it stays with
+  # scripts/stripe-setup.sh on the operator's machine.
+  validation {
+    condition     = var.stripe_secret_key == "" || startswith(var.stripe_secret_key, "rk_test_") || startswith(var.stripe_secret_key, "rk_live_")
+    error_message = "stripe_secret_key must be a restricted key (rk_test_... or rk_live_...). A full secret key (sk_...) is never deployed."
+  }
 }
 
 variable "stripe_webhook_secret" {
@@ -110,13 +127,26 @@ variable "stripe_webhook_secret" {
 }
 
 variable "stripe_price_ids" {
-  description = "Stripe price ids for the four knobs in docs/program-plan.md. All four must be set before payments_enabled can be \"1\"."
+  description = "Stripe price ids for the four knobs in docs/program-plan.md. All four must be set before payments_enabled can be \"1\". The Lambdas read them (STRIPE_PRICE_IDS) to refuse any checkout for another price and to hold each purchase to its plan's agency cap."
   type        = map(string)
   default = {
     bundle_25  = ""
     bundle_100 = ""
     refresh_mo = ""
     refresh_yr = ""
+  }
+
+  # A tfvars map replaces the default outright, so a missing or misspelled
+  # key would otherwise pass the gate and refuse every purchase of that plan.
+  validation {
+    condition     = toset(keys(var.stripe_price_ids)) == toset(["bundle_25", "bundle_100", "refresh_mo", "refresh_yr"])
+    error_message = "stripe_price_ids must have exactly the keys bundle_25, bundle_100, refresh_mo, refresh_yr."
+  }
+
+  # One price id on two plans would let the Lambdas guess which cap applies.
+  validation {
+    condition     = length(distinct(compact(values(var.stripe_price_ids)))) == length(compact(values(var.stripe_price_ids)))
+    error_message = "stripe_price_ids has the same price id on more than one plan."
   }
 }
 
@@ -144,9 +174,11 @@ resource "terraform_data" "commercial_gate_guard" {
       condition     = var.payments_enabled == "0" || length(local.price_ids_missing) == 0
       error_message = "payments_enabled is \"1\" but these price ids are blank: ${join(", ", local.price_ids_missing)}."
     }
+    # Both directions: a live key with test prices sells nothing, and a test
+    # key cannot read a live checkout, so every live purchase would fail.
     precondition {
-      condition     = var.payments_enabled == "0" || !startswith(var.stripe_secret_key, "rk_live_") || var.stripe_price_ids_are_live
-      error_message = "A live Stripe key is paired with price ids not confirmed live (stripe_price_ids_are_live = false)."
+      condition     = var.payments_enabled == "0" || local.stripe_key_is_live == var.stripe_price_ids_are_live
+      error_message = local.stripe_key_is_live ? "A live Stripe key is paired with price ids not confirmed live (stripe_price_ids_are_live = false)." : "stripe_price_ids_are_live is true but the Stripe key is not a live key."
     }
   }
 }
@@ -263,6 +295,7 @@ locals {
     PAYMENTS_ENABLED      = var.payments_enabled
     STRIPE_SECRET_KEY     = var.stripe_secret_key
     STRIPE_WEBHOOK_SECRET = var.stripe_webhook_secret
+    STRIPE_PRICE_IDS      = jsonencode(var.stripe_price_ids)
   }
 }
 
