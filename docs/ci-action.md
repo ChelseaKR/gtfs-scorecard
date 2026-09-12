@@ -54,7 +54,9 @@ silently in every workflow that names it. Pin a release and upgrade on purpose.
 **What `v1.4.0` does not yet include.** The refusal of an unreadable archive
 described under [Inputs](#inputs) is on `main` and is in no published release.
 `@v1.4.0` — and `@v1`, which points at the same commit today — still grade an
-archive that carries no schedule data rather than refusing it. Version 1.5.0
+archive that carries no schedule data rather than refusing it. The `history-path`
+input below is on `main` only as well, so a workflow pinned to `@v1.4.0` gets a
+warning about an unexpected input and no history. Version 1.5.0
 has a `CHANGELOG.md` entry but no tag and no release, so there is nothing newer
 to pin to yet. Tag namespaces and what each one promises are in
 [docs/release-checklist.md](release-checklist.md#tag-namespaces).
@@ -75,6 +77,7 @@ to pin to yet. Tag namespaces and what each one promises are in
 | `fail-on-regression` | no | `false` | Fail the build when the comparison shows a regression, or cannot be made because the two runs are different measurements. |
 | `sarif` | no | _(skip)_ | Path to also write validator notices as SARIF 2.1.0, relative to the workspace. |
 | `sarif-base` | no | _(root)_ | Directory the feed's files sit in inside the repository being annotated, for example `gtfs/`. |
+| `history-path` | no | _(skip)_ | Directory for a private run history: each run appends one record for the feed, read back with `scorecard trend`. Not in `v1.4.0`; see [Keeping a private history](workspace-history.md). |
 | `ref` | no | _(ignored)_ | Deprecated compatibility input. The scorer is bundled with the Action release and always matches the selected Action ref. |
 
 Leave a threshold blank to skip it. With neither `min-grade` nor

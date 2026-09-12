@@ -588,6 +588,9 @@ _SINGLE_FEED_ONLY = (
     ("--sarif", "sarif"),
     ("--sarif-base", "sarif_base"),
     ("--large-feed", "large_feed"),
+    # `--history` is recorded by the single-feed path only; a batch would take
+    # the flag and write nothing.
+    ("--history", "history"),
 )
 
 
@@ -674,6 +677,31 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             _write_sarif(args.sarif, unreadable_feed_sarif(f"{args.url}: {exc}"))
         return 1
     _print_scorecard_summary(artifact)
+    stopped = _try_side_outputs(artifact, report, args)
+    if stopped is not None:
+        return stopped
+
+    # CI gating: a feed-deployment repo can run `scorecard try <url> --min-grade B
+    # --min-days-to-expiry 30` and fail the build before publishing a bad feed.
+    return _try_gate(artifact, args)
+
+
+def _try_side_outputs(
+    artifact: dict[str, Any], report: ValidationReport, args: argparse.Namespace
+) -> int | None:
+    """Write the optional files a single-feed `try` was asked for, in order.
+
+    Returns an exit code when one of them stops the run, and ``None`` when
+    every requested file was written and the run should go on to its gate.
+    Only the workspace history stops it: it refuses rather than mix two feeds
+    into one folder, and the refusal must not be followed by a SARIF file or a
+    threshold verdict that reads like a complete run.
+
+    Split out of ``_cmd_try`` so that function stays under the complexity
+    floor -- see docs/lint-complexity-ratchet.md. `--batch` (#363) and
+    `--history` (#362) each added a branch there in the same week; neither
+    crossed the floor alone and together they did.
+    """
     if args.html:
         page = _standalone_scorecard_html(artifact)
         out = Path(args.html)
@@ -695,6 +723,18 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n")
         print(f"  Scorecard JSON written to {out}\n")
 
+    if getattr(args, "history", None):
+        from .workspace import WorkspaceError, append_run, describe_source
+
+        try:
+            ledger, step = append_run(
+                Path(args.history), artifact, source=describe_source(args.url)
+            )
+        except WorkspaceError as exc:
+            log.error("not recording this run in the history: %s", exc)
+            return 2
+        print(f"  History appended to {ledger}. {step.sentence}\n")
+
     if getattr(args, "sarif", None):
         from .sarif import build_sarif
 
@@ -708,9 +748,7 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         )
         print(f"  SARIF written to {args.sarif}\n")
 
-    # CI gating: a feed-deployment repo can run `scorecard try <url> --min-grade B
-    # --min-days-to-expiry 30` and fail the build before publishing a bad feed.
-    return _try_gate(artifact, args)
+    return None
 
 
 def _try_gate(artifact: dict[str, Any], args: argparse.Namespace) -> int:
@@ -3276,6 +3314,33 @@ def _cmd_alerts(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     return 0
 
 
+def _cmd_trend(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Read a private workspace history as a trend, with its alerts (#362).
+
+    Exit 2 when there is nothing to read: no history under the directory, or a
+    named feed without one. A line the history cannot read is named in the
+    output and in the log, never dropped silently.
+    """
+    from .workspace import RENDERERS, WorkspaceError, build_trend
+
+    try:
+        trend = build_trend(Path(args.history), feeds=args.feed, expiry_days=args.expiry_days)
+    except WorkspaceError as exc:
+        log.error("%s", exc)
+        return 2
+    for skipped in trend.skipped:
+        log.warning("%s", skipped.message())
+    text = RENDERERS[args.format](trend)
+    if args.out:
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(text)
+        log.info("Wrote the workspace trend for %d feed(s) to %s", len(trend.feeds), out)
+    else:
+        print(text, end="")
+    return 0
+
+
 def _cmd_notify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .alerts import build_digest
     from .notify import (
@@ -3692,6 +3757,14 @@ def main(argv: list[str] | None = None) -> int:
     adhoc.add_argument(
         "--json-out",
         help="write the complete scorecard artifact as JSON before applying CI thresholds",
+    )
+    adhoc.add_argument(
+        "--history",
+        metavar="DIR",
+        help=(
+            "append this run to a private history at DIR/<feed>/history.jsonl, read back "
+            "with `scorecard trend --history DIR`; counts and codes only, nothing published"
+        ),
     )
     adhoc.add_argument(
         "--page-url", help="link to the full scorecard, included in the --comment markdown"
@@ -4198,6 +4271,37 @@ def main(argv: list[str] | None = None) -> int:
     alerts.add_argument("--expiry-days", type=int, default=60, help="warn within this many days")
     alerts.add_argument("--out", help="write the digest here instead of stdout")
 
+    trend = sub.add_parser(
+        "trend",
+        help=(
+            "read a private history written by `try --history` as a trend, with the "
+            "alerts `scorecard alerts` would raise (#362)"
+        ),
+    )
+    trend.add_argument(
+        "--history", required=True, metavar="DIR", help="the directory given to `try --history`"
+    )
+    trend.add_argument(
+        "--feed",
+        action="append",
+        metavar="NAME",
+        help="only this feed's history (its folder name under DIR); repeat for more",
+    )
+    trend.add_argument(
+        "--format",
+        choices=["text", "markdown", "html"],
+        default="text",
+        help="output format (default: text)",
+    )
+    trend.add_argument(
+        "--expiry-days",
+        type=int,
+        default=60,
+        help="warn within this many days, as `scorecard alerts` does (default: 60)",
+    )
+    trend.add_argument("--out", help="write the trend here instead of stdout")
+    trend.set_defaults(registry_free=True)
+
     notify = sub.add_parser("notify", help="build per-subscriber feed-health emails")
     notify.add_argument("--subscriptions", help="path to subscriptions.yaml")
     notify.add_argument(
@@ -4520,6 +4624,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "activation-hydrate": _cmd_activation_hydrate,
         "run-summary": _cmd_run_summary,
         "alerts": _cmd_alerts,
+        "trend": _cmd_trend,
         "notify": _cmd_notify,
         "portfolio-digest": _cmd_portfolio_digest,
         "coverage-check": _cmd_coverage_check,

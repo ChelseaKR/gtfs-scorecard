@@ -423,7 +423,72 @@ def _anomaly_alert_items(
     return items
 
 
-def build_digest(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
+def feed_alert_items(
+    history: list[dict[str, Any]],
+    latest: dict[str, Any] | None,
+    *,
+    agency_id: str,
+    name: str,
+    expiry_days: int = DEFAULT_EXPIRY_DAYS,
+) -> list[AlertItem]:
+    """Every alert one feed earns from its trend history and latest artifact.
+
+    ``build_digest`` calls this once per registered feed and ``scorecard
+    trend`` calls it for a private workspace history (#362), so the two cannot
+    drift apart: the same history and the same latest artifact raise the same
+    items. ``history`` is oldest first, in the ``index.json`` point shape. Only
+    its suffix measured the same way as the newest point is read, so a rubric
+    or validator change is never reported as a regression.
+    """
+    items: list[AlertItem] = []
+    comparable_history = current_producer_contract_suffix(history)
+    expiry = _expiry_item(latest, expiry_days) if latest else None
+    if expiry:
+        items.append(expiry)
+    else:
+        # Behavioral risk is only worth surfacing when the deterministic
+        # check hasn't already flagged this feed — otherwise it is a
+        # slower-to-fire duplicate of the same warning.
+        lapse_risk = _lapse_risk_item(comparable_history, name, agency_id)
+        if lapse_risk:
+            items.append(_attach_finding_context(lapse_risk, latest))
+    regression = _regression_item(comparable_history, name, agency_id)
+    if regression:
+        items.append(_attach_finding_context(regression, latest))
+    # Not routed through _attach_finding_context: an export-structure
+    # change is not one of the validator's named findings, so there is no
+    # finding code to link. The plain scorecard URL is the honest link.
+    export_change = _export_change_item(latest, name, agency_id)
+    if export_change:
+        items.append(export_change)
+    items.extend(
+        _attach_finding_context(item, latest)
+        for item in _anomaly_alert_items(comparable_history, agency_id, name)
+    )
+    return items
+
+
+def alert_urgency(item: AlertItem) -> tuple[int, int, str]:
+    """Sort key for alert items, most urgent first.
+
+    Expiry first (soonest or most overdue first), then behavioral lapse risk
+    (the early warning), then regressions, then structural export changes (a
+    concrete, dated event but not yet known to have moved the grade), then
+    anomalies.
+    """
+    if item.kind == "expiry":
+        days = item.days_until_expiry
+        return (0, days if days is not None else 9999, item.agency_id)
+    if item.kind == "lapse_risk":
+        return (1, 0, item.agency_id)
+    if item.kind == "anomaly":
+        return (4, 0, item.agency_id)
+    if item.kind == "export_change":
+        return (3, 0, item.agency_id)
+    return (2, 0, item.agency_id)
+
+
+def build_digest(
     today: dt.date | None = None,
     expiry_days: int = DEFAULT_EXPIRY_DAYS,
 ) -> Digest:
@@ -446,58 +511,17 @@ def build_digest(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         # history on disk, but do not send a new alert for the alias.
         if agency_id not in current_ids:
             continue
-        history = entry.get("history", [])
-        comparable_history = current_producer_contract_suffix(history)
-        latest = _load_json(root / agency_id / "latest.json")
-        expiry = None
-        if latest:
-            expiry = _expiry_item(latest, expiry_days)
-            if expiry:
-                items.append(expiry)
-        if not expiry:
-            # Behavioral risk is only worth surfacing when the deterministic
-            # check hasn't already flagged this feed — otherwise it is a
-            # slower-to-fire duplicate of the same warning.
-            lapse_risk = _lapse_risk_item(
-                comparable_history, entry.get("name", agency_id), agency_id
-            )
-            if lapse_risk:
-                items.append(_attach_finding_context(lapse_risk, latest))
-        regression = _regression_item(comparable_history, entry.get("name", agency_id), agency_id)
-        if regression:
-            items.append(_attach_finding_context(regression, latest))
-        # Not routed through _attach_finding_context: an export-structure
-        # change is not one of the validator's named findings, so there is no
-        # finding code to link. The plain scorecard URL is the honest link.
-        export_change = _export_change_item(latest, entry.get("name", agency_id), agency_id)
-        if export_change:
-            items.append(export_change)
         items.extend(
-            _attach_finding_context(item, latest)
-            for item in _anomaly_alert_items(
-                comparable_history,
-                agency_id,
-                entry.get("name", agency_id),
+            feed_alert_items(
+                entry.get("history", []),
+                _load_json(root / agency_id / "latest.json"),
+                agency_id=agency_id,
+                name=entry.get("name", agency_id),
+                expiry_days=expiry_days,
             )
         )
 
-    def _urgency(item: AlertItem) -> tuple[int, int, str]:
-        # Expiry first (soonest/most overdue first), then behavioral lapse
-        # risk (the early warning), then regressions, then structural export
-        # changes (a concrete, dated event but not yet known to have moved
-        # the grade), then anomalies.
-        if item.kind == "expiry":
-            days = item.days_until_expiry
-            return (0, days if days is not None else 9999, item.agency_id)
-        if item.kind == "lapse_risk":
-            return (1, 0, item.agency_id)
-        if item.kind == "anomaly":
-            return (4, 0, item.agency_id)
-        if item.kind == "export_change":
-            return (3, 0, item.agency_id)
-        return (2, 0, item.agency_id)
-
-    items.sort(key=_urgency)
+    items.sort(key=alert_urgency)
     return Digest(as_of=as_of, items=items)
 
 

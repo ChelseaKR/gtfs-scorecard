@@ -358,6 +358,10 @@ def test_single_feed_options_are_refused_with_batch(tmp_path: Path) -> None:
         ["--min-days-to-expiry", "30"],
         ["--country", "CA"],
         ["--large-feed"],
+        # `try --history` is written by the single-feed path only. Without this
+        # the batch takes the flag and records nothing, which is the silent
+        # ignore the refusal list exists to prevent.
+        ["--history", "hist"],
     ):
         with pytest.raises(SystemExit) as exc:
             _batch(path, tmp_path / "out", *extra)

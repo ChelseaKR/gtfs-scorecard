@@ -79,6 +79,10 @@ inputs:
     description: "Directory the feed's files sit in inside the repository being annotated (for example gtfs/). Leave blank when the feed is a zip or sits at the repository root."
     required: false
     default: ""
+  history-path:
+    description: "Directory for a private run history. Each run appends one record for the feed, counts and codes only, and nothing is published; read it back with scorecard trend. Keep the directory between runs with actions/cache or by committing it. Leave blank to skip."
+    required: false
+    default: ""
   ref:
     description: "Deprecated compatibility input. The scorer is bundled with the Action release, so its version always matches the Action ref."
     required: false
@@ -114,6 +118,7 @@ runs:
         FAIL_ON_REGRESSION: ${{ inputs.fail-on-regression }}
         SARIF_OUT: ${{ inputs.sarif }}
         SARIF_BASE: ${{ inputs.sarif-base }}
+        HISTORY_PATH: ${{ inputs.history-path }}
         # Keep the downloaded Action tree immutable and all feed/validator
         # scratch data under the runner's temporary directory.
         SCORECARD_ROOT: ${{ runner.temp }}/gtfs-scorecard-work
@@ -132,6 +137,7 @@ runs:
         # is indistinguishable from a clean feed in the Security tab.
         if [[ -n "$SARIF_OUT" ]]; then args+=(--sarif "$SARIF_OUT"); fi
         if [[ -n "$SARIF_BASE" ]]; then args+=(--sarif-base "$SARIF_BASE"); fi
+        if [[ -n "$HISTORY_PATH" ]]; then args+=(--history "$HISTORY_PATH"); fi
         args+=(--json-out "$result_json")
         set +e
         uv run --project "${GITHUB_ACTION_PATH}/pipeline" --locked --no-dev \
