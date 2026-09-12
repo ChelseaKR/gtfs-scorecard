@@ -6,9 +6,18 @@
 # (auth NONE) Lambda function URLs — the same reason infra/alerts uses API GW.
 # The handler reads the standard v2 payload shape that both emit.
 #
-# Build the deployment package before applying:
-#   pip install ../../pipeline -t build && cp handler.py build/
-#   terraform init && terraform apply
+# Build the deployment package before applying, from the repository root:
+#   scripts/build-lambda-package.sh infra/submit
+#   terraform -chdir=infra/submit init && terraform -chdir=infra/submit apply
+#
+# The line this replaced was `pip install ../../pipeline -t build`, which on a
+# Mac vendors macOS wheels into a package the Linux runtime unpacks and cannot
+# load. This handler happens to survive that: its import chain reaches only
+# PyYAML's compiled parser, which PyYAML itself falls back from
+# (`__with_libyaml__ = False`), so the live Lambda is not broken today. It is
+# one import away from being broken silently, and the package ships five
+# unusable binaries either way, so it is built the same checked way as
+# infra/program-bundle, where the same line does fail on import.
 
 terraform {
   required_version = ">= 1.5"

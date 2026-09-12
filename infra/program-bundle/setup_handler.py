@@ -5,10 +5,13 @@ Two routes on the program-bundle API, both stateless per request:
 ``POST /setup``
     The page a buyer lands on after Stripe Checkout posts here with the
     Checkout Session id and the program details (name, accent, logo, agency
-    ids). The handler confirms with Stripe that the session is *paid*, mints
-    a bundle id, validates the request with the pipeline's own parse_request,
-    stores the capability row, records the session so a replayed form cannot
-    dispatch twice, dispatches report-bundle.yml, and for a subscription
+    ids). The handler confirms with Stripe that the session is *paid* and
+    that its one line item is one of this product's four prices (a paid
+    checkout for anything else on the same Stripe account builds nothing),
+    mints a bundle id, validates the request with the pipeline's own
+    parse_request held to the agency cap of the price that was bought,
+    records the session so a replayed form cannot dispatch twice, stores the
+    capability row, dispatches report-bundle.yml, and for a subscription
     stores the request so the weekly refresh can re-dispatch it.
 
 ``GET /download/{bundle_id}``
@@ -20,7 +23,8 @@ Two routes on the program-bundle API, both stateless per request:
 
 Payment is the only gate. There is no account and no password; the
 capability in the email is the credential, the same posture as the alerts
-confirm link.
+confirm link. The setup route also refuses outright unless PAYMENTS_ENABLED
+is "1", the same Terraform gate that decides whether the route exists.
 """
 
 from __future__ import annotations
@@ -31,11 +35,15 @@ import urllib.parse
 from typing import Any
 
 from common import (
+    PLAN_AGENCY_CAPS,
+    SUBSCRIPTION_PLANS,
     UpstreamError,
     bundle_row,
+    checkout_plan,
     dispatch_bundle_workflow,
     html_response,
     json_response,
+    payments_enabled,
     stripe_get,
     table,
     workflow_inputs,
@@ -47,21 +55,19 @@ PRESIGN_SECONDS = 15 * 60
 _SESSION_ID_MAX = 200
 
 
-def _cadence_for(session: dict[str, Any]) -> str:
-    return "monthly" if session.get("mode") == "subscription" else "one_time"
-
-
-def _session_row(session_id: str, bundle_id: str) -> dict[str, Any]:
+def _session_row(session_id: str, bundle_id: str, plan: str) -> dict[str, Any]:
     """Marks a Checkout Session as consumed. Shares the bundles table under a
-    ``session#`` key so one conditional put is the whole idempotency check."""
-    return {"bundle_id": f"session#{session_id}", "consumed_by": bundle_id}
+    ``session#`` key so one conditional put is the whole idempotency check.
+    No ``expires_at``: the claim must outlive the capability row, or a replay
+    after 30 days would build a second bundle from one payment."""
+    return {"bundle_id": f"session#{session_id}", "consumed_by": bundle_id, "plan": plan}
 
 
-def _claim_session(bundles: Any, session_id: str, bundle_id: str) -> bool:
+def _claim_session(bundles: Any, session_id: str, bundle_id: str, plan: str) -> bool:
     """Atomically claim the session; False if it was already used."""
     try:
         bundles.put_item(
-            Item=_session_row(session_id, bundle_id),
+            Item=_session_row(session_id, bundle_id, plan),
             ConditionExpression="attribute_not_exists(bundle_id)",
         )
     except Exception as err:  # boto3's ConditionalCheckFailedException, by name
@@ -71,7 +77,73 @@ def _claim_session(bundles: Any, session_id: str, bundle_id: str) -> bool:
     return True
 
 
+class _Refused(Exception):
+    """Carries the response to send instead of building anything.
+
+    The checks in ``_paid_purchase`` each have their own status and their own
+    sentence for the buyer, and every one of them means "nothing was built".
+    Raising them keeps ``setup`` a list of steps rather than a ladder.
+    """
+
+    def __init__(self, response: dict[str, Any]) -> None:
+        super().__init__(str(response.get("statusCode")))
+        self.response = response
+
+
+def _paid_purchase(session_id: str) -> tuple[dict[str, Any], str, str]:
+    """The Checkout Session, the price it was for, and the plan that price
+    sells. Raises ``_Refused`` when the session was not a paid purchase of one
+    of this product's four prices.
+
+    Two reads, not one. That the session is *paid* says only that money moved
+    on this Stripe account; what was *bought* is in the line items, and it is
+    what decides both whether to build at all and how many agencies the buyer
+    is entitled to.
+    """
+    try:
+        session = stripe_get(f"/v1/checkout/sessions/{urllib.parse.quote(session_id, safe='')}")
+    except UpstreamError as err:
+        raise _Refused(
+            json_response(502, {"ok": False, "error": "Could not confirm the payment yet."})
+        ) from err
+    if session.get("payment_status") != "paid":
+        raise _Refused(
+            json_response(402, {"ok": False, "error": "This checkout has not been paid."})
+        )
+
+    try:
+        bought = checkout_plan(session_id)
+    except UpstreamError as err:
+        # Stripe is unreachable, or the restricted key cannot read line items.
+        # Either way this is "not yet", never "build it anyway".
+        raise _Refused(
+            json_response(502, {"ok": False, "error": "Could not confirm the payment yet."})
+        ) from err
+    if bought is None:
+        raise _Refused(
+            json_response(
+                403,
+                {
+                    "ok": False,
+                    "error": "This checkout was not for a GTFS Scorecard report bundle, "
+                    "so nothing was built.",
+                },
+            )
+        )
+    price, plan = bought
+    return session, price, plan
+
+
 def setup(event: dict[str, Any]) -> dict[str, Any]:
+    if not payments_enabled():
+        return json_response(
+            503,
+            {
+                "ok": False,
+                "error": "Setup is closed right now, so nothing was built. "
+                "Your checkout has not been used; try again later.",
+            },
+        )
     try:
         form = json.loads(event.get("body") or "{}")
     except ValueError:
@@ -84,11 +156,9 @@ def setup(event: dict[str, Any]) -> dict[str, Any]:
         return json_response(400, {"ok": False, "error": "The checkout reference is missing."})
 
     try:
-        session = stripe_get(f"/v1/checkout/sessions/{urllib.parse.quote(session_id, safe='')}")
-    except UpstreamError:
-        return json_response(502, {"ok": False, "error": "Could not confirm the payment yet."})
-    if session.get("payment_status") != "paid":
-        return json_response(402, {"ok": False, "error": "This checkout has not been paid."})
+        session, price, plan = _paid_purchase(session_id)
+    except _Refused as refused:
+        return refused.response
 
     details = session.get("customer_details") or {}
     raw = {
@@ -98,15 +168,17 @@ def setup(event: dict[str, Any]) -> dict[str, Any]:
         "logo": form.get("logo", ""),
         "agency_ids": form.get("agency_ids", ""),
         "deliver_to": form.get("deliver_to") or details.get("email") or "",
-        "cadence": _cadence_for(session),
+        "cadence": "monthly" if plan in SUBSCRIPTION_PLANS else "one_time",
     }
     try:
-        request = parse_request(raw)
+        # Validated before the session is claimed, so a list over the plan's
+        # cap can be trimmed and sent again with the same checkout.
+        request = parse_request(raw, max_agencies=PLAN_AGENCY_CAPS[plan])
     except BundleError as err:
         return json_response(400, {"ok": False, "error": str(err)})
 
     bundles = table("BUNDLES_TABLE")
-    if not _claim_session(bundles, session_id, request.bundle_id):
+    if not _claim_session(bundles, session_id, request.bundle_id, plan):
         return json_response(
             409, {"ok": False, "error": "This checkout already produced a bundle."}
         )
@@ -118,6 +190,10 @@ def setup(event: dict[str, Any]) -> dict[str, Any]:
                 "id": str(session["subscription"]),
                 "status": "active",
                 "customer": str(session.get("customer") or ""),
+                # The refresh re-checks this against the configured prices, so
+                # a row left over from test mode never builds in live mode.
+                "price": price,
+                "plan": plan,
                 "deliver_to": request.deliver_to,
                 "request": json.dumps(request.as_dict()),
                 "created_at": bundle_row(request.as_dict(), source="checkout")["created_at"],

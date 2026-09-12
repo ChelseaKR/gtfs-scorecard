@@ -29,6 +29,25 @@ the declared public surface).
 
 ### Fixed
 
+- **The documented baseline example pinned a floating major, and it had `main`
+  red since it merged (2026-09-09).** `docs/ci-action.md`'s "Comparing against
+  a baseline" snippet read `uses: ChelseaKR/gtfs-scorecard@v1`. That section
+  arrived on a branch cut 28 minutes before the gate forbidding the floating
+  form landed, so it carried the older convention past a check that did not yet
+  exist when it was written. From the merge onward, three tests in
+  `pipeline/tests/test_documented_action_ref.py` failed on `main`
+  (`test_no_public_example_names_a_floating_major`,
+  `test_every_documented_ref_agrees`,
+  `test_the_documented_pin_has_a_changelog_entry`), and because the branch
+  protection here requires branches to be current with `main`, every open pull
+  request inherited the failure with nothing wrong in its own diff. Measured on
+  unmodified `main`: 3 failed, 4 passed on that file; with the pin corrected,
+  7 passed. The pin is `v1.4.0` and not the higher `1.5.0`, which has a
+  changelog section dated 2026-08-18 and no tag: it would satisfy the
+  changelog check and fail `test_the_documented_pin_is_a_tag_that_exists`.
+  The other three examples in the file were already pinned; only this one
+  was not.
+
 - **The weekly history secret scan could not fail on a credential that had
   been revoked (2026-09-06).** `trufflehog.yml` ran `--results=verified`,
   which reports a finding only when TruffleHog presents the credential to the
@@ -76,6 +95,26 @@ the declared public surface).
   the SEC-19 declaration is updated in `docs/standards-conformance-gaps.md`.
 
 ### Added
+
+- **`scorecard retest`: check a new export against an evidence packet
+  (#366).** `scorecard retest PACKET FEED --country CC` scores the feed the
+  way `scorecard try` does and reports each packet finding as cleared, still
+  present, or not comparable, in a record carrying both feed hashes and both
+  producer contracts (`--json-out`, `--markdown-out`). Exit 0 when every
+  finding is cleared, 1 when any is still present, 2 when it could not judge.
+  The packet is validated before anything is fetched. A different rubric,
+  scoring profile, validator or reader archive profile makes every finding not
+  comparable; a category the retest did not measure makes only its own
+  finding not comparable.
+
+  Building it found the packet's acceptance test passing on unchanged bytes.
+  Over the committed `data/artifacts` snapshot (2,496 packets, 7,412 work
+  items), 8 work items name a notice raised with a count of 0, such as "0 of
+  0 stops don't say whether a wheelchair user can board there", and
+  `acceptance_test_passes` compared that count with the expected 0 and
+  passed. It now requires the notice to be absent, which is what the packet's
+  own method text says. The Action input and the closure receipt are not
+  part of this change.
 
 - **Five more MCP tools, and three things they refuse to say (2026-09-06).**
   `scorecard-mcp` exposed search, one scorecard, and coverage stats; the
@@ -169,6 +208,32 @@ the declared public surface).
   largest-country ceiling, which that gate continues to report honestly as
   unmet.
 
+- **An OpenAPI 3.1 description of the static read API (part of #370).**
+  `web/api/v1/openapi.yaml`, which `pages.yml` already copies to
+  `/api/v1/openapi.yaml` with the rest of `web/`, describes 51 paths: the 46
+  in `docs/api.md`'s two endpoint tables and the 5 its prose names. Each is a
+  `GET` of a static file. The 9 operations with a published JSON Schema
+  reference it; the rest say only that the response is a JSON object and leave
+  `docs/api.md` as the contract for their fields, rather than carrying a schema
+  written for the occasion. The one server entry is relative, so a fork's copy
+  describes the fork.
+
+  Nothing generates the file, so `tests/test_openapi_contract.py` is what keeps
+  it true. It checks the document against the official OpenAPI 3.1
+  meta-schema, vendored and pinned by digest, and holds it to `docs/api.md` in
+  both directions with a floor under each. It resolves 45 of the 51 paths to a
+  file in the golden site and names why the other 6 cannot be there, a list
+  that must equal the unresolved set. It also validates each schema-backed
+  path's golden file against the schema the description names, so a reference
+  to the wrong schema fails. The PyPI and npm clients #370 also asks for need a
+  publishing credential and are not part of this change.
+
+  Writing it corrected two places where `docs/api.md` put a path under the
+  wrong base. `catalog.json` and `catalog.csv` are served from the site root,
+  and their `data/artifacts/` paths return 404. The Atom feed is at
+  `/changes/feed.xml`, and the artifact base does not serve it either. The
+  schema row now lists all eight published schemas rather than four.
+
 - **`scorecard diff`, and an Action baseline that fails closed
   (2026-09-06).** `scorecard diff OLD NEW` compares any two scorecard
   artifacts — file paths, `https` URLs, or `agency@YYYY-MM-DD` /
@@ -255,6 +320,35 @@ the declared public surface).
   The runtime is not flat — 117 to 163 minutes in six days — so the next
   decision is whether to shard the burst or lengthen the cron, and that is
   the owner's.
+
+- **`boxcar`'s published C is withdrawn; the reason it was held back was not
+  true of the code it was written beside.** The 2026-09-05 withdrawal left three
+  grades standing under `not_yet_corrected`, and `boxcar` was held back on the
+  stated ground that its 89 calendar rows make freshness a genuine measurement,
+  that `score_feed_content` therefore does not refuse the feed, and that
+  withdrawing the C would let the next run publish an A for a feed with no stops,
+  no routes and no trips. Checked on 2026-09-06 against the same commit: it does
+  refuse. `FeedDates.has_service_content` had already landed four days earlier
+  (2026-09-02) and gates freshness on stops and trips, not on calendars — the
+  `freshness` docstring names this exact feed as the case it was added for. So no
+  run could publish an A here, or anything else; the scoring decision the
+  hold-back was waiting on had already shipped, and only the withdrawal was
+  outstanding. Because the scorer refuses the archive it writes no artifact, so
+  the stale letter would have stood indefinitely — the same permanence the
+  nineteen withdrawals were about. What was published is worth naming: the same
+  feed scored D (70.0) on 2026-07-10 with 84 stops and 94 trips, and on
+  2026-08-06 its tables emptied and the grade went **up**, to C (73.0), because an
+  archive with nothing in it gives the deduction rules almost nothing to deduct
+  for. Re-fetched from the agency's own URL on 2026-09-06 to confirm the archive
+  is still header-only (HTTP 200, 5,544 bytes). `corrections.yaml` carries the
+  entry with its evidence, the current pointers and the `index.json` entry are
+  removed, and the 23 dated artifacts are kept, so a run that reads a real feed
+  here supersedes the withdrawal on its own. A regression test now pins the
+  refusal against `boxcar`'s exact archive shape — 89 calendar rows and a valid
+  `feed_info` window over header-only tables. The existing refusal test could not
+  have caught the false claim: it uses a zip with no GTFS members at all, which
+  trips `has_date_tables` and `has_service_content` together and so says nothing
+  about the combination that actually reached the public site.
 
 - **`scorecard lint` reported and never said whether it passed.**
   `docs/add-your-agency.md` sends a first-time contributor to

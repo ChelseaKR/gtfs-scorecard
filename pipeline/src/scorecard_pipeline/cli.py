@@ -1837,6 +1837,60 @@ def _cmd_evidence_packet(args: argparse.Namespace, parser: argparse.ArgumentPars
     return 0
 
 
+def _cmd_retest(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Score a new export and check it against an evidence packet (#366).
+
+    The packet is read and validated before anything is fetched, so a refused
+    packet costs no download and no validator run. Exit 0 when every packet
+    finding is cleared, 1 when any is still present, and 2 for anything this
+    command could not judge: a refused packet, a feed that could not be scored,
+    or a finding that is not comparable.
+    """
+    from .retest import (
+        PacketError,
+        build_retest_record,
+        describe_source,
+        render_retest_markdown,
+        retest_exit_code,
+        validate_packet,
+    )
+
+    packet_path = Path(args.packet)
+    try:
+        packet = validate_packet(json.loads(packet_path.read_text()))
+    except (OSError, json.JSONDecodeError, PacketError) as exc:
+        log.error("refusing %s before fetching anything: %s", packet_path, exc)
+        return 2
+    try:
+        artifact, _report = run_adhoc_detailed(
+            args.feed,
+            args.name or str(packet["agency"].get("name") or "") or None,
+            args.date,
+            country=args.country,
+            large_feed=args.large_feed,
+        )
+    except Exception as exc:
+        # The same breadth `scorecard try` catches. Here it is exit 2, not 1: a
+        # feed nobody could read is a retest nobody could judge, not a finding
+        # that is still present.
+        log.error("could not score %s: %s", args.feed, exc)
+        return 2
+    record = build_retest_record(
+        packet, artifact, retest_source=describe_source(args.feed), country=args.country
+    )
+    markdown = render_retest_markdown(record)
+    if args.json_out:
+        out = Path(args.json_out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+    if args.markdown_out:
+        out = Path(args.markdown_out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(markdown)
+    print(markdown, end="")
+    return retest_exit_code(record)
+
+
 def _cmd_fix_outcomes(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     """Measure finding resolution and recurrence from dated artifacts on disk."""
     from .config import artifacts_dir
@@ -3918,6 +3972,46 @@ def main(argv: list[str] | None = None) -> int:
     evidence_packet.add_argument("--scorecard-url", help="override the canonical scorecard URL")
     evidence_packet.add_argument("--out", help="write the packet here instead of stdout")
 
+    retest = sub.add_parser(
+        "retest",
+        help=(
+            "score a new export and check it against an evidence packet's acceptance "
+            "tests: cleared, still present, or not comparable (#366)"
+        ),
+    )
+    retest.add_argument(
+        "packet", help="evidence packet JSON written by `scorecard evidence-packet --format json`"
+    )
+    retest.add_argument("feed", help="direct link or local path to the new GTFS Schedule zip")
+    retest.add_argument(
+        "--country",
+        type=_country_arg,
+        required=True,
+        help=(
+            "ISO 3166-1 alpha-2 country the packet's scorecard was scored under; the packet "
+            "does not record it, and the validator's country setting changes some checks"
+        ),
+    )
+    retest.add_argument(
+        "--name", help="agency name for the scratch scorecard (default: the packet's)"
+    )
+    retest.add_argument(
+        "--date",
+        type=dt.date.fromisoformat,
+        default=utc_today(),
+        help="snapshot date to score the export under (default: today in UTC)",
+    )
+    retest.add_argument(
+        "--large-feed",
+        action="store_true",
+        help="apply the large-feed ingestion ceilings, as `scorecard try --large-feed` does",
+    )
+    retest.add_argument("--json-out", help="also write the retest record as JSON to this path")
+    retest.add_argument(
+        "--markdown-out", help="also write the retest record as Markdown to this path"
+    )
+    retest.set_defaults(registry_free=True)
+
     fix_outcomes = sub.add_parser(
         "fix-outcomes",
         help="measure finding resolution time and recurrence from dated artifact history",
@@ -4391,7 +4485,11 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     `diff` reads two artifacts it was handed; none looks an agency up, so none
     pays for the registry.
     """
-    if args.command not in {"try", "otp-build-check", "diff"}:
+    # A subcommand that never looks an agency up can also say so on its own
+    # parser, with ``set_defaults(registry_free=True)``.
+    if args.command not in {"try", "otp-build-check", "diff"} and not getattr(
+        args, "registry_free", False
+    ):
         load_agencies()
         agency_id = getattr(args, "agency", None)
         if agency_id and agency_id not in AGENCIES:
@@ -4409,6 +4507,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "vendor-report": _cmd_vendor_report,
         "vendor-radar": _cmd_vendor_radar,
         "evidence-packet": _cmd_evidence_packet,
+        "retest": _cmd_retest,
         "fix-outcomes": _cmd_fix_outcomes,
         "dataset": _cmd_dataset,
         "sensitivity": _cmd_sensitivity,
