@@ -1,0 +1,628 @@
+# Hand-maintained. render-site does not generate this file; pages.yml copies it
+# with the rest of web/ to /api/v1/openapi.yaml. docs/api.md is the contract it
+# describes, and pipeline/tests/test_openapi_contract.py holds the two together
+# in both directions, against the golden site, and against the OpenAPI 3.1
+# meta-schema. Edit docs/api.md and this file in the same change.
+openapi: 3.1.0
+info:
+  title: GTFS Scorecard read API
+  version: v1
+  summary: The static files the scorecard publishes, described as a read API.
+  description: |
+    The scorecard publishes static files and nothing else: no query server, no
+    authentication, and no write path. Every path below is a file on the host
+    that serves this document. `docs/api.md` is the prose contract; this file
+    describes the same paths in a form tools can read, and adds none.
+
+    Where a document carries a `schema_version`, tolerate added fields and treat
+    a change in the major version as a breaking change worth pinning against.
+    `x-artifact-schema-version-major` names the major version of the per-agency
+    artifact this description was written against.
+
+    Where a path has a JSON Schema under `/schemas/`, its response references it.
+    Where none exists, the response says only that it is a JSON object, and
+    `docs/api.md` stays the contract for its fields.
+
+    The data is offered under CC BY 4.0. Reuse it, including commercially, with
+    the attribution in `x-attribution`. A grade is a derived data-quality
+    signal, not a compliance determination.
+  license:
+    name: Creative Commons Attribution 4.0 International
+    identifier: CC-BY-4.0
+  x-attribution: GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator
+  x-artifact-schema-version-major: "1"
+externalDocs:
+  description: The prose contract for every path described here.
+  url: https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/api.md
+servers:
+  - url: /
+    description: >-
+      The host serving this document. Relative, so a fork's copy describes the
+      fork rather than gtfsscorecard.org.
+tags:
+  - name: artifacts
+    description: Per-agency scorecards, badges, rollups, and whole-catalog documents under `/data/artifacts/`.
+  - name: site
+    description: Catalog, flat export, NTD readiness, and change-feed files at the site root.
+  - name: api-v1
+    description: >-
+      Cross-agency views under the versioned `/api/v1/` path. Fields may be
+      added; existing fields keep their meaning and type; a breaking change
+      lands at `/api/v2/`.
+  - name: schemas
+    description: JSON Schemas (Draft 2020-12) that the documents above validate against.
+
+paths:
+  # --- /data/artifacts/ -------------------------------------------------------
+  /data/artifacts/index.json:
+    get:
+      operationId: getArtifactIndex
+      tags: [artifacts]
+      summary: Every published feed record with its score and grade history.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /data/artifacts/directory.json:
+    get:
+      operationId: getDirectory
+      tags: [artifacts]
+      summary: The covered-set directory, one row per published scorecard plus guarded summaries.
+      description: Individual percentiles are not published; the legacy percentile keys stay present as `null`.
+      responses:
+        "200": {$ref: "#/components/responses/Directory"}
+  /data/artifacts/scoring.json:
+    get:
+      operationId: getScoring
+      tags: [artifacts]
+      summary: Machine-readable methodology, with category weights, grade bands, and correctness severity deductions.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /data/artifacts/changes/latest.json:
+    get:
+      operationId: getLatestChanges
+      tags: [artifacts]
+      summary: Feed records whose grade or score moved under the same producer contract since their last check.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /data/artifacts/changes/{date}.json:
+    get:
+      operationId: getChangesOnDate
+      tags: [artifacts]
+      summary: An immutable dated copy of the change list.
+      description: Kept only when it carries the full comparison contract; pre-contract snapshots were withdrawn.
+      parameters:
+        - $ref: "#/components/parameters/date"
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /data/artifacts/{agency_id}/latest.json:
+    get:
+      operationId: getAgencyLatest
+      tags: [artifacts]
+      summary: The most recent full scorecard for one feed record.
+      parameters:
+        - $ref: "#/components/parameters/agency_id"
+      responses:
+        "200": {$ref: "#/components/responses/Artifact"}
+        "404": {$ref: "#/components/responses/NoCurrentFile"}
+  /data/artifacts/{agency_id}/{date}.json:
+    get:
+      operationId: getAgencyOnDate
+      tags: [artifacts]
+      summary: One feed record's scorecard on one date.
+      description: Immutable once written and retained, so a consumer can pin a date as a stable reference.
+      parameters:
+        - $ref: "#/components/parameters/agency_id"
+        - $ref: "#/components/parameters/date"
+      responses:
+        "200": {$ref: "#/components/responses/Artifact"}
+  /data/artifacts/{agency_id}/badge.svg:
+    get:
+      operationId: getAgencyBadgeSvg
+      tags: [artifacts]
+      summary: A self-contained SVG grade badge, regenerated with the rest of the artifacts.
+      parameters:
+        - $ref: "#/components/parameters/agency_id"
+      responses:
+        "200": {$ref: "#/components/responses/Svg"}
+        "404": {$ref: "#/components/responses/NoCurrentFile"}
+  /data/artifacts/{agency_id}/badge.json:
+    get:
+      operationId: getAgencyBadgeJson
+      tags: [artifacts]
+      summary: The same grade in the Shields.io endpoint format.
+      parameters:
+        - $ref: "#/components/parameters/agency_id"
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+        "404": {$ref: "#/components/responses/NoCurrentFile"}
+  /data/artifacts/rollups/index.json:
+    get:
+      operationId: getRollupIndex
+      tags: [artifacts]
+      summary: Every published program rollup, summarized.
+      responses:
+        "200": {$ref: "#/components/responses/RollupIndex"}
+  /data/artifacts/rollups/{rollup_id}.json:
+    get:
+      operationId: getRollup
+      tags: [artifacts]
+      summary: One rollup across many agencies.
+      parameters:
+        - $ref: "#/components/parameters/rollup_id"
+      responses:
+        "200": {$ref: "#/components/responses/Rollup"}
+  /data/artifacts/rollups/{rollup_id}.csv:
+    get:
+      operationId: getRollupCsv
+      tags: [artifacts]
+      summary: The same rollup's members as a spreadsheet.
+      parameters:
+        - $ref: "#/components/parameters/rollup_id"
+      responses:
+        "200": {$ref: "#/components/responses/Csv"}
+
+  # --- site root --------------------------------------------------------------
+  /catalog.json:
+    get:
+      operationId: getCatalog
+      tags: [site]
+      summary: Flat list of every agency with grade, feed URL, freshness, identity, and provenance.
+      responses:
+        "200": {$ref: "#/components/responses/Catalog"}
+  /catalog.csv:
+    get:
+      operationId: getCatalogCsv
+      tags: [site]
+      summary: The same catalog as CSV.
+      responses:
+        "200": {$ref: "#/components/responses/Csv"}
+  /dataset.json:
+    get:
+      operationId: getDataset
+      tags: [site]
+      summary: The flat analysis export.
+      description: >-
+        Its `schema_version` is the export's own shape; `pipeline_schema_version`
+        names the artifact schema it was derived from.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /dataset.csv:
+    get:
+      operationId: getDatasetCsv
+      tags: [site]
+      summary: The same flat export as CSV.
+      responses:
+        "200": {$ref: "#/components/responses/Csv"}
+  /ntd.json:
+    get:
+      operationId: getNtdReadiness
+      tags: [site]
+      summary: FTA NTD GTFS-readiness rolled up over tracked feed records.
+      description: >-
+        Its `reporter_coverage` block counts NTD reporters, a different unit that
+        must never be added to a feed-record count.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /changes/feed.xml:
+    get:
+      operationId: getChangeFeed
+      tags: [site]
+      summary: Atom feed of named changes.
+      description: >-
+        Wider than `/data/artifacts/changes/latest.json`: it also carries
+        `export_change` entries for structural moves in the feed file that did
+        not change the grade.
+      responses:
+        "200": {$ref: "#/components/responses/AtomFeed"}
+
+  # --- /api/v1/ ---------------------------------------------------------------
+  /api/v1/index.json:
+    get:
+      operationId: getApiIndex
+      tags: [api-v1]
+      summary: The API's self-description, with version, endpoint list, license, and attribution.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/openapi.yaml:
+    get:
+      operationId: getOpenApiDescription
+      tags: [api-v1]
+      summary: This document.
+      responses:
+        "200": {$ref: "#/components/responses/Yaml"}
+  /api/v1/agencies.json:
+    get:
+      operationId: getAgencies
+      tags: [api-v1]
+      summary: Every published feed record's latest check in one list.
+      description: "`realtime` is null when not measured."
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/agencies.parquet:
+    get:
+      operationId: getAgenciesParquet
+      tags: [api-v1]
+      summary: The covered-set table as Apache Parquet, for SQL with no query server.
+      responses:
+        "200": {$ref: "#/components/responses/Parquet"}
+  /api/v1/leaderboard.json:
+    get:
+      operationId: getLeaderboard
+      tags: [api-v1]
+      summary: Compatibility path for named changes.
+      description: >-
+        `top` and `bottom` are always empty; `most_improved` and `most_declined`
+        compare a feed only with its own prior check under the same producer
+        contract.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/by-state.json:
+    get:
+      operationId: getByState
+      tags: [api-v1]
+      summary: Legacy U.S.-state rollups.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/by-location.json:
+    get:
+      operationId: getByLocation
+      tags: [api-v1]
+      summary: Country rollups with nested ISO 3166-2 subdivisions.
+      responses:
+        "200": {$ref: "#/components/responses/ByLocation"}
+  /api/v1/stats.json:
+    get:
+      operationId: getStats
+      tags: [api-v1]
+      summary: Covered-row count and current-feed share, plus score aggregates over the guarded cohort.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/coverage.json:
+    get:
+      operationId: getCoverage
+      tags: [api-v1]
+      summary: Separately named registry, organization-key, published-page, and scored-row counts.
+      responses:
+        "200": {$ref: "#/components/responses/Coverage"}
+  /api/v1/equity.json:
+    get:
+      operationId: getEquity
+      tags: [api-v1]
+      summary: United States-only state ACS need tiers joined to agency grades.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/ids.json:
+    get:
+      operationId: getIds
+      tags: [api-v1]
+      summary: Identity crosswalk from scorecard slug to Mobility Database id, NTD id, and feed URL.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/ridership-impact.json:
+    get:
+      operationId: getRidershipImpact
+      tags: [api-v1]
+      summary: United States-only quality context weighted by NTD annual rider-trips.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+        "404":
+          description: Not published. The file is written only when the daily NTD fetch succeeded.
+  /api/v1/scoring.json:
+    get:
+      operationId: getApiScoring
+      tags: [api-v1]
+      summary: The same methodology as `/data/artifacts/scoring.json`, served under the versioned path.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/accessibility.json:
+    get:
+      operationId: getAccessibility
+      tags: [api-v1]
+      summary: Accessibility-data completeness, overall and by country and subdivision.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/adoption.json:
+    get:
+      operationId: getAdoption
+      tags: [api-v1]
+      summary: Which optional GTFS capabilities feeds publish, overall and by country and subdivision.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/features.json:
+    get:
+      operationId: getFeatures
+      tags: [api-v1]
+      summary: Every current feed record with filterable modes, capability flags, and accessibility completeness.
+      description: Unknown measurements are `null`, never `false`.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/global-coverage.json:
+    get:
+      operationId: getGlobalCoverage
+      tags: [api-v1]
+      summary: Auditable readiness gate for a bounded European GTFS Schedule beta.
+      description: "`not_ready` is a valid result, not an API failure."
+      responses:
+        "200": {$ref: "#/components/responses/GlobalCoverage"}
+  /api/v1/realtime.json:
+    get:
+      operationId: getRealtime
+      tags: [api-v1]
+      summary: Realtime reliability over sampled windows, overall and by country and subdivision.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/problems.json:
+    get:
+      operationId: getProblems
+      tags: [api-v1]
+      summary: The most common validator findings across the covered corpus, with prevalence counts.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/trend.json:
+    get:
+      operationId: getTrend
+      tags: [api-v1]
+      summary: The covered-set quality time series.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/status.json:
+    get:
+      operationId: getStatus
+      tags: [api-v1]
+      summary: Intended cadence plus liveness outcomes for the current published artifact index.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+  /api/v1/run-status.json:
+    get:
+      operationId: getRunStatus
+      tags: [api-v1]
+      summary: Latest completed-run evidence.
+      responses:
+        "200":
+          description: >-
+            A JSON object, or JSON `null` when no scoring run has published a
+            summary yet. `null` means "not published yet", not an empty run.
+          headers:
+            Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+          content:
+            application/json:
+              schema:
+                type: [object, "null"]
+  /api/v1/canada-equity.json:
+    get:
+      operationId: getCanadaEquity
+      tags: [api-v1]
+      summary: Canada served-area equity overlay (StatCan CIMD), refreshed monthly.
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+        "404":
+          description: Not published. The file appears once the monthly job has run.
+
+  # --- /schemas/ --------------------------------------------------------------
+  /schemas/artifact.schema.json:
+    get:
+      operationId: getArtifactSchema
+      tags: [schemas]
+      summary: JSON Schema for the per-agency artifact.
+      responses:
+        "200": {$ref: "#/components/responses/JsonSchema"}
+  /schemas/catalog.schema.json:
+    get:
+      operationId: getCatalogSchema
+      tags: [schemas]
+      summary: JSON Schema for the catalog.
+      responses:
+        "200": {$ref: "#/components/responses/JsonSchema"}
+  /schemas/directory.schema.json:
+    get:
+      operationId: getDirectorySchema
+      tags: [schemas]
+      summary: JSON Schema for the directory.
+      responses:
+        "200": {$ref: "#/components/responses/JsonSchema"}
+  /schemas/coverage.schema.json:
+    get:
+      operationId: getCoverageSchema
+      tags: [schemas]
+      summary: JSON Schema for the coverage counts.
+      responses:
+        "200": {$ref: "#/components/responses/JsonSchema"}
+  /schemas/rollup.schema.json:
+    get:
+      operationId: getRollupSchema
+      tags: [schemas]
+      summary: JSON Schema for one rollup.
+      responses:
+        "200": {$ref: "#/components/responses/JsonSchema"}
+  /schemas/rollup-index.schema.json:
+    get:
+      operationId: getRollupIndexSchema
+      tags: [schemas]
+      summary: JSON Schema for the rollup index.
+      responses:
+        "200": {$ref: "#/components/responses/JsonSchema"}
+  /schemas/by-location.schema.json:
+    get:
+      operationId: getByLocationSchema
+      tags: [schemas]
+      summary: JSON Schema for the location rollups.
+      responses:
+        "200": {$ref: "#/components/responses/JsonSchema"}
+  /schemas/global-coverage.schema.json:
+    get:
+      operationId: getGlobalCoverageSchema
+      tags: [schemas]
+      summary: JSON Schema for the global-coverage gate.
+      responses:
+        "200": {$ref: "#/components/responses/JsonSchema"}
+  /schemas/sync-source-metadata-1.1.schema.json:
+    get:
+      operationId: getSyncSourceMetadata11Schema
+      tags: [schemas]
+      summary: Immutable 1.1 contract for catalog-sync provenance sidecars.
+      responses:
+        "200": {$ref: "#/components/responses/JsonSchema"}
+  /schemas/sync-source-metadata-1.2.schema.json:
+    get:
+      operationId: getSyncSourceMetadata12Schema
+      tags: [schemas]
+      summary: Immutable 1.2 contract for catalog-sync provenance sidecars.
+      responses:
+        "200": {$ref: "#/components/responses/JsonSchema"}
+
+components:
+  parameters:
+    agency_id:
+      name: agency_id
+      in: path
+      required: true
+      description: >-
+        A published feed record's id, as listed in `/data/artifacts/index.json`.
+        `changes`, `rollups` and `run` are reserved and are never agency ids.
+      schema:
+        type: string
+        pattern: "^[a-z0-9][a-z0-9-]*$"
+    date:
+      name: date
+      in: path
+      required: true
+      description: A snapshot date, `YYYY-MM-DD`.
+      schema:
+        type: string
+        pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    rollup_id:
+      name: rollup_id
+      in: path
+      required: true
+      description: A rollup id, as listed in `/data/artifacts/rollups/index.json`.
+      schema:
+        type: string
+        pattern: "^[a-z0-9-]+$"
+  headers:
+    AccessControlAllowOrigin:
+      description: Every file is served with `*`, so it can be read from a browser or an edge function.
+      schema:
+        type: string
+        const: "*"
+  responses:
+    JsonObject:
+      description: A JSON object. `docs/api.md` is the contract for its fields.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        application/json:
+          schema:
+            type: object
+    Artifact:
+      description: One scorecard. The pipeline validates every artifact against this schema before writing it.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        application/json:
+          schema:
+            $ref: /schemas/artifact.schema.json
+    Catalog:
+      description: The catalog.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        application/json:
+          schema:
+            $ref: /schemas/catalog.schema.json
+    Directory:
+      description: The directory.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        application/json:
+          schema:
+            $ref: /schemas/directory.schema.json
+    Coverage:
+      description: The coverage counts.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        application/json:
+          schema:
+            $ref: /schemas/coverage.schema.json
+    GlobalCoverage:
+      description: The global-coverage gate.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        application/json:
+          schema:
+            $ref: /schemas/global-coverage.schema.json
+    ByLocation:
+      description: The location rollups.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        application/json:
+          schema:
+            $ref: /schemas/by-location.schema.json
+    Rollup:
+      description: One rollup.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        application/json:
+          schema:
+            $ref: /schemas/rollup.schema.json
+    RollupIndex:
+      description: The rollup index.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        application/json:
+          schema:
+            $ref: /schemas/rollup-index.schema.json
+    JsonSchema:
+      description: A JSON Schema (Draft 2020-12) document.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        application/json:
+          schema:
+            type: object
+    Csv:
+      description: Comma-separated values with a header row.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        text/csv:
+          schema:
+            type: string
+    Svg:
+      description: An SVG image.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        image/svg+xml:
+          schema:
+            type: string
+    Parquet:
+      description: An Apache Parquet file, served as a generic binary type.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        application/octet-stream: {}
+    AtomFeed:
+      description: An Atom 1.0 feed, served as generic XML.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        application/xml:
+          schema:
+            type: string
+    Yaml:
+      description: A YAML document.
+      headers:
+        Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
+      content:
+        application/yaml:
+          schema:
+            type: string
+    NoCurrentFile:
+      description: >-
+        No current file. The id is unknown, or it is a retired alias whose
+        unversioned current files were removed; its dated snapshots remain.

@@ -12,6 +12,18 @@ lets a make-good re-run happen without waiting a month.
 
 A dispatch failure for one subscription is logged and does not stop the
 others; the next tick tries again because ``last_refresh`` was not moved.
+
+Two more checks before anything is dispatched. A row whose stored price is
+not one of the configured refresh prices is skipped and counted as
+``not_on_plan``: that is a subscription that moved off the refresh prices, or
+a row left over from test mode once live price ids are configured. And the
+whole run does nothing unless PAYMENTS_ENABLED is "1"; the EventBridge rule
+is disabled with the same gate, so this only matters for a hand invoke.
+
+Dry run: with DRY_RUN=1 in the environment, or ``{"dry_run": true}`` as the
+invoke payload, the run scans and logs what it would dispatch (subscription
+id and agency count) and changes nothing: no dispatch, no capability row, no
+``last_refresh``. EventBridge's scheduled event never carries the flag.
 """
 
 from __future__ import annotations
@@ -22,10 +34,13 @@ import os
 from typing import Any
 
 from common import (
+    SUBSCRIPTION_PLANS,
     UpstreamError,
     bundle_row,
     dispatch_bundle_workflow,
     now_iso,
+    payments_enabled,
+    price_plans,
     table,
     workflow_inputs,
 )
@@ -62,13 +77,30 @@ def _scan_all(subscriptions: Any) -> list[dict[str, Any]]:
         kwargs = {"ExclusiveStartKey": start}
 
 
-def refresh(*, subscriptions: Any, bundles: Any, now: dt.datetime | None = None) -> dict[str, int]:
+def refresh(
+    *,
+    subscriptions: Any,
+    bundles: Any,
+    now: dt.datetime | None = None,
+    dry_run: bool = False,
+) -> dict[str, int]:
     """Dispatch a refresh for every due subscription. Returns counts."""
     current = now or dt.datetime.now(dt.UTC)
-    counts = {"scanned": 0, "due": 0, "dispatched": 0, "failed": 0}
+    counts = {
+        "scanned": 0,
+        "due": 0,
+        "not_on_plan": 0,
+        "dispatched": 0,
+        "would_dispatch": 0,
+        "failed": 0,
+    }
+    plans = price_plans()
     for row in _scan_all(subscriptions):
         counts["scanned"] += 1
         if not _due(row, now=current):
+            continue
+        if plans.get(str(row.get("price") or "")) not in SUBSCRIPTION_PLANS:
+            counts["not_on_plan"] += 1
             continue
         counts["due"] += 1
         try:
@@ -77,6 +109,12 @@ def refresh(*, subscriptions: Any, bundles: Any, now: dt.datetime | None = None)
             request = {}
         if not isinstance(request, dict) or not request.get("agency_ids"):
             counts["failed"] += 1
+            continue
+        if dry_run:
+            ids = request["agency_ids"]
+            count = len(ids) if isinstance(ids, list) else len(str(ids).split(","))
+            print(f"dry run: would refresh {row.get('id')} ({count} agencies)")
+            counts["would_dispatch"] += 1
             continue
         request["bundle_id"] = new_bundle_id()
         request["cadence"] = "monthly"
@@ -97,7 +135,18 @@ def refresh(*, subscriptions: Any, bundles: Any, now: dt.datetime | None = None)
 
 
 def handler(event: dict[str, Any], context: Any = None) -> dict[str, Any]:
-    """EventBridge entrypoint. The event carries nothing the handler reads."""
-    counts = refresh(subscriptions=table("SUBSCRIPTIONS_TABLE"), bundles=table("BUNDLES_TABLE"))
-    print(json.dumps({"refresh": counts, "at": now_iso()}))
-    return {"ok": True, **counts, "dry_run": os.environ.get("DRY_RUN", "0") == "1"}
+    """EventBridge entrypoint. The scheduled event carries nothing the
+    handler reads; a hand invoke may pass ``{"dry_run": true}``."""
+    dry_run = os.environ.get("DRY_RUN", "0") == "1" or (
+        isinstance(event, dict) and event.get("dry_run") is True
+    )
+    if not payments_enabled():
+        print(json.dumps({"refresh": "skipped: PAYMENTS_ENABLED is not 1", "at": now_iso()}))
+        return {"ok": True, "payments_enabled": False, "dry_run": dry_run}
+    counts = refresh(
+        subscriptions=table("SUBSCRIPTIONS_TABLE"),
+        bundles=table("BUNDLES_TABLE"),
+        dry_run=dry_run,
+    )
+    print(json.dumps({"refresh": counts, "dry_run": dry_run, "at": now_iso()}))
+    return {"ok": True, "payments_enabled": True, **counts, "dry_run": dry_run}
