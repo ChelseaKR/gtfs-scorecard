@@ -173,6 +173,38 @@ def test_parse_request_caps_the_cohort() -> None:
     assert len(parse_request(_raw(agency_ids=ids.rsplit(",", 1)[0])).agency_ids) == MAX_AGENCIES
 
 
+def test_parse_request_narrows_the_cap_to_the_plan_that_was_bought() -> None:
+    """`max_agencies` is how the setup route holds a purchase to what its
+    price covers (infra/program-bundle/setup_handler.py). It only ever
+    narrows: a caller cannot use it to sell more than the product's ceiling,
+    and the message says "your plan" so the buyer knows the list is the
+    problem, not the tool."""
+    twenty_six = ",".join(f"agency{i}" for i in range(26))
+    with pytest.raises(BundleError, match="your plan covers at most 25 agencies; 26 were given"):
+        parse_request(_raw(agency_ids=twenty_six), max_agencies=25)
+    twenty_five = twenty_six.rsplit(",", 1)[0]
+    assert len(parse_request(_raw(agency_ids=twenty_five), max_agencies=25).agency_ids) == 25
+    # The same list is fine under the larger plan.
+    assert len(parse_request(_raw(agency_ids=twenty_six), max_agencies=100).agency_ids) == 26
+
+    # Asking for more than the product's ceiling does not raise it.
+    over = ",".join(f"agency{i}" for i in range(MAX_AGENCIES + 1))
+    with pytest.raises(BundleError, match=f"at most {MAX_AGENCIES}"):
+        parse_request(_raw(agency_ids=over), max_agencies=10_000)
+
+    # A cap of zero is a programming error, not a request the buyer made.
+    with pytest.raises(ValueError, match="at least 1"):
+        parse_request(_raw(agency_ids="unitrans"), max_agencies=0)
+
+
+def test_parse_request_default_cap_is_unchanged_for_existing_callers() -> None:
+    """`scorecard bundle` and `scorecard bundle-email` call parse_request with
+    no cap (cli.py), and report-bundle.yml re-validates workflow inputs the
+    same way. The default has to stay the product ceiling."""
+    ids = ",".join(f"agency{i}" for i in range(MAX_AGENCIES))
+    assert len(parse_request(_raw(agency_ids=ids)).agency_ids) == MAX_AGENCIES
+
+
 def test_parse_request_keeps_a_valid_data_uri_and_bounds_its_size() -> None:
     small = "data:image/png;base64," + base64.b64encode(PNG).decode()
     assert parse_request(_raw(logo=small)).logo == small
