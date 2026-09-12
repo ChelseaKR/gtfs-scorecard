@@ -196,9 +196,13 @@ STATIC_NAV_PAGES: dict[str, str | None] = {
     "data/index.html": None,
     "support/index.html": "/about/",
     "fetcher/index.html": "/about/",
-    # Program report bundle (docs/program-plan.md): unlinked and noindex until
-    # the payment rail is verified end to end; registered here so the shared
-    # nav and footer stay in sync and the doc-stats sweep reads them.
+    # Program report bundle (docs/program-plan.md): /bundle/ is linked from
+    # /support/ and indexable since the tier opened. /bundle/setup/ is the
+    # post-checkout form and stays noindex and out of the sitemap: it says
+    # nothing to a reader who arrives without a Checkout Session, so an
+    # indexed one would collect search traffic it can only turn away. Both are
+    # registered here so the shared nav and footer stay in sync and the
+    # doc-stats sweep reads them.
     "bundle/index.html": None,
     "bundle/setup/index.html": None,
 }

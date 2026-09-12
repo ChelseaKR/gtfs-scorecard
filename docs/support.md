@@ -4,6 +4,8 @@ The scorecard is free for every transit agency, and it stays that way. An agency
 
 The public version of this page is [gtfsscorecard.org/support](https://gtfsscorecard.org/support/). This document is the repository copy of the same commitments.
 
+A program or consultancy that prepares packets for many agencies can buy every agency's board report as one branded archive at [gtfsscorecard.org/bundle](https://gtfsscorecard.org/bundle/) (how it works: [docs/program-plan.md](program-plan.md)); purchase buys no influence over grades, methodology, or which agencies are listed.
+
 ## What sponsorship pays for
 
 The core service costs single-digit dollars a month today. A $75 to $200 monthly
