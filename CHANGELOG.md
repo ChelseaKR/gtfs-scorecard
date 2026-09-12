@@ -94,6 +94,19 @@ the declared public surface).
   table: `docs/decisions/0053-secret-scan-reports-every-result-tier.md`;
   the SEC-19 declaration is updated in `docs/standards-conformance-gaps.md`.
 
+- **A connection reset while downloading a scanner failed a required check
+  before anything was scanned (2026-09-11).** `security.yml` fetches the
+  gitleaks release and `container-scan.yml` fetches the validator jar with
+  `curl --retry 3`, and curl retries only what it counts as transient: a
+  timeout, an FTP 4xx, or HTTP 408, 429, 500, 502, 503 or 504. A TLS
+  connection reset (exit 35) is none of those. On PR #395 that failed
+  `Secret scan (gitleaks)`, one of the 15 required checks on `main`, on the
+  first attempt and before gitleaks ran, so a merge would have waited on a
+  manual re-run. All three `curl --retry` commands in `.github/workflows/`
+  (the third is `otp-qa.yml`'s feed download) now also pass
+  `--retry-all-errors`, and `test_workflow_download_retry.py` holds that for
+  every workflow.
+
 ### Added
 
 - **`scorecard retest`: check a new export against an evidence packet
@@ -139,6 +152,26 @@ the declared public surface).
   `truncated`). `call_tool` now dispatches through a table, and a test asserts
   that table and the advertised `TOOLS` name the same set. Closes #369.
 
+- **Workspace history: `scorecard try --history DIR` and `scorecard trend`
+  (#362).** A feed that is not in the public registry can now keep a private
+  history. Each `try --history` run appends one record to
+  `DIR/<feed>/history.jsonl`, counts and codes only, in the published
+  `workspace-history.schema.json` shape, and `scorecard trend --history DIR`
+  renders it as text, Markdown or a self-contained HTML file, with the alerts
+  `scorecard alerts` would raise for a registered feed. Both call one
+  function, `alerts.feed_alert_items`, which `build_digest` now uses for every
+  registered feed, so the two cannot drift apart. A record measured
+  differently from the one before it is shown as a boundary and never
+  compared, a line the history cannot read is skipped and named, and a run is
+  refused rather than added to a folder that already holds a different feed.
+  The Action gains a `history-path` input on `main`; it is not in `v1.4.0`.
+  `--history` records one feed, so `try --batch` refuses it alongside the
+  other single-feed options. That refusal is added here rather than with the
+  batch verb because the two landed in the same week and neither list could
+  name a flag the other branch had not merged yet: measured on the merge of
+  the two, `try --batch … --history DIR` was accepted and wrote no history at
+  all, and no test failed.
+
 - **Program report bundle, built and not launched (2026-09-01).** The
   program tier the sustainability plan allows (gtfs-scorecard-plans/07:
   agency-facing stays free; only tools for the people who manage many
@@ -168,6 +201,21 @@ the declared public surface).
   excluded mechanically. Seventy-eight candidates remain queued on short
   calendars as September exports land; the registry moves to 2,275 records
   and the European sample to 618. The pass log is in `docs/feeds.md`.
+
+- **`scorecard try --batch`: score a CSV of untracked feeds into a private
+  cohort rollup (#363).** `scorecard try --batch feeds.csv --out DIR` scores
+  each row the way `scorecard try` scores one feed, writes each scorecard as
+  JSON and HTML, and writes one rollup as Markdown, HTML and CSV: every feed
+  in CSV order, the feeds whose service ends within 30 days or has ended, the
+  fixes shared across the cohort (counted by the published rollup's own
+  function, now `rollups.count_shared_fixes`), and the campaign worklists,
+  which omit grades. The CSV contract is published at
+  `/schemas/batch-feeds.schema.json` and is checked before anything is
+  fetched. A feed that cannot be fetched or read is a row with its reason,
+  never a grade, and makes the run exit non-zero only with `--strict`. A
+  local feed is recorded by file name only, and the same CSV with the same
+  `--date` gives byte-identical files. Nothing is published and nothing
+  enters the registry.
 
 - **76 reviewed French feed records from a second National Access Point
   exhaustion pass (2026-08-30).** Five weeks after the July exhaustion, the

@@ -28,3 +28,6 @@ or skipped category as progress.
 Campaign output intentionally omits grades and scores. It is a support worklist,
 not a leaderboard. Run one theme at a time, send the relevant fix guidance, and
 rebuild the same campaign after agencies republish to measure closeout.
+
+For feeds the registry does not list, `scorecard try --batch` builds these same
+worklists over a CSV you hold, privately. See [batch scoring](batch-scoring.md).

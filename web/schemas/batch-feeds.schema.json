@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gtfsscorecard.org/schemas/batch-feeds.schema.json",
+  "title": "GTFS Scorecard batch CSV row",
+  "description": "One row of the CSV that `scorecard try --batch` reads, as an object of trimmed cell strings keyed by column name. The header must name every required column and no others. The command checks one thing this schema cannot: `country` must be an assigned ISO 3166-1 alpha-2 code, not only two letters. A value containing :// must be an http or https link; any other value is a path to a local zip, read relative to the CSV's own folder.",
+  "type": "object",
+  "required": ["name", "url", "country"],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The name shown for the feed."
+    },
+    "url": {
+      "type": "string",
+      "minLength": 1,
+      "description": "A direct http or https link to the GTFS zip, or a local path to one.",
+      "if": { "pattern": "://" },
+      "then": { "pattern": "^[Hh][Tt][Tt][Pp][Ss]?://" }
+    },
+    "country": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{2}$",
+      "description": "The ISO 3166-1 alpha-2 country the feed is validated under."
+    },
+    "ntd_id": {
+      "type": "string",
+      "pattern": "^([0-9]+(\\.0)?)?$",
+      "description": "Optional NTD reporter id, carried into the rollup as a label. Blank means none."
+    },
+    "large_feed": {
+      "type": "string",
+      "pattern": "^([Tt][Rr][Uu][Ee]|[Ff][Aa][Ll][Ss][Ee]|[Yy][Ee][Ss]|[Nn][Oo]|1|0)?$",
+      "description": "Optional. true applies the large-feed ingestion ceilings; blank means false."
+    }
+  }
+}

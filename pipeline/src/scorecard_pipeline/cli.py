@@ -563,7 +563,101 @@ def _finding_copy(artifact: dict[str, Any]) -> dict[str, dict[str, str]]:
     return copy
 
 
+def _standalone_scorecard_html(artifact: dict[str, Any]) -> str:
+    """One scorecard page that renders when opened straight from disk (file://)."""
+    import re
+
+    from .instance import BASE_URL
+    from .render_site import _render_agency
+
+    # Rewrite root-absolute asset and nav links to the live domain so the
+    # page renders correctly opened straight from disk (file://).
+    return re.sub(r'(href|src)="/', rf'\1="{BASE_URL}/', _render_agency(artifact, []))
+
+
+# Single-feed `try` options. A batch row carries its own name, country and
+# large-feed flag, and the output files are per row, so a batch refuses these
+# rather than silently ignoring them.
+_SINGLE_FEED_ONLY = (
+    ("--name", "name"),
+    ("--html", "html"),
+    ("--comment", "comment"),
+    ("--json-out", "json_out"),
+    ("--page-url", "page_url"),
+    ("--min-grade", "min_grade"),
+    ("--sarif", "sarif"),
+    ("--sarif-base", "sarif_base"),
+    ("--large-feed", "large_feed"),
+    # `--history` is recorded by the single-feed path only; a batch would take
+    # the flag and write nothing.
+    ("--history", "history"),
+)
+
+
+def _cmd_try_batch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """`scorecard try --batch CSV --out DIR`: a private cohort rollup (#363).
+
+    The CSV and the output folder are checked before anything is fetched. A
+    feed that cannot be scored is listed with its reason and never graded; the
+    run still exits 0 so the rest of the rollup is usable, unless ``--strict``.
+    """
+    from .batch import (
+        BatchInputError,
+        build_cohort_rollup,
+        prepare_output_dir,
+        read_batch_csv,
+        score_batch,
+        write_batch_outputs,
+    )
+
+    if getattr(args, "url", None):
+        parser.error("give either one feed or --batch CSV, not both")
+    if not getattr(args, "out", None):
+        parser.error("--batch needs --out DIR")
+    refused = [flag for flag, attr in _SINGLE_FEED_ONLY if getattr(args, attr, None)]
+    if getattr(args, "min_days_to_expiry", None) is not None:
+        refused.append("--min-days-to-expiry")
+    if getattr(args, "country", "US") != "US":
+        refused.append("--country")
+    if refused:
+        parser.error(
+            f"{', '.join(refused)} apply to one feed; with --batch each CSV row carries "
+            "its own values"
+        )
+    csv_path = Path(args.batch)
+    out_dir = Path(args.out)
+    try:
+        rows = read_batch_csv(csv_path)
+        prepare_output_dir(out_dir)
+    except BatchInputError as exc:
+        log.error("refusing %s before fetching anything: %s", csv_path.name, exc)
+        return 2
+    results = score_batch(
+        rows, date=args.date, score=run_adhoc_detailed, workers=args.batch_workers
+    )
+    rollup = build_cohort_rollup(results, as_of=args.date, cohort_name=csv_path.stem)
+    write_batch_outputs(out_dir, results, rollup, render_html=_standalone_scorecard_html)
+    for member in rollup["members"]:
+        if member["status"] == "scored":
+            print(f"  scored      {member['name']} -> {member['scorecard_html']}")
+        else:
+            print(f"  not scored  {member['name']}: {member['reason']}")
+    print(
+        f"\n  {rollup['feeds_scored']} of {rollup['feeds_listed']} feeds scored; "
+        f"rollup written to {out_dir / 'rollup.html'}\n"
+    )
+    if getattr(args, "strict", False) and rollup["feeds_not_scored"]:
+        return 1
+    return 0
+
+
 def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    if getattr(args, "batch", None):
+        return _cmd_try_batch(args, parser)
+    if not getattr(args, "url", None):
+        parser.error("try needs a feed URL or local zip, or --batch CSV")
+    if getattr(args, "out", None) or getattr(args, "strict", False):
+        parser.error("--out and --strict apply only with --batch")
     try:
         artifact, report = run_adhoc_detailed(
             args.url,
@@ -583,15 +677,33 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             _write_sarif(args.sarif, unreadable_feed_sarif(f"{args.url}: {exc}"))
         return 1
     _print_scorecard_summary(artifact)
+    stopped = _try_side_outputs(artifact, report, args)
+    if stopped is not None:
+        return stopped
+
+    # CI gating: a feed-deployment repo can run `scorecard try <url> --min-grade B
+    # --min-days-to-expiry 30` and fail the build before publishing a bad feed.
+    return _try_gate(artifact, args)
+
+
+def _try_side_outputs(
+    artifact: dict[str, Any], report: ValidationReport, args: argparse.Namespace
+) -> int | None:
+    """Write the optional files a single-feed `try` was asked for, in order.
+
+    Returns an exit code when one of them stops the run, and ``None`` when
+    every requested file was written and the run should go on to its gate.
+    Only the workspace history stops it: it refuses rather than mix two feeds
+    into one folder, and the refusal must not be followed by a SARIF file or a
+    threshold verdict that reads like a complete run.
+
+    Split out of ``_cmd_try`` so that function stays under the complexity
+    floor -- see docs/lint-complexity-ratchet.md. `--batch` (#363) and
+    `--history` (#362) each added a branch there in the same week; neither
+    crossed the floor alone and together they did.
+    """
     if args.html:
-        import re
-
-        from .instance import BASE_URL
-        from .render_site import _render_agency
-
-        # Rewrite root-absolute asset and nav links to the live domain so the
-        # page renders correctly opened straight from disk (file://).
-        page = re.sub(r'(href|src)="/', rf'\1="{BASE_URL}/', _render_agency(artifact, []))
+        page = _standalone_scorecard_html(artifact)
         out = Path(args.html)
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(page)
@@ -611,6 +723,18 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         out.write_text(json.dumps(artifact, indent=2, sort_keys=True) + "\n")
         print(f"  Scorecard JSON written to {out}\n")
 
+    if getattr(args, "history", None):
+        from .workspace import WorkspaceError, append_run, describe_source
+
+        try:
+            ledger, step = append_run(
+                Path(args.history), artifact, source=describe_source(args.url)
+            )
+        except WorkspaceError as exc:
+            log.error("not recording this run in the history: %s", exc)
+            return 2
+        print(f"  History appended to {ledger}. {step.sentence}\n")
+
     if getattr(args, "sarif", None):
         from .sarif import build_sarif
 
@@ -624,9 +748,7 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         )
         print(f"  SARIF written to {args.sarif}\n")
 
-    # CI gating: a feed-deployment repo can run `scorecard try <url> --min-grade B
-    # --min-days-to-expiry 30` and fail the build before publishing a bad feed.
-    return _try_gate(artifact, args)
+    return None
 
 
 def _try_gate(artifact: dict[str, Any], args: argparse.Namespace) -> int:
@@ -3192,6 +3314,33 @@ def _cmd_alerts(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     return 0
 
 
+def _cmd_trend(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Read a private workspace history as a trend, with its alerts (#362).
+
+    Exit 2 when there is nothing to read: no history under the directory, or a
+    named feed without one. A line the history cannot read is named in the
+    output and in the log, never dropped silently.
+    """
+    from .workspace import RENDERERS, WorkspaceError, build_trend
+
+    try:
+        trend = build_trend(Path(args.history), feeds=args.feed, expiry_days=args.expiry_days)
+    except WorkspaceError as exc:
+        log.error("%s", exc)
+        return 2
+    for skipped in trend.skipped:
+        log.warning("%s", skipped.message())
+    text = RENDERERS[args.format](trend)
+    if args.out:
+        out = Path(args.out)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(text)
+        log.info("Wrote the workspace trend for %d feed(s) to %s", len(trend.feeds), out)
+    else:
+        print(text, end="")
+    return 0
+
+
 def _cmd_notify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .alerts import build_digest
     from .notify import (
@@ -3577,7 +3726,11 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     adhoc = sub.add_parser("try", help="score any GTFS feed URL or local zip (not published)")
-    adhoc.add_argument("url", help="direct link or local path to a GTFS Schedule zip")
+    adhoc.add_argument(
+        "url",
+        nargs="?",
+        help="direct link or local path to a GTFS Schedule zip (leave out with --batch)",
+    )
     adhoc.add_argument("--name", help="agency name to show (default: the feed host)")
     adhoc.add_argument(
         "--country",
@@ -3606,6 +3759,14 @@ def main(argv: list[str] | None = None) -> int:
         help="write the complete scorecard artifact as JSON before applying CI thresholds",
     )
     adhoc.add_argument(
+        "--history",
+        metavar="DIR",
+        help=(
+            "append this run to a private history at DIR/<feed>/history.jsonl, read back "
+            "with `scorecard trend --history DIR`; counts and codes only, nothing published"
+        ),
+    )
+    adhoc.add_argument(
         "--page-url", help="link to the full scorecard, included in the --comment markdown"
     )
     adhoc.add_argument(
@@ -3629,6 +3790,32 @@ def main(argv: list[str] | None = None) -> int:
             "directory the feed's files sit in inside the repository being annotated "
             "(e.g. gtfs/); leave blank when the feed is a zip or sits at the root"
         ),
+    )
+    adhoc.add_argument(
+        "--batch",
+        metavar="CSV",
+        help=(
+            "score every feed listed in this CSV (columns name, url, country, and optionally "
+            "ntd_id and large_feed) and write a private cohort rollup; see docs/batch-scoring.md"
+        ),
+    )
+    adhoc.add_argument(
+        "--out",
+        metavar="DIR",
+        help="with --batch: a new or empty directory for the per-feed scorecards and the rollup",
+    )
+    adhoc.add_argument(
+        "--batch-workers",
+        type=int,
+        choices=range(1, 5),
+        default=2,
+        metavar="N",
+        help="with --batch: how many feeds to score at once, 1 to 4 (default: 2)",
+    )
+    adhoc.add_argument(
+        "--strict",
+        action="store_true",
+        help="with --batch: exit 1 when any listed feed could not be scored",
     )
 
     diff = sub.add_parser(
@@ -4084,6 +4271,37 @@ def main(argv: list[str] | None = None) -> int:
     alerts.add_argument("--expiry-days", type=int, default=60, help="warn within this many days")
     alerts.add_argument("--out", help="write the digest here instead of stdout")
 
+    trend = sub.add_parser(
+        "trend",
+        help=(
+            "read a private history written by `try --history` as a trend, with the "
+            "alerts `scorecard alerts` would raise (#362)"
+        ),
+    )
+    trend.add_argument(
+        "--history", required=True, metavar="DIR", help="the directory given to `try --history`"
+    )
+    trend.add_argument(
+        "--feed",
+        action="append",
+        metavar="NAME",
+        help="only this feed's history (its folder name under DIR); repeat for more",
+    )
+    trend.add_argument(
+        "--format",
+        choices=["text", "markdown", "html"],
+        default="text",
+        help="output format (default: text)",
+    )
+    trend.add_argument(
+        "--expiry-days",
+        type=int,
+        default=60,
+        help="warn within this many days, as `scorecard alerts` does (default: 60)",
+    )
+    trend.add_argument("--out", help="write the trend here instead of stdout")
+    trend.set_defaults(registry_free=True)
+
     notify = sub.add_parser("notify", help="build per-subscriber feed-health emails")
     notify.add_argument("--subscriptions", help="path to subscriptions.yaml")
     notify.add_argument(
@@ -4406,6 +4624,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "activation-hydrate": _cmd_activation_hydrate,
         "run-summary": _cmd_run_summary,
         "alerts": _cmd_alerts,
+        "trend": _cmd_trend,
         "notify": _cmd_notify,
         "portfolio-digest": _cmd_portfolio_digest,
         "coverage-check": _cmd_coverage_check,

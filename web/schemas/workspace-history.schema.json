@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gtfsscorecard.org/schemas/workspace-history.schema.json",
+  "title": "GTFS Scorecard workspace history record",
+  "description": "One line of DIR/<feed>/history.jsonl, written by `scorecard try --history DIR` and read by `scorecard trend --history DIR` (#362). Counts and codes only: no finding text, no feed contact fields, and a local feed is named by its file name. This schema describes version 1.0. Within 1.x fields are only added, and readers ignore fields they do not know.",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "record_type",
+    "name",
+    "source",
+    "date",
+    "score",
+    "grade",
+    "rubric_version",
+    "scoring_profile_id",
+    "scoring_profile_rubric_version",
+    "validator_version",
+    "reader_archive_profile",
+    "feed_sha256",
+    "categories",
+    "days_until_expiry",
+    "service_horizon_status",
+    "findings",
+    "freshness"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": {"type": "string", "pattern": "^1\\.[0-9]+$"},
+    "record_type": {"const": "gtfs-scorecard-workspace-history"},
+    "name": {"type": "string", "description": "The feed's display name, from --name or the feed's host or file name."},
+    "source": {"type": "string", "description": "The feed URL as given, or `local file <name>` for a local zip."},
+    "date": {"type": "string", "format": "date", "description": "The snapshot date the run scored the feed under."},
+    "score": {"type": "number", "minimum": 0, "maximum": 100},
+    "grade": {"enum": ["A", "B", "C", "D", "F"]},
+    "rubric_version": {"type": ["string", "null"]},
+    "scoring_profile_id": {"type": ["string", "null"]},
+    "scoring_profile_rubric_version": {"type": ["string", "null"]},
+    "validator_version": {"type": ["string", "null"]},
+    "reader_archive_profile": {"type": "string"},
+    "feed_sha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+    "categories": {
+      "type": "object",
+      "description": "Score of each measured category. An unmeasured category is absent, never zero.",
+      "additionalProperties": {"type": "number"}
+    },
+    "days_until_expiry": {"type": ["integer", "null"]},
+    "service_horizon_status": {"type": ["string", "null"]},
+    "findings": {
+      "type": "object",
+      "description": "Finding codes and their instance counts across the measured categories.",
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "freshness": {
+      "type": "object",
+      "description": "The freshness facts the expiry alert reads.",
+      "required": ["finding_codes"],
+      "additionalProperties": false,
+      "properties": {
+        "days_until_expiry": {"type": ["integer", "null"]},
+        "service_type": {"type": "string"},
+        "seasonal_boundary": {"type": "boolean"},
+        "finding_codes": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}
