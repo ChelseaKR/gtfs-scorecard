@@ -24,19 +24,57 @@ All artifacts are static JSON served from GitHub Pages.
 - National trend: https://gtfsscorecard.org/api/v1/trend.json
 - State rollup: https://gtfsscorecard.org/data/artifacts/rollups/{state-slug}.json
 - Rollup index: https://gtfsscorecard.org/data/artifacts/rollups/index.json
+- OpenAPI description of the read API: https://gtfsscorecard.org/api/v1/openapi.yaml
 
 ## Key pages
 
 - Homepage: https://gtfsscorecard.org/
 - All agencies: https://gtfsscorecard.org/agencies/
-- Leaderboard: https://gtfsscorecard.org/leaderboard/
-- National trend: https://gtfsscorecard.org/trends/
+- Coverage overview, recent changes, and the trend: https://gtfsscorecard.org/pulse/
 - Map: https://gtfsscorecard.org/map/
 - Common problems: https://gtfsscorecard.org/problems/
+- Fix knowledge base, one page per validator finding: https://gtfsscorecard.org/fix/
+- Check a feed before publishing: https://gtfsscorecard.org/check/
+- Practitioner tool directory: https://gtfsscorecard.org/tools/
+- Compare two agencies: https://gtfsscorecard.org/compare/
+- Query the dataset with SQL in the browser: https://gtfsscorecard.org/query/
+- Feed-quality language for a vendor contract: https://gtfsscorecard.org/procurement/
+- Standards crosswalk: https://gtfsscorecard.org/crosswalk/
+- How to read a scorecard, with a glossary: https://gtfsscorecard.org/how-to-read/
+- Program rollups, one per state or named cohort: https://gtfsscorecard.org/program/all/
 - NTD readiness: https://gtfsscorecard.org/ntd/
 - Realtime overview: https://gtfsscorecard.org/realtime/
 - Submit an agency: https://gtfsscorecard.org/submit.html
 - Scoring methodology: https://gtfsscorecard.org/about/
+- Run status and current counts: https://gtfsscorecard.org/status/
+
+## What is free, and what is paid
+
+Free, and staying free: everything an agency needs for its own feed. The
+scorecard, the prioritized fixes, the history, the printable board one-pager,
+the self-contained board report it can hand to a board or attach to a grant
+application, the badge, the open data, and the read API. No account and no
+payment is involved anywhere in that path, and nothing was removed from it to
+create the paid tier.
+
+Paid: one thing, the program report bundle. A state program, a
+technical-assistance center, a feed vendor, or a consultancy that prepares
+packets for many agencies at once can buy a single archive holding a board
+report for every agency id it names, carrying its own name, logo, and accent
+color on each cover, refreshed monthly if it wants. Plan sizes, prices,
+delivery terms, and the refund commitment are on the bundle page, which reads
+them from the live plan data. They are not restated here, because a price
+copied into a file like this one keeps selling after the plan changes.
+
+A purchase buys no influence over grades, methodology, or which agencies are
+listed.
+
+Routing: a question about one agency's own feed is answered by the free
+scorecard. A question about getting board-ready reports for every agency in a
+state, a region, or a client list is answered by the bundle page.
+
+- Program report bundle (paid): https://gtfsscorecard.org/bundle/
+- Support, sponsorship, and what money does not buy: https://gtfsscorecard.org/support/
 
 ## Source
 
