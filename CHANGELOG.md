@@ -109,6 +109,62 @@ the declared public surface).
 
 ### Added
 
+- **A contract for `/bundle/plan.json`, and checks that read what the page
+  actually renders (2026-09-12).** `/bundle/` started taking real money the day
+  the payment rail was turned on, and the only gate with new exposure was the
+  `axe` accessibility scan. `web/src/bundle.js` builds the price lines and the
+  "Buy through Stripe" controls client-side out of `web/bundle/plan.json`, so
+  the served HTML carries no price and no link, and nothing static can see a
+  malformed plan. A `null` `checkout_url`, a test-mode Payment Link, an
+  interval on a one-off bundle, a fifth product nothing on Stripe backs, or
+  `paymentsAvailable: true` over any of those, all shipped green on the one
+  page that charges a card.
+
+  `web/schemas/program-bundle-plan.schema.json` closes the document: exactly
+  the four product keys `bundle_25`, `bundle_100`, `refresh_mo` and
+  `refresh_yr`; `interval` pinned to `null`, `"month"` and `"year"` per key so
+  a swap cannot advertise a cadence the Stripe price does not charge;
+  `checkout_url` restricted to a `https://buy.stripe.com/` Payment Link that is
+  not a test-mode one; and a conditional making `paymentsAvailable: true` a
+  claim about every product, each of which must then carry a numeric price and
+  a non-null link. It uses no `format` keyword, and a test keeps it that way:
+  `format` is an annotation unless the validator was built with a
+  `format_checker`, and a contract that looks enforced and is not is worse than
+  none. The live file validates unchanged.
+
+  The prices stay hand-written in three places — the table in
+  `docs/program-plan.md`, the cents constants in `scripts/stripe-setup.sh`, and
+  the dollars in `plan.json` — and their *agreement* is what is gated, in
+  `pipeline/tests/test_bundle_plan_contract.py`. None of the three is
+  downstream of another; the authoritative price lives in the Stripe account,
+  which no offline gate can read. Deriving one from another would delete the
+  transcription error the check exists to catch, and would empty the document's
+  own argument, which is the rule `docs/lint-complexity-ratchet.md` already
+  sets for a hand-maintained number carrying a human justification. The cents
+  constant is bound to a product through the `prices create` line that spends
+  it, so pointing `BUNDLE_25_CENTS` at the 100-agency price is a disagreement
+  the check can see, and each of the three readers asserts it found all four
+  keys before anything is compared.
+
+  `pipeline/tests/e2e/test_bundle_checkout.py` asserts the rendered DOM in all
+  three states the renderer has: four buy controls with `buy.stripe.com` hrefs
+  and each card printing its own plan's price when payments are on; four cards
+  reading "Not yet available" and no buy control when they are off; and no card
+  at all, under an announced error, when the plan cannot be read. Expectations
+  are read from the same `plan.json` the page reads, so a price change moves
+  the page and the test together.
+
+  `site-budgets.json` now lists `bundle/index.html` and
+  `bundle/setup/index.html` as `required` pages. Both were covered only by the
+  `**/index.html` pattern at 3,407,872 bytes, a ceiling over three hundred
+  times their size that matches whatever files happen to be present — so a
+  deploy that dropped the page taking the money, or the page Stripe redirects
+  the buyer to afterwards, passed every gate in the repository. A missing
+  `required` page exits 2 and always blocks.
+
+  `/bundle/` was deliberately **not** added to `lighthouserc.routes.json`;
+  `docs/follow-ups.md` records why and what would change the answer.
+
 - **`scorecard retest`: check a new export against an evidence packet
   (#366).** `scorecard retest PACKET FEED --country CC` scores the feed the
   way `scorecard try` does and reports each packet finding as cleared, still

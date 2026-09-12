@@ -163,6 +163,39 @@ Steps:
 The floor stays at 0.80 throughout. What is deferred is the tightening, not the
 standard.
 
+## Whether `/bundle/` needs a Lighthouse gate, once the routes config aggregates honestly
+
+**Status: open, opened 2026-09-12.** `/bundle/` went live taking real money the
+same day, and the pass that gated it (a JSON Schema over `web/bundle/plan.json`,
+its price agreement with `docs/program-plan.md` and `scripts/stripe-setup.sh`,
+three browser tests over the rendered buy controls, and a `required` byte budget
+for both pages of the paid flow) deliberately did **not** add the page to
+`lighthouserc.routes.json`. The reasons are the section above, not an oversight:
+
+1. That config still asserts with `aggregationMethod: "median-run"`, which for
+   `categories:*` degrades to best-of-N and for a timing metric picks a run by
+   proximity to median FCP rather than by the metric being asserted. ADR 0045
+   measured home-page FCP with a 2 ms interquartile range against an LCP spread
+   of 1813 ms, so the selection is close to arbitrary. Adding a page here buys a
+   verdict on the runner, not on the page.
+2. `/bundle/` is 10 KB of hand-authored HTML, three deferred scripts and one
+   `fetch`. There is no rendered payload that can grow with the registry, which
+   is the mechanism behind every performance regression this repository has
+   actually had.
+3. What the page can get wrong is what it sells, and the byte budget, the
+   schema and the browser tests are the checks that can see that. A performance
+   floor would report green over a page offering the wrong price.
+
+Steps, after step 3 of the section above lands:
+
+1. Once `lighthouserc.routes.json` asserts with a true `median`, re-open this
+   and decide on the same evidence the other routes were chosen on: several
+   `a11y.yml` jobs' worth of reports for `/bundle/`, not a single sample.
+2. If it is added, it is a fourth URL on a job that already runs three, so
+   weigh the minutes against what the accessibility scan (which already covers
+   `/bundle/` and `/bundle/setup/` through `.pa11yci.json`) does not already
+   tell us.
+
 ## Decide the share-alike question for records already listed
 
 **Status: open, opened 2026-09-01.** Two findings from the 2026-09-01 coverage
