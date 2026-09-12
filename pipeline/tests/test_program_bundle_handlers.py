@@ -413,6 +413,30 @@ def _form(**overrides: Any) -> dict[str, Any]:
     return base
 
 
+def _bought_earlier(
+    tables: dict[str, FakeTable],
+    plan: str,
+    *,
+    email: str = "buyer@example.org",
+    session_id: str = "cs_test_earlier",
+    prefix: str = "checkout#",
+) -> None:
+    """Record an earlier checkout by ``email``, the way the live tables hold one.
+
+    ``checkout#`` is the webhook's note of a completed checkout and ``session#``
+    is the setup route's own claim on one; a refresh reads both, because a
+    bundle can be paid for and never set up, and because only one of the two is
+    written by the route that grants a bundle. Neither carries ``expires_at``,
+    which is the whole reason a refresh can find a bundle bought months ago.
+    """
+    row: dict[str, Any] = {"bundle_id": f"{prefix}{session_id}", "email": email, "plan": plan}
+    if prefix == "checkout#":
+        row["seen_at"] = "2026-01-05T00:00:00+00:00"
+    else:
+        row |= {"consumed_by": "e" * 32, "dispatched": True}
+    tables["BUNDLES_TABLE"].items[row["bundle_id"]] = row
+
+
 def test_setup_paid_one_time_dispatches_and_records_the_capability(
     monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
 ) -> None:
@@ -450,6 +474,7 @@ def test_setup_subscription_stores_the_request_and_price_for_the_refresh(
     session = _paid_session(mode="subscription", subscription="sub_example")
     _stripe(monkeypatch, session, price=PRICE_REFRESH_MO)
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", lambda inputs: None)
+    _bought_earlier(tables, "bundle_100")
 
     resp = setup_handler.handler(_setup_event(_form(deliver_to="")))
     assert resp["statusCode"] == 200
@@ -458,6 +483,11 @@ def test_setup_subscription_stores_the_request_and_price_for_the_refresh(
     # The refresh re-checks the price before it dispatches anything.
     assert sub["price"] == PRICE_REFRESH_MO
     assert sub["plan"] == "refresh_mo"
+    # And what it renews, recorded at purchase time rather than re-derived
+    # every month from whatever the plan caps say then.
+    assert sub["agency_cap"] == 100
+    assert sub["renews_plan"] == "bundle_100"
+    assert sub["renews_session"] == "cs_test_earlier"
     stored = json.loads(sub["request"])
     assert stored["cadence"] == "monthly"
     # No deliver_to in the form: the payer's email from the session is used.
@@ -579,6 +609,350 @@ def test_setup_lets_a_bundle_100_purchase_list_more_than_twenty_five(
     over = setup_handler.handler(_setup_event(_form(agency_ids=too_many)))
     assert over["statusCode"] == 400
     assert "at most 100 agencies" in over["body"]
+
+
+# ---------------------------------------------------------------------------
+# a refresh renews a bundle, and covers what that bundle covered
+# ---------------------------------------------------------------------------
+#
+# `refresh_mo` and `refresh_yr` carry a ceiling of 100 in PLAN_AGENCY_CAPS, the
+# same number as `bundle_100`. Read as an entitlement that made $49 a month a
+# cheaper path to the 100-agency archive than the $349 bundle that sells one,
+# so the cheapest product on a live page strictly dominated the most expensive
+# one. The rule now is that a refresh renews a bundle already bought and covers
+# that bundle's agencies. The numbers below are written as literals rather than
+# read from PLAN_AGENCY_CAPS: a fixture derived from the constant under test
+# moves with it, and would hold however wrong the constant became.
+
+
+def _no_claims_allowed(monkeypatch: pytest.MonkeyPatch) -> list[str]:
+    """Make `_claim_session` fail loudly instead of consuming the checkout.
+
+    A refusal that happens *after* the claim leaves a buyer who has paid with a
+    spent checkout and no archive, and the API answers 409 "this checkout
+    already produced a bundle" to every retry. That is a worse outcome than the
+    arbitrage this rule closes, so reaching the claim at all is the failure.
+    """
+    reached: list[str] = []
+
+    def _fail(bundles: Any, session_id: str, *args: Any, **kwargs: Any) -> bool:
+        reached.append(session_id)
+        raise AssertionError(f"the checkout {session_id} was claimed before it was refused")
+
+    monkeypatch.setattr(setup_handler, "_claim_session", _fail)
+    return reached
+
+
+def _refresh_setup(
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    price: str = PRICE_REFRESH_MO,
+    session: dict[str, Any] | None = None,
+) -> list[dict[str, str]]:
+    dispatched: list[dict[str, str]] = []
+    served = (
+        session
+        if session is not None
+        else _paid_session(mode="subscription", subscription="sub_example")
+    )
+    _stripe(monkeypatch, served, price=price)
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
+    return dispatched
+
+
+def test_a_refresh_with_no_earlier_bundle_is_refused_before_the_checkout_is_claimed(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    dispatched = _refresh_setup(monkeypatch)
+    reached = _no_claims_allowed(monkeypatch)
+
+    resp = setup_handler.handler(_setup_event(_form()))
+    assert resp["statusCode"] == 403
+    error = json.loads(resp["body"])["error"]
+    # Actionable, and about the thing the buyer can do next. No promise that
+    # anybody will write to them: nothing in this system sends mail.
+    assert "renews a bundle you have already bought" in error
+    assert "gtfsscorecard.org/bundle/" in error
+    assert reached == []
+    assert dispatched == []
+    assert tables["BUNDLES_TABLE"].items == {}
+    assert tables["SUBSCRIPTIONS_TABLE"].items == {}
+
+
+@pytest.mark.parametrize("price", [PRICE_REFRESH_MO, PRICE_REFRESH_YR])
+def test_neither_refresh_price_sells_an_archive_on_its_own(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable], price: str
+) -> None:
+    """The monthly plan is the cheap one, but the rule is about the product,
+    not about the price: both refresh prices renew something."""
+    dispatched = _refresh_setup(monkeypatch, price=price)
+    _no_claims_allowed(monkeypatch)
+
+    assert setup_handler.handler(_setup_event(_form()))["statusCode"] == 403
+    assert dispatched == []
+    assert tables["BUNDLES_TABLE"].items == {}
+
+
+@pytest.mark.parametrize(
+    ("prior_plan", "covered", "one_too_many"),
+    [("bundle_25", 25, 26), ("bundle_100", 100, 101)],
+)
+def test_a_refresh_never_covers_more_agencies_than_the_bundle_it_renews(
+    monkeypatch: pytest.MonkeyPatch,
+    tables: dict[str, FakeTable],
+    prior_plan: str,
+    covered: int,
+    one_too_many: int,
+) -> None:
+    dispatched = _refresh_setup(monkeypatch)
+    _bought_earlier(tables, prior_plan)
+
+    over = setup_handler.handler(
+        _setup_event(_form(agency_ids=",".join(f"agency-{n}" for n in range(one_too_many))))
+    )
+    assert over["statusCode"] == 400
+    assert f"at most {covered} agencies" in json.loads(over["body"])["error"]
+    assert dispatched == []
+    # Refused before the claim, so the same checkout can be sent again shorter.
+    assert "session#cs_test_example" not in tables["BUNDLES_TABLE"].items
+
+    ok = setup_handler.handler(
+        _setup_event(_form(agency_ids=",".join(f"agency-{n}" for n in range(covered))))
+    )
+    assert ok["statusCode"] == 200, ok["body"]
+    assert len(dispatched[0]["agency_ids"].split(",")) == covered
+    assert tables["SUBSCRIPTIONS_TABLE"].items["sub_example"]["agency_cap"] == covered
+
+
+def test_the_cheapest_subscription_no_longer_buys_the_largest_bundles_archive(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """The arbitrage itself, written out: $49 a month against a $149 bundle.
+
+    Before this rule a `refresh_mo` checkout stood alone and was held to 100
+    agencies, so the monthly plan delivered the 100-agency archive `bundle_100`
+    sells. A buyer who has only ever bought the 25-agency bundle is now held to
+    25 on the refresh as well.
+    """
+    dispatched = _refresh_setup(monkeypatch)
+    _bought_earlier(tables, "bundle_25")
+
+    hundred = ",".join(f"agency-{n}" for n in range(100))
+    resp = setup_handler.handler(_setup_event(_form(agency_ids=hundred)))
+    assert resp["statusCode"] == 400
+    assert "at most 25 agencies; 100 were given" in json.loads(resp["body"])["error"]
+    assert dispatched == []
+
+
+def test_a_refresh_finds_a_bundle_whose_capability_row_is_long_gone(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """Bought in January, subscribed in March.
+
+    The capability row carries a 30-day TTL and DynamoDB has deleted it by
+    then. The two rows this reads instead carry no `expires_at` at all, and the
+    table below holds nothing else -- so a buyer whose bundle predates the
+    refresh by months is told what they bought, not that they never bought.
+    """
+    for prefix in ("checkout#", "session#"):
+        tables["BUNDLES_TABLE"].items.clear()
+        tables["SUBSCRIPTIONS_TABLE"].items.clear()
+        dispatched = _refresh_setup(monkeypatch)
+        _bought_earlier(tables, "bundle_100", prefix=prefix, session_id=f"cs_old_{prefix[0]}")
+
+        resp = setup_handler.handler(
+            _setup_event(_form(agency_ids=",".join(f"agency-{n}" for n in range(100))))
+        )
+        assert resp["statusCode"] == 200, (prefix, resp["body"])
+        assert len(dispatched[0]["agency_ids"].split(",")) == 100
+        assert tables["SUBSCRIPTIONS_TABLE"].items["sub_example"]["agency_cap"] == 100
+
+
+def test_a_subscription_is_not_a_bundle_a_later_subscription_can_renew(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """Otherwise the first $49 bootstraps the second, and the rule buys nothing."""
+    dispatched = _refresh_setup(monkeypatch)
+    _no_claims_allowed(monkeypatch)
+    _bought_earlier(tables, "refresh_mo", session_id="cs_test_first_sub")
+    _bought_earlier(tables, "refresh_yr", session_id="cs_test_second_sub", prefix="session#")
+
+    assert setup_handler.handler(_setup_event(_form()))["statusCode"] == 403
+    assert dispatched == []
+
+
+def test_the_form_cannot_claim_somebody_elses_bundle(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """Entitlement reads the address Stripe collected, never the form's.
+
+    `deliver_to` is text the buyer typed. If it decided this, anybody who
+    guessed a program's address would inherit that program's cap for the price
+    of the cheapest subscription -- the same arbitrage in a different hat.
+    """
+    dispatched = _refresh_setup(monkeypatch)
+    _no_claims_allowed(monkeypatch)
+    _bought_earlier(tables, "bundle_100", email="someone.else@example.org")
+
+    resp = setup_handler.handler(_setup_event(_form(deliver_to="someone.else@example.org")))
+    assert resp["statusCode"] == 403
+    assert dispatched == []
+
+
+def test_the_address_is_matched_whatever_case_stripe_recorded_it_in(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """A real buyer types their address twice, months apart. Refusing on the
+    shift key would be this rule failing the person it exists to serve."""
+    session = _paid_session(
+        mode="subscription",
+        subscription="sub_example",
+        customer_details={"email": "Buyer@Example.org "},
+    )
+    _refresh_setup(monkeypatch, session=session)
+    _bought_earlier(tables, "bundle_100", email="buyer@example.ORG")
+
+    assert setup_handler.handler(_setup_event(_form()))["statusCode"] == 200
+
+
+def test_a_checkout_stripe_collected_no_address_for_inherits_nothing(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    session = _paid_session(mode="subscription", subscription="sub_example", customer_details={})
+    _refresh_setup(monkeypatch, session=session)
+    _no_claims_allowed(monkeypatch)
+    _bought_earlier(tables, "bundle_100")
+
+    resp = setup_handler.handler(_setup_event(_form()))
+    assert resp["statusCode"] == 403
+    assert "no email address" in json.loads(resp["body"])["error"]
+    assert tables["BUNDLES_TABLE"].items.keys() == {"checkout#cs_test_earlier"}
+
+
+def test_an_earlier_checkout_the_webhook_could_not_read_is_settled_not_discounted(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """`plan: "unverified"` means Stripe was unreachable when the webhook ran.
+
+    It is not evidence that the buyer bought nothing, and counting it as such
+    is this portfolio's absence-rendered-as-a-value defect pointed at a paying
+    customer. Stripe still has the session, so it is asked.
+    """
+    session = _paid_session(mode="subscription", subscription="sub_example")
+    dispatched: list[dict[str, str]] = []
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
+    asked: list[str] = []
+
+    def fake_get(path: str) -> dict[str, Any]:
+        if "/line_items" not in path:
+            return session
+        asked.append(path)
+        price = PRICE_REFRESH_MO if "cs_test_example" in path else PRICE_BUNDLE_100
+        return _line_items(price)
+
+    monkeypatch.setattr(common, "stripe_get", fake_get)
+    monkeypatch.setattr(setup_handler, "stripe_get", fake_get)
+    _bought_earlier(tables, "unverified", session_id="cs_test_unread")
+
+    resp = setup_handler.handler(
+        _setup_event(_form(agency_ids=",".join(f"agency-{n}" for n in range(100))))
+    )
+    assert resp["statusCode"] == 200, resp["body"]
+    assert any("cs_test_unread" in path for path in asked), "the unread checkout was never settled"
+    assert tables["SUBSCRIPTIONS_TABLE"].items["sub_example"]["agency_cap"] == 100
+
+
+def test_an_outage_while_settling_says_not_yet_rather_than_you_never_bought(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    session = _paid_session(mode="subscription", subscription="sub_example")
+    dispatched: list[dict[str, str]] = []
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
+    _no_claims_allowed(monkeypatch)
+
+    def fake_get(path: str) -> dict[str, Any]:
+        if "/line_items" not in path:
+            return session
+        if "cs_test_unread" in path:
+            raise common.UpstreamError("GET line_items -> HTTP 503", status=503)
+        return _line_items(PRICE_REFRESH_MO)
+
+    monkeypatch.setattr(common, "stripe_get", fake_get)
+    monkeypatch.setattr(setup_handler, "stripe_get", fake_get)
+    _bought_earlier(tables, "unverified", session_id="cs_test_unread")
+
+    resp = setup_handler.handler(_setup_event(_form()))
+    assert resp["statusCode"] == 502
+    error = json.loads(resp["body"])["error"]
+    assert "Could not check which bundle this refresh renews" in error
+    assert "Do not pay again" in error
+    assert dispatched == []
+
+
+def test_a_stale_unread_row_stripe_has_never_heard_of_is_not_evidence_either_way(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """404 is Stripe saying the session does not exist on this account. That
+    row proves nothing, so it is skipped -- and with nothing else to go on the
+    answer is the ordinary refusal, not a 502 inviting a pointless retry."""
+    session = _paid_session(mode="subscription", subscription="sub_example")
+    _no_claims_allowed(monkeypatch)
+
+    def fake_get(path: str) -> dict[str, Any]:
+        if "/line_items" not in path:
+            return session
+        if "cs_test_unread" in path:
+            raise common.UpstreamError("GET line_items -> HTTP 404", status=404)
+        return _line_items(PRICE_REFRESH_MO)
+
+    monkeypatch.setattr(common, "stripe_get", fake_get)
+    monkeypatch.setattr(setup_handler, "stripe_get", fake_get)
+    _bought_earlier(tables, "unverified", session_id="cs_test_unread")
+
+    assert setup_handler.handler(_setup_event(_form()))["statusCode"] == 403
+
+
+def test_more_unread_checkouts_than_one_request_can_settle_answers_not_yet(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """A bound on the Stripe reads one setup request will make. Past it the
+    answer has to be "not yet": "you never bought a bundle" would be a claim
+    this run never checked."""
+    dispatched = _refresh_setup(monkeypatch)
+    _no_claims_allowed(monkeypatch)
+    for n in range(setup_handler._UNSETTLED_CHECKOUT_READS + 1):
+        _bought_earlier(tables, "unverified", session_id=f"cs_test_unread_{n}")
+
+    resp = setup_handler.handler(_setup_event(_form()))
+    assert resp["statusCode"] == 502
+    assert dispatched == []
+
+
+def test_a_one_time_bundle_still_needs_nothing_before_it(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """The rule is about refreshes. A first-time buyer of either bundle must
+    still be able to buy one, with an empty table behind them."""
+    for price, allowed in ((PRICE_BUNDLE_25, 25), (PRICE_BUNDLE_100, 100)):
+        tables["BUNDLES_TABLE"].items.clear()
+        dispatched: list[dict[str, str]] = []
+        _stripe(monkeypatch, price=price)
+        monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
+        resp = setup_handler.handler(
+            _setup_event(_form(agency_ids=",".join(f"agency-{n}" for n in range(allowed))))
+        )
+        assert resp["statusCode"] == 200, (price, resp["body"])
+        assert len(dispatched[0]["agency_ids"].split(",")) == allowed
+
+
+def test_every_configured_plan_is_either_a_bundle_or_a_subscription() -> None:
+    """A fifth plan in PLAN_AGENCY_CAPS and in neither tuple would be sold with
+    no rule about what it covers: `_agency_cap` would hand it its own ceiling,
+    which is exactly the reading that made the refresh prices an arbitrage."""
+    assert set(common.ONE_TIME_PLANS) | set(common.SUBSCRIPTION_PLANS) == set(
+        common.PLAN_AGENCY_CAPS
+    )
+    assert not set(common.ONE_TIME_PLANS) & set(common.SUBSCRIPTION_PLANS)
 
 
 def test_setup_refuses_everything_while_payments_are_disabled(
@@ -1063,6 +1437,10 @@ def test_refresh_dispatches_only_active_due_subscriptions(
         # sub_broken is billed with no stored request; that is its own count,
         # not a dispatch failure.
         "no_request": 1,
+        # None of these rows records an agency_cap, which is what a row written
+        # before the entitlement rule looks like. A missing cap is not a cap,
+        # so they are dispatched, not refused.
+        "over_cap": 0,
         "dispatched": 2,
         "would_dispatch": 0,
         "failed": 0,
@@ -1166,6 +1544,39 @@ def test_refresh_counts_a_billed_subscription_with_no_stored_request_apart(
     assert counts["no_request"] == 1
     assert counts["failed"] == 0
     assert counts["dispatched"] == 1
+
+
+def test_refresh_never_sends_more_agencies_than_the_subscription_was_sold(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """The cap the subscription was sold under travels on its row, and the
+    weekly run checks the stored list against it every month.
+
+    The setup route already holds that list to the cap, so no path through the
+    product reaches this. What it stops is a row edited by hand quietly sending
+    more than was ever bought, every month, with nothing to notice. Refused
+    rather than trimmed: which agencies to drop is not this job's call.
+    """
+    subs = tables["SUBSCRIPTIONS_TABLE"]
+    inside = {**json.loads(_sub()["request"]), "agency_ids": [f"agency-{n}" for n in range(25)]}
+    outside = {**inside, "agency_ids": [f"agency-{n}" for n in range(26)]}
+    subs.items["sub_ok"] = _sub(id="sub_ok", agency_cap=25, request=json.dumps(inside))
+    subs.items["sub_over"] = _sub(id="sub_over", agency_cap=25, request=json.dumps(outside))
+    # No cap recorded: a row written before this rule. A missing field is not a
+    # cap of any size, and cutting off a paying subscriber over one would be an
+    # absence dressed up as a decision.
+    subs.items["sub_legacy"] = _sub(id="sub_legacy", request=json.dumps(outside))
+    dispatched: list[dict[str, str]] = []
+    monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", dispatched.append)
+
+    counts = refresh_handler.refresh(subscriptions=subs, bundles=tables["BUNDLES_TABLE"])
+    assert counts["over_cap"] == 1
+    assert counts["dispatched"] == 2
+    sent = {len(d["agency_ids"].split(",")) for d in dispatched}
+    assert sent == {25, 26}, "the over-cap row was dispatched"
+    assert "last_refresh" not in subs.items["sub_over"]
+    assert subs.items["sub_ok"]["last_refresh"]
+    assert subs.items["sub_legacy"]["last_refresh"]
 
 
 def test_refresh_keeps_going_past_a_failed_dispatch(

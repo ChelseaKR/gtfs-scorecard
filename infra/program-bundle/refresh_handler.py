@@ -27,6 +27,16 @@ every row would fall into it and the tick would answer ``ok`` while no
 subscriber was ever refreshed again. That case raises ``ConfigurationError``
 and fails the invocation instead.
 
+A third check: a subscription renews a bundle and covers the agencies that
+bundle covered, and the cap it was sold under travels on the row as
+``agency_cap`` (setup_handler._record_subscription). A stored list longer than
+that cap is counted ``over_cap`` and dispatched to nobody -- refused, not
+trimmed, because choosing which agencies to drop is not this job's call. The
+setup route already holds the stored list to the cap, so nothing the product
+does reaches this; what it stops is a hand-edited row quietly sending more
+than was ever bought, every month. A row with no readable ``agency_cap`` is
+left alone: one predates this rule, and a missing field is not a cap.
+
 Dry run: with DRY_RUN=1 in the environment, or ``{"dry_run": true}`` as the
 invoke payload, the run scans and logs what it would dispatch (subscription
 id and agency count) and changes nothing: no dispatch, no capability row, no
@@ -80,6 +90,26 @@ def _due(row: dict[str, Any], *, now: dt.datetime) -> bool:
     return now - stamp >= dt.timedelta(days=REFRESH_DAYS)
 
 
+def _recorded_cap(row: dict[str, Any]) -> int | None:
+    """The agency cap this subscription was sold under, or None.
+
+    None is "no cap was recorded", which is what a row written before the
+    entitlement rule existed looks like, and it is not a cap of zero and not a
+    cap of a hundred. Those rows are left alone: cutting off a paying
+    subscriber on the strength of a missing field would be an absence dressed
+    up as a decision. A value that is present but unreadable is treated the
+    same way, and both are visible in the run's counts rather than inferred.
+    """
+    raw = row.get("agency_cap")
+    if isinstance(raw, bool) or raw is None:
+        return None
+    try:
+        cap = int(raw)
+    except (TypeError, ValueError):
+        return None
+    return cap if cap > 0 else None
+
+
 def _scan_all(subscriptions: Any) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     kwargs: dict[str, Any] = {}
@@ -106,6 +136,7 @@ def refresh(
         "due": 0,
         "not_on_plan": 0,
         "no_request": 0,
+        "over_cap": 0,
         "dispatched": 0,
         "would_dispatch": 0,
         "failed": 0,
@@ -144,9 +175,21 @@ def refresh(
             print(f"refresh {row.get('id')}: billed, but no setup request was ever stored")
             counts["no_request"] += 1
             continue
+        ids = request["agency_ids"]
+        count = len(ids) if isinstance(ids, list) else len([i for i in str(ids).split(",") if i])
+        cap = _recorded_cap(row)
+        if cap is not None and count > cap:
+            # A subscription renews a bundle and covers what that bundle
+            # covered (setup_handler._inherited_cap), and the setup route holds
+            # the stored list to that number, so this is unreachable by any
+            # path through the product. It is here because the alternative to
+            # refusing is sending more than was ever bought, every month,
+            # silently. Refused rather than trimmed: which agencies to drop is
+            # not this job's call.
+            print(f"refresh {row.get('id')}: {count} agencies stored against a cap of {cap}")
+            counts["over_cap"] += 1
+            continue
         if dry_run:
-            ids = request["agency_ids"]
-            count = len(ids) if isinstance(ids, list) else len(str(ids).split(","))
             print(f"dry run: would refresh {row.get('id')} ({count} agencies)")
             counts["would_dispatch"] += 1
             continue

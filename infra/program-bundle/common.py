@@ -51,16 +51,37 @@ SIGNATURE_TOLERANCE_SECONDS = 300
 
 
 # What each price buys (docs/program-plan.md, "Prices"). The setup route holds
-# the agency list to the cap of the price that was actually paid for; the two
-# refresh plans cover the same 100 agencies as the large bundle. Keys match
-# terraform's stripe_price_ids and web/bundle/plan.json's products.
+# the agency list to the cap of the price that was actually paid for. Keys
+# match terraform's stripe_price_ids and web/bundle/plan.json's products.
+#
+# These are ceilings, not entitlements, and the difference is the whole point
+# of setup_handler._inherited_cap. A refresh renews a bundle somebody already
+# bought and covers the agencies *that bundle* covers, so the 100 on the two
+# refresh rows is only the widest a refresh could ever be, never what one buys
+# on its own. Read as an entitlement it made the cheapest product dominate the
+# most expensive one: $49 a month delivered the same 100-agency archive the
+# $349 bundle sells, because the caps were equal and nothing required the
+# bundle first. The equal caps were deliberate; the arbitrage was not.
 PLAN_AGENCY_CAPS: dict[str, int] = {
     "bundle_25": 25,
     "bundle_100": 100,
     "refresh_mo": 100,
     "refresh_yr": 100,
 }
+# The one-time archives, and the subscriptions that renew one. Every key of
+# PLAN_AGENCY_CAPS belongs to exactly one of these two; a plan in neither
+# would be sold with no cap rule at all, which is what the setup route's
+# entitlement check would then have to guess at.
+ONE_TIME_PLANS = ("bundle_25", "bundle_100")
 SUBSCRIPTION_PLANS = ("refresh_mo", "refresh_yr")
+# Key prefixes in the bundles table. A bare bundle id is a capability row; a
+# `session#` row is the setup route's claim on a Checkout Session, and a
+# `checkout#` row is the webhook's note of a completed checkout. Neither
+# prefixed row carries `expires_at`, so both outlive the 30-day capability
+# TTL -- which is what lets a refresh bought in March find the bundle bought
+# in January (setup_handler._inherited_cap).
+SESSION_PREFIX = "session#"
+CHECKOUT_PREFIX = "checkout#"
 # One page of line items is plenty: every Payment Link scripts/stripe-setup.sh
 # creates has exactly one, and a longer list is refused unread.
 _LINE_ITEMS_LIMIT = 10
@@ -357,6 +378,25 @@ def table(env_name: str) -> Any:
 
     region = os.environ.get("AWS_REGION", "us-west-2")
     return boto3.resource("dynamodb", region_name=region).Table(os.environ[env_name])
+
+
+def scan_all(source: Any, **kwargs: Any) -> list[dict[str, Any]]:
+    """Every item of a table, following LastEvaluatedKey to the end.
+
+    A single ``scan`` returns one page, and a caller that reads only the first
+    one sees a prefix of the table and cannot tell that it did. Any
+    ``FilterExpression`` is passed through, but a filter is a bandwidth
+    saving, never the correctness argument: DynamoDB applies it after the
+    read, and a caller must still check what it got.
+    """
+    rows: list[dict[str, Any]] = []
+    while True:
+        page = source.scan(**kwargs)
+        rows.extend(page.get("Items") or [])
+        start = page.get("LastEvaluatedKey")
+        if not start:
+            return rows
+        kwargs = {**kwargs, "ExclusiveStartKey": start}
 
 
 def bundle_row(
