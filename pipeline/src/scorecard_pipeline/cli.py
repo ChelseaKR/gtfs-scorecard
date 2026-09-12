@@ -588,6 +588,9 @@ _SINGLE_FEED_ONLY = (
     ("--sarif", "sarif"),
     ("--sarif-base", "sarif_base"),
     ("--large-feed", "large_feed"),
+    # `--history` is recorded by the single-feed path only; a batch would take
+    # the flag and write nothing.
+    ("--history", "history"),
 )
 
 
@@ -674,6 +677,31 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             _write_sarif(args.sarif, unreadable_feed_sarif(f"{args.url}: {exc}"))
         return 1
     _print_scorecard_summary(artifact)
+    stopped = _try_side_outputs(artifact, report, args)
+    if stopped is not None:
+        return stopped
+
+    # CI gating: a feed-deployment repo can run `scorecard try <url> --min-grade B
+    # --min-days-to-expiry 30` and fail the build before publishing a bad feed.
+    return _try_gate(artifact, args)
+
+
+def _try_side_outputs(
+    artifact: dict[str, Any], report: ValidationReport, args: argparse.Namespace
+) -> int | None:
+    """Write the optional files a single-feed `try` was asked for, in order.
+
+    Returns an exit code when one of them stops the run, and ``None`` when
+    every requested file was written and the run should go on to its gate.
+    Only the workspace history stops it: it refuses rather than mix two feeds
+    into one folder, and the refusal must not be followed by a SARIF file or a
+    threshold verdict that reads like a complete run.
+
+    Split out of ``_cmd_try`` so that function stays under the complexity
+    floor -- see docs/lint-complexity-ratchet.md. `--batch` (#363) and
+    `--history` (#362) each added a branch there in the same week; neither
+    crossed the floor alone and together they did.
+    """
     if args.html:
         page = _standalone_scorecard_html(artifact)
         out = Path(args.html)
@@ -720,9 +748,7 @@ def _cmd_try(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         )
         print(f"  SARIF written to {args.sarif}\n")
 
-    # CI gating: a feed-deployment repo can run `scorecard try <url> --min-grade B
-    # --min-days-to-expiry 30` and fail the build before publishing a bad feed.
-    return _try_gate(artifact, args)
+    return None
 
 
 def _try_gate(artifact: dict[str, Any], args: argparse.Namespace) -> int:

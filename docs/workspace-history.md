@@ -28,6 +28,11 @@ compared with each other.
 A run that could not score the feed writes nothing. A missed run is a gap in
 the history, not a zero.
 
+`--history` records one feed, so
+[`scorecard try --batch`](batch-scoring.md) refuses it rather than accepting
+the flag and writing nothing. Record a cohort's history by running
+`scorecard try … --history` once per feed, each with its own `--name`.
+
 ## What a record holds
 
 Counts and codes only. A record holds the date, grade and score, each measured

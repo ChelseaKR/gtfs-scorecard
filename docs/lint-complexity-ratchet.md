@@ -16,13 +16,23 @@ debt explicitly here with a dated, visible `# noqa: C901` at each site
 pointing back to this file — rather than leaving `C90` out of `select`
 (which would let the audit's FAIL stand unchanged) or leaving CI red.
 
-**Last synced:** 2026-09-11, when `build_digest` fell under the floor: its
-per-feed alert logic moved into `alerts.feed_alert_items` so the private
+**Last synced:** 2026-09-12, on merging `main` into #362. `_cmd_try` crossed
+the floor at 12 without either branch putting it there: `--batch` (#363) added
+its dispatch and `--history` (#362) added its recording block in the same
+week, and each was under the floor on its own. No row was added for it. Its
+optional-output blocks moved into `_try_side_outputs`, which took `_cmd_try`
+back under the floor with no suppression, per this file's rule that a new
+`# noqa: C901` needs discussion and its instruction to ratchet down when
+touching a function for a feature. That edit moved `_cmd_liveness` to
+`cli.py:3076`; no number changed, and the table still holds fourteen rows.
+
+**Previously synced:** 2026-09-11, when `build_digest` fell under the floor:
+its per-feed alert logic moved into `alerts.feed_alert_items` so the private
 workspace trend of #362 raises the same items, and its row and suppression
 were removed. The table was regenerated with the file:line each function has
 today; no other number changed.
 
-**Previously synced:** 2026-08-27, from the regenerated table that
+**Synced before that:** 2026-08-27, from the regenerated table that
 `pipeline/tests/test_complexity_ratchet.py` prints. The file:line column moved
 when `render_site` gained the per-feed failure context of issue #308; no number
 changed. Synced by hand earlier the same day alongside the seasonal-boundary
@@ -61,7 +71,7 @@ without discussion.
 | `completeness` | `src/scorecard_pipeline/completeness.py:209` | 16 | Rider-experience field scoring; candidate: extract per-field scorers. The 16th branch is the guard that returns no category at all for an archive with no stops and no trips, so a rider-experience score is never published for a feed that described none. |
 | `parse_subscribers` | `src/scorecard_pipeline/notify.py:87` | 15 | Subscriber YAML parsing and validation; candidate: split per-field validators (same shape as `parse_agencies`). |
 | `parse_ridership_csv` | `src/scorecard_pipeline/ridership.py:58` | 14 | CSV column-mapping heuristics; candidate: extract per-column parsers. |
-| `_cmd_liveness` | `src/scorecard_pipeline/cli.py:2912` | 13 | CLI subcommand with several independent check branches; candidate: table-driven checks. |
+| `_cmd_liveness` | `src/scorecard_pipeline/cli.py:3076` | 13 | CLI subcommand with several independent check branches; candidate: table-driven checks. |
 | `_render_agency` | `src/scorecard_pipeline/render_site.py:2652` | 13 | Template string assembly. Its suppression pointed at this file and had no row; added here. |
 | `route_type_family` | `src/scorecard_pipeline/modes.py:48` | 13 | GTFS route-type classification. Moved here from `route_geometry.py`, which now keeps a two-line wrapper with no suppression. Its `# noqa` carries its own rationale ("explicit spec range mapping") rather than pointing at this file; that is a deliberate permanent exemption, listed so the count reconciles. |
 | `_board_hero` | `src/scorecard_pipeline/render_site.py:1155` | 12 | Template string assembly with several conditional blocks. |

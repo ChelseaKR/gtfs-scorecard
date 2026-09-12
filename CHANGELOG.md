@@ -165,6 +165,12 @@ the declared public surface).
   compared, a line the history cannot read is skipped and named, and a run is
   refused rather than added to a folder that already holds a different feed.
   The Action gains a `history-path` input on `main`; it is not in `v1.4.0`.
+  `--history` records one feed, so `try --batch` refuses it alongside the
+  other single-feed options. That refusal is added here rather than with the
+  batch verb because the two landed in the same week and neither list could
+  name a flag the other branch had not merged yet: measured on the merge of
+  the two, `try --batch … --history DIR` was accepted and wrote no history at
+  all, and no test failed.
 
 - **Program report bundle, built and not launched (2026-09-01).** The
   program tier the sustainability plan allows (gtfs-scorecard-plans/07:
