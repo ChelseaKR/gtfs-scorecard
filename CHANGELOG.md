@@ -169,6 +169,21 @@ the declared public surface).
   calendars as September exports land; the registry moves to 2,275 records
   and the European sample to 618. The pass log is in `docs/feeds.md`.
 
+- **`scorecard try --batch`: score a CSV of untracked feeds into a private
+  cohort rollup (#363).** `scorecard try --batch feeds.csv --out DIR` scores
+  each row the way `scorecard try` scores one feed, writes each scorecard as
+  JSON and HTML, and writes one rollup as Markdown, HTML and CSV: every feed
+  in CSV order, the feeds whose service ends within 30 days or has ended, the
+  fixes shared across the cohort (counted by the published rollup's own
+  function, now `rollups.count_shared_fixes`), and the campaign worklists,
+  which omit grades. The CSV contract is published at
+  `/schemas/batch-feeds.schema.json` and is checked before anything is
+  fetched. A feed that cannot be fetched or read is a row with its reason,
+  never a grade, and makes the run exit non-zero only with `--strict`. A
+  local feed is recorded by file name only, and the same CSV with the same
+  `--date` gives byte-identical files. Nothing is published and nothing
+  enters the registry.
+
 - **76 reviewed French feed records from a second National Access Point
   exhaustion pass (2026-08-30).** Five weeks after the July exhaustion, the
   transport.data.gouv.fr API snapshot yielded 206 still-untracked datasets
