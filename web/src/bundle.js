@@ -5,7 +5,18 @@
  * paymentsAvailable is true it renders the "not yet available" state. A page
  * deployed ahead of the payment rail therefore describes nothing it cannot
  * do, and turning the tier on is a data change, not a copy change.
+ *
+ * The same fetch builds the Offer structured data a search engine reads. The
+ * <head> of the page carries the Service, breadcrumb, and FAQ nodes
+ * statically, with no amount in them; every price a crawler sees is injected
+ * here from the same plan the visible cards are built from. So the two can
+ * never disagree, and a plan that says payments are off, or one that cannot
+ * be read, leaves no offer standing.
  */
+
+/** The Service node in the page head that the Offers attach to. */
+const SERVICE_ID = "https://gtfsscorecard.org/bundle/#service";
+const OFFER_SCRIPT_ID = "plan-offers-jsonld";
 
 const grid = /** @type {HTMLElement | null} */ (document.getElementById("plan-grid"));
 const notice = /** @type {HTMLElement | null} */ (document.getElementById("plan-notice"));
@@ -38,12 +49,96 @@ function money(amount, currency) {
   }
 }
 
+/**
+ * One Offer per sellable product, in the order the cards use. Built only from
+ * fields the plan actually carries: a product with no numeric price, no https
+ * checkout link, or a plan with payments switched off contributes nothing.
+ *
+ * Machine-readable values only, so nothing here is copy a reader sees: the
+ * cadence rides in category and in a UnitPriceSpecification rather than in a
+ * sentence.
+ * @param {Record<string, any>} plan @param {string[]} order
+ */
+function offerNodes(plan, order) {
+  if (plan.paymentsAvailable !== true) return [];
+  const products = plan.products || {};
+  const currency = String(plan.currency || "USD");
+  const nodes = [];
+  for (const key of order) {
+    const product = products[key];
+    if (!product || typeof product.price !== "number") continue;
+    const url = safeUrl(product.checkout_url);
+    if (!url.startsWith("https:")) continue;
+    /** @type {Record<string, any>} */
+    const offer = {
+      "@type": "Offer",
+      name: String(product.label || key),
+      price: String(product.price),
+      priceCurrency: currency,
+      availability: "https://schema.org/InStock",
+      url,
+      category: product.interval ? "subscription" : "one-time",
+    };
+    if (product.interval) {
+      offer.priceSpecification = {
+        "@type": "UnitPriceSpecification",
+        price: String(product.price),
+        priceCurrency: currency,
+        billingDuration: 1,
+        billingIncrement: 1,
+        unitCode: product.interval === "year" ? "ANN" : "MON",
+      };
+    }
+    nodes.push(offer);
+  }
+  return nodes;
+}
+
+/**
+ * Attach the offers to the static Service node by @id, so the two blocks merge
+ * into one entity rather than describing two services. Re-runs replace the
+ * block, and a plan with nothing to sell removes it: a stale offer is the one
+ * outcome this must never leave behind.
+ * @param {Record<string, any>} plan @param {string[]} order
+ */
+function publishOffers(plan, order) {
+  const existing = document.getElementById(OFFER_SCRIPT_ID);
+  if (existing) existing.remove();
+  const nodes = offerNodes(plan, order);
+  if (nodes.length === 0) return;
+  const prices = nodes.map((offer) => Number(offer.price));
+  const node = {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "@id": SERVICE_ID,
+    offers:
+      nodes.length === 1
+        ? nodes[0]
+        : {
+            "@type": "AggregateOffer",
+            priceCurrency: String(plan.currency || "USD"),
+            lowPrice: String(Math.min(...prices)),
+            highPrice: String(Math.max(...prices)),
+            offerCount: nodes.length,
+            offers: nodes,
+          },
+  };
+  const script = document.createElement("script");
+  script.id = OFFER_SCRIPT_ID;
+  script.type = "application/ld+json";
+  // textContent is not parsed as markup, and escaping "<" keeps the block safe
+  // even if a label or link ever carried one.
+  script.textContent = JSON.stringify(node).replace(/</g, "\\u003c");
+  document.head.appendChild(script);
+}
+
 /** @param {Record<string, any>} plan */
 function render(plan) {
+  const order = ["bundle_25", "bundle_100", "refresh_mo", "refresh_yr"];
+  publishOffers(plan, order);
   if (!grid) return;
   grid.replaceChildren();
   const products = plan.products || {};
-  const order = ["bundle_25", "bundle_100", "refresh_mo", "refresh_yr"];
   for (const key of order) {
     const product = products[key];
     if (!product) continue;

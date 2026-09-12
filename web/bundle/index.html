@@ -3,19 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Board reports for a program — GTFS Scorecard</title>
+  <title>GTFS board reports for a transit program | GTFS Scorecard</title>
   <meta name="description"
-        content="Branded board reports for every agency a program supports, from the same published scorecards, in one archive. The single-agency report stays free.">
+        content="One archive of board reports on GTFS data quality, one per transit agency your program supports, with your branding. An agency's own report stays free.">
   <link rel="canonical" href="https://gtfsscorecard.org/bundle/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Board reports for a program — GTFS Scorecard">
-  <meta property="og:description" content="Branded board reports for every agency a program supports, generated from the same published scorecards, delivered as one archive.">
+  <meta property="og:title" content="GTFS board reports for a transit program | GTFS Scorecard">
+  <meta property="og:description" content="Board reports on GTFS data quality for the transit agencies a program supports, in one archive, with your program's name and logo on every cover.">
   <meta property="og:url" content="https://gtfsscorecard.org/bundle/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:alt" content="GTFS Scorecard: transit data quality for small agencies.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://gtfsscorecard.org/og.png">
   <meta name="twitter:image:alt" content="GTFS Scorecard: transit data quality for small agencies.">
+  <!-- The service, its place in the site, and the questions answered on the page.
+       No price here: prices live in /bundle/plan.json and bundle.js adds the Offer
+       nodes at view time, so turning the tier off stays a data change. -->
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Service","@id":"https://gtfsscorecard.org/bundle/#service","name":"Program report bundle","url":"https://gtfsscorecard.org/bundle/","serviceType":"GTFS data quality board reports for a program","description":"Board reports on GTFS data quality, one per transit agency a program supports, built from the published scorecards and delivered as one archive carrying the program's name, logo, and accent color.","provider":{"@id":"https://gtfsscorecard.org/#organization"},"audience":{"@type":"Audience","audienceType":"State transit programs, technical assistance centers, feed vendors, and consultancies that support many agencies"},"isRelatedTo":{"@id":"https://gtfsscorecard.org/#free-scorecard"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://gtfsscorecard.org/"},{"@type":"ListItem","position":2,"name":"Support","item":"https://gtfsscorecard.org/support/"},{"@type":"ListItem","position":3,"name":"Board reports for a program"}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","@id":"https://gtfsscorecard.org/bundle/#faq","mainEntity":[{"@type":"Question","name":"What arrives?","acceptedAnswer":{"@type":"Answer","text":"One self-contained board report per agency id you name, in a single archive, with a manifest that accounts for every id you asked for."}},{"@type":"Question","name":"What branding does it carry?","acceptedAnswer":{"@type":"Answer","text":"Your program's name, logo, and accent color on every cover."}},{"@type":"Question","name":"When does it arrive?","acceptedAnswer":{"@type":"Answer","text":"Normally within the hour, always within two business days. If it is later than that, the purchase is refunded. That is a commitment, not an estimate."}},{"@type":"Question","name":"How long does the download link live?","acceptedAnswer":{"@type":"Answer","text":"30 days. A monthly plan sends a fresh archive and a fresh link each month until you cancel from the receipt Stripe emailed you."}},{"@type":"Question","name":"What does a purchase change about a grade?","acceptedAnswer":{"@type":"Answer","text":"Nothing. Grades, methodology, and which agencies are listed are not for sale, and an agency's own report stays free."}},{"@type":"Question","name":"What does a purchase not buy?","acceptedAnswer":{"@type":"Answer","text":"No influence over the scores. Grades, methodology, weights, and which agencies are listed are never for sale, and the bundle's numbers are the same ones on the public site. Every report keeps its attribution to the open-source scorecard and cites the public rubric. Sponsorship or purchase buys no influence over grades, methodology, or which agencies are listed."}},{"@type":"Question","name":"What stays free?","acceptedAnswer":{"@type":"Answer","text":"Everything an agency touches, including this report for its own feed. Open any agency page and choose the board one-pager, or generate the same file yourself with the open-source command. Nothing is subtracted from the free tier to create the bundle; it is an addition for the people who manage many agencies at once, and it is never the way an agency sees its own grade."}}]}</script>
   <link rel="stylesheet" href="/src/styles.css">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
   <script>
@@ -55,17 +61,19 @@
     <p id="plan-notice" class="form-status" role="status" aria-live="polite" hidden></p>
 
     <ul class="buy-terms">
-      <li><strong>What arrives:</strong> one self-contained board report per agency id you name,
+      <li><strong>What arrives?</strong> One self-contained board report per agency id you name,
       in a single archive, with a manifest that accounts for every id you asked for.</li>
-      <li><strong>Your branding:</strong> your program's name, logo, and accent color on every
-      cover.</li>
-      <li><strong>When it arrives:</strong> normally within the hour, always within two
+      <li><strong>What branding does it carry?</strong> Your program's name, logo, and accent
+      color on every cover.</li>
+      <li><strong>When does it arrive?</strong> Normally within the hour, always within two
       business days. If it is later than that, the purchase is refunded. That is a commitment,
       not an estimate.</li>
-      <li><strong>How long the link lives:</strong> 30 days. A monthly plan sends a fresh archive
-      and a fresh link each month until you cancel from the receipt Stripe emailed you.</li>
-      <li><strong>What it does not change:</strong> nothing. Grades, methodology, and which
-      agencies are listed are not for sale, and an agency's own report stays free.</li>
+      <li><strong>How long does the download link live?</strong> 30 days. A monthly plan sends a
+      fresh archive and a fresh link each month until you cancel from the receipt Stripe emailed
+      you.</li>
+      <li><strong>What does a purchase change about a grade?</strong> Nothing. Grades,
+      methodology, and which agencies are listed are not for sale, and an agency's own report
+      stays free.</li>
     </ul>
 
     <h2 class="section-title" id="plans-h">Plans and prices</h2>
@@ -75,7 +83,7 @@
     </div>
 
     <section aria-labelledby="free-h">
-      <h2 class="section-title" id="free-h">What stays free</h2>
+      <h2 class="section-title" id="free-h">What stays free?</h2>
       <p>Everything an agency touches, including this report for its own feed. Open any agency
       page and choose the board one-pager, or generate the same file yourself with the
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/board-report.md">open-source
@@ -104,7 +112,7 @@
     </section>
 
     <section aria-labelledby="independence-h">
-      <h2 class="section-title" id="independence-h">What a purchase does not buy</h2>
+      <h2 class="section-title" id="independence-h">What does a purchase not buy?</h2>
       <p>No influence over the scores. Grades, methodology, weights, and which agencies are
       listed are never for sale, and the bundle's numbers are the same ones on the public site.
       Every report keeps its attribution to the open-source scorecard and cites the public
