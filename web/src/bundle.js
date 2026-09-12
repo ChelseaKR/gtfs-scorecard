@@ -67,6 +67,21 @@ function render(plan) {
       price.textContent = "Not yet available";
     }
     card.append(kicker, h, price);
+    // A subscription renews a bundle: it covers the agencies that bundle
+    // covered and it does not include one. The server enforces that before it
+    // consumes the checkout, so a buyer with no bundle is refused rather than
+    // charged for nothing — but being refused after paying is a worse way to
+    // learn it than reading it here, which is why this sits on the card and
+    // not only in the steps further down the page. (No quoted prose in this
+    // comment: the l10n ratchet in pipeline/tests/test_l10n_readiness.py
+    // counts quoted literals with a regex that cannot tell code from a
+    // comment, so a quotation here would be counted as untranslated copy.)
+    if (product.interval) {
+      const renews = document.createElement("p");
+      renews.className = "fineprint";
+      renews.textContent = "Renews a bundle you have already bought, and covers the same agencies as that bundle. Buy a bundle first.";
+      card.appendChild(renews);
+    }
     if (canSell) {
       const p = document.createElement("p");
       const a = document.createElement("a");
