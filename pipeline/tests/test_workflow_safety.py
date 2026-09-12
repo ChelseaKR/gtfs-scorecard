@@ -907,7 +907,7 @@ def test_the_watchdog_reads_a_job_timeout_as_a_failure_not_as_silence() -> None:
     workflow = _workflow("watchdog.yml")
     watch = workflow[workflow.index("  watch:") : workflow.index("  production-lighthouse:")]
 
-    for check in ("Daily scorecard", "Realtime monitor"):
+    for check in ("Daily scorecard", "Realtime monitor", "Program report bundle"):
         step_at = watch.index(f"most recent completed {check} run")
         step = watch[step_at : step_at + 1200]
         assert '"$conclusion" = "cancelled"' in step, (
@@ -919,7 +919,7 @@ def test_the_watchdog_reads_a_job_timeout_as_a_failure_not_as_silence() -> None:
     # A check that could not get an answer is not a check that passed. The
     # realtime step refuses an empty conclusion rather than falling through it.
     realtime_at = watch.index("The most recent realtime monitor run did not fail")
-    realtime = watch[realtime_at:]
+    realtime = watch[realtime_at : watch.index("The most recent program report bundle run")]
     assert "--workflow rt-monitor.yml" in realtime
     assert '[ -z "$conclusion" ]' in realtime, (
         "an unreadable run list must be an error, not an implied pass"
@@ -1055,3 +1055,70 @@ def test_nothing_the_run_prints_carries_the_download_capability() -> None:
                     f"{job}/{step.get('name')} writes {name} into an annotation or the run "
                     f"summary, which is public: {line.strip()}"
                 )
+
+
+def test_the_watchdog_watches_the_workflow_that_delivers_paid_orders() -> None:
+    """report-bundle.yml fulfils a purchase, and nothing else notices it fail.
+
+    It is dispatched rather than scheduled, so there is no cadence for a
+    staleness check to bite on and no published page that looks wrong when it
+    stops. A failed run means a buyer paid, was told the build had started,
+    and will receive nothing -- visible only to somebody who opens the
+    Actions tab.
+
+    The two conclusions this check has to keep apart are the point of it:
+    an empty run list is the normal state before the first sale and must
+    pass, while a `gh` call that could not answer must fail. The
+    `|| echo '[]'` idiom the other two steps use cannot tell them apart, so
+    this one reads `gh`'s own exit status instead.
+    """
+    workflow = _workflow("watchdog.yml")
+    watch = workflow[workflow.index("  watch:") : workflow.index("  production-lighthouse:")]
+    step_at = watch.index("The most recent program report bundle run did not fail")
+    step = watch[step_at:]
+
+    assert "--workflow report-bundle.yml" in step
+    assert "set -euo pipefail" in step
+    assert "if ! latest=$(gh run list" in step, (
+        "the call's own failure must be distinguishable from an empty result"
+    )
+    assert "Could not read the Program report bundle run list" in step
+    assert "jq 'length'" in step and "-eq 0" in step, (
+        "a repository with no completed bundle runs has sold nothing and is healthy"
+    )
+    assert '[ -z "$conclusion" ]' in step, (
+        "an unreadable run list must be an error, not an implied pass"
+    )
+
+
+def test_a_failed_paid_bundle_run_says_so_without_naming_the_order() -> None:
+    """The other half of the same gap, inside report-bundle.yml.
+
+    A failed render used to leave no trace anybody reads: the setup form had
+    already told the buyer the build was starting, the delivery email only
+    exists on the success path, and the capability row is deleted by its
+    30-day TTL.
+
+    The split matters. The annotation and summary are public, so they say
+    only that an order failed; the identity goes by SES to the operator. The
+    generic rules above already forbid the capability in either public field,
+    and this pins the arrangement that keeps the failure legible anyway.
+    """
+    workflow = _workflow("report-bundle.yml")
+    assert "if: ${{ failure() }}" in workflow, (
+        "a run that fulfils a paid order must say so when it fails"
+    )
+    say_at = workflow.index("Say that a paid order failed")
+    say = workflow[say_at : workflow.index("Mail the operator that an order failed")]
+    assert "::error::" in say
+    assert "$GITHUB_STEP_SUMMARY" in say
+    assert "this log is public" in say, "the reason the order is not named belongs next to it"
+
+    mail = workflow[workflow.index("Mail the operator that an order failed") :]
+    assert "aws ses send-email" in mail
+    assert "BUNDLE_ID" in mail, "the private channel is where the order may be named"
+    assert "continue-on-error: true" in mail, (
+        "a notification that cannot be sent must not replace the failure it reports"
+    )
+    # The annotation is written first, so a broken SES cannot hide the order.
+    assert say_at < workflow.index("aws ses send-email")

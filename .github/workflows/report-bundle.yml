@@ -201,6 +201,73 @@ jobs:
       # run page, and GET <api>/download/<that id> answered 302 to a presigned
       # S3 URL while a never-issued id answered 404. The name was a working
       # download credential for anyone reading the Actions tab.
+      # A run of this workflow is a paid order, and until this step existed
+      # nothing in the repository noticed when one died. The buyer's form had
+      # already told them the build was starting; no email is sent on the
+      # failure path; the capability row sits in DynamoDB until its 30-day TTL
+      # removes the evidence. The only trace was a red row in the Actions tab
+      # that nobody watches.
+      #
+      # What this may NOT do is name the order. The bundle id is the download
+      # credential and annotations and run summaries are public on a public
+      # repository -- that was the leak fixed in the commit this builds on, and
+      # tests/test_workflow_safety.py now fails if it comes back through a
+      # helpful error message. So the public half says only that an order
+      # failed and points at the run; the identity travels by SES, privately,
+      # in the step below.
+      - name: Say that a paid order failed
+        if: ${{ failure() }}
+        env:
+          DISPATCH_KEY: ${{ inputs.dispatch_key }}
+        run: |
+          set -uo pipefail
+          echo "::error::A paid program report bundle did not complete. The buyer was told the build had started and nothing else will tell them otherwise. The order is named in the alert emailed to SES_FROM, and in the program-bundles table; it is deliberately not printed here, because this log is public."
+          {
+            echo
+            echo "## A paid order was not delivered"
+            echo
+            echo "- run group: \`${DISPATCH_KEY:-none}\`"
+            echo
+            echo "Re-running this workflow with the same inputs is the repair, and it is"
+            echo "safe: the archive and the download link are both keyed on the bundle id,"
+            echo "so a re-run fills the object the buyer's existing link already points at."
+            echo "The inputs are not shown on this page; take them from the emailed alert."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Then mail it, which is where the order may be named: SES goes to the
+      # operator, not to a public page. The Watchdog check is a six-hourly
+      # sweep, not a pager, and this is the one place that knows which order
+      # it was. `continue-on-error` covers only the mail: the run has already
+      # failed and the annotation above is written whatever SES does. A
+      # notification that cannot be sent must never stand in for the failure
+      # it reports.
+      - name: Mail the operator that an order failed
+        if: ${{ failure() && vars.ARTIFACTS_BUCKET != '' && vars.SES_FROM != '' }}
+        continue-on-error: true
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION || 'us-west-2' }}
+          BUNDLE_ID: ${{ inputs.bundle_id }}
+          CADENCE: ${{ inputs.cadence }}
+          DELIVER_TO: ${{ inputs.deliver_to }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          SES_FROM: ${{ vars.SES_FROM }}
+        run: |
+          set -uo pipefail
+          body="A program report bundle run failed, so a paid order is undelivered.
+
+          bundle id:  ${BUNDLE_ID}
+          deliver to: ${DELIVER_TO}
+          cadence:    ${CADENCE}
+          run:        ${RUN_URL}
+
+          Re-dispatch this workflow with the same inputs to repair it. The
+          archive and the download link are keyed on the bundle id, so the
+          re-run fills the object the buyer's link already points at."
+          aws ses send-email --region "$AWS_REGION" \
+            --from "$SES_FROM" --to "$SES_FROM" \
+            --subject "GTFS Scorecard: a program bundle run failed" \
+            --text "$body"
+
       - name: Keep the archive on the run
         if: ${{ always() }}
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
