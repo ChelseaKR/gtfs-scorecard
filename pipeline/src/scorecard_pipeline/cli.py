@@ -3638,7 +3638,7 @@ def _cmd_bundle_email(args: argparse.Namespace, parser: argparse.ArgumentParser)
     except (OSError, ValueError, BundleError) as err:
         print(f"error: {err}", file=sys.stderr)
         return 2
-    email = delivery_email(request, manifest, args.download_url, args.expires_on)
+    email = delivery_email(request, manifest, args.download_url, args.expires_on, args.promised_by)
     if args.out is not None:
         args.out.parent.mkdir(parents=True, exist_ok=True)
         args.out.write_text(f"To: {email.to}\nSubject: {email.subject}\n\n{email.body}")
@@ -3649,6 +3649,52 @@ def _cmd_bundle_email(args: argparse.Namespace, parser: argparse.ArgumentParser)
         send_via_ses([email], args.sender)
         print(f"sent to {email.to}")
     return 0
+
+
+def _cmd_program_refunds(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """List paid program orders past the two-business-day delivery promise.
+
+    Runs on the operator's machine with the operator's own AWS credentials.
+    The public reconciler issue carries counts only, because the repository is
+    public and a bundle id is a download capability; this is where the detail
+    lives. It reads DynamoDB and S3, prints the Stripe reference and the
+    commands that would refund each order, and **refunds nothing**: no Stripe
+    credential is used and no Stripe call is made.
+
+    Exit 1 when there is at least one breach, so it can gate a script.
+    """
+    import boto3  # type: ignore[import-not-found]
+
+    from .program_refunds import breached_orders, render
+
+    table = boto3.resource("dynamodb", region_name=args.region).Table(args.table)
+    s3 = boto3.client("s3", region_name=args.region)
+
+    rows: list[dict[str, object]] = []
+    scan: dict[str, object] = {}
+    while True:
+        page = table.scan(**scan)
+        rows.extend(page.get("Items") or [])
+        start = page.get("LastEvaluatedKey")
+        if not start:
+            break
+        scan = {"ExclusiveStartKey": start}
+
+    def present(bundle_id: str) -> bool:
+        from .bundle import archive_key
+
+        try:
+            s3.head_object(Bucket=args.bucket, Key=archive_key(bundle_id))
+        except Exception:  # botocore ClientError: absent, or unreadable
+            return False
+        return True
+
+    orders = breached_orders(rows, archive_present=present)
+    if args.json:
+        print(json.dumps(orders, indent=2, sort_keys=True))
+    else:
+        print(render(orders), end="")
+    return 1 if orders else 0
 
 
 def _cmd_canary(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
@@ -4417,6 +4463,22 @@ def main(argv: list[str] | None = None) -> int:
     )
     bundle_email.add_argument("--send", action="store_true", help="send through SES (needs boto3)")
     bundle_email.add_argument("--from", dest="sender", default="", help="verified SES sender")
+    bundle_email.add_argument(
+        "--promised-by",
+        default="",
+        help="the date this order was committed to at checkout, as the buyer was told it",
+    )
+
+    program_refunds = sub.add_parser(
+        "program-refunds",
+        help="list paid program orders past the delivery promise (reads DynamoDB; refunds nothing)",
+    )
+    program_refunds.add_argument(
+        "--table", default="gtfs-scorecard-program-bundles", help="DynamoDB table of capabilities"
+    )
+    program_refunds.add_argument("--bucket", required=True, help="artifacts bucket to check")
+    program_refunds.add_argument("--region", default="us-west-2")
+    program_refunds.add_argument("--json", action="store_true", help="machine-readable output")
 
     backfill = sub.add_parser(
         "backfill-state", help="fill missing agency state from the Mobility Database catalog"
@@ -4636,6 +4698,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "report": _cmd_report,
         "bundle": _cmd_bundle,
         "bundle-email": _cmd_bundle_email,
+        "program-refunds": _cmd_program_refunds,
         "backfill-state": _cmd_backfill_state,
         "lint": _cmd_lint,
         "identity": _cmd_identity,

@@ -94,8 +94,14 @@ if (!form) {
       });
       const body = await resp.json().catch(() => ({}));
       if (resp.ok && body.ok) {
+        // `body.promise` is the server's sentence, carrying the date it
+        // computed and stored against this order. It is deliberately not
+        // recomputed here: the two-business-day commitment carries a refund,
+        // and a second implementation of it in another language would
+        // disagree the first time a public holiday fell between them.
+        const promise = typeof body.promise === "string" ? body.promise : "";
         setStatus(
-          "Thank you. Your reports are being generated; the download link goes to the address you gave, and it stays valid for 30 days.",
+          `Thank you. Your reports are being generated and the download link goes to the address you gave. ${promise} The link stays valid for 30 days.`.replace(/\s+/g, " ").trim(),
           "ok",
         );
         return;

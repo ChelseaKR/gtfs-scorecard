@@ -216,6 +216,10 @@ def workflow_inputs(request: dict[str, Any]) -> dict[str, str]:
         # can reach main before this Lambda is redeployed. The reverse order
         # would be a 422 on every dispatch.
         "dispatch_key": dispatch_key(bundle_id),
+        # The date this order was committed to, as the buyer was told it,
+        # carried rather than recomputed in the workflow. Blank for a
+        # subscription refresh, which made no such promise.
+        "promised_by": str(request.get("promised_by") or ""),
     }
 
 
@@ -355,9 +359,24 @@ def table(env_name: str) -> Any:
     return boto3.resource("dynamodb", region_name=region).Table(os.environ[env_name])
 
 
-def bundle_row(request: dict[str, Any], *, source: str, session_id: str = "") -> dict[str, Any]:
-    """The capability row for one bundle: who it is for, when it expires."""
-    return {
+def bundle_row(
+    request: dict[str, Any],
+    *,
+    source: str,
+    session_id: str = "",
+    deliver_by_epoch: int | None = None,
+) -> dict[str, Any]:
+    """The capability row for one bundle: who it is for, when it expires, and
+    when it was promised by.
+
+    ``deliver_by_epoch`` is written once, at checkout, and never recomputed.
+    A promise recalculated later is a promise that moves, and this one carries
+    a refund. It is absent on a refresh row on purpose: the two-business-day
+    commitment is made at a purchase, and a subscription's monthly archive is
+    a different promise. A row without it can still be reported undelivered;
+    it simply cannot breach a deadline nobody made.
+    """
+    row = {
         "bundle_id": request["bundle_id"],
         "deliver_to": request["deliver_to"],
         "program_name": request["program_name"],
@@ -366,3 +385,6 @@ def bundle_row(request: dict[str, Any], *, source: str, session_id: str = "") ->
         "created_at": now_iso(),
         "expires_at": epoch_in(DOWNLOAD_DAYS),
     }
+    if deliver_by_epoch is not None:
+        row["deliver_by_epoch"] = int(deliver_by_epoch)
+    return row

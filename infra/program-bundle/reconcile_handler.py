@@ -6,6 +6,15 @@ that bought nothing?*
 
 Three shapes, and each is a real path a paid order can take to silence:
 
+``deadline_breached``
+    An ``undelivered`` order that is also past the date it was promised by.
+    ``/bundle/`` says the archive arrives "always within two business days.
+    If it is later than that, the purchase is refunded", so this one is not
+    a slow build, it is a refund owed. It is reported apart from
+    ``undelivered`` and named first, because the two need different actions
+    from a person and folding them together would bury the expensive one
+    inside a routine count.
+
 ``undelivered``
     A capability row whose archive is not in S3 after ``STALE_HOURS``. The
     setup route writes that row before it dispatches report-bundle.yml, so
@@ -67,6 +76,9 @@ from common import (
     table,
 )
 
+from scorecard_pipeline import deadline
+from scorecard_pipeline.bundle import archive_key
+
 # How long an order may sit before it counts as undelivered. A bundle of a
 # hundred agencies renders well inside report-bundle.yml's own 30-minute
 # bound, so six hours is several failed-and-retried builds, not a tight race.
@@ -112,7 +124,7 @@ def artifact_state(s3: Any, bucket: str, bundle_id: str) -> str:
     delivered one either, so it gets its own value and the caller refuses.
     """
     try:
-        s3.head_object(Bucket=bucket, Key=f"program-bundles/{bundle_id}/bundle.zip")
+        s3.head_object(Bucket=bucket, Key=archive_key(bundle_id))
     except Exception as err:  # botocore's ClientError, read by code not by type
         response = getattr(err, "response", None)
         code = ""
@@ -224,9 +236,14 @@ def _capability_finding(
     if state == _ARTIFACT_PRESENT:
         return None
     age = _age_hours(created, now=now)
+    # Past the promised date with no archive is a refund, not a delay. A row
+    # with no `deliver_by_epoch` made no such promise (a subscription refresh
+    # is a different commitment), so it can be late but cannot breach.
+    promised = row.get("deliver_by_epoch")
+    breached = deadline.is_breached(promised, now=now, archive_present=state != _ARTIFACT_MISSING)
     if state == _ARTIFACT_MISSING:
         action = (
-            f"No archive at program-bundles/{key}/bundle.zip. Re-dispatch "
+            f"No archive at {archive_key(key)}. Re-dispatch "
             "report-bundle.yml with this bundle id; the download link the buyer "
             "holds already points at that key."
         )
@@ -237,8 +254,17 @@ def _capability_finding(
             "S3 would not say whether this archive exists, so this run cannot "
             "vouch for this order either way. Check the bucket."
         )
+    if breached:
+        action = (
+            f"PAST THE PROMISED DATE. /bundle/ commits to delivery within "
+            f"{deadline.PROVISIONING_BUSINESS_DAYS} business days or a refund, and this "
+            "order is past it with no archive. Build it or refund it; "
+            "`scorecard program-refunds` prints the Stripe reference and the command."
+        )
     return {
-        "kind": "undelivered" if state == _ARTIFACT_MISSING else "unreadable",
+        "kind": "deadline_breached"
+        if breached
+        else ("undelivered" if state == _ARTIFACT_MISSING else "unreadable"),
         "key": key,
         "deliver_to": str(row.get("deliver_to") or ""),
         "program_name": str(row.get("program_name") or ""),
@@ -298,7 +324,18 @@ ISSUE_MARKER = "<!-- gtfs-scorecard:program-bundle-reconciler -->"
 LOG_GROUP = "/aws/lambda/gtfs-scorecard-program-bundle-reconcile"
 # Every kind the walk above can produce, so a kind that drops to zero is
 # printed as zero rather than vanishing from the report.
-KINDS = ("undelivered", "never_started", "abandoned_checkout", "unreadable")
+# Ordered by what a person has to do about them, worst first, because this
+# tuple is also the order the public issue prints and the order its title
+# reads from.
+KINDS = (
+    "deadline_breached",
+    "undelivered",
+    "never_started",
+    "abandoned_checkout",
+    "unreadable",
+)
+# The kinds that mean money is owed rather than that a build is late.
+BREACH_KINDS = ("deadline_breached",)
 
 
 def counts_by_kind(findings: list[dict[str, Any]]) -> dict[str, int]:
@@ -307,8 +344,21 @@ def counts_by_kind(findings: list[dict[str, Any]]) -> dict[str, int]:
 
 
 def issue_title(counts: dict[str, int]) -> str:
+    """The title escalates when money is owed.
+
+    A breach and a slow build are not the same severity and must not read the
+    same in a notification list. The title is the only place that difference
+    can be carried, because the body is counts and the counts are unranked.
+    """
+    breaches = sum(counts.get(kind, 0) for kind in BREACH_KINDS)
+    if breaches:
+        return (
+            f"REFUND DUE: {breaches} program order{'' if breaches == 1 else 's'} "
+            "past the promised delivery date"
+        )
     total = sum(counts.values())
-    return f"{total} program order{'' if total == 1 else 's'} need attention"
+    noun = "order needs" if total == 1 else "orders need"
+    return f"{total} program {noun} attention"
 
 
 def issue_body(counts: dict[str, int]) -> str:

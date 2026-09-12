@@ -281,6 +281,7 @@ def test_workflow_inputs_flatten_ids_and_default_the_optional_fields() -> None:
         "deliver_to": "p@example.org",
         "cadence": "one_time",
         "dispatch_key": common.dispatch_key("a" * 32),
+        "promised_by": "",
     }
 
 
@@ -1516,6 +1517,7 @@ def test_the_reconciler_names_the_order_a_failed_dispatch_left_behind(
     assert sorted(f["kind"] for f in findings) == ["never_started", "undelivered"]
     counts = reconcile_handler.counts_by_kind(findings)
     assert counts == {
+        "deadline_breached": 0,
         "undelivered": 1,
         "never_started": 1,
         "abandoned_checkout": 0,
@@ -1570,8 +1572,8 @@ def test_the_public_issue_carries_counts_and_nothing_that_identifies_anybody(
     assert not re.search(r"\b(cs|cus|sub|price|pi|ch)_[A-Za-z0-9]{6,}", published), (
         "a Stripe-shaped reference reached the issue"
     )
-    # What it does carry.
-    assert title == "4 program orders need attention"
+    # What it does carry. One of the kinds is a breach, so the title escalates.
+    assert title == "REFUND DUE: 1 program order past the promised delivery date"
     for kind in reconcile_handler.KINDS:
         assert f"{kind:<20}1" in body, kind
     assert reconcile_handler.LOG_GROUP in body
@@ -1718,3 +1720,125 @@ def test_the_reconcile_schedule_cannot_be_enabled_with_no_way_to_report() -> Non
     # nothing, so nobody sets it and expects an alert.
     assert "ses_from" not in terraform
     assert "ses:SendEmail" not in terraform
+
+
+# ---------------------------------------------------------------------------
+# the delivery promise, end to end through the handlers
+# ---------------------------------------------------------------------------
+
+
+def test_setup_records_the_promised_date_and_tells_the_buyer(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """The date is computed once, stored on the order, returned to the page
+    and carried into the workflow. Four places, one computation: the page
+    does not work it out again, and neither does the email."""
+    from scorecard_pipeline import deadline as dl
+
+    dispatched: list[dict[str, str]] = []
+    # Monday 14 September 2026, 09:00 in the promise's own zone.
+    checkout = 1789401600
+    _stripe(monkeypatch, _paid_session(created=checkout), price=PRICE_BUNDLE_25)
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
+
+    resp = setup_handler.handler(_setup_event(_form()))
+    assert resp["statusCode"] == 200, resp["body"]
+    body = json.loads(resp["body"])
+
+    expected = dl.deadline_date(dl.from_epoch(checkout))
+    assert body["deliver_by"] == expected.isoformat() == "2026-09-16"
+    assert dl.spoken_date(expected) in body["promise"]
+    assert "refunded" in body["promise"]
+
+    row = tables["BUNDLES_TABLE"].items[body["bundle_id"]]
+    assert row["deliver_by_epoch"] == dl.deadline_epoch(dl.from_epoch(checkout))
+    assert row["deliver_by_anchor"] == "checkout"
+    assert dispatched[0]["promised_by"] == dl.spoken_date(expected)
+
+
+def test_the_promise_is_anchored_to_the_checkout_not_to_the_form(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """A buyer who pays on Friday and fills the form in on Monday was
+    promised two business days from Friday. Anchoring on the form would hand
+    us the weekend, which is the direction that quietly favours us."""
+    from scorecard_pipeline import deadline as dl
+
+    # Friday 11 September 2026, 16:00 in the promise's own zone. Two business
+    # days on is Tuesday the 15th, and the weekend is not two of them.
+    friday = 1789167600
+    _stripe(monkeypatch, _paid_session(created=friday), price=PRICE_BUNDLE_25)
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", lambda inputs: None)
+
+    body = json.loads(setup_handler.handler(_setup_event(_form()))["body"])
+    assert body["deliver_by"] == dl.deadline_date(dl.from_epoch(friday)).isoformat()
+    assert body["deliver_by"] == "2026-09-15", "the weekend is not two business days"
+
+    # A session with no `created` is the only case that falls back to now, and
+    # the row says so rather than leaving it unanswerable.
+    session = _paid_session()
+    session.pop("created", None)
+    _stripe(monkeypatch, session, price=PRICE_BUNDLE_25)
+    tables["BUNDLES_TABLE"].items.clear()
+    second = json.loads(
+        setup_handler.handler(_setup_event(_form(session_id="cs_test_other")))["body"]
+    )
+    assert tables["BUNDLES_TABLE"].items[second["bundle_id"]]["deliver_by_anchor"] == "received"
+
+
+def _promised(offset_days: float) -> int:
+    return int((dt.datetime.now(dt.UTC) + dt.timedelta(days=offset_days)).timestamp())
+
+
+def test_a_breached_order_is_reported_apart_from_a_merely_late_one(
+    tables: dict[str, FakeTable],
+) -> None:
+    """One is a slow build, the other is a refund owed. They need different
+    actions from a person, so they must not arrive as one number.
+
+    The severity also has to survive into the notification: the issue body is
+    counts and counts are unranked, so the title is the only place the
+    difference can be carried, and it carries it."""
+    rows = tables["BUNDLES_TABLE"].items
+    rows["a" * 32] = _capability("a" * 32, hours=72, deliver_by_epoch=_promised(-1))
+    rows["b" * 32] = _capability("b" * 32, hours=72, deliver_by_epoch=_promised(+1))
+    rows["c" * 32] = _capability("c" * 32, hours=72)  # a refresh: no promise
+
+    findings = _reconcile(tables, _ReconcileS3())["findings"]
+    by_kind = {f["key"]: f["kind"] for f in findings}
+    assert by_kind["a" * 32] == "deadline_breached"
+    assert by_kind["b" * 32] == "undelivered"
+    assert by_kind["c" * 32] == "undelivered"
+
+    counts = reconcile_handler.counts_by_kind(findings)
+    assert counts["deadline_breached"] == 1
+    assert counts["undelivered"] == 2
+
+    title = reconcile_handler.issue_title(counts)
+    assert title.startswith("REFUND DUE"), title
+    assert "1 program order past the promised delivery date" in title
+    # And the breach says what to do, which is not what a late build says.
+    breach = next(f for f in findings if f["kind"] == "deadline_breached")
+    assert "PAST THE PROMISED DATE" in breach["action"]
+    assert "program-refunds" in breach["action"]
+
+
+def test_a_delivered_order_never_breaches_however_late_it_was(
+    tables: dict[str, FakeTable],
+) -> None:
+    """Late and delivered is not a refund by this machinery's reckoning. The
+    buyer may still be owed one; that is a judgement, and it is hers."""
+    rows = tables["BUNDLES_TABLE"].items
+    rows["a" * 32] = _capability("a" * 32, hours=72, deliver_by_epoch=_promised(-5))
+    s3 = _ReconcileS3(present={f"program-bundles/{'a' * 32}/bundle.zip"})
+    assert _reconcile(tables, s3)["findings"] == []
+
+
+def test_the_title_does_not_escalate_when_nothing_is_owed(
+    tables: dict[str, FakeTable],
+) -> None:
+    tables["BUNDLES_TABLE"].items["a" * 32] = _capability("a" * 32, hours=72)
+    findings = _reconcile(tables, _ReconcileS3())["findings"]
+    title = reconcile_handler.issue_title(reconcile_handler.counts_by_kind(findings))
+    assert title == "1 program order needs attention"
+    assert "REFUND" not in title
