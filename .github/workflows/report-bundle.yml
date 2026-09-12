@@ -119,6 +119,16 @@ jobs:
       # Only what the report reads: the index (history) and each requested
       # agency's current artifact. Not the whole corpus; a bundle is a hundred
       # files at most, and the daily run's full sync would take minutes.
+      #
+      # The checkout already carries a committed snapshot of data/artifacts,
+      # which is the fallback when no bucket is configured. It must not be the
+      # fallback when a bucket IS configured: that snapshot is re-materialised
+      # by hand and runs weeks behind, so a `cp` that failed for one agency
+      # would leave a stale grade in place and the report would print it as
+      # today's, dressed in a fresh history from the index that was fetched
+      # successfully. Delete each requested agency's copy first, so a failed
+      # fetch becomes an id the manifest names rather than a wrong number
+      # nobody can see is wrong.
       - name: Hydrate the requested artifacts from S3
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         env:
@@ -126,11 +136,22 @@ jobs:
         run: |
           set -euo pipefail
           aws s3 cp "s3://${ARTIFACTS_BUCKET}/data/artifacts/index.json" ../data/artifacts/index.json --only-show-errors
+          : > unhydrated.txt
           jq -r '.current[]' plan.json | while read -r id; do
             mkdir -p "../data/artifacts/${id}"
+            rm -f "../data/artifacts/${id}/latest.json"
             aws s3 cp "s3://${ARTIFACTS_BUCKET}/data/artifacts/${id}/latest.json" \
-              "../data/artifacts/${id}/latest.json" --only-show-errors || true
+              "../data/artifacts/${id}/latest.json" --only-show-errors \
+              || printf '%s\n' "$id" >> unhydrated.txt
           done
+          if [ -s unhydrated.txt ]; then
+            {
+              echo
+              echo "**Not hydrated from S3** (no current artifact was fetched; each is named in"
+              echo "the manifest as not published):"
+              sed 's/^/  - /' unhydrated.txt
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
       - name: Render the bundle
         run: uv run scorecard bundle --request request.json --out bundle.zip --manifest manifest.json

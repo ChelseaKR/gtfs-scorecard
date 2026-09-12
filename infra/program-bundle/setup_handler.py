@@ -19,7 +19,11 @@ Two routes on the program-bundle API, both stateless per request:
     archive exists, answers with a 302 to a presigned S3 URL that lives
     fifteen minutes. The emailed link is stable for thirty days; each click
     mints a fresh short-lived URL, so nothing long-lived is ever written into
-    an email. A bundle still being rendered answers 202 with a plain page.
+    an email. A bundle still being rendered answers 202 with a plain page. A
+    row past its own ``expires_at`` answers "expired" on that fact, not on
+    whether the object is there: the S3 lifecycle rule deletes the archive on
+    the day and the DynamoDB TTL sweep can lag it by two, and in that window
+    "the object is missing" would otherwise read as "still being prepared".
 
 Payment is the only gate. There is no account and no password; the
 capability in the email is the credential, the same posture as the alerts
@@ -31,7 +35,9 @@ from __future__ import annotations
 
 import json
 import os
+import time
 import urllib.parse
+from dataclasses import replace
 from typing import Any
 
 from common import (
@@ -55,12 +61,28 @@ PRESIGN_SECONDS = 15 * 60
 _SESSION_ID_MAX = 200
 
 
+def _session_key(session_id: str) -> str:
+    return f"session#{session_id}"
+
+
 def _session_row(session_id: str, bundle_id: str, plan: str) -> dict[str, Any]:
     """Marks a Checkout Session as consumed. Shares the bundles table under a
     ``session#`` key so one conditional put is the whole idempotency check.
     No ``expires_at``: the claim must outlive the capability row, or a replay
-    after 30 days would build a second bundle from one payment."""
-    return {"bundle_id": f"session#{session_id}", "consumed_by": bundle_id, "plan": plan}
+    after 30 days would build a second bundle from one payment.
+
+    ``dispatched`` starts False and is set True only once GitHub has accepted
+    the workflow_dispatch. The claim therefore records two different facts --
+    "this payment is spoken for" and "a build was actually started" -- so a
+    second submission after a failed dispatch can finish the order instead of
+    being told a bundle exists that does not.
+    """
+    return {
+        "bundle_id": _session_key(session_id),
+        "consumed_by": bundle_id,
+        "plan": plan,
+        "dispatched": False,
+    }
 
 
 def _claim_session(bundles: Any, session_id: str, bundle_id: str, plan: str) -> bool:
@@ -75,6 +97,46 @@ def _claim_session(bundles: Any, session_id: str, bundle_id: str, plan: str) -> 
             return False
         raise
     return True
+
+
+def _mark_dispatched(bundles: Any, session_id: str) -> None:
+    """Record that the build for this session really started."""
+    bundles.update_item(
+        Key={"bundle_id": _session_key(session_id)},
+        UpdateExpression="SET #d = :d",
+        ExpressionAttributeNames={"#d": "dispatched"},
+        ExpressionAttributeValues={":d": True},
+    )
+
+
+def _has_expired(expires_at: Any) -> bool:
+    """True only when the row carries a readable epoch that has passed.
+
+    An unreadable or absent ``expires_at`` is not evidence of expiry, so it
+    reads as "not expired" and the object decides -- the same rule the rest
+    of this module follows: a value that could not be read is never turned
+    into a fact about the buyer's order.
+    """
+    if isinstance(expires_at, bool):
+        return False
+    if isinstance(expires_at, int | float):
+        return int(expires_at) <= int(time.time())
+    text = str(expires_at or "").strip()
+    return text.isdigit() and int(text) <= int(time.time())
+
+
+def _unfinished_bundle_id(bundles: Any, session_id: str) -> str:
+    """The bundle id of a claim whose build never started, else "".
+
+    Only an explicit ``dispatched: False`` counts. A claim written before this
+    field existed, or one whose Lambda died after calling GitHub, has no such
+    record, and re-dispatching on a guess would build a second time from one
+    payment. Absence of the flag is not evidence of a failed dispatch.
+    """
+    row = bundles.get_item(Key={"bundle_id": _session_key(session_id)}).get("Item") or {}
+    if row.get("dispatched") is not False:
+        return ""
+    return str(row.get("consumed_by") or "")
 
 
 class _Refused(Exception):
@@ -103,12 +165,41 @@ def _paid_purchase(session_id: str) -> tuple[dict[str, Any], str, str]:
     try:
         session = stripe_get(f"/v1/checkout/sessions/{urllib.parse.quote(session_id, safe='')}")
     except UpstreamError as err:
+        # 404 is not an outage. Stripe is telling us this reference does not
+        # exist on this account and never will -- a mistyped or truncated
+        # address, or a test-mode id read with the live key. "Could not
+        # confirm yet" would invite a buyer to retry that forever.
+        if err.status == 404:
+            raise _Refused(
+                json_response(
+                    404,
+                    {
+                        "ok": False,
+                        "error": "That checkout reference is not one Stripe recognises. Open the "
+                        "page Stripe sent you to after paying, address and all. If you have lost "
+                        "it, reply to the receipt Stripe emailed you rather than paying again.",
+                    },
+                )
+            ) from err
         raise _Refused(
             json_response(502, {"ok": False, "error": "Could not confirm the payment yet."})
         ) from err
     if session.get("payment_status") != "paid":
+        # Not always "you did not pay". A payment method that settles later
+        # (a bank debit, say) leaves the session unpaid at the moment Stripe
+        # redirects here, and the buyer is looking at a completed checkout.
+        # The message has to fit both readers, and must not send anyone back
+        # to pay a second time.
         raise _Refused(
-            json_response(402, {"ok": False, "error": "This checkout has not been paid."})
+            json_response(
+                402,
+                {
+                    "ok": False,
+                    "error": "Stripe has not settled this checkout yet, so nothing was built. "
+                    "If you paid by a method that clears over a day or two, keep this page's "
+                    "web address and open it again once the receipt arrives. Do not pay again.",
+                },
+            )
         )
 
     try:
@@ -132,6 +223,26 @@ def _paid_purchase(session_id: str) -> tuple[dict[str, Any], str, str]:
         )
     price, plan = bought
     return session, price, plan
+
+
+def _record_subscription(session: dict[str, Any], request: Any, *, price: str, plan: str) -> None:
+    """Store what the weekly refresh needs, for a subscription purchase."""
+    if request.cadence != "monthly" or not session.get("subscription"):
+        return
+    table("SUBSCRIPTIONS_TABLE").put_item(
+        Item={
+            "id": str(session["subscription"]),
+            "status": "active",
+            "customer": str(session.get("customer") or ""),
+            # The refresh re-checks this against the configured prices, so
+            # a row left over from test mode never builds in live mode.
+            "price": price,
+            "plan": plan,
+            "deliver_to": request.deliver_to,
+            "request": json.dumps(request.as_dict()),
+            "created_at": bundle_row(request.as_dict(), source="checkout")["created_at"],
+        }
+    )
 
 
 def setup(event: dict[str, Any]) -> dict[str, Any]:
@@ -179,39 +290,54 @@ def setup(event: dict[str, Any]) -> dict[str, Any]:
 
     bundles = table("BUNDLES_TABLE")
     if not _claim_session(bundles, session_id, request.bundle_id, plan):
-        return json_response(
-            409, {"ok": False, "error": "This checkout already produced a bundle."}
-        )
+        # The session is spoken for. Whether a build actually started decides
+        # what to say: answering "this checkout already produced a bundle" to
+        # someone whose first attempt died before the dispatch is both false
+        # and a dead end, because the form is the only way they can reach us.
+        unfinished = _unfinished_bundle_id(bundles, session_id)
+        if not unfinished:
+            return json_response(
+                409, {"ok": False, "error": "This checkout already produced a bundle."}
+            )
+        # Finish the earlier order under its own bundle id, so one payment
+        # still yields exactly one bundle and one download link.
+        request = replace(request, bundle_id=unfinished)
     bundles.put_item(Item=bundle_row(request.as_dict(), source="checkout", session_id=session_id))
 
-    if request.cadence == "monthly" and session.get("subscription"):
-        table("SUBSCRIPTIONS_TABLE").put_item(
-            Item={
-                "id": str(session["subscription"]),
-                "status": "active",
-                "customer": str(session.get("customer") or ""),
-                # The refresh re-checks this against the configured prices, so
-                # a row left over from test mode never builds in live mode.
-                "price": price,
-                "plan": plan,
-                "deliver_to": request.deliver_to,
-                "request": json.dumps(request.as_dict()),
-                "created_at": bundle_row(request.as_dict(), source="checkout")["created_at"],
-            }
-        )
+    _record_subscription(session, request, price=price, plan=plan)
 
     try:
         dispatch_bundle_workflow(workflow_inputs(request.as_dict()))
-    except UpstreamError:
+    except UpstreamError as err:
+        # A paid order that never started a build is the one failure nobody
+        # else can see: the workflow leaves no run, and the buyer is told to
+        # wait. Print it so CloudWatch holds the session and bundle ids, and
+        # leave the claim's `dispatched` False so a second submission of the
+        # same form finishes the order instead of being refused.
+        print(
+            json.dumps(
+                {
+                    "event": "dispatch_failed",
+                    "session_id": session_id,
+                    "bundle_id": request.bundle_id,
+                    "plan": plan,
+                    "deliver_to": request.deliver_to,
+                    "error": str(err),
+                }
+            )
+        )
         return json_response(
             502,
             {
                 "ok": False,
-                "error": "Your order is recorded but the build could not start; "
-                "you will hear from us by email.",
+                "error": "Your order is recorded but the build could not start. "
+                "Nothing was charged twice. Send this form again in a few minutes and it "
+                "will pick up the same order; if it keeps failing, reply to the receipt "
+                "Stripe emailed you.",
                 "bundle_id": request.bundle_id,
             },
         )
+    _mark_dispatched(bundles, session_id)
     return json_response(200, {"ok": True, "bundle_id": request.bundle_id})
 
 
@@ -222,6 +348,19 @@ def download(bundle_id: str) -> dict[str, Any]:
     if not row:
         return html_response(
             404, "Link expired", "That download link has expired or was never issued."
+        )
+    # DynamoDB's TTL sweep is best-effort and can lag its deadline by up to two
+    # days, while the S3 lifecycle rule deletes the archive on the day. Between
+    # the two, an expired bundle has a row and no object -- which looks exactly
+    # like one still being rendered. Read the row's own expiry rather than
+    # inferring the state from the missing object, or a buyer past thirty days
+    # is told to keep waiting for a file that was deleted.
+    if _has_expired(row.get("expires_at")):
+        return html_response(
+            404,
+            "Link expired",
+            "That download link has expired. Bundles are kept for 30 days; "
+            "reply to the email it came in and it can be rebuilt.",
         )
     import boto3
 
@@ -234,7 +373,10 @@ def download(bundle_id: str) -> dict[str, Any]:
         return html_response(
             202,
             "Still being prepared",
-            "Your reports are still being generated. Try this link again in a few minutes.",
+            "Your reports are still being generated. Try this link again in a few minutes. "
+            "If this page still says the same thing an hour from now, the build did not "
+            "finish: reply to the receipt Stripe emailed you and quote "
+            f"{bundle_id[:8]}, and it will be rebuilt or refunded.",
         )
     url = s3.generate_presigned_url(
         "get_object",

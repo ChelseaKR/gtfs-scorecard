@@ -200,11 +200,17 @@ def price_plans() -> dict[str, str]:
     plans is dropped rather than guessed: a half-configured deploy refuses a
     purchase it cannot place, and never sells more than was paid for.
     """
+    raw = os.environ.get("STRIPE_PRICE_IDS") or "{}"
     try:
-        configured = json.loads(os.environ.get("STRIPE_PRICE_IDS") or "{}")
+        configured = json.loads(raw)
     except ValueError:
+        # Refusing everything is the right behaviour, but doing it silently is
+        # not: from the outside a mangled price map is indistinguishable from
+        # nobody having bought anything. Say so, once per call, in the log.
+        print("STRIPE_PRICE_IDS is not readable JSON; no price is recognised")
         return {}
     if not isinstance(configured, dict):
+        print("STRIPE_PRICE_IDS is not a JSON object; no price is recognised")
         return {}
     plans: dict[str, str] = {}
     ambiguous: set[str] = set()
@@ -215,6 +221,8 @@ def price_plans() -> dict[str, str]:
         if price in plans:
             ambiguous.add(price)
         plans[price] = plan
+    if ambiguous:
+        print(f"STRIPE_PRICE_IDS maps {len(ambiguous)} price id(s) to two plans; dropping them")
     return {price: plan for price, plan in plans.items() if price not in ambiguous}
 
 
