@@ -1,6 +1,6 @@
 # Program report bundle: what it is, what it costs, how it turns on
 
-The program tier's first product, built 2026-09-01 and **not launched**. The
+The program tier's first product, built 2026-09-01 and **launched 2026-09-12**. The
 decision behind it is [ADR 0049](decisions/0049-a-checkout-is-the-named-user.md);
 the money rules it lives under are the sustainability plan's
 (`gtfs-scorecard-plans/07-monetization-sustainability.md`, summarized in the
@@ -23,7 +23,7 @@ metric and no new grade. It is packaging, branding, and delivery.
 | --- | --- | --- |
 | Core: validate a request, classify ids against the registry, render each current one through `report.generate_report`, zip with a manifest | `pipeline/src/scorecard_pipeline/bundle.py`; `scorecard bundle`, `scorecard bundle-email` | Built, tested |
 | Fulfilment: on-demand render, upload behind a capability key, email the link | `.github/workflows/report-bundle.yml` | Built; delivery steps gated on Actions variables |
-| Purchase plumbing: post-checkout form (confirms the session is paid, dispatches), download route (presigns per click), Stripe webhook, weekly refresh, daily reconciler | `infra/program-bundle/` | Written, **not applied**; `payments_enabled = "0"` |
+| Purchase plumbing: post-checkout form (confirms the session is paid, dispatches), download route (presigns per click), Stripe webhook, weekly refresh, daily reconciler | `infra/program-bundle/` | **Applied and live** 2026-09-12; `payments_enabled = "1"`, `stripe_price_ids_are_live = true`. The daily reconciler is deployed but its schedule is `DISABLED` until its reporting channel lands. |
 | Storage: `program-bundles/<id>/bundle.zip` expires after 30 days | `infra/artifacts/main.tf` lifecycle rule | Written; needs a re-apply of `infra/artifacts` |
 | Pages: plans read from `web/bundle/plan.json`; setup form posts to the API | `web/bundle/`, `web/src/bundle.js`, `web/src/bundle-setup.js` | Built; unlinked, `noindex`, out of the sitemap; `paymentsAvailable: false` |
 | Stripe objects: two products, four prices, four Payment Links | `scripts/stripe-setup.sh` | Script only; nothing created |
@@ -184,8 +184,44 @@ description of what has to be true; the script is how it is done and checked.
    enforced by the setup route from the price that was actually paid for, so
    that purchase is refused in the form with the reason, not quietly trimmed
    and not quietly upgraded.
-7. **The live decision.** Record it here with the date and the reviews it
-   rests on (tax, refund policy, the two-business-day commitment). Then, in
+7. **The live decision.** *Recorded 2026-09-12.* Live mode was opened on this
+   date on Stripe account `acct_1UEJ7fAJdYOJsO05` (verified activated:
+   `charges_enabled`, `payouts_enabled`, `details_submitted`, no outstanding
+   requirements). Four live prices and four Payment Links were created, a
+   restricted key scoped to Checkout Sessions: Read was deployed, a live
+   webhook endpoint was registered, and `infra/program-bundle` was applied
+   with `payments_enabled = "1"` and `stripe_price_ids_are_live = true`.
+   `/bundle/` was published the same day (PR #393, merge `865a6d6e173`).
+
+   **What the date turned on, and what it did not.** The 2026-10-01 date this
+   branch was named for existed to protect a TechCA Emerging Technologies
+   Forum submission that used gtfsscorecard.org as its supporting URL. That
+   submission is not being filed (a work conflict, decided 2026-09-12), so the
+   "no paywall" non-goal it protected was withdrawn rather than overridden.
+   Agency-facing scoring staying free is a separate commitment and is
+   untouched.
+
+   **The three reviews this decision is supposed to rest on are NOT yet
+   recorded**, and this paragraph does not pretend otherwise:
+
+   | Review | State |
+   |---|---|
+   | Tax treatment of the revenue | outstanding |
+   | Refund policy, written down | outstanding |
+   | The two-business-day delivery commitment, reviewed against what the pipeline actually guarantees | outstanding |
+
+   The third is the one with teeth. `/bundle/` tells a buyer delivery is
+   "always within two business days. If it is later than that, the purchase is
+   refunded." As of this date nothing computes that deadline, nothing detects a
+   breach, and refunds are entirely manual: the deployed restricted key cannot
+   issue one by design. The daily reconciler (deployed, `DISABLED`) is what
+   would surface an undelivered order; until its reporting channel lands, a
+   failed delivery is found by a buyer complaining. Treat the commitment as a
+   promise currently kept by hand.
+
+   For reference, the original instruction for this step was: record the date
+   and the reviews it rests on (tax, refund policy, the two-business-day
+   commitment). Then, in
    live mode: `scripts/stripe-setup.sh` again with a *live* key, a live
    restricted key, a live webhook, and an apply with `stripe_price_ids_are_live
    = true`. The precondition refuses a live key paired with unconfirmed
