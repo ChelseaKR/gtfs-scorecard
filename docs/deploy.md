@@ -48,11 +48,14 @@ set them, and forks keep working with nothing set:
 
 Set variables and secrets under **Settings → Secrets and variables → Actions**.
 
-## 0. One-time: remote state bucket (only for `artifacts`)
+## 0. One-time: remote state bucket (`artifacts` and `program-bundle`)
 
-`infra/artifacts/backend.tf` keeps Terraform state in an S3 bucket named
-`gtfs-scorecard-tfstate-ckr`. Create it once before the first apply (skip if it
-exists):
+`infra/artifacts/backend.tf` and `infra/program-bundle/backend.tf` keep
+Terraform state in an S3 bucket named `gtfs-scorecard-tfstate-ckr`, under
+separate keys. `program-bundle` is there because its state holds the GitHub
+token and both Stripe secrets as Lambda environment variables, which must not
+sit in a local `terraform.tfstate` on one machine. Create the bucket once
+before the first apply (skip if it exists):
 
 ```sh
 aws s3api create-bucket --bucket gtfs-scorecard-tfstate-ckr \
@@ -61,7 +64,7 @@ aws s3api put-bucket-versioning --bucket gtfs-scorecard-tfstate-ckr \
   --versioning-configuration Status=Enabled
 ```
 
-Use a different name if that one is taken, and update `backend.tf` to match.
+Use a different name if that one is taken, and update both `backend.tf` files to match.
 
 ## 1. Artifacts CDN (`infra/artifacts`)
 
