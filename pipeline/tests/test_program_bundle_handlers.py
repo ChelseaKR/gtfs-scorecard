@@ -574,6 +574,84 @@ def test_setup_reports_upstream_failures_without_losing_the_order(
     assert "recorded" in body["error"]
 
 
+def test_setup_lets_a_buyer_finish_an_order_whose_dispatch_never_started(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """The dead end this closes: the first submission claimed the session and
+    then GitHub refused the dispatch, so no build exists and no email will
+    come. Answering the second submission "this checkout already produced a
+    bundle" is false and leaves a paying buyer with no move left. The retry
+    finishes the order instead, under the SAME bundle id, so one payment
+    still yields exactly one bundle and one download link."""
+    attempts: list[dict[str, str]] = []
+
+    def first_call_fails(inputs: dict[str, str]) -> None:
+        attempts.append(inputs)
+        if len(attempts) == 1:
+            raise common.UpstreamError("github 502")
+
+    _stripe(monkeypatch)
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", first_call_fails)
+
+    failed = setup_handler.handler(_setup_event(_form()))
+    assert failed["statusCode"] == 502
+    bundle_id = json.loads(failed["body"])["bundle_id"]
+    claim = tables["BUNDLES_TABLE"].items["session#cs_test_example"]
+    assert claim["consumed_by"] == bundle_id
+    assert claim["dispatched"] is False
+
+    retried = setup_handler.handler(_setup_event(_form()))
+    assert retried["statusCode"] == 200, retried["body"]
+    assert json.loads(retried["body"])["bundle_id"] == bundle_id
+    assert [a["bundle_id"] for a in attempts] == [bundle_id, bundle_id]
+    assert tables["BUNDLES_TABLE"].items["session#cs_test_example"]["dispatched"] is True
+
+    # And once a build really started, a third submission is refused again.
+    third = setup_handler.handler(_setup_event(_form()))
+    assert third["statusCode"] == 409
+    assert "already produced" in third["body"]
+    assert len(attempts) == 2
+
+
+def test_setup_will_not_rebuild_a_claim_that_predates_the_dispatched_flag(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """Absence of the flag is not evidence the dispatch failed. A claim
+    written before the field existed -- or by a Lambda that died after GitHub
+    accepted the dispatch -- must not be re-dispatched on a guess, or one
+    payment would buy two builds."""
+    _stripe(monkeypatch)
+    dispatched: list[dict[str, str]] = []
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
+    tables["BUNDLES_TABLE"].items["session#cs_test_example"] = {
+        "bundle_id": "session#cs_test_example",
+        "consumed_by": "e" * 32,
+        "plan": "bundle_25",
+    }
+
+    resp = setup_handler.handler(_setup_event(_form()))
+    assert resp["statusCode"] == 409
+    assert dispatched == []
+
+
+def test_setup_separates_an_unknown_checkout_from_a_stripe_outage(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """A 404 means this reference will never resolve -- a truncated address,
+    or a test-mode id read with the live key. Reporting it as "could not
+    confirm the payment yet" invites the buyer to retry it forever."""
+
+    def missing(path: str) -> dict[str, Any]:
+        raise common.UpstreamError("stripe 404", status=404)
+
+    monkeypatch.setattr(common, "stripe_get", missing)
+    monkeypatch.setattr(setup_handler, "stripe_get", missing)
+    resp = setup_handler.handler(_setup_event(_form()))
+    assert resp["statusCode"] == 404
+    assert "not one Stripe recognises" in json.loads(resp["body"])["error"]
+    assert tables["BUNDLES_TABLE"].items == {}
+
+
 def test_setup_routes_options_and_unknown_paths() -> None:
     assert (
         setup_handler.handler({"requestContext": {"http": {"method": "OPTIONS"}}})["statusCode"]
@@ -640,6 +718,40 @@ def test_download_answers_202_while_the_archive_is_missing_and_404_otherwise(
     assert setup_handler.handler(_download_event(bundle_id))["statusCode"] == 202
     assert setup_handler.handler(_download_event("d" * 32))["statusCode"] == 404
     assert setup_handler.handler(_download_event("not-hex"))["statusCode"] == 404
+
+
+def test_download_says_expired_rather_than_still_preparing_past_its_ttl(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """The S3 lifecycle rule deletes the archive on day 30; DynamoDB's TTL
+    sweep can lag by two more. In that window the row is present and the
+    object is gone, which is the same evidence as a build still running. The
+    row's own expiry settles it, so nobody is told to keep waiting for a file
+    that was deleted."""
+    s3 = _FakeS3(exists=False)
+    fake_boto3 = type("boto3", (), {"client": staticmethod(lambda *a, **k: s3)})
+    monkeypatch.setitem(sys.modules, "boto3", fake_boto3)
+
+    expired = "e" * 32
+    tables["BUNDLES_TABLE"].items[expired] = {
+        "bundle_id": expired,
+        "expires_at": int(time.time()) - 60,
+    }
+    resp = setup_handler.handler(_download_event(expired))
+    assert resp["statusCode"] == 404
+    assert "expired" in resp["body"]
+    assert "still being generated" not in resp["body"]
+
+    # Inside its thirty days it still reads as in progress, and says what to
+    # do if it never finishes.
+    live = "f" * 32
+    tables["BUNDLES_TABLE"].items[live] = {
+        "bundle_id": live,
+        "expires_at": int(time.time()) + 600,
+    }
+    pending = setup_handler.handler(_download_event(live))
+    assert pending["statusCode"] == 202
+    assert "an hour from now" in pending["body"]
 
 
 # ---------------------------------------------------------------------------
@@ -850,9 +962,12 @@ def test_refresh_dispatches_only_active_due_subscriptions(
         "scanned": 5,
         "due": 3,
         "not_on_plan": 0,
+        # sub_broken is billed with no stored request; that is its own count,
+        # not a dispatch failure.
+        "no_request": 1,
         "dispatched": 2,
         "would_dispatch": 0,
-        "failed": 1,
+        "failed": 0,
     }
     assert {d["cadence"] for d in dispatched} == {"monthly"}
     assert len({d["bundle_id"] for d in dispatched}) == 2
@@ -884,6 +999,75 @@ def test_refresh_skips_rows_that_are_not_on_a_configured_refresh_price(
     assert counts["dispatched"] == 1
     assert len(dispatched) == 1
     assert "last_refresh" not in subs.items["sub_foreign"]
+
+
+def test_refresh_refuses_the_whole_run_when_no_refresh_price_is_configured(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """The live price ids replaced the test ones, and the one that was
+    mistyped is the refresh price. Every row would then be counted
+    ``not_on_plan`` -- a claim about the subscription -- and the tick would
+    answer ok while no paying subscriber was ever refreshed again. A
+    configuration failure has to fail, not be published as a per-row fact."""
+    subs = tables["SUBSCRIPTIONS_TABLE"]
+    subs.items["sub_a"] = _sub(id="sub_a")
+    dispatched: list[dict[str, str]] = []
+    monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", dispatched.append)
+
+    for value in ("{}", "not json", "[]", json.dumps({"bundle_25": PRICE_BUNDLE_25})):
+        monkeypatch.setenv("STRIPE_PRICE_IDS", value)
+        with pytest.raises(refresh_handler.ConfigurationError):
+            refresh_handler.refresh(subscriptions=subs, bundles=tables["BUNDLES_TABLE"])
+        with pytest.raises(refresh_handler.ConfigurationError):
+            refresh_handler.handler({}, None)
+    assert dispatched == []
+    assert tables["BUNDLES_TABLE"].items == {}
+    assert "last_refresh" not in subs.items["sub_a"]
+
+    # One refresh price is enough to make `not_on_plan` mean something again.
+    monkeypatch.setenv("STRIPE_PRICE_IDS", json.dumps({"refresh_mo": PRICE_REFRESH_MO}))
+    assert (
+        refresh_handler.refresh(subscriptions=subs, bundles=tables["BUNDLES_TABLE"])["dispatched"]
+        == 1
+    )
+
+
+def test_refresh_writes_the_capability_row_before_it_dispatches(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """The workflow uploads the archive and emails the link on its own clock.
+    If this Lambda dies between the dispatch and the put, the emailed link
+    finds no row and reads "expired or never issued" for a bundle sitting in
+    the bucket. The row has to exist before anything can deliver against it."""
+    bundles = tables["BUNDLES_TABLE"]
+    tables["SUBSCRIPTIONS_TABLE"].items["sub_a"] = _sub(id="sub_a")
+    seen: list[list[str]] = []
+
+    def note_rows(inputs: dict[str, str]) -> None:
+        seen.append(sorted(bundles.items))
+
+    monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", note_rows)
+    counts = refresh_handler.refresh(subscriptions=tables["SUBSCRIPTIONS_TABLE"], bundles=bundles)
+    assert counts["dispatched"] == 1
+    assert len(seen[0]) == 1, "the capability row must already exist at dispatch time"
+
+
+def test_refresh_counts_a_billed_subscription_with_no_stored_request_apart(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """A subscription the webhook created at checkout whose buyer never
+    finished the setup form is being billed for nothing. Rolling it into
+    ``failed`` hid a paying customer inside a retry statistic; it now has its
+    own count, and ``failed`` means only that GitHub refused the dispatch."""
+    subs = tables["SUBSCRIPTIONS_TABLE"]
+    subs.items["sub_never_set_up"] = _sub(id="sub_never_set_up", request="")
+    subs.items["sub_ok"] = _sub(id="sub_ok")
+    monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", lambda inputs: None)
+
+    counts = refresh_handler.refresh(subscriptions=subs, bundles=tables["BUNDLES_TABLE"])
+    assert counts["no_request"] == 1
+    assert counts["failed"] == 0
+    assert counts["dispatched"] == 1
 
 
 def test_refresh_keeps_going_past_a_failed_dispatch(

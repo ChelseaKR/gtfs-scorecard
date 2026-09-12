@@ -57,7 +57,13 @@ HARDCODED_STRING_BASELINE = {
     # Program report bundle pages (docs/program-plan.md): unlinked and
     # noindex, so not yet in the locale catalog. Their status and form copy
     # is recorded here for the same ratchet as landing-scorecard.js.
-    "bundle-setup.js": 9,
+    # Raised 9 -> 10: the two disabled states of the post-checkout form now
+    # answer differently depending on whether Stripe left an order reference
+    # in the address, because one of those readers has already paid and the
+    # old single message told them nothing had been charged. A deliberate
+    # increase, to work back down through the catalog with the rest of these
+    # pages when the tier joins it.
+    "bundle-setup.js": 10,
     "bundle.js": 8,
     "config.js": 1,
     "es.js": 2,
