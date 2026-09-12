@@ -31,6 +31,7 @@
 </script>
 <script src="/src/theme.js" defer></script>
 <script src="/src/landing-scorecard.js?v=20260723-coverage" defer></script>
+<script src="/src/plan-summary.js" defer></script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23163a2c'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
 <style>
   @font-face {
@@ -813,7 +814,7 @@
   .movement .action { min-width: 13rem; border-color: var(--on-pine); color: var(--on-pine); }
 
   footer { background: var(--pine); color: var(--on-pine); padding: 3rem 0 2rem; }
-  .footer-grid { display: grid; grid-template-columns: 1.2fr repeat(3, 1fr); gap: 2rem; }
+  .footer-grid { display: grid; grid-template-columns: 1.2fr repeat(4, 1fr); gap: 2rem; }
   footer h2 { margin: 0 0 0.7rem; font-family: var(--display); font-size: 1.05rem; }
   footer p { margin: 0; color: #cfdcd2; font-size: 0.9rem; }
   footer nav { display: grid; align-content: start; }
@@ -1503,6 +1504,57 @@
     font-size: 0.8rem;
     font-weight: 700;
   }
+  /* The paid tier, stated once on the landing page. Same furniture as the task
+     register above it: a ruled list, mono kickers, no card wall and no colour
+     the page does not already use. */
+  .program-tier { padding: 2.75rem 0; border-bottom: 1px solid var(--line-ink); }
+  .program-tier .section-intro { margin-bottom: 1.35rem; }
+  .plan-tiles {
+    display: grid;
+    gap: 0;
+    margin: 0 0 1.25rem;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--ink);
+  }
+  .plan-tile {
+    min-width: 0;
+    padding: 0.9rem 0.8rem;
+    border-bottom: 1px solid var(--line-ink);
+  }
+  .plan-tile-kicker {
+    margin: 0 0 0.18rem;
+    color: var(--green);
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .plan-tile-name {
+    margin: 0 0 0.35rem;
+    color: var(--ink-soft);
+    font-size: 0.86rem;
+    line-height: 1.3;
+  }
+  .plan-tile-price {
+    margin: 0;
+    font-family: var(--mono);
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .plan-summary-status {
+    max-width: 62ch;
+    margin: 0 0 1rem;
+    color: var(--ink-soft);
+    font-size: 0.86rem;
+  }
+  .plan-summary-cta { margin: 0; max-width: 24rem; }
+  @media (min-width: 48rem) {
+    .plan-tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .plan-tile { border-bottom: 0; border-right: 1px solid var(--line-ink); }
+    .plan-tile:last-child { border-right: 0; }
+  }
+
   .scorecard-demo .scorecard-desk {
     grid-column: auto;
     grid-row: auto;
@@ -1715,6 +1767,7 @@
               <a id="scope-brief-link" href="/agency/unitrans/brief/">Open selected brief</a>
               <a id="scope-board-link" href="/agency/unitrans/board/">Board one-pager</a>
               <a href="/program/all/">Program views</a>
+              <a href="/bundle/">Bundle for a program (paid)</a>
             </nav>
           </li>
           <li>
@@ -1727,6 +1780,24 @@
             </nav>
           </li>
         </ul>
+      </section>
+
+      <section class="program-tier" id="programs" aria-labelledby="program-tier-h">
+        <div class="section-intro">
+          <p class="section-code">For programs</p>
+          <div>
+            <h2 id="program-tier-h">One paid add-on, for people who support many agencies.</h2>
+            <p class="lede">Scoring stays free for every agency, including the board one-pager an
+            agency takes to its own meeting. What costs money is the packaging: every agency you
+            support, as one archive of those same reports, under your program's name and logo. A
+            purchase buys no influence over grades, methodology, or which agencies are listed.</p>
+          </div>
+        </div>
+        <div class="plan-summary" data-plan-summary>
+          <p class="plan-summary-status" data-plan-status>Prices, delivery, and the refund
+          commitment are listed on the bundle page.</p>
+          <p class="plan-summary-cta"><a class="action action-secondary" href="/bundle/"><span>See the plans and what each includes</span><span class="arrow" aria-hidden="true">&rarr;</span></a></p>
+        </div>
       </section>
 
       <section class="scorecard-demo" aria-labelledby="scorecard-demo-h">
@@ -1922,6 +1993,7 @@
     <div class="footer-note"><h2>GTFS Scorecard</h2><p>An open-source data-quality lens for small transit agencies, piloted with Unitrans and Yolobus in Yolo County. It is not an official compliance determination.</p></div>
     <nav aria-label="Use the scorecard"><h2>Use</h2><a href="/app/">All scorecards</a><a href="/tools/">Feed tools</a><a href="/data/">Open data</a><a href="/status/">Pipeline status</a></nav>
     <nav aria-label="Explore the project"><h2>Explore</h2><a href="/pulse/">Coverage overview</a><a href="/problems/">Common problems</a><a href="/focus/">Focus areas</a><a href="/how-to-read/">How to read a scorecard</a></nav>
+    <nav aria-label="For programs"><h2>For programs</h2><a href="/program/all/">Program rollups</a><a href="/bundle/">Board report bundle (paid)</a></nav>
     <nav aria-label="Project information"><h2>Project</h2><a href="/about/">About</a><a href="/support/">Get help or sponsor</a><a href="https://github.com/ChelseaKR/gtfs-scorecard" target="_blank" rel="noopener">Source<span class="visually-hidden"> (opens in a new tab)</span></a><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/accessibility.md" target="_blank" rel="noopener">Accessibility<span class="visually-hidden"> (opens in a new tab)</span></a><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md" target="_blank" rel="noopener">Listing policy<span class="visually-hidden"> (opens in a new tab)</span></a><a href="https://chelseakr.com" target="_blank" rel="noopener">Built by Chelsea Kelly-Reif<span class="visually-hidden"> (opens in a new tab)</span></a></nav>
   </div>
 </footer>

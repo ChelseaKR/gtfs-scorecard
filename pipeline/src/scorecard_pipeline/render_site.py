@@ -4972,7 +4972,8 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     <section aria-labelledby="members-h">
       <h2 class="section-title" id="members-h">Feed scorecards: attention first, then alphabetical</h2>
       <ul class="program-list">{rows}</ul>
-    </section>"""
+    </section>
+    {_ROLLUP_BUNDLE_SECTION}"""
     body = "\n".join(line.rstrip() for line in body.splitlines())
     return _page(
         title=f"{rname} — GTFS Scorecard",
@@ -4981,6 +4982,26 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
         body=body,
         jsonld=_collection_page_jsonld(rname, desc, canonical),
     )
+
+
+# Program rollups are the one generated page family that names the paid tier in
+# its body, and the reasoning is the placement rule, not the conversion rate.
+# The tier is for people who manage many agencies at once; this page is the view
+# those people already use. An agency's own scorecard, its call brief, and its
+# board report are the free product and stay clean: no price appears beside a
+# single agency's grade, and report.py's methodology footer is untouched, so the
+# document an agency hands its board carries no offer to sell anything.
+_ROLLUP_BUNDLE_SECTION = (
+    '<section aria-labelledby="bundle-h">'
+    '<h2 class="section-title" id="bundle-h">Board reports for this group</h2>'
+    "<p>Every agency listed above has a free, printable board one-pager on its own page, and "
+    "always will. A program that needs all of them at once can "
+    '<a href="/bundle/">buy them as one archive</a>, branded with its own name and logo and '
+    "refreshed monthly if it wants. Prices are on that page. A purchase buys no influence over "
+    "grades, methodology, or which agencies are listed, and the archive contains the same "
+    "numbers published here.</p>"
+    "</section>"
+)
 
 
 def _rollup_member_row(m: dict[str, Any], note: str) -> str:

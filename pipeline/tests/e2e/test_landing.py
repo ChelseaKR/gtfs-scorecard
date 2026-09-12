@@ -278,3 +278,67 @@ def test_landing_escape_cancels_pending_search(page: Page, base_url: str) -> Non
 
     expect(page.locator("#feed-results")).to_be_hidden()
     expect(page.locator("#picker-status")).to_have_text("Search results closed.")
+
+
+# --- the paid tier, as a reader actually meets it on the landing page -------
+
+
+def _plan() -> dict[str, Any]:
+    """The single source of every price on the site (ADR 0049)."""
+    return cast(
+        dict[str, Any],
+        json.loads((Path(__file__).resolve().parents[3] / "web/bundle/plan.json").read_text()),
+    )
+
+
+def test_landing_shows_every_plan_price_read_from_plan_json(page: Page, base_url: str) -> None:
+    """The home page states what the one paid add-on costs, and states it from
+    plan.json rather than from copy. The literals here are computed from that
+    file, so a price change moves the page and this assertion together and
+    neither can quietly disagree with the checkout."""
+    plan = _plan()
+    assert plan["paymentsAvailable"] is True, "this test describes the tier while it is open"
+    page.goto(f"{base_url}/")
+
+    tiles = page.locator("#programs .plan-tile")
+    expect(tiles).to_have_count(len(plan["products"]))
+    for key, product in plan["products"].items():
+        tile = page.locator(f'#programs .plan-tile[data-plan="{key}"]')
+        expect(tile.locator(".plan-tile-name")).to_have_text(product["label"])
+        amount = f"${product['price']:,}"
+        expected = f"{amount} per {product['interval']}" if product["interval"] else amount
+        expect(tile.locator(".plan-tile-price")).to_have_text(expected)
+
+
+def test_landing_states_the_delivery_and_refund_commitment(page: Page, base_url: str) -> None:
+    plan = _plan()
+    page.goto(f"{base_url}/")
+    status = page.locator("#programs [data-plan-status]")
+    expect(status).to_contain_text(f"{plan['provisioning_business_days']} business days")
+    expect(status).to_contain_text("refunded if it is later than that")
+
+
+def test_landing_sends_a_buyer_to_the_bundle_page_and_never_straight_to_checkout(
+    page: Page, base_url: str
+) -> None:
+    """A checkout link on the home page would skip the page that states
+    delivery, the refund, how long the link lives, and what a purchase does not
+    buy. The landing page describes the tier; /bundle/ sells it."""
+    page.goto(f"{base_url}/")
+    expect(page.locator('#programs a[href="/bundle/"]')).to_have_count(1)
+    assert page.locator("#programs a").count() == 1
+    assert "buy.stripe.com" not in page.content()
+
+
+def test_landing_never_shows_a_stale_price_when_the_plan_cannot_be_read(
+    page: Page, base_url: str
+) -> None:
+    """An unreadable plan must leave no amount standing anywhere on the page."""
+    page.route("**/bundle/plan.json", lambda route: route.fulfill(status=500, body=""))
+    page.goto(f"{base_url}/")
+    expect(page.locator("#programs [data-plan-status]")).to_contain_text(
+        "Paid bundles are not available right now"
+    )
+    expect(page.locator("#programs .plan-tile")).to_have_count(0)
+    for product in _plan()["products"].values():
+        assert f"${product['price']:,}" not in page.content()

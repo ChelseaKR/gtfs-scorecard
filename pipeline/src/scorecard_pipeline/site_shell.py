@@ -102,6 +102,7 @@ _NAV_SECTION_PREFIXES = {
     "/concept/": "/how-to-read/",
     "/press/": "/how-to-read/",
     "/support/": "/about/",
+    "/bundle/": "/about/",
 }
 
 
@@ -196,15 +197,19 @@ STATIC_NAV_PAGES: dict[str, str | None] = {
     "data/index.html": None,
     "support/index.html": "/about/",
     "fetcher/index.html": "/about/",
-    # Program report bundle (docs/program-plan.md): /bundle/ is linked from
-    # /support/ and indexable since the tier opened. /bundle/setup/ is the
+    # Program report bundle (docs/program-plan.md): /bundle/ is indexable and,
+    # since the tier launched, reachable from the shared footer's "For
+    # programs" section on every page, from the home page, /about/, /data/,
+    # /support/, /tools/, and every program rollup. It sits in the About
+    # section (the same stop its parent /support/ fills), so the wayfinding bar
+    # says where a reader is instead of going blank. /bundle/setup/ is the
     # post-checkout form and stays noindex and out of the sitemap: it says
     # nothing to a reader who arrives without a Checkout Session, so an
     # indexed one would collect search traffic it can only turn away. Both are
     # registered here so the shared nav and footer stay in sync and the
     # doc-stats sweep reads them.
-    "bundle/index.html": None,
-    "bundle/setup/index.html": None,
+    "bundle/index.html": "/about/",
+    "bundle/setup/index.html": "/about/",
 }
 
 # The one shared footer, single-sourced here so the generated pages and the
@@ -255,6 +260,14 @@ FOOTER_HTML = f"""<footer class="site-footer">
             <li><a href="/query/">Query the dataset</a></li>
             <li><a href="/data/">Open data</a></li>
           </ul>
+        </section>
+        <section aria-labelledby="footer-programs-h">
+          <h2 id="footer-programs-h">For programs</h2>
+          <ul>
+            <li><a href="/program/all/">Program rollups</a></li>
+            <li><a href="/bundle/">Board report bundle (paid)</a></li>
+          </ul>
+          <p class="footer-aside">Scoring an agency is free. A purchase buys no influence over grades, methodology, or which agencies are listed.</p>
         </section>
         <section aria-labelledby="footer-project-h">
           <h2 id="footer-project-h">Project</h2>
