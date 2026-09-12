@@ -17,6 +17,8 @@ Environment (set by Terraform):
   WORKFLOW_REF          branch to dispatch on, default main
   STRIPE_SECRET_KEY     restricted key: read checkout sessions only
   STRIPE_WEBHOOK_SECRET signing secret of the one webhook endpoint
+  STRIPE_PRICE_IDS      JSON of terraform's stripe_price_ids: plan key -> price id
+  PAYMENTS_ENABLED      "1" while the purchase surface is open; anything else closes it
   SUBSCRIPTIONS_TABLE   DynamoDB table of subscriptions (hash: id)
   BUNDLES_TABLE         DynamoDB table of bundle capabilities (hash: bundle_id)
   ARTIFACTS_BUCKET      where report-bundle.yml puts program-bundles/<id>/bundle.zip
@@ -46,8 +48,39 @@ DOWNLOAD_DAYS = 30
 SIGNATURE_TOLERANCE_SECONDS = 300
 
 
+# What each price buys (docs/program-plan.md, "Prices"). The setup route holds
+# the agency list to the cap of the price that was actually paid for; the two
+# refresh plans cover the same 100 agencies as the large bundle. Keys match
+# terraform's stripe_price_ids and web/bundle/plan.json's products.
+PLAN_AGENCY_CAPS: dict[str, int] = {
+    "bundle_25": 25,
+    "bundle_100": 100,
+    "refresh_mo": 100,
+    "refresh_yr": 100,
+}
+SUBSCRIPTION_PLANS = ("refresh_mo", "refresh_yr")
+# One page of line items is plenty: every Payment Link scripts/stripe-setup.sh
+# creates has exactly one, and a longer list is refused unread.
+_LINE_ITEMS_LIMIT = 10
+
+
 class UpstreamError(RuntimeError):
-    """A GitHub or Stripe call failed; the message is safe to log, not to show."""
+    """A GitHub or Stripe call failed; the message is safe to log, not to show.
+
+    ``status`` is the HTTP status when the service answered, else None.
+    """
+
+    def __init__(self, message: str, status: int | None = None) -> None:
+        super().__init__(message)
+        self.status = status
+
+
+def payments_enabled() -> bool:
+    """True only while Terraform has opened the purchase surface. The API
+    route for the setup form is removed when the gate is closed; this is the
+    same gate read again inside the Lambda, so a stale route or a direct
+    invoke cannot build anything either."""
+    return os.environ.get("PAYMENTS_ENABLED", "0") == "1"
 
 
 # ---------------------------------------------------------------------------
@@ -103,7 +136,7 @@ def _request(
         with urllib.request.urlopen(req, timeout=20) as resp:  # noqa: S310 - fixed hosts only
             raw = resp.read().decode()
     except urllib.error.HTTPError as err:
-        raise UpstreamError(f"{method} {url} -> HTTP {err.code}") from err
+        raise UpstreamError(f"{method} {url} -> HTTP {err.code}", status=err.code) from err
     except (urllib.error.URLError, OSError) as err:
         raise UpstreamError(f"{method} {url} failed: {err}") from err
     return json.loads(raw) if raw.strip() else {}
@@ -157,6 +190,78 @@ def stripe_get(path: str) -> dict[str, Any]:
         raise UpstreamError("STRIPE_SECRET_KEY is not configured")
     out = _request("GET", f"{STRIPE_API}{path}", {"Authorization": f"Bearer {key}"})
     return out if isinstance(out, dict) else {}
+
+
+def price_plans() -> dict[str, str]:
+    """Map each configured Stripe price id to the plan it sells.
+
+    Read from STRIPE_PRICE_IDS on every call. A blank id, an unknown plan
+    key, or unreadable JSON recognises nothing, and an id configured for two
+    plans is dropped rather than guessed: a half-configured deploy refuses a
+    purchase it cannot place, and never sells more than was paid for.
+    """
+    try:
+        configured = json.loads(os.environ.get("STRIPE_PRICE_IDS") or "{}")
+    except ValueError:
+        return {}
+    if not isinstance(configured, dict):
+        return {}
+    plans: dict[str, str] = {}
+    ambiguous: set[str] = set()
+    for plan, price in configured.items():
+        if plan not in PLAN_AGENCY_CAPS or not isinstance(price, str) or not price.strip():
+            continue
+        price = price.strip()
+        if price in plans:
+            ambiguous.add(price)
+        plans[price] = plan
+    return {price: plan for price, plan in plans.items() if price not in ambiguous}
+
+
+def _price_id(item: object) -> str:
+    """The price id of one line item or subscription item."""
+    if not isinstance(item, dict):
+        return ""
+    price = item.get("price")
+    if isinstance(price, dict):
+        return str(price.get("id") or "")
+    return str(price or "")
+
+
+def plan_for_items(items: object) -> tuple[str, str] | None:
+    """(price id, plan) when ``items`` is exactly one item on a configured
+    price, else None. Every Payment Link scripts/stripe-setup.sh creates has
+    one line item, so anything else was not bought through one of them."""
+    if not isinstance(items, list) or len(items) != 1:
+        return None
+    price = _price_id(items[0])
+    plan = price_plans().get(price)
+    return (price, plan) if plan else None
+
+
+def checkout_plan(session_id: str) -> tuple[str, str] | None:
+    """What a Checkout Session bought: (price id, plan), or None when it was
+    not one of this product's prices.
+
+    Reads the session's line items with the same restricted key ("Checkout
+    Sessions: Read" covers them). Raises UpstreamError when Stripe cannot be
+    read, so a caller never mistakes an outage for a foreign purchase.
+    """
+    quoted = urllib.parse.quote(session_id, safe="")
+    listing = stripe_get(f"/v1/checkout/sessions/{quoted}/line_items?limit={_LINE_ITEMS_LIMIT}")
+    if listing.get("has_more"):
+        return None
+    return plan_for_items(listing.get("data"))
+
+
+def subscription_plan(subscription: dict[str, Any]) -> tuple[str, str] | None:
+    """(price id, plan) for a Stripe subscription object on one of the two
+    refresh prices, read from the object itself; None for anything else."""
+    items = subscription.get("items")
+    found = plan_for_items(items.get("data") if isinstance(items, dict) else None)
+    if found is None or found[1] not in SUBSCRIPTION_PLANS:
+        return None
+    return found
 
 
 def verify_stripe_signature(

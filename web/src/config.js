@@ -38,4 +38,4 @@ window.SCORECARD_TRY_URL = null;
 // Program report bundle (infra/program-bundle, docs/program-plan.md): the API
 // the post-checkout setup form (web/bundle/setup/) POSTs to. Null disables the
 // form with a plain notice; prices live in web/bundle/plan.json, never here.
-window.SCORECARD_BUNDLE_URL = null;
+window.SCORECARD_BUNDLE_URL = "https://7z31n3wbhi.execute-api.us-west-2.amazonaws.com";
