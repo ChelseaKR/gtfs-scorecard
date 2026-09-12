@@ -2,9 +2,14 @@
 #
 # Every entry names one scorecard that was published about a named transit
 # agency and should not have been. The grade was computed from an archive whose
-# stops and trips were never read, so the two categories that read the feed both
-# printed 0.0 for a measurement nobody made, and the letter beside them was an F
-# nobody had earned. The scorer stopped producing these on 2026-09-01
+# stops and trips were never read, so the categories that read the feed printed
+# numbers for a measurement nobody made, and the letter beside them was one
+# nobody had earned. In most of these that letter is an F off two 0.0s. It is
+# not always an F: `boxcar` published a C, and a C higher than the D the same
+# feed earned while it still had 84 stops and 94 trips, because an archive with
+# nothing in it gives the deduction rules almost nothing to deduct for. The
+# direction of the error is not the point; the absence of a measurement is.
+# The scorer stopped producing these on 2026-09-01
 # (score.UnreadableFeedError). It could not take back the ones already out.
 #
 # Each entry records:
@@ -77,6 +82,43 @@ corrections:
       The same empty archive as beloit-transit, published a second time under a
       catalog-derived id. This record is not in the registry, so no run will
       revisit it and its scorecard is withdrawn rather than re-scored.
+
+  - agency_id: boxcar
+    agency_name: Boxcar Commuter Bus
+    snapshot_date: "2026-08-07"
+    feed_sha256: 973eb43371f481c65f66bef6e51948b9fef994f629876e7772356277ba252f7a
+    grade: C
+    score: 73.0
+    published_from: "2026-08-06"
+    published_until: "2026-09-06"
+    cause: no_schedule_tables
+    outcome: not_measured
+    evidence: >-
+      Re-fetched from the agency's own URL on 2026-09-06 (HTTP 200, 5,544
+      bytes): stops.txt, routes.txt, trips.txt, stop_times.txt and shapes.txt
+      each hold a header row and nothing else, while calendar.txt holds 89 rows
+      and agency.txt one. The archive describes no service. This record is the
+      clearest reading of why an empty archive must not be graded at all: the
+      same feed was measured with 84 stops and 94 trips through 2026-07-10 and
+      scored D (70.0); on 2026-08-06 the tables emptied and the published letter
+      went UP, to C (73.0), because the two categories that read the feed had
+      almost nothing left to deduct for. A grade that rises when the feed
+      disappears is not a measurement of the feed.
+      This entry was held back on 2026-09-05 under not_yet_corrected on the
+      stated ground that `score_feed_content` does not refuse this feed and that
+      withdrawing the C would let the next run publish an A. That was checked on
+      2026-09-06 and is not true of the code it was written against: the same
+      commit already carried `FeedDates.has_service_content` (#331, merged
+      2026-09-02), which returns None from freshness for an archive with no
+      stops and no trips regardless of how many calendar rows it has, and the
+      freshness docstring names this feed as the case it was added for. Scoring
+      the archive above on origin/main raises UnreadableFeedError, so no run can
+      publish an A, or anything else, here. The scoring decision the hold-back
+      was waiting on had already been made and shipped; only the withdrawal was
+      outstanding. tests/test_unmeasurable_feed.py now pins the refusal against
+      this exact archive shape so the claim cannot go stale again unnoticed.
+      Boxcar is in the registry and keeps its 23 dated artifacts, so a run that
+      reads a real feed here supersedes this withdrawal on its own.
 
   - agency_id: catalina-express
     agency_name: Catalina Express
@@ -378,13 +420,3 @@ not_yet_corrected:
     reason: >-
       The same feed as anaheim-resort-transportation-art under a
       catalog-derived id, held back for the same reason.
-  - agency_id: boxcar
-    reason: >-
-      Published C (73.0), not an F, over an archive whose stops.txt, routes.txt
-      and trips.txt each hold a header row and nothing else. Confirmed live on
-      2026-09-05. This one needs a scoring decision before a correction, not
-      after: its calendar.txt has 89 real rows and its feed_info.txt a real
-      validity window, so freshness is a genuine measurement and
-      `score_feed_content` does not refuse the feed. Withdrawing the C without
-      that decision would let the next run publish an A for a feed with no
-      stops, no routes and no trips, which is worse than the C standing.

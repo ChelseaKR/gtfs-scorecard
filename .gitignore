@@ -58,6 +58,14 @@ _site/
 # Scratch dir for the national-routes tile build (intermediate GeoJSONL).
 # The PMTiles archive output lives at web/tiles/ and IS committed (ADR 0023).
 /build/
+
+# Lambda deployment packages: a vendored copy of pipeline/ and its dependencies
+# (17 MB for program-bundle), rebuilt by scripts/build-lambda-package.sh before
+# every apply. Listed per module, because `/build/` above is anchored at the
+# repo root and matches neither of these.
 infra/submit/build/
+infra/program-bundle/build/
+
+# saved terraform plans
 infra/submit/submit.tfplan
 *.tfplan
