@@ -181,11 +181,93 @@ jobs:
         with:
           path: data/artifacts/*/geometry.geojson
           key: route-geometry-v1-${{ github.run_id }}-${{ github.run_attempt }}
+      # The syncs above are a plain read of a store that two other workflows
+      # write non-atomically. `refresh.yml` (every three hours) and
+      # `scorecard.yml` (daily) publish under the `artifacts-publish`
+      # concurrency group; this workflow is in the `pages` group, so nothing
+      # serialises a deploy against a publish in flight. Both publishers commit
+      # in two phases — every changed agency's latest.json first, then
+      # index.json last as the commit pointer — and the bounded sync above
+      # takes about three minutes against a commit window of seconds.
+      #
+      # A read that straddles that window pairs one generation's index.json
+      # with another's latest.json. The guard below compares exactly those two
+      # and refuses the corpus, which is right: it will not publish a summary
+      # it cannot derive from the artifact sitting beside it. But the deploy
+      # then fails for a reason that has nothing to do with the commit being
+      # deployed. Run 34768926069 failed this way on 2026-09-13 and took the
+      # site deploy down with it. The index.json it read named feed_sha256
+      # b2010db2 for move-vendome; the latest.json it read alongside carried
+      # f8f03368, the same feed re-scored two hours later. Identical date,
+      # score, grade and category scores — the two generations were one field
+      # apart, which is why the date check passed and only the summary check
+      # fired.
+      #
+      # The store is consistent at rest, so the repair is to read it again,
+      # not to accept the contradiction. Re-read the objects the guard compares
+      # and revalidate. The guard itself is unchanged and still decides every
+      # attempt; when the corpus never converges this step fails exactly as it
+      # did before. The re-read escalates because the cheap repair covers the
+      # common case: index.json sorts before every agency directory, so a
+      # straddling sync almost always carries the stale index and the current
+      # latest.json, and re-reading the pointer alone resolves it. Only if that
+      # is not enough is every latest.json re-read. `--exact-timestamps` is
+      # required for that second pass: a re-scored latest.json is routinely the
+      # same size as the copy already on disk, and the default comparison would
+      # skip it.
+      #
+      # Joining the `artifacts-publish` group instead was considered and
+      # rejected: `refresh.yml` is bounded at 240 minutes, so a deploy would
+      # queue behind it, and a queued run is evicted from the pending slot by
+      # the next arrival (see this repo's concurrency comments) — which trades
+      # a rare retry for routinely losing deploys altogether.
       - name: Materialize validated current dated records
-        working-directory: pipeline
-        run: >-
-          uv run python scripts/materialize_current_artifacts.py
-          --artifacts-root ../data/artifacts
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        run: |
+          set -euo pipefail
+          bucket="${ARTIFACTS_BUCKET:-}"
+          role="${PAGES_AWS_ROLE_ARN:-}"
+
+          materialize() {
+            (cd pipeline && uv run python scripts/materialize_current_artifacts.py \
+              --artifacts-root ../data/artifacts)
+          }
+          reread_index() {
+            aws s3 cp "s3://${bucket}/data/artifacts/index.json" \
+              data/artifacts/index.json --only-show-errors
+          }
+          reread_every_latest() {
+            reread_index
+            aws s3 sync "s3://${bucket}/data/artifacts" data/artifacts \
+              --exclude "*" --include "*/latest.json" \
+              --exact-timestamps --only-show-errors
+          }
+
+          for attempt in 1 2 3; do
+            if materialize; then
+              exit 0
+            fi
+            # Nothing was hydrated from S3, so the corpus under test is the one
+            # committed to the repo and re-reading cannot change it. A guard
+            # failure there is a real defect in the checkout, not a race.
+            if [ -z "$bucket" ] || [ -z "$role" ]; then
+              echo "::error title=committed artifact corpus is inconsistent::index.json and latest.json disagree in the checkout itself; no S3 read was configured to re-read." >&2
+              exit 1
+            fi
+            if [ "$attempt" -eq 3 ]; then
+              echo "::error title=artifact corpus never converged::index.json and latest.json still disagree after ${attempt} reads. That is no longer a publish in flight; inspect the bucket before deploying." >&2
+              exit 1
+            fi
+            echo "::warning title=artifact corpus read during a publish::index.json and latest.json disagree, which a deploy that reads the bucket mid-commit produces. Re-reading and revalidating (attempt ${attempt} of 3)."
+            sleep $((attempt * 20))
+            if [ "$attempt" -eq 1 ]; then
+              reread_index
+            else
+              reread_every_latest
+            fi
+          done
+          exit 1
       - name: Render and assemble the Pages site
         id: assemble
         run: |

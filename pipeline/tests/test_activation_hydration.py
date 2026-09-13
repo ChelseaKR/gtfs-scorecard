@@ -638,3 +638,103 @@ def test_concurrency_is_bounded(tmp_path: Path, workers: int) -> None:
             workers=workers,
             client=FakeS3(_objects()),
         )
+
+
+def _generation(agency_id: str, date: str, feed_sha256: str) -> bytes:
+    """One agency's artifact as a named feed generation.
+
+    Two scoring runs of the same feed on the same day differ only in what they
+    read. Everything the summary carries about the score can be identical while
+    ``feed.sha256`` names a different set of bytes.
+    """
+    return (
+        json.dumps(
+            {
+                "agency": {"id": agency_id},
+                "snapshot_date": date,
+                "overall": {"score": 71, "grade": "C"},
+                "feed": {"sha256": feed_sha256},
+                "categories": {},
+            },
+            sort_keys=True,
+        )
+        + "\n"
+    ).encode()
+
+
+# The two feed digests move-vendome actually carried on 2026-09-13: the 14:13
+# UTC publish and the 16:35 UTC re-score of the same feed on the same day.
+_GENERATION_A = "b2010db28e41cb828f455a17c23505fdc17e06b5621609f6dbeb7432421d4345"
+_GENERATION_B = "f8f03368d3d05a86df1c6bde7dbae60ebc0f900d49bb9bc59c76a3fd3a14766e"
+
+
+def _torn_corpus(root: Path, indexed_sha: str, latest_sha: str) -> Path:
+    agency = root / "agency-one"
+    agency.mkdir(parents=True)
+    (root / "index.json").write_text(
+        json.dumps(
+            {
+                "agencies": {
+                    "agency-one": {
+                        "history": [
+                            {
+                                "date": "2026-07-10",
+                                "score": 71,
+                                "grade": "C",
+                                "feed_sha256": indexed_sha,
+                            }
+                        ],
+                    }
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    latest = _generation("agency-one", "2026-07-10", latest_sha)
+    (agency / "latest.json").write_bytes(latest)
+    (agency / "2026-07-10.json").write_bytes(latest)
+    return agency
+
+
+def test_local_current_materializer_rejects_a_provenance_only_index_disagreement(
+    tmp_path: Path,
+) -> None:
+    """A corpus read across a publish is refused, not repaired into the site.
+
+    `refresh.yml` and `scorecard.yml` commit each changed agency's latest.json
+    and then index.json, so a reader that is not serialised against them can
+    pair one generation's pointer with another's artifact. On 2026-09-13 the
+    Pages deploy did exactly that for move-vendome and this guard stopped it.
+
+    Nothing about the score disagreed — same date, same score, same grade, same
+    category scores. The disagreement was `feed_sha256` alone, which is the
+    only thing distinguishing two scorings of one feed on one day. So the date
+    check passes here by construction and the summary check has to be what
+    fails, or the two generations would be published as one.
+    """
+    root = tmp_path / "artifacts"
+    agency = _torn_corpus(root, indexed_sha=_GENERATION_A, latest_sha=_GENERATION_B)
+    before = (agency / "latest.json").read_bytes()
+
+    with pytest.raises(ActivationHydrationError, match="latest/index summary mismatch"):
+        materialize_local_current_artifacts(artifacts_root=root)
+
+    # Fails closed: refusing must not leave a half-repaired corpus behind for
+    # the renderer that runs next.
+    assert (agency / "latest.json").read_bytes() == before
+    assert (agency / "2026-07-10.json").read_bytes() == before
+
+
+def test_local_current_materializer_accepts_a_corpus_read_from_one_generation(
+    tmp_path: Path,
+) -> None:
+    """The same shape, read whole, is ordinary and must still pass.
+
+    Re-reading the store is the repair for the test above, so a single
+    generation's pointer and artifact have to be accepted or the retry could
+    never converge.
+    """
+    root = tmp_path / "artifacts"
+    _torn_corpus(root, indexed_sha=_GENERATION_B, latest_sha=_GENERATION_B)
+
+    assert materialize_local_current_artifacts(artifacts_root=root) == 0
