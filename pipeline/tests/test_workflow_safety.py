@@ -893,6 +893,146 @@ def test_the_realtime_monitor_bound_sits_between_its_runtime_and_its_cadence() -
     assert "cancel-in-progress: false" in workflow
 
 
+# Issue #390, measured 2026-09-13 from each job's own started_at/completed_at over
+# its scheduled run history. They are committed as the evidence each bound is
+# reasoned against, like REALTIME_MONITOR_OBSERVED_RUNTIME_CEILING_MINUTES. They do
+# not need to be kept current to catch drift: the watchdog step reads live
+# durations every six hours. They only need restating when a bound moves.
+#: 170.1 minutes, the longest of 100 scheduled refresh runs (2026-09-01..13).
+INTRADAY_REFRESH_OBSERVED_RUNTIME_CEILING_MINUTES = 171
+#: 114.2 minutes, the shortest gap between consecutive scheduled refresh fires.
+INTRADAY_REFRESH_TIGHTEST_OBSERVED_GAP_MINUTES = 114
+#: 56.7 minutes, the longest of 59 successful scheduled collect jobs (2026-07-04..09-13).
+DAILY_COLLECT_OBSERVED_RUNTIME_CEILING_MINUTES = 57
+
+
+def _job_block(workflow: str, job: str) -> str:
+    """One top-level job's text, from its key to the next job's key."""
+    start = workflow.index(f"\n  {job}:\n") + 1
+    following = re.search(r"^  [a-z][a-z0-9_-]*:$", workflow[start + 1 :], re.MULTILINE)
+    return workflow[start : start + 1 + following.start()] if following else workflow[start:]
+
+
+def _job_timeout(workflow: str, job: str) -> int:
+    bound = re.search(r"^    timeout-minutes: (\d+)$", _job_block(workflow, job), re.MULTILINE)
+    assert bound, f"the {job} job declares no timeout-minutes"
+    return int(bound.group(1))
+
+
+def test_the_intraday_refresh_bound_sits_between_its_runtime_and_its_cadence() -> None:
+    """`timeout-minutes: 240` sat above the job's own 180-minute cron.
+
+    It was argued from "~70 to ~137 minutes", a figure the job outgrew: the longest
+    of 100 scheduled runs measured on 2026-09-13 took 170.1. A bound above the
+    cadence cannot mean "this run has lost its schedule", because the serial
+    `artifacts-publish` group has already queued the next cycle, and a third
+    arrival evicts the queued run rather than the wedged one. Same two directions
+    as the realtime monitor's test, for the same reason.
+
+    No 90% headroom is asserted here, unlike collect. 171 of 175 is 97.7%, and no
+    bound under the 180-minute cadence gets under 90% of a 170-minute run. The
+    watchdog will fail on a run that long, which is the signal that the job needs
+    to be faster or the cron longer.
+    """
+    workflow = _workflow("refresh.yml")
+    every_n_hours = re.search(r'- cron: "\d+ \*/(\d+) \* \* \*"', workflow)
+    assert every_n_hours, "refresh.yml no longer declares an every-N-hours cron"
+    cadence_minutes = int(every_n_hours.group(1)) * 60
+    timeout_minutes = _job_timeout(workflow, "refresh")
+
+    assert timeout_minutes > INTRADAY_REFRESH_OBSERVED_RUNTIME_CEILING_MINUTES, (
+        f"timeout-minutes: {timeout_minutes} is at or below the longest recorded refresh "
+        f"({INTRADAY_REFRESH_OBSERVED_RUNTIME_CEILING_MINUTES} min), so a legitimately heavy "
+        "cycle is killed and recorded as `cancelled`."
+    )
+    assert timeout_minutes < cadence_minutes, (
+        f"timeout-minutes: {timeout_minutes} is at or above the {cadence_minutes}-minute "
+        "cron. A refresh allowed to outlive its cadence queues the next one in the serial "
+        "publish group. Make the job faster or the cron longer instead of raising this."
+    )
+    refresh = _job_block(workflow, "refresh")
+    assert "group: artifacts-publish" in refresh
+    assert "cancel-in-progress: false" in refresh
+
+
+def test_the_daily_collect_bound_clears_its_runtime_and_cannot_hold_back_two_refreshes() -> None:
+    """`timeout-minutes: 60` against a job whose slowest measured run took 56.7.
+
+    A killed collect drops the whole day's publish. The daily cadence is not the
+    ceiling; the shared publish slot is. Refresh fires into the same serial group
+    as little as 114 minutes apart, so a collect bound under that gap means one
+    collect can make at most one refresh wait, never a second that would evict it.
+    """
+    scorecard = _workflow("scorecard.yml")
+    timeout_minutes = _job_timeout(scorecard, "collect")
+
+    assert timeout_minutes > DAILY_COLLECT_OBSERVED_RUNTIME_CEILING_MINUTES, (
+        f"timeout-minutes: {timeout_minutes} is at or below the slowest recorded collect "
+        f"({DAILY_COLLECT_OBSERVED_RUNTIME_CEILING_MINUTES} min)."
+    )
+    # The watchdog fails a run at 90% of its bound. A bound whose own measured
+    # slowest run already sits there would be red on arrival, and it is the state
+    # #390 found: 56.7 of 60. Refresh cannot meet the same margin, because its
+    # cadence squeezes it (171 of 175), and its test says so instead of asserting it.
+    assert timeout_minutes * 9 > DAILY_COLLECT_OBSERVED_RUNTIME_CEILING_MINUTES * 10, (
+        f"the slowest recorded collect ({DAILY_COLLECT_OBSERVED_RUNTIME_CEILING_MINUTES} min) "
+        f"is 90% or more of timeout-minutes: {timeout_minutes}, so the watchdog's bound "
+        "check is already failing and the next heavier day is a timeout kill."
+    )
+    assert timeout_minutes < INTRADAY_REFRESH_TIGHTEST_OBSERVED_GAP_MINUTES, (
+        f"timeout-minutes: {timeout_minutes} is at or above the tightest observed gap "
+        f"between refresh fires ({INTRADAY_REFRESH_TIGHTEST_OBSERVED_GAP_MINUTES} min). A "
+        "collect that long can hold the publish slot across two refresh arrivals, and "
+        "the second evicts the first."
+    )
+    # The premise that makes the refresh gap a ceiling at all.
+    for text in (_job_block(scorecard, "collect"), _job_block(_workflow("refresh.yml"), "refresh")):
+        assert "group: artifacts-publish" in text
+        assert "cancel-in-progress: false" in text
+
+
+def test_the_watchdog_measures_publish_jobs_against_the_bounds_they_declare() -> None:
+    """A duration check with a stale copy of the bound measures nothing.
+
+    The watchdog carries the bounds as data because it has no checkout. So each copy
+    is held to the workflow it describes, the step reads a job killed at its bound as
+    a failure, and a reading that measured no job fails instead of passing.
+    """
+    watchdog = _workflow("watchdog.yml")
+    name = "- name: No scheduled publish job is running up against its own bound"
+    at = watchdog.index(name)
+    step = watchdog[at : watchdog.index("\n      - name:", at + len(name))]
+
+    declared = {
+        (workflow, job): (int(bound), int(runs))
+        for workflow, job, bound, runs in re.findall(
+            r"^ +([a-z0-9-]+\.yml)\|([a-z0-9_-]+)\|(\d+)\|(\d+)$", step, re.MULTILINE
+        )
+    }
+    assert set(declared) == {("refresh.yml", "refresh"), ("scorecard.yml", "collect")}
+    for (workflow, job), (bound, _runs) in declared.items():
+        assert bound == _job_timeout(_workflow(workflow), job), (
+            f"the watchdog measures {workflow} {job} against {bound} minutes, which is not "
+            "the bound that workflow declares"
+        )
+
+    # Refresh runs every three hours and the watchdog every six, so reading fewer
+    # than two runs would skip every other refresh.
+    refresh_cron = re.search(r'- cron: "\d+ \*/(\d+) ', _workflow("refresh.yml"))
+    watch_cron = re.search(r'- cron: "\d+ \*/(\d+) \* \* \*" # every', watchdog)
+    assert refresh_cron, "refresh.yml no longer declares an every-N-hours cron"
+    assert watch_cron, "watchdog.yml no longer declares its every-N-hours cron"
+    refresh_hours, watch_hours = int(refresh_cron.group(1)), int(watch_cron.group(1))
+    assert declared[("refresh.yml", "refresh")][1] * refresh_hours >= watch_hours
+
+    assert "if: ${{ always() }}" in step
+    assert "set -euo pipefail" in step
+    assert '[ "$conclusion" = "cancelled" ]' in step, "a job killed at its bound must fail"
+    assert "$((minutes * 10)) -ge $((bound * 9))" in step
+    assert '[ "$measured" -eq 0 ]' in step, "measuring no job must be an error, not a pass"
+    assert 'if [ -z "$ids" ]; then' in step
+
+
 def test_the_watchdog_reads_a_job_timeout_as_a_failure_not_as_silence() -> None:
     """A job killed by its own `timeout-minutes` concludes `cancelled`.
 

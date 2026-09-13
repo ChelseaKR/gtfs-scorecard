@@ -285,7 +285,21 @@ jobs:
     # when that leniency would otherwise ship an empty corpus.
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    # RELIABILITY (issue #390): 60 had no measured runtime behind it. Measured
+    # 2026-09-13 over the 72 scheduled runs from 2026-07-04 to 2026-09-13:
+    # successful runs took 5.2 to 56.7 minutes (median 40.5, n=59). The slowest
+    # used 94.5% of 60 (2026-07-28); September's slowest used 89.5% (53.7 on
+    # 2026-09-05). None was stopped at its bound. Collect runs after every shard
+    # and grows with the registry, so a bound that close is a timeout kill
+    # waiting for a heavy day, and a killed collect drops that day's publish.
+    #
+    # The daily cadence is not the ceiling here: consecutive fires were never
+    # less than about 20 hours apart. The shared `artifacts-publish` slot is.
+    # Intraday refresh fires into the same serial group as little as 114.2
+    # minutes apart, so 90 keeps a collect that runs to its bound shorter than
+    # the tightest refresh gap. One collect can then make at most one refresh
+    # wait, and never a second whose arrival would evict the first.
+    timeout-minutes: 90
     concurrency:
       group: artifacts-publish
       cancel-in-progress: false

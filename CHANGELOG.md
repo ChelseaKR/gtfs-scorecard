@@ -29,6 +29,24 @@ the declared public surface).
 
 ### Fixed
 
+- **Two scheduled publish bounds that nothing measured (2026-09-13).**
+  `refresh.yml`'s `timeout-minutes: 240` sat above the job's own 180-minute
+  cron, and was argued from "~70 to ~137 minutes", a runtime written once and
+  then outgrown. The longest of 100 scheduled runs measured 2026-09-01..13 took
+  170.1 minutes. A bound above the cadence cannot mean "this run has lost its
+  schedule", because the serial `artifacts-publish` group has already queued the
+  next cycle. It is now 175: above every recorded run, below the cadence. The
+  comment says plainly what no number fixes: scheduled fires were as little as
+  114.2 minutes apart, and nothing sits under that and above a 154-minute run.
+  `scorecard.yml`'s `collect` took up to 56.7 of its 60 minutes (2026-07-28), and
+  a killed collect drops the day's publish. It is now 90, which is under the
+  tightest refresh gap, so one collect can hold back at most one refresh.
+  Watchdog gains "No scheduled publish job is running up against its own bound".
+  It reads each recent run's job duration, not its conclusion, and fails at 90%
+  of the bound, on a job killed at its bound, and on a reading that measured
+  nothing. `test_workflow_safety.py` holds both bounds between their measured
+  runtime and their ceiling, and holds the watchdog's copies of the bounds to
+  the workflows ([#390](https://github.com/ChelseaKR/gtfs-scorecard/issues/390)).
 - **`/realtime/` and `api/v1/realtime.json` carried the build date where a data
   date belongs (2026-09-13).** The only date either document held was
   `generated_at`, written at every render, so a reader took it for when the
