@@ -9,6 +9,7 @@ behind it rather than the sentence describing it.
 from __future__ import annotations
 
 import datetime as dt
+import decimal
 import json
 import re
 from pathlib import Path
@@ -166,6 +167,66 @@ def test_a_breach_needs_a_promise_a_deadline_and_no_archive() -> None:
         assert not deadline.is_breached(absent, now=after, archive_present=False)
 
 
+def test_the_promise_reader_accepts_the_type_dynamodb_actually_returns() -> None:
+    """The breach rule reads a number out of DynamoDB, and DynamoDB's number
+    is not Python's.
+
+    ``common.bundle_row`` writes ``deliver_by_epoch`` as an ``int``; boto3's
+    resource layer stores that as ``{"N": "..."}`` and hands it back as a
+    ``decimal.Decimal``. Measured against boto3 1.43.93:
+    ``TypeSerializer().serialize(1789603199)`` is ``{'N': '1789603199'}`` and
+    ``TypeDeserializer().deserialize(...)`` is ``Decimal('1789603199')``,
+    for which ``isinstance(value, int | float)`` is ``False``.
+
+    A reader written that way refused every promise this product has ever
+    made, so no order could breach, the reconciler's title could never
+    escalate to REFUND DUE and `scorecard program-refunds` always printed
+    "no orders past the promise". The fake tables in
+    test_program_bundle_handlers.py hand back the object they were given, so
+    only the real type catches it. This is that type, named here once.
+    """
+    epoch = deadline.deadline_epoch(_at("2026-09-14T09:00:00+00:00"))
+
+    for readable in (epoch, float(epoch), decimal.Decimal(epoch), str(epoch)):
+        assert deadline.promised_epoch(readable) == float(epoch), readable
+
+    # Absent, unreadable, or a bool -- none of which is a promise. `True` is
+    # an `int`, and without the bool rule it would read as a deadline one
+    # second after the epoch and breach on sight.
+    unreadable: tuple[object, ...] = (None, "", "soon", True, False, float("nan"), [], {})
+    for absent in unreadable:
+        assert deadline.promised_epoch(absent) is None, absent
+
+
+def test_a_breach_and_its_lateness_survive_the_storage_round_trip() -> None:
+    """The same order, decided the same way, whichever of the two types the
+    row arrives as. This is the assertion the live reader failed."""
+    epoch = deadline.deadline_epoch(_at("2026-09-14T09:00:00+00:00"))
+    after = dt.datetime.fromtimestamp(epoch + 86400, tz=dt.UTC)
+
+    stored = decimal.Decimal(epoch)  # what a scan of the bundles table returns
+    assert deadline.is_breached(stored, now=after, archive_present=False)
+    assert deadline.days_late(stored, now=after) == deadline.days_late(epoch, now=after) == 1.0
+    assert not deadline.is_breached(stored, now=after, archive_present=True)
+
+
+def test_the_promise_reads_back_as_the_day_the_buyer_was_told() -> None:
+    """The stored epoch is the last second of the promised day in the
+    promise's own zone, which is the next morning in UTC. Reading it back in
+    UTC names a day the buyer was never told, on the one report whose job is
+    to settle whether that day was met."""
+    checkout = _at("2026-09-14T09:00:00+00:00")
+    told = deadline.deadline_date(checkout)
+    epoch = deadline.deadline_epoch(checkout)
+
+    assert told.isoformat() == "2026-09-16"
+    assert deadline.promised_day(epoch) == told
+    assert deadline.promised_day(decimal.Decimal(epoch)) == told
+    # The bug this replaced, stated so it cannot come back by accident.
+    assert dt.datetime.fromtimestamp(epoch, tz=dt.UTC).date() != told
+    assert deadline.promised_day(None) is None
+
+
 def _row(bundle_id: str, promised: int | None, **extra: object) -> dict[str, object]:
     row: dict[str, object] = {
         "bundle_id": bundle_id,
@@ -194,6 +255,34 @@ def test_the_refund_list_names_only_orders_that_are_actually_owed() -> None:
     assert [o["bundle_id"] for o in orders] == ["a" * 32]
     assert orders[0]["days_late"] == 2.0
     assert orders[0]["session_id"] == "cs_test_exampleref"
+
+
+def test_the_refund_list_reads_the_table_as_the_table_answers_it() -> None:
+    """`scorecard program-refunds` scans the real bundles table, so every row
+    it sees carries `Decimal`, not `int`. Listed with the type it was written
+    as and the type it is read back as, the answer has to be the same order
+    and the same lateness; the list that decides whether money is owed cannot
+    depend on which of the two a fixture happened to use.
+
+    And the date it prints is the date the buyer was told, in the promise's
+    own zone -- not the UTC morning after it.
+    """
+    checkout = _at("2026-09-14T09:00:00+00:00")
+    told = deadline.deadline_date(checkout)
+    promised = deadline.deadline_epoch(checkout)
+    now = dt.datetime.fromtimestamp(promised + 86400 * 2, tz=dt.UTC)
+    stored = [_row("a" * 32, None, deliver_by_epoch=decimal.Decimal(promised))]
+
+    orders = program_refunds.breached_orders(stored, archive_present=lambda _b: False, now=now)
+    assert [o["bundle_id"] for o in orders] == ["a" * 32]
+    assert orders[0]["days_late"] == 2.0
+    assert orders[0]["promised_by"] == told.isoformat() == "2026-09-16"
+    assert told.isoformat() in program_refunds.render(orders, now=now)
+
+    as_written = program_refunds.breached_orders(
+        [_row("a" * 32, promised)], archive_present=lambda _b: False, now=now
+    )
+    assert as_written == orders, "the stored type must not change the answer"
 
 
 def test_the_refund_report_prints_commands_and_runs_nothing() -> None:

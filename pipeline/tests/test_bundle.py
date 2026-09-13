@@ -416,6 +416,34 @@ def test_delivery_email_states_the_link_the_expiry_and_every_omission() -> None:
     assert "buys no influence" in email.body
 
 
+def test_delivery_email_states_the_date_the_order_was_promised_by() -> None:
+    """The last link in the refund promise, and the only one the buyer keeps.
+
+    /bundle/ commits to two business days "or the purchase is refunded", the
+    setup route computes that date at checkout and carries it through
+    report-bundle.yml's `promised_by` input to this email. A buyer holding a
+    late archive should not have to take our word for when it was due, so the
+    date is in the message they received rather than only in a table they
+    cannot see.
+
+    Blank is the subscription refresh, which made no such promise: the line
+    is absent rather than printed empty, because "promised by ." is worse
+    than saying nothing.
+    """
+    request = parse_request(_raw())
+    kept = delivery_email(
+        request,
+        _manifest(),
+        "https://x.example/d",
+        "2026-10-01",
+        "Wednesday 16 September",
+    )
+    assert "promised by Wednesday 16 September" in kept.body
+
+    refresh = delivery_email(request, _manifest(), "https://x.example/d", "2026-10-01")
+    assert "promised by" not in refresh.body
+
+
 def test_delivery_email_for_a_subscription_says_how_to_cancel() -> None:
     request = BundleRequest(
         bundle_id=BUNDLE_ID,

@@ -297,10 +297,18 @@ finishes the same bundle id rather than opening a second order. One payment
 can still only ever produce one bundle.
 
 **The build fails.** `report-bundle.yml` writes an annotation and a run
-summary naming the bundle id, and mails the same facts to `SES_FROM`.
+summary saying that a paid order did not complete, and deliberately does not
+name it: a run page on a public repository is a publication, and the bundle id
+is the download credential. The order is identified in the bundles table and in
+the reconciler's CloudWatch log, both private. Nor does that step send mail —
+`SES_FROM` is an address on a domain with no MX record, so the alert it used to
+send was delivered nowhere, which is the same defect as no alert wearing a coat.
 Re-dispatching with the same inputs is the repair: the archive and the
 download link are both keyed on the bundle id, so the re-run fills the object
-the buyer's existing link already points at. `watchdog.yml` reads that
+the buyer's existing link already points at. That also makes the ambiguous
+failure safe — a dispatch whose socket timed out after GitHub had queued the
+run — because the retry resumes the same bundle id, so both runs render to one
+archive key under one capability row. `watchdog.yml` reads that
 workflow's most recent conclusion every six hours as the backstop, and counts
 `cancelled` as a failure because that is what a job killed by its own
 `timeout-minutes` records.

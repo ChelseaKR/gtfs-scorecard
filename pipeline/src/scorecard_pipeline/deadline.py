@@ -35,6 +35,7 @@ shifts) do not expire.
 from __future__ import annotations
 
 import datetime as dt
+import math
 
 # The promise, in days. `web/bundle/plan.json` carries the same number for the
 # purchase page, and a test holds the two together.
@@ -166,6 +167,61 @@ def promise_sentence(checkout_at: dt.datetime) -> str:
     )
 
 
+def promised_epoch(deliver_by_epoch: object) -> float | None:
+    """A stored ``deliver_by_epoch`` as a number, or None when the row carries
+    no readable promise.
+
+    **The type this has to survive is DynamoDB's, not Python's.** The
+    capability row is written with an ``int`` (``common.bundle_row``), and
+    boto3's resource layer serialises that to ``{"N": "..."}`` and deserialises
+    it back to a ``decimal.Decimal`` -- which is not an ``int`` and not a
+    ``float``. A reader written as ``isinstance(value, int | float)`` therefore
+    refuses every promise this product has ever made, and refuses it silently:
+    the order reads as one that made no commitment, so it can be reported late
+    and can never be reported as a breach. A fake table hands back the object
+    it was given, so nothing short of the real type catches that.
+
+    ``bool`` is excluded because it is an ``int``: ``True`` would otherwise
+    read as a deadline one second after the epoch and breach on sight. A
+    numeric string is accepted, for the same reason
+    ``setup_handler._has_expired`` accepts one -- these rows are hand-editable
+    and a value a person can read as a date should not be discarded as
+    unreadable. Anything else is "no promise was made", which is what a
+    subscription refresh looks like, and is never turned into a fact about
+    the buyer's order.
+
+    One conversion, not a type ladder. ``float`` already accepts every shape
+    this field can arrive as -- ``int``, ``float``, ``Decimal``, and a string
+    of digits -- and a ladder of ``isinstance`` branches ahead of it would be
+    redundant with it, which is how the ``Decimal`` case came to be missing
+    from one branch and unnoticed: a second path answered, so no test could
+    see the first one was wrong.
+    """
+    if isinstance(deliver_by_epoch, bool):
+        return None
+    try:
+        value = float(deliver_by_epoch)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return None
+    return value if math.isfinite(value) else None
+
+
+def promised_day(deliver_by_epoch: object) -> dt.date | None:
+    """The stored promise back as the calendar date the buyer was told.
+
+    ``deadline_epoch`` is the last second of the promised day **in
+    DEADLINE_ZONE**, which is 06:59:59 or 07:59:59 the following morning in
+    UTC. So reading that timestamp back in UTC names the day *after* the one
+    on the buyer's confirmation page and in their delivery email, every time.
+    The refund report is the document that settles whether money is owed; it
+    cannot state a different date than the promise it is settling.
+    """
+    promised = promised_epoch(deliver_by_epoch)
+    if promised is None:
+        return None
+    return dt.datetime.fromtimestamp(promised, tz=_zone()).date()
+
+
 def is_breached(deliver_by_epoch: object, *, now: dt.datetime, archive_present: bool) -> bool:
     """Whether an order is past the date it was promised by, with nothing built.
 
@@ -177,15 +233,17 @@ def is_breached(deliver_by_epoch: object, *, now: dt.datetime, archive_present: 
     A row with no readable ``deliver_by_epoch`` made no such promise. That is
     a subscription refresh, or a row written before this field existed, and
     neither can breach a commitment nobody gave. Such an order is not lost:
-    it is still reported as undelivered, on the archive alone.
+    it is still reported as undelivered, on the archive alone. What counts as
+    readable is ``promised_epoch``, and the reason it is a named function is
+    written there.
     """
-    if archive_present or not isinstance(deliver_by_epoch, int | float):
+    if archive_present:
         return False
-    return now.timestamp() > float(deliver_by_epoch)
+    promised = promised_epoch(deliver_by_epoch)
+    return promised is not None and now.timestamp() > promised
 
 
 def days_late(deliver_by_epoch: object, *, now: dt.datetime) -> float | None:
     """How far past the promise, in days, or None when there was no promise."""
-    if not isinstance(deliver_by_epoch, int | float):
-        return None
-    return (now.timestamp() - float(deliver_by_epoch)) / 86400
+    promised = promised_epoch(deliver_by_epoch)
+    return None if promised is None else (now.timestamp() - promised) / 86400
