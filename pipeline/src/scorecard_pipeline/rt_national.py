@@ -11,7 +11,9 @@ This rolls the per-agency ``RtHealth`` summaries up into one covered-set picture
 a reliability-band distribution, median uptime and freshness, portable
 country/subdivision groups, a U.S.-state breakdown, and the most reliable feeds.
 It is pure over the summaries the monitor already produces, so the artifact is
-reproducible and adds no polling.
+reproducible and adds no polling. It also states when those summaries were
+gathered (``observed_vintage``), because the document's own build stamp is not a
+claim about the data in it.
 It stays inside the serverless model: it reads the samples the Actions cron
 already records and does not stand up a continuous worker fleet. Absence of a
 realtime feed is shown as "not monitored", never as a zero, the same way a missing
@@ -23,6 +25,7 @@ not a grade input and changes no score.
 
 from __future__ import annotations
 
+import datetime as dt
 from typing import Any
 
 from ._stats import _median
@@ -53,6 +56,62 @@ def reliability_band(uptime_pct: float) -> str:
     if uptime_pct >= MOSTLY_THRESHOLD:
         return "mostly"
     return "spotty"
+
+
+def observed_vintage(summaries: list[dict[str, Any]]) -> dict[str, Any]:
+    """When the observations behind this rollup were actually taken.
+
+    The rollup carries one build date and the rows it summarises do not have to
+    share it. ``rt-monitor.yml`` recorded nothing between 2026-09-05 and
+    2026-09-08 while ``/realtime/`` and ``api/v1/realtime.json`` were rebuilt on
+    the intraday cadence, stamped with the build date and describing a corpus
+    nobody had sampled since the 5th (#389). Each member already knows its own
+    ``last_ts``; this states it at the level a reader looks at.
+
+    A national rollup has as many vintages as it has members, so three dates are
+    reported rather than one: the newest observation anywhere in the corpus, the
+    oldest member's newest observation, and the median of those per-member dates.
+    The newest alone would hide a long tail of stale members behind one fresh
+    one; the median says whether the corpus is mostly fresh with an outlier or
+    mostly stale. All three are read off recorded timestamps, so — like the
+    per-agency window, which names the date it ends — this needs no threshold
+    for how stale is too stale, and cannot drift when the monitor stops. Every
+    date published here is a date some feed record was actually observed on.
+
+    Members that record no ``last_ts`` are counted, never quietly dropped from
+    the denominator: a date nobody recorded is absence, and it says so.
+    """
+    dated = [
+        int(summary["last_ts"])
+        for summary in summaries
+        if isinstance(summary.get("last_ts"), int) and not isinstance(summary.get("last_ts"), bool)
+    ]
+    undated = len(summaries) - len(dated)
+    if not dated:
+        return {
+            "feed_records_dated": 0,
+            "feed_records_undated": undated,
+            "oldest_last_observation": None,
+            "median_last_observation": None,
+            "newest_last_observation": None,
+        }
+    # The older of the two middle dates when the count is even, rather than
+    # their mean. Averaging two timestamps produces a date no feed record was
+    # observed on -- a value invented by the arithmetic -- and erring toward the
+    # older of the two never makes the corpus look fresher than it is.
+    ordered = sorted(dated)
+    median = ordered[(len(ordered) - 1) // 2]
+    return {
+        "feed_records_dated": len(dated),
+        "feed_records_undated": undated,
+        "oldest_last_observation": _utc_day(ordered[0]),
+        "median_last_observation": _utc_day(median),
+        "newest_last_observation": _utc_day(ordered[-1]),
+    }
+
+
+def _utc_day(ts: int) -> str:
+    return dt.datetime.fromtimestamp(ts, dt.UTC).date().isoformat()
 
 
 def _with_portable_location(summary: dict[str, Any]) -> dict[str, Any]:
@@ -159,6 +218,10 @@ def national_rt(summaries: list[dict[str, Any]], *, top: int = 10) -> dict[str, 
     median_lag = _median(lags)
     return {
         "monitored_feed_record_count": len(monitored),
+        # When the rows were gathered, as distinct from when the document was
+        # built. See observed_vintage: the payload's `generated_at` is a build
+        # stamp and describes nothing about the observations (#389).
+        "observed": observed_vintage(monitored),
         # v1 compatibility alias. The metric denominator is feed records.
         "monitored_count": len(monitored),
         "bands": bands,
