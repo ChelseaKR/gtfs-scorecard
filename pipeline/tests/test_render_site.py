@@ -3015,6 +3015,135 @@ def test_brief_carries_outreach_standards_and_portfolio_link() -> None:
     assert '<meta name="robots" content="noindex,follow">' in html
 
 
+def test_the_program_index_prints_an_average_only_when_the_cohort_supports_one() -> None:
+    """A one-line-per-rollup index is where a missing measurement turns into a
+    number: reading ``average_score`` straight out of the artifact would print
+    one for every rollup, including the ones whose own page says the average is
+    unavailable.
+
+    The committed fixture has no rollup with a comparison cohort, so the
+    publishable branch is unreachable from the goldens. Both branches are
+    exercised here instead, with literal values rather than values derived from
+    the guard.
+    """
+    from scorecard_pipeline.render_site import _render_program_index
+
+    publishable = {
+        "rollup": {"id": "yolo-county", "name": "Yolo County"},
+        "agency_count": 2,
+        "average_score": 81.7,
+        "needs_attention": 0,
+        "comparison": {"eligible_count": 2},
+        "grade_distribution": {"B": 2},
+    }
+    # Same numbers, no comparison cohort: the average is not publishable.
+    withheld = {
+        "rollup": {"id": "california", "name": "California agencies"},
+        "agency_count": 1,
+        "average_score": 81.7,
+        "needs_attention": 3,
+    }
+    html = _render_program_index([publishable, withheld])
+
+    assert "81.7 out of 100 average over 2 comparable" in html
+    assert "2 feed scorecards" in html
+    assert "1 feed scorecard ·" in html  # singular, not "1 feed scorecards"
+    assert "average unavailable" in html
+    assert html.count("81.7") == 1, "the withheld average was printed anyway"
+    assert "3 need attention" in html
+    assert "none flagged for attention" in html
+    # Alphabetical by name, so a reader can find a state without scanning 67 rows.
+    assert html.index("California agencies") < html.index("Yolo County")
+    # The offer sits above the list: this page shows no agency's grade at all,
+    # which is what lets it sit there without breaking the placement rule.
+    assert html.index('href="/bundle/"') < html.index('href="/program/california/"')
+
+
+def test_the_portfolio_route_falls_back_to_the_country_rollup() -> None:
+    """The state-only gate dropped every agency outside the United States.
+
+    Measured on the deployed site 2026-09-12: 15 of 30 sampled call briefs
+    carried the portfolio backlink, because the gate required ``country == "US"``
+    and a state whose slug had a page. Eighteen ``country-*`` rollups were
+    published at the time and were never used as the fallback, so a Canadian or
+    French agency's brief linked nothing while the page it should have linked
+    sat in the sitemap.
+
+    Every id here is an argument rather than a read of rollups.yaml, so a rollup
+    disappearing from the config cannot make this test pass by accident.
+    """
+    from scorecard_pipeline.render_site import _portfolio_route
+
+    us = {"agency": {"id": "unitrans", "country": "US"}}
+    canadian = {"agency": {"id": "barrie-transit", "country": "CA"}}
+
+    # A US agency prefers its own state.
+    assert _portfolio_route(
+        {"state": "California", "country": "US"}, us, {"california", "country-us"}
+    ) == ("california", "California")
+    # Multi-word states slug the way the rollup ids do.
+    assert _portfolio_route({"state": "New York", "country": "US"}, us, {"new-york"}) == (
+        "new-york",
+        "New York",
+    )
+    # The fallback: no state page, or no state at all.
+    assert _portfolio_route({"country": "CA"}, canadian, {"country-ca"}) == ("country-ca", "Canada")
+    assert _portfolio_route({"state": "Ontario", "country": "CA"}, canadian, {"country-ca"}) == (
+        "country-ca",
+        "Canada",
+    )
+    # Country read off the artifact when the directory record predates the field.
+    assert _portfolio_route({}, canadian, {"country-ca"}) == ("country-ca", "Canada")
+
+    # And never a link to a page that was not rendered.
+    assert _portfolio_route({"state": "California", "country": "US"}, us, set()) is None
+    assert _portfolio_route({"country": "CA"}, canadian, {"california"}) is None
+    assert _portfolio_route({"country": "ZZ"}, {"agency": {}}, {"country-zz"}) == (
+        "country-zz",
+        "ZZ",
+    )
+
+
+def test_the_agency_page_points_at_its_free_group_view_and_sells_nothing() -> None:
+    """R2b: the agency page carries the same portfolio pointer as its brief.
+
+    The scorecard is the site's dominant surface and the one a program liaison
+    usually lands on from search. It linked no group view at all: that link
+    lived one level deeper on the call brief, which is noindex and reached in
+    two clicks.
+
+    The line names a free page. It must not name the paid tier -- this is the
+    one agency-facing surface where the placement rule is easiest to break by
+    adding "and you can buy these" to a sentence that is already there.
+    """
+    from scorecard_pipeline.render_site import _render_agency
+
+    artifact = json.loads(
+        (
+            Path(__file__).parent
+            / "fixtures"
+            / "golden_site"
+            / "data"
+            / "artifacts"
+            / "unitrans"
+            / "latest.json"
+        ).read_text()
+    )
+    html = _render_agency(
+        artifact,
+        dir_record={"state": "California", "country": "US"},
+        program_ids={"california"},
+    )
+    head, separator, _footer = html.partition('<footer class="site-footer">')
+    assert separator, "no shared footer found; the split below proves nothing"
+    assert 'href="/program/california/"' in head
+    assert "California portfolio" in head
+    assert "/bundle/" not in head, "the agency page named the paid tier in its own content"
+
+    without = _render_agency(artifact, dir_record={"state": "California"}, program_ids=set())
+    assert "/program/california/" not in without
+
+
 def test_canadian_brief_omits_us_ntd_language() -> None:
     from scorecard_pipeline.render_site import _render_brief
 

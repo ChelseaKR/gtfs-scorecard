@@ -2661,6 +2661,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     artifacts: list[dict[str, Any]] | None = None,
     effort_bands: dict[str, str] | None = None,
     seo_metadata: AgencySeoMetadata | None = None,
+    program_ids: set[str] | None = None,
 ) -> str:
     name = artifact["agency"]["id"], artifact["agency"]["name"]
     agency_id, agency_name = name
@@ -2885,6 +2886,18 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         if (_outreach_block or _vendor_block or _embed_block or _citation_block)
         else ""
     )
+    # A pointer to the free group view this agency sits in, for the reader who
+    # supports several. It names a rollup, never the paid tier: no price, no
+    # /bundle/ link, nothing that would sit beside this agency's own grade —
+    # test_no_agency_facing_page_names_the_paid_tier_in_its_own_content still
+    # holds, and is what keeps this line honest if anyone extends it.
+    portfolio_line = _portfolio_pointer(
+        dir_record,
+        artifact,
+        program_ids,
+        css_class="fineprint",
+        tail="the same scorecards for every feed we track in that group, on one free page.",
+    )
     crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (agency_name, None)])
     body = f"""    <div class="report-head">
     {crumb}
@@ -2941,6 +2954,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     {_google_gate_line(artifact, now)}
     {_route_rule()}
     {_standards_section(artifact, (dir_record or {}).get("state", ""), (dir_record or {}).get("subdivision_code", ""))}
+    {portfolio_line}
     {_route_rule()}
     {_embed_block}
     {_citation_block}
@@ -2996,6 +3010,70 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         country_code=str(location_record.get("country") or "US"),
         wide=True,
         main_modifier="agency-report",
+    )
+
+
+def _portfolio_route(
+    dir_record: dict[str, Any] | None,
+    artifact: dict[str, Any],
+    program_ids: set[str] | None,
+) -> tuple[str, str] | None:
+    """The published rollup this agency belongs to, as ``(slug, label)``.
+
+    A US agency routes to its state's rollup. Everything else — a non-US agency,
+    and a US record with no state — routes to its country's rollup. The country
+    fallback is the point: the state-only gate this replaces dropped every
+    agency outside the United States and every unlocated record, so 15 of 30
+    sampled call briefs carried the link (measured 2026-09-12) while 18
+    ``country-*`` rollups sat published and unused.
+
+    ``None`` when no published rollup covers the record, so no surface links a
+    page that was never rendered. ``program_ids`` is the set of slugs the render
+    actually wrote, which is what makes that guarantee hold rather than be hoped
+    for.
+    """
+    ids = program_ids or set()
+    record = dir_record or {}
+    country = str(
+        record.get("country") or artifact.get("agency", {}).get("country") or "US"
+    ).upper()
+    state = str(record.get("state") or "").strip()
+    if country == "US" and state:
+        slug = state.lower().replace(" ", "-")
+        if slug in ids:
+            return slug, state
+    if len(country) == 2 and country.isalpha():
+        slug = f"country-{country.lower()}"
+        if slug in ids:
+            return slug, country_name(country, fallback=country)
+    return None
+
+
+def _portfolio_pointer(
+    dir_record: dict[str, Any] | None,
+    artifact: dict[str, Any],
+    program_ids: set[str] | None,
+    *,
+    css_class: str,
+    tail: str,
+) -> str:
+    """The "Part of the <group> portfolio" line, or ``""`` when none applies.
+
+    One sentence shape for the scorecard and for the call brief, differing only
+    in the class each page styles it with and the clause saying why that reader
+    would follow it. It links a free group view and names nothing paid, which is
+    what lets it sit on an agency-facing page at all.
+
+    Returning ``""`` instead of branching in each caller also keeps both
+    template assemblers off the complexity ratchet (CQ-05).
+    """
+    route = _portfolio_route(dir_record, artifact, program_ids)
+    if not route:
+        return ""
+    slug, label = route
+    return (
+        f'<p class="{css_class}">Part of the '
+        f'<a href="/program/{esc(slug)}/">{esc(label)} portfolio</a>: {tail}</p>'
     )
 
 
@@ -3179,17 +3257,16 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     if location_label:
         facts.append(f"<dt>Location</dt><dd>{esc(location_label)}</dd>")
 
-    # Portfolio backlink: only when the state's rollup page is actually
-    # published, so the brief never links a 404.
-    portfolio_html = ""
-    if where and str((dir_record or {}).get("country") or "US").upper() == "US":
-        slug = str(where).lower().replace(" ", "-")
-        if program_ids and slug in program_ids:
-            portfolio_html = (
-                f'<p class="brief-portfolio no-print">Part of the '
-                f'<a href="/program/{esc(slug)}/">{esc(str(where))} portfolio</a>: '
-                "see where this agency sits among the state's feeds before the call.</p>"
-            )
+    # Portfolio backlink: only when the rollup page is actually published, so the
+    # brief never links a 404. The state rollup first, the country rollup when
+    # there is no state page — see _portfolio_route.
+    portfolio_html = _portfolio_pointer(
+        dir_record,
+        artifact,
+        program_ids,
+        css_class="brief-portfolio no-print",
+        tail="see where this agency sits among the other feeds in that group before the call.",
+    )
 
     # The jurisdiction guideline or support resource, when one exists. It is
     # selected by ISO subdivision code, with state-name fallback for old
@@ -4692,7 +4769,8 @@ def _render_agency_index(
       Use the page links to browse the complete directory.</p>
     <nav class="grade-jump" aria-label="Other views of the same scorecards">Same scorecards, other
     views: <a href="/app/">live search and filters</a> · <a href="/map/">on a map</a> ·
-    <a href="/routes/">every route</a> · <a href="/compare/">compare two</a></nav>
+    <a href="/routes/">every route</a> · <a href="/compare/">compare two</a> ·
+    <a href="/program/">grouped by program</a></nav>
 {pager_top}
 {jump_nav}
 {expired_section}
@@ -4855,6 +4933,127 @@ def _guarded_comparison_count(payload: dict[str, Any]) -> int:
     return nested
 
 
+def _rollup_guarded_summary(rollup: dict[str, Any]) -> tuple[bool, int]:
+    """May this rollup's cross-feed average be published, and over how many feeds?
+
+    One definition, shared by ``/program/<id>/`` and the ``/program/`` index, so
+    the two surfaces can never disagree about whether an average exists. A
+    rollup with no comparison cohort, a non-numeric average, or a grade
+    distribution that does not add up to the cohort returns ``False``, and every
+    caller then prints "average unavailable" instead of a number nothing
+    measured. The count is returned alongside so a caller can say what the
+    average is over rather than implying it covers every member.
+    """
+    raw_comparison = rollup.get("comparison")
+    comparison = raw_comparison if isinstance(raw_comparison, dict) else {}
+    raw_count = comparison.get("eligible_count")
+    count = raw_count if isinstance(raw_count, int) and not isinstance(raw_count, bool) else 0
+    raw_distribution = rollup.get("grade_distribution")
+    distribution = raw_distribution if isinstance(raw_distribution, dict) else {}
+    distribution_total = sum(
+        value
+        for value in distribution.values()
+        if isinstance(value, int) and not isinstance(value, bool) and value >= 0
+    )
+    average_score = rollup.get("average_score")
+    guarded = bool(
+        count > 0
+        and isinstance(average_score, (int, float))
+        and not isinstance(average_score, bool)
+        and distribution_total == count
+    )
+    return guarded, count
+
+
+def _whole_number(value: Any) -> int:
+    """A non-negative count from an artifact field, or 0 when it is not one."""
+    if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+        return value
+    return 0
+
+
+# The static twin of the app's #/programs card list (web/src/app.js
+# renderPrograms), and the page the analysis of 2026-09-12 found missing: every
+# named rollup had zero inbound links from any indexable page, because the only
+# index of them lived inside the JavaScript app at /app/#/programs, where no
+# crawler and no no-JS reader can reach it, and /program/ itself returned 404.
+_PROGRAM_INDEX_LEDE = (
+    "A view for the people who support many agencies at once. Each rollup puts the feeds "
+    "needing attention first, then lists the rest alphabetically, and names the fixes "
+    "shared across the group."
+)
+
+
+def _render_program_index(rollups: list[dict[str, Any]]) -> str:
+    """One crawlable row per published rollup, ordered by name.
+
+    Every number here is read back from the same rollup payload the rollup page
+    renders, through the same ``_rollup_guarded_summary`` guard, so the index
+    cannot advertise an average the rollup page itself declines to publish.
+
+    This page carries the bundle pointer near the top, which the placement rule
+    (never beside a single agency's grade) permits by construction: it is the
+    one page on the site whose entire subject is a group of programs and which
+    shows no agency's grade at all.
+    """
+    rows_parts: list[str] = []
+    for payload in sorted(
+        rollups,
+        key=lambda r: (str(r["rollup"]["name"]).casefold(), str(r["rollup"]["id"])),
+    ):
+        rid = str(payload["rollup"]["id"])
+        rname = str(payload["rollup"]["name"])
+        guarded, comparable = _rollup_guarded_summary(payload)
+        average_score = payload.get("average_score")
+        avg = (
+            f"{average_score} out of 100 average over {comparable} comparable"
+            if guarded
+            else "average unavailable"
+        )
+        agency_count = _whole_number(payload.get("agency_count"))
+        needs_attention = _whole_number(payload.get("needs_attention"))
+        attention = (
+            f'<span class="pill-warn">{needs_attention} need attention</span>'
+            if needs_attention
+            else '<span class="pill-ok">none flagged for attention</span>'
+        )
+        noun = "feed scorecard" if agency_count == 1 else "feed scorecards"
+        rows_parts.append(
+            f'<li class="agency-card"><div>'
+            f'<h3><a href="/program/{esc(rid)}/">{esc(rname)}</a></h3>'
+            f'<p class="meta">{agency_count} {noun} · {avg} · {attention}</p>'
+            "</div></li>"
+        )
+    rows = "".join(rows_parts)
+    canonical = f"{BASE_URL}/program/"
+    desc = (
+        f"Every published program rollup: {len(rows_parts)} portfolio views of the same GTFS "
+        "feed scorecards, grouped by state, country, or named cohort."
+    )
+    pointer = _bundle_pointer(
+        "Supporting a whole program rather than one agency is what these pages are for.",
+        "order those board reports as one branded archive",
+    )
+    body = f"""    {_breadcrumb([("Home", "/"), ("Program rollups", None)])}
+    <a class="backlink" href="/agencies/">&larr; All agencies</a>
+    <h1 class="page-title">Program rollups.</h1>
+    <p class="page-lede">{_PROGRAM_INDEX_LEDE}</p>
+    {pointer}
+    <section aria-labelledby="rollups-h">
+      <h2 class="section-title" id="rollups-h">Published rollups <span class="grade-count">{len(rows_parts)}</span></h2>
+      <ul class="agency-list">{rows}</ul>
+    </section>"""
+    body = "\n".join(line.rstrip() for line in body.splitlines())
+    return _page(
+        title="Program rollups — GTFS Scorecard",
+        description=desc,
+        canonical=canonical,
+        body=body,
+        wide=True,
+        jsonld=_collection_page_jsonld("Program rollups", desc, canonical),
+    )
+
+
 def _render_rollup(rollup: dict[str, Any]) -> str:
     rid = rollup["rollup"]["id"]
     rname = rollup["rollup"]["name"]
@@ -4889,26 +5088,10 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
     rows = "".join(rows_parts)
     raw_comparison = rollup.get("comparison")
     comparison = raw_comparison if isinstance(raw_comparison, dict) else {}
-    raw_comparable_count = comparison.get("eligible_count")
-    comparable_count = (
-        raw_comparable_count
-        if isinstance(raw_comparable_count, int) and not isinstance(raw_comparable_count, bool)
-        else 0
-    )
     raw_distribution = rollup.get("grade_distribution")
     distribution = raw_distribution if isinstance(raw_distribution, dict) else {}
-    distribution_total = sum(
-        count
-        for count in distribution.values()
-        if isinstance(count, int) and not isinstance(count, bool) and count >= 0
-    )
     average_score = rollup.get("average_score")
-    guarded_summary = bool(
-        comparable_count > 0
-        and isinstance(average_score, (int, float))
-        and not isinstance(average_score, bool)
-        and distribution_total == comparable_count
-    )
+    guarded_summary, comparable_count = _rollup_guarded_summary(rollup)
     avg = f"{average_score} out of 100 average" if guarded_summary else "average unavailable"
     comparison_contract = _comparison_contract_text(comparison)
     dist_bar = _grade_distribution_bar(distribution, comparable_count) if guarded_summary else ""
@@ -4951,9 +5134,13 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
             f"routes, or all public transport in {esc(country_label)}, and it is not "
             f"a claim that GTFS Scorecard covers {esc(country_label)}.</p>"
         )
-    crumb = _breadcrumb([("Home", "/"), ("All agencies", "/agencies/"), (rname, None)])
+    # Up is the rollup index, not the agency directory: a reader on one program's
+    # page is looking for programs. This is also what the app's own twin does
+    # (app.js renderProgram links back to #/programs), and it is how the other 66
+    # rollups become reachable from any one of them.
+    crumb = _breadcrumb([("Home", "/"), ("Program rollups", "/program/"), (rname, None)])
     body = f"""    {crumb}
-    <a class="backlink" href="/agencies/">&larr; All agencies</a>
+    <a class="backlink" href="/program/">&larr; All program rollups</a>
     <div class="score-hero">
       <div>
         <h1 class="page-title">{esc(rname)}</h1>
@@ -10463,6 +10650,38 @@ def _apply_registry_agency_names(
     return changed
 
 
+def _write_program_pages(art: Path, write: Callable[..., None]) -> None:
+    """Every ``/program/<id>/`` rollup page, then ``/program/`` listing them.
+
+    The index is built from the payloads this run actually rendered, not from
+    the index artifact, so it can never list a page that was not written — and
+    it is skipped entirely when nothing rendered, which keeps each rollup page's
+    "All program rollups" breadcrumb pointing at a page that exists.
+
+    Lifted out of ``render_site`` with its loop and both guards, which is a net
+    ratchet-down of three branches on the site's largest function (CQ-05): the
+    index is new work, and the function it would have been written inside is the
+    one thing in this module already listed as debt.
+    """
+    rollup_index = art / "rollups" / "index.json"
+    if not rollup_index.exists():
+        return
+    rendered: list[dict[str, Any]] = []
+    for entry in json.loads(rollup_index.read_text()).get("rollups", []):
+        payload_file = art / "rollups" / f"{entry['id']}.json"
+        if not payload_file.exists():
+            continue
+        payload = json.loads(payload_file.read_text())
+        rendered.append(payload)
+        write(
+            f"program/{entry['id']}/index.html",
+            _render_rollup(payload),
+            f"{BASE_URL}/program/{entry['id']}/",
+        )
+    if rendered:
+        write("program/index.html", _render_program_index(rendered), f"{BASE_URL}/program/")
+
+
 def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     """Generate all static pages, the sitemap, and robots.txt under web/.
 
@@ -11011,8 +11230,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         except (json.JSONDecodeError, OSError):
             canada_equity = {}
 
-    # Published rollup slugs, read once so each brief can link its state's
-    # portfolio page only when that page will actually exist.
+    # Published rollup slugs, read once so an agency page and its brief link a
+    # portfolio page only when that page will actually exist. Gated on the
+    # payload file the render loop below reads, not on the index listing it:
+    # the loop writes a rollup page only when `<id>.json` is present, so an id
+    # listed without one is a link to a 404.
     program_ids: set[str] = set()
     rollup_index_file = art / "rollups" / "index.json"
     if rollup_index_file.exists():
@@ -11020,6 +11242,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             program_ids = {
                 str(r.get("id", ""))
                 for r in json.loads(rollup_index_file.read_text()).get("rollups", [])
+                if (art / "rollups" / f"{r.get('id', '')}.json").exists()
             }
         except (json.JSONDecodeError, OSError):
             program_ids = set()
@@ -11088,6 +11311,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                     artifacts=dated_artifacts,
                     effort_bands=effort_bands,
                     seo_metadata=agency_seo_metadata[agency_id],
+                    program_ids=program_ids,
                 ),
                 f"{BASE_URL}/agency/{agency_id}/",
                 lastmod=str(artifact.get("snapshot_date") or "") or None,
@@ -11636,16 +11860,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         f"{BASE_URL}/equity/",
     )
 
-    rollup_index = art / "rollups" / "index.json"
-    if rollup_index.exists():
-        for r in json.loads(rollup_index.read_text()).get("rollups", []):
-            rfile = art / "rollups" / f"{r['id']}.json"
-            if rfile.exists():
-                write(
-                    f"program/{r['id']}/index.html",
-                    _render_rollup(json.loads(rfile.read_text())),
-                    f"{BASE_URL}/program/{r['id']}/",
-                )
+    _write_program_pages(art, write)
 
     write("sitemap.xml", _sitemap(urls, sitemap_lastmods))
     write("robots.txt", f"User-agent: *\nAllow: /\nSitemap: {BASE_URL}/sitemap.xml\n")

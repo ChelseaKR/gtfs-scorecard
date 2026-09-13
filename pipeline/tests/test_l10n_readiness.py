@@ -53,7 +53,12 @@ HARDCODED_STRING_BASELINE = {
     # plain-language explanation, and fine print adds enough quote pairs to
     # expose four more matches in this deliberately simple whole-file heuristic,
     # so record 392 while the presenter copy remains pseudolocalizable.
-    "app.js": 392,
+    # Raised 392 -> 395: #/programs and #/program/<id> now say what their static
+    # twins at /program/ and /program/<id>/ already said about the paid tier
+    # (the two shared promises plus one pointer sentence per view), which until
+    # now the app named nowhere. A deliberate increase, to move into the catalog
+    # with the rest of the tier copy when the tier joins it.
+    "app.js": 395,
     # Program report bundle pages (docs/program-plan.md): unlinked and
     # noindex, so not yet in the locale catalog. Their status and form copy
     # is recorded here for the same ratchet as landing-scorecard.js.
