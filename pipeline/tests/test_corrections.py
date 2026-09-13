@@ -319,10 +319,19 @@ def test_a_withdrawal_that_does_not_reach_what_is_published_is_a_problem(
     grade" check passed; the id was covered, so the stranded-grade check skipped
     it. Nothing in the file's own gate could say that a named agency was still
     publicly graded F over an archive with 0 stops and 0 trips.
+
+    The re-dating half of that is now closed upstream: #432 made `withdraws()`
+    match on the feed hash alone, so the same bytes under a later date are still
+    withdrawn. What this gate still has to catch is the other half, which no
+    hash match can reach — a covered id publishing a grade over a DIFFERENT
+    archive the entry never described. The id being named in corrections.yaml
+    is what makes it invisible: it is excluded from the stranded-grade scan.
     """
     agency_dir = tmp_path / "santa-clarita-transit"
     agency_dir.mkdir()
-    (agency_dir / "latest.json").write_text(json.dumps(_artifact(date="2026-08-10")))
+    (agency_dir / "latest.json").write_text(
+        json.dumps(_artifact(date="2026-08-10", sha="f" * 64))
+    )
 
     problems = correction_problems(parse_corrections(ONE_ENTRY), tmp_path)
 
