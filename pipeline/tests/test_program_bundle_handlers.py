@@ -18,6 +18,7 @@ accidentally describe itself as `bundle_100` on one of the two reads."""
 from __future__ import annotations
 
 import datetime as dt
+import decimal
 import hashlib
 import hmac
 import importlib.util
@@ -76,12 +77,21 @@ class _ConditionExpression:
     condition deleted. This reads the real string instead.
 
     The grammar is exactly what these handlers write and no more:
-    ``attribute_exists(a)``, ``attribute_not_exists(a)``, ``a = :v``,
-    ``a <> :v``, ``AND``, ``OR`` and parentheses, with ``#n`` names resolved
-    through ExpressionAttributeNames. ``item`` is None when the row does not
-    exist. A comparison against an absent attribute is false, as DynamoDB
-    evaluates it -- which is why a `session#` row written before
-    `dispatch_state` existed refuses a retry rather than allowing one.
+    ``attribute_exists(a)``, ``attribute_not_exists(a)``,
+    ``begins_with(a, :v)``, ``a = :v``, ``a <> :v``, ``AND``, ``OR`` and
+    parentheses, with ``#n`` names resolved through ExpressionAttributeNames.
+    ``item`` is None when the row does not exist. A comparison against an
+    absent attribute is false, as DynamoDB evaluates it -- which is why a
+    `session#` row written before `dispatched` existed refuses a retry rather
+    than allowing one.
+
+    ``begins_with`` is here for the other side of this class. The same
+    expression language is also how ``_purchase_rows`` asks DynamoDB for the
+    two prefixes a refresh's entitlement is read from, and a fake whose
+    ``scan`` ignored ``FilterExpression`` made that request parameter
+    unexaminable: narrowing the filter to ``session#`` alone -- which in
+    production stops a refresh ever finding a bundle recorded only by the
+    webhook -- left every test green.
     """
 
     def __init__(
@@ -91,7 +101,7 @@ class _ConditionExpression:
         values: dict[str, Any] | None,
         names: dict[str, str] | None,
     ) -> None:
-        self.tokens = expression.replace("(", " ( ").replace(")", " ) ").split()
+        self.tokens = expression.replace("(", " ( ").replace(")", " ) ").replace(",", " ").split()
         self.at = 0
         self.item = item
         self.values = values or {}
@@ -138,6 +148,16 @@ class _ConditionExpression:
             assert self._next() == ")"
             present = self.item is not None and attribute in self.item
             return present if token == "attribute_exists" else not present
+        if token == "begins_with":
+            assert self._next() == "("
+            raw = self._next()
+            attribute = self.names.get(raw, raw)
+            placeholder = self._next()
+            assert self._next() == ")"
+            assert placeholder in self.values, f"no value for {placeholder}"
+            if self.item is None or attribute not in self.item:
+                return False
+            return str(self.item[attribute]).startswith(str(self.values[placeholder]))
         attribute = self.names.get(token, token)
         operator = self._next()
         placeholder = self._next()
@@ -154,12 +174,38 @@ class _ConditionExpression:
 
 class FakeTable:
     """Enough of a DynamoDB Table for these handlers: a dict with the
-    conditional-put and update shapes they use."""
+    conditional-put, update and scan shapes they use.
 
-    def __init__(self, items: dict[str, dict[str, Any]] | None = None, key: str = "bundle_id"):
+    ``scan`` is deliberately not a dict dump. Two things about a real scan
+    decide whether a paid order is seen at all, and a fake that returns
+    everything in one unfiltered list makes both unexaminable:
+
+    ``page_size``
+        DynamoDB answers a scan with at most 1 MB and a ``LastEvaluatedKey``,
+        and every caller here has its own loop to follow it. A caller that
+        reads only the first page sees a prefix of the table and cannot tell
+        that it did -- the reconciler would stop reporting undelivered orders
+        past the first page, the entitlement read would refuse a real buyer,
+        and the weekly refresh would stop refreshing paying subscribers. Set
+        it to make the fake page.
+
+    ``FilterExpression``
+        Evaluated, not ignored. It is how ``_purchase_rows`` asks for the two
+        prefixes a refresh inherits its cap from, and a fake that dropped it
+        answered a narrowed filter with the whole table.
+    """
+
+    def __init__(
+        self,
+        items: dict[str, dict[str, Any]] | None = None,
+        key: str = "bundle_id",
+        page_size: int | None = None,
+    ):
         self.key = key
         self.items: dict[str, dict[str, Any]] = dict(items or {})
         self.updates: list[dict[str, Any]] = []
+        self.page_size = page_size
+        self.scans: list[dict[str, Any]] = []
 
     def _allows(self, key_value: str, kwargs: dict[str, Any]) -> bool:
         condition = kwargs.get("ConditionExpression")
@@ -196,8 +242,33 @@ class FakeTable:
             target, _, placeholder = clause.strip().partition(" = ")
             row[names.get(target, target)] = values[placeholder]
 
-    def scan(self, **_: Any) -> dict[str, Any]:
-        return {"Items": list(self.items.values())}
+    def scan(self, **kwargs: Any) -> dict[str, Any]:
+        self.scans.append(dict(kwargs))
+        keys = list(self.items)
+        start = kwargs.get("ExclusiveStartKey")
+        if start is not None:
+            keys = keys[keys.index(start[self.key]) + 1 :]
+        last: dict[str, Any] | None = None
+        if self.page_size is not None and len(keys) > self.page_size:
+            keys = keys[: self.page_size]
+            last = {self.key: keys[-1]}
+        # DynamoDB applies a filter AFTER reading the page, so a filtered
+        # scan can return an empty page and still have more to come. Filtering
+        # before paging here would hide that from every caller.
+        condition = kwargs.get("FilterExpression")
+        rows = [self.items[k] for k in keys]
+        if condition:
+            rows = [
+                row
+                for row in rows
+                if _ConditionExpression(
+                    condition,
+                    row,
+                    kwargs.get("ExpressionAttributeValues"),
+                    kwargs.get("ExpressionAttributeNames"),
+                ).evaluate()
+            ]
+        return {"Items": rows} if last is None else {"Items": rows, "LastEvaluatedKey": last}
 
 
 class ConditionalCheckFailedException(Exception):
@@ -2253,3 +2324,260 @@ def test_the_title_does_not_escalate_when_nothing_is_owed(
     title = reconcile_handler.issue_title(reconcile_handler.counts_by_kind(findings))
     assert title == "1 program order needs attention"
     assert "REFUND" not in title
+
+
+def test_a_breach_is_still_a_breach_in_the_type_the_table_returns(
+    tables: dict[str, FakeTable],
+) -> None:
+    """The fakes above hold whatever Python object they were handed. The real
+    table does not.
+
+    ``deliver_by_epoch`` is put as an ``int`` and every scan answers it as a
+    ``decimal.Decimal`` (boto3's resource layer; measured against 1.43.93).
+    Nothing in this file could see the difference, so a breach rule that
+    accepted only ``int`` and ``float`` passed every test here while
+    reporting, in production, that no order had ever missed the promise.
+    Both types are put through the reconciler, and the answer has to match.
+    """
+    told_epoch = _promised(-1)
+    for stored in (told_epoch, decimal.Decimal(told_epoch)):
+        tables["BUNDLES_TABLE"].items.clear()
+        tables["BUNDLES_TABLE"].items["a" * 32] = _capability(
+            "a" * 32, hours=72, deliver_by_epoch=stored
+        )
+        findings = _reconcile(tables, _ReconcileS3())["findings"]
+        assert [f["kind"] for f in findings] == ["deadline_breached"], stored
+        counts = reconcile_handler.counts_by_kind(findings)
+        assert reconcile_handler.issue_title(counts).startswith("REFUND DUE"), stored
+
+
+def test_the_date_the_row_stores_is_the_date_the_buyer_was_told(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """One promise, written once and read back once, with the storage type
+    and the timezone both in the path.
+
+    The setup route tells the buyer a date and stores an epoch. The refund
+    report reads that epoch back and prints a date to the person deciding
+    whether money is owed. Those two dates are the same promise and have to
+    be the same string, so this drives the write through the handler rather
+    than asserting against a hand-built row.
+    """
+    from scorecard_pipeline import deadline as dl
+
+    checkout = 1789401600  # Monday 14 September 2026, 09:00 in the promise's zone
+    _stripe(monkeypatch, _paid_session(created=checkout), price=PRICE_BUNDLE_25)
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", lambda inputs: None)
+
+    body = json.loads(setup_handler.handler(_setup_event(_form()))["body"])
+    row = tables["BUNDLES_TABLE"].items[body["bundle_id"]]
+    # The round trip the table performs on the way back out.
+    stored = decimal.Decimal(int(row["deliver_by_epoch"]))
+    read_back = dl.promised_day(stored)
+
+    assert read_back is not None, "the stored promise must be readable at all"
+    assert read_back.isoformat() == body["deliver_by"] == "2026-09-16"
+    assert dl.spoken_date(read_back) in body["promise"]
+
+
+def test_a_refresh_makes_no_dated_promise_so_it_cannot_breach_one(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """The two-business-day commitment is made at a purchase. A subscription's
+    monthly archive is a different promise, so the weekly refresh must write no
+    ``deliver_by_epoch`` -- a field it did write would make every subscriber a
+    refund liability on a date nobody quoted them.
+
+    Asserted on the row the refresh actually writes, not on ``bundle_row``'s
+    signature: the question is what reaches the table.
+    """
+    tables["SUBSCRIPTIONS_TABLE"].items["sub_a"] = _sub(id="sub_a")
+    monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", lambda inputs: None)
+    refresh_handler.refresh(
+        subscriptions=tables["SUBSCRIPTIONS_TABLE"], bundles=tables["BUNDLES_TABLE"]
+    )
+
+    rows = [r for k, r in tables["BUNDLES_TABLE"].items.items() if "#" not in k]
+    assert len(rows) == 1 and rows[0]["source"] == "refresh"
+    assert "deliver_by_epoch" not in rows[0]
+
+    # And the reconciler reads that absence the way it is meant: still an
+    # order it will report, never one that owes a refund.
+    rows[0]["created_at"] = _hours_ago(72)
+    findings = _reconcile(tables, _ReconcileS3())["findings"]
+    assert [f["kind"] for f in findings] == ["undelivered"]
+
+
+def test_one_payment_leaves_one_bundle_when_a_dispatch_fails_after_github_took_it(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """The ambiguous failure: the socket times out, so the Lambda raises, but
+    GitHub had already queued the run. The buyer retries and a second run
+    starts for an order that is already building.
+
+    What makes that safe is not the retry being clever -- it cannot know --
+    but every output of the two attempts being the same object: one capability
+    row, one archive key, one concurrency group, and one promised date. Then
+    the duplicate run overwrites its own bundle and the buyer's existing link
+    still points at it. Each of those four is asserted here, because each of
+    them is what would quietly stop being true.
+    """
+    from scorecard_pipeline.bundle import archive_key
+
+    attempts: list[dict[str, str]] = []
+
+    def timeout_then_succeed(inputs: dict[str, str]) -> None:
+        attempts.append(inputs)
+        if len(attempts) == 1:
+            # GitHub queued it; the answer never came back.
+            raise common.UpstreamError("POST .../dispatches failed: timed out")
+
+    _stripe(monkeypatch, _paid_session(created=1789401600), price=PRICE_BUNDLE_25)
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", timeout_then_succeed)
+
+    first = json.loads(setup_handler.handler(_setup_event(_form()))["body"])
+    second = json.loads(setup_handler.handler(_setup_event(_form()))["body"])
+    assert second["bundle_id"] == first["bundle_id"]
+
+    ids = {a["bundle_id"] for a in attempts}
+    assert len(attempts) == 2 and ids == {first["bundle_id"]}
+    # The run group and the S3 key are both derived from the bundle id, so
+    # two runs of one order cannot collide with anything but each other.
+    assert len({a["dispatch_key"] for a in attempts}) == 1
+    assert len({archive_key(a["bundle_id"]) for a in attempts}) == 1
+    # And the promise did not move: it is anchored to Stripe's `created`,
+    # which the retry did not change. A deadline that slipped on every retry
+    # would be a refund liability the buyer was never told about.
+    assert len({a["promised_by"] for a in attempts}) == 1
+
+    rows = tables["BUNDLES_TABLE"].items
+    capabilities = [k for k in rows if "#" not in k]
+    claims = [k for k in rows if k.startswith("session#")]
+    assert capabilities == [first["bundle_id"]], "one payment, one download link"
+    assert claims == ["session#cs_test_example"], "one payment, one claim"
+    assert rows["session#cs_test_example"]["dispatched"] is True
+
+
+def test_an_entitlement_row_with_nobody_s_address_on_it_grants_nothing(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """A purchase row carrying no email cannot be attributed to anyone.
+
+    Both writers can produce one: the webhook records
+    ``customer_details.email`` and writes ``""`` when Stripe collected none,
+    and a `session#` claim written before that field existed has no ``email``
+    key at all. The address check runs before the plan check for that reason
+    -- an unattributable purchase must not reach the settle-against-Stripe
+    path either, because `checkout_plan` answers what a session bought and
+    never who bought it, so settling one would hand its cap to whoever asked.
+    """
+    session = _paid_session(mode="subscription", subscription="sub_example")
+    paths = _stripe(monkeypatch, session, price=PRICE_REFRESH_MO)
+    dispatched: list[dict[str, str]] = []
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
+    _no_claims_allowed(monkeypatch)
+    rows = tables["BUNDLES_TABLE"].items
+    # Stripe collected no address at this checkout, and the webhook could not
+    # read what it bought. Reached, it would cost a Stripe call and could
+    # grant a cap; the address check runs first, so it costs neither.
+    rows["checkout#cs_no_email"] = {
+        "bundle_id": "checkout#cs_no_email",
+        "plan": "unverified",
+        "email": "",
+        "seen_at": "2026-01-05T00:00:00+00:00",
+    }
+    # A claim written before `_session_row` carried an address at all.
+    rows["session#cs_legacy"] = {
+        "bundle_id": "session#cs_legacy",
+        "consumed_by": "e" * 32,
+        "plan": "bundle_100",
+        "dispatched": True,
+    }
+
+    resp = setup_handler.handler(_setup_event(_form()))
+    assert resp["statusCode"] == 403
+    assert "renews a bundle you have already bought" in json.loads(resp["body"])["error"]
+    assert not any("cs_no_email" in p or "cs_legacy" in p for p in paths), (
+        "an unattributable purchase row must not be settled against Stripe"
+    )
+    assert dispatched == []
+
+
+def test_an_agency_id_the_form_rejects_is_named_and_consumes_nothing(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """The other half of "an id is never silently dropped".
+
+    A bundle names every requested id in its manifest, but an id that fails
+    the character rule never reaches a manifest at all: the whole request is
+    refused. That is right -- guessing what a mistyped id meant would be
+    worse -- and it only works if the buyer is told *which* id and can send
+    the same checkout again. So: the offending id is in the message, nothing
+    is built, and above all the checkout is not claimed, or the correction
+    would be answered "this checkout already produced a bundle".
+    """
+    dispatched: list[dict[str, str]] = []
+    _stripe(monkeypatch, price=PRICE_BUNDLE_25)
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
+
+    bad = setup_handler.handler(_setup_event(_form(agency_ids="unitrans, Yolo Bus!,sactrans")))
+    assert bad["statusCode"] == 400
+    error = json.loads(bad["body"])["error"]
+    assert "yolo bus!" in error, error
+    assert "not a scorecard id" in error
+    assert dispatched == []
+    assert tables["BUNDLES_TABLE"].items == {}
+
+    # The same checkout, corrected, still works.
+    fixed = setup_handler.handler(_setup_event(_form(agency_ids="unitrans,yolobus,sactrans")))
+    assert fixed["statusCode"] == 200, fixed["body"]
+    assert dispatched[0]["agency_ids"] == "unitrans,yolobus,sactrans"
+
+
+def test_every_table_walk_reads_past_the_first_page(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """DynamoDB answers a scan with one page and a ``LastEvaluatedKey``, and
+    three separate loops here follow it. A caller that read only the first
+    page would see a prefix of the table and have no way to tell -- the
+    reconciler would stop reporting undelivered orders, a refresh's
+    entitlement read would refuse a real buyer, and the weekly run would stop
+    refreshing paying subscribers. All three failures are silent and all
+    three cost money, so the fake pages at one row and each loop is made to
+    walk it.
+    """
+    bundles = tables["BUNDLES_TABLE"]
+    subs = tables["SUBSCRIPTIONS_TABLE"]
+    bundles.page_size = 1
+    subs.page_size = 1
+
+    # 1. the reconciler: the order that needs reporting is on the last page.
+    bundles.items["a" * 32] = _capability("a" * 32, hours=1)  # inside the window
+    bundles.items["b" * 32] = _capability("b" * 32, hours=72)  # undelivered
+    result = _reconcile(tables, _ReconcileS3())
+    assert result["scanned"] == 2
+    assert [f["key"] for f in result["findings"]] == ["b" * 32]
+    assert len(bundles.scans) > 1, "the reconciler asked for one page and stopped"
+
+    # 2. the entitlement read: the bundle being renewed is on the last page.
+    bundles.items.clear()
+    bundles.items["checkout#cs_noise"] = {
+        "bundle_id": "checkout#cs_noise",
+        "plan": "bundle_25",
+        "email": "someone.else@example.org",
+        "seen_at": "2026-01-05T00:00:00+00:00",
+    }
+    _bought_earlier(tables, "bundle_100", session_id="cs_test_older")
+    dispatched = _refresh_setup(monkeypatch)
+    hundred = ",".join(f"agency-{n}" for n in range(100))
+    resp = setup_handler.handler(_setup_event(_form(agency_ids=hundred)))
+    assert resp["statusCode"] == 200, resp["body"]
+    assert len(dispatched[0]["agency_ids"].split(",")) == 100
+
+    # 3. the weekly refresh: the due subscription is on the last page.
+    subs.items.clear()
+    subs.items["sub_recent"] = _sub(id="sub_recent", last_refresh=_hours_ago(1))
+    subs.items["sub_due"] = _sub(id="sub_due")
+    monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", lambda inputs: None)
+    counts = refresh_handler.refresh(subscriptions=subs, bundles=bundles)
+    assert counts["scanned"] == 2 and counts["dispatched"] == 1

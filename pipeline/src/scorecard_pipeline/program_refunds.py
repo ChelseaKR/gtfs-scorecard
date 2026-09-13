@@ -57,19 +57,25 @@ def breached_orders(
             promised, now=current, archive_present=archive_present(bundle_id)
         ):
             continue
-        # is_breached only returns True for a readable number, so this cannot
-        # be None; narrowed here rather than asserted, because a broken
-        # assumption should print a row without a date, not crash a report
-        # somebody is running because money may be owed.
+        # is_breached only returns True for a readable number, so neither of
+        # these can be None; narrowed here rather than asserted, because a
+        # broken assumption should print a row without a date, not crash a
+        # report somebody is running because money may be owed.
         late = deadline.days_late(promised, now=current) or 0.0
-        promised_day = dt.datetime.fromtimestamp(float(promised or 0), tz=dt.UTC).date()
+        # In the promise's own zone, not UTC. The stored epoch is the last
+        # second of the promised day in America/Los_Angeles, so reading it
+        # back in UTC names the following morning and this report would state
+        # a date one day later than the buyer's own confirmation and delivery
+        # email -- on the one document whose job is to settle whether that
+        # promise was kept.
+        day = deadline.promised_day(promised)
         found.append(
             {
                 "bundle_id": bundle_id,
                 "session_id": str(row.get("session_id") or ""),
                 "deliver_to": str(row.get("deliver_to") or ""),
                 "program_name": str(row.get("program_name") or ""),
-                "promised_by": promised_day.isoformat(),
+                "promised_by": day.isoformat() if day else "",
                 "days_late": round(late, 1),
                 "archive_key": archive_key(bundle_id),
             }

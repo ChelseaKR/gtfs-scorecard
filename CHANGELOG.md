@@ -29,6 +29,27 @@ the declared public surface).
 
 ### Fixed
 
+- **The delivery-breach rule could not read the type DynamoDB returns, so no
+  paid order has ever been reported as owing a refund (2026-09-13).**
+  `/bundle/` promises delivery within two business days "or the purchase is
+  refunded". `common.bundle_row` writes `deliver_by_epoch` as an `int`; boto3's
+  DynamoDB resource stores that as `{"N": "..."}` and hands it back as a
+  `decimal.Decimal`, for which `isinstance(value, int | float)` is `False`.
+  `deadline.is_breached` and `deadline.days_late` were written exactly that
+  way, so every real row read as one that had made no promise:
+  `deadline_breached` could never fire, the reconciler's issue title could
+  never escalate to `REFUND DUE`, and `scorecard program-refunds` printed "no
+  orders past the promise" however many there were. Every test passed, because
+  the table fakes hand back the Python object they were given. Both readers now
+  go through one `deadline.promised_epoch`, which takes any shape the field can
+  arrive as and refuses `bool` (an `int`, and `True` would breach on sight).
+- **The refund report named a day the buyer was never told (2026-09-13).**
+  `deadline_epoch` is the last second of the promised day in
+  America/Los_Angeles, which is the following morning in UTC, and
+  `program_refunds` read it back with `.date()` in UTC — so an order the buyer
+  was told was due Wednesday 16 September printed as "promised by 2026-09-17"
+  on the one document that settles whether that promise was kept. It now reads
+  back through `deadline.promised_day`, in the promise's own zone.
 - **The documented baseline example pinned a floating major, and it had `main`
   red since it merged (2026-09-09).** `docs/ci-action.md`'s "Comparing against
   a baseline" snippet read `uses: ChelseaKR/gtfs-scorecard@v1`. That section
@@ -109,6 +130,36 @@ the declared public surface).
 
 ### Added
 
+- **Coverage for the delivery pipeline behind `/bundle/`, measured rather than
+  asserted (2026-09-13).** The purchase page is well covered; the machinery
+  that has to turn a payment into an archive was not covered to the same
+  standard, and that is where the money goes. Each behaviour was measured by
+  sabotaging the property and running the suite, which found four things no
+  test could see: the breach rule's blindness to DynamoDB's number type and the
+  refund report's off-by-a-day date (both in Fixed above); an entitlement row
+  carrying nobody's email address, which would have granted its cap to whoever
+  asked and cost a Stripe call to settle; and three `scan` loops — the
+  reconciler's, the entitlement read's and the weekly refresh's — none of which
+  had ever been made to follow a `LastEvaluatedKey`, so a bundles table past one
+  DynamoDB page would have silently stopped reporting undelivered orders,
+  refused real buyers, and stopped refreshing paying subscribers.
+  New tests also pin the ambiguous dispatch failure (a socket that timed out
+  after GitHub queued the run: one capability row, one claim, one archive key,
+  one run group, one unmoved promise), that a subscription refresh writes no
+  `deliver_by_epoch` and so cannot breach a date nobody quoted it, that an
+  agency id refused by the character rule is named to the buyer and leaves the
+  checkout unclaimed so the same one can be corrected and resent, and the two
+  legs that carry the promised date into the buyer's delivery email — the
+  workflow step and the email body — neither of which had been checked at all.
+- **The table fake now evaluates what it is asked, not just what it holds
+  (2026-09-13).** `FakeTable.scan` ignored `FilterExpression` and returned every
+  row in one page, so the DynamoDB-side filter in
+  `setup_handler._purchase_rows` was unexaminable: narrowing it to `session#`
+  alone — which in production stops a refresh ever finding a bundle recorded
+  only by the webhook, the exact case the entitlement rule exists to serve —
+  left all 169 tests green. The fake now evaluates the filter (the condition
+  parser grew `begins_with`) and can page, and that one repair turned nine
+  existing tests into checks of the filter they had always been about.
 - **A contract for `/bundle/plan.json`, and checks that read what the page
   actually renders (2026-09-12).** `/bundle/` started taking real money the day
   the payment rail was turned on, and the only gate with new exposure was the

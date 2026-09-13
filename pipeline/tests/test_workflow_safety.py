@@ -1057,6 +1057,31 @@ def test_nothing_the_run_prints_carries_the_download_capability() -> None:
                 )
 
 
+def test_the_fulfilment_workflow_carries_the_promise_into_the_delivery_email() -> None:
+    """The refund promise is computed once, in the Lambda, and travels as an
+    input. This is the leg nothing else can check.
+
+    `setup_handler` puts the spoken date in `promised_by`, and a unit test
+    holds `delivery_email` to printing it -- but between them sits a workflow
+    step, and a dropped `env:` line or a dropped flag there would silently
+    ship every delivery email without the date it was due. The buyer would
+    then be the only party to the promise who cannot see it, on a page that
+    offers a refund for missing it. Nothing fails; the line just stops
+    appearing.
+    """
+    workflow = _workflow("report-bundle.yml")
+    assert "promised_by:" in workflow, "the workflow must accept the promised date"
+
+    email_at = workflow.index("Email the download link")
+    step = workflow[email_at : workflow.index("      - name: Say when delivery is off")]
+    assert "PROMISED_BY: ${{ inputs.promised_by }}" in step, (
+        "the promised date must reach the email step's environment"
+    )
+    assert '--promised-by "$PROMISED_BY"' in step, (
+        "the promised date must reach the email itself, not just the step"
+    )
+
+
 def test_the_watchdog_watches_the_workflow_that_delivers_paid_orders() -> None:
     """report-bundle.yml fulfils a purchase, and nothing else notices it fail.
 
