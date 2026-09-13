@@ -348,10 +348,16 @@ def test_the_a11y_gate_opens_every_page_that_names_the_paid_tier_in_its_content(
     """Derived from the rendered pages, because a list is how one got missed.
 
     /program/all/ rendered the same offer block as /program/california/ and only
-    the second was scanned — and /program/all/ is the 1.31 MB one, the page most
-    likely to behave differently under an accessibility scan. Every page that
-    states the offer in its own content is a purchase surface for this purpose,
-    whether or not it renders a plan grid.
+    the second was scanned. Every page that states the offer in its own content
+    is a purchase surface for this purpose, whether or not it renders a plan
+    grid — a11y.yml's own derived set reads `data-plan-summary`, which the
+    rollup pages do not carry.
+
+    A page that genuinely cannot be scanned may sit in `_unscannable` in the
+    same config, and must carry a reason and a review date. That is deliberately
+    not a free pass: a gap with a written reason in the file the gate reads is
+    worth more than a silently shorter list, and an entry naming a page that no
+    longer states the offer fails below rather than lingering.
     """
     config = json.loads((_REPO / ".pa11yci.json").read_text())
     scanned = {
@@ -372,7 +378,21 @@ def test_the_a11y_gate_opens_every_page_that_names_the_paid_tier_in_its_content(
             offer_pages.add("/" + relative.as_posix().removesuffix("index.html"))
     assert offer_pages, "no generated page names the paid tier; this would prove nothing"
 
-    missing = offer_pages - scanned
+    unscannable = config.get("_unscannable", {})
+    for served, waiver in unscannable.items():
+        assert served in offer_pages or served in scanned, (
+            f"{served} is recorded as unscannable but is neither scanned nor an "
+            "offer page; delete the entry rather than leaving it to rot"
+        )
+        assert served not in scanned, f"{served} is both scanned and waived"
+        assert len(str(waiver.get("reason", ""))) > 120, (
+            f"{served}: an exemption from the a11y gate needs a reason that says "
+            "what was measured, not a label"
+        )
+        assert re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(waiver.get("last_reviewed", ""))), served
+        assert waiver.get("review"), f"{served}: say what would let this be scanned again"
+
+    missing = offer_pages - scanned - set(unscannable)
     assert not missing, (
         f"these pages state the offer but the axe gate never opens them: {sorted(missing)}"
     )
