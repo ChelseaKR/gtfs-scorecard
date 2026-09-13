@@ -412,7 +412,31 @@ jobs:
             lhci-*.log
           if-no-files-found: warn
           retention-days: 14
-      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+      # RELIABILITY: this upload is the last thing between a finished render and
+      # a published site, and it fails on the platform rather than on anything
+      # in this repository. Run 34245244731 (2026-09-08, an Intraday refresh
+      # deploy) uploaded all 204,351,632 bytes and then died on
+      # `Failed to FinalizeArtifact: ... (403) Forbidden`, which took the deploy
+      # and that refresh cycle's publish with it: the data reached S3 and the
+      # site kept serving the previous generation until the next cycle three
+      # hours later.
+      #
+      # One retry, and only one. The first attempt tolerates its own failure so
+      # the second can run; the second carries no `continue-on-error`, so two
+      # failures still fail the job — a transient 403 is worth a second attempt,
+      # a real one is not worth hiding. Nothing is lost by retrying a finalize
+      # that never finished: the artifact name is only claimed on a successful
+      # finalize, and a second conflict fails loudly rather than deploying
+      # something unnamed.
+      - name: Upload the Pages artifact
+        id: upload
+        continue-on-error: true
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: _site
+      - name: Upload the Pages artifact (second attempt)
+        if: ${{ steps.upload.outcome == 'failure' }}
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: _site
 
@@ -428,8 +452,24 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # RELIABILITY: the action's own bound is 10 minutes, and when it expires
+      # the action does not just stop waiting — it CANCELS the deployment it
+      # started. Run 34461157937 (2026-09-10, an Intraday refresh deploy) spent
+      # all 600 seconds reading `Current status: updating_pages` from a healthy
+      # backend and then printed `Timeout reached, aborting!` and
+      # `Canceled deployment with ID ea066b0c…`, so a slow publish became no
+      # publish and the site served the previous generation for another cycle.
+      #
+      # 20 minutes is a bound on GitHub's Pages backend, not on this repo's
+      # work: the artifact is already uploaded by the time this step starts,
+      # and the job's own 30-minute `timeout-minutes` still contains it. A
+      # retry is deliberately not added here — a second `deploy-pages` after a
+      # cancel starts the same publish again against the same slow backend,
+      # where waiting longer is what the evidence says was needed.
       - uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
         id: deployment
+        with:
+          timeout: "1200000"
 
   production-smoke:
     needs: [lighthouse, deploy]
