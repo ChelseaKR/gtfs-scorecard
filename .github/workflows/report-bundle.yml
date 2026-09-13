@@ -228,8 +228,24 @@ jobs:
           aws s3 cp bundle.zip "s3://${ARTIFACTS_BUCKET}/program-bundles/${BUNDLE_ID}/bundle.zip" \
             --content-type application/zip --only-show-errors
 
+      # Once the step above has run, the archive is in the bucket and the
+      # buyer's only route to it is this email.
+      #
+      # That is why the two variables the email needs are checked *inside* this
+      # step rather than in its `if:`. Gated there, a blank BUNDLE_API_BASE or
+      # SES_FROM skipped the send, and the run still ended green with the
+      # archive sitting in S3 -- which is precisely the evidence the daily
+      # reconciler reads as a delivered order (reconcile_handler._capability_
+      # finding asks S3 whether the object exists, and nothing anywhere asks
+      # whether the mail was sent). One deleted or renamed repository variable
+      # would therefore have stopped delivery for every paid order, with a
+      # green run, no watchdog alarm, no reconciler finding, and a buyer who
+      # had been told on the setup form that the build had started.
+      #
+      # The failure is the alarm: watchdog.yml reads this workflow's conclusion
+      # every six hours, and the step below says a paid order did not complete.
       - name: Email the download link
-        if: ${{ vars.ARTIFACTS_BUCKET != '' && vars.BUNDLE_API_BASE != '' && vars.SES_FROM != '' }}
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         env:
           BUNDLE_API_BASE: ${{ vars.BUNDLE_API_BASE }}
           BUNDLE_ID: ${{ inputs.bundle_id }}
@@ -237,6 +253,10 @@ jobs:
           SES_FROM: ${{ vars.SES_FROM }}
         run: |
           set -euo pipefail
+          if [ -z "${BUNDLE_API_BASE}" ] || [ -z "${SES_FROM}" ]; then
+            echo "::error::The archive was uploaded but the delivery route is not configured (BUNDLE_API_BASE and SES_FROM must both be set), so the download link cannot be sent. Failing this run: an uploaded archive with no email reads as a delivered order everywhere else in this system."
+            exit 1
+          fi
           expires="$(date -u -d '+30 days' +%Y-%m-%d)"
           uv run --with boto3 python -m scorecard_pipeline.cli bundle-email \
             --request request.json --manifest manifest.json \
@@ -244,8 +264,11 @@ jobs:
             --expires-on "$expires" --promised-by "$PROMISED_BY" \
             --out email.txt --send --from "$SES_FROM"
 
+      # Only the no-bucket case now. A bucket with no delivery route is not a
+      # degraded mode, it is an undelivered paid order, and the step above
+      # fails on it instead of writing a note nobody reads.
       - name: Say when delivery is off
-        if: ${{ vars.ARTIFACTS_BUCKET == '' || vars.BUNDLE_API_BASE == '' || vars.SES_FROM == '' }}
+        if: ${{ vars.ARTIFACTS_BUCKET == '' }}
         run: |
           {
             echo
