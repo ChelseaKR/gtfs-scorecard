@@ -87,6 +87,7 @@ from .pages_tools import (
     _render_query_page,
     _render_tools_page,
 )
+from .rollups import csv_column_headers
 from .rule_links import (
     BEST_PRACTICE,
     REALTIME_REFERENCE,
@@ -5054,6 +5055,107 @@ def _render_program_index(rollups: list[dict[str, Any]]) -> str:
     )
 
 
+_ISO_DATE_RE = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+
+def _rollup_content_date(rollup: dict[str, Any]) -> str:
+    """The most recent member snapshot in a rollup, or "" when there is none.
+
+    This is the rollup's ``dateModified`` and its sitemap ``<lastmod>``, and it
+    is deliberately **not** the payload's ``generated_at``. Every deploy runs
+    ``scorecard rollups`` before rendering, so ``generated_at`` is the build
+    clock: publishing it would tell a crawler that all 68 program pages changed
+    every time the site was rebuilt, which is the same untruth the sitemap's
+    own comment gives as the reason hand-authored pages carry no date at all.
+
+    A member's ``snapshot_date`` is when that agency's feed was actually
+    checked. The newest one is the freshest thing this page reports, it moves
+    only when the underlying data does, and it is what the agency pages already
+    publish as their own ``dateModified`` -- so the same date means the same
+    thing across the site. Two builds of one artifact set produce one answer,
+    which is also what keeps the committed sitemap from churning.
+
+    Returns "" when no member carries a parseable date; callers then omit the
+    field rather than substituting today's.
+    """
+    dates = [
+        member.get("snapshot_date")
+        for member in rollup.get("members", [])
+        if isinstance(member, dict)
+    ]
+    valid = [
+        value for value in dates if isinstance(value, str) and _ISO_DATE_RE.fullmatch(value.strip())
+    ]
+    return max(valid).strip() if valid else ""
+
+
+def _rollup_dataset_jsonld(
+    rollup: dict[str, Any], description: str, canonical: str
+) -> dict[str, Any]:
+    """The rollup as a schema.org Dataset, beside its CollectionPage node.
+
+    A rollup page is two things at once and says so: a listing a person reads,
+    and a published dataset a machine can take away. The JSON and CSV named
+    here are the files ``scripts/assemble_public_artifacts.sh`` already copies
+    across the deployment boundary, so this advertises nothing the site does
+    not ship -- and ``check_site_seo.py`` resolves every same-origin
+    ``contentUrl`` against the assembled tree, so a distribution that stopped
+    being published fails the build rather than 404ing for a reader.
+
+    Three things are deliberately absent:
+
+    * **No aggregate values.** ``average_score`` is published on the page only
+      when ``_rollup_guarded_summary`` allows it, and a Dataset node is exactly
+      the place where a withheld number gets restated as a confident one. The
+      variables below are the CSV's own column names -- what is measured, never
+      a measurement -- so this node has no way to publish a figure the page
+      withholds.
+    * **No ``spatialCoverage``.** A country rollup states in its own words that
+      it measures reviewed feed records and is not a claim to cover that
+      country; a ``Country`` place here would contradict the sentence above it.
+    * **No ``about`` member list.** The members are named in the page's own
+      markup and each one's ``/agency/<id>/`` page carries its own Dataset with
+      ``about`` naming that agency. Restating 2,182 organisations inside
+      /program/all/ would be the same claim at ten times the bytes.
+    """
+    rid = str(rollup["rollup"]["id"])
+    rname = str(rollup["rollup"]["name"])
+    modified = _rollup_content_date(rollup)
+    node: dict[str, Any] = {
+        "@context": "https://schema.org",
+        "@type": "Dataset",
+        "@id": f"{canonical}#dataset",
+        "name": f"{rname}: GTFS data quality rollup",
+        "description": description,
+        "url": canonical,
+        "identifier": {
+            "@type": "PropertyValue",
+            "propertyID": "GTFS Scorecard program rollup",
+            "value": rid,
+        },
+        "license": "https://creativecommons.org/licenses/by/4.0/",
+        "includedInDataCatalog": {"@type": "DataCatalog", "url": BASE_URL},
+        "creator": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
+        "variableMeasured": list(csv_column_headers()),
+        "distribution": [
+            {
+                "@type": "DataDownload",
+                "encodingFormat": "application/json",
+                "contentUrl": f"{BASE_URL}/data/artifacts/rollups/{rid}.json",
+            },
+            {
+                "@type": "DataDownload",
+                "encodingFormat": "text/csv",
+                "contentUrl": f"{BASE_URL}/data/artifacts/rollups/{rid}.csv",
+            },
+        ],
+        "keywords": ["GTFS", "transit data quality", "program rollup", rname],
+    }
+    if modified:
+        node["dateModified"] = modified
+    return node
+
+
 def _render_rollup(rollup: dict[str, Any]) -> str:
     rid = rollup["rollup"]["id"]
     rname = rollup["rollup"]["name"]
@@ -5167,7 +5269,10 @@ def _render_rollup(rollup: dict[str, Any]) -> str:
         description=desc,
         canonical=canonical,
         body=body,
-        jsonld=_collection_page_jsonld(rname, desc, canonical),
+        jsonld=[
+            _collection_page_jsonld(rname, desc, canonical),
+            _rollup_dataset_jsonld(rollup, desc, canonical),
+        ],
     )
 
 
@@ -10673,13 +10778,30 @@ def _write_program_pages(art: Path, write: Callable[..., None]) -> None:
             continue
         payload = json.loads(payload_file.read_text())
         rendered.append(payload)
+        # A real <lastmod>, in the convention the sitemap comment already sets:
+        # generated pages pass a date they can source, hand-authored pages pass
+        # none. The rollups were the only generated family passing none, so a
+        # crawler had nothing to schedule 68 pages by. The date is the newest
+        # member snapshot, never the payload's generated_at -- every deploy
+        # rebuilds the rollups, so that field is the build clock and would
+        # restate "today" on 68 pages that did not change.
         write(
             f"program/{entry['id']}/index.html",
             _render_rollup(payload),
             f"{BASE_URL}/program/{entry['id']}/",
+            lastmod=_rollup_content_date(payload) or None,
         )
     if rendered:
-        write("program/index.html", _render_program_index(rendered), f"{BASE_URL}/program/")
+        # The index changes whenever any rollup it summarises does, so the
+        # newest member snapshot across them all is its own date -- read from the
+        # same payloads the rows are built from.
+        index_lastmod = max((_rollup_content_date(payload) for payload in rendered), default="")
+        write(
+            "program/index.html",
+            _render_program_index(rendered),
+            f"{BASE_URL}/program/",
+            lastmod=index_lastmod or None,
+        )
 
 
 def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md

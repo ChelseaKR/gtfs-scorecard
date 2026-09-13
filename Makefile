@@ -1,7 +1,7 @@
 # Convenience targets. CI runs the same commands directly (see .github/workflows);
 # these just give them stable names. `uv` runs inside the pipeline/ project.
 
-.PHONY: verify tiles tiles-geojsonl map-geometry render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav mutation mutation-results iac
+.PHONY: verify tiles tiles-geojsonl map-geometry render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav sync-bundle-offers mutation mutation-results iac
 
 # The merge-blocking gate: lint, format, types, tests, the AAA contrast check,
 # and the plain-language readability check. Mirrors .github/workflows/ci.yml.
@@ -76,6 +76,13 @@ render-constants:
 # tests/test_static_nav.py fails CI if a static page's nav drifts from it.
 sync-static-nav:
 	cd pipeline && uv run python -c "from scorecard_pipeline.render_site import sync_static_navs; print('synced:', [str(p) for p in sync_static_navs()])"
+
+# Regenerate /bundle/'s offers JSON-LD from web/bundle/plan.json, the single
+# source of every price. The served page stated no price at all until this
+# existed; tests/test_bundle_offers_markup.py fails CI when the block and the
+# plan disagree, so a price cannot change without the page changing with it.
+sync-bundle-offers:
+	cd pipeline && uv run python -c "from scorecard_pipeline.site_shell import sync_bundle_offers; print('synced:', [str(p) for p in sync_bundle_offers()])"
 
 # Rebuild the national all-routes vector tiles + PMTiles archive (web/tiles/).
 # Requires tippecanoe on PATH (brew install tippecanoe). NOT part of `verify` or

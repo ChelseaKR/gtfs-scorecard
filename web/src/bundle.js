@@ -6,16 +6,20 @@
  * deployed ahead of the payment rail therefore describes nothing it cannot
  * do, and turning the tier on is a data change, not a copy change.
  *
- * The same fetch builds the Offer structured data a search engine reads. The
- * <head> of the page carries the Service, breadcrumb, and FAQ nodes
- * statically, with no amount in them; every price a crawler sees is injected
- * here from the same plan the visible cards are built from. So the two can
- * never disagree, and a plan that says payments are off, or one that cannot
- * be read, leaves no offer standing.
+ * The Offer structured data is now served in the HTML, generated from this
+ * same plan.json by site_shell.sync_bundle_offers and gated against it, so a
+ * crawler that runs no scripts still reads what the page charges. This module
+ * keeps rewriting that one block from its own fetch: the element ids match, so
+ * the static block is replaced rather than duplicated, and a plan that says
+ * payments are off -- or one that cannot be read at all -- still leaves no
+ * offer standing on the page a person is looking at.
  */
 
 /** The Service node in the page head that the Offers attach to. */
 const SERVICE_ID = "https://gtfsscorecard.org/bundle/#service";
+/** Its page, named on the offers node too, so replacing the server-rendered
+ * block with this one does not drop a field the served markup carried. */
+const SERVICE_URL = "https://gtfsscorecard.org/bundle/";
 const OFFER_SCRIPT_ID = "plan-offers-jsonld";
 
 const grid = /** @type {HTMLElement | null} */ (document.getElementById("plan-grid"));
@@ -111,6 +115,7 @@ function publishOffers(plan, order) {
     "@context": "https://schema.org",
     "@type": "Service",
     "@id": SERVICE_ID,
+    url: SERVICE_URL,
     offers:
       nodes.length === 1
         ? nodes[0]
