@@ -16,7 +16,16 @@ debt explicitly here with a dated, visible `# noqa: C901` at each site
 pointing back to this file — rather than leaving `C90` out of `select`
 (which would let the audit's FAIL stand unchanged) or leaving CI red.
 
-**Last synced:** 2026-09-12, on merging `main` into #362. `_cmd_try` crossed
+**Last synced:** 2026-09-12, on publishing `/program/` as a static index of the
+program rollups. Two numbers fell and none rose: `render_site` 56 to 53, because
+the rollup loop and both its guards moved into `_write_program_pages` rather than
+the index being written inside the one function in this module already listed as
+debt; and `_render_brief` 16 to 14, because the two nested conditions behind its
+portfolio backlink became one `_portfolio_pointer` call, now shared with the
+agency page. `_render_agency` gained that line and stayed at 13 for the same
+reason. No row was added or removed, and the table still holds fourteen.
+
+**Synced earlier that day:** on merging `main` into #362. `_cmd_try` crossed
 the floor at 12 without either branch putting it there: `--batch` (#363) added
 its dispatch and `--history` (#362) added its recording block in the same
 week, and each was under the floor on its own. No row was added for it. Its
@@ -63,13 +72,13 @@ without discussion.
 
 | Function | File:line | Complexity | Note |
 |---|---|---|---|
-| `render_site` | `src/scorecard_pipeline/render_site.py:10395` | 56 | Top-level orchestrator calling every page renderer in sequence; the biggest single item here — candidate: split into `render_site` (thin driver) plus a registry of `(route, render_fn)` pairs. The 56th branch attaches the NTD reporter-coverage block only when the committed snapshot reconciles (#278), so a reporter count that does not add up is never written into `ntd.json`. |
+| `render_site` | `src/scorecard_pipeline/render_site.py:10685` | 53 | Top-level orchestrator calling every page renderer in sequence; the biggest single item here — candidate: split into `render_site` (thin driver) plus a registry of `(route, render_fn)` pairs. Down from 56 on 2026-09-12: the rollup loop and both its guards moved into `_write_program_pages`, so the page family that gained a `/program/` index did not add a branch here. |
 | `parse_agencies` | `src/scorecard_pipeline/agencies.py:171` | 36 | Config-parsing fan-out over many optional YAML fields; candidate: split per-field validators. |
 | `propose_agencies_with_dispositions` | `src/scorecard_pipeline/mobilitydb.py:666` | 32 | Mobility Database matching heuristics; candidate: extract match-scoring helper. Was tracked as `propose_agencies`, which is now a thin wrapper at `mobilitydb.py:909` with no suppression. |
 | `render_digest` | `src/scorecard_pipeline/alerts.py:550` | 17 | Digest section assembly; candidate: extract one function per digest section. |
-| `_render_brief` | `src/scorecard_pipeline/render_site.py:3070` | 16 | Template string assembly. |
 | `completeness` | `src/scorecard_pipeline/completeness.py:209` | 16 | Rider-experience field scoring; candidate: extract per-field scorers. The 16th branch is the guard that returns no category at all for an archive with no stops and no trips, so a rider-experience score is never published for a feed that described none. |
 | `parse_subscribers` | `src/scorecard_pipeline/notify.py:87` | 15 | Subscriber YAML parsing and validation; candidate: split per-field validators (same shape as `parse_agencies`). |
+| `_render_brief` | `src/scorecard_pipeline/render_site.py:3148` | 14 | Template string assembly. |
 | `parse_ridership_csv` | `src/scorecard_pipeline/ridership.py:58` | 14 | CSV column-mapping heuristics; candidate: extract per-column parsers. |
 | `_cmd_liveness` | `src/scorecard_pipeline/cli.py:3076` | 13 | CLI subcommand with several independent check branches; candidate: table-driven checks. |
 | `_render_agency` | `src/scorecard_pipeline/render_site.py:2652` | 13 | Template string assembly. Its suppression pointed at this file and had no row; added here. |
@@ -98,7 +107,7 @@ below still reading 54 against ruff's 55.
 
 Ratchet down opportunistically: when touching any function above for a
 feature/bugfix, refactor it under the threshold and delete its row rather
-than editing around it. `render_site` (56), `parse_agencies` (36) and
+than editing around it. `render_site` (53), `parse_agencies` (36) and
 `propose_agencies_with_dispositions` (32) are the highest-value targets given
 how far over the floor they sit. Re-run
 `ruff check --statistics` after each removal to confirm the count only goes

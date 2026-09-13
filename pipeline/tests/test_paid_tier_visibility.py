@@ -25,6 +25,8 @@ import re
 from pathlib import Path
 from typing import Any, cast
 
+import yaml
+
 from scorecard_pipeline.site_shell import (
     FOOTER_HTML,
     FOOTER_HTML_ES,
@@ -39,10 +41,76 @@ _GOLDENS = _REPO / "pipeline" / "tests" / "goldens"
 _BUNDLE_HREF = 'href="/bundle/"'
 # The sentence /support/, /bundle/, and ADR 0049 all use, verbatim.
 _INDEPENDENCE = "buys no influence over grades, methodology, or which agencies are listed"
+_FOOTER_TAG = '<footer class="site-footer">'
+# A page the crawler is told not to index is not an inbound route to anything.
+# Read off the page's own robots tag rather than a path list, so a page that
+# changes its mind is counted correctly on the same render.
+_NOINDEX_RE = re.compile(r'<meta name="robots"[^>]*noindex')
+_PROGRAM_HREF_RE = re.compile(r'href="/program/([a-z0-9-]+)/"')
 
 
 def _plan() -> dict[str, Any]:
     return cast(dict[str, Any], json.loads((_WEB / "bundle" / "plan.json").read_text()))
+
+
+def _configured_rollup_ids() -> set[str]:
+    """Every rollup slug rollups.yaml declares.
+
+    Derived, never listed here: a hand-maintained copy goes stale the next time
+    a rollup is added, and a gate reading a stale list is a gate that cannot
+    fail.
+    """
+    document = yaml.safe_load((_REPO / "rollups.yaml").read_text())
+    return {str(entry["id"]) for entry in (document or {}).get("rollups", [])}
+
+
+def _published_rollup_ids() -> set[str]:
+    """Every rollup the render actually wrote a page for, from the goldens."""
+    program = _GOLDENS / "program"
+    return {
+        child.name
+        for child in program.iterdir()
+        if child.is_dir() and (child / "index.html").is_file()
+    }
+
+
+def _program_links_from_indexable_pages() -> tuple[set[str], int]:
+    """Rollup slugs linked from a rendered page's own content, and pages swept.
+
+    Two rules decide what counts, and both are the difference between a gate and
+    a decoration:
+
+    * **Split at the shared footer.** Every page on the site carries
+      /program/all/ down there, so a sweep over whole documents would call every
+      rollup reachable forever on the strength of one footer link. Only the
+      content above the footer counts as a route. A page with no footer at all
+      must prove it is one of the retired-URL redirect stubs, which carry no
+      chrome; otherwise the split found nothing and the caller would be reading
+      a whole document while believing it read a body.
+    * **Skip noindex pages.** The call brief already links its state rollup and
+      is `noindex,follow`. Counting it would report the rollups reachable while
+      no indexable page named one, which is exactly the state measured on
+      2026-09-12.
+    """
+    linked: set[str] = set()
+    swept = 0
+    for path in sorted(_GOLDENS.rglob("*.html")):
+        relative = path.relative_to(_GOLDENS)
+        if relative.parts[0] == "report":
+            continue  # the board report is a document, not a page on this site
+        html = path.read_text()
+        if _NOINDEX_RE.search(html):
+            continue
+        head, separator, _footer = html.partition(_FOOTER_TAG)
+        if not separator:
+            assert 'http-equiv="refresh"' in html, (
+                f"{relative}: no shared footer and not a redirect stub, so the "
+                "split below would read the whole document as page content"
+            )
+            continue
+        swept += 1
+        linked.update(_PROGRAM_HREF_RE.findall(head))
+    return linked, swept
 
 
 # --- the tier is findable -------------------------------------------------
@@ -128,6 +196,128 @@ def test_the_program_audience_pages_reach_the_tier_above_the_footer() -> None:
     assert _BUNDLE_HREF in tools.partition('<footer class="site-footer">')[0]
 
 
+def test_every_published_program_rollup_is_reachable_from_an_indexable_page() -> None:
+    """The reach metric, and the one that read **zero** the day it was written.
+
+    Measured against the deployed site on 2026-09-12: 67 program rollups were in
+    the sitemap, and the only /program/ link any page emitted was
+    /program/all/, inside the shared footer. The other 66 had no inbound link
+    from any indexable page at all. The index of them existed only inside the
+    JavaScript app at /app/#/programs, which no crawler and no reader without
+    JavaScript can follow, and /program/ itself returned 404.
+
+    That is worth a gate precisely because presence was already solved: the
+    offer reached 6,177 of 6,355 rendered pages, on the one page family nothing
+    linked. A page in the sitemap that nothing links is a page a reader arrives
+    at by guessing a URL.
+
+    Both id sets are derived — one from rollups.yaml, one from what the render
+    wrote — and the sweep asserts it found pages before concluding anything from
+    them.
+    """
+    configured = _configured_rollup_ids()
+    assert configured, "rollups.yaml declares no rollups; this gate would pass vacuously"
+
+    published = _published_rollup_ids()
+    assert published, "no rollup pages were rendered; this gate would pass vacuously"
+    assert published <= configured, (
+        f"rollup pages were rendered for ids rollups.yaml does not declare: "
+        f"{sorted(published - configured)}"
+    )
+
+    linked, swept = _program_links_from_indexable_pages()
+    assert swept > 20, f"the page sweep collapsed at {swept} pages; it would prove nothing"
+
+    orphans = published - linked
+    assert not orphans, (
+        f"these rollups have no inbound link from any indexable page's own "
+        f"content: {sorted(orphans)}. The shared footer does not count — it "
+        "carries one rollup on every page and would make this gate unfailable."
+    )
+
+
+def test_the_program_index_is_itself_reachable_from_the_agency_directory() -> None:
+    """The index gives 66 rollups their only route, so it needs one of its own.
+
+    /agencies/ is the "Find an agency" nav stop and the obvious place to start
+    for someone who supports many of them. Its own wayfinding line offered four
+    other views of the same scorecards and did not mention the per-program one,
+    which is how a reader serving forty agencies was told about a map and never
+    about the page for their job.
+    """
+    head, separator, _footer = (
+        (_GOLDENS / "agencies" / "index.html").read_text().partition(_FOOTER_TAG)
+    )
+    assert separator, "no shared footer found; the split below proves nothing"
+    assert 'href="/program/"' in head, (
+        "/agencies/ does not offer the program view among its other views of "
+        "the same scorecards, so the rollup index is reachable only by guessing"
+    )
+
+
+def test_the_program_index_publishes_no_average_its_own_rollup_page_withholds() -> None:
+    """One guard, two surfaces, and no number the data does not support.
+
+    A rollup with no comparison cohort prints "average unavailable" on its own
+    page. The index lists the same rollups in one line each, which is exactly
+    the shape where a missing measurement gets rendered as a confident number:
+    a bare `average_score` read straight out of the artifact would have printed
+    one for every rollup whose page declines to. Both surfaces call
+    ``_rollup_guarded_summary``; this asserts they agree on the output.
+    """
+    index_html = (_GOLDENS / "program" / "index.html").read_text()
+    rows = re.findall(r'<li class="agency-card">.*?</li>', index_html, re.S)
+    assert rows, "the program index rendered no rows; this test would prove nothing"
+
+    published = _published_rollup_ids()
+    listed = set(_PROGRAM_HREF_RE.findall(index_html))
+    assert listed == published, (
+        f"the index lists {sorted(listed)} but the render published {sorted(published)}"
+    )
+
+    for rollup_id in sorted(published):
+        page = (_GOLDENS / "program" / rollup_id / "index.html").read_text()
+        row = next(r for r in rows if f'href="/program/{rollup_id}/"' in r)
+        assert ("average unavailable" in page) == ("average unavailable" in row), (
+            f"{rollup_id}: the index and the rollup page disagree about whether "
+            "this group has a publishable average"
+        )
+
+
+def test_the_a11y_gate_opens_every_page_that_names_the_paid_tier_in_its_content() -> None:
+    """Derived from the rendered pages, because a list is how one got missed.
+
+    /program/all/ rendered the same offer block as /program/california/ and only
+    the second was scanned — and /program/all/ is the 1.31 MB one, the page most
+    likely to behave differently under an accessibility scan. Every page that
+    states the offer in its own content is a purchase surface for this purpose,
+    whether or not it renders a plan grid.
+    """
+    config = json.loads((_REPO / ".pa11yci.json").read_text())
+    scanned = {
+        (entry["url"] if isinstance(entry, dict) else entry).replace("http://127.0.0.1:8080", "")
+        for entry in config["urls"]
+    }
+    assert len(scanned) > 20, "the a11y config collapsed; this test would prove nothing"
+
+    offer_pages = set()
+    for path in sorted(_GOLDENS.rglob("*.html")):
+        relative = path.relative_to(_GOLDENS)
+        if relative.parts[0] == "report":
+            continue
+        head, separator, _footer = path.read_text().partition(_FOOTER_TAG)
+        if not separator:
+            continue
+        if _BUNDLE_HREF in head:
+            offer_pages.add("/" + relative.as_posix().removesuffix("index.html"))
+    assert offer_pages, "no generated page names the paid tier; this would prove nothing"
+
+    missing = offer_pages - scanned
+    assert not missing, (
+        f"these pages state the offer but the axe gate never opens them: {sorted(missing)}"
+    )
+
+
 def test_the_paid_tier_pointer_is_one_shared_string_not_four_paraphrases() -> None:
     """Two promises ("free for every agency", "buys no influence") are the whole
     basis for selling anything here, so every generated surface says them the
@@ -152,13 +342,67 @@ def test_the_paid_tier_pointer_is_one_shared_string_not_four_paraphrases() -> No
     # Descriptive, and different per page: one anchor string repeated everywhere
     # reads as a banner and tells a reader nothing about where they are going.
     anchors = set()
-    for rel in ("procurement/index.html", "pulse/index.html", "program/all/index.html"):
+    rels = (
+        "procurement/index.html",
+        "pulse/index.html",
+        "program/all/index.html",
+        "program/index.html",
+    )
+    for rel in rels:
         head = (_GOLDENS / rel).read_text().partition('<footer class="site-footer">')[0]
         anchors.update(re.findall(r'<a href="/bundle/">([^<]+)</a>', head))
-    assert len(anchors) == 3, anchors
+    assert len(anchors) == len(rels), anchors
     for anchor in anchors:
         assert len(anchor.split()) >= 4, anchor
         assert "here" not in anchor.lower()
+
+
+def test_the_app_says_what_its_static_twin_says_about_the_paid_tier() -> None:
+    """web/src/app.js renders the same rollups the static site publishes.
+
+    #/program/<id> is the app's drawing of /program/<id>/, the page whose static
+    twin carries the offer, and #/programs is the index the static site now
+    publishes at /program/. Until this landed, app.js contained the string
+    "bundle" zero times: one view of one page named the tier and the other did
+    not, which is a defect regardless of whether anyone buys anything.
+
+    The two promises are pinned against the Python constants rather than a copy
+    of them, so a reworded promise fails here instead of quietly shipping two
+    versions of the same sentence. The app must not quote a price: plan.json
+    owns those, and the sweep below would catch it anyway.
+    """
+    from scorecard_pipeline.render_site import _BUNDLE_FREE_NOTE, _BUNDLE_INDEPENDENCE
+
+    app = (_WEB / "src" / "app.js").read_text()
+    assert _BUNDLE_INDEPENDENCE in app
+    assert _BUNDLE_FREE_NOTE in app
+    assert app.count(_BUNDLE_INDEPENDENCE) == 1, (
+        "the independence promise is written twice in app.js; it is a constant"
+    )
+    assert '<a href="/bundle/">' in app
+
+    # And only on the two group views. A per-agency view in the app is the same
+    # reader as /agency/<id>/, where the tier stays out of the body, and
+    # #/cohort is a reader's own followed list -- an owner call, deliberately
+    # not taken here.
+    bodies = dict(
+        zip(
+            re.findall(r"^(?:async )?function (\w+)\(", app, re.M),
+            re.split(r"^(?:async )?function \w+\(", app, flags=re.M)[1:],
+            strict=True,
+        )
+    )
+    for view in ("renderScorecard", "renderCohort"):
+        assert view in bodies, f"{view} was renamed; this absence test now checks nothing"
+        body = bodies[view]
+        assert "/bundle/" not in body and "bundlePointer(" not in body, (
+            f"{view} names the paid tier"
+        )
+    for view in ("renderPrograms", "renderProgram"):
+        body = bodies[view]
+        assert "/bundle/" in body or "bundlePointer(" in body, (
+            f"{view} renders a page whose static twin names the tier, and says nothing"
+        )
 
 
 def test_the_home_page_states_the_tier_as_a_section_not_a_passing_mention() -> None:

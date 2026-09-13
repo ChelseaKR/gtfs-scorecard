@@ -2318,6 +2318,30 @@ function setupOverview(agencies, total, summary) {
 
 /* ---------------- program rollups ---------------- */
 
+/* The two promises the paid tier rests on, verbatim from the render_site.py
+   constants _BUNDLE_INDEPENDENCE and _BUNDLE_FREE_NOTE. #/programs and
+   #/program/<id> are this app rendering pages the site also publishes
+   statically, and the static twin names the tier; saying it in different words
+   here would mean one view of one page sells differently from the other.
+   Pinned by pipeline/tests/test_paid_tier_visibility.py, which compares these
+   strings against the Python constants rather than against a copy of them. No
+   price is quoted: prices live in web/bundle/plan.json and are read on
+   /bundle/. Apostrophes are avoided in this file on purpose -- the
+   hardcoded-string ratchet in test_l10n_readiness.py pairs quotes across the
+   whole file, and one stray apostrophe re-pairs every literal after it. */
+const BUNDLE_INDEPENDENCE =
+  "A purchase buys no influence over grades, methodology, or which agencies are listed.";
+const BUNDLE_FREE_NOTE =
+  "Scoring is free for every agency, and each agency keeps a free, printable board one-pager on its own page.";
+
+/** One paragraph pointing a program-audience view at the paid bundle. Same
+ *  placement rule as the static pages: a view of a group of feeds, never beside
+ *  the grade of one agency, and never on #/agency/<id>.
+ *  @param {string} lead @param {string} anchor */
+function bundlePointer(lead, anchor) {
+  return `<p class="fineprint">${lead} A program can <a href="/bundle/">${anchor}</a>, with prices on that page. ${BUNDLE_FREE_NOTE} ${BUNDLE_INDEPENDENCE}</p>`;
+}
+
 /** @param {any} index */
 function renderPrograms(index) {
   document.title = "Program rollups — GTFS Scorecard";
@@ -2346,6 +2370,10 @@ function renderPrograms(index) {
     <p class="page-lede reveal">A view for the people who support many agencies at once.
     Each rollup puts attention work first, ordered by rider impact when known, then lists
     other feed scorecards alphabetically. It also surfaces fixes shared across several feeds.</p>
+    ${bundlePointer(
+      "Supporting a whole program rather than one agency is what these pages are for.",
+      "order those board reports as one branded archive",
+    )}
     <ul class="agency-list">${cards}</ul>`;
 }
 
@@ -2445,7 +2473,15 @@ function renderProgram(rollup) {
       <h2 class="section-title" id="members-h">Feed scorecards: attention first, then alphabetical</h2>
       <ul class="program-list">${rows}</ul>
     </section>
-    ${commonSection}`;
+    ${commonSection}
+    <section aria-labelledby="bundle-h" class="reveal">
+      <h2 class="section-title" id="bundle-h">Board reports for this group</h2>
+      <p>Every agency listed above has a free, printable board one-pager on its own page, and
+      always will. A program that needs all of them at once can
+      <a href="/bundle/">buy them as one archive</a>, branded with its own name and logo and
+      refreshed monthly if it wants. Prices are on that page. ${BUNDLE_INDEPENDENCE}
+      The archive contains the same numbers published here.</p>
+    </section>`;
 }
 
 /* ---------------- my cohort (client-side) ---------------- */
