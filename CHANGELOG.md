@@ -47,6 +47,23 @@ the declared public surface).
   nothing. `test_workflow_safety.py` holds both bounds between their measured
   runtime and their ceiling, and holds the watchdog's copies of the bounds to
   the workflows ([#390](https://github.com/ChelseaKR/gtfs-scorecard/issues/390)).
+- **A realtime monitor run whose push was rejected threw its observations away
+  (2026-09-13).** `rt-monitor.yml` samples every agency for over two hours and
+  commits at the end, so `main` has usually moved to another monitor run's
+  observations by then: the concurrency queue releases the next run within
+  seconds of this one's push, and that run's checkout can precede it. The retry
+  rebased, and a rebase cannot resolve this — both sides appended different
+  readings to the same per-agency records, so every file conflicted and the loop
+  ran `git rebase --abort; exit 1`. Measured over the 30 days to 2026-09-13,
+  that cost one scheduled run a day from 09-09 onward (the 03:31 UTC run, six
+  days running), each one a full three-hour sampling cycle for every agency,
+  and each one also reddening Watchdog's realtime check. The two runs are not in
+  disagreement, so the retry now unions the two histories by capture timestamp
+  (`pipeline/scripts/merge_rt_health.py`), recomputes each summary from the
+  merged list, caps it the way an append does, and re-commits. A record present
+  only on the other side is left alone, a shared timestamp keeps the published
+  copy, and a corrupt published record still refuses to be read as an empty
+  history.
 - **`/realtime/` and `api/v1/realtime.json` carried the build date where a data
   date belongs (2026-09-13).** The only date either document held was
   `generated_at`, written at every render, so a reader took it for when the
