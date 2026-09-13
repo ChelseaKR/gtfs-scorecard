@@ -132,8 +132,10 @@ class Correction:
     """One withdrawn published grade.
 
     ``snapshot_date`` and ``feed_sha256`` identify the exact record being
-    withdrawn, so a later run that scores different bytes, or the same bytes on
-    a later day, supersedes the withdrawal instead of being suppressed by it.
+    withdrawn, so a later run that scores different bytes supersedes the
+    withdrawal instead of being suppressed by it. The same bytes on a later day
+    supersede it only if they were actually read that day; see
+    :func:`suppresses_current`, which is what reindex asks.
 
     ``evidence`` is required and is the point of the file. A withdrawal with no
     stated reason cannot be checked by the next person, and these entries name
@@ -323,12 +325,32 @@ def load_corrections() -> dict[str, Correction]:
 def suppresses_current(correction: Correction | None, artifact: Mapping[str, Any] | None) -> bool:
     """Whether this agency's current surfaces must stay withdrawn.
 
-    True only while the newest artifact on file is the exact record the
-    correction withdraws. Anything newer is a real measurement and publishes.
+    The withdrawal lifts for a real measurement, and only for a real
+    measurement. Two things count as one, and the second is why this is not
+    just :meth:`Correction.withdraws`:
+
+    * the newest artifact is not the withdrawn record at all -- different bytes,
+      so the feed changed and was read afresh; or
+    * it carries the same bytes but was actually read, which is what the reader
+      fix for a wrapped archive (#353) produces: the same ``feed_sha256``, a
+      later date, and stops and trips this time.
+
+    What does not count is the same unread bytes re-scored under a later date.
+    ``withdraws`` alone treated that as new, and it is not: nothing was read
+    either time, so the second letter is the first fabrication with a fresher
+    stamp on it. Measured on the published store on 2026-09-13, that is how
+    ``beloit-transit`` (F 37.8) and ``massachusetts-area-express-max`` (F 31.3)
+    were still publicly graded a week after this file withdrew them -- each one
+    re-scored on 2026-08-10 from the very bytes the entry beside it names, at
+    ``2f047947b9b6`` and ``28e972b743f8``, with 0 stops and 0 trips both times.
     """
     if correction is None or artifact is None:
         return False
-    return correction.withdraws(artifact)
+    if correction.withdraws(artifact):
+        return True
+    feed = artifact.get("feed")
+    sha = str(feed.get("sha256", "")) if isinstance(feed, Mapping) else ""
+    return sha == correction.feed_sha256 and grades_a_feed_with_nothing_in_it(artifact)
 
 
 def _newest_artifact(agency_dir: Path) -> dict[str, Any] | None:
