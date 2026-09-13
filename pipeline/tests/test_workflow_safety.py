@@ -1281,7 +1281,7 @@ def test_a_failed_paid_bundle_run_says_so_without_naming_the_order() -> None:
         "a run that fulfils a paid order must say so when it fails"
     )
     say_at = workflow.index("Say that a paid order failed")
-    say = workflow[say_at : workflow.index("      - name: Keep the archive on the run")]
+    say = workflow[say_at:]
     assert "::error::" in say
     assert "$GITHUB_STEP_SUMMARY" in say
     assert "this log is public" in say, "the reason the order is not named belongs next to it"
@@ -1410,3 +1410,43 @@ def test_a_configured_delivery_route_still_sends_the_link(tmp_path: Path) -> Non
     assert f"--download-url https://api.example/download/{'b' * 32}" in done.stdout
     assert "--promised-by Tuesday 16 September" in done.stdout
     assert "--send --from reports@example" in done.stdout
+
+
+def test_the_built_archive_is_never_kept_on_the_run() -> None:
+    """A run artifact of this repository is published, and the bundle is not.
+
+    The archive is the paid deliverable. Its README.txt and manifest.json both
+    print the 32-hex bundle id, which is the download capability that fetches
+    it from S3 for thirty days (setup_handler: "the capability in the email is
+    the credential"), and the manifest also names the buying program. This
+    repository is public: every signed-in GitHub account has read access, so
+    every one of them could download that artifact for its whole retention
+    window, and the REST artifact listing answers with no token at all.
+
+    Renaming the artifact took the capability off the run *page* (#407). It did
+    not take it out of the *file*, and the file was still being published. The
+    delivery route needs none of it: the archive goes to the artifacts bucket
+    behind the presigning download route, and a failed run is repaired by
+    re-running this workflow with the same inputs.
+    """
+    workflow = _report_bundle()
+    for job, step in _steps(workflow):
+        uses = str(step.get("uses") or "")
+        assert "upload-artifact" not in uses, (
+            f"{job}/{step.get('name')} publishes a run artifact; a run artifact of a public "
+            "repository is published, and the bundle archive is a paid deliverable that "
+            "carries its own download capability"
+        )
+        paths = str((step.get("with") or {}).get("path") or "")
+        for built in ("bundle.zip", "manifest.json"):
+            assert built not in paths, f"{job}/{step.get('name')} publishes {built}"
+
+    # And the summary must not tell a reader to go and get it there, because
+    # after this change it is not there -- and if it ever is again, the test
+    # above fails first.
+    raw = _workflow("report-bundle.yml")
+    off_at = raw.index("Say when delivery is off")
+    off = raw[off_at : raw.index("      - name: Say that a paid order failed")]
+    assert "attached to this run instead" not in off, (
+        "the delivery-off summary promises an archive the run no longer keeps"
+    )

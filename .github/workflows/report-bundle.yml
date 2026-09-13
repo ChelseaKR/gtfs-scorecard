@@ -18,9 +18,12 @@ name: Program report bundle
 # fetched or rendered.
 #
 # Delivery degrades honestly. Without an artifacts bucket, the committed
-# snapshot is used. Without the program-bundle API (BUNDLE_API_BASE) the
-# archive is kept as a run artifact and no email is sent, because an email
-# with a link that will not work is worse than no email.
+# snapshot is used. Without the program-bundle API (BUNDLE_API_BASE) no email
+# is sent, because an email with a link that will not work is worse than no
+# email. Nothing is kept on the run in either case: a run artifact of a public
+# repository is published, and the archive is the paid deliverable and carries
+# its own download capability. The repair for an undelivered order is a re-run
+# with the same inputs.
 
 on:
   workflow_dispatch:
@@ -270,7 +273,10 @@ jobs:
           {
             echo
             echo "**No email was sent.** ARTIFACTS_BUCKET, BUNDLE_API_BASE, and SES_FROM must all be"
-            echo "set for delivery; the archive is attached to this run instead (30-day retention)."
+            echo "set for delivery. The archive is not attached to this run either: a run artifact"
+            echo "of a public repository is published, and this one is a paid deliverable that"
+            echo "carries its own download capability. Set the three variables and re-run this"
+            echo "workflow with the same inputs."
           } >> "$GITHUB_STEP_SUMMARY"
 
       # The artifact name is public. Measured 2026-09-12 against the two runs
@@ -321,13 +327,25 @@ jobs:
             echo "program-bundles table, and the daily reconciler files the counts as an issue."
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Keep the archive on the run
-        if: ${{ always() }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
-        with:
-          name: program-bundle-${{ inputs.dispatch_key || github.run_id }}
-          path: |
-            pipeline/bundle.zip
-            pipeline/manifest.json
-          if-no-files-found: warn
-          retention-days: 30
+      # There is deliberately no upload-artifact step here, and adding one back
+      # is a regression test failure (test_the_built_archive_is_never_kept_on
+      # _the_run). A run artifact of this repository is published: this repo is
+      # public, so every signed-in GitHub account has read access and can
+      # download it for its whole retention window, and the REST artifact
+      # listing answers unauthenticated.
+      #
+      # What was being uploaded was `pipeline/bundle.zip` and
+      # `pipeline/manifest.json` -- the paid deliverable itself, the buying
+      # program's name, and, inside the archive's own README.txt and manifest,
+      # the 32-hex bundle id. That id IS the download capability
+      # (infra/program-bundle/setup_handler.py: "the capability in the email is
+      # the credential"), so the archive was also a copy of the credential that
+      # fetches it from S3 for thirty days. Renaming the artifact (#407) took
+      # the id off the run page; it did not take it out of the file.
+      #
+      # Delivery does not need it. The archive goes to
+      # program-bundles/<id>/bundle.zip in the artifacts bucket, which is
+      # outside the CloudFront allow-list and reachable only through the
+      # presigning download route, and the buyer gets a link to that. A failed
+      # run is repaired by re-running this workflow with the same inputs, which
+      # is what the failure summary above already says.
