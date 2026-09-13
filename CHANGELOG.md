@@ -29,6 +29,21 @@ the declared public surface).
 
 ### Fixed
 
+- **`scorecard try` on a local zip wrote the machine's absolute path into the
+  files people forward (2026-09-13).** A single-feed run recorded a local feed
+  as `file:///…` of its resolved path, so a user name and a folder layout
+  landed in `feed.static_url` and `fetch.final_url` of the `--json-out`
+  artifact, in the JSON-LD of the `--html` scorecard, and in the terminal
+  summary — three of the six outputs a `try` can produce. Those are exactly the
+  files that get attached to a ticket or emailed to a vendor. A local feed is
+  now recorded by its file name only, the way `try --batch` and
+  `scorecard retest` already record one; the resolved path stays in the scratch
+  key, which is never published, so two feeds that share a name still cannot
+  overwrite each other's download. `tests/test_adhoc.py` now runs a `try` with
+  every output flag and searches all six for the path, its `file://` form and
+  its containing folder. Schema.org `isBasedOn` is omitted rather than filled
+  with a file name, since only a fetchable link belongs in a URL slot
+  ([#398](https://github.com/ChelseaKR/gtfs-scorecard/issues/398)).
 - **The delivery-breach rule could not read the type DynamoDB returns, so no
   paid order has ever been reported as owing a refund (2026-09-13).**
   `/bundle/` promises delivery within two business days "or the purchase is

@@ -2984,7 +2984,11 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             ),
         ],
         "license": "https://creativecommons.org/licenses/by/4.0/",
-        "isBasedOn": artifact.get("feed", {}).get("static_url"),
+        # Only a fetchable link belongs in a schema.org URL slot. An ad-hoc
+        # score of a local zip records the feed by file name (#398), which
+        # is honest as prose and wrong as a URL, so the key is omitted
+        # rather than filled with something a consumer would try to GET.
+        **_based_on(artifact),
         "includedInDataCatalog": {"@type": "DataCatalog", "url": BASE_URL},
         "creator": {"@type": "Organization", "name": ORG_NAME, "url": BASE_URL},
         "about": {"@type": "Organization", "name": agency_name},
@@ -3012,6 +3016,20 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         wide=True,
         main_modifier="agency-report",
     )
+
+
+def _based_on(artifact: dict[str, Any]) -> dict[str, str]:
+    """The schema.org ``isBasedOn`` pair, present only when the feed has a link.
+
+    ``feed.static_url`` is an https link for every tracked agency. For a feed
+    scored from a local zip it is the file's name and nothing more (#398): a
+    real fact about where the score came from, and not a URL, so it is left out
+    of the JSON-LD instead of being published as one.
+    """
+    static_url = artifact.get("feed", {}).get("static_url")
+    if isinstance(static_url, str) and static_url.startswith(("http://", "https://")):
+        return {"isBasedOn": static_url}
+    return {}
 
 
 def _portfolio_route(
