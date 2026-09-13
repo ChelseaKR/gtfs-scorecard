@@ -52,6 +52,20 @@
     The reports render from the published scorecards and the download link goes to the address
     below, normally within the hour and always within two business days.</p>
 
+    <!-- This form has no action and no method: web/src/bundle-setup.js submits it. Without
+         scripting the button does nothing at all, and it does nothing silently, which is the
+         worst place on this site for a dead control because the buyer has already paid. The
+         refund-backed clock is anchored to the checkout rather than to this form
+         (scorecard_pipeline/deadline.py), so the time a stranded buyer spends working out why
+         nothing happened is time off the promise. Say so instead. -->
+    <noscript>
+      <p class="form-status form-status-err">This form is submitted by a script, and scripting is
+      switched off in this browser, so the button below will not do anything. Nothing is lost:
+      the payment is recorded and this page keeps working. Open this same address again in a
+      browser with scripting enabled and fill the form there. Worth doing promptly, because the
+      two business days are counted from when you paid, not from when this form is sent.</p>
+    </noscript>
+
     <form id="setup-form" class="submit-form" novalidate>
       <p class="field">
         <label for="program_name">Program or organization name <span class="req">(required)</span></label>

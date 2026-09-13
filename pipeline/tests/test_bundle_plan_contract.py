@@ -2,8 +2,10 @@
 
 ``web/bundle/plan.json`` is the whole payment surface of ``/bundle/``. ``web/src/bundle.js``
 fetches it at runtime and builds the price lines and the "Buy through Stripe" controls from
-it, so the served HTML contains no price, no link, and therefore no evidence of a malformed
-plan: a wrong price, a ``null`` ``checkout_url``, a typo'd Payment Link or a
+it. The served HTML now states the same amounts, in two regions generated from this same
+file by ``make sync-bundle-offers`` (issue #417), but it still carries no *independent*
+statement of a price, and so no evidence of a malformed plan: a wrong price, a ``null``
+``checkout_url``, a typo'd Payment Link or a
 ``paymentsAvailable: true`` over products nothing backs would all render as a confident page
 and ship green. That is this portfolio's "absence rendered as a value" defect pointed at
 revenue, which is why the contract lives in ``web/schemas/`` beside the published data
@@ -44,6 +46,8 @@ from typing import Any
 
 import pytest
 from jsonschema import Draft202012Validator
+
+from scorecard_pipeline.site_shell import bundle_noscript_region
 
 # This file is pipeline/tests/test_bundle_plan_contract.py, so parents[2] is the repo root.
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -345,14 +349,31 @@ def test_every_amount_the_script_sets_is_a_whole_number_of_currency_units() -> N
         assert amount == amount.to_integral_value(), f"{key} is not a whole number of units"
 
 
-def test_the_page_itself_still_carries_no_price() -> None:
+def test_the_page_itself_carries_no_price_it_did_not_generate() -> None:
     """docs/program-plan.md: "the site never carries a price of its own".
 
     Prices live in ``plan.json`` so that turning the tier on or moving a price is a data
     change. A currency amount typed into the markup is a fourth copy that nothing above
     reconciles, and it would survive ``paymentsAvailable: false``.
+
+    A generated amount is a different thing, and the page now carries four of them: the
+    ``noscript-plans`` region ``make sync-bundle-offers`` writes, so that a reader without
+    scripting is told what the page charges instead of being told nothing is for sale
+    (issue #417). It is re-derived from ``plan.json`` below rather than trusted, so the
+    fourth copy this test exists to prevent still cannot exist -- the amounts in the
+    region are the plan's amounts or the build is red, and switching the tier off removes
+    them, which is the property the rule was protecting.
     """
-    hardcoded = re.findall(r"\$\s?[\d,]+(?:\.\d{2})?", PAGE_PATH.read_text(encoding="utf-8"))
+    page = PAGE_PATH.read_text(encoding="utf-8")
+
+    generated = bundle_noscript_region(json.loads(PLAN_PATH.read_text(encoding="utf-8")))
+    assert generated in page, (
+        f"{PAGE_PATH.name}'s no-scripting plan list is not what `make sync-bundle-offers` "
+        "writes from plan.json; run it and commit the result"
+    )
+    typed = page.replace(generated, " ")
+
+    hardcoded = re.findall(r"\$\s?[\d,]+(?:\.\d{2})?", typed)
     assert hardcoded == [], f"{PAGE_PATH.name} hardcodes {hardcoded}"
 
 

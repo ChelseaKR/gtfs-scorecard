@@ -33,16 +33,22 @@ from __future__ import annotations
 import json
 import re
 from copy import deepcopy
+from html import unescape
 from pathlib import Path
 from typing import Any
 
 from scorecard_pipeline.site_shell import (
+    _BUNDLE_NOSCRIPT_RE,
     _BUNDLE_OFFERS_RE,
     BUNDLE_OFFERS_SCRIPT_ID,
+    BUNDLE_RENEWAL_NOTE,
     BUNDLE_SERVICE_ID,
+    bundle_noscript_html,
+    bundle_noscript_region,
     bundle_offer_nodes,
     bundle_offers_jsonld,
     bundle_offers_region,
+    bundle_price_text,
 )
 
 # The real repo, not the tmp root conftest points artifacts_dir at.
@@ -231,3 +237,245 @@ def test_the_runtime_rewrite_targets_the_block_the_server_wrote() -> None:
     # source keeps a renamed key on one side from silently halving the page.
     for field in ("@context", "@type", "@id", "url", "offers"):
         assert field in script, f"bundle.js no longer emits {field!r}"
+
+
+# --- and the half of #417 a person reads -----------------------------------
+#
+# The JSON-LD above closed the machine half: a crawler can now read what the
+# page charges. A reader with scripting off still read "nothing is for sale from
+# this page without it" while four live Payment Links were being served. The
+# same generator writes the list they see, from the same plan, under the same
+# drift gate. Prices visible without scripting went from 0 of 4 to 4 of 4.
+
+
+def _noscript_region(html: str) -> str:
+    match = _BUNDLE_NOSCRIPT_RE.search(html)
+    assert match is not None, (
+        "web/bundle/index.html has no noscript-plans:begin/noscript-plans:end region; "
+        "`make sync-bundle-offers` has nothing to write into"
+    )
+    return match.group(0)
+
+
+def test_the_noscript_plan_list_matches_plan_json() -> None:
+    """Same gate as the offers block, on the region a person reads.
+
+    Compared as the exact region text, markers included, so a hand-edit inside
+    the region fails as loudly as a stale one: the amounts a reader sees are a
+    rendering of plan.json or the build is red.
+    """
+    assert _noscript_region(_PAGE.read_text()) == bundle_noscript_region(_plan()), (
+        "/bundle/'s no-scripting plan list and web/bundle/plan.json disagree; "
+        "run `make sync-bundle-offers` and commit the result"
+    )
+
+
+def test_a_reader_without_scripting_sees_every_price_the_plan_sells() -> None:
+    """The claim that matters, asserted against plan.json rather than the generator.
+
+    A test that only compared file to generator would pass just as happily if
+    the generator emitted an empty block, which is exactly the state #417
+    measured on the live site.
+    """
+    plan = _plan()
+    assert plan.get("paymentsAvailable") is True, (
+        "plan.json is not selling; this test asserts what a selling page must show"
+    )
+    region = _noscript_region(_PAGE.read_text())
+    currency = str(plan.get("currency") or "USD")
+    for key, product in plan["products"].items():
+        amount = bundle_price_text(float(product["price"]), currency)
+        assert amount in region, f"{key}: a reader without scripting never sees {amount}"
+        assert str(product["label"]) in region, f"{key}: its price is shown with no label"
+        if product.get("interval"):
+            assert f"{amount} per {product['interval']}" in region, (
+                f"{key}: an amount with no cadence beside it reads as a one-time charge"
+            )
+
+
+def test_the_noscript_list_sends_nobody_to_a_checkout_it_cannot_finish() -> None:
+    """No buy control here, on purpose, and the reason is measurable.
+
+    ``/bundle/setup/`` -- where Stripe returns the buyer -- is a ``<form>`` with
+    no ``action`` and no ``method``; ``web/src/bundle-setup.js`` submits it. With
+    scripting off it cannot be completed at all. A checkout link in this block
+    would therefore take the money and strand the payer, and the refund clock
+    starts at the checkout rather than at the form
+    (``scorecard_pipeline/deadline.py``), so the stranding is expensive as well
+    as rude. The page's rule is to describe nothing it cannot do; this is that
+    rule applied to the checkout.
+
+    Asserted from the setup page's own markup, so the day that form gains a
+    server-side action this test fails and the decision is revisited rather
+    than inherited.
+    """
+    setup = (_WEB / "bundle" / "setup" / "index.html").read_text()
+    form = re.search(r"<form[^>]*id=\"setup-form\"[^>]*>", setup)
+    assert form is not None, "the setup form was renamed; this reasoning needs rechecking"
+    assert "action=" not in form.group(0) and "method=" not in form.group(0), (
+        "/bundle/setup/ can now submit without scripting, so the no-scripting plan "
+        "list may carry checkout links; revisit bundle_noscript_html"
+    )
+
+    # Both the committed region and what the generator would write now. Checking
+    # only the file leaves a generator that has grown a checkout link passing
+    # here until someone runs `make sync-bundle-offers` -- which is exactly what
+    # a negative control on this test found: sabotaging the generator alone left
+    # it green.
+    for source, markup in (
+        ("web/bundle/index.html", _noscript_region(_PAGE.read_text())),
+        ("site_shell.bundle_noscript_html", bundle_noscript_html(_plan())),
+    ):
+        assert "buy.stripe.com" not in markup and "<a " not in markup, (
+            f"{source}: the no-scripting plan list offers a checkout the buyer cannot complete"
+        )
+        assert "need scripting enabled" in markup, (
+            f"{source}: the list states prices but not that it cannot sell, which is "
+            "the page's own rule about describing what it cannot do"
+        )
+
+
+def test_the_setup_page_says_its_form_is_dead_without_scripting() -> None:
+    """The one dead control on this site that sits after the money changed hands.
+
+    Without this the button is silent: a buyer who has already paid clicks
+    "Build my reports", nothing happens, and the two business days they were
+    promised are already running.
+    """
+    setup = (_WEB / "bundle" / "setup" / "index.html").read_text()
+    warning = re.search(r"<noscript>\s*<p[^>]*>(.*?)</p>", setup, re.S)
+    assert warning is not None, "/bundle/setup/ gives a scripting-off buyer no warning at all"
+    text = " ".join(warning.group(1).split())
+    assert "scripting" in text
+    assert "will not do anything" in text, "the warning does not say the button is dead"
+
+
+def test_the_renewal_condition_reads_the_same_with_and_without_scripting() -> None:
+    """A subscription renews a bundle and does not include one.
+
+    Shown on the scripted card by web/src/bundle.js and on the generated list by
+    site_shell. Two renderings of one condition, so they are held to one string:
+    a reader quoted "$49 per month" without it has been told the price of
+    something other than what they would be buying.
+    """
+    assert BUNDLE_RENEWAL_NOTE in (_WEB / "src" / "bundle.js").read_text(), (
+        "bundle.js no longer states the renewal condition in the words the "
+        "generated list uses; the two surfaces have drifted"
+    )
+    region = _noscript_region(_PAGE.read_text())
+    plan = _plan()
+    for key, product in plan["products"].items():
+        if product.get("interval"):
+            assert BUNDLE_RENEWAL_NOTE in region, f"{key}: sold without its renewal condition"
+
+
+def test_nothing_is_shown_without_scripting_when_the_plan_sells_nothing() -> None:
+    """The tier-off rule, applied to the region a person reads.
+
+    Each refusal that removes an Offer removes a card here too, and an empty set
+    leaves the sentence saying so and no amount at all -- which is what makes
+    switching the tier off still a data change rather than a copy change.
+    """
+    plan = _plan()
+    live = bundle_price_text(float(plan["products"]["bundle_25"]["price"]), plan["currency"])
+    assert live in bundle_noscript_html(plan), (
+        "the live plan shows no price; the cases below prove little"
+    )
+
+    for label, broken in (
+        ("payments off", {**deepcopy(plan), "paymentsAvailable": False}),
+        ("truthy string", {**deepcopy(plan), "paymentsAvailable": "true"}),
+    ):
+        rendered = bundle_noscript_html(broken)
+        assert "$" not in rendered, f"{label}: an amount survived the tier being off"
+        assert "No plan is for sale" in rendered, label
+
+    priced = deepcopy(plan)
+    for product in priced["products"].values():
+        product["price"] = None
+    assert "$" not in bundle_noscript_html(priced)
+
+    insecure = deepcopy(plan)
+    for product in insecure["products"].values():
+        product["checkout_url"] = "http://buy.example.test/x"
+    assert "$" not in bundle_noscript_html(insecure), (
+        "a plan whose checkout links are not https states a price to a reader "
+        "while stating no Offer to a crawler; the two gates must agree"
+    )
+
+
+def test_the_amount_a_reader_sees_is_the_amount_the_offer_carries() -> None:
+    """One plan, two renderings, no third opinion about the number.
+
+    The Offer carries "149" and the reader sees "$149". Both come from
+    plan.json, so the only way they can disagree is a formatting bug here --
+    which is what this checks, by taking the digits back out of the rendered
+    string.
+    """
+    plan = _plan()
+    currency = str(plan.get("currency") or "USD")
+    by_name = {node["name"]: node["price"] for node in bundle_offer_nodes(plan)}
+    assert by_name, "no offers to compare against"
+    for product in plan["products"].values():
+        rendered = bundle_price_text(float(product["price"]), currency)
+        assert rendered.lstrip("$").replace(",", "") == str(int(product["price"]))
+        assert by_name[str(product["label"])] == str(product["price"])
+
+
+# --- and the answers it gives a search result -------------------------------
+
+
+# Inline elements are removed with nothing in their place and everything else
+# with a space, so "the <a>open-source command</a>." reads as one sentence
+# rather than as "command ." -- which is the difference between a drift check
+# that works and one that reports its own tag stripping as a finding.
+_INLINE_TAGS = "a|strong|em|b|i|code|span|abbr|small|sup|sub|br"
+
+
+def _visible_text(html: str) -> str:
+    """The page's prose, near enough for a substring comparison."""
+    text = re.sub(r"(?is)<script\b.*?</script>", " ", html)
+    text = re.sub(r"(?is)<style\b.*?</style>", " ", text)
+    text = re.sub(r"(?s)<!--.*?-->", " ", text)
+    text = re.sub(rf"(?is)</?(?:{_INLINE_TAGS})(?:\s[^>]*)?>", "", text)
+    text = re.sub(r"(?s)<[^>]+>", " ", text)
+    return " ".join(unescape(text).split())
+
+
+def _faq_node(html: str) -> dict[str, Any]:
+    for block in re.findall(r'<script type="application/ld\+json">(.*?)</script>', html, re.S):
+        node = json.loads(block)
+        if node.get("@type") == "FAQPage":
+            return dict(node)
+    raise AssertionError("/bundle/ no longer publishes a FAQPage; nothing here can be checked")
+
+
+def test_every_answer_the_page_publishes_is_an_answer_the_page_gives() -> None:
+    """The FAQ structured data restates seven of this page's own sentences.
+
+    Nothing held the two together. A search result is built from the structured
+    copy, so a reworded promise on the page -- the delivery window, the refund,
+    what a purchase does not buy -- would keep being quoted in its old words to
+    every reader who never reaches the page. On the one page that takes money
+    that is not a formatting bug, it is a stale commitment.
+
+    Compared as substrings of the rendered prose, so the page may say more than
+    it publishes; it may not publish something it does not say.
+    """
+    page = _PAGE.read_text()
+    prose = _visible_text(page)
+    questions = _faq_node(page)["mainEntity"]
+    assert len(questions) >= 5, "the FAQ shrank; this sweep would prove little"
+
+    for question in questions:
+        answer = " ".join(str(question["acceptedAnswer"]["text"]).split())
+        assert answer in prose, (
+            f"/bundle/ publishes an answer to {question['name']!r} that the page "
+            f"itself no longer gives:\n  published: {answer}"
+        )
+        # And the question is a heading or a term on the page, not only in the
+        # structured data, so the FAQ cannot grow a topic the page never raises.
+        assert str(question["name"]) in prose, (
+            f"/bundle/ publishes the question {question['name']!r}, which appears "
+            "nowhere in the page's own text"
+        )

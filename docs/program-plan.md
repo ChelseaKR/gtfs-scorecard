@@ -53,7 +53,12 @@ hands a board or a grant reviewer is the layer buyers pay for
 (`income-plan-2026-07/15-EXPANSION-STUDY4` F4, `09-NEW-PROJECT-IDEATION` N1).
 A program with twenty agencies gets twenty board packets for a twentieth of
 that. Set them in `scripts/stripe-setup.sh` and the Stripe dashboard; the
-site never carries a price of its own.
+site never carries a price of its own. `/bundle/` does state these amounts in
+the bytes it serves — as `Offer` structured data and as the plan list a reader
+without scripting sees — but both are generated from `web/bundle/plan.json` by
+`make sync-bundle-offers` and compared byte for byte against it in CI, so they
+are readings of that file rather than a fourth transcription of the decision.
+Switching the tier off still removes them, and still takes only a data change.
 
 | Knob | Price | What it covers |
 | --- | --- | --- |

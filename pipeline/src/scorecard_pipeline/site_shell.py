@@ -392,8 +392,20 @@ BUNDLE_SERVICE_ID = f"{BASE_URL}/bundle/#service"
 BUNDLE_OFFERS_SCRIPT_ID = "plan-offers-jsonld"
 BUNDLE_PLAN_PATH = "bundle/plan.json"
 BUNDLE_PAGE_PATH = "bundle/index.html"
-# The one generated region in the hand-authored /bundle/ page.
+# The generated regions in the hand-authored /bundle/ page. Both are written by
+# `make sync-bundle-offers` from plan.json and compared byte for byte in CI, so
+# neither is a copy of a price: they are renderings of the one document that
+# owns it. tests/test_bundle_offers_markup.py holds that.
 _BUNDLE_OFFERS_RE = re.compile(r"<!-- offers:begin -->.*?<!-- offers:end -->", re.DOTALL)
+_BUNDLE_NOSCRIPT_RE = re.compile(
+    r"<!-- noscript-plans:begin -->.*?<!-- noscript-plans:end -->", re.DOTALL
+)
+# Every marker pair a generated region may use, in the order they appear. The
+# price guards in tests/test_paid_tier_visibility.py and
+# tests/test_bundle_plan_contract.py subtract exactly these spans before they
+# sweep for a typed amount, so the exemption is the generator's output and
+# nothing else.
+BUNDLE_GENERATED_REGION_RES = (_BUNDLE_OFFERS_RE, _BUNDLE_NOSCRIPT_RE)
 _BUNDLE_OFFERS_EMPTY_NOTE = (
     "<!-- Nothing is for sale: plan.json either switches payments off or lists no "
     "product with both a numeric price and an https checkout link. The page states "
@@ -509,6 +521,114 @@ def bundle_offers_region(plan: dict[str, Any]) -> str:
     return f"<!-- offers:begin -->\n  {inner}\n  <!-- offers:end -->"
 
 
+# The renewal condition, word for word as web/src/bundle.js prints it on a
+# subscription card. A reader shown a monthly amount and not this has been
+# told the price of something other than what they would be buying, so the
+# no-scripting list carries it too and
+# test_the_renewal_condition_reads_the_same_with_and_without_scripting fails the
+# build if the two ever reword apart.
+BUNDLE_RENEWAL_NOTE = (
+    "Renews a bundle you have already bought, and covers the same agencies as "
+    "that bundle. Buy a bundle first."
+)
+# Why the no-scripting list states prices and offers no checkout control:
+# /bundle/setup/, where Stripe returns the buyer, is a form with no action and
+# no method that web/src/bundle-setup.js submits. Without scripting it cannot be
+# completed, so a buy link here would take the money and strand the buyer. The
+# page's rule is to describe nothing it cannot do; this is that rule applied to
+# the checkout as well as to the price.
+_BUNDLE_NOSCRIPT_CLOSING = (
+    "Prices are in {currency} and are set on the server, not on this page. "
+    "Paying and setting up a bundle both need scripting enabled, so this list "
+    "carries no checkout. Every free part of this site works without it, "
+    "including the board report each agency gets for its own feed."
+)
+_BUNDLE_NOSCRIPT_EMPTY = (
+    "No plan is for sale from this page right now. The free single-agency board "
+    "report is unchanged: open any agency page and choose the board one-pager."
+)
+
+
+def bundle_price_text(amount: float, currency: str) -> str:
+    """One plan's amount, rendered the way a reader sees it.
+
+    Matches what ``web/src/bundle.js`` prints, so the page reads identically
+    with and without scripting: ``Intl.NumberFormat`` in ``en-US`` over ``USD``
+    with no fraction digits gives a leading dollar sign, no decimals, and a
+    thousands separator above 999. Any other ISO 4217 code takes the same
+    fallback shape the script uses when ``Intl`` refuses the code, because there
+    is no ``Intl`` here to ask and inventing a symbol would be this file's own
+    opinion about an amount it does not own.
+
+    No worked example is written out here on purpose: an amount in this file is
+    the thing test_no_template_carries_a_price_that_plan_json_owns forbids, and
+    it does not read docstrings. It caught one while this function was written.
+    """
+    rendered = f"{amount:,.0f}"
+    return f"${rendered}" if currency == "USD" else f"{rendered} {currency}"
+
+
+def bundle_noscript_html(plan: dict[str, Any]) -> str:
+    """The plan list a reader without scripting sees, from ``plan.json`` alone.
+
+    Gated on exactly what ``bundle_offer_nodes`` is gated on, so the three
+    surfaces -- the cards the script draws, the ``Offer`` nodes a crawler reads,
+    and this -- turn on and off together. A plan that sells nothing renders the
+    sentence saying so, which is the same rule the rest of the page follows:
+    never describe what the page cannot do.
+    """
+    currency = str(plan.get("currency") or "USD")
+    products = plan.get("products")
+    sellable: list[tuple[str, dict[str, Any]]] = []
+    if plan.get("paymentsAvailable") is True and isinstance(products, dict):
+        for key, product in products.items():
+            if not isinstance(product, dict):
+                continue
+            price = product.get("price")
+            if not isinstance(price, (int, float)) or isinstance(price, bool):
+                continue
+            checkout = product.get("checkout_url")
+            if not isinstance(checkout, str) or not checkout.startswith("https://"):
+                continue
+            sellable.append((str(key), product))
+
+    if not sellable:
+        return f"<noscript>\n        <p>{esc(_BUNDLE_NOSCRIPT_EMPTY)}</p>\n      </noscript>"
+
+    cards = []
+    for key, product in sellable:
+        interval = product.get("interval")
+        amount = bundle_price_text(float(product["price"]), currency)
+        price_line = f"{amount} per {interval}" if interval else amount
+        # The heading ids are prefixed because the script builds its own cards
+        # with plan-<key>-h. With scripting on, this element's content is parsed
+        # as text and never enters the document, but a prefix costs nothing and
+        # removes the question.
+        renewal = (
+            f'\n          <p class="fineprint">{esc(BUNDLE_RENEWAL_NOTE)}</p>' if interval else ""
+        )
+        cards.append(
+            f'        <section class="support-path" aria-labelledby="ns-plan-{esc(key)}-h">\n'
+            f'          <p class="support-path-kicker">'
+            f"{'Subscription' if interval else 'One time'}</p>\n"
+            f'          <h2 id="ns-plan-{esc(key)}-h">'
+            f"{esc(product.get('label') or key)}</h2>\n"
+            f'          <p class="plan-price">{esc(price_line)}</p>{renewal}\n'
+            f"        </section>"
+        )
+    closing = _BUNDLE_NOSCRIPT_CLOSING.format(currency=currency)
+    body = "\n".join(cards)
+    return f'<noscript>\n{body}\n        <p class="fineprint">{esc(closing)}</p>\n      </noscript>'
+
+
+def bundle_noscript_region(plan: dict[str, Any]) -> str:
+    """The generated no-scripting block, markers included, as it sits on disk."""
+    return (
+        "<!-- noscript-plans:begin -->\n      "
+        f"{bundle_noscript_html(plan)}\n      <!-- noscript-plans:end -->"
+    )
+
+
 def sync_bundle_offers(root: Path | None = None) -> list[Path]:
     """Rewrite /bundle/'s generated offers block from web/bundle/plan.json.
 
@@ -528,15 +648,25 @@ def sync_bundle_offers(root: Path | None = None) -> list[Path]:
     amounts would be the fourth place a price lives, and the reason this
     repository already gates ``plan.json`` against the other three is that a
     copied price keeps selling after the plan changes.
+
+    Two regions now, written together from one read of the plan: the ``Offer``
+    JSON-LD a crawler reads, and the plan list a reader without scripting reads.
+    They were one problem -- the served bytes stated no price -- and half of it
+    was closed for machines only. Nothing else in the page is touched.
     """
     web = (root or _repo_root()) / "web"
     path = web / BUNDLE_PAGE_PATH
     plan = json.loads((web / BUNDLE_PLAN_PATH).read_text())
     old = path.read_text()
-    match = _BUNDLE_OFFERS_RE.search(old)
-    if match is None:
-        raise ValueError(f"{path}: expected one offers:begin/offers:end region, found none")
-    new = old[: match.start()] + bundle_offers_region(plan) + old[match.end() :]
+    new = old
+    for marker, pattern, generated in (
+        ("offers", _BUNDLE_OFFERS_RE, bundle_offers_region(plan)),
+        ("noscript-plans", _BUNDLE_NOSCRIPT_RE, bundle_noscript_region(plan)),
+    ):
+        match = pattern.search(new)
+        if match is None:
+            raise ValueError(f"{path}: expected one {marker}:begin/{marker}:end region, found none")
+        new = new[: match.start()] + generated + new[match.end() :]
     if new == old:
         return []
     path.write_text(new)
