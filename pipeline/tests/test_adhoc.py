@@ -80,7 +80,11 @@ def test_run_adhoc_scores_local_corrected_copy(monkeypatch, tmp_path: Path) -> N
     artifact = cli.run_adhoc(str(local), None, dt.date(2026, 7, 18))
 
     assert artifact["agency"]["name"] == "corrected"
-    assert artifact["feed"]["static_url"] == local.resolve().as_uri()
+    # The file name and nothing more (#398). The absolute path would carry a
+    # user name and a folder layout into a file people forward; the SHA-256
+    # below already identifies the bytes and `fetch.source` already says local.
+    assert artifact["feed"]["static_url"] == "corrected.zip"
+    assert artifact["fetch"]["final_url"] == "corrected.zip"
     assert artifact["fetch"]["source"] == "local"
     assert "local feed copy" in " ".join(artifact["confidence"]["notes"])
     assert artifact["overall"]["grade"] in {"A", "B", "C", "D", "F"}
@@ -214,3 +218,94 @@ def test_print_summary_includes_grade_and_fixes() -> None:
     assert "Rider experience" in out  # completeness relabeled
     assert "not yet measured" in out  # realtime
     assert "Re-export with a longer calendar window." in out
+
+
+def _stub_local_scoring(monkeypatch, scratch: Path) -> None:  # type: ignore[no-untyped-def]
+    """Score a local zip offline: no network fetcher, no Java validator."""
+    monkeypatch.setattr(cli, "raw_dir", lambda: scratch)
+    monkeypatch.setattr(cli, "run_validator", lambda *a, **k: Path("unused.json"))
+    monkeypatch.setattr(
+        cli, "parse_report", lambda *a, **k: ValidationReport(validator_version="9.9.9", notices=[])
+    )
+    monkeypatch.setattr(
+        cli,
+        "fetch_static",
+        lambda *_a, **_k: pytest.fail("local input must not use the network fetcher"),
+    )
+
+
+def test_try_writes_no_local_path_into_any_output(monkeypatch, tmp_path: Path) -> None:  # type: ignore[no-untyped-def]
+    """Every file `scorecard try` writes for a local zip, searched for the path.
+
+    These are the files a person attaches to a ticket or emails to a vendor.
+    The feed's absolute location, its ``file://`` form and the folder holding it
+    must appear in none of them, and this asserts that over the whole set rather
+    than over the two fields #398 happened to name.
+    """
+    feed_dir = tmp_path / "Users" / "someone" / "Downloads" / "vendor-feeds"
+    feed_dir.mkdir(parents=True)
+    local = feed_dir / "corrected.zip"
+    local.write_bytes(FIXTURE.read_bytes())
+    _stub_local_scoring(monkeypatch, tmp_path / "raw")
+
+    out = tmp_path / "out"
+    buf = io.StringIO()
+    with redirect_stdout(buf):
+        code = cli.main(
+            [
+                "try",
+                str(local),
+                "--date",
+                "2026-07-18",
+                "--html",
+                str(out / "scorecard.html"),
+                "--comment",
+                str(out / "comment.md"),
+                "--json-out",
+                str(out / "scorecard.json"),
+                "--history",
+                str(out / "history"),
+                "--sarif",
+                str(out / "notices.sarif"),
+            ]
+        )
+    assert code == 0
+
+    resolved = local.resolve()
+    leaks = {str(resolved), resolved.as_uri(), str(resolved.parent)}
+    written = sorted(path for path in out.rglob("*") if path.is_file())
+    # Guard the guard: an empty walk would pass this test while measuring
+    # nothing. Five flags were given, and --history writes its own ledger.
+    assert len(written) >= 5, [path.name for path in written]
+    for path in [*written]:
+        text = path.read_text()
+        assert not any(leak in text for leak in leaks), path.name
+    assert not any(leak in buf.getvalue() for leak in leaks), "terminal summary"
+
+
+def test_try_keeps_same_named_local_feeds_apart(monkeypatch, tmp_path: Path) -> None:  # type: ignore[no-untyped-def]
+    """Recording the file name must not make two feeds share a scratch folder.
+
+    Two people's ``corrected.zip`` are different feeds. The name is what gets
+    recorded; the resolved path is what still keeps the download and the
+    validator output of one run from replacing another's.
+    """
+    report_dirs: list[Path] = []
+
+    def validate(_feed: Path, output_dir: Path, *, country_code: str = "US") -> Path:
+        report_dirs.append(output_dir)
+        return Path("unused.json")
+
+    _stub_local_scoring(monkeypatch, tmp_path / "raw")
+    monkeypatch.setattr(cli, "run_validator", validate)
+
+    artifacts = []
+    for folder in ("first", "second"):
+        where = tmp_path / folder
+        where.mkdir()
+        zipped = where / "corrected.zip"
+        zipped.write_bytes(FIXTURE.read_bytes())
+        artifacts.append(cli.run_adhoc(str(zipped), None, dt.date(2026, 7, 18)))
+
+    assert [a["feed"]["static_url"] for a in artifacts] == ["corrected.zip", "corrected.zip"]
+    assert report_dirs[0] != report_dirs[1]

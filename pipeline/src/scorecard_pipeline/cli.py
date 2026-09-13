@@ -439,7 +439,19 @@ def run_adhoc_detailed(
     parsed = urllib.parse.urlparse(source)
     if not is_local and parsed.scheme not in {"http", "https"}:
         raise FileNotFoundError(f"local GTFS zip not found: {candidate}")
-    source_ref = candidate.resolve().as_uri() if is_local else source
+    local_path = candidate.resolve() if is_local else None
+    # What every output records the feed as. A local zip is recorded by file
+    # name only, the way `try --batch` (#363) and `scorecard retest` (#366)
+    # already record one: a scorecard is written to be forwarded to a vendor or
+    # attached to a ticket, and an absolute path carries a user name and a
+    # folder layout into it while adding no evidence -- the feed's SHA-256 in
+    # the same artifact already identifies the bytes, and `fetch.source` already
+    # says "local". See #398.
+    source_ref = local_path.name if local_path is not None else source
+    # What keeps concurrent runs apart, which is a different question: two
+    # people's `corrected.zip` are different feeds, so the scratch key stays on
+    # the resolved absolute path even though nothing records it.
+    scratch_ref = local_path.as_uri() if local_path is not None else source
     label = name or (candidate.stem if is_local else parsed.netloc) or "Ad-hoc feed"
     agency = Agency(
         id="_adhoc",
@@ -452,11 +464,11 @@ def run_adhoc_detailed(
     # URL and validator country. Several local/worker invocations can score
     # different feeds at once; a shared `_adhoc/<date>` path lets one download
     # replace another between fetch and validation.
-    scratch_key = f"{country_code}\0{source_ref}".encode()
+    scratch_key = f"{country_code}\0{scratch_ref}".encode()
     scratch_id = f"_adhoc-{hashlib.sha256(scratch_key).hexdigest()[:16]}"
     scratch_agency = dataclasses.replace(agency, id=scratch_id)
-    if is_local:
-        local_source = candidate.resolve()
+    if local_path is not None:
+        local_source = local_path
         scratch_dir = raw_dir() / scratch_id / date.isoformat()
         scratch_dir.mkdir(parents=True, exist_ok=True)
         scratch_path = scratch_dir / "gtfs.zip"

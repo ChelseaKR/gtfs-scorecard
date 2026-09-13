@@ -62,6 +62,17 @@
       .nav-menu-btn { display: none !important; }
       .nav-cluster { display: flex !important; position: static; }
     }
+    /* The generated plan list is wrapped in its own <noscript> so it can only
+       reach a reader who has no scripting. That wrapper would otherwise be a
+       single grid item holding all four cards in one column. `display: contents`
+       hands the cards to #plan-grid directly, so they lay out exactly as the
+       scripted ones do. It is declared here, inside a stylesheet that only
+       applies when scripting is off, because with scripting on the element's
+       contents are raw text and unhiding it would print markup on the page. */
+    #plan-grid > noscript { display: contents; }
+    /* Its closing note is about the whole list, not about a fifth plan, so it
+       spans the row rather than standing in one column beside the cards. */
+    #plan-grid > noscript > .fineprint { grid-column: 1 / -1; margin-top: 0; }
   </style></noscript>
 </head>
 <body>
@@ -95,10 +106,51 @@
       stays free.</li>
     </ul>
 
+    <!-- The sample sits above the prices because it is the answer to the question a
+         first-time buyer asks before the amount means anything: what is the thing. The
+         same link is still in "What stays free?" below, where it makes the different
+         point that an agency gets this for itself at no cost. -->
+    <p><a class="report-action" href="/agency/unitrans/board/">See a live board report for one
+    agency</a>. The archive holds one of these per agency id you name, as a self-contained
+    file you can attach to a packet or print.</p>
+
     <h2 class="section-title" id="plans-h">Plans and prices</h2>
+    <!-- The plan list for a reader with no scripting, generated from
+         /bundle/plan.json by `make sync-bundle-offers` alongside the offers
+         JSON-LD above. Never edited by hand, and emitted only while the plan
+         says payments are available, so the amounts here are a rendering of
+         plan.json rather than a copy of it. With scripting on, a browser parses
+         a <noscript> element's contents as text and never inserts them, and
+         bundle.js clears this container before it draws its own cards, so the
+         two lists can never both be on the page. -->
     <div id="plan-grid" class="support-paths" role="group" aria-labelledby="plans-h">
-      <noscript><p>Plans are read from the server. Enable scripting to see whether any are
-      available; nothing is for sale from this page without it.</p></noscript>
+      <!-- noscript-plans:begin -->
+      <noscript>
+        <section class="support-path" aria-labelledby="ns-plan-bundle_25-h">
+          <p class="support-path-kicker">One time</p>
+          <h2 id="ns-plan-bundle_25-h">One bundle, up to 25 agencies</h2>
+          <p class="plan-price">$149</p>
+        </section>
+        <section class="support-path" aria-labelledby="ns-plan-bundle_100-h">
+          <p class="support-path-kicker">One time</p>
+          <h2 id="ns-plan-bundle_100-h">One bundle, up to 100 agencies</h2>
+          <p class="plan-price">$349</p>
+        </section>
+        <section class="support-path" aria-labelledby="ns-plan-refresh_mo-h">
+          <p class="support-path-kicker">Subscription</p>
+          <h2 id="ns-plan-refresh_mo-h">Monthly refresh</h2>
+          <p class="plan-price">$49 per month</p>
+          <p class="fineprint">Renews a bundle you have already bought, and covers the same agencies as that bundle. Buy a bundle first.</p>
+        </section>
+        <section class="support-path" aria-labelledby="ns-plan-refresh_yr-h">
+          <p class="support-path-kicker">Subscription</p>
+          <h2 id="ns-plan-refresh_yr-h">Monthly refresh, billed yearly</h2>
+          <p class="plan-price">$490 per year</p>
+          <p class="fineprint">Renews a bundle you have already bought, and covers the same agencies as that bundle. Buy a bundle first.</p>
+        </section>
+        <p class="fineprint">Prices are in USD and are set on the server, not on this page. Paying and setting up a bundle both need scripting enabled, so this list carries no checkout. Every free part of this site works without it, including the board report each agency gets for its own feed.</p>
+      </noscript>
+      <!-- noscript-plans:end -->
     </div>
 
     <section aria-labelledby="free-h">

@@ -6601,3 +6601,97 @@ def test_status_page_omits_the_denominator_when_the_run_did_not_record_one() -> 
     assert "of 0 shards" not in html
     assert "Run completed" in html
     assert "with warnings" not in html
+
+
+def test_rt_page_states_when_its_observations_were_taken() -> None:
+    """The page says the readings' dates, not only the build's (#389)."""
+    from scorecard_pipeline.render_site import _render_rt_page
+
+    html = _render_rt_page(
+        {
+            "feed_record_count": 4,
+            "comparison_eligible_count": 4,
+            "comparison": {"eligible_count": 4},
+            "monitored_feed_record_count": 3,
+            "raw_monitored_feed_record_count": 4,
+            "monitored_count": 3,
+            "median_uptime_pct": 99.0,
+            "median_lag_seconds": 12,
+            "bands": {"reliable": 2, "mostly": 1, "spotty": 0},
+            "most_reliable": [],
+            "states": [],
+            "observed": {
+                "feed_records_dated": 3,
+                "feed_records_undated": 1,
+                "oldest_last_observation": "2026-06-30",
+                "median_last_observation": "2026-09-05",
+                "newest_last_observation": "2026-09-12",
+            },
+        }
+    )
+    assert "last observed on 2026-09-12" in html
+    assert "the median on 2026-09-05" in html
+    assert "least recently observed on 2026-06-30" in html
+    # The undated member is named, not folded into the three dates.
+    assert "One further monitored feed record carries no observation date" in html
+    assert "not the date this page was built" in html
+
+
+def test_rt_page_says_so_when_no_observation_carries_a_date() -> None:
+    """No date is stated as no date -- never as the build date, never as a zero."""
+    from scorecard_pipeline.render_site import _render_rt_page
+
+    nat = {
+        "feed_record_count": 2,
+        "comparison_eligible_count": 2,
+        "comparison": {"eligible_count": 2},
+        "monitored_feed_record_count": 2,
+        "raw_monitored_feed_record_count": 2,
+        "monitored_count": 2,
+        "median_uptime_pct": 99.0,
+        "median_lag_seconds": 12,
+        "bands": {"reliable": 2, "mostly": 0, "spotty": 0},
+        "most_reliable": [],
+        "states": [],
+        "observed": {
+            "feed_records_dated": 0,
+            "feed_records_undated": 2,
+            "oldest_last_observation": None,
+            "median_last_observation": None,
+            "newest_last_observation": None,
+        },
+    }
+    html = _render_rt_page(nat)
+    assert "carry no observation date" in html
+    assert "None of the 2 feed records here records one." in html
+
+    # A payload with no vintage block at all is the same failure one step back,
+    # and must not read as a page that simply had nothing to say.
+    without = {key: value for key, value in nat.items() if key != "observed"}
+    assert "does not record when its readings were taken" in _render_rt_page(without)
+
+
+def test_rt_page_dates_nothing_when_it_publishes_no_readings() -> None:
+    """No aggregate on the page, so no vintage line describing one."""
+    from scorecard_pipeline.render_site import _render_rt_page
+
+    html = _render_rt_page(
+        {
+            "feed_record_count": 100,
+            "comparison_eligible_count": 0,
+            "comparison": {"eligible_count": 0},
+            "raw_monitored_feed_record_count": 8,
+            "monitored_feed_record_count": 0,
+            "monitored_count": 0,
+            "observed": {
+                "feed_records_dated": 0,
+                "feed_records_undated": 0,
+                "oldest_last_observation": None,
+                "median_last_observation": None,
+                "newest_last_observation": None,
+            },
+        }
+    )
+    assert "unavailable until current-contract checks" in html
+    assert "observation date" not in html
+    assert "readings were taken" not in html

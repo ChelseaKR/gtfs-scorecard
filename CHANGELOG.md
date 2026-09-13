@@ -47,6 +47,40 @@ the declared public surface).
   nothing. `test_workflow_safety.py` holds both bounds between their measured
   runtime and their ceiling, and holds the watchdog's copies of the bounds to
   the workflows ([#390](https://github.com/ChelseaKR/gtfs-scorecard/issues/390)).
+- **`/realtime/` and `api/v1/realtime.json` carried the build date where a data
+  date belongs (2026-09-13).** The only date either document held was
+  `generated_at`, written at every render, so a reader took it for when the
+  observations were current. They need not be: `rt-monitor.yml` recorded nothing
+  between 2026-09-05 and 2026-09-08 while both were rebuilt on the intraday
+  cadence and stamped with the build date. Each member already carried its own
+  `last_ts`; `rt_national.observed_vintage` now states it at the level a reader
+  looks at. The rollup gains an `observed` block — the newest, median and oldest
+  of the members' own last-observation dates — and the page carries the same
+  three dates in prose. A national rollup has as many vintages as it has
+  members, so all three are published rather than one: the newest alone would
+  hide a long tail of stale members behind one fresh one. No threshold is
+  introduced, matching the per-agency window that names the date it ends. Every
+  published date is a date a feed record was actually observed on — an even
+  count takes the older of the two middle dates rather than their mean. Members
+  recording no date are counted in `feed_records_undated` and named on the page,
+  not dropped from the denominator, and a corpus where nobody recorded a date
+  publishes nulls and says so rather than falling back to the build date
+  ([#389](https://github.com/ChelseaKR/gtfs-scorecard/issues/389)).
+- **`scorecard try` on a local zip wrote the machine's absolute path into the
+  files people forward (2026-09-13).** A single-feed run recorded a local feed
+  as `file:///…` of its resolved path, so a user name and a folder layout
+  landed in `feed.static_url` and `fetch.final_url` of the `--json-out`
+  artifact, in the JSON-LD of the `--html` scorecard, and in the terminal
+  summary — three of the six outputs a `try` can produce. Those are exactly the
+  files that get attached to a ticket or emailed to a vendor. A local feed is
+  now recorded by its file name only, the way `try --batch` and
+  `scorecard retest` already record one; the resolved path stays in the scratch
+  key, which is never published, so two feeds that share a name still cannot
+  overwrite each other's download. `tests/test_adhoc.py` now runs a `try` with
+  every output flag and searches all six for the path, its `file://` form and
+  its containing folder. Schema.org `isBasedOn` is omitted rather than filled
+  with a file name, since only a fetchable link belongs in a URL slot
+  ([#398](https://github.com/ChelseaKR/gtfs-scorecard/issues/398)).
 - **The delivery-breach rule could not read the type DynamoDB returns, so no
   paid order has ever been reported as owing a refund (2026-09-13).**
   `/bundle/` promises delivery within two business days "or the purchase is

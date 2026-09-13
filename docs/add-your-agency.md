@@ -23,6 +23,12 @@ to fix. Add `--html scorecard.html` to also write a standalone page you can
 open in a browser. Nothing is uploaded; the download stays in your local
 cache.
 
+You can point it at a local zip instead of a link — a corrected export, say.
+A local feed is recorded in every output by its file name, never by its full
+path, so the JSON, the standalone page and the terminal summary can be attached
+to a ticket or sent to a vendor without carrying your folder layout. The feed's
+SHA-256 is in the artifact either way, and that is what identifies the bytes.
+
 ## What you need
 
 - A direct link to your GTFS Schedule zip. If you don't know it, search
