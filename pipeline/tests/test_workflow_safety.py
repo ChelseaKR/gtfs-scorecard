@@ -17,6 +17,36 @@ def _workflow(name: str) -> str:
     return (ROOT / ".github" / "workflows" / name).read_text(encoding="utf-8")
 
 
+def test_every_watchdog_check_fails_when_it_cannot_read_the_answer() -> None:
+    """A watchdog that cannot reach the API must say so, not report health.
+
+    Each of these checks asks `gh run list` for the most recent completed run
+    and branches on its `conclusion`. That call ends in `|| echo '[]'`, so any
+    failure -- a network blip, an expired token, a secondary rate limit --
+    yields an EMPTY conclusion rather than an error. An empty string matches
+    none of the failure branches, so without an explicit guard the step exits
+    0 and the watchdog reports the pipeline healthy on the strength of a reply
+    it never received. That is the precise shape of a check that cannot fail.
+
+    Measured 2026-09-13: the Daily scorecard check was missing this guard
+    while the realtime and bundle checks beside it already had it. The test is
+    written over every such step rather than the three that exist today, so a
+    fourth check cannot be added without it.
+    """
+    workflow = _workflow("watchdog.yml")
+    steps = [block for block in workflow.split("      - name: ") if "gh run list" in block]
+    assert steps, "watchdog.yml no longer has a step that reads a run conclusion"
+    unguarded = [
+        block.splitlines()[0]
+        for block in steps
+        if "conclusion=$(" in block and 'if [ -z "$conclusion" ]' not in block
+    ]
+    assert not unguarded, (
+        "these watchdog checks read a run conclusion but pass when it is empty, "
+        "so an unreachable API reads as a healthy pipeline: " + ", ".join(unguarded)
+    )
+
+
 def test_commit_retry_loops_fail_when_no_push_succeeds() -> None:
     for name in ("equity.yml", "canada-equity.yml", "rt-monitor.yml", "rt-archive.yml"):
         workflow = _workflow(name)
@@ -1052,7 +1082,13 @@ def test_the_watchdog_reads_a_job_timeout_as_a_failure_not_as_silence() -> None:
 
     for check in ("Daily scorecard", "Realtime monitor", "Program report bundle"):
         step_at = watch.index(f"most recent completed {check} run")
-        step = watch[step_at : step_at + 1200]
+        # To the end of this step, not a fixed number of characters. A window
+        # measured in bytes stops covering the step the moment a comment is
+        # added above the branch it looks for, and then reports that branch
+        # missing when it is merely further down -- which is what happened when
+        # the unreadable-answer guard was added to the Daily check.
+        next_step = watch.find("\n      - name: ", step_at)
+        step = watch[step_at:] if next_step == -1 else watch[step_at:next_step]
         assert '"$conclusion" = "cancelled"' in step, (
             f"the {check} check cannot see a job killed by its own timeout"
         )

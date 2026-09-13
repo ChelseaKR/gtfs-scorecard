@@ -105,6 +105,17 @@ jobs:
           status=$(echo "$latest" | jq -r '.[0].status // empty')
           event=$(echo "$latest" | jq -r '.[0].event // empty')
           echo "most recent completed Daily scorecard run: event=$event status=$status conclusion=$conclusion"
+          # An unreadable answer is not a good answer. `gh run list` falls back
+          # to '[]' on any failure (network, auth, a rate limit), which leaves
+          # `conclusion` empty — and an empty string matches none of the
+          # branches below, so without this the step exits 0 and the watchdog
+          # reports the Daily pipeline healthy on the strength of a reply it
+          # never got. The realtime and bundle checks in this same file already
+          # guard this way; this one did not.
+          if [ -z "$conclusion" ]; then
+            echo "::error::Could not read a completed Daily scorecard run. This check says nothing about the Daily pipeline until it can."
+            exit 1
+          fi
           # `cancelled` is in this list because that is what GitHub records
           # when a job hits its own `timeout-minutes`, not `timed_out`.
           # Measured on 2026-09-08 against Realtime monitor run 34162993774:
