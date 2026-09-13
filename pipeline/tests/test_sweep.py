@@ -138,3 +138,50 @@ def test_resweep_keeps_current_feed_current() -> None:
     new, summary = resweep(art, dt.date(2026, 6, 20))
     assert new["categories"]["freshness"]["score"] == 85.0
     assert summary["new_days"] == (dt.date(2026, 9, 1) - dt.date(2026, 6, 20)).days
+
+
+def test_a_chain_of_sweeps_keeps_naming_the_day_the_feed_was_fetched() -> None:
+    """The defect: each sweep took the previous sweep's stamp as a fetch date.
+
+    Sweeps run every cycle, so the published claim became "fetched yesterday"
+    for feeds nobody had downloaded in weeks. On 2026-09-13, 468 of the 472
+    published recomputes claimed a fetch on 2026-09-12 while carrying the same
+    feed_sha256 they had held since 2026-08-10.
+    """
+    art = _artifact(last_service="2027-09-02", fresh_score=85.0, days=365)
+    art["snapshot_date"] = "2026-08-10"  # the day the feed was really downloaded
+
+    first, _ = resweep(art, dt.date(2026, 9, 12))
+    assert first["recompute"]["feed_fetched_date"] == "2026-08-10"
+
+    # Sweeping the swept artifact, as the next cycle does.
+    second, _ = resweep(first, dt.date(2026, 9, 13))
+    assert second["snapshot_date"] == "2026-09-13"
+    assert second["recompute"]["as_of"] == "2026-09-13"
+    assert second["recompute"]["feed_fetched_date"] == "2026-08-10"
+
+    # And a thirtieth sweep still says the same thing.
+    latest = second
+    for day in range(14, 30):
+        latest, _ = resweep(latest, dt.date(2026, 9, day))
+    assert latest["recompute"]["feed_fetched_date"] == "2026-08-10"
+
+
+def test_a_full_score_after_a_sweep_resets_the_fetch_date() -> None:
+    """The rule must not freeze the date: a real fetch is a real fetch.
+
+    A full re-score writes an artifact with no recompute block, so the next
+    sweep reads its snapshot_date, which is the day it was downloaded.
+    """
+    from scorecard_pipeline.sweep import last_fetched_date
+
+    swept = _artifact(last_service="2027-09-02", fresh_score=85.0, days=365)
+    swept["snapshot_date"] = "2026-08-10"
+    swept, _ = resweep(swept, dt.date(2026, 9, 12))
+    assert last_fetched_date(swept) == "2026-08-10"
+
+    rescored = _artifact(last_service="2027-09-02", fresh_score=85.0, days=365)
+    rescored["snapshot_date"] = "2026-09-13"
+    assert last_fetched_date(rescored) == "2026-09-13"
+    swept_again, _ = resweep(rescored, dt.date(2026, 9, 14))
+    assert swept_again["recompute"]["feed_fetched_date"] == "2026-09-13"

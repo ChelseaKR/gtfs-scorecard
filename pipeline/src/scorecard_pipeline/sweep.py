@@ -59,6 +59,31 @@ def _category_from_json(d: dict[str, Any]) -> CategoryResult:
     )
 
 
+def last_fetched_date(artifact: dict[str, Any]) -> str | None:
+    """The date the feed behind ``artifact`` was last actually downloaded.
+
+    A full score's ``snapshot_date`` is that date. A sweep's is not: the sweep
+    stamps the day it recomputed freshness, having fetched nothing. So the
+    answer for a swept artifact is the fetch date it already carries, and
+    reading ``snapshot_date`` off it instead reports the previous sweep.
+
+    That is what the field did, and sweeps run every cycle, so the claim was
+    almost always "fetched yesterday". Measured against the published store on
+    2026-09-13: of 472 records published as freshness recomputes, 468 named
+    ``feed_fetched_date: 2026-09-12`` while their feeds had not been downloaded
+    since 2026-08-10 -- unchanged ``feed_sha256`` across the whole window. The
+    field exists so a consumer "never mistakes it for a fresh validation"; a
+    date one day old says exactly that.
+    """
+    prior = artifact.get("recompute")
+    if isinstance(prior, dict) and prior.get("kind") == "freshness":
+        fetched = prior.get("feed_fetched_date")
+        if isinstance(fetched, str) and fetched:
+            return fetched
+    snapshot = artifact.get("snapshot_date")
+    return snapshot if isinstance(snapshot, str) else None
+
+
 def _feed_dates(details: dict[str, Any]) -> FeedDates:
     # feed_publisher_name is not stored and not read by freshness(), so None.
     # seasonal_boundary round-trips through details (freshness() records it);
@@ -135,10 +160,13 @@ def resweep(artifact: dict[str, Any], today: dt.date) -> tuple[dict[str, Any], d
     new_artifact["snapshot_date"] = today.isoformat()
     # Mark this as a freshness-only recompute, naming the date the feed was last
     # actually fetched, so a consumer never mistakes it for a fresh validation.
+    # That date survives a chain of sweeps rather than advancing with each one
+    # (last_fetched_date): a sweep downloads nothing, so it cannot be evidence
+    # of a download.
     new_artifact["recompute"] = {
         "kind": "freshness",
         "as_of": today.isoformat(),
-        "feed_fetched_date": artifact.get("snapshot_date"),
+        "feed_fetched_date": last_fetched_date(artifact),
     }
 
     old = artifact.get("overall", {})
