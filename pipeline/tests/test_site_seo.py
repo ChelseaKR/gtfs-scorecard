@@ -165,8 +165,10 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path]:
                     else (
                         '<script type="application/ld+json">'
                         '{"@context":"https://schema.org","@type":"Dataset",'
-                        f'"url":"{ORIGIN}/agency/demo/"'
-                        "}</script>"
+                        f'"url":"{ORIGIN}/agency/demo/",'
+                        '"distribution":{"@type":"DataDownload",'
+                        f'"contentUrl":"{ORIGIN}/data/demo.json"'
+                        "}}</script>"
                     )
                 ),
                 body='<a href="/agencies/">Directory</a>',
@@ -198,6 +200,11 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path]:
     )
     (site / "app.js").write_text("/* fixture */\n", encoding="utf-8")
     (site / "og.png").write_bytes(b"png")
+    # The file the agency Dataset advertises as its download. A structured
+    # block is the one place a URL appears that no link or asset check reads,
+    # so the valid fixture has to carry one for the checks below to mean
+    # anything.
+    _write_text(site, "data/demo.json", '{"demo": true}\n')
     sitemap_urls = (
         "/",
         "/agencies/",
@@ -939,8 +946,10 @@ def test_configured_hreflang_cluster_is_exact(
             (
                 '<script type="application/ld+json">'
                 '{"@context":"https://schema.org","@type":"Dataset",'
-                f'"url":"{ORIGIN}/agency/demo/"'
-                "}</script>"
+                f'"url":"{ORIGIN}/agency/demo/",'
+                '"distribution":{"@type":"DataDownload",'
+                f'"contentUrl":"{ORIGIN}/data/demo.json"'
+                "}}</script>"
             ),
             "",
             "jsonld.required_type_missing",
@@ -971,6 +980,130 @@ def test_required_agency_dataset_has_schema_identity(
 
     assert result.returncode == 1
     assert expected_code in _codes(report)
+
+
+def test_a_required_type_must_be_the_page_own_top_level_node(tmp_path: Path) -> None:
+    """Mentioning an entity of the required type is not declaring one.
+
+    The Dataset moved inside another node's ``isBasedOn``: the page now refers
+    to a dataset instead of being one, which is exactly the state the
+    requirement exists to catch, and the old whole-document walk accepted it.
+    """
+    site, config = _write_fixture(tmp_path)
+    _replace(
+        site / "agency/demo/index.html",
+        '{"@context":"https://schema.org","@type":"Dataset",',
+        '{"@context":"https://schema.org","@type":"WebPage",'
+        f'"url":"{ORIGIN}/agency/demo/","isBasedOn":{{"@type":"Dataset",',
+    )
+    _replace(site / "agency/demo/index.html", "}}</script>", "}}}</script>")
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "jsonld.required_type_missing" in _codes(report)
+
+
+def test_a_nested_node_of_a_required_type_is_not_asked_for_this_page_url(
+    tmp_path: Path,
+) -> None:
+    """A reference to another entity keeps that entity's URL, not this page's.
+
+    /bundle/ names the site Organization and the free single-agency scorecard
+    inside its own Service node so a crawler reading only that page knows who
+    the provider is. Both are Services or Organizations that live elsewhere,
+    and demanding they carry /bundle/'s canonical would make naming them
+    impossible.
+    """
+    site, config = _write_fixture(tmp_path)
+    _replace(
+        site / "agency/demo/index.html",
+        '"distribution":{"@type":"DataDownload",',
+        '"isBasedOn":{"@type":"Dataset","url":"https://example.org/upstream/"},'
+        '"distribution":{"@type":"DataDownload",',
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert _codes(report) == set()
+
+
+@pytest.mark.parametrize(
+    ("new_url", "expected_code"),
+    [
+        (f"{ORIGIN}/data/gone.json", "jsonld.missing_distribution"),
+        (f"{ORIGIN.replace('https://', 'http://')}/data/demo.json", "jsonld.insecure_distribution"),
+    ],
+)
+def test_a_same_site_jsonld_download_must_exist_and_be_secure(
+    tmp_path: Path,
+    new_url: str,
+    expected_code: str,
+) -> None:
+    """A DataDownload is a promise about a file, and nothing else checks it.
+
+    ``<a href>`` and ``<img src>`` are resolved against the rendered tree; a URL
+    that appears only inside a JSON-LD block is invisible to those collectors,
+    so a dataset could advertise a 404 on every page of a family with the whole
+    SEO contract green.
+    """
+    site, config = _write_fixture(tmp_path)
+    _replace(
+        site / "agency/demo/index.html",
+        f'"contentUrl":"{ORIGIN}/data/demo.json"',
+        f'"contentUrl":"{new_url}"',
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert expected_code in _codes(report)
+
+
+def test_a_malformed_jsonld_download_url_is_reported_not_swallowed(tmp_path: Path) -> None:
+    """A URL the parser cannot split is a finding, not a silent skip.
+
+    The resolver returns None for anything off-origin, so a URL that raises on
+    parse would otherwise take the same quiet path as a legitimate external
+    mirror and never be reported.
+    """
+    site, config = _write_fixture(tmp_path)
+    _replace(
+        site / "agency/demo/index.html",
+        f'"contentUrl":"{ORIGIN}/data/demo.json"',
+        '"contentUrl":"https://[invalid"',
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    assert "jsonld.malformed_distribution" in _codes(report)
+
+
+def test_an_offsite_jsonld_download_is_left_alone(tmp_path: Path) -> None:
+    """This check resolves files; it does not reach the network.
+
+    An upstream feed or a mirror on another host is a legitimate ``contentUrl``
+    and cannot be resolved here, so it is not a finding. Paired with the test
+    above so the same fixture proves the check fires on one and not the other.
+    """
+    site, config = _write_fixture(tmp_path)
+    _replace(
+        site / "agency/demo/index.html",
+        f'"contentUrl":"{ORIGIN}/data/demo.json"',
+        '"contentUrl":"https://data.example.org/feed.zip"',
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    assert _codes(report) == set()
 
 
 def test_required_json_ld_pattern_must_match_a_page(tmp_path: Path) -> None:
@@ -1206,7 +1339,18 @@ def test_repository_config_keeps_aliases_and_exemptions_narrow() -> None:
     assert config["retained_redirects_path"] == "_meta/retained-agency-redirects.json"
     assert config["canonical_aliases"] == {"/app/": "/agencies/"}
     assert config["hreflang_groups"] == [{"en": "/", "es": "/es/"}]
-    assert config["required_json_ld_types"] == {"/agency/*/": ["Dataset"]}
+    # Every page family whose structured data is load-bearing, and no other.
+    # Widened deliberately: a rollup publishes a Dataset and the page it lists
+    # from, /bundle/ a Service, and each of those could stop being published
+    # with no code change and no other test noticing. The full reasoning, and
+    # the check that each entry is still required, is in
+    # tests/test_program_discoverability.py.
+    assert config["required_json_ld_types"] == {
+        "/agency/*/": ["Dataset"],
+        "/bundle/": ["Service"],
+        "/program/": ["CollectionPage"],
+        "/program/*/": ["CollectionPage", "Dataset"],
+    }
     assert config["redirect_aliases"] == {
         "/access/": "/adoption/#access",
         "/changes/": "/pulse/#changes",

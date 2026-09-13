@@ -382,6 +382,167 @@ def sync_static_navs() -> list[Path]:
     return changed
 
 
+# The /bundle/ Service node the offers attach to, and the id web/src/bundle.js
+# looks up before it replaces the block at view time. Keeping the id identical
+# is the whole mechanism: the server writes this block, and bundle.js removes
+# and rewrites *that same element* from its own fetch of plan.json, so the page
+# carries exactly one offers block whether or not scripts run, and a plan that
+# says nothing is for sale still leaves no offer standing.
+BUNDLE_SERVICE_ID = f"{BASE_URL}/bundle/#service"
+BUNDLE_OFFERS_SCRIPT_ID = "plan-offers-jsonld"
+BUNDLE_PLAN_PATH = "bundle/plan.json"
+BUNDLE_PAGE_PATH = "bundle/index.html"
+# The one generated region in the hand-authored /bundle/ page.
+_BUNDLE_OFFERS_RE = re.compile(r"<!-- offers:begin -->.*?<!-- offers:end -->", re.DOTALL)
+_BUNDLE_OFFERS_EMPTY_NOTE = (
+    "<!-- Nothing is for sale: plan.json either switches payments off or lists no "
+    "product with both a numeric price and an https checkout link. The page states "
+    "no price because there is none to state. -->"
+)
+
+
+def bundle_offer_nodes(plan: dict[str, Any]) -> list[dict[str, Any]]:
+    """One schema.org Offer per sellable product, from ``plan.json`` alone.
+
+    Built only from fields the plan actually carries, and in the plan file's own
+    product order: a product with no numeric price, or no https checkout link,
+    or a plan with ``paymentsAvailable`` anything but ``True``, contributes
+    nothing. That is the same set of refusals ``web/src/bundle.js::offerNodes``
+    applies to the same file, deliberately — the served markup and the runtime
+    markup are two readings of one source, and they refuse the same things.
+
+    No amount is written here. Every value is read from the plan, which is why
+    switching the tier off stays a data change: edit ``plan.json``, run
+    ``make sync-bundle-offers``, and the offers disappear from the page.
+    ``test_bundle_offers_markup_matches_plan_json`` fails the build if the two
+    are ever out of step, so a price cannot change without the served page
+    changing with it.
+    """
+    if plan.get("paymentsAvailable") is not True:
+        return []
+    currency = str(plan.get("currency") or "USD")
+    products = plan.get("products")
+    if not isinstance(products, dict):
+        return []
+    nodes: list[dict[str, Any]] = []
+    for key, product in products.items():
+        if not isinstance(product, dict):
+            continue
+        price = product.get("price")
+        if not isinstance(price, (int, float)) or isinstance(price, bool):
+            continue
+        checkout = product.get("checkout_url")
+        if not isinstance(checkout, str) or not checkout.startswith("https://"):
+            continue
+        interval = product.get("interval")
+        offer: dict[str, Any] = {
+            "@type": "Offer",
+            "name": str(product.get("label") or key),
+            "price": str(price),
+            "priceCurrency": currency,
+            "availability": "https://schema.org/InStock",
+            "url": checkout,
+            "category": "subscription" if interval else "one-time",
+        }
+        if interval:
+            offer["priceSpecification"] = {
+                "@type": "UnitPriceSpecification",
+                "price": str(price),
+                "priceCurrency": currency,
+                "billingDuration": 1,
+                "billingIncrement": 1,
+                "unitCode": "ANN" if interval == "year" else "MON",
+            }
+        nodes.append(offer)
+    return nodes
+
+
+def bundle_offers_jsonld(plan: dict[str, Any]) -> dict[str, Any] | None:
+    """The Service node carrying those offers, or ``None`` when there are none.
+
+    Attached to the page's static Service node by ``@id`` so the two merge into
+    one entity rather than describing two services, and carrying ``url`` so the
+    node identifies the page it is on -- which is also what
+    ``check_site_seo.py``'s required-type check asks of every top-level node of
+    a required type.
+    """
+    nodes = bundle_offer_nodes(plan)
+    if not nodes:
+        return None
+    # Ordered on the numeric value, reported as the string the Offer carries,
+    # so the range is never a reformatted version of a price stated elsewhere
+    # on the same page: "49" here and "49.0" in the offer would be two
+    # renderings of one amount, and only one of them is what the plan says.
+    by_price = sorted(nodes, key=lambda offer: float(offer["price"]))
+    offers: dict[str, Any] | list[dict[str, Any]] = (
+        nodes[0]
+        if len(nodes) == 1
+        else {
+            "@type": "AggregateOffer",
+            "priceCurrency": str(plan.get("currency") or "USD"),
+            "lowPrice": by_price[0]["price"],
+            "highPrice": by_price[-1]["price"],
+            "offerCount": len(nodes),
+            "offers": nodes,
+        }
+    )
+    return {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "@id": BUNDLE_SERVICE_ID,
+        "url": f"{BASE_URL}/bundle/",
+        "offers": offers,
+    }
+
+
+def bundle_offers_region(plan: dict[str, Any]) -> str:
+    """The generated block, markers included, exactly as it appears on disk."""
+    node = bundle_offers_jsonld(plan)
+    inner = (
+        _BUNDLE_OFFERS_EMPTY_NOTE
+        if node is None
+        else (
+            f'<script id="{BUNDLE_OFFERS_SCRIPT_ID}" type="application/ld+json">'
+            f"{json.dumps(node, separators=(',', ':'))}</script>"
+        )
+    )
+    return f"<!-- offers:begin -->\n  {inner}\n  <!-- offers:end -->"
+
+
+def sync_bundle_offers(root: Path | None = None) -> list[Path]:
+    """Rewrite /bundle/'s generated offers block from web/bundle/plan.json.
+
+    The same shape as ``sync_static_navs``: one canonical source, one delimited
+    region in a hand-authored page, a ``make`` target that regenerates it, and a
+    test that fails CI when the two drift. Returns the paths that changed (empty
+    when in sync).
+
+    Why the page needs this at all, measured on the live site on 2026-09-13:
+    ``/bundle/`` was selling four plans and the bytes it served contained no
+    price and no ``Offer`` node. Prices existed only in the DOM after
+    ``bundle.js`` fetched the plan, so anything reading the page without running
+    scripts -- which is most of what indexes a page -- saw a sales page that
+    sold nothing at no price.
+
+    Generated rather than hand-maintained on purpose. A typed copy of the
+    amounts would be the fourth place a price lives, and the reason this
+    repository already gates ``plan.json`` against the other three is that a
+    copied price keeps selling after the plan changes.
+    """
+    web = (root or _repo_root()) / "web"
+    path = web / BUNDLE_PAGE_PATH
+    plan = json.loads((web / BUNDLE_PLAN_PATH).read_text())
+    old = path.read_text()
+    match = _BUNDLE_OFFERS_RE.search(old)
+    if match is None:
+        raise ValueError(f"{path}: expected one offers:begin/offers:end region, found none")
+    new = old[: match.start()] + bundle_offers_region(plan) + old[match.end() :]
+    if new == old:
+        return []
+    path.write_text(new)
+    return [path]
+
+
 def fit_seo_title(title: str) -> str:
     """Return ``title`` without its site suffix when it overruns the bound.
 
@@ -403,7 +564,7 @@ def _page(
     description: str,
     canonical: str,
     body: str,
-    jsonld: dict[str, Any] | None = None,
+    jsonld: dict[str, Any] | list[dict[str, Any]] | None = None,
     head_extra: str = "",
     robots: str | None = None,
     wide: bool = False,
@@ -422,10 +583,17 @@ def _page(
     ``main_modifier`` adds a page-family hook without replacing the shared
     container classes."""
     title = fit_seo_title(title)
-    ld = (
-        f'\n  <script type="application/ld+json">{json.dumps(jsonld, separators=(",", ":"))}</script>'
-        if jsonld
-        else ""
+    # One <script> per node, never one array, because a page can describe more
+    # than one entity: a program rollup is both a listing page and a published
+    # dataset. Separate blocks keep each node independently readable, and they
+    # are what check_site_seo.py's required_json_ld_types walks -- it asks each
+    # node for its own @context and url, which an array element cannot inherit
+    # from a sibling.
+    nodes = [jsonld] if isinstance(jsonld, dict) else list(jsonld or [])
+    ld = "".join(
+        f'\n  <script type="application/ld+json">{json.dumps(node, separators=(",", ":"))}</script>'
+        for node in nodes
+        if node
     )
     if robots:
         ld += f'\n  <meta name="robots" content="{esc(robots)}">'

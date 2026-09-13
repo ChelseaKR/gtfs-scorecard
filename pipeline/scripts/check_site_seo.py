@@ -1256,8 +1256,22 @@ def _json_ld_nodes(value: Any) -> list[dict[str, Any]]:
     return nodes
 
 
-def _validate_json_ld(page: Page, findings: list[Finding]) -> list[dict[str, Any]]:
+def _validate_json_ld(
+    page: Page, findings: list[Finding]
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    """Parse every JSON-LD block, returning (all nodes, top-level nodes).
+
+    The two lists answer two different questions and conflating them was a
+    defect. *All* nodes is the right scope for a property that can legitimately
+    appear at any depth -- a ``DataDownload``'s ``contentUrl``, a date. *Top
+    level* is the right scope for "this page declares an entity of type X":
+    only a node a block starts with is the page's own subject. A node reached
+    through ``provider``, ``isRelatedTo`` or ``isBasedOn`` is a reference to
+    something described elsewhere, and demanding it carry this page's canonical
+    URL is asking a pointer to be its own target.
+    """
     nodes: list[dict[str, Any]] = []
+    top_level: list[dict[str, Any]] = []
     for block in page.json_ld:
         try:
             value = json.loads(
@@ -1285,6 +1299,8 @@ def _validate_json_ld(page: Page, findings: list[Finding]) -> list[dict[str, Any
             )
             continue
         nodes.extend(_json_ld_nodes(value))
+        block_nodes = value if isinstance(value, list) else [value]
+        top_level.extend(item for item in block_nodes if isinstance(item, dict))
         for location, date_value in _json_ld_dates(value):
             if not _valid_iso_date(date_value):
                 findings.append(
@@ -1294,7 +1310,71 @@ def _validate_json_ld(page: Page, findings: list[Finding]) -> list[dict[str, Any
                         f"line {block.line}: {location} is not a valid ISO 8601 date",
                     )
                 )
-    return nodes
+    return nodes, top_level
+
+
+def _validate_json_ld_distributions(
+    page: Page,
+    nodes: list[dict[str, Any]],
+    config: Config,
+    files: set[str],
+    findings: list[Finding],
+) -> None:
+    """Every same-origin ``contentUrl`` in this page's JSON-LD must be a file
+    the assembled site actually ships.
+
+    A ``DataDownload`` is the one part of a structured-data block that makes a
+    promise about something outside the page: an agency scorecard's
+    ``latest.json``, a program rollup's ``.json`` and ``.csv``. Nothing else
+    checks them. ``<a href>`` and ``<img src>`` are resolved against the site
+    tree by ``_validate_reference``; a URL that appears only inside a
+    ``<script type="application/ld+json">`` block is invisible to the parser's
+    link and asset collectors, so a distribution could 404 on every page of a
+    family with the whole SEO contract green.
+
+    That is the failure worth catching here, because it is silent in both
+    directions: a machine reader follows the link and gets an error page, and a
+    person never sees the link at all. The public artifact tree is assembled by
+    an allowlist (``scripts/assemble_public_artifacts.sh``), so a filename that
+    stops crossing the deployment boundary -- exactly what that script is built
+    to do -- takes the advertised download with it and changes no markup.
+
+    Off-origin ``contentUrl`` values are left alone: this check resolves files,
+    and it does not make network requests.
+    """
+    for node in nodes:
+        raw = node.get("contentUrl")
+        if not isinstance(raw, str) or not raw.strip():
+            continue
+        try:
+            target = _local_target(raw, page, config)
+        except ValueError:
+            findings.append(
+                Finding(
+                    "jsonld.malformed_distribution",
+                    page.relative_path,
+                    f"malformed JSON-LD contentUrl {raw!r}",
+                )
+            )
+            continue
+        if target is None:
+            continue
+        if target.scheme != "https":
+            findings.append(
+                Finding(
+                    "jsonld.insecure_distribution",
+                    page.relative_path,
+                    f"same-site JSON-LD contentUrl must use HTTPS: {raw!r}",
+                )
+            )
+        if _resolve_file(target.path, files) is None:
+            findings.append(
+                Finding(
+                    "jsonld.missing_distribution",
+                    page.relative_path,
+                    f"JSON-LD contentUrl does not exist in the site: {raw!r}",
+                )
+            )
 
 
 def _node_has_type(node: dict[str, Any], type_name: str) -> bool:
@@ -1304,15 +1384,23 @@ def _node_has_type(node: dict[str, Any], type_name: str) -> bool:
 
 def _validate_required_json_ld(
     page: Page,
-    nodes: list[dict[str, Any]],
+    top_level_nodes: list[dict[str, Any]],
     config: Config,
     findings: list[Finding],
 ) -> None:
+    """A configured page family must declare each required @type as its own subject.
+
+    Matched against top-level nodes only. A page that merely *mentions* an
+    entity of the required type -- ``provider``, ``isRelatedTo``,
+    ``isBasedOn`` -- has not declared it, so a nested mention no longer
+    satisfies the requirement, and is no longer asked to carry this page's
+    canonical URL either.
+    """
     for pattern, required_types in config.required_json_ld_types.items():
         if not _matches_path_pattern(page.public_path, pattern):
             continue
         for type_name in required_types:
-            matching = [node for node in nodes if _node_has_type(node, type_name)]
+            matching = [node for node in top_level_nodes if _node_has_type(node, type_name)]
             if not matching:
                 findings.append(
                     Finding(
@@ -1833,9 +1921,10 @@ def _validate_page(
         )
         _validate_presentation(page, config, findings)
     _validate_noindex(page, config, findings)
-    json_ld_nodes = _validate_json_ld(page, findings)
+    json_ld_nodes, top_level_json_ld = _validate_json_ld(page, findings)
+    _validate_json_ld_distributions(page, json_ld_nodes, config, files, findings)
     if not is_redirect:
-        _validate_required_json_ld(page, json_ld_nodes, config, findings)
+        _validate_required_json_ld(page, top_level_json_ld, config, findings)
     for reference in page.misplaced_seo:
         findings.append(
             Finding(

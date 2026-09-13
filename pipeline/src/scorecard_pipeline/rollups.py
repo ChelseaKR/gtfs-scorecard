@@ -564,6 +564,19 @@ _CSV_COLUMNS: tuple[tuple[str, str], ...] = (
 )
 
 
+def csv_column_headers() -> tuple[str, ...]:
+    """The published column names of a rollup's CSV distribution, in order.
+
+    The rollup page advertises that CSV as a schema.org DataDownload and names
+    these as the dataset's ``variableMeasured``. Reading them from the writer's
+    own column table rather than restating them means a column added here is
+    described the moment it is published, and a column removed stops being
+    claimed; ``test_the_rollup_dataset_variables_are_the_published_csv_columns``
+    asserts the two stay the same list.
+    """
+    return tuple(header for header, _ in _CSV_COLUMNS)
+
+
 def _csv_cell(value: Any) -> str:
     if value is None:
         return ""

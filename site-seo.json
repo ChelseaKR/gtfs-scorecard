@@ -24,6 +24,16 @@
   "required_json_ld_types": {
     "/agency/*/": [
       "Dataset"
+    ],
+    "/bundle/": [
+      "Service"
+    ],
+    "/program/": [
+      "CollectionPage"
+    ],
+    "/program/*/": [
+      "CollectionPage",
+      "Dataset"
     ]
   },
   "title_length": [
