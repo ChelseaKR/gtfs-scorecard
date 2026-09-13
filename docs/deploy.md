@@ -251,7 +251,7 @@ Actions; this is the inventory an operator should know exists:
 | `equity.yml` | weekly | Refreshes the US equity overlay from Census ACS (ADR 0015). |
 | `canada-equity.yml` | monthly | Refreshes the Canada overlay from StatCan CIMD (ADR 0027). |
 | `otp-qa.yml` | weekly | Routing QA against containerized OpenTripPlanner (ADR 0014). |
-| `dataset-release.yml` | monthly | Tags the citable `dataset-YYYY-MM` release with the flat exports. |
+| `dataset-release.yml` | monthly | Tags the citable `dataset-YYYY-MM` release with the flat exports. Fires on days 1, 2 and 3; days 2 and 3 are no-ops once the month has a successful run. |
 | `onboard.yml` | on issue | Scores a feed from a "score-request" issue and comments the scorecard. |
 | `validator-canary.yml` | manual | Shadow-scores a candidate validator version for governed upgrades. |
 | `tiles.yml` | manual | Rebuilds the national PMTiles route archive (needs tippecanoe). |

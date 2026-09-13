@@ -64,8 +64,27 @@ jobs:
       - name: Sample realtime feeds
         working-directory: pipeline
         run: uv run scorecard rt-health
+      # RELIABILITY: the retry below used to rebase, and a rebase cannot resolve
+      # what it finds here. This job samples for over two hours and pushes at
+      # the end, so `main` has routinely moved to ANOTHER monitor run's
+      # observations by then — the concurrency queue releases the next run
+      # within seconds of this one's push, and its checkout can precede that
+      # push. Both sides then hold different appends to the same per-agency
+      # JSON, so every record is a content conflict: run 34735712784
+      # (2026-09-13) hit `git rebase --abort; exit 1` with conflicts in
+      # essentially the whole directory and discarded a full cycle of
+      # observations. Measured over the 30 days to 2026-09-13, this cost one
+      # scheduled run a day from 09-09 onward (03:31 UTC, six days running),
+      # and each loss also reddened Watchdog's realtime check.
+      #
+      # The two sides are not in disagreement — each holds observations the
+      # other never took — so the retry unions the histories by capture
+      # timestamp instead of replaying a patch. `merge_rt_health.py` recomputes
+      # each summary from the merged list; the published copy wins a shared
+      # timestamp, so a merge never rewrites what main already carries.
       - name: Commit observations
         run: |
+          set -euo pipefail
           git config user.name "scorecard-bot"
           git config user.email "actions@users.noreply.github.com"
           git add data/rt-health
@@ -76,9 +95,21 @@ jobs:
             pushed=false
             for attempt in 1 2 3 4 5; do
               if git push origin HEAD:main; then pushed=true; break; fi
-              echo "push rejected (main moved); rebasing and retrying ($attempt)"
+              echo "push rejected (main moved); merging both histories and retrying ($attempt)"
+              ours="$RUNNER_TEMP/rt-health-ours-$attempt"
+              rm -rf "$ours"
+              cp -R data/rt-health "$ours"
               git fetch origin main
-              git rebase origin/main || { git rebase --abort; exit 1; }
+              git reset --hard FETCH_HEAD
+              (cd pipeline && uv run python scripts/merge_rt_health.py \
+                --ours "$ours" --into ../data/rt-health)
+              git add data/rt-health
+              if git diff --cached --quiet; then
+                echo "main already carries every observation this run recorded."
+                pushed=true
+                break
+              fi
+              git commit -m "chore(rt): realtime health observations"
               sleep 3
             done
             if [ "$pushed" != true ]; then

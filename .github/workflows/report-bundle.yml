@@ -18,9 +18,12 @@ name: Program report bundle
 # fetched or rendered.
 #
 # Delivery degrades honestly. Without an artifacts bucket, the committed
-# snapshot is used. Without the program-bundle API (BUNDLE_API_BASE) the
-# archive is kept as a run artifact and no email is sent, because an email
-# with a link that will not work is worse than no email.
+# snapshot is used. Without the program-bundle API (BUNDLE_API_BASE) no email
+# is sent, because an email with a link that will not work is worse than no
+# email. Nothing is kept on the run in either case: a run artifact of a public
+# repository is published, and the archive is the paid deliverable and carries
+# its own download capability. The repair for an undelivered order is a re-run
+# with the same inputs.
 
 on:
   workflow_dispatch:
@@ -255,8 +258,24 @@ jobs:
           aws s3 cp bundle.zip "s3://${ARTIFACTS_BUCKET}/program-bundles/${BUNDLE_ID}/bundle.zip" \
             --content-type application/zip --only-show-errors
 
+      # Once the step above has run, the archive is in the bucket and the
+      # buyer's only route to it is this email.
+      #
+      # That is why the two variables the email needs are checked *inside* this
+      # step rather than in its `if:`. Gated there, a blank BUNDLE_API_BASE or
+      # SES_FROM skipped the send, and the run still ended green with the
+      # archive sitting in S3 -- which is precisely the evidence the daily
+      # reconciler reads as a delivered order (reconcile_handler._capability_
+      # finding asks S3 whether the object exists, and nothing anywhere asks
+      # whether the mail was sent). One deleted or renamed repository variable
+      # would therefore have stopped delivery for every paid order, with a
+      # green run, no watchdog alarm, no reconciler finding, and a buyer who
+      # had been told on the setup form that the build had started.
+      #
+      # The failure is the alarm: watchdog.yml reads this workflow's conclusion
+      # every six hours, and the step below says a paid order did not complete.
       - name: Email the download link
-        if: ${{ vars.ARTIFACTS_BUCKET != '' && vars.BUNDLE_API_BASE != '' && vars.SES_FROM != '' }}
+        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         env:
           BUNDLE_API_BASE: ${{ vars.BUNDLE_API_BASE }}
           BUNDLE_ID: ${{ inputs.bundle_id }}
@@ -264,6 +283,10 @@ jobs:
           SES_FROM: ${{ vars.SES_FROM }}
         run: |
           set -euo pipefail
+          if [ -z "${BUNDLE_API_BASE}" ] || [ -z "${SES_FROM}" ]; then
+            echo "::error::The archive was uploaded but the delivery route is not configured (BUNDLE_API_BASE and SES_FROM must both be set), so the download link cannot be sent. Failing this run: an uploaded archive with no email reads as a delivered order everywhere else in this system."
+            exit 1
+          fi
           expires="$(date -u -d '+30 days' +%Y-%m-%d)"
           uv run --with boto3 python -m scorecard_pipeline.cli bundle-email \
             --request request.json --manifest manifest.json \
@@ -271,13 +294,19 @@ jobs:
             --expires-on "$expires" --promised-by "$PROMISED_BY" \
             --out email.txt --send --from "$SES_FROM"
 
+      # Only the no-bucket case now. A bucket with no delivery route is not a
+      # degraded mode, it is an undelivered paid order, and the step above
+      # fails on it instead of writing a note nobody reads.
       - name: Say when delivery is off
-        if: ${{ vars.ARTIFACTS_BUCKET == '' || vars.BUNDLE_API_BASE == '' || vars.SES_FROM == '' }}
+        if: ${{ vars.ARTIFACTS_BUCKET == '' }}
         run: |
           {
             echo
             echo "**No email was sent.** ARTIFACTS_BUCKET, BUNDLE_API_BASE, and SES_FROM must all be"
-            echo "set for delivery; the archive is attached to this run instead (30-day retention)."
+            echo "set for delivery. The archive is not attached to this run either: a run artifact"
+            echo "of a public repository is published, and this one is a paid deliverable that"
+            echo "carries its own download capability. Set the three variables and re-run this"
+            echo "workflow with the same inputs."
           } >> "$GITHUB_STEP_SUMMARY"
 
       # The artifact name is public. Measured 2026-09-12 against the two runs
@@ -328,13 +357,25 @@ jobs:
             echo "program-bundles table, and the daily reconciler files the counts as an issue."
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Keep the archive on the run
-        if: ${{ always() }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
-        with:
-          name: program-bundle-${{ inputs.dispatch_key || github.run_id }}
-          path: |
-            pipeline/bundle.zip
-            pipeline/manifest.json
-          if-no-files-found: warn
-          retention-days: 30
+      # There is deliberately no upload-artifact step here, and adding one back
+      # is a regression test failure (test_the_built_archive_is_never_kept_on
+      # _the_run). A run artifact of this repository is published: this repo is
+      # public, so every signed-in GitHub account has read access and can
+      # download it for its whole retention window, and the REST artifact
+      # listing answers unauthenticated.
+      #
+      # What was being uploaded was `pipeline/bundle.zip` and
+      # `pipeline/manifest.json` -- the paid deliverable itself, the buying
+      # program's name, and, inside the archive's own README.txt and manifest,
+      # the 32-hex bundle id. That id IS the download capability
+      # (infra/program-bundle/setup_handler.py: "the capability in the email is
+      # the credential"), so the archive was also a copy of the credential that
+      # fetches it from S3 for thirty days. Renaming the artifact (#407) took
+      # the id off the run page; it did not take it out of the file.
+      #
+      # Delivery does not need it. The archive goes to
+      # program-bundles/<id>/bundle.zip in the artifacts bucket, which is
+      # outside the CloudFront allow-list and reachable only through the
+      # presigning download route, and the buyer gets a link to that. A failed
+      # run is repaired by re-running this workflow with the same inputs, which
+      # is what the failure summary above already says.
