@@ -47,6 +47,23 @@ the declared public surface).
   nothing. `test_workflow_safety.py` holds both bounds between their measured
   runtime and their ceiling, and holds the watchdog's copies of the bounds to
   the workflows ([#390](https://github.com/ChelseaKR/gtfs-scorecard/issues/390)).
+- **A realtime monitor run whose push was rejected threw its observations away
+  (2026-09-13).** `rt-monitor.yml` samples every agency for over two hours and
+  commits at the end, so `main` has usually moved to another monitor run's
+  observations by then: the concurrency queue releases the next run within
+  seconds of this one's push, and that run's checkout can precede it. The retry
+  rebased, and a rebase cannot resolve this — both sides appended different
+  readings to the same per-agency records, so every file conflicted and the loop
+  ran `git rebase --abort; exit 1`. Measured over the 30 days to 2026-09-13,
+  that cost one scheduled run a day from 09-09 onward (the 03:31 UTC run, six
+  days running), each one a full three-hour sampling cycle for every agency,
+  and each one also reddening Watchdog's realtime check. The two runs are not in
+  disagreement, so the retry now unions the two histories by capture timestamp
+  (`pipeline/scripts/merge_rt_health.py`), recomputes each summary from the
+  merged list, caps it the way an append does, and re-commits. A record present
+  only on the other side is left alone, a shared timestamp keeps the published
+  copy, and a corrupt published record still refuses to be read as an empty
+  history.
 - **`/realtime/` and `api/v1/realtime.json` carried the build date where a data
   date belongs (2026-09-13).** The only date either document held was
   `generated_at`, written at every render, so a reader took it for when the
@@ -66,6 +83,21 @@ the declared public surface).
   not dropped from the denominator, and a corpus where nobody recorded a date
   publishes nulls and says so rather than falling back to the build date
   ([#389](https://github.com/ChelseaKR/gtfs-scorecard/issues/389)).
+- **The monthly dataset cut had one attempt a month, and 2026-09 spent it
+  (2026-09-13).** Run 33553673342 (2026-09-01) failed in "Assemble the release
+  bundle": `expected-latest-ids` and `actual-latest-ids` differed at line 294,
+  the index/latest straddle `pages.yml` now re-reads through. `dataset-2026-09`
+  does not exist, the citable release for that month was never cut, and nothing
+  said so — this workflow publishes no page and has no cadence to go stale
+  against, so a failed cut is invisible until somebody opens the Actions tab.
+  It now fires on days 1, 2 and 3, and a new `decide` job keeps a healthy month
+  at exactly one run by asking whether a run of this workflow started in this
+  month and succeeded. That question is deliberately not "does the tag exist":
+  the tag is written two thirds of the way through the job, so a run that
+  tagged and then failed to stage its release would read as done and never be
+  retried. An unreadable run history fails the guard rather than being turned
+  into an empty answer, and the release job is skipped outright on a spent
+  fire rather than started and short-circuited.
 - **`scorecard try` on a local zip wrote the machine's absolute path into the
   files people forward (2026-09-13).** A single-feed run recorded a local feed
   as `file:///…` of its resolved path, so a user name and a folder layout
@@ -81,6 +113,23 @@ the declared public surface).
   its containing folder. Schema.org `isBasedOn` is omitted rather than filled
   with a file name, since only a fetchable link belongs in a URL slot
   ([#398](https://github.com/ChelseaKR/gtfs-scorecard/issues/398)).
+- **A Pages platform blip cost a whole publish cycle, twice in six days
+  (2026-09-13).** Neither loss came from anything this repository produced. Run
+  34245244731 (2026-09-08) uploaded all 204,351,632 bytes of the site artifact
+  and then failed on `Failed to FinalizeArtifact: ... (403) Forbidden`; run
+  34461157937 (2026-09-10) read `Current status: updating_pages` from a healthy
+  backend for the full 10 minutes `actions/deploy-pages` defaults to and then
+  *cancelled its own deployment* (`Timeout reached, aborting!`). Both were
+  Intraday refresh deploys, so in both the refreshed data reached S3 and the
+  live site kept serving the previous generation until the next cycle three
+  hours later, with a red scheduled run to read. The upload is now attempted
+  twice — the first attempt tolerates its own failure so the second can run, and
+  the second carries no `continue-on-error`, so two failures still fail the job
+  — and the deploy waits 20 minutes, above the action's default and inside the
+  job's own 30-minute bound. `test_pages_deploy_resilience.py` holds that shape:
+  exactly one tolerated failure, a retry tied to the first attempt's outcome
+  that can itself fail, and a wait that stays shorter than the job containing
+  it.
 - **The delivery-breach rule could not read the type DynamoDB returns, so no
   paid order has ever been reported as owing a refund (2026-09-13).**
   `/bundle/` promises delivery within two business days "or the purchase is

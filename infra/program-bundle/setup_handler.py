@@ -64,6 +64,7 @@ from common import (
     dispatch_bundle_workflow,
     html_response,
     json_response,
+    now_iso,
     payments_enabled,
     scan_all,
     stripe_get,
@@ -117,6 +118,16 @@ def _session_row(session_id: str, bundle_id: str, plan: str, email: str) -> dict
     }
 
 
+def _condition_failed(err: Exception) -> bool:
+    """Whether a boto3 exception is the conditional check failing.
+
+    Read by name rather than by type: the resource layer builds these classes
+    dynamically, so importing the exception would tie this module to a client
+    that only exists at runtime.
+    """
+    return "ConditionalCheckFailed" in type(err).__name__ or "ConditionalCheckFailed" in str(err)
+
+
 def _claim_session(
     bundles: Any, session_id: str, bundle_id: str, plan: str, email: str = ""
 ) -> bool:
@@ -127,7 +138,7 @@ def _claim_session(
             ConditionExpression="attribute_not_exists(bundle_id)",
         )
     except Exception as err:  # boto3's ConditionalCheckFailedException, by name
-        if "ConditionalCheckFailed" in type(err).__name__ or "ConditionalCheckFailed" in str(err):
+        if _condition_failed(err):
             return False
         raise
     return True
@@ -424,31 +435,77 @@ def _agency_cap(bundles: Any, session: dict[str, Any], session_id: str, plan: st
 def _record_subscription(
     session: dict[str, Any], request: Any, *, price: str, plan: str, entitlement: _Inherited
 ) -> None:
-    """Store what the weekly refresh needs, for a subscription purchase."""
+    """Store what the weekly refresh needs, for a subscription purchase.
+
+    **This route does not decide whether a subscription is active.** Stripe
+    does, and the webhook is where Stripe's answer arrives
+    (webhook_handler: a status other than ``active`` or ``trialing`` stops the
+    refresh, and ``customer.subscription.deleted`` marks the row canceled).
+    Writing the whole row with ``put_item`` overwrote that answer with
+    ``status: "active"``, and the form is submitted *after* checkout, so the
+    events that can lose the race are the ones that matter: a subscription
+    cancelled from the Stripe receipt in the minutes before the buyer fills in
+    this form came back as active, and the weekly refresh then sent a fresh
+    archive every 28 days, for ever, for a subscription nobody was paying for.
+    A failed first payment (``past_due``, ``unpaid``) was erased the same way.
+
+    So the status is written once, in a conditional put that creates the row,
+    and never touched again by this route. Every later write is an update of
+    the fields this route owns.
+
+    ``last_refresh`` is stamped because one has just been sent: this route
+    dispatches the first archive itself, and ``refresh_handler._due`` reads an
+    absent ``last_refresh`` as "never refreshed, so due now". The first weekly
+    tick after a purchase therefore sent a second archive within days of the
+    first, on a plan the page sells as monthly.
+    """
     if request.cadence != "monthly" or not session.get("subscription"):
         return
-    table("SUBSCRIPTIONS_TABLE").put_item(
-        Item={
-            "id": str(session["subscription"]),
-            "status": "active",
-            "customer": str(session.get("customer") or ""),
-            # The refresh re-checks this against the configured prices, so
-            # a row left over from test mode never builds in live mode.
-            "price": price,
-            "plan": plan,
-            # What this subscription renews, recorded at purchase time. The
-            # stored request is already held to this number, but the number
-            # itself has to travel with the subscription: a refresh that
-            # re-derived it later would read today's plan caps rather than the
-            # bundle this buyer actually bought, and the refresh checks it
-            # again every month against the list it is about to send.
-            "agency_cap": entitlement.cap,
-            "renews_plan": entitlement.plan,
-            "renews_session": entitlement.session_id,
-            "deliver_to": request.deliver_to,
-            "request": json.dumps(request.as_dict()),
-            "created_at": bundle_row(request.as_dict(), source="checkout")["created_at"],
-        }
+    subscriptions = table("SUBSCRIPTIONS_TABLE")
+    subscription_id = str(session["subscription"])
+    stamp = now_iso()
+    owned: dict[str, Any] = {
+        "customer": str(session.get("customer") or ""),
+        # The refresh re-checks this against the configured prices, so
+        # a row left over from test mode never builds in live mode.
+        "price": price,
+        "plan": plan,
+        # What this subscription renews, recorded at purchase time. The
+        # stored request is already held to this number, but the number
+        # itself has to travel with the subscription: a refresh that
+        # re-derived it later would read today's plan caps rather than the
+        # bundle this buyer actually bought, and the refresh checks it
+        # again every month against the list it is about to send.
+        "agency_cap": entitlement.cap,
+        "renews_plan": entitlement.plan,
+        "renews_session": entitlement.session_id,
+        "deliver_to": request.deliver_to,
+        "request": json.dumps(request.as_dict()),
+        "last_refresh": stamp,
+    }
+    try:
+        subscriptions.put_item(
+            Item={"id": subscription_id, "status": "active", "created_at": stamp, **owned},
+            ConditionExpression="attribute_not_exists(#k)",
+            ExpressionAttributeNames={"#k": "id"},
+        )
+        return
+    except Exception as err:  # boto3's ConditionalCheckFailedException, by name
+        if not _condition_failed(err):
+            raise
+    # The row exists, so the webhook has already recorded what Stripe says
+    # about this subscription. Update only what the setup form is the source
+    # of; `status`, `canceled_at` and `created_at` are left exactly as they
+    # were found. Names are placeheld because several of these ("status",
+    # "plan", "request") are DynamoDB reserved words.
+    names = {f"#f{index}": field for index, field in enumerate(owned)}
+    values = {f":v{index}": value for index, value in enumerate(owned.values())}
+    assignments = ", ".join(f"{name} = :v{index}" for index, name in enumerate(names))
+    subscriptions.update_item(
+        Key={"id": subscription_id},
+        UpdateExpression=f"SET {assignments}",
+        ExpressionAttributeNames=names,
+        ExpressionAttributeValues=values,
     )
 
 

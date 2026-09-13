@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import shutil
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -1278,7 +1281,7 @@ def test_a_failed_paid_bundle_run_says_so_without_naming_the_order() -> None:
         "a run that fulfils a paid order must say so when it fails"
     )
     say_at = workflow.index("Say that a paid order failed")
-    say = workflow[say_at : workflow.index("      - name: Keep the archive on the run")]
+    say = workflow[say_at:]
     assert "::error::" in say
     assert "$GITHUB_STEP_SUMMARY" in say
     assert "this log is public" in say, "the reason the order is not named belongs next to it"
@@ -1294,3 +1297,156 @@ def test_a_failed_paid_bundle_run_says_so_without_naming_the_order() -> None:
             assert '--to "$SES_FROM"' not in block, (
                 "mailing the sending identity is a send that succeeds and a delivery that does not"
             )
+
+
+# ---------------------------------------------------------------------------
+# report-bundle.yml: an uploaded archive that cannot be emailed is not delivered
+# ---------------------------------------------------------------------------
+
+
+_BASH = shutil.which("bash") or "/bin/bash"
+
+
+def _email_step() -> dict[str, Any]:
+    for _job, step in _steps(_report_bundle()):
+        if str(step.get("name") or "") == "Email the download link":
+            return step
+    raise AssertionError("report-bundle.yml no longer has an 'Email the download link' step")
+
+
+def _run_email_step(tmp_path: Path, **env: str) -> subprocess.CompletedProcess[str]:
+    """Run the delivery step's own script with `uv` and `date` stubbed.
+
+    The script is executed rather than pattern-matched, because what is being
+    checked is a decision it makes at run time: whether it sends, and whether
+    it fails when it cannot. The stub records its arguments, so "no email was
+    attempted" is an observation and not an inference.
+    """
+    stubs = tmp_path / "stubs"
+    stubs.mkdir(parents=True)
+    (stubs / "uv").write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$STUB_LOG"\nexit 0\n')
+    (stubs / "date").write_text("#!/bin/sh\necho 2026-10-13\n")
+    for stub in stubs.iterdir():
+        stub.chmod(0o755)
+    log = tmp_path / "stub.log"
+    environment = {
+        **os.environ,
+        "PATH": f"{stubs}:{os.environ['PATH']}",
+        "STUB_LOG": str(log),
+        "GITHUB_STEP_SUMMARY": str(tmp_path / "summary.md"),
+        **env,
+    }
+    done = subprocess.run(  # noqa: S603 - fixed shell and a repository-owned workflow step
+        [_BASH, "-c", str(_email_step()["run"])],
+        cwd=tmp_path,
+        env=environment,
+        capture_output=True,
+        text=True,
+    )
+    done.stdout = done.stdout + (log.read_text() if log.exists() else "")
+    return done
+
+
+def test_the_delivery_step_is_gated_only_on_the_bucket_it_uploaded_to() -> None:
+    """A missing delivery variable must not silently skip the send.
+
+    Gated in the `if:` on all three variables, a blank BUNDLE_API_BASE or
+    SES_FROM skipped this step, the job ended green, and the archive sat in
+    S3 -- which is the only thing the daily reconciler looks at
+    (`_capability_finding` asks S3 whether the object exists). Nothing in this
+    system measures whether the mail was sent, so one deleted repository
+    variable would have stopped delivery for every paid order without a single
+    red run, alarm or finding, while each buyer had been told on the setup form
+    that their build had started.
+    """
+    condition = str(_email_step().get("if") or "")
+    assert "vars.ARTIFACTS_BUCKET" in condition, "the step still needs the upload to have happened"
+    for gate in ("vars.BUNDLE_API_BASE", "vars.SES_FROM"):
+        assert gate not in condition, (
+            f"{gate} in the step's `if:` turns a broken delivery route into a skipped step and a "
+            "green run; it must be checked inside the step, where it can fail"
+        )
+    off = [
+        step
+        for _job, step in _steps(_report_bundle())
+        if str(step.get("name") or "") == "Say when delivery is off"
+    ]
+    assert off and "BUNDLE_API_BASE" not in str(off[0].get("if") or ""), (
+        "a bucket with no delivery route is an undelivered paid order, not a degraded mode"
+    )
+
+
+def test_a_blank_delivery_route_fails_the_run_and_sends_nothing(tmp_path: Path) -> None:
+    """Run the step. Blank route: non-zero exit, and no send attempted."""
+    for blank in ("BUNDLE_API_BASE", "SES_FROM"):
+        env = {
+            "BUNDLE_API_BASE": "https://api.example",
+            "SES_FROM": "reports@example",
+            "BUNDLE_ID": "a" * 32,
+            "PROMISED_BY": "Tuesday 16 September",
+        }
+        env[blank] = ""
+        done = _run_email_step(tmp_path / blank, **env)
+        assert done.returncode != 0, f"a blank {blank} left the run green"
+        assert "::error::" in done.stdout, f"a blank {blank} failed without saying why"
+        assert "bundle-email" not in done.stdout, (
+            f"a blank {blank} still attempted a send: {done.stdout}"
+        )
+
+
+def test_a_configured_delivery_route_still_sends_the_link(tmp_path: Path) -> None:
+    """And the send is unchanged when the route is there: same download URL,
+    same promised date, same from address. A guard that also broke the happy
+    path would be worse than the hole it closes."""
+    done = _run_email_step(
+        tmp_path,
+        BUNDLE_API_BASE="https://api.example/",
+        SES_FROM="reports@example",
+        BUNDLE_ID="b" * 32,
+        PROMISED_BY="Tuesday 16 September",
+    )
+    assert done.returncode == 0, done.stderr
+    assert "bundle-email" in done.stdout
+    assert f"--download-url https://api.example/download/{'b' * 32}" in done.stdout
+    assert "--promised-by Tuesday 16 September" in done.stdout
+    assert "--send --from reports@example" in done.stdout
+
+
+def test_the_built_archive_is_never_kept_on_the_run() -> None:
+    """A run artifact of this repository is published, and the bundle is not.
+
+    The archive is the paid deliverable. Its README.txt and manifest.json both
+    print the 32-hex bundle id, which is the download capability that fetches
+    it from S3 for thirty days (setup_handler: "the capability in the email is
+    the credential"), and the manifest also names the buying program. This
+    repository is public: every signed-in GitHub account has read access, so
+    every one of them could download that artifact for its whole retention
+    window, and the REST artifact listing answers with no token at all.
+
+    Renaming the artifact took the capability off the run *page* (#407). It did
+    not take it out of the *file*, and the file was still being published. The
+    delivery route needs none of it: the archive goes to the artifacts bucket
+    behind the presigning download route, and a failed run is repaired by
+    re-running this workflow with the same inputs.
+    """
+    workflow = _report_bundle()
+    for job, step in _steps(workflow):
+        uses = str(step.get("uses") or "")
+        assert "upload-artifact" not in uses, (
+            f"{job}/{step.get('name')} publishes a run artifact; a run artifact of a public "
+            "repository is published, and the bundle archive is a paid deliverable that "
+            "carries its own download capability"
+        )
+        paths = str((step.get("with") or {}).get("path") or "")
+        for built in ("bundle.zip", "manifest.json"):
+            assert built not in paths, f"{job}/{step.get('name')} publishes {built}"
+
+    # And the summary must not tell a reader to go and get it there, because
+    # after this change it is not there -- and if it ever is again, the test
+    # above fails first.
+    raw = _workflow("report-bundle.yml")
+    off_at = raw.index("Say when delivery is off")
+    off = raw[off_at : raw.index("      - name: Say that a paid order failed")]
+    assert "attached to this run instead" not in off, (
+        "the delivery-off summary promises an archive the run no longer keeps"
+    )

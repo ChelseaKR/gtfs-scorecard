@@ -182,6 +182,62 @@ def test_the_withdrawal_lifts_when_a_real_measurement_arrives(tmp_path: Path) ->
     assert withdrawn_now(parse_corrections(ONE_ENTRY).withdrawn, tmp_path) == ()
 
 
+def test_the_withdrawal_does_not_lift_for_the_same_unread_bytes_on_a_later_date(
+    tmp_path: Path,
+) -> None:
+    """The escape that kept two withdrawn F grades publicly published.
+
+    `beloit-transit` and `massachusetts-area-express-max` were withdrawn on
+    2026-09-06, and both were still served a week later. Each had been
+    re-scored on 2026-08-10 from the exact bytes its entry names, so the newest
+    artifact on file matched the correction on hash but not on date. Matching
+    on both together read that as a new measurement. Nothing was read either
+    time: 0 stops and 0 trips, before and after.
+    """
+    agency_dir = tmp_path / "santa-clarita-transit"
+    agency_dir.mkdir()
+    redated = _artifact(date="2026-08-10")
+    (agency_dir / "2026-07-16.json").write_text(json.dumps(_artifact()))
+    (agency_dir / "2026-08-10.json").write_text(json.dumps(redated))
+    (agency_dir / "latest.json").write_text(json.dumps(redated))
+
+    entry = parse_corrections(ONE_ENTRY).withdrawn["santa-clarita-transit"]
+    # The record it names is still exactly that one record.
+    assert entry.withdraws(redated) is False
+    # But the withdrawal holds, because a re-stamp is not a reading.
+    assert corrections.suppresses_current(entry, redated) is True
+    assert withdrawn_now(parse_corrections(ONE_ENTRY).withdrawn, tmp_path) == (
+        "santa-clarita-transit",
+    )
+
+
+def test_the_withdrawal_still_lifts_when_the_same_bytes_are_finally_read(
+    tmp_path: Path,
+) -> None:
+    """The case the narrow rule must not catch.
+
+    Eleven of the nineteen wrap their tables in a folder. The reader fix (#353)
+    reads those same bytes and finds real stops and trips, so the same
+    `feed_sha256` on a later date is a genuine measurement and must publish.
+    """
+    agency_dir = tmp_path / "santa-clarita-transit"
+    agency_dir.mkdir()
+    read_at_last = _artifact(date="2026-09-10", stops=364, trips=898, grade="C")
+    (agency_dir / "2026-07-16.json").write_text(json.dumps(_artifact()))
+    (agency_dir / "2026-09-10.json").write_text(json.dumps(read_at_last))
+
+    entry = parse_corrections(ONE_ENTRY).withdrawn["santa-clarita-transit"]
+    assert corrections.suppresses_current(entry, read_at_last) is False
+    assert withdrawn_now(parse_corrections(ONE_ENTRY).withdrawn, tmp_path) == ()
+
+
+def test_a_different_feed_still_supersedes_the_withdrawal(tmp_path: Path) -> None:
+    """Different bytes are a different feed, whatever they score."""
+    entry = parse_corrections(ONE_ENTRY).withdrawn["santa-clarita-transit"]
+    other_bytes = _artifact(date="2026-09-10", sha="a" * 64)
+    assert corrections.suppresses_current(entry, other_bytes) is False
+
+
 def test_reconcile_removes_a_withdrawn_agency_current_pointers(tmp_path: Path) -> None:
     """The file operation, with no registry loaded at all.
 

@@ -1,8 +1,10 @@
 # Monthly citable dataset release (docs/expansion-ideation-2026-07.md, section C;
 # RESEARCH-ROADMAP.md E7). A researcher citing "the scorecard dataset" needs a
 # pinned, byte-verifiable reference, not a URL whose contents change daily. This tags
-# the first-of-month state as dataset-YYYY-MM and attaches the flat exports plus
-# the data dictionary, so a citation can verify the exact bytes analysed.
+# the start-of-month state as dataset-YYYY-MM and attaches the flat exports plus
+# the data dictionary, so a citation can verify the exact bytes analysed. The cut
+# is attempted on day 1 and retried on days 2 and 3 if day 1 produced no
+# successful run; a month that cuts cleanly still runs exactly once.
 name: Dataset release
 
 on:
@@ -12,11 +14,26 @@ on:
     # consume the successful Daily run's exact Pages artifact by run id rather
     # than racing the mutable production URL.
     - cron: "47 17 1 * *"
+    # RELIABILITY (2026-09-13): a monthly job gets one attempt a year at each
+    # month, and it spent 2026-09's. Run 33553673342 (2026-09-01) failed in
+    # "Assemble the release bundle" — `expected-latest-ids` and
+    # `actual-latest-ids` differed at line 294, the index/latest straddle
+    # pages.yml now re-reads through (#420) — and `dataset-2026-09` does not
+    # exist. Nothing retried it and nothing says it is missing: this workflow
+    # has no cadence to go stale against and no page that looks wrong when it
+    # stops. Two more fires, same time of day. The `decide` job below makes
+    # them no-ops once the month has been cut, so a healthy month still runs
+    # exactly once.
+    - cron: "47 17 2 * *"
+    - cron: "47 17 3 * *"
   workflow_dispatch: {}
 
+# Write is the tagging job's, not this file's: the `decide` job below only reads
+# run history, and a workflow-level `contents: write` would hand it the token
+# that can move a release tag (zizmor excessive-permissions). Each job declares
+# what it needs.
 permissions:
-  contents: write # create the tag and release
-  actions: read # resolve the successful Daily scorecard run for scheduled cuts
+  contents: read
 
 # A second concurrent run (manual dispatch racing the schedule) must not
 # double-create/overlap a release; the later tag-exists guard only checks
@@ -26,9 +43,81 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Whether this month still needs cutting. Kept in its own job so the retry
+  # fires are free when there is nothing to do: the release job below is
+  # skipped outright rather than started and short-circuited step by step.
+  #
+  # "Already cut" is read as a successful run of THIS workflow started in this
+  # month, not as the tag existing. The tag is written two thirds of the way
+  # through the job, so a run that tagged and then failed to stage its release
+  # draft would leave a tag and no release — and a guard keyed on the tag would
+  # read that as done and never retry it.
+  decide:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read # read this workflow's own run history
+    outputs:
+      cut: ${{ steps.decide.outputs.cut }}
+    steps:
+      - name: Does this month still need a cut?
+        id: decide
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" != schedule ]; then
+            # A manual cut is a deliberate act; it is not second-guessed here.
+            # The release job still refuses anything but current origin/main.
+            echo "cut=true" >> "$GITHUB_OUTPUT"
+            echo "manual dispatch: proceeding to the release job."
+            exit 0
+          fi
+          day=$(date -u +%d)
+          case "$day" in
+            01 | 02 | 03) ;;
+            *)
+              echo "::error::A scheduled dataset cut runs on days 1-3 UTC; today is day $day."
+              exit 1
+              ;;
+          esac
+          month=$(date -u +%Y-%m)
+          # Failing to ask is not the same as a clean answer: without a run
+          # list this job says nothing, rather than assuming the month is
+          # uncut (which would re-cut a good month) or cut (which would lose
+          # it again).
+          if ! runs=$(gh api --paginate \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/dataset-release.yml/runs?status=success&per_page=100" \
+            --jq '.workflow_runs' 2>"$RUNNER_TEMP/gh-runs.err"); then
+            echo "::error::Could not read this workflow's run history: $(cat "$RUNNER_TEMP/gh-runs.err")"
+            exit 1
+          fi
+          cut_runs=$(jq -s --arg month "$month" '
+            add
+            | map(select(
+                .conclusion == "success"
+                and (.run_started_at | startswith($month + "-"))
+              ))
+            | length
+          ' <<<"$runs")
+          if [ "$cut_runs" -gt 0 ]; then
+            echo "cut=false" >> "$GITHUB_OUTPUT"
+            echo "$month already has $cut_runs successful dataset release run(s); nothing to do."
+            echo "$month was already cut; this retry fire did nothing." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo "cut=true" >> "$GITHUB_OUTPUT"
+          echo "no successful dataset release run started in $month yet; cutting on day $day."
+
   release:
+    needs: decide
+    if: ${{ needs.decide.outputs.cut == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: write # create the tag and release
+      actions: read # resolve the successful Daily scorecard run for scheduled cuts
     concurrency:
       group: artifacts-publish
       cancel-in-progress: false
@@ -59,8 +148,13 @@ jobs:
           origin_main=$(git rev-parse refs/remotes/origin/main)
           if [ "$EVENT_NAME" = schedule ]; then
             cut_date=$(date -u +%Y-%m-%d)
-            if [[ "$cut_date" != ????-??-01 ]]; then
-              echo "::error::The scheduled dataset cut must run on day 1 UTC."
+            # Days 1-3: day 1 is the cut, days 2 and 3 are retries the `decide`
+            # job only lets through when day 1 (and 2) produced no successful
+            # run. A retry cuts that day's state, not day 1's — the month in
+            # the tag comes from the Daily run's own start date either way, so
+            # a slipped cut is still this month's release rather than none.
+            if [[ "$cut_date" != ????-??-0[123] ]]; then
+              echo "::error::The scheduled dataset cut must run on day 1, 2 or 3 UTC."
               exit 1
             fi
             runs_json=$(gh api --paginate \

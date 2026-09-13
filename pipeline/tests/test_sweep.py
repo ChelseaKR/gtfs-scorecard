@@ -1,9 +1,14 @@
-"""Tests for the freshness sweep (pure recompute, no file I/O)."""
+"""Tests for the freshness sweep (pure recompute, plus the command that applies it)."""
 
 from __future__ import annotations
 
 import datetime as dt
+import json
+import logging
+from pathlib import Path
 from typing import Any
+
+import pytest
 
 from scorecard_pipeline.sweep import can_resweep, needs_sweep, resweep
 
@@ -138,3 +143,81 @@ def test_resweep_keeps_current_feed_current() -> None:
     new, summary = resweep(art, dt.date(2026, 6, 20))
     assert new["categories"]["freshness"]["score"] == 85.0
     assert summary["new_days"] == (dt.date(2026, 9, 1) - dt.date(2026, 6, 20)).days
+
+
+def _artifact_over_an_empty_archive() -> dict[str, Any]:
+    """A published scorecard shaped like `boxcar`'s on 2026-09-13.
+
+    Its rider-experience category is `measured` over an archive holding 0 stops
+    and 0 trips, because it was scored before `score_feed_content` learned to
+    refuse such an archive (#331). Freshness carries real dates, so the sweep
+    can recompute it and would otherwise re-stamp the whole record.
+    """
+    art = _artifact(last_service="2027-09-02", fresh_score=100.0, days=365)
+    art["agency"] = {"id": "boxcar", "name": "Boxcar Commuter Bus"}
+    art["overall"] = {"score": 83.9, "grade": "B"}
+    art["categories"]["freshness"]["details"]["feed_end_date"] = "2027-09-02"
+    art["categories"]["completeness"]["details"] = {
+        "stops": 0,
+        "trips": 0,
+        "components": {"contact": 15.0, "fares": 0.0},
+        "unmeasured_components": ["headsigns", "stop_names"],
+    }
+    return art
+
+
+def test_a_grade_over_an_empty_archive_is_not_swept_to_a_new_date() -> None:
+    # The defect: the sweep carries correctness, rider experience and realtime
+    # forward untouched, so a letter the scorer now refuses to produce was
+    # re-published with today's date every cycle. boxcar published B 83.9 this
+    # way on 2026-09-13, over an archive its own artifact records as 0 stops
+    # and 0 trips.
+    art = _artifact_over_an_empty_archive()
+    assert can_resweep(art), "freshness is recomputable, so only the new rule can hold it back"
+    assert needs_sweep(art, dt.date(2026, 9, 13)) is False
+
+
+def test_a_real_measurement_is_still_swept() -> None:
+    # The rule is narrow: an archive that was actually read still sweeps.
+    art = _artifact_over_an_empty_archive()
+    art["categories"]["completeness"]["details"] = {"stops": 296, "trips": 1794}
+    assert needs_sweep(art, dt.date(2026, 9, 13)) is True
+
+
+def test_the_sweep_command_names_what_it_held_back_and_leaves_it_undated(
+    tmp_path: Path,
+    caplog: pytest.LogCaptureFixture,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The whole command, not the predicate: the held-back record keeps its own
+    date, a real one beside it is still swept, and the holding back is said out
+    loud. A skip nobody is told about is how this ran for days."""
+    import argparse
+
+    from scorecard_pipeline import cli, config
+
+    root = tmp_path / "data" / "artifacts"
+    empty_dir = root / "boxcar"
+    real_dir = root / "unitrans"
+    for directory in (empty_dir, real_dir):
+        directory.mkdir(parents=True)
+    empty = _artifact_over_an_empty_archive()
+    real = _artifact_over_an_empty_archive()
+    real["agency"] = {"id": "unitrans", "name": "Unitrans"}
+    real["categories"]["completeness"]["details"] = {"stops": 296, "trips": 1794}
+    (empty_dir / "latest.json").write_text(json.dumps(empty))
+    (real_dir / "latest.json").write_text(json.dumps(real))
+    monkeypatch.setattr(config, "artifacts_dir", lambda: root)
+
+    changed = tmp_path / "changed.txt"
+    args = argparse.Namespace(date=dt.date(2026, 9, 13), apply=False, changed_out=str(changed))
+    with caplog.at_level(logging.WARNING):
+        assert cli._cmd_freshness_sweep(args, argparse.ArgumentParser()) == 0
+
+    # The record over an empty archive is not among those the sweep would refresh;
+    # the feed that was actually read still is.
+    assert changed.read_text().split() == ["unitrans"]
+    # And the reader of the log is told which record was held back, and why.
+    assert "no stops and no trips" in caplog.text
+    assert "boxcar" in caplog.text
+    assert "corrections.yaml" in caplog.text

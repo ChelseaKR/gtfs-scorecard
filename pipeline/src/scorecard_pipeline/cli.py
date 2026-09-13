@@ -3025,12 +3025,48 @@ def _cmd_onboard(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
     return 0
 
 
-def _cmd_freshness_sweep(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
-    import json as _json
+def _current_artifact_for_sweep(agency_dir: Path) -> dict[str, Any] | None:
+    """This agency's current artifact, or None when there is nothing to sweep.
 
+    A directory with no ``latest.json``, or one that cannot be read as JSON, is
+    not a sweep candidate. Kept out of the command so its loop stays a sequence
+    of decisions about the artifact rather than about the file.
+    """
+    latest = agency_dir / "latest.json"
+    if not latest.exists():
+        return None
+    try:
+        artifact = json.loads(latest.read_text())
+    except (OSError, ValueError):
+        return None
+    return artifact if isinstance(artifact, dict) else None
+
+
+def _warn_held_back_from_sweep(held_back: list[str], corrections_filename: str) -> None:
+    """Say which published grades the sweep refused to carry to a new date.
+
+    The sweep runs unattended every cycle, so this is the only place a person
+    learns that a record is publishing a letter over an archive with nothing in
+    it. Taking that letter down is a reviewed entry in the corrections file,
+    which nobody can write for a record they were never told about.
+    """
+    if not held_back:
+        return
+    log.warning(
+        "Held back %d published grade(s) over an archive with no stops and no "
+        "trips; the sweep will not re-date them, and they stay published until "
+        "withdrawn in %s: %s",
+        len(held_back),
+        corrections_filename,
+        ", ".join(sorted(held_back)),
+    )
+
+
+def _cmd_freshness_sweep(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .config import artifacts_dir
+    from .corrections import CORRECTIONS_FILENAME
     from .publish import publish, registered_agency_dirs
-    from .sweep import needs_sweep, resweep
+    from .sweep import carries_a_grade_the_scorer_would_refuse, needs_sweep, resweep
 
     today = args.date
     root = artifacts_dir()
@@ -3040,16 +3076,20 @@ def _cmd_freshness_sweep(args: argparse.Namespace, parser: argparse.ArgumentPars
 
     swept = 0
     swept_ids: list[str] = []
+    held_back: list[str] = []
     changes: list[dict[str, Any]] = []
     # Bounded to the registry: re-stamping an unlisted S3-hydrated directory
     # keeps a delisted feed looking alive (docs/listing-policy.md).
     for agency_dir in registered_agency_dirs(root):
-        latest = agency_dir / "latest.json"
-        if not latest.exists():
+        artifact = _current_artifact_for_sweep(agency_dir)
+        if artifact is None:
             continue
-        try:
-            artifact = _json.loads(latest.read_text())
-        except (OSError, ValueError):
+        # Named, never skipped quietly: this record publishes a letter over an
+        # archive with no stops and no trips, so the sweep must not carry it to
+        # a new date. Retracting it is a reviewed corrections.yaml entry, and
+        # nobody can write one for a record they were never told about.
+        if carries_a_grade_the_scorer_would_refuse(artifact):
+            held_back.append(agency_dir.name)
             continue
         if not needs_sweep(artifact, today):
             continue
@@ -3073,11 +3113,13 @@ def _cmd_freshness_sweep(args: argparse.Namespace, parser: argparse.ArgumentPars
             c["old_days"],
             c["new_days"],
         )
+    _warn_held_back_from_sweep(held_back, CORRECTIONS_FILENAME)
     verb = "Applied" if args.apply else "Would change"
     log.info(
-        "Freshness sweep for %s: %d agencies reswept, %s %d grade(s).%s",
+        "Freshness sweep for %s: %d agencies reswept, %d held back, %s %d grade(s).%s",
         today.isoformat(),
         swept,
+        len(held_back),
         verb.lower(),
         len(changes),
         "" if args.apply else " Re-run with --apply to publish.",
