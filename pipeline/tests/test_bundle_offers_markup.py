@@ -33,7 +33,7 @@ from __future__ import annotations
 import json
 import re
 from copy import deepcopy
-from html import unescape
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
 
@@ -425,21 +425,61 @@ def test_the_amount_a_reader_sees_is_the_amount_the_offer_carries() -> None:
 # --- and the answers it gives a search result -------------------------------
 
 
-# Inline elements are removed with nothing in their place and everything else
-# with a space, so "the <a>open-source command</a>." reads as one sentence
-# rather than as "command ." -- which is the difference between a drift check
-# that works and one that reports its own tag stripping as a finding.
-_INLINE_TAGS = "a|strong|em|b|i|code|span|abbr|small|sup|sub|br"
+# Inline elements add nothing between their neighbours and everything else adds
+# a space, so "the <a>open-source command</a>." reads as one sentence rather
+# than as "command ." -- which is the difference between a drift check that
+# works and one that reports its own tag stripping as a finding.
+_INLINE_TAGS = frozenset(
+    {"a", "strong", "em", "b", "i", "code", "span", "abbr", "small", "sup", "sub", "br"}
+)
+_SKIPPED_BODIES = frozenset({"script", "style"})
+
+
+class _ProseParser(HTMLParser):
+    """Collects a page's text, skipping script and style bodies.
+
+    A tokenizer rather than regular expressions, on purpose. The first version
+    of this helper stripped ``<script>`` blocks with a pattern that does not
+    match an end tag written ``</script >``, and CodeQL raised it on the pull
+    request that added it (py/bad-tag-filter, high). Nothing here sanitizes
+    untrusted input, but a missed end tag would have swallowed page prose and
+    turned this drift check into one that fails, or passes, for the wrong
+    reason. The standard library already ends a script or style body the way a
+    browser does, so there is no hand-written filter left to get wrong.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.parts: list[str] = []
+        self._skipping = 0
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag in _SKIPPED_BODIES:
+            self._skipping += 1
+        elif tag not in _INLINE_TAGS:
+            self.parts.append(" ")
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in _SKIPPED_BODIES:
+            self._skipping = max(0, self._skipping - 1)
+        elif tag not in _INLINE_TAGS:
+            self.parts.append(" ")
+
+    def handle_data(self, data: str) -> None:
+        if not self._skipping:
+            self.parts.append(data)
 
 
 def _visible_text(html: str) -> str:
-    """The page's prose, near enough for a substring comparison."""
-    text = re.sub(r"(?is)<script\b.*?</script>", " ", html)
-    text = re.sub(r"(?is)<style\b.*?</style>", " ", text)
-    text = re.sub(r"(?s)<!--.*?-->", " ", text)
-    text = re.sub(rf"(?is)</?(?:{_INLINE_TAGS})(?:\s[^>]*)?>", "", text)
-    text = re.sub(r"(?s)<[^>]+>", " ", text)
-    return " ".join(unescape(text).split())
+    """The page's prose, near enough for a substring comparison.
+
+    Comments are dropped because ``HTMLParser`` routes them to
+    ``handle_comment``, which this parser does not keep.
+    """
+    parser = _ProseParser()
+    parser.feed(html)
+    parser.close()
+    return " ".join("".join(parser.parts).split())
 
 
 def _faq_node(html: str) -> dict[str, Any]:
@@ -479,3 +519,32 @@ def test_every_answer_the_page_publishes_is_an_answer_the_page_gives() -> None:
             f"/bundle/ publishes the question {question['name']!r}, which appears "
             "nowhere in the page's own text"
         )
+
+
+def test_the_prose_reader_skips_script_bodies_however_the_end_tag_is_written() -> None:
+    """The drift check above is only a check while this holds.
+
+    Every FAQ answer is also inside the page's FAQPage JSON-LD, which sits in a
+    ``<script>``. A prose reader that let script bodies through would find each
+    answer there and pass the drift check on any page at all -- a gate that
+    cannot fail. So the skip is pinned here directly, including the end-tag
+    spellings a regular expression misses, which is what CodeQL flagged on the
+    first version of this helper.
+    """
+    for end in ("</script>", "</script >", "</SCRIPT>", "</script\n>", "</script\t>"):
+        page = f'<p>before</p><script type="application/ld+json">{{"k": "inside"}}{end}<p>after</p>'
+        text = _visible_text(page)
+        assert "inside" not in text, f"a script body ending {end!r} leaked into the prose"
+        assert text == "before after", (end, text)
+
+    assert _visible_text("<p>x</p><style>.y { color: red }</style ><p>z</p>") == "x z"
+    assert _visible_text("<p>a</p><!-- not prose --><p>b</p>") == "a b"
+    assert _visible_text('<p>the <a href="/x">open-source command</a>.</p>') == (
+        "the open-source command."
+    )
+
+    # And on the real page: the structured data's own vocabulary never reaches
+    # the prose, so an answer found in the prose was found in the prose.
+    prose = _visible_text(_PAGE.read_text())
+    for token in ('"@type"', "acceptedAnswer", "mainEntity", "application/ld+json"):
+        assert token not in prose, f"{token} from a script body leaked into /bundle/'s prose"
