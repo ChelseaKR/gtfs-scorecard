@@ -24,6 +24,7 @@ from __future__ import annotations
 import datetime as dt
 from typing import Any
 
+from .corrections import grades_a_feed_with_nothing_in_it
 from .gtfs import FeedDates
 from .metrics import CategoryResult, Finding, freshness
 from .score import CATEGORY_WEIGHTS, build_scorecard
@@ -87,14 +88,48 @@ def can_resweep(artifact: dict[str, Any]) -> bool:
     return bool(details.get("feed_end_date") or details.get("last_service_date"))
 
 
+def carries_a_grade_the_scorer_would_refuse(artifact: dict[str, Any]) -> bool:
+    """True when the categories this sweep would carry forward grade nothing.
+
+    The sweep re-measures freshness and carries correctness, rider experience
+    and realtime forward untouched, because those need a re-fetch to change.
+    That is sound while the carried categories are a measurement. It is not when
+    they grade an archive with no stops and no trips: ``score_feed_content``
+    refuses to produce such a scorecard at all (``UnreadableFeedError``, #331),
+    and a sweep that re-stamps one publishes today what no run today could.
+
+    The two failures compound. A feed the scorer refuses writes no artifact, so
+    the run leaves the old letter in place; the sweep then re-dates that letter
+    every cycle, so a grade nobody can reproduce reads as current indefinitely
+    and the refusal never gets the chance to take it down. Measured against the
+    published store on 2026-09-13, ``boxcar`` published B 83.9 and
+    ``fr-pan-14652`` D 69.3 this way, both stamped with that day's date over
+    archives their own artifacts record as holding 0 stops and 0 trips --
+    and ``corrections.yaml`` states of the first that "no run can publish an A,
+    or anything else, here".
+
+    Holding the artifact back stops the re-stamping. It does not retract what is
+    already published: a withdrawal is a reviewed entry in ``corrections.yaml``,
+    which is why the sweep names every record it holds back rather than skipping
+    it quietly.
+    """
+    return grades_a_feed_with_nothing_in_it(artifact)
+
+
 def needs_sweep(artifact: dict[str, Any], today: dt.date) -> bool:
     """True when a feed can be reswept and its latest score predates `today`.
 
     A feed already scored on the sweep date (a full run, or an earlier sweep the
     same day) is current, so re-sweeping would only restamp it and, worse, demote
     a full score to a freshness-only recompute. Skipping keeps the sweep safe to
-    run alongside and after the daily full score, and makes repeat runs no-ops."""
+    run alongside and after the daily full score, and makes repeat runs no-ops.
+
+    False also for an artifact whose carried categories grade an archive with
+    nothing in it, which the sweep must not re-publish under a new date; see
+    :func:`carries_a_grade_the_scorer_would_refuse`."""
     if not can_resweep(artifact):
+        return False
+    if carries_a_grade_the_scorer_would_refuse(artifact):
         return False
     snapshot = artifact.get("snapshot_date")
     return not (isinstance(snapshot, str) and snapshot >= today.isoformat())
