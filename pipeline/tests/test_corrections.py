@@ -329,9 +329,7 @@ def test_a_withdrawal_that_does_not_reach_what_is_published_is_a_problem(
     """
     agency_dir = tmp_path / "santa-clarita-transit"
     agency_dir.mkdir()
-    (agency_dir / "latest.json").write_text(
-        json.dumps(_artifact(date="2026-08-10", sha="f" * 64))
-    )
+    (agency_dir / "latest.json").write_text(json.dumps(_artifact(date="2026-08-10", sha="f" * 64)))
 
     problems = correction_problems(parse_corrections(ONE_ENTRY), tmp_path)
 
