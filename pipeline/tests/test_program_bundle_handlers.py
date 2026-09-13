@@ -565,6 +565,93 @@ def test_setup_subscription_stores_the_request_and_price_for_the_refresh(
     assert stored["deliver_to"] == "buyer@example.org"
 
 
+def test_the_setup_form_does_not_reactivate_a_subscription_stripe_has_ended(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """Stripe decides whether a subscription is live; this route does not.
+
+    The setup form is submitted *after* checkout, so a buyer who cancels from
+    the Stripe receipt in the minutes before filling it in produces exactly
+    this order of events: `customer.subscription.deleted` marks the row
+    canceled, and then the setup route writes the row. Written with put_item
+    it wrote `status: "active"` over the cancellation, and the weekly refresh
+    then sent a fresh archive every 28 days for ever, to somebody who was
+    paying for none of them. A failed first payment (`past_due`, `unpaid`)
+    was erased the same way.
+    """
+    session = _paid_session(mode="subscription", subscription="sub_example")
+    _stripe(monkeypatch, session, price=PRICE_REFRESH_MO)
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", lambda inputs: None)
+    _bought_earlier(tables, "bundle_100")
+    tables["SUBSCRIPTIONS_TABLE"].items["sub_example"] = {
+        "id": "sub_example",
+        "status": "canceled",
+        "canceled_at": "2026-09-13T00:00:00+00:00",
+        "price": PRICE_REFRESH_MO,
+        "plan": "refresh_mo",
+    }
+
+    resp = setup_handler.handler(_setup_event(_form()))
+    assert resp["statusCode"] == 200
+
+    sub = tables["SUBSCRIPTIONS_TABLE"].items["sub_example"]
+    assert sub["status"] == "canceled", "the setup form overwrote Stripe's answer"
+    assert sub["canceled_at"] == "2026-09-13T00:00:00+00:00"
+    # The fields this route does own are still written: the buyer paid for one
+    # archive and gets it, and the row says what it was for.
+    assert sub["agency_cap"] == 100
+    assert json.loads(sub["request"])["cadence"] == "monthly"
+
+    # And the consequence the buyer would have been billed nothing for.
+    dispatched: list[dict[str, str]] = []
+    monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", dispatched.append)
+    counts = refresh_handler.refresh(
+        subscriptions=tables["SUBSCRIPTIONS_TABLE"],
+        bundles=tables["BUNDLES_TABLE"],
+        now=dt.datetime(2027, 1, 1, tzinfo=dt.UTC),
+    )
+    assert counts["dispatched"] == 0 and dispatched == []
+
+
+def test_a_subscription_purchase_does_not_refresh_itself_days_later(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """The setup route dispatches the first archive itself.
+
+    `refresh_handler._due` reads a row with no `last_refresh` as "never
+    refreshed, so due now", so the first weekly tick after a purchase sent a
+    second archive within days of the first -- on a plan sold as monthly, to a
+    buyer who was told each refresh arrives monthly. The purchase stamps the
+    clock it started.
+    """
+    session = _paid_session(mode="subscription", subscription="sub_example")
+    _stripe(monkeypatch, session, price=PRICE_REFRESH_MO)
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", lambda inputs: None)
+    _bought_earlier(tables, "bundle_100")
+
+    assert setup_handler.handler(_setup_event(_form()))["statusCode"] == 200
+    stamped = tables["SUBSCRIPTIONS_TABLE"].items["sub_example"]["last_refresh"]
+    assert stamped, "the purchase left no record that an archive had just been sent"
+
+    dispatched: list[dict[str, str]] = []
+    monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", dispatched.append)
+    started = dt.datetime.fromisoformat(stamped)
+
+    a_week = refresh_handler.refresh(
+        subscriptions=tables["SUBSCRIPTIONS_TABLE"],
+        bundles=tables["BUNDLES_TABLE"],
+        now=started + dt.timedelta(days=7),
+    )
+    assert a_week["dispatched"] == 0, "a second archive a week after the purchase"
+
+    a_month = refresh_handler.refresh(
+        subscriptions=tables["SUBSCRIPTIONS_TABLE"],
+        bundles=tables["BUNDLES_TABLE"],
+        now=started + dt.timedelta(days=refresh_handler.REFRESH_DAYS + 1),
+    )
+    assert a_month["dispatched"] == 1, "and the monthly refresh still happens"
+
+
 def test_setup_cadence_follows_the_price_not_the_session_mode(
     monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
 ) -> None:
