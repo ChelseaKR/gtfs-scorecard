@@ -34,14 +34,35 @@ env:
 jobs:
   refresh:
     runs-on: ubuntu-latest
-    # RELIABILITY (issue #297): no bound previously existed short of the
-    # platform's 360-minute default. Observed successful runs range from ~70
-    # to ~137 minutes depending on how many feeds are due this cycle (cadence
-    # tiers, ADR 0010), so this stays well above that range to avoid flagging
-    # a legitimately heavy cycle, while still catching a genuine hang (a
-    # runner killed validating a large feed, as in issue #297) inside one
-    # scheduling day instead of running silent for six hours.
-    timeout-minutes: 240
+    # RELIABILITY (issues #297, #390): until #297 there was no bound short of
+    # the platform's 360-minute default. #297 set 240 against an observed "~70
+    # to ~137 minutes", a figure written once that the job then outgrew and
+    # nothing recomputed. Re-measured 2026-09-13 over the 100 scheduled runs
+    # from 2026-09-01T09:33Z to 2026-09-13T18:30Z: successful runs took 56.6
+    # to 154.1 minutes (median 87.3, n=84), the longest run of any conclusion
+    # took 170.1 (a failure), and no run was stopped at its bound. How long a
+    # cycle takes still depends on how many feeds are due (cadence tiers, ADR
+    # 0010).
+    #
+    # 175 sits above every one of those runs and below the 180-minute cron.
+    # 240 did not. A bound above the cadence cannot mean "this run has lost its
+    # schedule": by the time it fires the next cycle has already started, and
+    # `artifacts-publish` is serial with `cancel-in-progress: false`, so a third
+    # arrival evicts the queued run rather than the wedged one.
+    #
+    # What no number can do is stated rather than implied. GitHub defers
+    # scheduled fires unevenly, and consecutive fires in the same window were as
+    # little as 114.2 minutes apart (median 181.3, longest 226.5). No bound sits
+    # below that and above a 154-minute run, so this catches a wedged runner
+    # (a runner killed validating a large feed, as in #297) and a run that has
+    # outlived the nominal cadence, not a compressed gap. A faster job or a
+    # longer cron fixes that, and which one is an owner decision.
+    #
+    # This number is now read. Watchdog's "No scheduled publish job is running
+    # up against its own bound" compares each run's duration with it, and
+    # pipeline/tests/test_workflow_safety.py holds it between the measured
+    # runtime and the cadence.
+    timeout-minutes: 175
     concurrency:
       group: artifacts-publish
       cancel-in-progress: false

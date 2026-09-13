@@ -119,6 +119,67 @@ jobs:
             exit 1
           fi
 
+      # Issue #390. A bound nothing measures is the rt-monitor incident one step
+      # earlier. That job sat eleven runs deep in its own timeout because the
+      # runtime its bound was argued from was written once and never read again.
+      # The check above reads a conclusion, and a job that finishes at 58 of 60
+      # minutes concludes `success` right up to the day it concludes
+      # `cancelled`. This step reads the duration instead, for the two jobs whose
+      # kill drops a publish.
+      #
+      # The bounds are copied here, and pipeline/tests/test_workflow_safety.py
+      # fails if they stop matching the workflows. This step fails for a job at
+      # or past 90% of its bound, for a job stopped at its bound (a timeout
+      # concludes `cancelled` and keeps its steps), and for a reading that found
+      # no job to measure, which is not a pass.
+      - name: No scheduled publish job is running up against its own bound
+        if: ${{ always() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # workflow|job|timeout-minutes|completed runs to read. Refresh fires
+          # every 3 hours and this step every 6, so it reads 3 runs to see
+          # every one.
+          BOUNDED_JOBS: |
+            refresh.yml|refresh|175|3
+            scorecard.yml|collect|90|2
+        run: |
+          set -euo pipefail
+          fail=0
+          while IFS='|' read -r workflow job bound runs; do
+            [ -z "$workflow" ] && continue
+            ids=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow "$workflow" \
+              --branch main --status completed --limit "$runs" \
+              --json databaseId --jq '.[].databaseId' 2>/dev/null || true)
+            if [ -z "$ids" ]; then
+              echo "::error::Could not read completed $workflow runs, so nothing here says how close $job is to its $bound-minute bound."
+              fail=1
+              continue
+            fi
+            measured=0
+            for id in $ids; do
+              row=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id/jobs?per_page=100" \
+                --jq ".jobs[] | select(.name == \"$job\" and .started_at != null and .completed_at != null) | [.started_at, .completed_at, .conclusion, (.steps | length)] | @tsv" \
+                2>/dev/null || true)
+              [ -z "$row" ] && continue
+              IFS=$'\t' read -r started completed conclusion steps <<< "$row"
+              minutes=$(( ( $(date -u -d "$completed" +%s) - $(date -u -d "$started" +%s) ) / 60 ))
+              measured=$((measured + 1))
+              echo "$workflow $job, run $id: $minutes of $bound minutes, $conclusion, $steps steps"
+              if [ "$conclusion" = "cancelled" ] && [ "$steps" -gt 0 ] && [ "$minutes" -ge $((bound - 1)) ]; then
+                echo "::error::$workflow $job run $id was stopped by its own $bound-minute bound after $minutes minutes. GitHub records that as cancelled, not as a failure."
+                fail=1
+              elif [ $((minutes * 10)) -ge $((bound * 9)) ]; then
+                echo "::error::$workflow $job run $id took $minutes of its $bound-minute bound, 90% or more. The next heavier run is a timeout kill: re-measure the runtime and move the bound or the work before that happens."
+                fail=1
+              fi
+            done
+            if [ "$measured" -eq 0 ]; then
+              echo "::error::None of the last $runs completed $workflow runs has a $job job with a start and an end, so its duration was not measured."
+              fail=1
+            fi
+          done <<< "$BOUNDED_JOBS"
+          exit "$fail"
+
       # The realtime monitor publishes no page of its own, so nothing else in
       # this repository notices when it stops. Its record (data/rt-health) is
       # read by every agency page's reliability section and by /realtime/, and
