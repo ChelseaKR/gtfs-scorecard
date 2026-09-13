@@ -25,7 +25,11 @@ import re
 from pathlib import Path
 from typing import Any, cast
 
-from scorecard_pipeline.site_shell import FOOTER_HTML, FOOTER_HTML_WITHOUT_US_TOOLS
+from scorecard_pipeline.site_shell import (
+    FOOTER_HTML,
+    FOOTER_HTML_ES,
+    FOOTER_HTML_WITHOUT_US_TOOLS,
+)
 
 # pipeline/tests/test_paid_tier_visibility.py -> parents[2] is the repo root.
 _REPO = Path(__file__).resolve().parents[2]
@@ -56,6 +60,20 @@ def test_the_shared_footer_reaches_the_paid_tier_and_says_it_is_paid() -> None:
         assert _INDEPENDENCE in footer
 
 
+def test_the_spanish_footer_deliberately_does_not_sell_anything() -> None:
+    """/es/ is the site's only rider-facing page, and its footer is a short strip
+    of the few destinations a Spanish reader can act on.
+
+    The bundle is an English-only purchase made by program staff, so it is left
+    out on purpose rather than by oversight. Recorded as a test because the
+    absence is the decision: adding the link should be a deliberate edit here,
+    not a footer tidy-up. Discovery does not depend on it either way, since
+    /bundle/ is linked from every English page and listed in the sitemap.
+    """
+    assert "/bundle/" not in FOOTER_HTML_ES
+    assert "bundle" not in FOOTER_HTML_ES.lower()
+
+
 def test_the_footer_carries_no_price() -> None:
     """Prices come from plan.json at view time; the footer is static HTML on
     every page, so it can only ever carry a stale one."""
@@ -79,6 +97,68 @@ def test_each_landing_surface_reaches_the_paid_tier() -> None:
     # /tools/ and the program rollups are generated; assert the shipped output.
     assert _BUNDLE_HREF in (_GOLDENS / "tools" / "index.html").read_text()
     assert _BUNDLE_HREF in (_GOLDENS / "program" / "california" / "index.html").read_text()
+
+
+def test_the_program_audience_pages_reach_the_tier_above_the_footer() -> None:
+    """A footer link is a fallback, not a path. These four generated pages are
+    where the tier's buyers arrive: someone writing feed quality into a contract
+    (/procurement/), someone reading the corpus rather than one feed (/pulse/),
+    someone comparing what this site offers (/tools/), and someone already
+    looking at a whole program at once (/program/all/).
+
+    Split on the shared footer, so moving the body link into the footer and
+    calling it done fails here. The independence promise travels with the offer
+    on every page this repo renders, which is why it is asserted beside it.
+    """
+    for rel in ("procurement/index.html", "pulse/index.html", "program/all/index.html"):
+        html = (_GOLDENS / rel).read_text()
+        head, sep, _footer = html.partition('<footer class="site-footer">')
+        assert sep, f"{rel}: no shared footer found; the split below proves nothing"
+        assert _BUNDLE_HREF in head, (
+            f"{rel}: reaches the paid tier only through the shared footer. "
+            "This page's reader is who the tier is for."
+        )
+        assert _INDEPENDENCE in head, (
+            f"{rel}: names the paid tier without the independence sentence."
+        )
+
+    # /tools/ is rendered by pages_tools.py, which states the offer in its own
+    # words inside a capability list; assert the link, not this file's wording.
+    tools = (_GOLDENS / "tools" / "index.html").read_text()
+    assert _BUNDLE_HREF in tools.partition('<footer class="site-footer">')[0]
+
+
+def test_the_paid_tier_pointer_is_one_shared_string_not_four_paraphrases() -> None:
+    """Two promises ("free for every agency", "buys no influence") are the whole
+    basis for selling anything here, so every generated surface says them the
+    same way. Constants, checked through the rendered pages: a copy-pasted
+    variant that drifts one word fails the assertions above, and a second
+    constant that says it differently fails this one.
+    """
+    from scorecard_pipeline.render_site import (
+        _BUNDLE_FREE_NOTE,
+        _BUNDLE_INDEPENDENCE,
+        _bundle_pointer,
+    )
+
+    assert _INDEPENDENCE in _BUNDLE_INDEPENDENCE
+    assert "free" in _BUNDLE_FREE_NOTE
+
+    pointer = _bundle_pointer("Lead sentence?", "anchor text")
+    assert '<a href="/bundle/">anchor text</a>' in pointer
+    assert _BUNDLE_FREE_NOTE in pointer
+    assert _BUNDLE_INDEPENDENCE in pointer
+
+    # Descriptive, and different per page: one anchor string repeated everywhere
+    # reads as a banner and tells a reader nothing about where they are going.
+    anchors = set()
+    for rel in ("procurement/index.html", "pulse/index.html", "program/all/index.html"):
+        head = (_GOLDENS / rel).read_text().partition('<footer class="site-footer">')[0]
+        anchors.update(re.findall(r'<a href="/bundle/">([^<]+)</a>', head))
+    assert len(anchors) == 3, anchors
+    for anchor in anchors:
+        assert len(anchor.split()) >= 4, anchor
+        assert "here" not in anchor.lower()
 
 
 def test_the_home_page_states_the_tier_as_a_section_not_a_passing_mention() -> None:
