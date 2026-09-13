@@ -74,7 +74,7 @@ def _published_rollup_ids() -> set[str]:
     }
 
 
-def _program_links_from_indexable_pages() -> tuple[set[str], int]:
+def _program_links_from_indexable_pages(root: Path | None = None) -> tuple[set[str], int]:
     """Rollup slugs linked from a rendered page's own content, and pages swept.
 
     Two rules decide what counts, and both are the difference between a gate and
@@ -91,11 +91,18 @@ def _program_links_from_indexable_pages() -> tuple[set[str], int]:
       is `noindex,follow`. Counting it would report the rollups reachable while
       no indexable page named one, which is exactly the state measured on
       2026-09-12.
+
+    Neither rule is exercised by the committed fixture -- its three agencies
+    carry no state, so no golden brief links a rollup at all, and the fixture is
+    exactly where both failures are impossible. ``root`` exists so the rules
+    themselves can be tested against pages built to break them; see
+    ``test_the_reach_sweep_counts_only_a_page_own_content``.
     """
+    root = root or _GOLDENS
     linked: set[str] = set()
     swept = 0
-    for path in sorted(_GOLDENS.rglob("*.html")):
-        relative = path.relative_to(_GOLDENS)
+    for path in sorted(root.rglob("*.html")):
+        relative = path.relative_to(root)
         if relative.parts[0] == "report":
             continue  # the board report is a document, not a page on this site
         html = path.read_text()
@@ -194,6 +201,59 @@ def test_the_program_audience_pages_reach_the_tier_above_the_footer() -> None:
     # words inside a capability list; assert the link, not this file's wording.
     tools = (_GOLDENS / "tools" / "index.html").read_text()
     assert _BUNDLE_HREF in tools.partition('<footer class="site-footer">')[0]
+
+
+def test_the_reach_sweep_counts_only_a_page_own_content(tmp_path: Path) -> None:
+    """The two rules the gate below stands on, against pages built to break them.
+
+    The committed fixture cannot exercise either: its agencies carry no state,
+    so no golden call brief links a rollup, and the shared footer links only
+    `all`, which is published anyway. A guard whose failure mode is unreachable
+    from the fixture is a guard nobody has measured, so these pages are written
+    here on purpose:
+
+    * a footer-only link, which is how every page on the real site mentions
+      /program/all/ and must never count as a route;
+    * a `noindex` page with the link in its body, which is the call brief;
+    * an indexable page with the link in its body, which is the only thing that
+      does count;
+    * a page with neither a footer nor a meta refresh, which means the split
+      found nothing and the sweep must refuse rather than read the whole
+      document as though it were page content.
+    """
+    footer = _FOOTER_TAG + '<a href="/program/in-the-footer/">rollups</a></footer>'
+
+    (tmp_path / "footer-only").mkdir()
+    (tmp_path / "footer-only" / "index.html").write_text(f"<main>nothing here</main>{footer}")
+    (tmp_path / "brief").mkdir()
+    (tmp_path / "brief" / "index.html").write_text(
+        '<meta name="robots" content="noindex,follow">'
+        '<main><a href="/program/noindex-only/">portfolio</a></main>' + footer
+    )
+    (tmp_path / "real").mkdir()
+    (tmp_path / "real" / "index.html").write_text(
+        '<main><a href="/program/counted/">portfolio</a></main>' + footer
+    )
+    (tmp_path / "stub").mkdir()
+    (tmp_path / "stub" / "index.html").write_text(
+        '<meta http-equiv="refresh" content="0; url=/pulse/">'
+    )
+
+    linked, swept = _program_links_from_indexable_pages(tmp_path)
+    assert linked == {"counted"}
+    # Two of the four: the noindex brief and the redirect stub are not routes.
+    assert swept == 2
+
+    (tmp_path / "chromeless").mkdir()
+    (tmp_path / "chromeless" / "index.html").write_text(
+        '<main><a href="/program/uncounted/">portfolio</a></main>'
+    )
+    try:
+        _program_links_from_indexable_pages(tmp_path)
+    except AssertionError as failure:
+        assert "not a redirect stub" in str(failure)
+    else:  # pragma: no cover - the sweep must refuse this page
+        raise AssertionError("a page with no footer was swept as though it had one")
 
 
 def test_every_published_program_rollup_is_reachable_from_an_indexable_page() -> None:
