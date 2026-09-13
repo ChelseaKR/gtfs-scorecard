@@ -113,6 +113,23 @@ the declared public surface).
   its containing folder. Schema.org `isBasedOn` is omitted rather than filled
   with a file name, since only a fetchable link belongs in a URL slot
   ([#398](https://github.com/ChelseaKR/gtfs-scorecard/issues/398)).
+- **A Pages platform blip cost a whole publish cycle, twice in six days
+  (2026-09-13).** Neither loss came from anything this repository produced. Run
+  34245244731 (2026-09-08) uploaded all 204,351,632 bytes of the site artifact
+  and then failed on `Failed to FinalizeArtifact: ... (403) Forbidden`; run
+  34461157937 (2026-09-10) read `Current status: updating_pages` from a healthy
+  backend for the full 10 minutes `actions/deploy-pages` defaults to and then
+  *cancelled its own deployment* (`Timeout reached, aborting!`). Both were
+  Intraday refresh deploys, so in both the refreshed data reached S3 and the
+  live site kept serving the previous generation until the next cycle three
+  hours later, with a red scheduled run to read. The upload is now attempted
+  twice — the first attempt tolerates its own failure so the second can run, and
+  the second carries no `continue-on-error`, so two failures still fail the job
+  — and the deploy waits 20 minutes, above the action's default and inside the
+  job's own 30-minute bound. `test_pages_deploy_resilience.py` holds that shape:
+  exactly one tolerated failure, a retry tied to the first attempt's outcome
+  that can itself fail, and a wait that stays shorter than the job containing
+  it.
 - **The delivery-breach rule could not read the type DynamoDB returns, so no
   paid order has ever been reported as owing a refund (2026-09-13).**
   `/bundle/` promises delivery within two business days "or the purchase is
