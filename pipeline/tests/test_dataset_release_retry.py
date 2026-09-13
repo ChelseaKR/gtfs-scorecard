@@ -93,11 +93,23 @@ def test_the_scheduled_cut_still_refuses_a_day_it_was_not_scheduled_for() -> Non
 
 
 def test_the_decide_job_cannot_write_anything() -> None:
-    permissions = WORKFLOW["jobs"]["decide"]["permissions"]
-    assert permissions == {"actions": "read"}, (
-        "the deciding job reads run history and nothing else; the workflow-level "
-        "contents: write belongs to the job that tags"
+    assert WORKFLOW["jobs"]["decide"]["permissions"] == {"actions": "read"}, (
+        "the deciding job reads run history and nothing else"
     )
     assert re.search(r"^  decide:\n(?:.*\n)*?    timeout-minutes: \d+$", TEXT, re.MULTILINE), (
         "an unbounded guard job can hold the release behind it for six hours"
     )
+
+
+def test_the_write_scope_belongs_to_the_job_that_tags() -> None:
+    """A second job is a second holder of whatever the file grants.
+
+    `contents: write` here is the token that can create a release tag. Left at
+    the workflow level it would be handed to the guard job too, which only ever
+    reads run history (zizmor `excessive-permissions`, high).
+    """
+    assert WORKFLOW["permissions"] == {"contents": "read"}
+    assert WORKFLOW["jobs"]["release"]["permissions"] == {
+        "contents": "write",
+        "actions": "read",
+    }

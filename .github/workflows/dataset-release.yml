@@ -28,9 +28,12 @@ on:
     - cron: "47 17 3 * *"
   workflow_dispatch: {}
 
+# Write is the tagging job's, not this file's: the `decide` job below only reads
+# run history, and a workflow-level `contents: write` would hand it the token
+# that can move a release tag (zizmor excessive-permissions). Each job declares
+# what it needs.
 permissions:
-  contents: write # create the tag and release
-  actions: read # resolve the successful Daily scorecard run for scheduled cuts
+  contents: read
 
 # A second concurrent run (manual dispatch racing the schedule) must not
 # double-create/overlap a release; the later tag-exists guard only checks
@@ -112,6 +115,9 @@ jobs:
     if: ${{ needs.decide.outputs.cut == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    permissions:
+      contents: write # create the tag and release
+      actions: read # resolve the successful Daily scorecard run for scheduled cuts
     concurrency:
       group: artifacts-publish
       cancel-in-progress: false
