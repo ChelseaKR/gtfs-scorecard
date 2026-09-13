@@ -43,6 +43,7 @@ import os
 from typing import Any
 
 from common import (
+    CHECKOUT_PREFIX,
     UpstreamError,
     checkout_plan,
     json_response,
@@ -110,7 +111,7 @@ def apply_event(event_type: str, data: dict[str, Any], *, subscriptions: Any, bu
             return "ignored"
         bundles.put_item(
             Item={
-                "bundle_id": f"checkout#{session_id}",
+                "bundle_id": f"{CHECKOUT_PREFIX}{session_id}",
                 "mode": obj.get("mode", ""),
                 "plan": plan,
                 "email": (obj.get("customer_details") or {}).get("email", ""),

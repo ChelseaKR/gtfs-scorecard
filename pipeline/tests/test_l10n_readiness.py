@@ -64,7 +64,13 @@ HARDCODED_STRING_BASELINE = {
     # increase, to work back down through the catalog with the rest of these
     # pages when the tier joins it.
     "bundle-setup.js": 10,
-    "bundle.js": 8,
+    # Raised 8 -> 9: each subscription card now says on its face that a refresh
+    # renews a bundle already bought and covers the same agencies. The server
+    # refuses a refresh with no bundle before it consumes the checkout, so the
+    # sentence is not the enforcement; it is what stops a buyer paying to find
+    # that out. A deliberate increase, to work back down with the rest of these
+    # pages when the tier joins the catalog.
+    "bundle.js": 9,
     "config.js": 1,
     "es.js": 2,
     "i18n.js": 0,

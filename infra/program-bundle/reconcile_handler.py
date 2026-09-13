@@ -68,7 +68,9 @@ import os
 from typing import Any
 
 from common import (
+    CHECKOUT_PREFIX,
     DOWNLOAD_DAYS,
+    SESSION_PREFIX,
     UpstreamError,
     github_request,
     now_iso,
@@ -87,8 +89,6 @@ STALE_HOURS = 6
 # DynamoDB and the evidence with it, so the digest says so out loud.
 EXPIRY_DAYS = DOWNLOAD_DAYS
 
-_SESSION_PREFIX = "session#"
-_CHECKOUT_PREFIX = "checkout#"
 _ARTIFACT_PRESENT = "present"
 _ARTIFACT_MISSING = "missing"
 _ARTIFACT_UNREADABLE = "unreadable"
@@ -202,7 +202,7 @@ def _checkout_finding(
     row: dict[str, Any], key: str, keys: set[str], *, now: dt.datetime, stale_hours: float
 ) -> dict[str, Any] | None:
     """A payment that never reached the setup form."""
-    if f"{_SESSION_PREFIX}{key[len(_CHECKOUT_PREFIX) :]}" in keys:
+    if f"{SESSION_PREFIX}{key[len(CHECKOUT_PREFIX) :]}" in keys:
         return None
     seen = str(row.get("seen_at") or "")
     if not _is_stale(seen, now=now, stale_hours=stale_hours):
@@ -302,9 +302,9 @@ def reconcile(
 
     for row in rows:
         key = str(row.get("bundle_id") or "")
-        if key.startswith(_SESSION_PREFIX):
+        if key.startswith(SESSION_PREFIX):
             found = _session_finding(row, key, created, now=current, stale_hours=stale_hours)
-        elif key.startswith(_CHECKOUT_PREFIX):
+        elif key.startswith(CHECKOUT_PREFIX):
             found = _checkout_finding(row, key, keys, now=current, stale_hours=stale_hours)
         else:
             # Anything else is a capability row: one download link, one order.
