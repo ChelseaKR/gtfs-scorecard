@@ -308,6 +308,54 @@ def test_no_published_grade_over_an_empty_feed_is_left_uncorrected() -> None:
     )
 
 
+def test_a_withdrawal_that_does_not_reach_what_is_published_is_a_problem(
+    tmp_path: Path,
+) -> None:
+    """The hole that hid two published F grades for a week.
+
+    beloit-transit and massachusetts-area-express-max were withdrawn, and each
+    was then re-scored from the same unread bytes on a later date. The entry no
+    longer named the published record, so the "still publishes the withdrawn
+    grade" check passed; the id was covered, so the stranded-grade check skipped
+    it. Nothing in the file's own gate could say that a named agency was still
+    publicly graded F over an archive with 0 stops and 0 trips.
+
+    The re-dating half of that is now closed upstream: #432 made `withdraws()`
+    match on the feed hash alone, so the same bytes under a later date are still
+    withdrawn. What this gate still has to catch is the other half, which no
+    hash match can reach — a covered id publishing a grade over a DIFFERENT
+    archive the entry never described. The id being named in corrections.yaml
+    is what makes it invisible: it is excluded from the stranded-grade scan.
+    """
+    agency_dir = tmp_path / "santa-clarita-transit"
+    agency_dir.mkdir()
+    (agency_dir / "latest.json").write_text(json.dumps(_artifact(date="2026-08-10", sha="f" * 64)))
+
+    problems = correction_problems(parse_corrections(ONE_ENTRY), tmp_path)
+
+    assert len(problems) == 1
+    assert "does not reach what is published" in problems[0]
+    assert "santa-clarita-transit" in problems[0]
+
+
+def test_a_withdrawal_whose_record_is_gone_is_not_a_problem(tmp_path: Path) -> None:
+    """The completed withdrawal stays silent: no current pointer at all."""
+    agency_dir = tmp_path / "santa-clarita-transit"
+    agency_dir.mkdir()
+    (agency_dir / "2026-07-16.json").write_text(json.dumps(_artifact()))
+    assert correction_problems(parse_corrections(ONE_ENTRY), tmp_path) == []
+
+
+def test_a_real_measurement_under_a_withdrawn_id_is_not_a_problem(tmp_path: Path) -> None:
+    """A feed that was finally read publishes normally, and the gate says nothing."""
+    agency_dir = tmp_path / "santa-clarita-transit"
+    agency_dir.mkdir()
+    (agency_dir / "latest.json").write_text(
+        json.dumps(_artifact(date="2026-09-10", stops=364, trips=898, grade="C"))
+    )
+    assert correction_problems(parse_corrections(ONE_ENTRY), tmp_path) == []
+
+
 def test_every_withdrawn_grade_is_actually_gone_from_the_published_corpus() -> None:
     """The other direction. A record that says withdrawn while the file is still
     there is worse than no record at all."""
