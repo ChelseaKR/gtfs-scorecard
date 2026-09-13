@@ -83,6 +83,21 @@ the declared public surface).
   not dropped from the denominator, and a corpus where nobody recorded a date
   publishes nulls and says so rather than falling back to the build date
   ([#389](https://github.com/ChelseaKR/gtfs-scorecard/issues/389)).
+- **The monthly dataset cut had one attempt a month, and 2026-09 spent it
+  (2026-09-13).** Run 33553673342 (2026-09-01) failed in "Assemble the release
+  bundle": `expected-latest-ids` and `actual-latest-ids` differed at line 294,
+  the index/latest straddle `pages.yml` now re-reads through. `dataset-2026-09`
+  does not exist, the citable release for that month was never cut, and nothing
+  said so — this workflow publishes no page and has no cadence to go stale
+  against, so a failed cut is invisible until somebody opens the Actions tab.
+  It now fires on days 1, 2 and 3, and a new `decide` job keeps a healthy month
+  at exactly one run by asking whether a run of this workflow started in this
+  month and succeeded. That question is deliberately not "does the tag exist":
+  the tag is written two thirds of the way through the job, so a run that
+  tagged and then failed to stage its release would read as done and never be
+  retried. An unreadable run history fails the guard rather than being turned
+  into an empty answer, and the release job is skipped outright on a spent
+  fire rather than started and short-circuited.
 - **`scorecard try` on a local zip wrote the machine's absolute path into the
   files people forward (2026-09-13).** A single-feed run recorded a local feed
   as `file:///…` of its resolved path, so a user name and a folder layout
