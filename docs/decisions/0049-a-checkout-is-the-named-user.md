@@ -15,6 +15,22 @@ holds fixed — agency-facing free, no price in a template, purchase buys no
 influence, no shaming surface — is unchanged and is now asserted by
 `pipeline/tests/test_paid_tier_visibility.py`.
 
+**Status log, 2026-09-13 (issue #417).** "No price in HTML", below, was written
+about a page deployed ahead of its payment rail and has been read since as a
+rule about bytes. It was always a rule about *authorship*: a price typed into a
+template keeps selling after the plan changes. The page now states its four
+amounts in the served HTML twice — as `Offer` structured data for a machine, and
+as a plan list inside `<noscript>` for a person — and neither is typed. Both are
+written from `web/bundle/plan.json` by `make sync-bundle-offers`, compared byte
+for byte against the generator on every CI run, and emitted only while the plan
+says payments are available. `.github/workflows/pages.yml` copies `web/` in one
+step, so the page and the plan it renders are always served from one commit.
+What changed is who can read the price: measured on the live site, a reader with
+scripting off saw 0 of 4 prices and a sentence saying nothing was for sale, while
+four live Payment Links were being served. No checkout control was added to that
+list, because `/bundle/setup/` cannot be submitted without scripting and a buy
+link there would take the money and strand the payer.
+
 ## Context
 
 The sustainability plan (`gtfs-scorecard-plans/07-monetization-sustainability.md`)
