@@ -10,7 +10,12 @@ is the easiest way to break:
    These tests assert the absence, because an absence is exactly what no
    accessibility scan, golden diff, or link checker will notice going away.
 2. **A price lives in web/bundle/plan.json and nowhere else.** A price copied
-   into a template is a price that keeps selling after the plan changes.
+   into a template is a price that keeps selling after the plan changes. A
+   price *generated* from that file into a delimited region, by
+   ``make sync-bundle-offers``, and compared byte for byte against the
+   generator on every run, is not a copy — it is a rendering, and it changes
+   when the plan changes or the build fails. The sweep below subtracts exactly
+   those regions and nothing else.
 
 The positive half is here too: the tier is meant to be *findable*, so the
 pages a reader actually lands on must reach it, and the accessibility gate must
@@ -28,9 +33,12 @@ from typing import Any, cast
 import yaml
 
 from scorecard_pipeline.site_shell import (
+    BUNDLE_GENERATED_REGION_RES,
     FOOTER_HTML,
     FOOTER_HTML_ES,
     FOOTER_HTML_WITHOUT_US_TOOLS,
+    bundle_noscript_region,
+    bundle_offers_region,
 )
 
 # pipeline/tests/test_paid_tier_visibility.py -> parents[2] is the repo root.
@@ -581,6 +589,22 @@ def test_the_program_rollup_names_the_tier_after_the_member_list() -> None:
 # --- every price comes from plan.json -------------------------------------
 
 
+def _generated_regions(text: str) -> list[str]:
+    """Every ``make sync-bundle-offers`` region in ``text``, in file order."""
+    return [
+        match.group(0)
+        for pattern in BUNDLE_GENERATED_REGION_RES
+        for match in pattern.finditer(text)
+    ]
+
+
+def _without_generated_regions(text: str) -> str:
+    """``text`` with those regions removed, so a sweep sees only typed markup."""
+    for pattern in BUNDLE_GENERATED_REGION_RES:
+        text = pattern.sub(" ", text)
+    return text
+
+
 def test_no_template_carries_a_price_that_plan_json_owns() -> None:
     """The design rule from ADR 0049: "/bundle/ and /bundle/setup/ read every
     price from web/bundle/plan.json". Every new surface reads it the same way,
@@ -588,8 +612,21 @@ def test_no_template_carries_a_price_that_plan_json_owns() -> None:
 
     Searched as the rendered amount ("$149"), which is the form that would
     actually mislead a reader, rather than the bare digits.
+
+    **The one exemption, and why it is not a hole.** ``/bundle/`` states its
+    prices in the served bytes -- issue #417 measured a page selling four plans
+    whose HTML contained no amount at all, which is how a crawler, an assistant,
+    and a reader with scripting off all saw a sales page that sold nothing.
+    Those amounts are generated into two marker-delimited regions by
+    ``make sync-bundle-offers`` and are re-derived from ``plan.json`` here on
+    every run: a hand-edit inside the markers fails just as a hand-typed price
+    outside them does, and a price changed in ``plan.json`` without a re-sync
+    fails too. The sweep therefore subtracts the regions rather than the file,
+    and asserts which file was allowed to have any -- so the exemption cannot
+    widen to a second page, or to the rest of this one, without failing here.
     """
-    products = _plan()["products"]
+    plan = _plan()
+    products = plan["products"]
     assert isinstance(products, dict)
     amounts = [f"${product['price']}" for product in products.values()]
     assert amounts, "plan.json lists no products; this test would pass vacuously"
@@ -600,10 +637,35 @@ def test_no_template_carries_a_price_that_plan_json_owns() -> None:
         *(_REPO / "pipeline" / "src" / "scorecard_pipeline").glob("*.py"),
     ]
     assert len(searched) > 100, "the file sweep collapsed; it would prove nothing"
+
+    exempted: dict[str, list[str]] = {}
     for path in searched:
         text = path.read_text(errors="ignore")
+        # A generated region is a markup construct. The subtraction applies only
+        # to markup, so the generator's own source -- which necessarily contains
+        # the marker strings it writes -- is still swept in full. It is, and it
+        # caught two prices typed into docstrings while this was being written.
+        if path.suffix == ".html":
+            regions = _generated_regions(text)
+            if regions:
+                exempted[path.relative_to(_REPO).as_posix()] = regions
+            text = _without_generated_regions(text)
         for amount in amounts:
-            assert amount not in text, f"{path}: carries the literal price {amount}"
+            assert amount not in text, (
+                f"{path}: carries the literal price {amount} outside any generated region"
+            )
+
+    # Exactly one file may hold generated regions, and its regions must be what
+    # the generator produces from the plan as it stands right now. Without this
+    # the subtraction above would be blanket permission to type anything between
+    # two comment markers.
+    assert list(exempted) == ["web/bundle/index.html"], (
+        f"generated price regions appeared in {sorted(exempted)}; only /bundle/ may carry them"
+    )
+    assert exempted["web/bundle/index.html"] == [
+        bundle_offers_region(plan),
+        bundle_noscript_region(plan),
+    ], "the exempted regions are not what `make sync-bundle-offers` writes from plan.json"
 
 
 # --- and the accessibility gate sees what was added -----------------------
