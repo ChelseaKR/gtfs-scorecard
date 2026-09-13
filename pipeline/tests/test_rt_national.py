@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+import datetime as dt
 from typing import Any
 
 from scorecard_pipeline.config import AGENCIES, Agency
-from scorecard_pipeline.rt_national import national_rt, reliability_band
+from scorecard_pipeline.rt_national import national_rt, observed_vintage, reliability_band
 
 
 def _summary(
@@ -181,3 +182,74 @@ def test_realtime_uses_registry_location_for_legacy_health_summary(
     assert nat["states"] == []
     assert nat["countries"][0]["country_code"] == "CA"
     assert nat["countries"][0]["subdivisions"][0]["subdivision_code"] == "CA-ON"
+
+
+# --- the vintage of the inputs (#389) -------------------------------------------------------
+
+
+def _at(day: str) -> int:
+    """Midday UTC on a date, as the monitor records timestamps."""
+    return int(dt.datetime.fromisoformat(f"{day}T12:00:00+00:00").timestamp())
+
+
+def test_observed_vintage_reports_the_spread_not_one_date() -> None:
+    """A rollup has as many vintages as members; one date would hide the tail."""
+    vintage = observed_vintage(
+        [
+            {"id": "fresh", "last_ts": _at("2026-09-12")},
+            {"id": "middle", "last_ts": _at("2026-09-05")},
+            {"id": "stale", "last_ts": _at("2026-06-30")},
+        ]
+    )
+    assert vintage["newest_last_observation"] == "2026-09-12"
+    assert vintage["median_last_observation"] == "2026-09-05"
+    assert vintage["oldest_last_observation"] == "2026-06-30"
+    assert vintage["feed_records_dated"] == 3
+    assert vintage["feed_records_undated"] == 0
+
+
+def test_observed_vintage_counts_undated_members_instead_of_dropping_them() -> None:
+    """A member with no recorded date is absence, and the payload says so.
+
+    Dropping it would shrink the denominator silently and leave three dates
+    describing a corpus larger than the one they were computed over.
+    """
+    vintage = observed_vintage(
+        [
+            {"id": "dated", "last_ts": _at("2026-09-12")},
+            {"id": "undated", "last_ts": None},
+            {"id": "missing-key"},
+        ]
+    )
+    assert vintage["feed_records_dated"] == 1
+    assert vintage["feed_records_undated"] == 2
+    assert vintage["newest_last_observation"] == "2026-09-12"
+
+
+def test_observed_vintage_publishes_no_date_when_nobody_recorded_one() -> None:
+    """Never the build date, and never a zero: the fields are null and counted."""
+    vintage = observed_vintage([{"id": "a"}, {"id": "b", "last_ts": None}])
+    assert vintage["feed_records_dated"] == 0
+    assert vintage["feed_records_undated"] == 2
+    assert vintage["oldest_last_observation"] is None
+    assert vintage["median_last_observation"] is None
+    assert vintage["newest_last_observation"] is None
+
+
+def test_national_rt_carries_the_vintage_of_its_inputs(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    """The rollup the API and the page both read states when it was gathered."""
+    monkeypatch.setitem(AGENCIES, "a", Agency(id="a", name="A", static_gtfs_url="https://a.test"))
+    monkeypatch.setitem(AGENCIES, "b", Agency(id="b", name="B", static_gtfs_url="https://b.test"))
+    nat = national_rt(
+        [
+            {**_summary("a", uptime=100.0), "last_ts": _at("2026-09-12")},
+            {**_summary("b", uptime=95.0), "last_ts": _at("2026-09-05")},
+        ]
+    )
+    assert nat["observed"] == {
+        "feed_records_dated": 2,
+        "feed_records_undated": 0,
+        "oldest_last_observation": "2026-09-05",
+        "median_last_observation": "2026-09-05",
+        "newest_last_observation": "2026-09-12",
+    }

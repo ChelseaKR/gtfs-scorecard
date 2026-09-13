@@ -29,6 +29,25 @@ the declared public surface).
 
 ### Fixed
 
+- **`/realtime/` and `api/v1/realtime.json` carried the build date where a data
+  date belongs (2026-09-13).** The only date either document held was
+  `generated_at`, written at every render, so a reader took it for when the
+  observations were current. They need not be: `rt-monitor.yml` recorded nothing
+  between 2026-09-05 and 2026-09-08 while both were rebuilt on the intraday
+  cadence and stamped with the build date. Each member already carried its own
+  `last_ts`; `rt_national.observed_vintage` now states it at the level a reader
+  looks at. The rollup gains an `observed` block — the newest, median and oldest
+  of the members' own last-observation dates — and the page carries the same
+  three dates in prose. A national rollup has as many vintages as it has
+  members, so all three are published rather than one: the newest alone would
+  hide a long tail of stale members behind one fresh one. No threshold is
+  introduced, matching the per-agency window that names the date it ends. Every
+  published date is a date a feed record was actually observed on — an even
+  count takes the older of the two middle dates rather than their mean. Members
+  recording no date are counted in `feed_records_undated` and named on the page,
+  not dropped from the denominator, and a corpus where nobody recorded a date
+  publishes nulls and says so rather than falling back to the build date
+  ([#389](https://github.com/ChelseaKR/gtfs-scorecard/issues/389)).
 - **The delivery-breach rule could not read the type DynamoDB returns, so no
   paid order has ever been reported as owing a refund (2026-09-13).**
   `/bundle/` promises delivery within two business days "or the purchase is

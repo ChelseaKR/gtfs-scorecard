@@ -10220,6 +10220,65 @@ _RT_BAND_LABELS = {
 }
 
 
+def _rt_vintage_line(nat: dict[str, Any]) -> str:
+    """When the observations on this page were taken, stated on the page.
+
+    ``generated_at`` is the build time and is written at every render, so a
+    reader who takes it for the data's date reads a document stamped today over
+    rows nobody has sampled in days -- which is what happened while the monitor
+    was down between 2026-09-05 and 2026-09-08 (#389). The dates here are read
+    off the members' own recorded observations by ``rt_national.observed_vintage``.
+
+    A rollup with no vintage block, and one whose members recorded no dates,
+    each say so. Neither silently omits the sentence: an unstated vintage is
+    exactly the condition this line exists to make visible.
+    """
+    observed = nat.get("observed")
+    if not isinstance(observed, dict):
+        return (
+            '<p class="fineprint">This snapshot does not record when its readings were taken, '
+            "so nothing on this page states how current they are.</p>"
+        )
+    dated = int(observed.get("feed_records_dated") or 0)
+    undated = int(observed.get("feed_records_undated") or 0)
+    newest = observed.get("newest_last_observation")
+    oldest = observed.get("oldest_last_observation")
+    median = observed.get("median_last_observation")
+    if not dated or not newest:
+        missing = (
+            f" None of the {undated} feed records here records one."
+            if undated
+            else " No feed record here records one."
+        )
+        return (
+            '<p class="fineprint">These readings carry no observation date, so this page cannot '
+            f"say how current they are.{missing} The date this document was built is not a claim "
+            "about them.</p>"
+        )
+    if oldest == newest:
+        span = f"Every one of these {dated} feed records was last observed on {esc(oldest)}."
+    else:
+        span = (
+            f"The newest of these {dated} feed records was last observed on {esc(newest)}; "
+            f"the median on {esc(median)}, and the least recently observed on {esc(oldest)}."
+        )
+    undated_note = (
+        (
+            " One further monitored feed record carries no observation date and is not "
+            "described by those dates."
+            if undated == 1
+            else f" A further {undated} monitored feed records carry no observation date and "
+            "are not described by those dates."
+        )
+        if undated
+        else ""
+    )
+    return (
+        f'<p class="fineprint">{span}{undated_note} Sampling is periodic, so these are the '
+        "dates the readings were taken, not the date this page was built.</p>"
+    )
+
+
 def _render_rt_page(
     nat: dict[str, Any], histories: dict[str, list[dict[str, Any]]] | None = None
 ) -> str:
@@ -10307,8 +10366,12 @@ def _render_rt_page(
             f"feed responded <strong>{esc(nat.get('median_uptime_pct'))}% of the time</strong>, "
             f"with the data arriving about {lag_txt} behind real time."
         )
+        # Only where readings are published is there anything to date. The two
+        # branches below publish no aggregate, so a vintage line there would
+        # describe numbers the page does not show.
+        vintage = _rt_vintage_line(nat)
     elif comparable_count <= 0:
-        band_table = reliable_table = state_table = location_table = ""
+        band_table = reliable_table = state_table = location_table = vintage = ""
         lead = (
             "Cross-feed realtime reliability is unavailable until current-contract checks "
             "create a comparable feed-record cohort. The raw monitor state contains "
@@ -10316,7 +10379,7 @@ def _render_rt_page(
             "reliability aggregate or named-feed claim."
         )
     else:
-        band_table = reliable_table = state_table = location_table = ""
+        band_table = reliable_table = state_table = location_table = vintage = ""
         lead = (
             f"{comparable_count} feed records meet the comparison contract, but none has "
             "a realtime monitor observation yet."
@@ -10341,7 +10404,7 @@ def _render_rt_page(
             f"""    {_breadcrumb([("Home", "/"), ("Realtime reliability", None)])}
     <a class="backlink" href="/">&larr; Home</a>
     <h1 class="page-title">Realtime reliability.</h1>
-    <p class="page-lede">{lead}</p>
+    <p class="page-lede">{lead}</p>{vintage}
     {band_table}
     {reliable_table}
     {location_table}
