@@ -465,6 +465,29 @@ def test_the_app_says_what_its_static_twin_says_about_the_paid_tier() -> None:
         )
 
 
+def test_the_app_rollup_offer_reads_word_for_word_like_the_static_rollup() -> None:
+    """#/program/<id> and /program/<id>/ are two renderings of one page.
+
+    The offer block is authored twice, once in Python and once in JavaScript,
+    which is the shape where two surfaces drift into saying different things
+    about the same purchase. Compared as text rather than as markup, so the
+    `reveal` class and the template interpolation do not count as a difference
+    and a changed sentence does.
+    """
+    from scorecard_pipeline.render_site import _BUNDLE_INDEPENDENCE, _ROLLUP_BUNDLE_SECTION
+
+    def visible(markup: str) -> str:
+        return re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", markup)).strip()
+
+    app = (_WEB / "src" / "app.js").read_text()
+    start = app.index('<section aria-labelledby="bundle-h"')
+    end = app.index("</section>", start) + len("</section>")
+    rendered = app[start:end].replace("${BUNDLE_INDEPENDENCE}", _BUNDLE_INDEPENDENCE)
+    assert "${" not in rendered, "an unsubstituted interpolation would compare as literal text"
+
+    assert visible(rendered) == visible(_ROLLUP_BUNDLE_SECTION)
+
+
 def test_the_home_page_states_the_tier_as_a_section_not_a_passing_mention() -> None:
     html = (_WEB / "index.html").read_text()
     assert 'id="program-tier-h"' in html
