@@ -163,6 +163,20 @@ jobs:
       # a blip that costs the site nothing cost a buyer an agency. A 404 is
       # not a blip -- that agency has no published artifact -- so it is taken
       # at its word and not retried.
+      #
+      # The two outcomes are kept apart after the retries, because the buyer's
+      # manifest cannot tell them apart. `scorecard bundle` classifies an id
+      # with no artifact on disk as `not_published`, and the manifest and the
+      # delivery email print its reason as "tracked, but no scorecard is
+      # published for it yet". For a 404 that is the truth. For an S3 read
+      # that failed three times it is a claim about the agency, manufactured
+      # from a failed read of our own bucket, and the buyer -- who is paying
+      # for a judgement about exactly that -- has no way to see the
+      # difference. So a 404 continues the build and an unreadable object
+      # fails the run: late is recoverable by a re-run with the same inputs,
+      # and the failure path is watched (watchdog.yml, and the "Say that a
+      # paid order failed" step below). A wrong sentence about an agency is
+      # delivered and believed.
       - name: Hydrate the requested artifacts from S3
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         env:
@@ -186,27 +200,43 @@ jobs:
               esac
               if [ "$attempt" -eq 3 ]; then
                 echo "S3 read failed three times for ${id}: ${err}" >&2
-                return 1
+                return 2
               fi
               echo "S3 read failed for ${id}; retrying (${attempt}/3)." >&2
               sleep $((attempt * 5))
             done
           }
           : > unhydrated.txt
+          : > unreadable.txt
           jq -r '.current[]' plan.json | while read -r id; do
             mkdir -p "../data/artifacts/${id}"
             rm -f "../data/artifacts/${id}/latest.json"
-            if ! fetch_latest "$id"; then
-              printf '%s\n' "$id" >> unhydrated.txt
-            fi
+            status=0
+            fetch_latest "$id" || status=$?
+            case "$status" in
+              0) ;;
+              1) printf '%s\n' "$id" >> unhydrated.txt ;;
+              *) printf '%s\n' "$id" >> unreadable.txt ;;
+            esac
           done
           if [ -s unhydrated.txt ]; then
             {
               echo
-              echo "**Not hydrated from S3** (no current artifact was fetched; each is named in"
-              echo "the manifest as not published):"
+              echo "**Not hydrated from S3** (S3 has no current artifact for these ids; each is"
+              echo "named in the manifest as not published, which is what it is):"
               sed 's/^/  - /' unhydrated.txt
             } >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -s unreadable.txt ]; then
+            {
+              echo
+              echo "**S3 would not answer** for $(wc -l < unreadable.txt | tr -d ' ') of the"
+              echo "requested ids after three attempts each. The ids are not listed here: this"
+              echo "page is public and they are a paying program's caseload. Re-run this"
+              echo "workflow with the same inputs."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::S3 would not answer for one or more requested agencies after three attempts. Failing rather than building: an agency whose artifact could not be read renders in the buyer's manifest as \"tracked, but no scorecard is published for it yet\", which is a statement about that agency and would not be true. Re-run with the same inputs."
+            exit 1
           fi
 
       - name: Render the bundle

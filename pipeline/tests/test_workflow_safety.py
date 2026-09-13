@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import json
+import os
 import re
+import shutil
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -1294,3 +1297,98 @@ def test_a_failed_paid_bundle_run_says_so_without_naming_the_order() -> None:
             assert '--to "$SES_FROM"' not in block, (
                 "mailing the sending identity is a send that succeeds and a delivery that does not"
             )
+
+
+# ---------------------------------------------------------------------------
+# report-bundle.yml: "I could not read it" must not reach a buyer as
+# "that agency has not published one"
+# ---------------------------------------------------------------------------
+
+_BASH = shutil.which("bash") or "/bin/bash"
+
+
+def _hydrate_step() -> dict[str, Any]:
+    for _job, step in _steps(_report_bundle()):
+        if str(step.get("name") or "") == "Hydrate the requested artifacts from S3":
+            return step
+    raise AssertionError("report-bundle.yml no longer hydrates the requested artifacts")
+
+
+def _run_hydrate(
+    tmp_path: Path, ids: list[str], *, blips: set[str]
+) -> subprocess.CompletedProcess[str]:
+    """Run the hydrate step with a stubbed `aws`, `jq` and `sleep`.
+
+    `blips` are the ids the stub fails on the way a transient S3 error fails
+    (no 404 in the message); every other id answers 404. Running the script is
+    the point: what is being tested is which of those two answers reaches the
+    buyer, and that is a decision the shell makes.
+    """
+    work = tmp_path / "pipeline"
+    (work / ".." / "data" / "artifacts").resolve().mkdir(parents=True, exist_ok=True)
+    work.mkdir(parents=True, exist_ok=True)
+    (work / "plan.json").write_text(json.dumps({"current": ids, "refused": []}))
+    stubs = tmp_path / "stubs"
+    stubs.mkdir()
+    (stubs / "aws").write_text(
+        "#!/bin/sh\n"
+        'for arg in "$@"; do case "$arg" in s3://*) key="$arg";; esac; done\n'
+        'case "$key" in\n'
+        "  *index.json) exit 0 ;;\n"
+        f"  {'|'.join(f'*/{blip}/*' for blip in sorted(blips)) or '__none__'})\n"
+        '    echo "download failed: Connection reset by peer" >&2; exit 1 ;;\n'
+        "  *)\n"
+        '    echo "fatal error: An error occurred (404) when calling the HeadObject operation: '
+        'Not Found" >&2; exit 1 ;;\n'
+        "esac\n"
+    )
+    (stubs / "sleep").write_text("#!/bin/sh\nexit 0\n")
+    for stub in stubs.iterdir():
+        stub.chmod(0o755)
+    summary = tmp_path / "summary.md"
+    done = subprocess.run(  # noqa: S603 - fixed shell and a repository-owned workflow step
+        [_BASH, "-c", str(_hydrate_step()["run"])],
+        cwd=work,
+        env={
+            **os.environ,
+            "PATH": f"{stubs}:{os.environ['PATH']}",
+            "ARTIFACTS_BUCKET": "example-artifacts",
+            "GITHUB_STEP_SUMMARY": str(summary),
+        },
+        capture_output=True,
+        text=True,
+    )
+    done.stdout += summary.read_text() if summary.exists() else ""
+    return done
+
+
+def test_an_agency_s3_never_published_still_builds_the_bundle(tmp_path: Path) -> None:
+    """A 404 is S3 answering. That agency has no published artifact, the
+    manifest says so, and the other reports are still worth delivering."""
+    done = _run_hydrate(tmp_path, ["alpha", "beta"], blips=set())
+    assert done.returncode == 0, done.stderr
+    assert "not published" in done.stdout
+    assert (tmp_path / "pipeline" / "unhydrated.txt").read_text().split() == ["alpha", "beta"]
+
+
+def test_an_artifact_s3_would_not_answer_for_does_not_ship_as_not_published(
+    tmp_path: Path,
+) -> None:
+    """The defect this closes, run end to end.
+
+    `scorecard bundle` classifies an id with no artifact on disk as
+    `not_published`, and the manifest and delivery email print the reason as
+    "tracked, but no scorecard is published for it yet". After three failed
+    reads of our own bucket that sentence is a claim about the agency
+    manufactured from a failed read, and the buyer -- who is paying for a
+    judgement about exactly that agency's data -- cannot tell it apart from
+    the true one. The run fails instead, which is recoverable: a re-run with
+    the same inputs fills the same S3 key behind the same link.
+    """
+    done = _run_hydrate(tmp_path, ["alpha", "beta"], blips={"beta"})
+    assert done.returncode != 0, "a bundle was built on an S3 read that never answered"
+    assert "::error::" in done.stdout
+    assert (tmp_path / "pipeline" / "unreadable.txt").read_text().split() == ["beta"]
+    # The id is a paying program's caseload and the summary is public.
+    assert "beta" not in done.stdout.split("::error::")[-1].split("\n")[0]
+    assert "- beta" not in done.stdout
