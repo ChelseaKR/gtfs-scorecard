@@ -44,3 +44,15 @@ paths = [
     '''^web/catalog\.(json|csv)$''',
     '''^web/dataset\.(json|csv)$''',
 ]
+# ADR 0055 / PR #439: pipeline/tests/test_measure.py's `_KEY` fixture is a
+# synthetic PostHog-shaped project key (`phc_` + a sequential, readable
+# 0-9/a-v run — not random) used only to exercise render_measure_script's
+# validation and injection logic. The committed web/src/measure.js shim never
+# carries a key; the real one reaches the site only via the POSTHOG_KEY
+# secret at deploy time (see site_shell.py's MEASURE_KEY_ENV). gitleaks'
+# generic-api-key rule matches the fixture's shape. A path allowlist for the
+# whole test file would be broader than the false positive; matching the
+# literal fixture string wherever it appears is exact instead.
+regexes = [
+    '''phc_TestKey0123456789abcdefghijklmnopqrstuv''',
+]
