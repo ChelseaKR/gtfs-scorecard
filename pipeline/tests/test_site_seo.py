@@ -667,7 +667,10 @@ def test_measurement_contract_holds_the_script_to_its_one_declared_host(
         item for item in payload["findings"] if item["code"] == "measurement.undeclared_host"
     ]
     assert [item["path"] for item in findings] == ["src/measure.js"]
-    assert "collector.example.org" in findings[0]["message"]
+    assert findings[0]["message"] == (
+        "the measurement script names 'collector.example.org'; only "
+        "'measure.example.test' is declared for it"
+    )
 
 
 def test_measurement_contract_fails_when_the_declared_script_is_absent(

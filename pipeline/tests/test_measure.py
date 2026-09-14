@@ -43,7 +43,7 @@ _SETUP = (_WEB / "bundle" / "setup" / "index.html").read_text()
 _BUNDLE_JS = (_WEB / "src" / "bundle.js").read_text()
 _REPORT_GOLDENS = _REPO / "pipeline" / "tests" / "goldens" / "report"
 
-_KEY = "phc_TestKey0123456789abcdefghijklmnopqrstuv"
+_KEY = "phc_TestKey0123456789abcdefghijklmnopqrstuv"  # gitleaks:allow (fixture key, not real)
 _PAGE_TYPES = ("home", "agency", "program", "bundle", "support", "fix", "directory", "other")
 
 
