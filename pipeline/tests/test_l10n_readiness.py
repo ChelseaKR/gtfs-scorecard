@@ -75,7 +75,16 @@ HARDCODED_STRING_BASELINE = {
     # sentence is not the enforcement; it is what stops a buyer paying to find
     # that out. A deliberate increase, to work back down with the rest of these
     # pages when the tier joins the catalog.
-    "bundle.js": 9,
+    # Raised 9 -> 10: the runtime-rewritten offers node now carries its own
+    # name ("Program report bundle") so it stands alone as a complete Google
+    # Product node, rather than depending on a merge with the page's separate
+    # Service block for a property Product structured data requires. Schema.org
+    # vocabulary values elsewhere on this same node (Offer, AggregateOffer,
+    # InStock, and the like) are not counted here because they are single
+    # words; this is the first two-word literal the offers node itself has
+    # carried. Not user-facing copy, so it is recorded rather than moved into
+    # the catalog.
+    "bundle.js": 10,
     "config.js": 1,
     "es.js": 2,
     "i18n.js": 0,

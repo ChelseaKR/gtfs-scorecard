@@ -20,6 +20,12 @@ const SERVICE_ID = "https://gtfsscorecard.org/bundle/#service";
 /** Its page, named on the offers node too, so replacing the server-rendered
  * block with this one does not drop a field the served markup carried. */
 const SERVICE_URL = "https://gtfsscorecard.org/bundle/";
+/** Also named on this node (not only on the hand-authored Service block that
+ * carries it in the page head) so it stands alone as a complete Product:
+ * Google Product structured data requires a name plus an offers, review, or
+ * aggregateRating, and two script tags sharing an @id are not guaranteed to
+ * be read as one node. */
+const SERVICE_NAME = "Program report bundle";
 const OFFER_SCRIPT_ID = "plan-offers-jsonld";
 
 const grid = /** @type {HTMLElement | null} */ (document.getElementById("plan-grid"));
@@ -113,8 +119,9 @@ function publishOffers(plan, order) {
   const prices = nodes.map((offer) => Number(offer.price));
   const node = {
     "@context": "https://schema.org",
-    "@type": "Service",
+    "@type": ["Service", "Product"],
     "@id": SERVICE_ID,
+    name: SERVICE_NAME,
     url: SERVICE_URL,
     offers:
       nodes.length === 1
