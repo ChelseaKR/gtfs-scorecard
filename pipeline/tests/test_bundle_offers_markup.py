@@ -213,6 +213,36 @@ def test_the_offers_node_names_the_page_it_is_on() -> None:
     assert node["@context"] == "https://schema.org"
 
 
+def test_the_offers_node_is_a_product_google_can_index() -> None:
+    """A ``Service`` node is not eligible for Google's Product structured data.
+
+    Measured: the served node was typed only ``Service``, with no ``name`` of
+    its own. Google's Product structured data (the free "Popular products" and
+    product-snippet surfaces that do not need a Merchant Center account) needs
+    a node typed ``Product`` carrying a ``name`` plus at least one of
+    ``offers``, ``review``, or ``aggregateRating`` -- and needs it regardless
+    of whether a browser or crawler treats this script tag and the page's
+    separate hand-authored Service block, which share an ``@id``, as one
+    merged node. This node must therefore be self-sufficient: ``Product``
+    among its types, with its own ``name``, sitting beside the ``offers`` it
+    already carried.
+    """
+    node = bundle_offers_jsonld(_plan())
+    assert node is not None
+    assert isinstance(node["@type"], list) and "Product" in node["@type"], (
+        "the offers node is not typed Product, so its offers are invisible to "
+        "Google's Product structured data"
+    )
+    assert "Service" in node["@type"], (
+        "site-seo.json still requires a Service @type on /bundle/; dropping it "
+        "here would redden the structural SEO gate"
+    )
+    assert node.get("name"), (
+        "a Product node with no name fails Google's own required-property check "
+        "even though it carries offers"
+    )
+
+
 def test_the_runtime_rewrite_targets_the_block_the_server_wrote() -> None:
     """bundle.js replaces this element; it must not add a second one.
 

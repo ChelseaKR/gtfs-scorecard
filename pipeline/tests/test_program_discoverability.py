@@ -390,7 +390,7 @@ def test_the_structural_seo_gate_requires_the_structured_data_these_pages_publis
     required = config["required_json_ld_types"]
     for pattern, types in (
         ("/agency/*/", {"Dataset"}),
-        ("/bundle/", {"Service"}),
+        ("/bundle/", {"Service", "Product"}),
         ("/program/", {"CollectionPage"}),
         ("/program/*/", {"CollectionPage", "Dataset"}),
     ):

@@ -1452,13 +1452,14 @@ def test_repository_config_keeps_aliases_and_exemptions_narrow() -> None:
     assert config["hreflang_groups"] == [{"en": "/", "es": "/es/"}]
     # Every page family whose structured data is load-bearing, and no other.
     # Widened deliberately: a rollup publishes a Dataset and the page it lists
-    # from, /bundle/ a Service, and each of those could stop being published
-    # with no code change and no other test noticing. The full reasoning, and
-    # the check that each entry is still required, is in
-    # tests/test_program_discoverability.py.
+    # from, /bundle/ a Service and also a Product -- Google's Product
+    # structured data, which a pure Service node is not eligible for -- and
+    # each of those could stop being published with no code change and no
+    # other test noticing. The full reasoning, and the check that each entry
+    # is still required, is in tests/test_program_discoverability.py.
     assert config["required_json_ld_types"] == {
         "/agency/*/": ["Dataset"],
-        "/bundle/": ["Service"],
+        "/bundle/": ["Service", "Product"],
         "/program/": ["CollectionPage"],
         "/program/*/": ["CollectionPage", "Dataset"],
     }

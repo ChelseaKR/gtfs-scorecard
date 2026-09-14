@@ -582,6 +582,18 @@ def bundle_offer_nodes(plan: dict[str, Any]) -> list[dict[str, Any]]:
     return nodes
 
 
+#: The node's display name, carried in this one generated block (not only in
+#: the hand-authored Service block above it in the HTML) so the block is a
+#: self-sufficient Product on its own: Google's Product structured data
+#: requires "name" plus at least one of offers/review/aggregateRating, and
+#: whether two <script type="application/ld+json"> tags on one page that
+#: share an @id are actually merged into one node by a given consumer is not
+#: something to depend on. Not a price, so it is not routed through
+#: plan.json: a display name is not the thing test_bundle_offers_markup.py
+#: guards against drifting from the plan.
+BUNDLE_SERVICE_NAME = "Program report bundle"
+
+
 def bundle_offers_jsonld(plan: dict[str, Any]) -> dict[str, Any] | None:
     """The Service node carrying those offers, or ``None`` when there are none.
 
@@ -590,6 +602,14 @@ def bundle_offers_jsonld(plan: dict[str, Any]) -> dict[str, Any] | None:
     node identifies the page it is on -- which is also what
     ``check_site_seo.py``'s required-type check asks of every top-level node of
     a required type.
+
+    ``@type`` carries both ``Service`` (what ``site-seo.json`` requires of
+    ``/bundle/``) and ``Product`` (what Google's Product structured data --
+    the free "Popular products" and product-snippet surfaces -- requires of a
+    node before its ``offers`` are eligible at all; a pure ``Service`` node is
+    not). Schema.org's own definition of ``Product`` is "any offered product
+    or service," so this is not a mischaracterization, just a second,
+    Google-legible name for the same node.
     """
     nodes = bundle_offer_nodes(plan)
     if not nodes:
@@ -613,8 +633,9 @@ def bundle_offers_jsonld(plan: dict[str, Any]) -> dict[str, Any] | None:
     )
     return {
         "@context": "https://schema.org",
-        "@type": "Service",
+        "@type": ["Service", "Product"],
         "@id": BUNDLE_SERVICE_ID,
+        "name": BUNDLE_SERVICE_NAME,
         "url": f"{BASE_URL}/bundle/",
         "offers": offers,
     }
