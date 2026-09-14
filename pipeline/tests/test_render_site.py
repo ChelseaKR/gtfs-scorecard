@@ -5127,6 +5127,50 @@ def test_problem_page_zero_comparison_is_unavailable_not_clean() -> None:
     assert "No findings have been aggregated" not in html
 
 
+def test_problem_page_fix_guide_links_name_their_guides() -> None:
+    """/problems/ builds its own guide link, outside _fix_guide_link.
+
+    Measured live on 2026-09-13: the page carried 23 links reading "Read the
+    fix guide", each to a different guide. The same text rule applies here:
+    the link names the code it opens, and no two guides share a text.
+    """
+    from scorecard_pipeline.render_site import FIX_CODES_WITH_PAGES, _render_problems_page
+
+    codes = ("expired_calendar", "unused_shape")
+    FIX_CODES_WITH_PAGES.update(codes)
+    try:
+        html = _render_problems_page(
+            {
+                "feed_record_count": 10,
+                "comparison_eligible_count": 10,
+                "comparison": {"eligible_count": 10},
+                "comparison_feed_record_count": 10,
+                "total_agencies": 10,
+                "problems": [
+                    {
+                        "code": code,
+                        "what": f"What {code} says.",
+                        "why": "Trips can disappear.",
+                        "fix": "Fix it.",
+                        "severity": "WARNING",
+                        "prevalence_pct": 70.0,
+                        "agencies": 7,
+                        "instances": 14,
+                    }
+                    for code in codes
+                ],
+            }
+        )
+    finally:
+        for code in codes:
+            FIX_CODES_WITH_PAGES.discard(code)
+    links = re.findall(r'<a class="fix-guide" href="(/fix/[a-z0-9_]+/)">([^<]*)</a>', html)
+    assert [href for href, _ in links] == [f"/fix/{code}/" for code in codes], links
+    for (href, text), code in zip(links, codes, strict=True):
+        assert code in text, f"{href} link text {text!r} does not name {code}"
+    assert len({text for _, text in links}) == len(codes), f"two guides share link text: {links}"
+
+
 def test_ridership_impact_line_states_coverage_and_never_ranks() -> None:
     from scorecard_pipeline.render_site import _ridership_impact_line
 

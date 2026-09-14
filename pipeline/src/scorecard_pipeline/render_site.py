@@ -10506,7 +10506,7 @@ def _render_problems_page(nat: dict[str, Any]) -> str:
             code = esc(p["code"])
             label = _problem_chart_label(p)
             guide = (
-                f' <a class="fix-guide" href="/fix/{code}/">Read the fix guide</a>'
+                f' <a class="fix-guide" href="/fix/{code}/">Read the fix guide for {code}</a>'
                 if p["code"] in FIX_CODES_WITH_PAGES
                 else ""
             )

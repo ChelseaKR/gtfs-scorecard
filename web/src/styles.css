@@ -2293,7 +2293,7 @@ main:focus { outline: none; }
 .finding .how { margin: 0; font-size: 0.9rem; }
 .finding .how strong { color: var(--green); }
 .finding .code { font-size: 0.74rem; color: var(--ink-soft); }
-.finding .fix-guide { color: var(--green); font-weight: 600; white-space: nowrap; }
+.finding .fix-guide { color: var(--green); font-weight: 600; }
 .availability {
   display: inline-flex;
   align-items: center;
@@ -2786,6 +2786,11 @@ main p,
   align-items: center;
   min-height: 44px;
 }
+/* The link names the finding it opens ("Read the fix guide for
+   scorecard_wheelchair_boarding_unknown"), and a notice code has no break
+   opportunity of its own. Let it break anywhere, as .fix-context code already
+   does, or the code widens the page past the 320px reflow width. */
+.fix-guide { overflow-wrap: anywhere; }
 .cohort-note > summary { width: fit-content; padding: 0.2rem 0.2rem; }
 
 /* The colour-selection control (1.4.8), shared with the landing page. */
