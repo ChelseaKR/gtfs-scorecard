@@ -45,6 +45,7 @@ set them, and forks keep working with nothing set:
 | Mirror artifacts to the CDN bucket | `ARTIFACTS_BUCKET` | `AWS_ROLE_ARN` secret, `infra/artifacts` applied |
 | Send the feed-health email digest | `SES_FROM` | a verified SES sender, `infra/alerts` applied |
 | AWS region (optional) | `AWS_REGION` | defaults to `us-west-2` |
+| Count page views and bundle checkout clicks ([ADR 0055](decisions/0055-cookieless-site-measurement.md)) | `POSTHOG_KEY` (a **secret**, not a variable) | a PostHog Cloud US project with "Discard client IP data" on; unset keeps the site silent |
 
 Set variables and secrets under **Settings → Secrets and variables → Actions**.
 
@@ -327,7 +328,10 @@ uv run python scripts/check_site_seo.py \
 It checks internal links, assets, forms, fragments, duplicate IDs, head-only
 page metadata, exact canonical aliases, sitemap and robots rules, reciprocal
 HTTPS language links, required structured-data identity and dates, and the
-public no-tracking contract. A finding stops the build.
+site-measurement contract: exactly one `/src/measure.js` on every page, none on
+a redirect stub, no other telemetry host anywhere on the site, and no host but
+the declared one inside that script. A finding stops the build. The report's
+`measured_pages` sits beside `html_files` so the two can be read together.
 
 It also measures two things a page can get wrong while every element is
 present. `title_length` and `description_length` in `site-seo.json` bound each
@@ -351,8 +355,14 @@ runs against `/`, `/agencies/`, `/agency/unitrans/`, and
 `/fix/expired_calendar/`, then retains the reports and log for 90 days. A
 manual watchdog dispatch runs both the availability and Lighthouse jobs.
 
-These are synthetic checks. The deployed pages do not load analytics, set
-tracking cookies, or send visitor beacons. Search Console setup is deliberately
+These are synthetic checks. The deployed pages load one first-party measurement
+script, `web/src/measure.js`, which sends page views and bundle checkout clicks
+to PostHog Cloud US only when the deploy wrote a `POSTHOG_KEY` into it (the
+"Write the measurement key into the assembled site" step in `pages.yml`; the
+committed copy has no key and sends nothing). It sets no cookie and honours
+Global Privacy Control and Do Not Track; see
+[ADR 0055](decisions/0055-cookieless-site-measurement.md) and the statement at
+`/about/#privacy`. Search Console setup is deliberately
 outside the deployment: the domain owner can complete DNS verification and
 submit `https://gtfsscorecard.org/sitemap.xml`, but this repository must not
 store Search Console credentials, API configuration, or an automated

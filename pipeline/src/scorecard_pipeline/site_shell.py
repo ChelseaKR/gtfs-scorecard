@@ -280,6 +280,7 @@ FOOTER_HTML = f"""<footer class="site-footer">
             <li><a href="/crosswalk/">Standards crosswalk</a></li>
             <li><a href="/press/">For reporters</a></li>
             <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="/about/#privacy">Privacy</a></li>
             <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
             <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
           </ul>
@@ -299,6 +300,7 @@ FOOTER_HTML_ES = """<footer class="site-footer">
       <p><a href="/es/">Buscar una agencia</a> ·
       <a href="/agencies/" hreflang="en">Directorio completo (en inglés)</a> ·
       <a href="/accessibility/" hreflang="en">Accesibilidad (en inglés)</a> ·
+      <a href="/about/#privacy" hreflang="en">Privacidad (en inglés)</a> ·
       <a href="/" hreflang="en">English</a></p>
     </div>
   </footer>"""
@@ -380,6 +382,117 @@ def sync_static_navs() -> list[Path]:
             path.write_text(new)
             changed.append(path)
     return changed
+
+
+# Site measurement (docs/decisions/0055-cookieless-site-measurement.md). One
+# first-party script, web/src/measure.js, on every page the site serves, and one
+# PostHog project key written into it at deploy time by `scorecard
+# render-measure` from the POSTHOG_KEY secret. The committed copy of the script
+# has no key and sends nothing; the deploy with no key ships exactly that copy.
+#
+# Two mechanisms keep this honest. `sync_static_measure` gives every
+# hand-authored page the tag the generated pages get from `_page`, and
+# tests/test_measure.py fails on a page without it, with two of it, or with a
+# redirect stub carrying it. `render_measure_script` is the only way a key
+# reaches the site, and it refuses anything that does not look like a PostHog
+# project key rather than splicing an arbitrary string into JavaScript.
+MEASURE_SCRIPT_PATH = "src/measure.js"
+MEASURE_SCRIPT_TAG = '<script src="/src/measure.js" defer></script>'
+MEASURE_HOST = "https://us.i.posthog.com"
+MEASURE_KEY_ENV = "POSTHOG_KEY"
+# The pages that are written by hand rather than by _page: the nav-synced set
+# plus the two landing pages, which carry their own header.
+MEASURED_STATIC_PAGES: tuple[str, ...] = (*STATIC_NAV_PAGES, "index.html", "es/index.html")
+_THEME_SCRIPT_TAG_RE = re.compile(
+    r'^(?P<indent>[ \t]*)<script src="/src/theme\.js" defer></script>$', re.MULTILINE
+)
+_MEASURE_SCRIPT_TAG_RE = re.compile(
+    r'^[ \t]*<script src="/src/measure\.js" defer></script>\n', re.MULTILINE
+)
+# The one line of the shim a deploy rewrites. Anchored on the trailing marker so
+# a second `var KEY` anywhere else in the file is not silently taken for it.
+_MEASURE_KEY_LINE_RE = re.compile(
+    r'^(?P<indent>[ \t]*)var KEY = "(?P<key>[^"\n]*)"; // measure:key$', re.MULTILINE
+)
+# What a PostHog project key looks like. Anything else is refused: the value is
+# spliced into a JavaScript string literal, and a deploy that fails loudly on a
+# mistyped secret is better than one that ships a broken shim or an injection.
+_MEASURE_KEY_RE = re.compile(r"phc_[A-Za-z0-9]{8,}")
+
+
+def measure_tag_count(html: str) -> int:
+    """How many measurement script tags one document carries."""
+    return len(_MEASURE_SCRIPT_TAG_RE.findall(html + "\n"))
+
+
+def with_measure_tag(html: str, *, label: str = "page") -> str:
+    """``html`` carrying exactly one measurement tag, placed after the theme
+    script every page loads first. Existing copies are removed first, so a page
+    that somehow gained two ends up with one, not three."""
+    stripped = _MEASURE_SCRIPT_TAG_RE.sub("", html)
+    anchors = list(_THEME_SCRIPT_TAG_RE.finditer(stripped))
+    if len(anchors) != 1:
+        raise ValueError(
+            f"{label}: expected one theme.js script tag to place the measurement tag after, "
+            f"found {len(anchors)}"
+        )
+    anchor = anchors[0]
+    insert = f"\n{anchor.group('indent')}{MEASURE_SCRIPT_TAG}"
+    return stripped[: anchor.end()] + insert + stripped[anchor.end() :]
+
+
+def sync_static_measure() -> list[Path]:
+    """Give each hand-authored page exactly one measurement script tag.
+
+    The same shape as ``sync_static_navs``: one canonical tag, a ``make``
+    target that writes it, and a test that fails CI on drift. Returns the paths
+    that changed (empty when in sync). Run via ``make sync-measure``."""
+    web = _repo_root() / "web"
+    changed: list[Path] = []
+    for rel in MEASURED_STATIC_PAGES:
+        path = web / rel
+        old = path.read_text()
+        new = with_measure_tag(old, label=str(path))
+        if new != old:
+            path.write_text(new)
+            changed.append(path)
+    return changed
+
+
+def render_measure_script(key: str | None, source: str | None = None) -> str:
+    """The shim with ``key`` written into its one key line.
+
+    ``source`` defaults to the committed ``web/src/measure.js``. An empty or
+    absent key renders the file byte-identical to a committed copy that carries
+    no key, which is how a deploy with no secret set ships nothing that sends.
+    """
+    text = (
+        source if source is not None else (_repo_root() / "web" / MEASURE_SCRIPT_PATH).read_text()
+    )
+    matches = list(_MEASURE_KEY_LINE_RE.finditer(text))
+    if len(matches) != 1:
+        raise ValueError(
+            f"{MEASURE_SCRIPT_PATH}: expected exactly one `var KEY = ...; // measure:key` line, "
+            f"found {len(matches)}"
+        )
+    value = (key or "").strip()
+    if value and not _MEASURE_KEY_RE.fullmatch(value):
+        raise ValueError(
+            f"{MEASURE_KEY_ENV} does not look like a PostHog project key (phc_ followed by "
+            "letters and digits); refusing to write it into the site"
+        )
+    match = matches[0]
+    line = f'{match.group("indent")}var KEY = "{value}"; // measure:key'
+    return text[: match.start()] + line + text[match.end() :]
+
+
+def write_measure_script(out: Path, key: str | None) -> bool:
+    """Write the rendered shim to ``out``. Returns whether measurement is on,
+    which is the same question as whether a key was written."""
+    rendered = render_measure_script(key)
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(rendered)
+    return bool((key or "").strip())
 
 
 # The /bundle/ Service node the offers attach to, and the id web/src/bundle.js
@@ -769,6 +882,7 @@ def _page(
     }} catch (e) {{}}
   </script>
   <script src="/src/theme.js" defer></script>
+  {MEASURE_SCRIPT_TAG}
   <script src="/src/nav.js" defer></script>
   <noscript><style>
     /* Without JS the menu button cannot expand the collapsed nav, so show the

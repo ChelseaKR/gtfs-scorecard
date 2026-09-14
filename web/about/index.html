@@ -27,6 +27,7 @@
     } catch (e) {}
   </script>
   <script src="/src/theme.js" defer></script>
+  <script src="/src/measure.js" defer></script>
   <script src="/src/nav.js" defer></script>
   <noscript><style>
     /* Without JS the menu button cannot expand the collapsed nav, so show the
@@ -104,6 +105,40 @@
       Organizations that want to help cover the hosting and data costs can read how on
       <a href="/support/">the support page</a>.</p>
     </section>
+
+    <!-- The one statement of what the site records about a visit. It describes
+         web/src/measure.js and nothing more: a sentence here that the script does
+         not do is the thing tests/test_measure.py exists to catch, and a thing the
+         script does that this page omits is the other. Keep the two in step. -->
+    <section aria-labelledby="privacy-h" id="privacy">
+      <h2 class="section-title" id="privacy-h">What this site records about a visit</h2>
+      <p>The site counts page views. For each one it records the page opened (the path only,
+      never the part of the address after a question mark or a hash), the family the page
+      belongs to (home, agency, program, bundle, support, fix guide, directory, or other), and
+      the domain of the site that linked here. It records one further event: when a checkout
+      link on <a href="/bundle/">the bundle page</a> is followed, the plan that link belongs
+      to. That is the whole list. The purpose is to learn which pages people land on and
+      whether the paid bundle page is reached and acted on.</p>
+      <p>No cookie is set, and nothing is kept on your device beyond the current tab. A random
+      visit id lives in the tab's session storage and is discarded when the tab closes, so two
+      visits cannot be joined and no profile is built. Nothing you type is recorded: the script
+      never reads a form or the page text, and the setup form after checkout, including the
+      email address on it, is marked so that no measurement tool can read it. There is no
+      session recording and no fingerprinting.</p>
+      <p>The events go to PostHog Cloud US, run by PostHog Inc. in the United States. As with
+      any web request, PostHog's servers receive your IP address and browser identifier to
+      deliver the request; the project is configured to discard the IP address rather than
+      store it with the event. PostHog keeps the events for one year on the plan this project
+      uses. Nothing is sold or shared with anyone else.</p>
+      <p>To opt out, turn on <a href="https://globalprivacycontrol.org/">Global Privacy
+      Control</a> or Do Not Track in your browser, or block requests to us.i.posthog.com. The
+      script checks both signals before it does anything and sends nothing when either is set,
+      and every part of the site works the same either way. The script is the full record of
+      what is collected and is published at
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/web/src/measure.js">web/src/measure.js</a>;
+      the decision behind it is
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/decisions/0055-cookieless-site-measurement.md">ADR 0055</a>.</p>
+    </section>
   </main>
 
   <footer class="site-footer">
@@ -169,6 +204,7 @@
             <li><a href="/crosswalk/">Standards crosswalk</a></li>
             <li><a href="/press/">For reporters</a></li>
             <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="/about/#privacy">Privacy</a></li>
             <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
             <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
           </ul>

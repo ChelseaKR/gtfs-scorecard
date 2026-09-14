@@ -11,6 +11,7 @@
 | Public agency metadata | Directory, identity, corrections | Public registry and reviewed Git history |
 | Subscriber email and selected alerts | Deliver requested feed-health notices | Double opt-in store; delivery process only; removable |
 | Request IP counter | Abuse prevention for instant scoring | Fixed-window count with TTL; no public output |
+| Page-view and bundle-checkout-click events (added 2026-09-13, [ADR 0055](../decisions/0055-cookieless-site-measurement.md)) | Learn which pages are landed on and whether the paid bundle page is reached and acted on | PostHog Cloud US, one year; page path and type, referring domain, plan id; no cookie, a tab-scoped random visit id, no person profile, client IP discarded at ingestion; off under Global Privacy Control or Do Not Track; stated at `/about/#privacy` |
 | Operational logs | Diagnose scheduled jobs | Provider retention; do not log tokens, feed credentials, or private proof |
 
 ## Necessity and minimization

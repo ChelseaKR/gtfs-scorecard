@@ -28,6 +28,7 @@
     } catch (e) {}
   </script>
   <script src="/src/theme.js" defer></script>
+  <script src="/src/measure.js" defer></script>
   <script src="/src/nav.js" defer></script>
   <script src="/src/config.js"></script>
   <script src="/src/bundle-setup.js" defer></script>
@@ -66,7 +67,11 @@
       two business days are counted from when you paid, not from when this form is sent.</p>
     </noscript>
 
-    <form id="setup-form" class="submit-form" novalidate>
+    <!-- ph-no-capture: the site's own measurement script never reads a form, and
+         this class is what PostHog's SDK honours if one is ever added, so the
+         program name, the agency list, and the buyer's email below can never be
+         autocaptured by either. tests/test_measure.py holds the marker here. -->
+    <form id="setup-form" class="submit-form ph-no-capture" novalidate>
       <p class="field">
         <label for="program_name">Program or organization name <span class="req">(required)</span></label>
         <input id="program_name" name="program_name" type="text" required maxlength="120"
@@ -97,7 +102,7 @@
       <p class="field">
         <label for="deliver_to">Send the download link to</label>
         <input id="deliver_to" name="deliver_to" type="email" autocomplete="email"
-          placeholder="Leave blank to use the email you paid with">
+          class="ph-no-capture" placeholder="Leave blank to use the email you paid with">
       </p>
       <p class="field">
         <button type="submit" class="submit-button">Build my reports</button>
@@ -173,6 +178,7 @@
             <li><a href="/crosswalk/">Standards crosswalk</a></li>
             <li><a href="/press/">For reporters</a></li>
             <li><a href="/accessibility/">Accessibility</a></li>
+            <li><a href="/about/#privacy">Privacy</a></li>
             <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
             <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
           </ul>

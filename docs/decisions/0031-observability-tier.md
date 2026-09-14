@@ -54,6 +54,12 @@ Declare, for the deployed system as it exists today:
     would add surveillance surface to a civic tool for a metric the synthetic
     Lighthouse checks already regression-tripwire. See
     `docs/listing-policy.md` for the public no-tracking statement.
+    **Amended 2026-09-13 by [ADR 0055](0055-cookieless-site-measurement.md):**
+    the site now carries one cookieless first-party measurement script (page
+    views and bundle checkout clicks, PostHog Cloud US). That is still not RUM:
+    no Core Web Vitals are collected, and the field-SLI declination above
+    stands. `docs/listing-policy.md` and `/about/#privacy` carry the current
+    public statement.
   - Search Console is not a runtime or observability dependency. The domain
     owner may complete DNS ownership verification and submit the sitemap
     outside this repository. No Search Console credential, API configuration,

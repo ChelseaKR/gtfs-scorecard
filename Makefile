@@ -1,7 +1,7 @@
 # Convenience targets. CI runs the same commands directly (see .github/workflows);
 # these just give them stable names. `uv` runs inside the pipeline/ project.
 
-.PHONY: verify tiles tiles-geojsonl map-geometry render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav sync-bundle-offers mutation mutation-results iac
+.PHONY: verify tiles tiles-geojsonl map-geometry render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav sync-measure sync-bundle-offers mutation mutation-results iac
 
 # The merge-blocking gate: lint, format, types, tests, the AAA contrast check,
 # and the plain-language readability check. Mirrors .github/workflows/ci.yml.
@@ -76,6 +76,13 @@ render-constants:
 # tests/test_static_nav.py fails CI if a static page's nav drifts from it.
 sync-static-nav:
 	cd pipeline && uv run python -c "from scorecard_pipeline.render_site import sync_static_navs; print('synced:', [str(p) for p in sync_static_navs()])"
+
+# Give every hand-authored page exactly one <script src="/src/measure.js">
+# tag, the site-measurement shim the generated pages get from _page
+# (docs/decisions/0055). tests/test_measure.py fails CI when a page lacks it,
+# carries two, or a redirect stub carries one.
+sync-measure:
+	cd pipeline && uv run python -c "from scorecard_pipeline.site_shell import sync_static_measure; print('synced:', [str(p) for p in sync_static_measure()])"
 
 # Regenerate /bundle/'s offers JSON-LD from web/bundle/plan.json, the single
 # source of every price. The served page stated no price at all until this
