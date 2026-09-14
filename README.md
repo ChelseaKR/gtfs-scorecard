@@ -367,8 +367,14 @@ N/A (no network surface to probe). For Tier B, every fresh site build passes a
 blocking structural SEO check. Lighthouse gates code changes, and a weekly
 synthetic run checks representative production routes. Build-time SEO reports
 are retained for 14 days and production Lighthouse reports for 90 days.
-The public site has no analytics loader, visitor-tracking code, or real-user
-monitoring beacon. Search Console ownership verification and sitemap submission
+The public site carries one first-party measurement script, `web/src/measure.js`
+([ADR 0055](docs/decisions/0055-cookieless-site-measurement.md)): page views and
+bundle checkout clicks, sent to PostHog Cloud US with no cookie and no identifier
+that outlives the browser tab, off under Global Privacy Control or Do Not Track,
+and off entirely unless the deploy carries a `POSTHOG_KEY`. What it records is
+stated at [/about/#privacy](https://gtfsscorecard.org/about/#privacy) and held by
+the structural check. It is not real-user monitoring: no Core Web Vitals are
+collected. Search Console ownership verification and sitemap submission
 remain external domain-owner tasks; this repository stores no Search Console
 credentials or configuration. See the ADR and [deploy runbook](docs/deploy.md).
 

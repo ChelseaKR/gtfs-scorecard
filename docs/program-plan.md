@@ -97,9 +97,12 @@ if it were working.
 | 0 purchases, `/bundle/` over about 50 unique visitors | A price or copy problem, not a demand problem. Halve the one-time price once; change nothing else for another 90 days. |
 | 1 or more purchases | Build the program workspace (hosted saved cohorts, team sharing, SLA'd support; 07's "supporter workspace" row) for that buyer. Ask permission to name their program on `/support/`. |
 
-Unique visitors come from the Pages traffic view, the only analytics this
-site has; the page is `noindex` and unlinked until launch, so the count
-starts at launch.
+Unique visitors come from the Pages traffic view and, once the `POSTHOG_KEY`
+secret is set, from the site's own page-view count
+([ADR 0055](decisions/0055-cookieless-site-measurement.md)), which is the only
+one of the two that can say whether a visit reached `/bundle/` and followed a
+checkout link (the `bundle_checkout_click` event carries the plan id). The
+count starts at launch.
 
 ## Runbook: from "written" to "on"
 

@@ -15,10 +15,19 @@ agency-submitted feeds.
 
 ## Privacy
 
-The public scorecard does not use analytics or track visitors. It sets no
-tracking cookies, sends no page-view beacons, and does not build rider or
-visitor profiles. Site-quality checks use automated synthetic visits instead
-of observing real visitor sessions.
+The public scorecard counts page views and one further event, a click on a
+checkout link on the bundle page. It sets no cookie, keeps no identifier past
+the current browser tab, reads nothing a visitor types, and builds no rider or
+visitor profile. The full statement of what is recorded, where it goes, how
+long it is kept, and how to opt out is on the site at
+[gtfsscorecard.org/about/#privacy](https://gtfsscorecard.org/about/#privacy).
+The script that does the recording is `web/src/measure.js`, the decision is
+[ADR 0055](decisions/0055-cookieless-site-measurement.md), and Global Privacy
+Control or Do Not Track switches it off. Site-quality checks use automated
+synthetic visits instead of observing real visitor sessions.
+
+Until 2026-09-13 the site recorded nothing about a visit at all. That rule
+was withdrawn on that date; this section and the site say what replaced it.
 
 The domain owner may verify ownership through DNS and submit the public sitemap
 to Search Console outside this project. The repository contains no Search

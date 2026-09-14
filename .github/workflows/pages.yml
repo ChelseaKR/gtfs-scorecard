@@ -26,6 +26,12 @@ on:
     secrets:
       PAGES_AWS_ROLE_ARN:
         required: false
+      # Site measurement (docs/decisions/0055-cookieless-site-measurement.md).
+      # Optional: unset leaves the deployed shim a no-op that sends nothing.
+      # Every caller passes it through, so a data-refresh deploy carries the
+      # same key a code push does and measurement never flickers off.
+      POSTHOG_KEY:
+        required: false
   workflow_dispatch:
 
 permissions:
@@ -311,6 +317,19 @@ jobs:
               release_manifest_sha256: $release_manifest_sha256}' \
             > _site/deployment.json
           echo "deployed_sha=$deployed_sha" >> "$GITHUB_OUTPUT"
+      # Site measurement (docs/decisions/0055-cookieless-site-measurement.md).
+      # POSTHOG_KEY is a PostHog project key: write-only and shipped in every
+      # page by design, held as a secret only so it can be set without a
+      # commit. Unset, this writes the committed no-op shim and nothing is
+      # sent; malformed, it fails the deploy with the reason rather than ship
+      # a broken file. It runs after the copy of web/ above and before the
+      # structural gate, which then checks the file it wrote: exactly one load
+      # on every page, none on a redirect stub, one destination host.
+      - name: Write the measurement key into the assembled site
+        working-directory: pipeline
+        env:
+          POSTHOG_KEY: ${{ secrets.POSTHOG_KEY }}
+        run: uv run scorecard render-measure --out ../_site/src/measure.js
       - name: Enforce the structural SEO contract
         working-directory: pipeline
         run: >-
