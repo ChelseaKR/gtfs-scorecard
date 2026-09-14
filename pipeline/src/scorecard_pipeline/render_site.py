@@ -165,8 +165,33 @@ def _route_rule() -> str:
 
 
 def _fix_guide_link(code: str) -> str:
+    """Link a finding to its fix guide, naming the finding the guide is about.
+
+    Measured on the rendered site on 2026-09-13: "Read the fix guide" was the
+    text of 23,304 of the 23,360 internal links into /fix/, spread over 2,052
+    pages and pointing at 40 different guides. On /problems/ alone, 23 links
+    reading the same six words went to 23 different destinations.
+
+    Two separate things followed from that, and naming the destination closes
+    both. WCAG 2.2 AAA 2.4.9 Link Purpose (Link Only) asks that a link's
+    purpose be identifiable from its text alone, and docs/accessibility.md
+    records that criterion as MET; a page carrying 23 identically worded links
+    to 23 different pages is the criterion's own failure case. Two of the four
+    callers below (the fix-loop list and the program rollup's shared findings)
+    do not print the code anywhere near the link, so there was no adjacent
+    context to fall back on either.
+
+    The code is also the string a practitioner has in hand when their feed is
+    failing, and the fix guides are the only pages here written for that
+    reader rather than for someone looking up a stop. _rule_ref_link already
+    spends a code-bearing description on MobilityData's copy of the rule, so
+    the site was describing the external rule better than its own guide.
+    """
     if code in FIX_CODES_WITH_PAGES:
-        return f' · <a class="fix-guide" href="/fix/{esc(code)}/">Read the fix guide</a>'
+        return (
+            f' · <a class="fix-guide" href="/fix/{esc(code)}/">'
+            f"Read the fix guide for {esc(code)}</a>"
+        )
     return ""
 
 
