@@ -35,6 +35,8 @@ _CONFIG_KEYS = {
     "redirect_aliases",
     "title_length",
     "description_length",
+    "measurement_script",
+    "measurement_host",
 }
 _IGNORED_SCHEMES = {"blob", "data", "javascript", "mailto", "sms", "tel"}
 _HEADING_TAGS = ("h1", "h2", "h3", "h4", "h5", "h6")
@@ -75,12 +77,24 @@ _REFRESH_RE = re.compile(r"^\s*0(?:\.0+)?\s*;\s*url\s*=\s*(.+?)\s*$", re.IGNOREC
 # Mirrors scorecard_pipeline.agencies.ID_PATTERN at the public route boundary.
 _AGENCY_PATH_RE = re.compile(r"^/agency/[a-z0-9][a-z0-9_-]*/$")
 _SITEMAP_NAMESPACE = "http://www.sitemaps.org/schemas/sitemap/0.9"
+# The site-measurement contract (docs/decisions/0055-cookieless-site-measurement
+# .md): the one declared first-party script is the whole of what the site
+# collects about a visit, so every page must load it exactly once, a redirect
+# stub must not load it at all, and nothing else on the site may name a
+# telemetry host. The hosts below serve vendor analytics loaders; the PostHog
+# SDK loader is listed by its asset hosts because it is the thing that would
+# bring autocapture and session recording with it. The declared measurement
+# host is deliberately not on this list: the rule for it is that only the
+# declared script may name it, and that the declared script names nothing else.
 _FORBIDDEN_TELEMETRY_HOST_SUFFIXES = (
     "google-analytics.com",
     "googletagmanager.com",
+    "us-assets.i.posthog.com",
+    "eu-assets.i.posthog.com",
+    "app.posthog.com",
 )
 _FORBIDDEN_TELEMETRY_MARKERS = _FORBIDDEN_TELEMETRY_HOST_SUFFIXES
-_FORBIDDEN_TELEMETRY_FILES = {"analytics.js"}
+_HTTPS_HOST_RE = re.compile(r"https://([a-z0-9.-]+)", re.IGNORECASE)
 
 
 class ConfigError(ValueError):
@@ -103,6 +117,8 @@ class Config:
     redirect_aliases: dict[str, str]
     title_length: tuple[int, int]
     description_length: tuple[int, int]
+    measurement_script: str
+    measurement_host: str
 
 
 @dataclass(frozen=True, order=True)
@@ -662,12 +678,41 @@ def _validate_terminal_aliases(
             raise ConfigError(f"alias target must not be a configured noindex page: {source!r}")
 
 
+def _measurement_settings(raw: dict[str, Any]) -> tuple[str, str]:
+    """The declared measurement script (a root-relative .js path) and the one
+    https origin it may send to."""
+    script = raw["measurement_script"]
+    if (
+        not isinstance(script, str)
+        or not script.startswith("/")
+        or script.startswith("//")
+        or not script.endswith(".js")
+        or ".." in script.split("/")
+    ):
+        raise ConfigError("measurement_script must be a root-relative .js path")
+    host = raw["measurement_host"]
+    if not isinstance(host, str):
+        raise ConfigError("measurement_host must be an https origin with no path")
+    parts = urlsplit(host)
+    if (
+        parts.scheme != "https"
+        or not parts.hostname
+        or "@" in parts.netloc
+        or parts.path
+        or parts.query
+        or parts.fragment
+    ):
+        raise ConfigError("measurement_host must be an https origin with no path")
+    return script, host
+
+
 def load_config(path: Path) -> Config:
     """Read and strictly validate schema-v1 configuration."""
     raw = _read_config_object(path)
     _validate_config_keys(raw)
     origin = _site_origin(raw)
     fragment_prefixes, noindex_patterns = _config_path_lists(raw)
+    measurement_script, measurement_host = _measurement_settings(raw)
 
     canonical_aliases = _path_mapping(raw, "canonical_aliases", allow_fragment=False)
     redirect_aliases = _path_mapping(raw, "redirect_aliases", allow_fragment=True)
@@ -690,6 +735,8 @@ def load_config(path: Path) -> Config:
         redirect_aliases=redirect_aliases,
         title_length=_length_bounds(raw, "title_length"),
         description_length=_length_bounds(raw, "description_length"),
+        measurement_script=measurement_script,
+        measurement_host=measurement_host,
     )
 
 
@@ -863,77 +910,173 @@ def _is_forbidden_telemetry_reference(value: str, page: Page, config: Config) ->
         hostname = (resolved.hostname or "").casefold()
     except ValueError:
         return False
-    if any(
+    return any(
         hostname == suffix or hostname.endswith(f".{suffix}")
         for suffix in _FORBIDDEN_TELEMETRY_HOST_SUFFIXES
-    ):
-        return True
-    origin = urlsplit(config.site_origin)
-    return (
-        resolved.netloc.casefold() == origin.netloc.casefold()
-        and PurePosixPath(unquote(resolved.path)).name in _FORBIDDEN_TELEMETRY_FILES
     )
 
 
-def _contains_forbidden_telemetry_marker(value: str) -> bool:
+def _names_undeclared_telemetry(value: str, measurement_host: str) -> bool:
+    """Whether JavaScript outside the declared script names a telemetry host,
+    the declared measurement host included: measurement comes from one file."""
     folded = value.casefold()
-    return any(marker in folded for marker in _FORBIDDEN_TELEMETRY_MARKERS)
+    if any(marker in folded for marker in _FORBIDDEN_TELEMETRY_MARKERS):
+        return True
+    return measurement_host in folded
 
 
-def _validate_no_tracking(
+def _measurement_references(page: Page, config: Config) -> list[Reference]:
+    """The asset references on ``page`` that load the declared measurement script."""
+    found: list[Reference] = []
+    for reference in page.assets:
+        target = _local_target(reference.value, page, config)
+        if target is not None and target.path == config.measurement_script:
+            found.append(reference)
+    return found
+
+
+def _validate_measurement(
     site_root: Path,
     pages: dict[str, Page],
     files: set[str],
     config: Config,
     findings: list[Finding],
-) -> None:
-    for page in pages.values():
-        for reference in page.assets:
-            if _is_forbidden_telemetry_reference(reference.value, page, config):
-                findings.append(
-                    Finding(
-                        "privacy.telemetry_asset",
-                        page.relative_path,
-                        (
-                            f"line {reference.line}: tracking/analytics asset is forbidden: "
-                            f"{reference.value!r}"
-                        ),
-                    )
-                )
-        for script in page.inline_scripts:
-            if _contains_forbidden_telemetry_marker(script.value):
-                findings.append(
-                    Finding(
-                        "privacy.telemetry_script",
-                        page.relative_path,
-                        f"line {script.line}: inline tracking/analytics loader is forbidden",
-                    )
-                )
+) -> int:
+    """Hold the site-measurement contract; return how many pages carry exactly
+    one copy of the declared script.
 
+    Four rules. Every page that is not a redirect stub loads the declared
+    script exactly once, because a page without it is a page the disclosure
+    on /about/#privacy does not describe, and a page with two of it reports
+    every view twice. A redirect stub loads nothing, since it is not a page a
+    reader is on. No page and no other script names a vendor analytics loader
+    or the measurement host itself, so the declared script stays the whole of
+    what is sent. And the declared script names no https host but the one
+    declared for it, so a second destination cannot arrive inside the file the
+    contract allows.
+    """
+    script_relative = config.measurement_script.lstrip("/")
+    if script_relative not in files:
+        findings.append(
+            Finding(
+                "measurement.script_missing",
+                script_relative,
+                "the declared measurement script is not in the site",
+            )
+        )
+    measurement_host = (urlsplit(config.measurement_host).hostname or "").casefold()
+
+    measured = 0
+    for page in pages.values():
+        measured += _validate_page_measurement(page, config, findings)
+        _validate_page_telemetry(page, config, measurement_host, findings)
     for relative_path in sorted(files):
-        path = PurePosixPath(relative_path)
-        if path.name in _FORBIDDEN_TELEMETRY_FILES:
+        if PurePosixPath(relative_path).suffix.casefold() != ".js":
+            continue
+        _validate_script_telemetry(
+            site_root, relative_path, script_relative, config, measurement_host, findings
+        )
+    return measured
+
+
+def _validate_page_measurement(page: Page, config: Config, findings: list[Finding]) -> int:
+    """Return 1 when ``page`` loads the declared script exactly once and is not
+    a redirect stub; otherwise record why and return 0."""
+    loads = _measurement_references(page, config)
+    if page.refreshes:
+        for reference in loads:
             findings.append(
                 Finding(
-                    "privacy.telemetry_file",
-                    relative_path,
-                    "tracking/analytics loader file is forbidden by the public privacy policy",
+                    "measurement.on_redirect",
+                    page.relative_path,
+                    f"line {reference.line}: a redirect stub must not load the measurement script",
                 )
             )
-        if path.suffix.casefold() != ".js":
-            continue
-        # A distinct name: `script` above this loop is a Reference, and reusing
-        # it for the file's text made a strict-mode type error inside the
-        # privacy gate that nothing was checking.
-        script_source = (site_root / relative_path).read_text(encoding="utf-8")
-        if _contains_forbidden_telemetry_marker(script_source):
+        return 0
+    if not loads:
+        findings.append(
+            Finding(
+                "measurement.missing",
+                page.relative_path,
+                f"page does not load the measurement script {config.measurement_script!r}",
+            )
+        )
+        return 0
+    if len(loads) > 1:
+        lines = ", ".join(str(reference.line) for reference in loads)
+        findings.append(
+            Finding(
+                "measurement.duplicate",
+                page.relative_path,
+                f"page loads the measurement script {len(loads)} times (lines {lines})",
+            )
+        )
+        return 0
+    return 1
+
+
+def _validate_page_telemetry(
+    page: Page, config: Config, measurement_host: str, findings: list[Finding]
+) -> None:
+    for reference in page.assets:
+        if _is_forbidden_telemetry_reference(reference.value, page, config):
+            findings.append(
+                Finding(
+                    "privacy.telemetry_asset",
+                    page.relative_path,
+                    (
+                        f"line {reference.line}: tracking/analytics asset is forbidden: "
+                        f"{reference.value!r}"
+                    ),
+                )
+            )
+    for script in page.inline_scripts:
+        if _names_undeclared_telemetry(script.value, measurement_host):
             findings.append(
                 Finding(
                     "privacy.telemetry_script",
-                    relative_path,
-                    "JavaScript contains a forbidden tracking/analytics host",
+                    page.relative_path,
+                    f"line {script.line}: an inline script names a telemetry host; "
+                    f"measurement may come only from {config.measurement_script!r}",
                 )
             )
+
+
+def _validate_script_telemetry(
+    site_root: Path,
+    relative_path: str,
+    script_relative: str,
+    config: Config,
+    measurement_host: str,
+    findings: list[Finding],
+) -> None:
+    """One JavaScript file: the declared script may name only its declared
+    host; every other file may name no telemetry host at all."""
+    # A distinct name from the Reference the page loop calls `script`: reusing
+    # that name for a file's text once made a strict-mode type error inside
+    # the privacy gate that nothing was checking.
+    script_source = (site_root / relative_path).read_text(encoding="utf-8")
+    if relative_path == script_relative:
+        named = {match.group(1).casefold() for match in _HTTPS_HOST_RE.finditer(script_source)}
+        for other in sorted(named - {measurement_host}):
+            findings.append(
+                Finding(
+                    "measurement.undeclared_host",
+                    relative_path,
+                    f"the measurement script names {other!r}; only "
+                    f"{measurement_host!r} is declared for it",
+                )
+            )
+        return
+    if _names_undeclared_telemetry(script_source, measurement_host):
+        findings.append(
+            Finding(
+                "privacy.telemetry_script",
+                relative_path,
+                f"JavaScript names a telemetry host; measurement may come only from "
+                f"{config.measurement_script!r}",
+            )
+        )
 
 
 def _validate_metadata(
@@ -2015,7 +2158,7 @@ def audit(site_root: Path, config: Config) -> tuple[list[Finding], dict[str, int
     for page in pages.values():
         _validate_page(page, pages, files, config, redirect_aliases, findings)
 
-    _validate_no_tracking(site_root, pages, files, config, findings)
+    measured_pages = _validate_measurement(site_root, pages, files, config, findings)
     _validate_noindex_patterns(pages, config, findings)
     _validate_required_json_ld_patterns(pages, config, findings)
     _validate_duplicate_metadata(pages, config, redirect_aliases, findings)
@@ -2031,6 +2174,10 @@ def audit(site_root: Path, config: Config) -> tuple[list[Finding], dict[str, int
         "canonical_aliases": canonical_aliases,
         "html_files": len(pages),
         "indexable_pages": (len(pages) - noindex_pages - redirect_alias_count - canonical_aliases),
+        # Pages carrying exactly one measurement script, printed beside the
+        # page count so the two numbers can be read off the same report: the
+        # contract holds when they differ by exactly the redirect stubs.
+        "measured_pages": measured_pages,
         "noindex_pages": noindex_pages,
         "redirect_aliases": sum(bool(page.refreshes) for page in pages.values()),
     }
@@ -2047,6 +2194,7 @@ def _report(
         "canonical_aliases": 0,
         "html_files": 0,
         "indexable_pages": 0,
+        "measured_pages": 0,
         "noindex_pages": 0,
         "redirect_aliases": 0,
     }

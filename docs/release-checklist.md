@@ -55,16 +55,19 @@ recommending `@v1`.
 - [ ] The fresh site passes the blocking structural SEO gate, including local
   links and fragments, duplicate IDs, metadata, canonical aliases, sitemap and
   robots parity, reciprocal HTTPS language links, required structured-data
-  identity and dates, and the no-tracking contract. Confirm the generated
+  identity and dates, and the site-measurement contract. Confirm the generated
   report is retained for 14 days.
 - [ ] Security, dependency, container, workflow, standards-pin, and CodeQL checks pass.
 - [ ] Public claims identify their source, date, scope, and limitation; no output implies
   certification, rider service quality, or staff performance.
 - [ ] Schema, API, methodology, accessibility, and migration documentation changed with
   the implementation when applicable.
-- [ ] Public pages contain no analytics loader, tracking cookie, or visitor beacon.
-  Search Console DNS verification and sitemap submission remain external owner
-  tasks; no Search Console credentials or configuration are added to the repo.
+- [ ] Public pages load exactly one measurement script (`/src/measure.js`,
+  [ADR 0055](decisions/0055-cookieless-site-measurement.md)) and no other analytics
+  loader, tracking cookie, or visitor beacon, and `/about/#privacy` still says
+  exactly what that script sends. Search Console DNS verification and sitemap
+  submission remain external owner tasks; no Search Console credentials or
+  configuration are added to the repo.
 - [ ] Rollback is a revert of the merge commit; any data or infrastructure exception has
   an explicit recovery command and owner.
 

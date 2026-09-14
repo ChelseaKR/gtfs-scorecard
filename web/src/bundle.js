@@ -188,6 +188,12 @@ function render(plan) {
       a.className = "submit-button";
       a.href = safeUrl(product.checkout_url);
       a.textContent = "Buy through Stripe";
+      // The last thing this site can see of a purchase is this click; the
+      // checkout itself happens on Stripe. web/src/measure.js reports it under
+      // this event name with the plan id, and nothing else about the reader
+      // (docs/decisions/0055-cookieless-site-measurement.md).
+      a.setAttribute("data-measure", "bundle_checkout_click");
+      a.setAttribute("data-measure-plan", key);
       p.appendChild(a);
       card.appendChild(p);
     }

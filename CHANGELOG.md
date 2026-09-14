@@ -27,6 +27,30 @@ the declared public surface).
 
 ## [Unreleased]
 
+### Added
+
+- **Cookieless site measurement, disclosed on the page it measures
+  (2026-09-13, [ADR 0055](docs/decisions/0055-cookieless-site-measurement.md)).**
+  The site recorded nothing about a visit until now, and could not say whether
+  anyone reached `/bundle/` or followed a checkout link. One first-party script,
+  `web/src/measure.js`, now sends a page view (path only, page family,
+  referring domain) and a `bundle_checkout_click` with the plan id to PostHog
+  Cloud US: no SDK, no cookie, a visit id that dies with the tab,
+  `$process_person_profile: false`, off under Global Privacy Control or Do Not
+  Track, and off entirely unless the deploy writes a `POSTHOG_KEY` into the
+  script (`scorecard render-measure`, a new `pages.yml` step; the committed copy
+  has no key). `/about/#privacy` states what is sent, linked from every footer.
+  `check_site_seo.py` replaces the no-tracking contract with the site-measurement
+  one: exactly one `/src/measure.js` on every page, none on a redirect stub, the
+  PostHog SDK loader hosts forbidden alongside Google's, the measurement host
+  named nowhere but the declared script, and that script naming no other host;
+  `measured_pages` is reported beside `html_files`. `tests/test_measure.py`
+  holds the script's own promises, the `ph-no-capture` marker on the
+  post-checkout form and its email field, and that the board report a buyer
+  receives never carries the script. `docs/listing-policy.md`, `README.md`,
+  `docs/deploy.md`, `docs/release-checklist.md`, `docs/audits/dpia-lite.md`,
+  and ADR 0031 say the same thing the site does.
+
 ### Fixed
 
 - **Two scheduled publish bounds that nothing measured (2026-09-13).**
