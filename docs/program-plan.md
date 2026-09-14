@@ -341,6 +341,44 @@ report finds things and tells nobody. The dispatch token already carries the
 is that somebody checked, and that the label the report is filed under
 exists.
 
+## What is rehearsed without a purchase
+
+Nothing past step 7 has run for a real buyer. The joins between the pieces are
+run instead against a synthetic purchase, so the first sale is not the first
+execution. `pipeline/tests/test_paid_path_transaction.py` runs in `make verify`;
+`pipeline/tests/e2e/test_bundle_setup_form.py` runs in `e2e.yml`. Neither
+creates, reads or touches a Stripe object.
+
+- **Payment Link to `/bundle/setup/`.** The transaction test holds
+  `scripts/stripe-setup.sh` to the one redirect that names this page and
+  `plan.json` to four distinct `buy.stripe.com` links. It cannot open a link:
+  loading a Payment Link creates a Checkout Session. The live check this still
+  needs is a read of the four `plink_` objects (`after_completion.redirect.url`
+  and each one's single price), which only the owner's key can make.
+- **The form to the setup route.** The browser test drives the real page with
+  `?session_id=cs_test_…`, submits it, and reads the request it makes. The
+  endpoint is rewritten to the test server and every external request is
+  aborted. Stripe substituting `{CHECKOUT_SESSION_ID}` into the address is the
+  part it takes on Stripe's word.
+- **The setup route to `report-bundle.yml`.** The inputs the Lambda sends are
+  compared with the inputs the workflow declares (an undeclared input, or a
+  required one left empty, is a 422 and an order that never starts), and one
+  purchase is run from the form through the workflow's own two pipeline steps
+  to the archive key the download route presigns, the email, and the
+  reconciler's verdict with the archive there and with it gone. The deployed
+  token's `actions: write` scope is the one thing this cannot check.
+- **The weekly tick.** A subscription is bought, its stored request is read
+  back 28 days later by `refresh_handler`, and the dispatch it produces is
+  built. The EventBridge rule is checked by its own log, not by a purchase:
+  with no subscribers the Tuesday invocation still writes
+  `{"refresh": {"scanned": 0, ...}}`, and a missing log group means it has
+  never fired.
+- **The webhook to a later refresh.** A signed `checkout.session.completed`
+  body goes through `webhook_handler.handler`, and the `checkout#` row it
+  writes is what a refresh months later inherits its cap from. Stripe's
+  delivery to the endpoint is the part this cannot check; an unsigned
+  `POST /webhook` answering 400 shows the route is deployed and closed.
+
 ## Closing it again
 
 Set `payments_enabled = "0"` and apply: the `/setup` route disappears, the
