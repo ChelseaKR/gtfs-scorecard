@@ -1,7 +1,7 @@
 {
   "comparison": {
     "absolute_rankings_published": false,
-    "eligible_count": 1612,
+    "eligible_count": 1611,
     "excluded_count": 392,
     "exclusion_counts": {
       "duplicate_feed_identity": 8,
@@ -16,7 +16,7 @@
     },
     "individual_percentiles_published": false,
     "measured_category_cohorts": {
-      "correctness+freshness+completeness": 1612,
+      "correctness+freshness+completeness": 1611,
       "correctness+freshness+completeness+realtime": 143
     },
     "note": "Score aggregates and named changes use one current producer contract, raw reader archive profile, and measured-category set across canonical feed records, with unresolved duplicate identities removed. Absolute rankings and individual percentiles are not published.",
@@ -497,16 +497,16 @@
       "state": "New Hampshire"
     },
     {
-      "agency_count": 5,
-      "comparison_eligible_count": 5,
-      "feed_record_count": 5,
+      "agency_count": 4,
+      "comparison_eligible_count": 4,
+      "feed_record_count": 4,
       "indicators": {
         "disability_pct": 10.6,
         "poverty_pct": 9.7,
         "zero_vehicle_pct": 11.3
       },
-      "low_grade_share": 60.0,
-      "median_score": 52.9,
+      "low_grade_share": 75.0,
+      "median_score": 48.5,
       "need_tier": "lower",
       "state": "New Jersey"
     },
