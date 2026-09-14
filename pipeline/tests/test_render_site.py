@@ -3517,6 +3517,70 @@ def test_rollup_common_fixes_section_omits_the_guide_link_without_a_page() -> No
     assert "fix-guide" not in html
 
 
+def test_fix_guide_link_text_names_the_finding_the_guide_is_about() -> None:
+    """A fix-guide link has to say which guide it opens, in its own text.
+
+    Measured on the rendered site on 2026-09-13: 23,304 of the 23,360 internal
+    links into /fix/ read "Read the fix guide", across 2,052 pages and 40
+    destinations. That is a WCAG 2.2 AAA 2.4.9 failure on a criterion
+    docs/accessibility.md records as MET, and it spends the site's only
+    internal anchor text on its only pages written for a practitioner whose
+    feed is failing.
+    """
+    from scorecard_pipeline.render_site import FIX_CODES_WITH_PAGES, _fix_guide_link
+
+    codes = ("expired_calendar", "unused_shape")
+    FIX_CODES_WITH_PAGES.update(codes)
+    try:
+        texts = {}
+        for code in codes:
+            markup = _fix_guide_link(code)
+            assert f'href="/fix/{code}/"' in markup
+            text = re.sub(r"<[^>]+>", "", markup).strip().lstrip("\u00b7").strip()
+            assert code in text, f"link text {text!r} does not name {code}"
+            texts[code] = text
+        assert len(set(texts.values())) == len(codes), f"two guides share link text: {texts}"
+    finally:
+        for code in codes:
+            FIX_CODES_WITH_PAGES.discard(code)
+
+
+def test_rollup_common_fixes_links_are_told_apart_by_their_text_alone() -> None:
+    """The rollup's shared-findings list prints no code beside the link.
+
+    This caller and the agency fix-loop list are the two that offer no adjacent
+    context, so identical link text there leaves nothing at all to tell two
+    destinations apart.
+    """
+    from scorecard_pipeline.render_site import FIX_CODES_WITH_PAGES, _rollup_common_fixes_section
+
+    codes = ("scorecard_no_feed_contact", "unused_shape")
+    FIX_CODES_WITH_PAGES.update(codes)
+    try:
+        rollup = {
+            "rollup": {"id": "test-state", "name": "Test State"},
+            "common_fixes": [
+                {
+                    "code": codes[0],
+                    "fix": "Add feed_contact_email to feed_info.txt.",
+                    "agencies": 5,
+                },
+                {"code": codes[1], "fix": "Remove route shapes no trip uses.", "agencies": 3},
+            ],
+        }
+        html = _rollup_common_fixes_section(rollup)
+        links = re.findall(r'<a class="fix-guide" href="(/fix/[a-z0-9_]+/)">([^<]*)</a>', html)
+        assert len(links) == len(codes), links
+        by_text: dict[str, set[str]] = {}
+        for href, text in links:
+            by_text.setdefault(text, set()).add(href)
+        collisions = {text: sorted(hrefs) for text, hrefs in by_text.items() if len(hrefs) > 1}
+        assert not collisions, f"one link text points at several guides: {collisions}"
+    finally:
+        for code in codes:
+            FIX_CODES_WITH_PAGES.discard(code)
+
+
 def test_rollup_common_fixes_section_empty_when_nothing_shared() -> None:
     from scorecard_pipeline.render_site import _rollup_common_fixes_section
 
