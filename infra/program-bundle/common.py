@@ -21,6 +21,11 @@ Environment (set by Terraform):
   STRIPE_WEBHOOK_SECRET signing secret of the one webhook endpoint
   STRIPE_PRICE_IDS      JSON of terraform's stripe_price_ids: plan key -> price id
   PAYMENTS_ENABLED      "1" while the purchase surface is open; anything else closes it
+  GOOGLE_ADS_CONVERSION_ACTION
+                        Google Ads conversion action resource name; blank (default)
+                        keeps conversion_tracking.py's seam a no-op. Read by the
+                        webhook only, wired through this env block like every other
+                        variable here.
   SUBSCRIPTIONS_TABLE   DynamoDB table of subscriptions (hash: id)
   BUNDLES_TABLE         DynamoDB table of bundle capabilities (hash: bundle_id)
   ARTIFACTS_BUCKET      where report-bundle.yml puts program-bundles/<id>/bundle.zip

@@ -3637,6 +3637,21 @@ def _cmd_render_constants(args: argparse.Namespace, parser: argparse.ArgumentPar
     return 0
 
 
+def _cmd_render_measure(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    from .site_shell import MEASURE_KEY_ENV, write_measure_script
+
+    # The deploy's one chance to turn measurement on. An unset or empty secret
+    # writes the committed no-op shim; a malformed one fails the deploy with
+    # the reason, rather than shipping a broken file (ADR 0055).
+    try:
+        on = write_measure_script(Path(args.out), os.environ.get(MEASURE_KEY_ENV))
+    except ValueError as exc:
+        parser.error(str(exc))
+    state = "on" if on else f"off ({MEASURE_KEY_ENV} is not set; nothing will be sent)"
+    print(f"wrote {args.out}: site measurement {state}")
+    return 0
+
+
 def _cmd_report(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .report import ReportError, generate_report, load_brand
 
@@ -4473,6 +4488,15 @@ def main(argv: list[str] | None = None) -> int:
         "render-constants",
         help="regenerate web/src/generated/constants.js from the Python definitions",
     )
+    render_measure = sub.add_parser(
+        "render-measure",
+        help="write web/src/measure.js with the POSTHOG_KEY from the environment (deploy only)",
+    )
+    render_measure.add_argument(
+        "--out",
+        required=True,
+        help="where to write the rendered shim, e.g. ../_site/src/measure.js",
+    )
 
     report = sub.add_parser(
         "report",
@@ -4749,6 +4773,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "reindex": _cmd_reindex,
         "render-site": _cmd_render_site,
         "render-constants": _cmd_render_constants,
+        "render-measure": _cmd_render_measure,
         "report": _cmd_report,
         "bundle": _cmd_bundle,
         "bundle-email": _cmd_bundle_email,

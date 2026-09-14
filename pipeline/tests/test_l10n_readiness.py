@@ -96,6 +96,11 @@ HARDCODED_STRING_BASELINE = {
     # the source and method labels for freshness findings raise it to 121.
     "landing-scorecard.js": 121,
     "locale.js": 0,
+    # The site-measurement shim (docs/decisions/0055): event and property
+    # names only, no reader-facing copy. The one match is the strict-mode
+    # directive, which this heuristic counts in theme.js and nav.js too. A
+    # sentence a reader sees does not belong in this file, so this stays at 1.
+    "measure.js": 1,
     "nav.js": 4,
     # The compact paid-tier summary the landing page and /support/ render from
     # web/bundle/plan.json. New module, so this is its first recorded baseline

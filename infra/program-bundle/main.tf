@@ -181,6 +181,12 @@ variable "stripe_price_ids_are_live" {
   default     = false
 }
 
+variable "google_ads_conversion_action" {
+  description = "Google Ads conversion action resource name (\"customers/<id>/conversionActions/<id>\"), e.g. once a Google Ads account and an Enhanced Conversions for Leads action exist for the bundle purchase. Blank (default) keeps conversion_tracking.py's seam a no-op; nothing else needs to change to turn it on. See docs/paid-search-readiness.md."
+  type        = string
+  default     = ""
+}
+
 # ---------------------------------------------------------------------------
 # The gate. Preconditions, not check blocks: a check block only warns.
 # ---------------------------------------------------------------------------
@@ -319,18 +325,19 @@ resource "aws_iam_role_policy" "lambda" {
 
 locals {
   common_env = {
-    GITHUB_REPO           = var.github_repo
-    GITHUB_TOKEN          = var.github_token
-    WORKFLOW_FILE         = "report-bundle.yml"
-    WORKFLOW_REF          = "main"
-    SUBSCRIPTIONS_TABLE   = aws_dynamodb_table.subscriptions.name
-    BUNDLES_TABLE         = aws_dynamodb_table.bundles.name
-    ARTIFACTS_BUCKET      = var.artifacts_bucket
-    ALLOW_ORIGIN          = var.allow_origin
-    PAYMENTS_ENABLED      = var.payments_enabled
-    STRIPE_SECRET_KEY     = var.stripe_secret_key
-    STRIPE_WEBHOOK_SECRET = var.stripe_webhook_secret
-    STRIPE_PRICE_IDS      = jsonencode(var.stripe_price_ids)
+    GITHUB_REPO                  = var.github_repo
+    GITHUB_TOKEN                 = var.github_token
+    WORKFLOW_FILE                = "report-bundle.yml"
+    WORKFLOW_REF                 = "main"
+    SUBSCRIPTIONS_TABLE          = aws_dynamodb_table.subscriptions.name
+    BUNDLES_TABLE                = aws_dynamodb_table.bundles.name
+    ARTIFACTS_BUCKET             = var.artifacts_bucket
+    ALLOW_ORIGIN                 = var.allow_origin
+    PAYMENTS_ENABLED             = var.payments_enabled
+    STRIPE_SECRET_KEY            = var.stripe_secret_key
+    STRIPE_WEBHOOK_SECRET        = var.stripe_webhook_secret
+    STRIPE_PRICE_IDS             = jsonencode(var.stripe_price_ids)
+    GOOGLE_ADS_CONVERSION_ACTION = var.google_ads_conversion_action
   }
 }
 

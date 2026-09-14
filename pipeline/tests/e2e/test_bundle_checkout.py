@@ -94,6 +94,13 @@ def test_four_buy_controls_render_with_live_stripe_payment_links(page: Page, bas
         expect(card.get_by_role("link", name=BUY_LABEL)).to_have_attribute(
             "href", product["checkout_url"]
         )
+        # The click is the last thing the site can see of a purchase, so each
+        # link opts in to measurement by name and plan (ADR 0055); measure.js
+        # reports nothing a reader clicks that is not marked this way.
+        expect(card.get_by_role("link", name=BUY_LABEL)).to_have_attribute(
+            "data-measure", "bundle_checkout_click"
+        )
+        expect(card.get_by_role("link", name=BUY_LABEL)).to_have_attribute("data-measure-plan", key)
 
     expect(page.locator("#plan-notice")).to_contain_text("Checkout is open")
     expect(page.locator("#plan-fineprint")).to_be_visible()

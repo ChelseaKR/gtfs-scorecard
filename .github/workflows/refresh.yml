@@ -305,3 +305,4 @@ jobs:
       perf_gate: advisory
     secrets:
       PAGES_AWS_ROLE_ARN: ${{ secrets.PAGES_AWS_ROLE_ARN }}
+      POSTHOG_KEY: ${{ secrets.POSTHOG_KEY }}

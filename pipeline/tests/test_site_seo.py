@@ -13,6 +13,11 @@ import pytest
 ROOT = Path(__file__).resolve().parents[2]
 CHECKER = ROOT / "pipeline" / "scripts" / "check_site_seo.py"
 ORIGIN = "https://example.test"
+# The site-measurement contract (ADR 0055): one declared script on every page,
+# one destination host, nothing else naming a telemetry host.
+MEASURE_HOST = "https://measure.example.test"
+MEASURE_TAG = '<script src="/src/measure.js" defer></script>'
+MEASURE_SHIM = f'/* fixture shim */\nvar HOST = "{MEASURE_HOST}";\n'
 
 
 def _page(
@@ -27,11 +32,13 @@ def _page(
     language: str = "en",
     noindex: bool = False,
     og_url: str | None = None,
+    measured: bool = True,
 ) -> str:
     canonical = f"{ORIGIN}{canonical_path or public_path}"
     social_url = og_url or canonical
     robots = '<meta name="robots" content="noindex,follow">' if noindex else ""
     heading = f"<h1>{h1}</h1>" if h1 is not None else ""
+    measure = MEASURE_TAG if measured else ""
     return f"""<!doctype html>
 <html lang="{language}">
 <head>
@@ -45,6 +52,7 @@ def _page(
   <meta property="og:url" content="{social_url}">
   <meta property="og:image" content="{ORIGIN}/og.png">
   {robots}
+  {measure}
   {extra_head}
 </head>
 <body>{heading}{body}</body>
@@ -78,6 +86,8 @@ def _config() -> dict[str, Any]:
         "redirect_aliases": {
             "/old/": "/target/?view=all#section",
         },
+        "measurement_script": "/src/measure.js",
+        "measurement_host": MEASURE_HOST,
     }
 
 
@@ -199,6 +209,7 @@ def _write_fixture(tmp_path: Path) -> tuple[Path, Path]:
 """,
     )
     (site / "app.js").write_text("/* fixture */\n", encoding="utf-8")
+    _write_text(site, "src/measure.js", MEASURE_SHIM)
     (site / "og.png").write_bytes(b"png")
     # The file the agency Dataset advertises as its download. A structured
     # block is the one place a URL appears that no link or asset check reads,
@@ -318,6 +329,7 @@ def test_valid_site_passes_with_deterministic_report_and_canonical_alias(
         "findings": 0,
         "html_files": 9,
         "indexable_pages": 5,
+        "measured_pages": 8,
         "noindex_pages": 2,
         "redirect_aliases": 1,
     }
@@ -345,6 +357,7 @@ def test_manifest_authorized_agency_redirect_is_excluded_from_sitemap(
         "findings": 0,
         "html_files": 10,
         "indexable_pages": 5,
+        "measured_pages": 8,
         "noindex_pages": 2,
         "redirect_aliases": 2,
     }
@@ -610,25 +623,123 @@ def test_srcset_still_checks_non_data_candidates(tmp_path: Path) -> None:
     assert "asset.missing_target" in _codes(report)
 
 
-def test_no_tracking_contract_rejects_analytics_loader_asset_and_file(
+def test_measurement_contract_requires_exactly_one_script_on_every_page(
     tmp_path: Path,
 ) -> None:
+    """A page without the script is one the disclosure does not describe; a
+    page with two reports every view twice; a redirect stub is not a page a
+    reader is on. Each is its own finding so the report says which."""
     site, config = _write_fixture(tmp_path)
-    _replace(
-        site / "index.html",
-        "</head>",
-        '<script src="/analytics.js"></script></head>',
-    )
-    _write_text(site, "analytics.js", "/* tracking loader placeholder */\n")
+    _replace(site / "agencies/index.html", MEASURE_TAG, "")
+    _replace(site / "index.html", MEASURE_TAG, MEASURE_TAG + MEASURE_TAG)
+    _replace(site / "old/index.html", "</head>", MEASURE_TAG + "</head>")
     report = tmp_path / "report.json"
 
     result = _run(site, config, report)
 
     assert result.returncode == 1
-    assert {
-        "privacy.telemetry_asset",
-        "privacy.telemetry_file",
-    } <= _codes(report)
+    payload = json.loads(report.read_text(encoding="utf-8"))
+    by_code = {(item["code"], item["path"]) for item in payload["findings"]}
+    assert ("measurement.missing", "agencies/index.html") in by_code
+    assert ("measurement.duplicate", "index.html") in by_code
+    assert ("measurement.on_redirect", "old/index.html") in by_code
+    # The count beside html_files is of pages that hold the contract, so it
+    # excludes all three and is printed even when the run fails.
+    assert payload["summary"]["measured_pages"] == 6
+
+
+def test_measurement_contract_holds_the_script_to_its_one_declared_host(
+    tmp_path: Path,
+) -> None:
+    site, config = _write_fixture(tmp_path)
+    _write_text(
+        site,
+        "src/measure.js",
+        MEASURE_SHIM + 'var MIRROR = "https://collector.example.org/e";\n',
+    )
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    payload = json.loads(report.read_text(encoding="utf-8"))
+    findings = [
+        item for item in payload["findings"] if item["code"] == "measurement.undeclared_host"
+    ]
+    assert [item["path"] for item in findings] == ["src/measure.js"]
+    assert findings[0]["message"] == (
+        "the measurement script names 'collector.example.org'; only "
+        "'measure.example.test' is declared for it"
+    )
+
+
+def test_measurement_contract_fails_when_the_declared_script_is_absent(
+    tmp_path: Path,
+) -> None:
+    site, config = _write_fixture(tmp_path)
+    (site / "src" / "measure.js").unlink()
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    codes = _codes(report)
+    assert "measurement.script_missing" in codes
+    # The pages still reference it, so the existing asset check fires too.
+    assert "asset.missing_target" in codes
+
+
+def test_measurement_may_come_only_from_the_declared_script(tmp_path: Path) -> None:
+    """The host is allowed in one file. An inline script naming it, a second
+    script naming it, or the vendor SDK loader itself is each a finding."""
+    site, config = _write_fixture(tmp_path)
+    _replace(
+        site / "index.html",
+        "</head>",
+        (
+            f"<script>fetch('{MEASURE_HOST}/i/v0/e/')</script>"
+            '<script src="https://us-assets.i.posthog.com/static/array.js"></script>'
+            "</head>"
+        ),
+    )
+    _write_text(site, "app.js", f'fetch("{MEASURE_HOST}/i/v0/e/");\n')
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    payload = json.loads(report.read_text(encoding="utf-8"))
+    by_code = {(item["code"], item["path"]) for item in payload["findings"]}
+    assert ("privacy.telemetry_script", "index.html") in by_code
+    assert ("privacy.telemetry_script", "app.js") in by_code
+    assert ("privacy.telemetry_asset", "index.html") in by_code
+
+
+@pytest.mark.parametrize(
+    ("key", "value"),
+    [
+        ("measurement_script", "src/measure.js"),
+        ("measurement_script", "/src/measure.css"),
+        ("measurement_script", "//evil.example/measure.js"),
+        ("measurement_host", "http://measure.example.test"),
+        ("measurement_host", "https://measure.example.test/collect"),
+        ("measurement_host", "https://user@measure.example.test"),
+        ("measurement_host", 7),
+    ],
+)
+def test_measurement_settings_are_validated_strictly(
+    tmp_path: Path, key: str, value: object
+) -> None:
+    site, config = _write_fixture(tmp_path)
+    payload = json.loads(config.read_text(encoding="utf-8"))
+    payload[key] = value
+    config.write_text(json.dumps(payload), encoding="utf-8")
+    report = tmp_path / "report.json"
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 2
+    assert json.loads(report.read_text(encoding="utf-8"))["errors"][0]["code"] == "config.invalid"
 
 
 def test_no_tracking_contract_rejects_known_telemetry_hosts(tmp_path: Path) -> None:
