@@ -23,6 +23,7 @@ import hashlib
 import hmac
 import importlib.util
 import json
+import os
 import re
 import sys
 import time
@@ -62,6 +63,7 @@ def _load(name: str) -> Any:
 
 
 common = _load("common")
+conversion_tracking = _load("conversion_tracking")
 setup_handler = _load("setup_handler")
 webhook_handler = _load("webhook_handler")
 refresh_handler = _load("refresh_handler")
@@ -1537,6 +1539,124 @@ def test_webhook_notes_a_checkout_it_could_not_verify_rather_than_failing(
     # An id that is not a Checkout Session id is never looked up at all.
     odd = _event("checkout.session.completed", {"id": "not-a-session", "mode": "payment"})
     assert json.loads(webhook_handler.handler(_webhook(odd))["body"])["outcome"] == "ignored"
+
+
+def _completed_checkout(session_id: str, **overrides: Any) -> bytes:
+    """A checkout.session.completed event body carrying the two fields Stripe
+    includes on the object itself (amount_total in cents, currency) that
+    conversion_tracking reads without a second Stripe call."""
+    obj: dict[str, Any] = {
+        "id": session_id,
+        "mode": "payment",
+        "customer_details": {"email": "buyer@example.org"},
+        "amount_total": 14900,
+        "currency": "usd",
+    }
+    obj.update(overrides)
+    return _event("checkout.session.completed", obj)
+
+
+def test_webhook_fires_no_conversion_event_while_unconfigured(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """The default, every deploy today: GOOGLE_ADS_CONVERSION_ACTION is unset.
+    A negative control -- without it, a spy on the sink would pass trivially
+    whether or not the seam ever runs, so this proves the seam is reached
+    (the checkout is still noted) and still emits nothing."""
+    assert os.environ.get("GOOGLE_ADS_CONVERSION_ACTION", "") == ""
+    fired: list[dict[str, Any]] = []
+    monkeypatch.setattr(conversion_tracking, "emit", fired.append)
+    _stripe(monkeypatch, price=PRICE_BUNDLE_25)
+    body = _completed_checkout("cs_conv_1")
+    assert json.loads(webhook_handler.handler(_webhook(body))["body"])["outcome"] == "noted"
+    assert tables["BUNDLES_TABLE"].items["checkout#cs_conv_1"]["plan"] == "bundle_25"
+    assert fired == []
+
+
+def test_webhook_fires_a_conversion_event_once_a_conversion_action_is_configured(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """The seam this whole module exists for: setting one env var (the
+    Terraform variable google_ads_conversion_action, once Chelsea has a real
+    one) is the entire difference between this test and the one above."""
+    monkeypatch.setenv("GOOGLE_ADS_CONVERSION_ACTION", "customers/123/conversionActions/456")
+    fired: list[dict[str, Any]] = []
+    monkeypatch.setattr(conversion_tracking, "emit", fired.append)
+    _stripe(monkeypatch, price=PRICE_BUNDLE_100)
+    body = _completed_checkout("cs_conv_2", amount_total=34900)
+    assert json.loads(webhook_handler.handler(_webhook(body))["body"])["outcome"] == "noted"
+    assert len(fired) == 1
+    event = fired[0]
+    assert event["conversion_action"] == "customers/123/conversionActions/456"
+    assert event["conversion_value"] == 349.0
+    assert event["currency_code"] == "USD"
+    assert event["plan"] == "bundle_100"
+    assert event["user_identifiers"] == [
+        {"hashed_email": conversion_tracking.hash_identifier("buyer@example.org")}
+    ]
+    # The email itself never appears in the emitted event, only its hash.
+    assert "buyer@example.org" not in json.dumps(event)
+
+
+def test_webhook_fires_no_conversion_event_for_an_unverified_checkout(
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
+) -> None:
+    """A Stripe outage means the webhook does not actually know this checkout
+    was this product's (it could be another product on the same account);
+    reporting a conversion on that guess would misreport to Google Ads
+    rather than just miss one, so it must not fire even though an action is
+    configured."""
+    monkeypatch.setenv("GOOGLE_ADS_CONVERSION_ACTION", "customers/123/conversionActions/456")
+    fired: list[dict[str, Any]] = []
+    monkeypatch.setattr(conversion_tracking, "emit", fired.append)
+
+    def down(path: str) -> dict[str, Any]:
+        raise common.UpstreamError("stripe 500", status=500)
+
+    monkeypatch.setattr(common, "stripe_get", down)
+    body = _completed_checkout("cs_conv_3")
+    assert json.loads(webhook_handler.handler(_webhook(body))["body"])["outcome"] == "noted"
+    assert tables["BUNDLES_TABLE"].items["checkout#cs_conv_3"]["plan"] == "unverified"
+    assert fired == []
+
+
+def test_conversion_event_is_none_with_no_email_even_when_configured(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("GOOGLE_ADS_CONVERSION_ACTION", "customers/123/conversionActions/456")
+    assert (
+        conversion_tracking.build_conversion_event(
+            plan="bundle_25",
+            email="",
+            amount_total=14900,
+            currency="usd",
+            occurred_at="2026-09-14T00:00:00+00:00",
+        )
+        is None
+    )
+
+
+def test_conversion_event_is_none_while_unconfigured() -> None:
+    assert os.environ.get("GOOGLE_ADS_CONVERSION_ACTION", "") == ""
+    assert (
+        conversion_tracking.build_conversion_event(
+            plan="bundle_25",
+            email="buyer@example.org",
+            amount_total=14900,
+            currency="usd",
+            occurred_at="2026-09-14T00:00:00+00:00",
+        )
+        is None
+    )
+
+
+def test_hash_identifier_normalizes_before_hashing() -> None:
+    assert conversion_tracking.hash_identifier(
+        "  Buyer@Example.ORG "
+    ) == conversion_tracking.hash_identifier("buyer@example.org")
+    assert conversion_tracking.hash_identifier(
+        "buyer@example.org"
+    ) != conversion_tracking.hash_identifier("other@example.org")
 
 
 def test_webhook_reads_a_base64_transport_body(tables: dict[str, FakeTable]) -> None:

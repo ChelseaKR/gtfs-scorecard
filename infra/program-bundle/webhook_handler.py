@@ -22,6 +22,9 @@ has told us the program's details, and from the weekly refresh
   keeps an address outside Stripe; how long it should be kept is a retention
   decision for the operator, recorded here so it is a choice rather than an
   accident of which rows happened to get the field.
+  A confirmed (never ``unverified``) checkout also reaches
+  ``conversion_tracking.note_conversion``, which is a no-op today -- see
+  that module's docstring for the Google Ads seam it exists to be.
 - ``customer.subscription.created`` / ``updated``: upsert the subscription's
   status and price. A status other than ``active`` or ``trialing`` stops the
   refresh, and so does a price that is not one of the two refresh prices.
@@ -52,6 +55,7 @@ from common import (
     table,
     verify_stripe_signature,
 )
+from conversion_tracking import note_conversion
 
 ACTIVE_STATUSES = ("active", "trialing")
 
@@ -118,6 +122,14 @@ def apply_event(event_type: str, data: dict[str, Any], *, subscriptions: Any, bu
                 "seen_at": now_iso(),
             }
         )
+        # Never for "unverified": that means Stripe could not confirm which
+        # price was bought (or whether it was this product's at all), and a
+        # conversion fired on a guess would misreport to Google Ads rather
+        # than just miss one. See conversion_tracking.py for the rest of the
+        # seam; it is a no-op end to end until GOOGLE_ADS_CONVERSION_ACTION
+        # is set, which it is not today.
+        if plan != "unverified":
+            note_conversion(plan=plan, obj=obj)
         return "noted"
     if event_type not in (
         "customer.subscription.created",
