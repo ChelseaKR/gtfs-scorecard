@@ -182,9 +182,69 @@ variable "stripe_price_ids_are_live" {
 }
 
 variable "google_ads_conversion_action" {
-  description = "Google Ads conversion action resource name (\"customers/<id>/conversionActions/<id>\"), e.g. once a Google Ads account and an Enhanced Conversions for Leads action exist for the bundle purchase. Blank (default) keeps conversion_tracking.py's seam a no-op; nothing else needs to change to turn it on. See docs/paid-search-readiness.md."
+  description = "Google Ads conversion action resource name (\"customers/<id>/conversionActions/<id>\"). Blank keeps conversion_tracking.py's seam a no-op. Set to the real one created 2026-09-15 (\"Enhanced conversions for leads\", Purchases, primary, data-driven attribution, 90-day click-through) -- see docs/paid-search-readiness.md."
+  type        = string
+  default     = "customers/2688527650/conversionActions/7769927171"
+}
+
+# Google Ads credentials for ads_conversion_upload_handler.py, the same
+# sensitive-variable-with-a-blank-default shape as stripe_secret_key and
+# github_token above: never a value this repo commits, supplied at apply
+# time from whichever tfvars or secret store already holds the rest of
+# this module's configuration. See docs/google-ads-upload-setup.md for
+# where each value comes from.
+variable "google_ads_developer_token" {
+  description = "Google Ads API developer token. Sunset as the access-control mechanism 2026-09-09 (access levels now attach to the Google Cloud project behind the OAuth client below), but the google-ads client library's config still accepts the field, so it is still generated and set for forward compatibility. Blank keeps the upload Lambda a no-op."
   type        = string
   default     = ""
+  sensitive   = true
+}
+
+variable "google_ads_client_id" {
+  description = "OAuth 2.0 client id of the \"Desktop app\" credential created in Google Cloud Console for scripts/generate-google-ads-refresh-token.py. Blank keeps the upload Lambda a no-op."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "google_ads_client_secret" {
+  description = "OAuth 2.0 client secret paired with google_ads_client_id. Blank keeps the upload Lambda a no-op."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "google_ads_refresh_token" {
+  description = "OAuth 2.0 refresh token from scripts/generate-google-ads-refresh-token.py's one-time interactive run. Blank keeps the upload Lambda a no-op."
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "google_ads_login_customer_id" {
+  description = "The Google Ads account performing the upload, ten digits, no dashes (the same numeric id embedded in google_ads_conversion_action above -- not a secret, just an account number). Validated the same way the google-ads client library validates it, so a typo fails the plan instead of failing at upload time."
+  type        = string
+  default     = "2688527650"
+
+  validation {
+    condition     = var.google_ads_login_customer_id == "" || can(regex("^[0-9]{10}$", var.google_ads_login_customer_id))
+    error_message = "google_ads_login_customer_id must be exactly ten digits, no dashes, e.g. \"2688527650\"."
+  }
+}
+
+variable "google_ads_upload_ready" {
+  description = <<-EOT
+    Turns the daily ads_conversion_upload_handler.py schedule on. False keeps it DISABLED,
+    the same "Terraform cannot check this for itself" posture as reconciler_reporting_ready:
+    the five google_ads_* credential variables above being non-blank proves they were typed
+    in, not that they are valid, and the only real check is a call ads_conversion_upload_handler
+    itself makes against a live Google Ads account. Before setting this true, run the Lambda
+    by hand with {"dry_run": true} and confirm it logs the pending row(s) it would upload with
+    no error, then run it for real once and check the row(s) it claims land as
+    status: "uploaded" in the ad-conversions table, not "failed".
+  EOT
+  type        = bool
+  default     = false
 }
 
 # ---------------------------------------------------------------------------
@@ -210,6 +270,36 @@ resource "terraform_data" "commercial_gate_guard" {
     precondition {
       condition     = var.payments_enabled == "0" || local.stripe_key_is_live == var.stripe_price_ids_are_live
       error_message = local.stripe_key_is_live ? "A live Stripe key is paired with price ids not confirmed live (stripe_price_ids_are_live = false)." : "stripe_price_ids_are_live is true but the Stripe key is not a live key."
+    }
+  }
+}
+
+# A flipped-on schedule with a blank credential would run daily, find
+# pending conversions, and refuse every one of them with ConfigurationError
+# -- loud, but a full day late each time, and an easy typo to make when the
+# five variables above are set one at a time. Caught at plan time instead.
+resource "terraform_data" "google_ads_upload_guard" {
+  input = {
+    google_ads_upload_ready = var.google_ads_upload_ready
+  }
+
+  lifecycle {
+    # google_ads_developer_token is deliberately not required here: Google
+    # sunset it as the access-control mechanism 2026-09-09 (access levels
+    # now attach to the Cloud project behind the OAuth client), and its own
+    # client library lists it as optional. Requiring it anyway would be a
+    # gate this code cannot justify against what Google's current docs say
+    # -- see docs/google-ads-upload-setup.md and that variable's own
+    # description.
+    precondition {
+      condition = !var.google_ads_upload_ready || alltrue([
+        var.google_ads_conversion_action != "",
+        var.google_ads_client_id != "",
+        var.google_ads_client_secret != "",
+        var.google_ads_refresh_token != "",
+        var.google_ads_login_customer_id != "",
+      ])
+      error_message = "google_ads_upload_ready is true but google_ads_conversion_action or one of the four required google_ads_* credential variables is blank."
     }
   }
 }
@@ -264,8 +354,31 @@ resource "aws_dynamodb_table" "bundles" {
   }
 }
 
+# One row per Stripe checkout session that produced a conversion event
+# (conversion_tracking.store_pending_upload writes these; see that module's
+# docstring for why a table and not a Logs Insights query over the printed
+# CloudWatch lines). No TTL: a "failed" row is the record a human follows up
+# on, and an "uploaded" row is the only durable proof this purchase was ever
+# reported to Google Ads -- neither should expire out from under an owner
+# who has not looked yet, the same reasoning as the `checkout#` rows in
+# `bundles` above.
+resource "aws_dynamodb_table" "ad_conversions" {
+  name         = "${var.project}-program-ad-conversions"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "conversion_id"
+
+  attribute {
+    name = "conversion_id"
+    type = "S"
+  }
+
+  point_in_time_recovery {
+    enabled = true
+  }
+}
+
 # ---------------------------------------------------------------------------
-# Lambdas (one package, three entrypoints)
+# Lambdas (one package, five entrypoints)
 # ---------------------------------------------------------------------------
 
 data "archive_file" "package" {
@@ -308,6 +421,7 @@ resource "aws_iam_role_policy" "lambda" {
         Resource = [
           aws_dynamodb_table.subscriptions.arn,
           aws_dynamodb_table.bundles.arn,
+          aws_dynamodb_table.ad_conversions.arn,
         ]
       },
       {
@@ -338,6 +452,15 @@ locals {
     STRIPE_WEBHOOK_SECRET        = var.stripe_webhook_secret
     STRIPE_PRICE_IDS             = jsonencode(var.stripe_price_ids)
     GOOGLE_ADS_CONVERSION_ACTION = var.google_ads_conversion_action
+    # Read by ads_conversion_upload_handler.py only, wired through this
+    # shared env block like every other variable here (the same convention
+    # GOOGLE_ADS_CONVERSION_ACTION above already follows for the webhook).
+    AD_CONVERSIONS_TABLE         = aws_dynamodb_table.ad_conversions.name
+    GOOGLE_ADS_DEVELOPER_TOKEN   = var.google_ads_developer_token
+    GOOGLE_ADS_CLIENT_ID         = var.google_ads_client_id
+    GOOGLE_ADS_CLIENT_SECRET     = var.google_ads_client_secret
+    GOOGLE_ADS_REFRESH_TOKEN     = var.google_ads_refresh_token
+    GOOGLE_ADS_LOGIN_CUSTOMER_ID = var.google_ads_login_customer_id
   }
 }
 
@@ -380,6 +503,24 @@ resource "aws_lambda_function" "refresh" {
   source_code_hash = data.archive_file.package.output_base64sha256
   timeout          = 60
   memory_size      = 128
+
+  environment {
+    variables = local.common_env
+  }
+}
+
+resource "aws_lambda_function" "ads_conversion_upload" {
+  function_name    = "${var.project}-program-bundle-ads-upload"
+  role             = aws_iam_role.lambda.arn
+  runtime          = "python3.12"
+  handler          = "ads_conversion_upload_handler.handler"
+  filename         = data.archive_file.package.output_path
+  source_code_hash = data.archive_file.package.output_base64sha256
+  # One gRPC call to Google Ads carrying at most a handful of rows (this
+  # product's weekly purchase volume); 60s matches refresh's own timeout for
+  # a comparably small, comparably occasional upstream call.
+  timeout     = 60
+  memory_size = 128
 
   environment {
     variables = local.common_env
@@ -543,9 +684,43 @@ resource "aws_lambda_permission" "events_reconcile" {
   source_arn    = aws_cloudwatch_event_rule.daily_reconcile.arn
 }
 
+# ---------------------------------------------------------------------------
+# Daily Google Ads conversion upload
+# ---------------------------------------------------------------------------
+
+# Disabled until google_ads_upload_ready is true -- see that variable's own
+# description and terraform_data.google_ads_upload_guard above. 15:50 UTC is
+# after both the weekly refresh (14:30 Tuesdays) and the daily reconciler
+# (15:10), so this never contends with either for the shared IAM role's
+# throughput on the same clock tick.
+resource "aws_cloudwatch_event_rule" "daily_ads_upload" {
+  name                = "${var.project}-program-bundle-ads-upload"
+  description         = "Upload pending Google Ads conversion events."
+  schedule_expression = "cron(50 15 * * ? *)"
+  state               = var.google_ads_upload_ready ? "ENABLED" : "DISABLED"
+}
+
+resource "aws_cloudwatch_event_target" "daily_ads_upload" {
+  rule = aws_cloudwatch_event_rule.daily_ads_upload.name
+  arn  = aws_lambda_function.ads_conversion_upload.arn
+}
+
+resource "aws_lambda_permission" "events_ads_upload" {
+  statement_id  = "AllowEventBridgeInvokeAdsUpload"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.ads_conversion_upload.function_name
+  principal     = "events.amazonaws.com"
+  source_arn    = aws_cloudwatch_event_rule.daily_ads_upload.arn
+}
+
 output "reconcile_function" {
   description = "Invoke by hand with {\"dry_run\": true} to see what the daily reconciler would report."
   value       = aws_lambda_function.reconcile.function_name
+}
+
+output "ads_conversion_upload_function" {
+  description = "Invoke by hand with {\"dry_run\": true} to see what the upload job would send to Google Ads."
+  value       = aws_lambda_function.ads_conversion_upload.function_name
 }
 
 output "api_base" {

@@ -68,6 +68,7 @@ setup_handler = _load("setup_handler")
 webhook_handler = _load("webhook_handler")
 refresh_handler = _load("refresh_handler")
 reconcile_handler = _load("reconcile_handler")
+ads_conversion_upload_handler = _load("ads_conversion_upload_handler")
 
 
 class _ConditionExpression:
@@ -2788,3 +2789,478 @@ def test_every_table_walk_reads_past_the_first_page(
     monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", lambda inputs: None)
     counts = refresh_handler.refresh(subscriptions=subs, bundles=bundles)
     assert counts["scanned"] == 2 and counts["dispatched"] == 1
+
+
+# ---------------------------------------------------------------------------
+# conversion_tracking: the AD_CONVERSIONS_TABLE sink (store_pending_upload)
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def ad_table(monkeypatch: pytest.MonkeyPatch) -> FakeTable:
+    """A fake `ads_conversion_upload_handler.py` table, wired into both
+    modules that touch it. Not folded into the shared `tables` fixture:
+    every existing test above runs with AD_CONVERSIONS_TABLE unset, and
+    should keep doing so -- this fixture is opt-in per test."""
+    fake = FakeTable(key="conversion_id")
+    monkeypatch.setenv("AD_CONVERSIONS_TABLE", "ad-conversions")
+    monkeypatch.setattr(conversion_tracking, "table", lambda env, f=fake: f)
+    monkeypatch.setattr(ads_conversion_upload_handler, "table", lambda env, f=fake: f)
+    return fake
+
+
+def _pending_event(conversion_id: str = "cs_ad_1", **overrides: Any) -> dict[str, Any]:
+    hashed = conversion_tracking.hash_identifier("buyer@example.org")
+    event = {
+        "conversion_action": "customers/2688527650/conversionActions/7769927171",
+        "conversion_date_time": "2026-09-14T00:00:00+00:00",
+        "conversion_value": 349.0,
+        "currency_code": "USD",
+        "plan": "bundle_100",
+        "user_identifiers": [{"hashed_email": hashed}],
+        "conversion_id": conversion_id,
+    }
+    event.update(overrides)
+    return event
+
+
+def test_store_pending_upload_writes_a_pending_row_keyed_by_the_session_id(
+    ad_table: FakeTable,
+) -> None:
+    conversion_tracking.store_pending_upload(_pending_event("cs_store_1"))
+    row = ad_table.items["cs_store_1"]
+    assert row["status"] == "pending"
+    assert row["event"]["conversion_id"] == "cs_store_1"
+    # put through boto3's resource layer a Python float is refused outright;
+    # this is the type it has to leave here as.
+    assert isinstance(row["event"]["conversion_value"], decimal.Decimal)
+
+
+def test_store_pending_upload_does_nothing_without_the_table_configured() -> None:
+    """AD_CONVERSIONS_TABLE unset -- every deploy before main.tf's table is
+    applied. No fake table is even wired in: if this reached `table(...)`
+    it would try to build a real boto3 resource and fail the test, which is
+    exactly the negative control -- a spy that never got called proves
+    nothing about whether the guard runs before the table lookup."""
+    assert os.environ.get("AD_CONVERSIONS_TABLE", "") == ""
+    conversion_tracking.store_pending_upload(_pending_event())  # must not raise or touch boto3
+
+
+def test_store_pending_upload_skips_a_blank_conversion_id(ad_table: FakeTable) -> None:
+    conversion_tracking.store_pending_upload(_pending_event(conversion_id=""))
+    assert ad_table.items == {}
+
+
+def test_store_pending_upload_refuses_to_overwrite_an_uploaded_row(ad_table: FakeTable) -> None:
+    """The idempotency half that lives in conversion_tracking: a Stripe
+    webhook retry calls note_conversion (and so emit, and so this) again for
+    a checkout already reported. It must not reset an already-uploaded row
+    back to pending -- that would queue a second report for one sale."""
+    conversion_tracking.store_pending_upload(_pending_event("cs_retry_1"))
+    ad_table.items["cs_retry_1"]["status"] = "uploaded"
+    ad_table.items["cs_retry_1"]["detail"] = ""
+
+    conversion_tracking.store_pending_upload(_pending_event("cs_retry_1"))
+
+    assert ad_table.items["cs_retry_1"]["status"] == "uploaded"
+
+
+def test_emit_still_prints_the_cloudwatch_line_and_also_stores(
+    ad_table: FakeTable, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """emit()'s pre-existing behaviour (a spy every earlier test in this
+    file relies on) is unchanged; storing is additive."""
+    event = _pending_event("cs_emit_1")
+    conversion_tracking.emit(event)
+    printed = json.loads(capsys.readouterr().out.strip().splitlines()[0])
+    assert printed == {"conversion_event": event}
+    assert ad_table.items["cs_emit_1"]["status"] == "pending"
+
+
+# ---------------------------------------------------------------------------
+# ads_conversion_upload_handler: a fake Google Ads client and its tests
+# ---------------------------------------------------------------------------
+
+
+class _FakeProto:
+    """Stands in for a proto-plus message instance: plain attribute
+    assignment, and the two repeated fields this module appends to."""
+
+    def __init__(self, name: str) -> None:
+        self._name = name
+        self.user_identifiers: list[Any] = []
+        self.conversions: list[Any] = []
+
+
+class _FakeFailure:
+    """Stands in for a deserialized GoogleAdsFailure. `deserialize` is an
+    identity function: the fake response below hands `_partial_failures`
+    the already-built failure object as `detail.value` directly, rather
+    than round-tripping it through real protobuf `Any` packing -- that
+    wire-format code belongs to `google-ads`/`proto-plus`, not to this
+    module, and is not what these tests are checking."""
+
+    def __init__(self, errors: list[Any]) -> None:
+        self.errors = errors
+
+    @classmethod
+    def deserialize(cls, value: Any) -> Any:
+        return value
+
+
+class _FakeFieldPathElement:
+    def __init__(self, field_name: str, index: int) -> None:
+        self.field_name = field_name
+        self.index = index
+
+
+class _FakeLocation:
+    def __init__(self, index: int | None) -> None:
+        elements = [] if index is None else [_FakeFieldPathElement("conversions", index)]
+        self.field_path_elements = elements
+
+
+class _FakeError:
+    def __init__(self, message: str, index: int | None) -> None:
+        self.message = message
+        self.location = _FakeLocation(index)
+
+
+class _FakeDetail:
+    def __init__(self, failure: _FakeFailure) -> None:
+        self.value = failure  # see _FakeFailure.deserialize
+
+
+class _FakeStatus:
+    def __init__(self, code: int = 0, details: list[_FakeDetail] | None = None) -> None:
+        self.code = code
+        self.details = details or []
+
+
+class _FakeUploadResponse:
+    def __init__(self, partial_failure_error: _FakeStatus | None = None) -> None:
+        self.partial_failure_error = partial_failure_error or _FakeStatus()
+
+
+class _FakeEnums:
+    class UserIdentifierSourceEnum:
+        FIRST_PARTY = "FIRST_PARTY"
+
+
+class _FakeGoogleAdsClient:
+    def __init__(self, response: _FakeUploadResponse | None = None) -> None:
+        self.enums = _FakeEnums()
+        self.requests: list[Any] = []
+        self._response = response or _FakeUploadResponse()
+
+    def get_type(self, name: str) -> Any:
+        if name == "GoogleAdsFailure":
+            return _FakeFailure(errors=[])
+        return _FakeProto(name)
+
+    def get_service(self, name: str) -> Any:
+        assert name == "ConversionUploadService"
+        return self
+
+    def upload_click_conversions(self, *, request: Any) -> _FakeUploadResponse:
+        self.requests.append(request)
+        return self._response
+
+
+def test_parse_event_reads_a_valid_row_including_the_type_the_table_returns() -> None:
+    """Decimal, the same "type the fake never introduces but the real table
+    does" check as test_a_breach_is_still_a_breach_in_the_type_the_table_returns
+    above -- store_pending_upload's own _for_dynamodb writes a Decimal, and a
+    reader that only accepted float would pass every test here and refuse
+    every real row."""
+    stored_event = _pending_event("cs_1")
+    stored_event["conversion_value"] = decimal.Decimal("349.00")
+    row = {"conversion_id": "cs_1", "status": "pending", "event": stored_event}
+    event = ads_conversion_upload_handler.parse_event(row)
+    assert event == {
+        "conversion_action": "customers/2688527650/conversionActions/7769927171",
+        "conversion_date_time": "2026-09-14 00:00:00+00:00",
+        "conversion_value": 349.0,
+        "currency_code": "USD",
+        "hashed_email": conversion_tracking.hash_identifier("buyer@example.org"),
+    }
+
+
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        {"conversion_action": ""},
+        {"conversion_date_time": ""},
+        {"conversion_value": 0},
+        {"currency_code": ""},
+        {"user_identifiers": []},
+        {"user_identifiers": [{"hashed_email": "a"}, {"hashed_email": "b"}]},
+        {"user_identifiers": [{"hashed_email": ""}]},
+        {"user_identifiers": [{}]},
+        {"user_identifiers": "not-a-list"},
+    ],
+)
+def test_parse_event_is_none_for_a_malformed_stored_event(overrides: dict[str, Any]) -> None:
+    event = _pending_event("cs_bad", **overrides)
+    row = {"conversion_id": "cs_bad", "status": "pending", "event": event}
+    assert ads_conversion_upload_handler.parse_event(row) is None
+
+
+def test_parse_event_is_none_when_the_row_has_no_event_map() -> None:
+    parse_event = ads_conversion_upload_handler.parse_event
+    assert parse_event({"conversion_id": "cs_bad"}) is None
+    assert parse_event({"conversion_id": "cs_bad", "event": "oops"}) is None
+
+
+def test_google_ads_datetime_swaps_the_separator_only() -> None:
+    out = ads_conversion_upload_handler._google_ads_datetime("2026-09-14T00:00:00+00:00")
+    assert out == "2026-09-14 00:00:00+00:00"
+
+
+def test_build_click_conversion_sets_every_field_and_never_a_gclid() -> None:
+    client = _FakeGoogleAdsClient()
+    event = {
+        "conversion_action": "customers/2688527650/conversionActions/7769927171",
+        "conversion_date_time": "2026-09-14 00:00:00+00:00",
+        "conversion_value": 349.0,
+        "currency_code": "USD",
+        "hashed_email": "deadbeef",
+    }
+    click_conversion = ads_conversion_upload_handler.build_click_conversion(client, event)
+    assert click_conversion.conversion_action == event["conversion_action"]
+    assert click_conversion.conversion_date_time == event["conversion_date_time"]
+    assert click_conversion.conversion_value == 349.0
+    assert click_conversion.currency_code == "USD"
+    assert len(click_conversion.user_identifiers) == 1
+    identifier = click_conversion.user_identifiers[0]
+    assert identifier.hashed_email == "deadbeef"
+    assert identifier.user_identifier_source == "FIRST_PARTY"
+    # This site is cookieless and captures no gclid (docs/decisions/0055);
+    # a real proto-plus ClickConversion defaults gclid to "", so the only
+    # way to prove this code never sets it is that this fake -- which sets
+    # nothing it is not told to -- never got told to.
+    assert not hasattr(click_conversion, "gclid")
+
+
+def test_upload_batch_reports_one_failure_without_losing_the_other_row() -> None:
+    client = _FakeGoogleAdsClient(
+        response=_FakeUploadResponse(
+            _FakeStatus(
+                code=3,
+                details=[_FakeDetail(_FakeFailure([_FakeError("bad currency code", index=1)]))],
+            )
+        )
+    )
+    rows = [
+        ("cs_ok", ads_conversion_upload_handler.parse_event({"event": _pending_event("cs_ok")})),
+        ("cs_bad", ads_conversion_upload_handler.parse_event({"event": _pending_event("cs_bad")})),
+    ]
+    outcome = ads_conversion_upload_handler.upload_batch(
+        client, login_customer_id="2688527650", rows=rows
+    )
+    assert outcome["cs_ok"] == ("uploaded", "")
+    assert outcome["cs_bad"] == ("failed", "bad currency code")
+    assert len(client.requests) == 1
+    request = client.requests[0]
+    assert request.customer_id == "2688527650"
+    assert request.partial_failure is True
+    assert len(request.conversions) == 2
+
+
+def test_upload_batch_reports_every_row_uploaded_when_the_batch_fully_succeeds() -> None:
+    client = _FakeGoogleAdsClient()
+    rows = [("cs_1", ads_conversion_upload_handler.parse_event({"event": _pending_event("cs_1")}))]
+    outcome = ads_conversion_upload_handler.upload_batch(client, login_customer_id="1", rows=rows)
+    assert outcome == {"cs_1": ("uploaded", "")}
+
+
+def test_mark_row_second_claim_of_an_already_claimed_row_is_refused(ad_table: FakeTable) -> None:
+    mark_row = ads_conversion_upload_handler.mark_row
+    ad_table.items["cs_1"] = {"conversion_id": "cs_1", "status": "pending"}
+    assert mark_row(ad_table, "cs_1", status="uploaded", detail="") is True
+    assert ad_table.items["cs_1"]["status"] == "uploaded"
+    # A second claim -- another overlapping run, or a retry of this one --
+    # must not be allowed to move an already-resolved row again.
+    again = mark_row(ad_table, "cs_1", status="failed", detail="late")
+    assert again is False
+    row_status = ad_table.items["cs_1"]["status"]
+    assert row_status == "uploaded", "a refused claim must not overwrite the row"
+
+
+def test_pending_rows_reads_only_status_pending(ad_table: FakeTable) -> None:
+    ad_table.items["cs_pending"] = {"conversion_id": "cs_pending", "status": "pending"}
+    ad_table.items["cs_uploaded"] = {"conversion_id": "cs_uploaded", "status": "uploaded"}
+    ad_table.items["cs_failed"] = {"conversion_id": "cs_failed", "status": "failed"}
+    rows = ads_conversion_upload_handler.pending_rows(ad_table)
+    assert [r["conversion_id"] for r in rows] == ["cs_pending"]
+
+
+def test_run_skips_and_marks_a_malformed_row_failed_without_crashing_the_batch(
+    ad_table: FakeTable,
+) -> None:
+    """Negative control for the "one bad row cannot sink the batch" claim in
+    the module docstring: a hand-edited or pre-contract row sits next to a
+    good one. Both get resolved in one run, and the good one uploads."""
+    ad_table.items["cs_good"] = {
+        "conversion_id": "cs_good",
+        "status": "pending",
+        "event": _pending_event("cs_good"),
+    }
+    ad_table.items["cs_bad"] = {
+        "conversion_id": "cs_bad",
+        "status": "pending",
+        "event": _pending_event("cs_bad", currency_code=""),
+    }
+    client = _FakeGoogleAdsClient()
+    counts = ads_conversion_upload_handler.run(
+        conversions=ad_table,
+        credentials={"login_customer_id": "2688527650"},
+        client_factory=lambda _creds: client,
+    )
+    assert counts["scanned"] == 2
+    assert counts["malformed"] == 1
+    assert counts["uploaded"] == 1
+    assert ad_table.items["cs_bad"]["status"] == "failed"
+    assert ad_table.items["cs_bad"]["detail"] == "malformed stored event"
+    assert ad_table.items["cs_good"]["status"] == "uploaded"
+    # The one row Google Ads actually saw was the good one.
+    assert len(client.requests[0].conversions) == 1
+
+
+def test_run_is_idempotent_a_second_run_uploads_nothing_more(ad_table: FakeTable) -> None:
+    """The required idempotency proof: store one event the way the webhook
+    does, run the upload once, then run it again. The second run must find
+    nothing pending and must not call Google Ads a second time for the same
+    sale."""
+    conversion_tracking.store_pending_upload(_pending_event("cs_twice"))
+    client = _FakeGoogleAdsClient()
+
+    first = ads_conversion_upload_handler.run(
+        conversions=ad_table,
+        credentials={"login_customer_id": "2688527650"},
+        client_factory=lambda _creds: client,
+    )
+    assert first["uploaded"] == 1
+    assert ad_table.items["cs_twice"]["status"] == "uploaded"
+
+    second = ads_conversion_upload_handler.run(
+        conversions=ad_table,
+        credentials={"login_customer_id": "2688527650"},
+        client_factory=lambda _creds: client,
+    )
+    assert second == {
+        "scanned": 0,
+        "malformed": 0,
+        "uploaded": 0,
+        "failed": 0,
+        "claimed_elsewhere": 0,
+        "would_upload": 0,
+    }
+    assert len(client.requests) == 1, "the second run must never call Google Ads again"
+
+
+def test_run_dry_run_calls_no_client_and_writes_no_row(ad_table: FakeTable) -> None:
+    ad_table.items["cs_1"] = {
+        "conversion_id": "cs_1",
+        "status": "pending",
+        "event": _pending_event("cs_1"),
+    }
+
+    def boom(_creds: Any) -> Any:
+        raise AssertionError("dry run must never build a Google Ads client")
+
+    counts = ads_conversion_upload_handler.run(
+        conversions=ad_table,
+        credentials={"login_customer_id": "2688527650"},
+        client_factory=boom,
+        dry_run=True,
+    )
+    assert counts["would_upload"] == 1
+    assert ad_table.items["cs_1"]["status"] == "pending", "dry run must not touch the row"
+
+
+def test_run_refuses_with_configuration_error_when_credentials_are_missing(
+    ad_table: FakeTable,
+) -> None:
+    ad_table.items["cs_1"] = {
+        "conversion_id": "cs_1",
+        "status": "pending",
+        "event": _pending_event("cs_1"),
+    }
+    with pytest.raises(ads_conversion_upload_handler.ConfigurationError):
+        ads_conversion_upload_handler.run(conversions=ad_table, credentials=None)
+    # Refused, not silently skipped -- the row is untouched, ready for a
+    # real run once docs/google-ads-upload-setup.md is finished.
+    assert ad_table.items["cs_1"]["status"] == "pending"
+
+
+def test_run_with_no_pending_rows_never_raises_configuration_error_either(
+    ad_table: FakeTable,
+) -> None:
+    """No rows means nothing to configure a client for -- refusing here
+    would fail the daily schedule forever on an empty table, which is the
+    default state until the first sale."""
+    counts = ads_conversion_upload_handler.run(conversions=ad_table, credentials=None)
+    assert counts["scanned"] == 0
+
+
+def test_credentials_is_none_unless_the_four_required_ones_are_set(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    required = [
+        "GOOGLE_ADS_CLIENT_ID",
+        "GOOGLE_ADS_CLIENT_SECRET",
+        "GOOGLE_ADS_REFRESH_TOKEN",
+        "GOOGLE_ADS_LOGIN_CUSTOMER_ID",
+    ]
+    for name in [*required, "GOOGLE_ADS_DEVELOPER_TOKEN"]:
+        monkeypatch.delenv(name, raising=False)
+    assert ads_conversion_upload_handler._credentials() is None
+    for name in required:
+        monkeypatch.setenv(name, f"{name}-value")
+    # developer_token stays blank: it is not required (see the module's own
+    # comment on _CREDENTIAL_ENV_VARS -- Google sunset it 2026-09-09), and
+    # this is the proof a real deploy can flip google_ads_upload_ready
+    # without ever generating one.
+    creds = ads_conversion_upload_handler._credentials()
+    assert creds == {
+        "developer_token": "",
+        "client_id": "GOOGLE_ADS_CLIENT_ID-value",
+        "client_secret": "GOOGLE_ADS_CLIENT_SECRET-value",
+        "refresh_token": "GOOGLE_ADS_REFRESH_TOKEN-value",
+        "login_customer_id": "GOOGLE_ADS_LOGIN_CUSTOMER_ID-value",
+    }
+    monkeypatch.setenv("GOOGLE_ADS_CLIENT_ID", "")
+    assert ads_conversion_upload_handler._credentials() is None
+
+
+def test_handler_skips_cleanly_when_the_table_is_not_configured() -> None:
+    assert os.environ.get("AD_CONVERSIONS_TABLE", "") == ""
+    result = ads_conversion_upload_handler.handler({})
+    assert result == {"ok": True, "configured": False, "dry_run": False}
+
+
+def test_handler_raises_when_a_row_ends_up_failed_so_it_is_not_silently_dropped(
+    ad_table: FakeTable,
+) -> None:
+    ad_table.items["cs_bad"] = {
+        "conversion_id": "cs_bad",
+        "status": "pending",
+        "event": _pending_event("cs_bad", currency_code=""),
+    }
+    with pytest.raises(RuntimeError, match="need attention"):
+        ads_conversion_upload_handler.handler({})
+    assert ad_table.items["cs_bad"]["status"] == "failed"
+
+
+def test_handler_dry_run_reports_ok_and_touches_nothing(ad_table: FakeTable) -> None:
+    ad_table.items["cs_1"] = {
+        "conversion_id": "cs_1",
+        "status": "pending",
+        "event": _pending_event("cs_1"),
+    }
+    result = ads_conversion_upload_handler.handler({"dry_run": True})
+    assert result["ok"] is True
+    assert result["dry_run"] is True
+    assert result["would_upload"] == 1
+    assert ad_table.items["cs_1"]["status"] == "pending"
