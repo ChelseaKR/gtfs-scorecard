@@ -63,6 +63,43 @@ raises every dark-text ratio.
 The High contrast and Dark themes clear the same threshold with wider margin
 (typically 9:1 to 21:1); run the script for the full table.
 
+## Brand mark and social-preview images (large text, threshold 4.5:1)
+
+`web/favicon.svg` (the route-line-into-a-checkmark mark, reused at
+`web/apple-touch-icon.svg`), `web/og.svg`, and `web/bundle-og.svg` are static
+raster images, not live CSS, so `check_contrast.py` checks their literal
+hexes directly rather than theme tokens (see the "OG/social-preview images"
+group in `PAIRS`). Every text element in both cards is set at or above the
+AAA large-text size (>=18.66px bold or >=24px), so 4.5:1 is the applicable
+bar; the background is checked against the panel gradient's lighter stop
+(`#143123`), the worse of its two stops.
+
+| Pair | Ratio |
+| --- | --- |
+| wordmark/headline `#f2f3ee` on gradient `#143123` | 12.61 |
+| subtitle `#cdddcf` on gradient `#143123` | 9.94 |
+| grade-tile letter `#9fb2a2` on tile `#1b3a2a` | 5.56 |
+| highlighted grade-A ink `#102a20` on amber chip `#fdc70a` | 9.72 |
+| footer domain `#fdc70a` on gradient `#143123` | 8.94 |
+| footer place `#9fb2a2` on gradient `#143123` | 6.27 |
+| bundle-og kicker `#fdc70a` on gradient `#143123` | 8.94 |
+| bundle-og trust line `#fdc70a` on gradient `#143123` | 8.94 |
+| bundle-og report-card grade B `#2c5f70` on white chip | 7.05 |
+| bundle-og report-card grade C `#8a5a14` on white chip | 5.91 |
+| bundle-og report-card grade A `#102a20` on amber chip | 9.72 |
+| mark checkmark `#fdc70a` on badge circle `#163a2c` | 7.97 |
+
+These images are decorative (an Organization `logo` and two `og:image`/
+`twitter:image` social-preview cards); the alt text a screen-reader user
+actually gets is the `og:image:alt`/`twitter:image:alt` pair each page
+carries, not the pixels. The root card and every hand-authored page except
+`/bundle/` share one alt string ("GTFS Scorecard: transit data quality for
+small agencies."), enforced by
+`pipeline/tests/test_static_nav.py::test_hand_authored_pages_describe_the_shared_social_image`.
+`/bundle/` carries its own, describing its own card ("GTFS Scorecard Program
+Report Bundle: board reports for every agency your program supports."),
+enforced by the same test's bundle-specific assertion.
+
 ## Per-criterion conformance
 
 | Criterion | Status | Notes |
