@@ -61,11 +61,25 @@ price_refresh_yr=$(api prices create --product "$refresh_product" --currency usd
 
 # Payment Links send the buyer to the setup form with the session reference.
 success="${SITE}/bundle/setup/?session_id={CHECKOUT_SESSION_ID}"
+# Requires a "Terms of service" URL to be set once, by hand, in the Stripe
+# Dashboard under Settings > Public business information: that account-level
+# setting is what the checkbox this turns on actually links to, and there is
+# no per-Payment-Link field for it. Point it at ${SITE}/bundle/#plans-h, the
+# page whose buy-terms list and FAQ carry the delivery, refund, and
+# auto-renewal commitments a buyer is agreeing to. This was unset when the
+# four live Payment Links currently in web/bundle/plan.json were created;
+# re-run stripe-setup.sh (new links, `line`/`checkout_url` values change) or
+# apply the same two fields to the existing ones with `stripe payment_links
+# update <id>` by hand once the Dashboard setting is in place. Neither is done
+# here: recreating spends new ids for no reason, and this script must not
+# touch a live Payment Link that is already selling.
 link() {
   api payment_links create \
     -d "line_items[0][price]=$1" -d "line_items[0][quantity]=1" \
     -d "after_completion[type]=redirect" \
     -d "after_completion[redirect][url]=$success" \
+    -d "consent_collection[terms_of_service]=required" \
+    -d "custom_text[submit][message]=Delivery, refund, and cancellation terms: ${SITE}/bundle/#plans-h" \
     | jq -r .url
 }
 link_bundle_25=$(link "$price_bundle_25")
