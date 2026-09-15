@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- Source for bundle-og.png: the /bundle/ page's own social share card,
+       distinct from the root card (web/og.svg). Same masthead lockup and
+       palette for series consistency, but its own headline (the page's real
+       <h1>), its own trust line (the exact delivery commitment from
+       web/bundle/index.html's buy-terms list, not marketing copy), and a
+       fanned-report-cards motif instead of the root's grade ladder, since
+       this product is "one archive of many agencies' board reports," not
+       "here is the grading scale." Rasterize with:
+         rsvg-convert web/bundle-og.svg -o web/bundle-og.png -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#143123"/>
+      <stop offset="1" stop-color="#0e2419"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="40" y="40" width="1120" height="550" rx="26" fill="none"
+        stroke="#f2f3ee" stroke-width="4" opacity="0.9"/>
+
+  <!-- mark + wordmark lockup (shared masthead position with the root card) -->
+  <g transform="translate(92,84)">
+    <circle cx="46" cy="46" r="46" fill="#163a2c" stroke="#f2f3ee" stroke-width="2.5" opacity="0.98"/>
+    <path d="M23 47 L41 65 L74 26" fill="none" stroke="#fdc70a" stroke-width="10.5"
+          stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="23" cy="47" r="6" fill="#fdc70a"/>
+    <circle cx="74" cy="26" r="9.2" fill="#f2f3ee" stroke="#fdc70a" stroke-width="6.2"/>
+  </g>
+  <text x="212" y="146" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+        font-weight="900" font-size="72" fill="#f2f3ee" letter-spacing="-1">GTFS Scorecard</text>
+
+  <!-- kicker: names the paid tier -->
+  <text x="92" y="222" font-family="'Atkinson Hyperlegible Mono', ui-monospace, monospace"
+        font-weight="700" font-size="26" letter-spacing="0.12em" fill="#fdc70a">PROGRAM REPORT BUNDLE</text>
+
+  <!-- headline: the page's own h1, "Board reports for every agency you support" -->
+  <text x="92" y="296" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+        font-weight="900" font-size="66" fill="#f2f3ee" letter-spacing="-1">Board reports for</text>
+  <text x="92" y="366" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+        font-weight="900" font-size="66" fill="#f2f3ee" letter-spacing="-1">every agency you</text>
+  <text x="92" y="436" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+        font-weight="900" font-size="66" fill="#f2f3ee" letter-spacing="-1">support</text>
+
+  <!-- subtitle -->
+  <text x="94" y="478" font-family="'Public Sans', 'Helvetica Neue', Arial, sans-serif"
+        font-weight="400" font-size="29" fill="#cdddcf">Your program's name and logo on every cover.</text>
+
+  <!-- trust line: the exact delivery commitment from the buy-terms list,
+       not a marketing claim -->
+  <text x="94" y="514" font-family="'Public Sans', 'Helvetica Neue', Arial, sans-serif"
+        font-weight="700" font-size="26" fill="#fdc70a">Delivered within 2 business days, or refunded.</text>
+
+  <!-- fanned report cards: an archive of branded board reports -->
+  <g>
+    <g transform="translate(818,352) rotate(-8)">
+      <rect x="-82" y="-104" width="164" height="208" rx="12" fill="#f2f3ee"/>
+      <rect x="-82" y="-104" width="164" height="40" rx="10" fill="#2c5f70"/>
+      <circle cx="52" cy="-84" r="17" fill="#ffffff"/>
+      <text x="52" y="-77" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="900" font-size="20" fill="#2c5f70">B</text>
+      <rect x="-58" y="-38" width="100" height="9" rx="4.5" fill="#c6ccbe"/>
+      <rect x="-58" y="-16" width="72" height="9" rx="4.5" fill="#c6ccbe"/>
+      <rect x="-58" y="24" width="116" height="9" rx="4.5" fill="#e5e8df"/>
+      <rect x="-58" y="46" width="90" height="9" rx="4.5" fill="#e5e8df"/>
+      <rect x="-58" y="68" width="104" height="9" rx="4.5" fill="#e5e8df"/>
+    </g>
+    <g transform="translate(873,352) rotate(0)">
+      <rect x="-82" y="-104" width="164" height="208" rx="12" fill="#f2f3ee"/>
+      <rect x="-82" y="-104" width="164" height="40" rx="10" fill="#8a5a14"/>
+      <circle cx="52" cy="-84" r="17" fill="#ffffff"/>
+      <text x="52" y="-77" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="900" font-size="20" fill="#8a5a14">C</text>
+      <rect x="-58" y="-38" width="100" height="9" rx="4.5" fill="#c6ccbe"/>
+      <rect x="-58" y="-16" width="72" height="9" rx="4.5" fill="#c6ccbe"/>
+      <rect x="-58" y="24" width="116" height="9" rx="4.5" fill="#e5e8df"/>
+      <rect x="-58" y="46" width="90" height="9" rx="4.5" fill="#e5e8df"/>
+      <rect x="-58" y="68" width="104" height="9" rx="4.5" fill="#e5e8df"/>
+    </g>
+    <g transform="translate(928,352) rotate(8)">
+      <rect x="-82" y="-104" width="164" height="208" rx="12" fill="#f2f3ee"/>
+      <rect x="-82" y="-104" width="164" height="40" rx="10" fill="#1d5c40"/>
+      <circle cx="52" cy="-84" r="17" fill="#fdc70a"/>
+      <text x="52" y="-77" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-weight="900" font-size="20" fill="#102a20">A</text>
+      <rect x="-58" y="-38" width="100" height="9" rx="4.5" fill="#c6ccbe"/>
+      <rect x="-58" y="-16" width="72" height="9" rx="4.5" fill="#c6ccbe"/>
+      <rect x="-58" y="24" width="116" height="9" rx="4.5" fill="#e5e8df"/>
+      <rect x="-58" y="46" width="90" height="9" rx="4.5" fill="#e5e8df"/>
+      <rect x="-58" y="68" width="104" height="9" rx="4.5" fill="#e5e8df"/>
+    </g>
+  </g>
+
+  <!-- footer: the bundle's own path, not the root card's domain+place line -->
+  <text x="1108" y="562" text-anchor="end"
+        font-family="'Atkinson Hyperlegible Mono', ui-monospace, monospace"
+        font-size="30" fill="#fdc70a">gtfsscorecard.org/bundle</text>
+</svg>

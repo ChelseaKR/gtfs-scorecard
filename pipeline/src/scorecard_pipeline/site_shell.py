@@ -872,7 +872,11 @@ def _page(
   <meta name="twitter:image" content="{esc(_SOCIAL_IMAGE_URL)}">
   <meta name="twitter:image:alt" content="{esc(_SOCIAL_IMAGE_ALT)}">
   <link rel="stylesheet" href="/src/styles.css">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">{ld}
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">{ld}
   <script>
     /* Apply the saved theme before first paint to avoid a flash (WCAG 1.4.8). */
     try {{
