@@ -68,12 +68,33 @@ def test_hand_authored_pages_do_not_block_on_remote_fonts() -> None:
 
 
 def test_hand_authored_pages_describe_the_shared_social_image() -> None:
-    pages = set(STATIC_NAV_PAGES) | {"index.html"}
+    """Every hand-authored page shares the root og.png and its alt text,
+    except /bundle/: the paid tier gets its own card (bundle-og.png,
+    web/bundle-og.svg) with its own alt text, since a launch post sharing
+    /bundle/ should not show a reader the free tool's card."""
+    pages = (set(STATIC_NAV_PAGES) | {"index.html"}) - {"bundle/index.html"}
     alt = "GTFS Scorecard: transit data quality for small agencies."
     for rel in pages:
         html = (_REPO / "web" / rel).read_text()
+        assert 'content="https://gtfsscorecard.org/og.png"' in html, rel
         assert html.count(f'<meta property="og:image:alt" content="{alt}">') == 1, rel
         assert html.count(f'<meta name="twitter:image:alt" content="{alt}">') == 1, rel
+        assert "bundle-og.png" not in html, rel
+
+
+def test_bundle_page_describes_its_own_social_image() -> None:
+    html = (_REPO / "web" / "bundle" / "index.html").read_text()
+    alt = (
+        "GTFS Scorecard Program Report Bundle: board reports for every "
+        "agency your program supports."
+    )
+    image_url = "https://gtfsscorecard.org/bundle-og.png"
+    assert html.count(f'<meta property="og:image" content="{image_url}">') == 1
+    assert html.count(f'<meta name="twitter:image" content="{image_url}">') == 1
+    assert html.count(f'<meta property="og:image:alt" content="{alt}">') == 1
+    assert html.count(f'<meta name="twitter:image:alt" content="{alt}">') == 1
+    assert html.count('<meta property="og:image:width" content="1200">') == 1
+    assert html.count('<meta property="og:image:height" content="630">') == 1
 
 
 def test_homepages_publish_the_exact_reciprocal_language_pair() -> None:
@@ -95,6 +116,40 @@ def test_shared_social_image_has_declared_dimensions() -> None:
     png = (_REPO / "web" / "og.png").read_bytes()
     assert png[:16] == b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"
     assert struct.unpack(">II", png[16:24]) == (1200, 630)
+
+
+def test_bundle_social_image_has_declared_dimensions() -> None:
+    png = (_REPO / "web" / "bundle-og.png").read_bytes()
+    assert png[:16] == b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"
+    assert struct.unpack(">II", png[16:24]) == (1200, 630)
+
+
+def test_apple_touch_icon_is_the_declared_180_square() -> None:
+    png = (_REPO / "web" / "apple-touch-icon.png").read_bytes()
+    assert png[:16] == b"\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR"
+    assert struct.unpack(">II", png[16:24]) == (180, 180)
+
+
+_FAVICON_LINKS = (
+    '<link rel="icon" type="image/svg+xml" href="/favicon.svg">',
+    '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">',
+    '<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">',
+    '<link rel="shortcut icon" href="/favicon.ico">',
+    '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">',
+)
+
+
+def test_hand_authored_pages_carry_the_full_icon_set() -> None:
+    """Every hand-authored page links the real mark (favicon.svg) plus its
+    PNG/ICO fallbacks and the apple-touch-icon, not the old inline circle+dot
+    data URI. Mirrors _page()'s <head> (test_render_site.py), which generated
+    pages get automatically; these pages don't, so nothing catches drift here
+    except this test."""
+    for rel in set(STATIC_NAV_PAGES) | {"index.html", "es/index.html"}:
+        html = (_REPO / "web" / rel).read_text()
+        for link in _FAVICON_LINKS:
+            assert link in html, f"{rel}: missing {link!r}"
+        assert "data:image/svg+xml" not in html, f"{rel}: still carries the old inline favicon"
 
 
 _MONEY_PAGES = (

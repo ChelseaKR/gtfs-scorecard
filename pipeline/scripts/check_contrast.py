@@ -101,6 +101,28 @@ PAIRS: list[tuple[str, str, str, bool]] = [
     ("landing page focus ring on --paper", "L_focus-page", "L_paper", False),
     ("landing dark-chrome focus ring on --pine", "L_focus-dark", "L_pine", False),
     ("landing amber-surface focus ring on --amber", "L_focus-on-amber", "L_amber", False),
+    # ---- OG/social-preview images (web/og.svg, web/bundle-og.svg) and the
+    # brand mark (web/favicon.svg, web/apple-touch-icon.svg) ----
+    # These are baked into raster images, not live CSS, so every pair uses
+    # literal hexes rather than theme tokens (a flat, theme-independent
+    # design: social platforms render a single PNG, not the page's own
+    # theme). All text in both cards is set at or above the AAA "large text"
+    # size (>=18.66px bold or >=24px), so the applicable bar is 4.5:1. The
+    # background is checked against the gradient's lighter stop (#143123),
+    # the worse of its two stops, as a conservative flat stand-in for the
+    # gradient a reader's eye actually sees.
+    ("og wordmark/headline cream on gradient (lighter stop)", "#f2f3ee", "#143123", True),
+    ("og subtitle on gradient (lighter stop)", "#cdddcf", "#143123", True),
+    ("og grade-tile letter on tile fill", "#9fb2a2", "#1b3a2a", True),
+    ("og highlighted grade-A ink on amber chip", "#102a20", "#fdc70a", True),
+    ("og footer domain (amber mono) on gradient (lighter stop)", "#fdc70a", "#143123", True),
+    ("og footer place on gradient (lighter stop)", "#9fb2a2", "#143123", True),
+    ("bundle-og kicker (amber bold) on gradient (lighter stop)", "#fdc70a", "#143123", True),
+    ("bundle-og trust line (amber bold) on gradient (lighter stop)", "#fdc70a", "#143123", True),
+    ("bundle-og report-card grade B on white chip", "#2c5f70", "#ffffff", True),
+    ("bundle-og report-card grade C on white chip", "#8a5a14", "#ffffff", True),
+    ("bundle-og report-card grade A on amber chip", "#102a20", "#fdc70a", True),
+    ("mark checkmark (amber) on badge circle fill", "#fdc70a", "#163a2c", True),
 ]
 
 THEMES: dict[str, dict[str, str]] = {

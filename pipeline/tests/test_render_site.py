@@ -4561,6 +4561,24 @@ def test_page_shell_describes_the_shared_social_image() -> None:
     assert html.count(f'<meta name="twitter:image:alt" content="{alt}">') == 1
 
 
+def test_page_shell_links_the_real_mark_not_the_old_inline_favicon() -> None:
+    from scorecard_pipeline.site_shell import _page
+
+    html = _page(
+        title="t",
+        description="d",
+        canonical="https://gtfsscorecard.org/x/",
+        body="<p>hi</p>",
+    )
+
+    assert '<link rel="icon" type="image/svg+xml" href="/favicon.svg">' in html
+    assert '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">' in html
+    assert '<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">' in html
+    assert '<link rel="shortcut icon" href="/favicon.ico">' in html
+    assert '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">' in html
+    assert "data:image/svg+xml" not in html
+
+
 def test_page_shell_uses_local_system_font_fallbacks() -> None:
     from scorecard_pipeline.site_shell import _page
 
