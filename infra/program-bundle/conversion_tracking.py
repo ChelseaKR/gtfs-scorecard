@@ -20,18 +20,36 @@ below is the same one the webhook already stores in the bundles table
 (webhook_handler.py); nothing new is collected, only reused, server-side,
 after a sale is already known.
 
-What this module does NOT do, on purpose: call the Google Ads API. A real
-upload needs OAuth (a developer token, an OAuth client, a refresh token, a
-login customer id) -- credentials this repo will never hold, and standing up
-that call here would be code nobody could run or test today. So the sink
-(``emit``) only writes one structured line to the Lambda's own CloudWatch log
-group. The follow-up -- a small scheduled job that reads those lines and
-calls the Google Ads API's offline conversion / enhanced-conversions-for-leads
-upload via the ``google-ads`` client library -- is deliberately left for
-after Chelsea has a conversion action to upload to; seeing real logged events
-first is also the easiest way to check the payload shape before that job is
-written. See the design doc's "owner steps" for the account-creation order
-this waits on.
+2026-09-15 update: the conversion action above now exists
+(``customers/2688527650/conversionActions/7769927171``), and the follow-up
+this docstring used to defer -- ``ads_conversion_upload_handler.py``, a
+scheduled Lambda that reads what ``emit`` below writes and calls the
+Google Ads API's ``ConversionUploadService`` via the ``google-ads`` client
+library -- now exists too (docs/google-ads-upload-setup.md). This module's
+own job is unchanged: build the payload and hand it to a sink. What changed
+is the sink.
+
+``emit`` still prints one structured line to this Lambda's CloudWatch log
+group -- that inspection path is untouched. It also now writes the same
+event, when ``AD_CONVERSIONS_TABLE`` is configured, to a small DynamoDB
+table ``ads_conversion_upload_handler.py`` reads on a schedule. Why a table
+and not a CloudWatch Logs Insights query over the printed lines (the shape
+this docstring originally sketched, still described in
+docs/paid-search-readiness.md §3): Logs Insights has no notion of "already
+uploaded," so that plan needed a second small store for the checkpoint
+anyway, plus an async, polled query API in front of it. Writing straight to
+a table this repo already has idioms for (``common.scan_all``, the
+conditional-write pattern in ``webhook_handler._update_subscription``) gets
+the same result with one moving part instead of two, and is what the upload
+handler's own tests exercise with the existing ``FakeTable`` harness rather
+than a mocked Logs Insights client.
+
+``store_pending_upload`` keys each row by the Stripe checkout session id
+(carried through as ``conversion_id``) and refuses to overwrite a row that
+is already there. That is what keeps a Stripe webhook retry of the same
+``checkout.session.completed`` -- which calls ``note_conversion`` again --
+from resetting an already-uploaded row back to pending and causing a second
+report to Google Ads for one sale.
 """
 
 from __future__ import annotations
@@ -39,9 +57,12 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+from decimal import Decimal
 from typing import Any
 
-from common import now_iso
+from common import now_iso, table
+
+PENDING = "pending"
 
 
 def conversion_action() -> str:
@@ -65,6 +86,7 @@ def build_conversion_event(
     amount_total: int | None,
     currency: str,
     occurred_at: str,
+    conversion_id: str = "",
 ) -> dict[str, Any] | None:
     """The payload for one purchase, in the shape a later Google Ads upload
     would send, or None when there is nothing to send: no conversion action
@@ -76,6 +98,13 @@ def build_conversion_event(
     Session object in the ``checkout.session.completed`` event payload
     (no second Stripe read); it is converted to a decimal currency amount
     here because that is the unit Google Ads' conversion value expects.
+
+    ``conversion_id`` is the Stripe checkout session id (``note_conversion``
+    passes ``obj["id"]``). It travels on the event only so
+    ``store_pending_upload`` has a stable key to write the pending row
+    under; ``ads_conversion_upload_handler.py`` never sends it to Google
+    Ads. Blank by default so every existing caller of this function keeps
+    working unchanged.
     """
     action = conversion_action()
     if not action or not email:
@@ -84,22 +113,80 @@ def build_conversion_event(
         "conversion_action": action,
         # Google Ads wants "yyyy-MM-dd HH:mm:ss+HH:mm"; occurred_at is
         # common.now_iso()'s "yyyy-MM-ddTHH:mm:ss+00:00" and only needs its
-        # "T" swapped for a space at upload time, a transform that belongs
-        # in the eventual upload job, not baked into the logged event here.
+        # "T" swapped for a space at upload time, a transform
+        # ads_conversion_upload_handler.py makes, not baked into the logged
+        # event here.
         "conversion_date_time": occurred_at,
         "conversion_value": round((amount_total or 0) / 100, 2),
         "currency_code": (currency or "usd").upper(),
         "plan": plan,
         "user_identifiers": [{"hashed_email": hash_identifier(email)}],
+        "conversion_id": conversion_id,
     }
 
 
 def emit(event: dict[str, Any]) -> None:
     """Write one conversion event as a single structured CloudWatch log line
-    (this Lambda's stdout). This is the seam's sink today -- nothing calls
-    the Google Ads API yet. A later change points this at the google-ads
-    client library instead of, or in addition to, logging."""
+    (this Lambda's stdout), then hand it to ``store_pending_upload`` -- see
+    the module docstring for why a small table and not a Logs Insights
+    query. Printing happens unconditionally and first: it is cheap,
+    unaffected by whether the table is configured, and is what every
+    existing test that spies on this function has always observed."""
     print(json.dumps({"conversion_event": event}, sort_keys=True))
+    store_pending_upload(event)
+
+
+def store_pending_upload(event: dict[str, Any]) -> None:
+    """Persist one conversion event as a ``status: "pending"`` row
+    ``ads_conversion_upload_handler.py`` can find, when
+    ``AD_CONVERSIONS_TABLE`` is configured. Blank (every deploy before
+    main.tf's table is applied) makes this a no-op, the same posture as
+    ``conversion_action()`` above.
+
+    Keyed by ``event["conversion_id"]`` with a condition that refuses to
+    overwrite an existing row -- see the module docstring: a Stripe webhook
+    retry must not be able to reset an already-uploaded row back to
+    pending. A blank ``conversion_id`` cannot be keyed at all; that row is
+    logged (the printed CloudWatch line above already carries the full
+    event) and not written, rather than written under a made-up key nothing
+    else would ever look for.
+
+    Not wrapped in a broader try/except: a genuine DynamoDB outage here
+    raises, the same as an outage in the ``bundles.put_item`` call the
+    webhook already makes right before this runs. Stripe retries the
+    webhook on a non-2xx response, and the write is safe to retry (the
+    condition below is exactly what makes it so).
+    """
+    table_name = os.environ.get("AD_CONVERSIONS_TABLE", "").strip()
+    if not table_name:
+        return
+    conversion_id = str(event.get("conversion_id") or "")
+    if not conversion_id:
+        print(json.dumps({"conversion_event_error": "no conversion_id; not queued for upload"}))
+        return
+    row = {
+        "conversion_id": conversion_id,
+        "status": PENDING,
+        "event": _for_dynamodb(event),
+        "created_at": now_iso(),
+    }
+    conversions = table("AD_CONVERSIONS_TABLE")
+    try:
+        conversions.put_item(Item=row, ConditionExpression="attribute_not_exists(conversion_id)")
+    except Exception as err:  # boto3's ConditionalCheckFailedException, by name -- see common.py
+        if "ConditionalCheckFailed" in type(err).__name__ or "ConditionalCheckFailed" in str(err):
+            return
+        raise
+
+
+def _for_dynamodb(event: dict[str, Any]) -> dict[str, Any]:
+    """boto3's Table resource refuses a Python ``float`` ("Float types are
+    not supported. Use Decimal types instead."); ``conversion_value`` is the
+    only float ``build_conversion_event`` produces."""
+    out = dict(event)
+    if "conversion_value" in out:
+        out["conversion_value"] = Decimal(str(out["conversion_value"]))
+    return out
 
 
 def note_conversion(*, plan: str, obj: dict[str, Any]) -> None:
@@ -107,7 +194,7 @@ def note_conversion(*, plan: str, obj: dict[str, Any]) -> None:
     confirmed is this product's (a real plan, not "" or "unverified"). Reads
     the same Stripe Checkout Session object the webhook itself reads, builds
     the conversion event, and emits it when configured. A no-op end to end
-    while GOOGLE_ADS_CONVERSION_ACTION is unset, which is every deploy today.
+    while GOOGLE_ADS_CONVERSION_ACTION is unset.
     """
     email = str((obj.get("customer_details") or {}).get("email") or "")
     event = build_conversion_event(
@@ -116,6 +203,7 @@ def note_conversion(*, plan: str, obj: dict[str, Any]) -> None:
         amount_total=obj.get("amount_total"),
         currency=str(obj.get("currency") or "usd"),
         occurred_at=now_iso(),
+        conversion_id=str(obj.get("id") or ""),
     )
     if event is not None:
         emit(event)
