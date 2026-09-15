@@ -815,6 +815,63 @@ def test_the_intraday_rescore_loop_tells_unchanged_apart_from_failed() -> None:
     assert '[ "$EXIT" -eq 2 ]' in step
 
 
+def test_the_intraday_rescore_loop_has_a_wall_clock_deadline() -> None:
+    """The rescore loop had no bound of its own, so a large due batch could
+    run the whole job out to its own `timeout-minutes` with the loop still
+    mid-agency. A job killed by its own timeout never reaches the reindex and
+    rollups step or the S3 publish step after it, so every feed already
+    re-scored that cycle was discarded along with the ones still queued.
+
+    Measured 2026-09-14: four of that day's eight scheduled runs (06:56,
+    09:37, 12:41, 18:34 UTC; run ids 34815554761, 34828962272, 34844837213,
+    34881574728) were cancelled at their 175-minute bound while still inside
+    this loop, each having already re-scored 100+ agencies before losing all
+    of them -- and 34844837213's overrun then held the shared
+    `artifacts-publish` concurrency slot long enough that the same day's Daily
+    scorecard `collect` job queued behind it and was evicted (cancelled, 0
+    steps) when the next scheduled refresh arrived. The loop now stops taking
+    on new agencies once a deadline measured from the job's own start has
+    passed, leaving slack for the steps after it.
+    """
+    workflow = _workflow("refresh.yml")
+    job_timeout = _job_timeout(workflow, "refresh")
+
+    assert "job_started_epoch" in workflow, (
+        "the loop's deadline must be read from when the job actually started, "
+        "not from when this step started -- earlier steps already spend part "
+        "of the same timeout-minutes budget"
+    )
+    record_at = workflow.index("Record job start time")
+    step_at = workflow.index("Re-score only the feeds that changed")
+    assert record_at < step_at, "the job start time must be recorded before the loop reads it"
+
+    step = workflow[step_at : workflow.index("Rebuild index and rollups", step_at)]
+
+    assert "job_started_epoch" in step
+    deadline_match = re.search(r'REFRESH_RESCORE_DEADLINE_SECONDS: "(\d+)"', step)
+    assert deadline_match, "the deadline must be a fixed, readable number of seconds"
+    deadline_seconds = int(deadline_match.group(1))
+    assert 0 < deadline_seconds < job_timeout * 60
+
+    # Slack for the reindex/rollups step and the S3 publish after this loop:
+    # measured 2026-09-14, both plus the AWS credential renewal between them
+    # took 2-4 minutes on every recorded run, so 10 minutes of headroom below
+    # the job's own bound is not a tight budget.
+    assert job_timeout * 60 - deadline_seconds >= 10 * 60, (
+        "the deadline leaves too little of the job's timeout-minutes for the "
+        "steps that publish whatever this loop managed to score"
+    )
+
+    assert 'if [ "$(date -u +%s)" -ge "$deadline" ]' in step
+    assert "deferred=$(( deferred + 1 ))" in step
+    assert "::warning title=refresh budget exhausted::" in step
+
+    # A cycle that deferred every changed feed to the budget (attempted=0)
+    # must not trip the "refreshed nothing" failure: that guard is for a feed
+    # that was attempted and failed, not one never attempted at all.
+    assert '[ "$attempted" -gt 0 ] && [ "$refreshed" -eq 0 ]' in step
+
+
 def test_the_shard_step_runs_under_pipefail() -> None:
     """The whole of a shard's work happens inside
     `echo "$MATRIX_SHARD" | jq -r '.[]' | while read -r id`. Actions runs

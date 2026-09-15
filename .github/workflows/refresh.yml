@@ -81,6 +81,19 @@ jobs:
         with:
           python-version: "3.12"
 
+      # RELIABILITY: the per-feed rescore loop further down has no bound of its
+      # own, so a large due batch (more agencies now carry a realtime feed
+      # than when 175 was last measured) can run this whole job out to its
+      # job-level timeout-minutes with the loop still mid-agency. A job killed
+      # by timeout-minutes never reaches the reindex/rollups step or the S3
+      # publish step after it, so every feed already re-scored that cycle is
+      # discarded along with the ones still queued -- the loop needs its own
+      # wall-clock deadline, read from when this job actually started, to stop
+      # taking on new agencies while enough of the budget remains for the
+      # steps after it.
+      - name: Record job start time
+        run: echo "job_started_epoch=$(date -u +%s)" >> "$GITHUB_ENV"
+
       - name: Authenticate to AWS
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
@@ -144,16 +157,36 @@ jobs:
 
       - name: Re-score only the feeds that changed
         working-directory: pipeline
+        env:
+          # Stop starting new agencies once this many seconds have elapsed
+          # since the job began, leaving the rest of `timeout-minutes: 175`
+          # for the two steps that come after this loop: rebuilding the index
+          # and rollups, and publishing to S3. 9300s = 155 minutes; measured
+          # 2026-09-14, those two steps plus the AWS credential renewal
+          # between them have taken 2-4 minutes on every run recorded, so 20
+          # minutes of slack is generous headroom, not a tight budget. A
+          # deferred feed keeps its last good artifact (the same outcome a
+          # real per-feed failure already produces below) and stays in the due
+          # list for the next cycle; the daily `scorecard.yml` run
+          # re-validates every canonical feed regardless of liveness state at
+          # least once every 24h either way.
+          REFRESH_RESCORE_DEADLINE_SECONDS: "9300"
         run: |
           set -uo pipefail
           changed="$RUNNER_TEMP/changed.txt"
           [ -s "$changed" ] || { echo "No changed feeds to re-score."; exit 0; }
+          deadline=$(( job_started_epoch + REFRESH_RESCORE_DEADLINE_SECONDS ))
           attempted=0
           refreshed=0
           failed=0
+          deferred=0
           # A single feed's vendor outage must not abort the batch; warn and move on.
           while read -r id; do
             [ -n "$id" ] || continue
+            if [ "$(date -u +%s)" -ge "$deadline" ]; then
+              deferred=$(( deferred + 1 ))
+              continue
+            fi
             attempted=$(( attempted + 1 ))
             echo "::group::rescore $id"
             uv run scorecard run --agency "$id" && EXIT=0 || EXIT=$?
@@ -173,7 +206,10 @@ jobs:
             fi
             echo "::endgroup::"
           done < "$changed"
-          echo "re-scored $refreshed of $attempted changed feeds ($failed failed)"
+          echo "re-scored $refreshed of $attempted changed feeds ($failed failed, $deferred deferred to next cycle)"
+          if [ "$deferred" -gt 0 ]; then
+            echo "::warning title=refresh budget exhausted::$deferred changed feed(s) were not attempted this cycle; the rescore loop stopped $((REFRESH_RESCORE_DEADLINE_SECONDS / 60)) minutes into the job so it can still publish what it scored. Deferred feeds kept their last good artifact and stay due next cycle."
+          fi
           # The floor scorecard.yml has (its "Verify shard artifacts before
           # publishing" step) and this tier did not. Every non-zero exit above
           # became an `echo`, and nothing downstream counted them, so an
@@ -181,7 +217,9 @@ jobs:
           # ran reindex, rollups, render-site, the S3 publish and the Pages
           # deploy, and reported success. Republishing yesterday's corpus under
           # today's deployment timestamp is the one outcome a refresh must not
-          # report as a refresh.
+          # report as a refresh. A cycle that deferred everything to the budget
+          # (attempted=0) is not this: it still applied the freshness sweep and
+          # will publish that, and next cycle picks the deferred feeds back up.
           if [ "$attempted" -gt 0 ] && [ "$refreshed" -eq 0 ]; then
             echo "::error::None of the $attempted changed feeds re-scored this cycle. Refusing to publish a refresh that refreshed nothing; each feed's cause is in the warnings above."
             exit 1
