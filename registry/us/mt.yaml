@@ -73,3 +73,12 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+
+  - id: park-county-transit
+    name: Park County Transit
+    subdivision_code: US-MT
+    subdivision_name: Montana
+    is_official: true
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11888/ParkCountyGTFS.zip
+    mdb_id: ntd-88293
+    license_note: No stated data license in the source catalog; verify before publishing.

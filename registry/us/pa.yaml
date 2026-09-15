@@ -143,3 +143,12 @@ agencies:
     static_gtfs_url: https://github.com/PhlashGTFS/GTFS/releases/latest/download/PHLASH_GTFS.zip
     mdb_id: 2877
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: borough-of-mt-carmel
+    name: Borough of Mt. Carmel
+    subdivision_code: US-PA
+    subdivision_name: Pennsylvania
+    is_official: true
+    static_gtfs_url: https://lats.rideralerts.com/infopoint/gtfs-zip.ashx
+    mdb_id: ntd-30116
+    license_note: No stated data license in the source catalog; verify before publishing.

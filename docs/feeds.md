@@ -2265,6 +2265,87 @@ France's admitted records rise from 343 to 357 of a 618-record reviewed
 European sample. These are feed records from one national portal, not a
 census of French agencies or coverage.
 
+## NTD-matched US sync pass (2026-09-14)
+
+`scorecard sync --country US` was run against the live Mobility Database
+catalog to check whether registered US coverage still reflects what the
+catalog carries. It returned 202 candidates the registry does not already
+track by id or feed URL. Rather than admit all 202, this pass kept only the
+35 the source catalog itself flagged `is_official: true` with a matching
+National Transit Database id — the strongest identity signal available for a
+US agency without a per-agency license or portal check, and the same bar
+`docs/global-coverage-roadmap.md` sets for defensibility before breadth.
+
+The sync tool's own dedupe only catches an exact id, mdb id, or feed URL
+match, so seven of the 35 were excluded by hand after turning out to name an
+operator already tracked under a different id or feed URL:
+
+- **Champaign-Urbana Mass Transit District** (`developer.mtd.org`) duplicates
+  the already-tracked `champaign-urbana-mass-transit-district-mtd`
+  (`developer.cumtd.com`), same agency (CUMTD), different feed host.
+- **Centre Area Transportation Authority (CATABUS)** duplicates the
+  already-tracked `centre-county-transit-authority-cata`, which is on a
+  stale `transitfeeds.com` URL flagged by the 2026-08-31 feed-discovery pass
+  (`docs/feed-discovery.md`) — a URL-update case, not a new agency.
+- **Adirondack Trailways, New York Trailways, Pine Hill Trailways, Burlington
+  Trailways** is one consolidated feed from the operator's own CMS covering
+  four networks this registry already tracks as four separate legacy feeds
+  from the NY 511 S3 bucket (`adirondack-trailways-adp`,
+  `adirondack-trailways-nyp`, `new-york-trailways`,
+  `adirondack-trailways-pine-hill-trailways`) — a consolidation question for
+  a dedicated review, not a same-pass add.
+- Four more (METRA/Columbus GA, Butte Regional Transit B-Line, LANTA, Tri
+  Delta Transit) were flagged by the sync tool itself, which appends an
+  `-ntd-NNNNN` suffix to a candidate's id when its name already exists in
+  the registry; each names an operator already tracked under a different
+  feed URL, held here as an update case rather than a new record.
+
+The remaining 28 were checked for an exact-name or exact-NTD-id collision
+against the full registry and found clean. They span 20 states and add
+Wyoming's first tracked feed. Two were spot-checked end to end with
+`scorecard try` against their live URLs: City of Pullman, Washington
+(grade D, 63.8/100) and Lake Charles Transit, Louisiana (grade A, 93.3/100),
+confirming the pipeline fetches, validates, and scores them without special
+handling.
+
+- **Lake Charles Transit** and **Good Earth Transit** — Louisiana (`US-LA`).
+- **City of Hattiesburg** — Mississippi (`US-MS`).
+- **City of Kingsport** and **City of Pigeon Forge** — Tennessee (`US-TN`).
+- **City of Hinesville, Georgia** — Georgia (`US-GA`).
+- **City of Longview**, **McKinney Avenue Transit Authority**, **Metro
+  McAllen**, and **Texarkana Urban Transit District (T-Line Bus)** — Texas
+  (`US-TX`).
+- **TriCounty Link** — South Carolina (`US-SC`).
+- **City of Galesburg** — Illinois (`US-IL`).
+- **Milford Transit District** — Connecticut (`US-CT`).
+- **City of Jefferson** — Missouri (`US-MO`), distinct from the
+  already-tracked JeffCo Express (Jefferson County, a different agency).
+- **Borough of Mt. Carmel** — Pennsylvania (`US-PA`).
+- **Maui County Transit** — Hawaii (`US-HI`).
+- **Ute Tribe Public Transit** — Utah (`US-UT`).
+- **Seneca Transit System** — New York (`US-NY`).
+- **City of Pullman** — Washington (`US-WA`).
+- **Developmental Services of NW Kansas/ACCESS Transportation** — Kansas
+  (`US-KS`).
+- **City of Hobbs** and **A:Shiwi Transit** — New Mexico (`US-NM`).
+- **City of Kokomo** — Indiana (`US-IN`); the catalog listed Google Drive
+  links as its realtime endpoints, which is not a conforming GTFS-RT source,
+  so `rt_urls` was left unset rather than tracked as realtime.
+- **LauderGO! Water Trolley** — Florida (`US-FL`).
+- **Park County Transit** — Montana (`US-MT`).
+- **Wind River Transportation Authority** — Wyoming (`US-WY`), the state's
+  first tracked feed.
+- **City of Fargo** — North Dakota (`US-ND`).
+- **St. Cloud Metropolitan Transit Commission** — Minnesota (`US-MN`).
+
+None state a data license in the catalog; each carries the standard
+"verify before publishing" license note pending a per-agency check. The
+registry moves from 2,643 to 2,671 records. The remaining 167 sync
+candidates (the non-`is_official` majority, plus the 4 US-only-catalog
+transitland-sourced rows already at the 202 count) are not queued anywhere;
+admitting them means the identity and reuse review this roadmap requires,
+not a mechanical follow-on.
+
 ## Unitrans (ASUCD / City of Davis)
 
 | | |

@@ -29,3 +29,12 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cityofgrandforks-nd-us/cityofgrandforks-nd-us.zip
     mdb_id: 2199
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-fargo
+    name: City of Fargo
+    subdivision_code: US-ND
+    subdivision_name: North Dakota
+    is_official: true
+    static_gtfs_url: https://ridematbus.com/gtfs
+    mdb_id: ntd-80003
+    license_note: No stated data license in the source catalog; verify before publishing.

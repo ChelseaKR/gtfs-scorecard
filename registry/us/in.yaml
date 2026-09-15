@@ -100,3 +100,12 @@ agencies:
     static_gtfs_url: https://gtfs.remix.com/citilink_fortwayne_in_us.zip
     mdb_id: 2266
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-kokomo
+    name: City of Kokomo
+    subdivision_code: US-IN
+    subdivision_name: Indiana
+    is_official: true
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11767/CityofKokomo_Transit.zip
+    mdb_id: ntd-50145
+    license_note: No stated data license in the source catalog; verify before publishing.

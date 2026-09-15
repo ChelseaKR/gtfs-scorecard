@@ -85,3 +85,12 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/cctbus-mn-us/cctbus-mn-us.zip
     mdb_id: 2301
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: st-cloud-metropolitan-transit-commission
+    name: St. Cloud Metropolitan Transit Commission
+    subdivision_code: US-MN
+    subdivision_name: Minnesota
+    is_official: true
+    static_gtfs_url: https://ridemetrobus.com/transit/google_transit.zip
+    mdb_id: ntd-50028
+    license_note: No stated data license in the source catalog; verify before publishing.

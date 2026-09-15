@@ -29,3 +29,12 @@ agencies:
     static_gtfs_url: https://www.nps.gov/external-resources/gtfs/guis/guis-ferry-service-ms.zip
     mdb_id: 3210
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-hattiesburg
+    name: City of Hattiesburg
+    subdivision_code: US-MS
+    subdivision_name: Mississippi
+    is_official: true
+    static_gtfs_url: https://api.transloc.com/gtfs/hct.zip
+    mdb_id: ntd-40060
+    license_note: No stated data license in the source catalog; verify before publishing.

@@ -84,3 +84,21 @@ agencies:
     static_gtfs_url: https://www.sctdd.org/wp-content/uploads/2025/02/gtfs_muletown.zip
     mdb_id: 2420
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-kingsport
+    name: City of Kingsport
+    subdivision_code: US-TN
+    subdivision_name: Tennessee
+    is_official: true
+    static_gtfs_url: https://api.transloc.com/gtfs/kats.zip
+    mdb_id: ntd-40080
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  - id: city-of-pigeon-forge
+    name: City of Pigeon Forge
+    subdivision_code: US-TN
+    subdivision_name: Tennessee
+    is_official: true
+    static_gtfs_url: https://pigeonforge.connexionz.net/rtt/public/resource/gtfs.zip
+    mdb_id: ntd-41136
+    license_note: No stated data license in the source catalog; verify before publishing.

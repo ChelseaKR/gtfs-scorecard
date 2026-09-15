@@ -292,6 +292,11 @@ POINT_IN_TIME: list[tuple[str, str, str]] = [
         "per-wave curation log: the second France exhaustion pass's result",
     ),
     (
+        "docs/feeds.md",
+        r"registry moves from [\d,]+ to ([\d,]+) records",
+        "per-wave curation log: the NTD-matched US sync pass's result",
+    ),
+    (
         "docs/global-expansion.md",
         r"waves contains ([\d,]+) feed records",
         "frozen 2026-07-18 baseline; the section says so and says why",

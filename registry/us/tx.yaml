@@ -146,3 +146,39 @@ agencies:
     static_gtfs_url: https://d2igk3wxwksqfb.cloudfront.net/dallashostcommitteedata.zip
     mdb_id: 3218
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: city-of-longview
+    name: City of Longview
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    is_official: true
+    static_gtfs_url: https://cloud.longviewtexas.gov/maps/LongviewTransitGTFS/LongviewTransitGTFS.zip
+    mdb_id: ntd-60081
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  - id: mckinney-avenue-transit-authority
+    name: McKinney Avenue Transit Authority
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    is_official: true
+    static_gtfs_url: https://mata.tripshot.com/v1/gtfs/feed/public
+    mdb_id: ntd-60133
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  - id: metro-mcallen
+    name: Metro McAllen
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    is_official: true
+    static_gtfs_url: https://mcallen.net/metro/assets/resources/GTFS%20-%20TransLoc.zip
+    mdb_id: ntd-60099
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  - id: texarkana-urban-transit-district-t-line-bus
+    name: Texarkana Urban Transit District (T-Line Bus)
+    subdivision_code: US-TX
+    subdivision_name: Texas
+    is_official: true
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11728/texarkanaurbantransit-tx-us.zip
+    mdb_id: ntd-60093
+    license_note: No stated data license in the source catalog; verify before publishing.

@@ -177,9 +177,66 @@ def test_repo_registry_matches_documented_feed_record_counts(
     agencies = read_agencies()
     european = [agency for agency in agencies if agency.country in EUROPE_BETA_COUNTRY_CODES]
 
-    assert len(agencies) == 2_643
+    assert len(agencies) == 2_671
     assert len(european) == 760
     assert len({agency.country for agency in european}) == 28
+
+
+def test_repo_registry_includes_2026_09_ntd_official_cohort(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A 28-agency US cohort, all `is_official` and NTD-matched in the source
+
+    catalog, sourced via `scorecard sync --country US` on 2026-09-14 and
+    reviewed by hand against the existing registry to exclude anything that
+    duplicated an already-tracked operator under a different name or URL
+    (see docs/global-coverage-roadmap.md). Wyoming's first tracked feed is
+    part of this cohort, adding a shard.
+    """
+    monkeypatch.setenv("SCORECARD_ROOT", str(REPO_ROOT))
+    by_id = {agency.id: agency for agency in read_agencies()}
+
+    wind_river = by_id["wind-river-transportation-authority"]
+    assert wind_river.subdivision_code == "US-WY"
+    assert wind_river.mdb_id == "ntd-80121"
+    assert wind_river.is_official is True
+
+    lake_charles = by_id["lake-charles-transit"]
+    assert lake_charles.subdivision_code == "US-LA"
+    assert lake_charles.mdb_id == "ntd-60023"
+
+    cohort_ids = {
+        "lake-charles-transit",
+        "good-earth-transit",
+        "city-of-hattiesburg",
+        "city-of-kingsport",
+        "city-of-hinesville-georgia",
+        "city-of-longview",
+        "tricounty-link",
+        "city-of-galesburg",
+        "milford-transit-district",
+        "city-of-jefferson",
+        "borough-of-mt-carmel",
+        "mckinney-avenue-transit-authority",
+        "maui-county-transit",
+        "metro-mcallen",
+        "ute-tribe-public-transit",
+        "seneca-transit-system",
+        "city-of-pigeon-forge",
+        "city-of-pullman",
+        "developmental-services-of-nw-kansas-access-transportation",
+        "city-of-hobbs",
+        "texarkana-urban-transit-district-t-line-bus",
+        "city-of-kokomo",
+        "laudergo-water-trolley",
+        "park-county-transit",
+        "wind-river-transportation-authority",
+        "a-shiwi-transit",
+        "city-of-fargo",
+        "st-cloud-metropolitan-transit-commission",
+    }
+    assert cohort_ids <= by_id.keys()
+    assert len(cohort_ids) == 28
 
 
 def test_repo_registry_carries_reviewed_coverage_recovery_updates(
