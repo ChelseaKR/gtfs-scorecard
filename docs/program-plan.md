@@ -209,13 +209,13 @@ description of what has to be true; the script is how it is done and checked.
    Agency-facing scoring staying free is a separate commitment and is
    untouched.
 
-   **The three reviews this decision is supposed to rest on are NOT yet
-   recorded**, and this paragraph does not pretend otherwise:
+   **Two of the three reviews this decision is supposed to rest on are still
+   NOT recorded**, and this paragraph does not pretend otherwise:
 
    | Review | State |
    |---|---|
    | Tax treatment of the revenue | outstanding |
-   | Refund policy, written down | outstanding |
+   | Refund policy, written down | written 2026-09-14: the buy-terms list and FAQ on `/bundle/` state what happens on a late delivery, a wrong or broken archive, and a cancelled subscription, in the buyer's own words rather than a linked document. No separate policy page exists; see the trust/policy audit this row records. |
    | The two-business-day delivery commitment, reviewed against what the pipeline actually guarantees | outstanding |
 
    The third is the one with teeth. `/bundle/` tells a buyer delivery is
