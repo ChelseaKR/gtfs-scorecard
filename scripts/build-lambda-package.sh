@@ -48,9 +48,19 @@ BUILD="$MODULE_DIR/build"
 echo "== $MODULE: building $BUILD for $PLATFORM / CPython $PYTHON_VERSION"
 rm -rf "$BUILD"
 
+# infra/program-bundle is the only module with a handler needing more than
+# the pipeline's core dependencies: ads_conversion_upload_handler.py imports
+# the google-ads client, kept as an optional extra (pipeline/pyproject.toml)
+# so every other module's package -- infra/submit included -- stays as lean
+# as it already was.
+PIPELINE_SPEC="$REPO_ROOT/pipeline"
+if [ "$MODULE" = "infra/program-bundle" ]; then
+  PIPELINE_SPEC="$REPO_ROOT/pipeline[ads]"
+fi
+
 # --only-binary=:all: is what makes --platform meaningful: pip may not build a
 # wheel from source here, because a source build would target this machine.
-python3 -m pip install "$REPO_ROOT/pipeline" -t "$BUILD" \
+python3 -m pip install "$PIPELINE_SPEC" -t "$BUILD" \
   --platform "$PLATFORM" \
   --python-version "$PYTHON_VERSION" \
   --implementation cp \

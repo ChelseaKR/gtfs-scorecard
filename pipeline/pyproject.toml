@@ -25,6 +25,18 @@ dependencies = [
 # Kept optional so the core pipeline stays lean; `scorecard query` and the
 # parquet artifact are the only things that need it.
 query = ["duckdb>=1.0"]
+# infra/program-bundle/ads_conversion_upload_handler.py is the only thing
+# that needs this (a real gRPC/protobuf dependency, unlike boto3 which the
+# Lambda runtime already provides -- see that module's docstring). Kept
+# optional for the same "core pipeline stays lean" reason as `query` above;
+# scripts/build-lambda-package.sh installs this extra only when packaging
+# infra/program-bundle, so infra/submit's package is unaffected. Floor is
+# 32.0 (Google Ads API v25): installed and checked against
+# ads_conversion_upload_handler.py's field/method names while writing it
+# (2026-09-15). Not upper-bounded, since the request/response shape this
+# handler reads (ClickConversion, UploadClickConversionsRequest,
+# GoogleAdsFailure) has been stable across API versions.
+ads = ["google-ads>=32.0"]
 
 [project.scripts]
 scorecard = "scorecard_pipeline.cli:main"
