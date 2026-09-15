@@ -370,15 +370,33 @@ def fetch_sample(kind: str, url: str, archive_to: str | None = None) -> RtSample
 def capture_window(
     agency: Agency, date: dt.date, samples: int = 3, interval_seconds: int = 30
 ) -> RtWindow:
-    """Sample every realtime endpoint `samples` times, `interval` apart."""
+    """Sample every realtime endpoint `samples` times, `interval` apart.
+
+    Stops after the first round if every configured endpoint failed there and
+    every one of those failures was `measured` (a real endpoint failure, per
+    `measures_the_endpoint`, not our own fetcher breaking). `RtWindow.kind_ok`
+    and `kind_measured` only ever ask *whether* a measured sample failed, never
+    how many did (see their docstrings), so a feed that is completely
+    unreachable in round 1 scores identically whether this stops there or
+    grinds through two more rounds of the same result. Those two rounds are
+    not free: each is `len(agency.rt_urls)` fetches at up to a 30s connect
+    timeout apiece plus a fixed `interval_seconds` sleep, serially, inside a
+    single-threaded per-agency loop (refresh.yml's "Re-score only the feeds
+    that changed"). One agency with a dead RT host was measured costing that
+    loop about 5.5 minutes for three all-failed rounds; this bounds the same
+    agency to about 1.5. A partial failure (some kinds up, one down) still
+    runs every round, because that is exactly the case still worth sampling.
+    """
     window = RtWindow()
     for i in range(samples):
         if i > 0:
             time.sleep(interval_seconds)
+        round_samples: list[RtSample] = []
         for kind, url in agency.rt_urls.items():
             stamp = int(time.time())
             archive = raw_dir() / agency.id / date.isoformat() / "rt" / f"{kind}-{stamp}.pb"
             sample = fetch_sample(kind, url, archive_to=str(archive))
+            round_samples.append(sample)
             window.samples.append(sample)
             log.info(
                 "%s rt %s sample %d/%d: %s",
@@ -388,6 +406,15 @@ def capture_window(
                 samples,
                 "ok" if sample.ok else f"FAILED ({sample.error})",
             )
+        if round_samples and all(not s.ok and s.measured for s in round_samples):
+            log.info(
+                "%s rt: every configured endpoint failed in round %d/%d; "
+                "stopping early instead of repeating the same result",
+                agency.id,
+                i + 1,
+                samples,
+            )
+            break
     return window
 
 

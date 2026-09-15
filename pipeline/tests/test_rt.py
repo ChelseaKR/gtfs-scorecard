@@ -1153,6 +1153,75 @@ def test_capture_window_samples_each_kind_and_spaces_requests(
     assert sleeps == [30]
 
 
+def test_capture_window_stops_early_when_every_endpoint_is_completely_down(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A feed whose every configured endpoint fails in round 1 does not score
+    any differently after two more rounds of the same failure: `RtWindow.kind_ok`
+    and `kind_measured` only ever ask whether a measured sample failed, never
+    how many did. Measured 2026-09-14 (run 34844837213): one agency with a
+    fully-dead RT host cost the serial intraday rescore loop about 5.5 minutes
+    for three all-failed rounds of three endpoints each at up to a 30s connect
+    timeout, plus the interval sleeps between rounds. This bounds the same
+    agency to about one round.
+    """
+    from scorecard_pipeline.config import Agency
+
+    agency = Agency(
+        id="demo",
+        name="Demo",
+        static_gtfs_url="https://example.org/g.zip",
+        rt_urls={"trip_updates": "https://example.org/tu", "vehicle_positions": "https://e/vp"},
+    )
+
+    def fake_fetch(kind: str, url: str, archive_to: str | None = None) -> RtSample:
+        return RtSample(
+            kind=kind, fetched_at=NOW, ok=False, measured=True, error="connection refused"
+        )
+
+    sleeps: list[int] = []
+    monkeypatch.setattr(rt, "fetch_sample", fake_fetch)
+    monkeypatch.setattr(time, "sleep", lambda s: sleeps.append(s))
+
+    window = rt.capture_window(agency, dt.date(2026, 6, 11), samples=3, interval_seconds=30)
+
+    # One round over two endpoints, not three rounds: every endpoint failed in
+    # round 1, so rounds 2 and 3 never ran, and no interval sleep was needed.
+    assert len(window.samples) == 2
+    assert sleeps == []
+    assert all(not s.ok for s in window.samples)
+
+
+def test_capture_window_keeps_sampling_a_partially_reachable_feed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The early stop only fires when every configured kind failed in the same
+    round. One kind up and one down is still worth the full sampling window --
+    that is exactly the case the window exists to measure."""
+    from scorecard_pipeline.config import Agency
+
+    agency = Agency(
+        id="demo",
+        name="Demo",
+        static_gtfs_url="https://example.org/g.zip",
+        rt_urls={"trip_updates": "https://example.org/tu", "vehicle_positions": "https://e/vp"},
+    )
+
+    def fake_fetch(kind: str, url: str, archive_to: str | None = None) -> RtSample:
+        if kind == "trip_updates":
+            return RtSample(kind=kind, fetched_at=NOW, ok=True, header_timestamp=NOW)
+        return RtSample(kind=kind, fetched_at=NOW, ok=False, measured=True, error="timeout")
+
+    sleeps: list[int] = []
+    monkeypatch.setattr(rt, "fetch_sample", fake_fetch)
+    monkeypatch.setattr(time, "sleep", lambda s: sleeps.append(s))
+
+    window = rt.capture_window(agency, dt.date(2026, 6, 11), samples=3, interval_seconds=30)
+
+    assert len(window.samples) == 6
+    assert sleeps == [30, 30]
+
+
 def test_reachable_feed_without_timestamp_notes_it_without_penalty() -> None:
     # A feed that omits the optional header timestamp shouldn't be scored stale;
     # freshness drops out and a zero-deduction note explains the gap.
