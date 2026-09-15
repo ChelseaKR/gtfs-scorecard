@@ -1,0 +1,13 @@
+# Wyoming (US) agencies — one manifest-listed shard of the GTFS Scorecard registry.
+#
+# The field reference and contribution workflow live in registry/README.md.
+# Every id must be unique across every shard listed by registry/index.yaml.
+agencies:
+  - id: wind-river-transportation-authority
+    name: Wind River Transportation Authority
+    subdivision_code: US-WY
+    subdivision_name: Wyoming
+    is_official: true
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/6174/wrta_wy_gtfs.zip
+    mdb_id: ntd-80121
+    license_note: No stated data license in the source catalog; verify before publishing.

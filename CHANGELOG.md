@@ -29,6 +29,22 @@ the declared public surface).
 
 ### Added
 
+- **28 reviewed US feed records from an NTD-matched `scorecard sync` pass
+  (2026-09-14).** `scorecard sync --country US` against the live Mobility
+  Database catalog returned 202 untracked candidates; this pass kept only
+  the 35 flagged `is_official` in the source catalog with a matching
+  National Transit Database id, then excluded seven by hand after they
+  turned out to duplicate an already-tracked operator under a different
+  name or feed URL (Champaign-Urbana MTD, the Centre County CATABUS feed,
+  a consolidated Trailways feed covering four already-separately-tracked
+  New York Trailways entries, and four candidates the sync tool itself
+  flagged with an `-ntd-NNNNN` id suffix because the name already existed).
+  The 28 that remained span 20 states and add Wyoming's first tracked feed
+  (Wind River Transportation Authority), all small systems in line with the
+  product's stated audience. The registry moves to 2,671 records; see
+  `docs/global-coverage-roadmap.md` for why this project reviews sync
+  output by hand rather than admitting it automatically.
+
 - **Cookieless site measurement, disclosed on the page it measures
   (2026-09-13, [ADR 0055](docs/decisions/0055-cookieless-site-measurement.md)).**
   The site recorded nothing about a visit until now, and could not say whether

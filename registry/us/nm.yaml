@@ -147,3 +147,21 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-07-18"
       identity_reviewed: true
+
+  - id: city-of-hobbs
+    name: City of Hobbs
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    is_official: true
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/11543/hobbs_gtfs.zip
+    mdb_id: ntd-60190
+    license_note: No stated data license in the source catalog; verify before publishing.
+
+  - id: a-shiwi-transit
+    name: A:Shiwi Transit
+    subdivision_code: US-NM
+    subdivision_name: New Mexico
+    is_official: true
+    static_gtfs_url: https://rapid.nationalrtap.org/GTFSFileManagement/UserUploadFiles/7763/AshiwiGTFS.zip
+    mdb_id: ntd-66242
+    license_note: No stated data license in the source catalog; verify before publishing.

@@ -159,3 +159,12 @@ agencies:
     static_gtfs_url: https://schedules.metrarail.com/gtfs/schedule.zip
     mdb_id: 2854
     license_note: "License: https://metra.com/gtfs-realtime-api-key-request-license-agreement"
+
+  - id: city-of-galesburg
+    name: City of Galesburg
+    subdivision_code: US-IL
+    subdivision_name: Illinois
+    is_official: true
+    static_gtfs_url: https://gis.ci.galesburg.il.us/cityofgalesburg-il-us.zip
+    mdb_id: ntd-50502
+    license_note: No stated data license in the source catalog; verify before publishing.

@@ -47,3 +47,12 @@ agencies:
     static_gtfs_url: https://files.looptrolley.com/google_transit.zip
     mdb_id: 2035
     license_note: "License: https://www.looptrolley.com/resources"
+
+  - id: city-of-jefferson
+    name: City of Jefferson
+    subdivision_code: US-MO
+    subdivision_name: Missouri
+    is_official: true
+    static_gtfs_url: https://jctgtfsdownload.itcurves.us/DownloadGtfs
+    mdb_id: ntd-70043
+    license_note: No stated data license in the source catalog; verify before publishing.

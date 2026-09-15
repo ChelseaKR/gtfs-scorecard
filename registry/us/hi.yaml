@@ -30,3 +30,12 @@ agencies:
     static_gtfs_url: https://www.thebus.org/transitdata/production/google_transit.zip
     mdb_id: 2350
     license_note: No stated data license in the Mobility Database; verify before publishing.
+
+  - id: maui-county-transit
+    name: Maui County Transit
+    subdivision_code: US-HI
+    subdivision_name: Hawaii
+    is_official: true
+    static_gtfs_url: https://mauibus.org/gtfs
+    mdb_id: ntd-90241
+    license_note: No stated data license in the source catalog; verify before publishing.

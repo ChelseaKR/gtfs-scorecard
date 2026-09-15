@@ -750,3 +750,12 @@ agencies:
       reviewed_by: ChelseaKR
       reviewed_on: "2026-09-01"
       identity_reviewed: true
+
+  - id: seneca-transit-system
+    name: Seneca Transit System
+    subdivision_code: US-NY
+    subdivision_name: New York
+    is_official: true
+    static_gtfs_url: https://passio3.com/senecanation/passioTransit/gtfs/google_transit.zip
+    mdb_id: ntd-22929
+    license_note: No stated data license in the source catalog; verify before publishing.
