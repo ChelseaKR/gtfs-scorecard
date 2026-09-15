@@ -29,6 +29,25 @@ the declared public surface).
 
 ### Added
 
+- **Google Ads conversion upload job (2026-09-15,
+  [docs/google-ads-upload-setup.md](docs/google-ads-upload-setup.md)).** A
+  real conversion action now exists
+  (`customers/2688527650/conversionActions/7769927171`), so the upload job
+  `docs/paid-search-readiness.md` §3/step 10 deferred is built:
+  `infra/program-bundle/ads_conversion_upload_handler.py`, a Lambda
+  EventBridge invokes daily, uploads every pending conversion event via the
+  `google-ads` client library's `ConversionUploadService`, and writes each
+  row's own outcome back. `conversion_tracking.emit` now also writes to a
+  new small DynamoDB table (`gtfs-scorecard-program-ad-conversions`) rather
+  than only printing to CloudWatch, keyed by Stripe checkout session id so
+  a webhook retry cannot double-report a sale; see that module's docstring
+  for why a table and not the CloudWatch Logs Insights query originally
+  sketched. Five new `google_ads_*` Terraform variables (four required, one
+  optional -- Google sunset the developer token as an access-control
+  mechanism 2026-09-09) carry the credentials, blank by default, never
+  committed. Written, not yet applied, and the daily schedule stays
+  `DISABLED` until `google_ads_upload_ready` is set `true`.
+
 - **28 reviewed US feed records from an NTD-matched `scorecard sync` pass
   (2026-09-14).** `scorecard sync --country US` against the live Mobility
   Database catalog returned 202 untracked candidates; this pass kept only

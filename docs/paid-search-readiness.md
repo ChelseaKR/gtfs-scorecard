@@ -10,6 +10,15 @@ spent anywhere; nothing was submitted to Google. Prices below are read from
 $490/yr); if that file changes, re-check every price quoted here before
 reusing this document.
 
+**2026-09-15 update:** a real conversion action now exists
+(`customers/2688527650/conversionActions/7769927171`) and §3's "later,
+separately" upload job (originally step 10 below) is built --
+`infra/program-bundle/ads_conversion_upload_handler.py`. §3 and step 10
+below are historical (they describe the state as of 2026-09-14, before the
+conversion action existed); read
+[`docs/google-ads-upload-setup.md`](google-ads-upload-setup.md) for the
+current design and the owner steps that remain.
+
 ## 0. Why paid search, in one paragraph
 
 Organic traffic to this site is almost entirely lookup intent: someone who
