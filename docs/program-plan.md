@@ -23,7 +23,7 @@ metric and no new grade. It is packaging, branding, and delivery.
 | --- | --- | --- |
 | Core: validate a request, classify ids against the registry, render each current one through `report.generate_report`, zip with a manifest | `pipeline/src/scorecard_pipeline/bundle.py`; `scorecard bundle`, `scorecard bundle-email` | Built, tested |
 | Fulfilment: on-demand render, upload behind a capability key, email the link | `.github/workflows/report-bundle.yml` | Built; delivery steps gated on Actions variables |
-| Purchase plumbing: post-checkout form (confirms the session is paid, dispatches), download route (presigns per click), Stripe webhook, weekly refresh, daily reconciler | `infra/program-bundle/` | **Applied and live** 2026-09-12; `payments_enabled = "1"`, `stripe_price_ids_are_live = true`. The daily reconciler is deployed but its schedule is `DISABLED` until its reporting channel lands. |
+| Purchase plumbing: post-checkout form (confirms the session is paid, dispatches), download route (presigns per click), Stripe webhook, weekly refresh, daily reconciler | `infra/program-bundle/` | **Applied and live** 2026-09-12; `payments_enabled = "1"`, `stripe_price_ids_are_live = true`. The daily reconciler's schedule (`reconciler_reporting_ready`) was confirmed and turned on the same day; see the reconciler status note below — this row previously read "DISABLED" and that was stale. |
 | Storage: `program-bundles/<id>/bundle.zip` expires after 30 days | `infra/artifacts/main.tf` lifecycle rule | Written; needs a re-apply of `infra/artifacts` |
 | Pages: plans read from `web/bundle/plan.json`; setup form posts to the API | `web/bundle/`, `web/src/bundle.js`, `web/src/bundle-setup.js` | Built; unlinked, `noindex`, out of the sitemap; `paymentsAvailable: false` |
 | Stripe objects: two products, four prices, four Payment Links | `scripts/stripe-setup.sh` | Script only; nothing created |
@@ -226,9 +226,41 @@ description of what has to be true; the script is how it is done and checked.
    late build. Refunds remain manual by design: the deployed restricted key
    reads Checkout Sessions and cannot issue one, and `scorecard
    program-refunds` prints the Stripe reference and the commands for a person
-   to run. What is still outstanding is that the reconciler which detects the
-   breach is deployed `DISABLED`; until it is switched on, the commitment is
-   backed by the watchdog and by somebody looking.
+   to run.
+
+   **Reconciler status (this paragraph previously said the schedule was
+   `DISABLED` and stayed that way after it was actually turned on; that drift
+   is corrected here).** Both preconditions `reconciler_reporting_ready`'s
+   description names were confirmed on 2026-09-12 -- the dispatch token's
+   `Issues: Read and write` permission (the differential probe already
+   recorded in `infra/program-bundle/main.tf`) and the `program-bundle-reconciler`
+   label, created by hand since nothing in this repository creates it --
+   and the flag was set `true` in the local `terraform.tfvars` and applied
+   the same day. `aws events describe-rule --name
+   gtfs-scorecard-program-bundle-reconcile` shows `State: ENABLED`, and its
+   CloudWatch log carries a clean run on 2026-09-12, -13 and -14 (UTC 15:10,
+   `cron(10 15 * * ? *)`), each scanning every row in the bundles table and
+   finding nothing to report -- consistent with zero real purchases so far
+   (`report-bundle.yml` carries exactly two runs total, both `workflow_dispatch`
+   by hand on 2026-09-11, the day before the tier went on sale; none since).
+   The commitment is live and self-monitoring, not merely backed by the
+   watchdog. Because there have been no real orders yet, the branch that
+   files or updates the public GitHub issue has not fired outside its test
+   suite (`pipeline/tests/test_program_bundle_handlers.py`, the daily
+   reconciler section) -- that suite exercises a deliberately breached order,
+   a merely-late one and the idempotent open/unchanged/updated issue cycle
+   end to end against a mocked GitHub API, which is the verification this
+   repo's own posture calls for rather than filing a real issue about a
+   fictitious order.
+
+   One gap remains for whoever next re-applies this module from a clean
+   account: the label is not created by any committed script, so a fresh
+   apply with `reconciler_reporting_ready = true` and no label present would
+   fail loudly on the first real finding (`reconcile_handler.handler` raises
+   rather than swallowing a 422) instead of silently. Recreate it with
+   `gh label create program-bundle-reconciler --color B60205 --description
+   "Opened by the program-bundle reconciler: paid orders with no delivered
+   bundle"` before flipping the flag on a new deployment.
 
    For reference, the original instruction for this step was: record the date
    and the reviews it rests on (tax, refund policy, the two-business-day

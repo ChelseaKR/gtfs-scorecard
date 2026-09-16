@@ -12,13 +12,16 @@
 #   (daily)                     reconcile paid orders that bought nothing and
 #                               report the counts in one GitHub issue
 #
-# Status: written, not yet applied (same posture as infra/compute and
-# infra/instant-score; see infra/README.md). Everything that can charge
-# anyone sits behind `payments_enabled`, which defaults to "0" and cannot be
-# turned on while the Stripe configuration is blank: the preconditions on
-# terraform_data.commercial_gate_guard fail the *plan*, not a warning a CI
-# `plan -out && apply` would never show anyone (the family-greenhouse
-# pattern this copies).
+# Status: applied and live since 2026-09-12 (docs/program-plan.md's runbook
+# records the sequence; `payments_enabled = "1"`, `stripe_price_ids_are_live =
+# true`). Everything that can charge anyone sits behind `payments_enabled`,
+# which defaults to "0" and cannot be turned on while the Stripe configuration
+# is blank: the preconditions on terraform_data.commercial_gate_guard fail the
+# *plan*, not a warning a CI `plan -out && apply` would never show anyone (the
+# family-greenhouse pattern this copies). A fresh checkout or a from-scratch
+# apply still starts at that same "written, not applied" posture as
+# infra/compute and infra/instant-score (see infra/README.md) until the same
+# runbook is followed again.
 #
 # API Gateway, not Lambda function URLs, for the same account-level reason
 # as infra/alerts and infra/submit.
@@ -518,11 +521,19 @@ resource "aws_lambda_permission" "events" {
 # carrying counts and a CloudWatch pointer, and nothing identifying, because
 # this repository is public.
 #
-# Disabled until the reporting path is confirmed ready. Terraform cannot check
-# a channel for itself, so the switch is the gate; without it the job would run
-# daily, find paid orders, fail to file them and be exactly the unreachable
-# alerting it was built to replace. The variable's own description carries the
-# two things to confirm before flipping it.
+# Disabled BY DEFAULT until the reporting path is confirmed ready. Terraform
+# cannot check a channel for itself, so the switch is the gate; without it the
+# job would run daily, find paid orders, fail to file them and be exactly the
+# unreachable alerting it was built to replace. The variable's own description
+# carries the two things to confirm before flipping it (default stays `false`
+# so a plan from a clean checkout never turns this on as a side effect).
+#
+# Both were confirmed 2026-09-12 and `reconciler_reporting_ready` was set
+# `true` in the local, gitignored `terraform.tfvars` and applied the same day
+# -- see docs/program-plan.md's reconciler status note for the live evidence
+# (the rule reads ENABLED in the account; three clean daily runs so far, zero
+# findings). That fact lives only in the applied state and this comment,
+# because the tfvars value itself is never committed.
 resource "aws_cloudwatch_event_rule" "daily_reconcile" {
   name                = "${var.project}-program-bundle-reconcile"
   description         = "Report paid program orders with no delivered bundle."
