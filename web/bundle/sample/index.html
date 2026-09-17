@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unitrans (ASUCD / City of Davis): transit data quality report — sample</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0 1.25rem 3rem; background: #ffffff; color: #20241f;
+      font: 16px/1.55 "Public Sans", "Helvetica Neue", Arial, sans-serif;
+    }
+    .accent-band { height: 0.5rem; background: #5b3a8e; margin: 0 -1.25rem; }
+    .report { max-width: 46rem; margin: 0 auto; }
+    .prepared-by {
+      display: flex; align-items: center; gap: 0.75rem;
+      border-bottom: 1px solid #c6ccbe; padding: 0.75rem 0; margin-bottom: 1.5rem;
+    }
+    .prepared-by img { max-height: 3rem; max-width: 12rem; }
+    .prepared-by p { margin: 0; color: #3d4339; font-size: 0.9375rem; }
+    .kicker {
+      margin: 1.5rem 0 0.25rem; color: #3d4339;
+      font-size: 0.9375rem; letter-spacing: 0.02em; text-transform: uppercase;
+    }
+    h1 { margin: 0 0 0.5rem; font-size: 1.75rem; line-height: 1.25; }
+    h2 {
+      margin: 2rem 0 0.75rem; font-size: 1.25rem;
+      border-bottom: 3px solid #5b3a8e; padding-bottom: 0.25rem;
+    }
+    .grade-line { font-size: 1.375rem; margin: 0 0 0.25rem; }
+    .trend-line { margin: 0; color: #3d4339; }
+    table { border-collapse: collapse; width: 100%; margin: 0.75rem 0; }
+    caption { text-align: left; color: #3d4339; font-size: 0.9375rem; padding-bottom: 0.5rem; }
+    th, td { border: 1px solid #c6ccbe; padding: 0.5rem 0.625rem; text-align: left; vertical-align: top; }
+    thead th { background: #e5e8df; }
+    tbody th { font-weight: 600; }
+    td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+    ol.fixes { padding-left: 1.25rem; }
+    ol.fixes li { margin: 0 0 1rem; }
+    ol.fixes p { margin: 0.25rem 0; }
+    .fix-do { font-weight: 600; }
+    .fix-effort, .muted { color: #3d4339; }
+    dl.pillars { margin: 0.75rem 0; }
+    dl.pillars dt { font-weight: 600; margin-top: 0.625rem; }
+    dl.pillars dd { margin: 0.125rem 0 0; }
+    .status-chip {
+      display: inline-block; border: 1px solid #3d4339; border-radius: 0.25rem;
+      padding: 0 0.375rem; margin-left: 0.25rem; font-size: 0.875rem; font-weight: 600;
+    }
+    .report-foot {
+      margin-top: 2.5rem; border-top: 1px solid #c6ccbe; padding-top: 0.75rem;
+      color: #3d4339; font-size: 0.875rem;
+    }
+    a { color: #20241f; }
+    @media print {
+      body { padding: 0; font-size: 12px; }
+      .accent-band { margin: 0; }
+      section { break-inside: avoid; }
+      h2 { break-after: avoid-page; }
+      .new-page { break-before: page; }
+      .report-foot a[href^="http"]::after { content: " (" attr(href) ")"; }
+    }
+    .sample-banner {
+      background: #e5e8df; border: 2px solid #3d4339; border-radius: 0.375rem;
+      padding: 0.75rem 1rem; margin: 1rem auto 0; max-width: 46rem;
+    }
+    .sample-banner p { margin: 0; }
+    .sample-tag {
+      display: inline-block; margin-left: 0.5rem; padding: 0 0.375rem;
+      border: 1px solid #3d4339; border-radius: 0.25rem; font-size: 0.8125rem;
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
+      vertical-align: middle;
+    }
+    @media print {
+      .sample-banner { border-color: #000; }
+    }
+  </style>
+  <meta name="description" content="A sample Program Report Bundle cover: one real, currently published agency&#x27;s GTFS data-quality score, rendered with a placeholder program name, logo, and accent color. A purchased bundle covers every agency you choose, branded with your own program&#x27;s name, logo, and accent color.">
+  <link rel="canonical" href="https://gtfsscorecard.org/bundle/sample/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Unitrans (ASUCD / City of Davis): transit data quality report — sample">
+  <meta property="og:description" content="A sample Program Report Bundle cover: one real, currently published agency&#x27;s GTFS data-quality score, rendered with a placeholder program name, logo, and accent color. A purchased bundle covers every agency you choose, branded with your own program&#x27;s name, logo, and accent color.">
+  <meta property="og:url" content="https://gtfsscorecard.org/bundle/sample/">
+  <meta property="og:image" content="https://gtfsscorecard.org/bundle-og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://gtfsscorecard.org/bundle-og.png">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
+  <meta name="robots" content="noindex,follow">
+  <script src="/src/measure.js" defer></script>
+</head>
+<body>
+  <div class="accent-band" role="presentation"></div>
+  <div class="sample-banner" role="note"><p><strong>Sample report.</strong> This is Unitrans (ASUCD / City of Davis)&rsquo;s real, current published score, shown with a placeholder program name, logo, and accent color so you can see the format before you buy. Your report will use your program&rsquo;s real branding and will cover every agency you select.</p></div>
+  <div class="report">
+    <div class="prepared-by"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMjAiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyMjAgNjQiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iUGxhY2Vob2xkZXIgbG9nbyI+PHJlY3Qgd2lkdGg9IjIyMCIgaGVpZ2h0PSI2NCIgcng9IjYiIGZpbGw9IiM1YjNhOGUiLz48dGV4dCB4PSIxMTAiIHk9IjM4IiBmb250LWZhbWlseT0iSGVsdmV0aWNhLCBBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMSIgZm9udC13ZWlnaHQ9IjcwMCIgZmlsbD0iI2ZmZmZmZiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+WU9VUiBMT0dPPC90ZXh0Pjwvc3ZnPg==" alt="Your Program Name Here logo"><p>Prepared by Your Program Name Here</p></div>
+    <header>
+      <p class="kicker">Transit data quality report &middot; checked 2026-08-07 <span class="sample-tag">Sample</span></p>
+      <h1>Unitrans (ASUCD / City of Davis)</h1>
+      <p class="grade-line">Grade C &middot; 72.6 out of 100</p>
+      <p class="trend-line">Down 3.0 points since 2026-08-06 (C to C).</p>
+    </header>
+    <section aria-labelledby="what-h">
+      <h2 id="what-h">What this grade measures</h2>
+      <p>The quality of the schedule data in the feed scored here for trip-planning
+      apps: whether riders using Google Maps, Apple Maps, or Transit see current,
+      correct, and complete information. It measures the data feed, not service
+      quality or operations.</p>
+    </section>
+    <section aria-labelledby="categories-h">
+      <h2 id="categories-h">Category scores</h2>
+      <table><caption>The four rubric categories, each scored 0 to 100. A category the pipeline has not measured yet shows no number and never counts against the grade.</caption><thead><tr><th scope="col">Category</th><th scope="col" class="num">Score</th><th scope="col">Where this feed stands</th></tr></thead><tbody><tr><th scope="row">Correctness</th><td class="num">79.2</td><td>The MobilityData validator flagged 4 kinds of issue across 130 instances (0 error, 107 warning, 23 informational).</td></tr><tr><th scope="row">Freshness</th><td class="num">76.7</td><td>Service data covers the next 46 days.</td></tr><tr><th scope="row">Rider experience</th><td class="num">60.0</td><td>0% of stops state wheelchair accessibility (0% marked accessible, 0% marked not accessible). This measures what the feed publishes, not whether a stop is physically usable. Fare data is published.</td></tr><tr><th scope="row">Realtime quality</th><td class="num">Not yet published</td><td>Unitrans runs live tracking through Swiftly, but no public GTFS-Realtime endpoint is documented. Realtime remains unmeasured and does not count against the grade.</td></tr></tbody></table>
+    </section>
+    <section aria-labelledby="fixes-h">
+      <h2 id="fixes-h">Top three things to fix</h2>
+      <p>Three improvements, in priority order, each sized so a board can see what it is approving:</p><ol class="fixes"><li><p class="fix-do">Set wheelchair_boarding to 1 (accessible) or 2 (not accessible) for every stop. A field survey can start with the busiest stops.</p><p>296 of 296 stops don&#x27;t say whether a wheelchair user can board there. Riders who use wheelchairs can&#x27;t plan a trip when accessibility is marked &#x27;unknown&#x27;; apps show no information at all.</p><p class="fix-effort">Estimated effort: A column in stops.txt; your scheduling software likely has it.</p></li><li><p class="fix-do">Set wheelchair_accessible on every trip. If every vehicle is accessible, this may be one default; otherwise use the value for each trip.</p><p>1794 of 1794 trips don&#x27;t say whether the vehicle is wheelchair accessible. Even with accessible stops, riders need to know the bus itself can take them.</p><p class="fix-effort">Estimated effort: A default or per-trip field in your export.</p></li><li><p class="fix-do">Turn on &#x27;remove unused shapes&#x27; (or the like) in your export tool.</p><p>The feed contains route shapes no trip uses. Harmless to riders, but it bloats the feed and suggests stale export data.</p><p class="fix-effort">Estimated effort: One setting.</p></li></ol>
+    </section>
+    <section class="new-page" aria-labelledby="ntd-h">
+      <h2 id="ntd-h"><abbr title="National Transit Database">NTD</abbr> GTFS readiness <span class="status-chip">Ready</span></h2>
+      <p>Published at a public URL, valid, current, and identified with agency_id: the four feed checks for RY2026 all hold here. Only your own D-10 and P-50 filings make that official; this is a heads-up, not a determination.</p>
+      <dl class="pillars"><dt>Published <span class="status-chip">Ready</span></dt><dd>Published at a public URL.</dd><dt>Valid <span class="status-chip">Ready</span></dt><dd>Passes validation with no errors.</dd><dt>Current <span class="status-chip">Ready</span></dt><dd>Service data covers the next 46 days.</dd><dt>agency_id provided <span class="status-chip">Ready</span></dt><dd>agency.txt provides agency_id. For RY2026, keep one stable value for each NTD reporter represented in the feed and crosswalk each value on the P-50 form.</dd><dt>shapes.txt covers your trips <span class="status-chip">Ready</span></dt><dd>All 1794 trips have a shape in shapes.txt.</dd></dl>
+      <p><strong>In plain words:</strong> agencies that report to the federal National
+      Transit Database certify once a year, on form D-10, that they publish a working,
+      up-to-date feed. For RY2026, each represented reporter also needs a stable agency_id
+      crosswalked to its NTD ID on P-50; the two values need not be equal. This section is
+      a heads-up on whether the feed looks ready; the filings are the official check. FTA also
+      requires shapes.txt in the published GTFS: Full Reporters from Report Year 2025,
+      and Reduced, Rural, and Tribal Reporters from Report Year 2026.</p>
+    </section>
+    <section class="new-page" aria-labelledby="trend-h">
+      <h2 id="trend-h">Over time</h2>
+      <p>Down 3.0 points since 2026-08-06 (C to C). The table lists each daily check.</p>
+      <p class="muted">Showing the 12 most recent of 30 checks.</p><table><caption>Overall score by check, with the change from the previous check stated in words.</caption>
+      <thead><tr><th scope="col">Check</th><th scope="col" class="num">Score</th><th scope="col">Grade</th><th scope="col">Change</th></tr></thead>
+      <tbody><tr><th scope="row">2026-07-01</th><td class="num">80.8</td><td>B</td><td>not compared</td></tr><tr><th scope="row">2026-07-02</th><td class="num">80.8</td><td>B</td><td>not compared</td></tr><tr><th scope="row">2026-07-03</th><td class="num">80.8</td><td>B</td><td>not compared</td></tr><tr><th scope="row">2026-07-04</th><td class="num">80.8</td><td>B</td><td>not compared</td></tr><tr><th scope="row">2026-07-05</th><td class="num">80.8</td><td>B</td><td>not compared</td></tr><tr><th scope="row">2026-07-06</th><td class="num">80.8</td><td>B</td><td>not compared</td></tr><tr><th scope="row">2026-07-07</th><td class="num">80.8</td><td>B</td><td>not compared</td></tr><tr><th scope="row">2026-07-08</th><td class="num">80.8</td><td>B</td><td>not compared</td></tr><tr><th scope="row">2026-07-09</th><td class="num">80.8</td><td>B</td><td>not compared</td></tr><tr><th scope="row">2026-07-10</th><td class="num">80.8</td><td>B</td><td>not compared</td></tr><tr><th scope="row">2026-08-06</th><td class="num">75.6</td><td>C</td><td>not compared</td></tr><tr><th scope="row">2026-08-07</th><td class="num">72.6</td><td>C</td><td>down 3.0</td></tr></tbody></table>
+    </section>
+    <footer class="report-foot">
+      <p class="muted">This page is a sample of the <a href="https://gtfsscorecard.org/bundle/">Program Report Bundle</a>: one real, currently published agency score, shown with placeholder branding instead of a buyer's own. A purchased bundle carries your program's own name, logo, and accent color on every agency's cover, for every agency you choose.</p>
+      <p>Prepared by Your Program Name Here with the GTFS Scorecard, an open-source data quality tool for small and rural transit agencies. Scores follow the public rubric
+      (<a href="https://gtfsscorecard.org/how-to-read/">how to read a scorecard</a>; full methodology in
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/rubric.md">docs/rubric.md</a>), rubric v1.3,
+      validator 8.0.1. Report generated 2026-09-17 02:45 UTC
+      from the 2026-08-07 check. Live scorecard: <a href="https://gtfsscorecard.org/agency/unitrans/">https://gtfsscorecard.org/agency/unitrans/</a>.
+      A data-quality read to support the conversation, not an official compliance determination.</p>
+    </footer>
+  </div>
+</body>
+</html>
