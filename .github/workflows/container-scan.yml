@@ -102,8 +102,36 @@ jobs:
             "https://github.com/MobilityData/gtfs-validator/releases/download/v${version}/gtfs-validator-${version}-cli.jar"
           echo "${jar_sha256}  ${jar_rel}" | sha256sum -c -
 
+      # The default `docker build` driver keeps layers in the local Docker
+      # engine, which is wiped with the runner at the end of every job — there
+      # is nothing for a second run to reuse. buildx's `docker-container`
+      # driver is the only one that can export/import layers through an
+      # external cache backend, so this step stands it up before building.
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      # Both Dockerfiles start with a `dnf upgrade` + Java 17 install against a
+      # pinned AL2023 snapshot, which only changes when AL2023_REPO_GUID is
+      # bumped (SEC-28 rotations), plus a `pip install` layer that only changes
+      # with pipeline/pyproject.toml or its dependencies. Measured cold
+      # (2026-09-17, no cache): ~37-39s per image. The GitHub Actions cache
+      # backend (`type=gha`) persists layers between runs so an unrelated PR —
+      # most of them, since this job runs unconditionally per issue #289 above
+      # — reuses the AL2023+Java layer instead of rebuilding it. Separate
+      # `scope` per matrix leg: the two Dockerfiles diverge after the shared
+      # prefix (different COPY targets), and a shared scope would have each
+      # leg evict the other's cache on every run instead of both landing hits.
+      # `--load` puts the built image into the local Docker engine, same as
+      # plain `docker build` did, so the Trivy step below still scans
+      # `${{ matrix.tag }}` by that name with no change to what gets scanned.
       - name: Build production image
-        run: docker build -f ${{ matrix.dockerfile }} -t ${{ matrix.tag }} .
+        run: |
+          docker buildx build \
+            --load \
+            -f ${{ matrix.dockerfile }} \
+            -t ${{ matrix.tag }} \
+            --cache-from type=gha,scope=container-scan-${{ matrix.name }} \
+            --cache-to type=gha,scope=container-scan-${{ matrix.name }},mode=max \
+            .
 
       - name: Trivy vulnerability scan (fails on fixable HIGH/CRITICAL)
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
