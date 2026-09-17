@@ -12,6 +12,11 @@ high-contrast theme. Run before committing the accessibility work:
 from __future__ import annotations
 
 import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
+
+from scorecard_pipeline.badge import _FALLBACK_COLOR, _GRADE_COLOR
 
 
 def _lin(c: float) -> float:
@@ -123,6 +128,17 @@ PAIRS: list[tuple[str, str, str, bool]] = [
     ("bundle-og report-card grade C on white chip", "#8a5a14", "#ffffff", True),
     ("bundle-og report-card grade A on amber chip", "#102a20", "#fdc70a", True),
     ("mark checkmark (amber) on badge circle fill", "#fdc70a", "#163a2c", True),
+    # ---- embeddable grade badge SVG (scorecard_pipeline/badge.py) ----
+    # The badge is a standalone SVG with a fixed palette (literal hexes, no
+    # theming), so these pairs hold in every theme pass, same as the og/mark
+    # pairs above. Colours come straight from badge.py so this list can't
+    # drift from what the pipeline actually writes to badge.svg. Badge text
+    # is 11px, well under the AAA "large text" threshold, so 7:1 applies.
+    *(
+        (f"badge white text on grade {grade} fill", "#ffffff", hexcolor, False)
+        for grade, hexcolor in _GRADE_COLOR.items()
+    ),
+    ("badge white text on fallback (unknown grade) fill", "#ffffff", _FALLBACK_COLOR, False),
 ]
 
 THEMES: dict[str, dict[str, str]] = {
