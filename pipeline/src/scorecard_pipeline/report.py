@@ -288,8 +288,8 @@ def build_report_data(
 # ---------------------------------------------------------------------------
 
 
-def _css(accent: str) -> str:
-    return f"""    :root {{ color-scheme: light; }}
+def _css(accent: str, *, sample: bool = False) -> str:
+    base = f"""    :root {{ color-scheme: light; }}
     * {{ box-sizing: border-box; }}
     body {{
       margin: 0; padding: 0 1.25rem 3rem; background: {_PAPER}; color: {_INK};
@@ -345,6 +345,32 @@ def _css(accent: str) -> str:
       .new-page {{ break-before: page; }}
       .report-foot a[href^="http"]::after {{ content: " (" attr(href) ")"; }}
     }}"""
+    if not sample:
+        return base
+    # Reuses the table-header fill/ink pair already asserted AAA above
+    # ("report ink on table-header fill" in check_contrast.py) instead of a
+    # new color, so the banner needs no new contrast entry of its own. The
+    # accent stays out of this block on purpose (Brand.accent is decorative
+    # only, chosen by whoever bought the bundle, and never guaranteed to hold
+    # contrast against white or black text).
+    return (
+        base
+        + f"""
+    .sample-banner {{
+      background: {_HEAD_BG}; border: 2px solid {_INK_SOFT}; border-radius: 0.375rem;
+      padding: 0.75rem 1rem; margin: 1rem auto 0; max-width: 46rem;
+    }}
+    .sample-banner p {{ margin: 0; }}
+    .sample-tag {{
+      display: inline-block; margin-left: 0.5rem; padding: 0 0.375rem;
+      border: 1px solid {_INK_SOFT}; border-radius: 0.25rem; font-size: 0.8125rem;
+      font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em;
+      vertical-align: middle;
+    }}
+    @media print {{
+      .sample-banner {{ border-color: #000; }}
+    }}"""
+    )
 
 
 def _prepared_by_html(brand: Brand | None) -> str:
@@ -448,10 +474,85 @@ def _history_html(rows: list[dict[str, Any]], trend_line: str) -> str:
     """
 
 
-def render_report(data: dict[str, Any], brand: Brand | None = None) -> str:
+@dataclass(frozen=True)
+class SamplePageMeta:
+    """Where and how the one bundle-sample report.py ever serves as a page on
+    the site itself (see bundle_sample.py) is described to search engines and
+    social previews. Kept separate from ``Brand``: a brand names who bought
+    the report; this names where the *sample* file lives once it is a page,
+    which no purchased report ever is (a purchased report is a zip entry, not
+    a URL)."""
+
+    canonical_url: str
+    description: str
+
+
+def _sample_head_extra(name: str, meta: SamplePageMeta) -> str:
+    """The tags render_report adds only for the one on-site sample page: a
+    title, description, canonical link, social preview, and the noindex
+    directive check_site_seo.py requires of every page that is not meant to
+    rank (site-seo.json's ``noindex_path_patterns``), plus the measurement
+    script every page on the site carries (docs/decisions/0055). None of this
+    reaches a real buyer's report: ``sample`` defaults False and no caller in
+    bundle.py ever passes it."""
+    title = f"{esc(name)}: transit data quality report — sample"
+    return f"""
+  <meta name="description" content="{esc(meta.description)}">
+  <link rel="canonical" href="{esc(meta.canonical_url)}">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{title}">
+  <meta property="og:description" content="{esc(meta.description)}">
+  <meta property="og:url" content="{esc(meta.canonical_url)}">
+  <meta property="og:image" content="{BASE_URL}/bundle-og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{BASE_URL}/bundle-og.png">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23204e3a'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%23f2f3ee'/%3E%3C/svg%3E">
+  <meta name="robots" content="noindex,follow">
+  <script src="/src/measure.js" defer></script>"""
+
+
+def _sample_banner_html(name: str) -> str:
+    return (
+        '\n  <div class="sample-banner" role="note"><p><strong>Sample report.</strong> '
+        f"This is {esc(name)}&rsquo;s real, current published score, shown with a "
+        "placeholder program name, logo, and accent color so you can see the format "
+        "before you buy. Your report will use your program&rsquo;s real branding and "
+        "will cover every agency you select.</p></div>"
+    )
+
+
+def _sample_chip_html() -> str:
+    return ' <span class="sample-tag">Sample</span>'
+
+
+def _sample_foot_note_html() -> str:
+    return (
+        '<p class="muted">This page is a sample of the '
+        f'<a href="{BASE_URL}/bundle/">Program Report Bundle</a>: one real, currently '
+        "published agency score, shown with placeholder branding instead of a buyer's "
+        "own. A purchased bundle carries your program's own name, logo, and accent "
+        "color on every agency's cover, for every agency you choose.</p>\n      "
+    )
+
+
+def render_report(
+    data: dict[str, Any],
+    brand: Brand | None = None,
+    *,
+    sample: bool = False,
+    sample_meta: SamplePageMeta | None = None,
+) -> str:
     """One self-contained HTML document from build_report_data output. No
     external stylesheet, font, script, or image: everything a browser needs to
-    show or print it travels inside the file."""
+    show or print it travels inside the file.
+
+    ``sample`` and ``sample_meta`` are additive and used by exactly one
+    caller (bundle_sample.py, for the on-site preview at /bundle/sample/);
+    every other caller, including a real paid bundle's build_bundle, leaves
+    them at their defaults and gets byte-for-byte the same document this
+    function has always rendered (tests/test_report_golden.py holds this)."""
     accent = brand.accent if brand else DEFAULT_ACCENT
     name = data["agency"]["name"]
     grade = data["grade"]
@@ -461,21 +562,26 @@ def render_report(data: dict[str, Any], brand: Brand | None = None) -> str:
         if brand
         else "Produced by the GTFS Scorecard, an open-source data quality tool for small and rural transit agencies."
     )
+    title_suffix = " — sample" if sample else ""
+    head_extra = _sample_head_extra(name, sample_meta) if sample and sample_meta else ""
+    banner = _sample_banner_html(name) if sample else ""
+    chip = _sample_chip_html() if sample else ""
+    foot_note = _sample_foot_note_html() if sample else ""
     return f"""<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{esc(name)}: transit data quality report</title>
+  <title>{esc(name)}: transit data quality report{title_suffix}</title>
   <style>
-{_css(accent)}
-  </style>
+{_css(accent, sample=sample)}
+  </style>{head_extra}
 </head>
 <body>
-  <div class="accent-band" role="presentation"></div>
+  <div class="accent-band" role="presentation"></div>{banner}
   <div class="report">
     {_prepared_by_html(brand)}<header>
-      <p class="kicker">Transit data quality report &middot; checked {esc(data["checked"])}</p>
+      <p class="kicker">Transit data quality report &middot; checked {esc(data["checked"])}{chip}</p>
       <h1>{esc(name)}</h1>
       <p class="grade-line">Grade {esc(grade)} &middot; {esc(str(score))} out of 100</p>
       <p class="trend-line">{esc(data["trend_line"])}</p>
@@ -496,7 +602,7 @@ def render_report(data: dict[str, Any], brand: Brand | None = None) -> str:
       {_fixes_html(data["fixes"])}
     </section>
     {_ntd_html(data["ntd"])}{_history_html(data["history"], data["trend_line"])}<footer class="report-foot">
-      <p>{produced} Scores follow the public rubric
+      {foot_note}<p>{produced} Scores follow the public rubric
       (<a href="{esc(_HOW_TO_READ_URL)}">how to read a scorecard</a>; full methodology in
       <a href="{esc(_RUBRIC_DOC_URL)}">docs/rubric.md</a>), rubric v{esc(data["rubric_version"])},
       validator {esc(data["validator_version"])}. Report generated {esc(data["generated_at"])}
@@ -540,14 +646,20 @@ def generate_report(
     brand: Brand | None = None,
     out: Path | None = None,
     now: dt.datetime | None = None,
+    sample: bool = False,
+    sample_meta: SamplePageMeta | None = None,
 ) -> Path:
     """Render the board-ready report for one agency and write it to ``out``
     (default: <agency>-board-report.html in the current directory). Returns
-    the written path."""
+    the written path.
+
+    ``sample``/``sample_meta`` pass straight through to render_report; see
+    its docstring. Nothing in this repository calls generate_report with
+    ``sample=True`` except bundle_sample.py."""
     artifact, history = _load_inputs(agency_id)
     generated_at = now or dt.datetime.now(dt.UTC)
     data = build_report_data(artifact, history, generated_at=generated_at)
-    html_text = render_report(data, brand)
+    html_text = render_report(data, brand, sample=sample, sample_meta=sample_meta)
     path = out or Path(f"{agency_id}-board-report.html")
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(html_text)

@@ -284,6 +284,11 @@ jobs:
           # pages cross into the deployed site.
           uv run scorecard rollups
           uv run scorecard render-site
+          # /bundle/'s sample cover (bundle_sample.py): rendered fresh on every
+          # deploy from the same published artifact render-site just read, so
+          # it never drifts from the real scoring methodology or the pilot
+          # agency's real, current grade.
+          uv run scorecard bundle-sample
           cd ..
           mkdir -p _site/data
           cp -r web/. _site/

@@ -3695,6 +3695,24 @@ def _cmd_bundle(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     return 0
 
 
+def _cmd_bundle_sample(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Render the on-site sample of a Program Report Bundle cover
+    (bundle_sample.py): one real, currently published agency, rendered
+    through the exact path a paid build uses, with placeholder branding and
+    marked SAMPLE throughout. Wired into pages.yml so it regenerates on
+    every deploy; see web/bundle/index.html's "See a sample report" link."""
+    from .bundle_sample import build_bundle_sample
+    from .report import ReportError
+
+    try:
+        path = build_bundle_sample(args.out)
+    except ReportError as err:
+        print(f"error: {err}", file=sys.stderr)
+        return 2
+    print(path)
+    return 0
+
+
 def _cmd_bundle_email(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     """Render (and with --send, send through SES) the delivery email for a
     built bundle. Rendering never touches the network; --send needs boto3."""
@@ -4557,6 +4575,17 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="write the build plan (ids to fetch, ids refused) and stop; renders nothing",
     )
+    bundle_sample = sub.add_parser(
+        "bundle-sample",
+        help="render the on-site sample of a Program Report Bundle cover (web/bundle/sample/)",
+    )
+    bundle_sample.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help="output path (default: web/bundle/sample/index.html at the repo root)",
+    )
+
     bundle_email = sub.add_parser(
         "bundle-email", help="render or send the delivery email for a built program bundle"
     )
@@ -4820,6 +4849,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "render-measure": _cmd_render_measure,
         "report": _cmd_report,
         "bundle": _cmd_bundle,
+        "bundle-sample": _cmd_bundle_sample,
         "bundle-email": _cmd_bundle_email,
         "program-refunds": _cmd_program_refunds,
         "backfill-state": _cmd_backfill_state,
