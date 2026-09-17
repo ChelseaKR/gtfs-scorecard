@@ -71,6 +71,12 @@ jobs:
           persist-credentials: false
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
+          # Every other workflow in this repo that calls setup-uv enables its
+          # cache (ci.yml, e2e.yml, a11y.yml, ...); this one was the one
+          # holdout, paying a full dependency resolve on every deploy — code
+          # pushes, three-hourly intraday refreshes, and the daily scorecard
+          # run alike.
+          enable-cache: true
           python-version: "3.12"
       - name: Install the pipeline
         working-directory: pipeline
