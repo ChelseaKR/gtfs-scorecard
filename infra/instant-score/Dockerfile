@@ -8,7 +8,7 @@ FROM public.ecr.aws/lambda/python:3.12
 # Apply Amazon Linux security fixes from a reviewed, content-addressed
 # repository snapshot, then add Java 17 for the validator jar. The immutable
 # GUID avoids both the stale base-image snapshot and a mutable `latest` build.
-ARG AL2023_REPO_GUID=85f850e94b099c03219caec40bfba27b4d5a4f494da0cecd49502a9ad5cd201e
+ARG AL2023_REPO_GUID=6ac5adb46dce32d21e7bd0c7e97948be299a34e9e2f7a2cb3ca6ae047b0f869e
 RUN mkdir -p /tmp/al2023-pinned \
     && printf '%s\n' \
         '[amazonlinux]' \

@@ -69,6 +69,26 @@ the declared public surface).
 
 ### Fixed
 
+- **Advance the AL2023 snapshot pin past 18 HIGH openssl CVEs (2026-09-16).**
+  Both Lambda images (`infra/compute`, `infra/instant-score`) `dnf upgrade`
+  against an immutable Amazon Linux 2023 repository snapshot GUID, pinned
+  rather than left floating so a CVE fix lands only when this repo deliberately
+  advances it (see the 2026-08-18 precedent in this file). The GUID last moved
+  on 2026-09-01; `container-scan.yml`'s Monday run found 18 HIGH CVEs
+  (CVE-2026-14457, CVE-2026-18798, CVE-2026-54874, CVE-2026-63072 through
+  CVE-2026-63076, and CVE-2026-75803, each once in `openssl-fips-provider-latest`
+  and once in `openssl-snapsafe-libs`) fixed in `1:3.5.8-1.amzn2023.0.1`, one
+  version past the pinned `1:3.5.7-2.amzn2023.0.2`. `AL2023_REPO_GUID` in both
+  Dockerfiles now points at the current snapshot from Amazon's mirror list
+  (`6ac5adb4...b0f869e`), verified directly before this change: its repodata
+  serves the fixed 0.1 openssl builds, and a `--platform linux/amd64` rebuild
+  of both images (matching the `ubuntu-latest` runner Trivy scans on) reproduced
+  the 18-finding baseline first, then confirmed `trivy image --severity
+  HIGH,CRITICAL --ignore-unfixed` reports 0 findings against the advanced pin,
+  with `rpm -q` in the built image showing both packages at `3.5.8-1.amzn2023.0.1`.
+  No change to `.trivyignore.yaml`: these were real, fixable CVEs, not false
+  positives.
+
 - **Two scheduled publish bounds that nothing measured (2026-09-13).**
   `refresh.yml`'s `timeout-minutes: 240` sat above the job's own 180-minute
   cron, and was argued from "~70 to ~137 minutes", a runtime written once and
