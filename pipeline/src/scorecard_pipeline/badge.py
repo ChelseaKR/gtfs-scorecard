@@ -16,29 +16,36 @@ from xml.sax.saxutils import escape
 
 # Grade colours chosen for contrast on white and to stay distinguishable to
 # common colour-vision deficiencies; the letter itself is the primary signal,
-# never colour alone.
+# never colour alone. The badge text is white at 11px -- WCAG "normal" text --
+# so every colour here is picked to clear this repo's AAA bar (7:1) against
+# white, not just AA (4.5:1); pipeline/scripts/check_contrast.py imports
+# _GRADE_COLOR and _FALLBACK_COLOR directly and checks each against white, so
+# a colour cannot drift below 7:1 without failing the merge-blocking
+# `make verify` gate.
 _GRADE_COLOR = {
-    "A": "#1f7a4d",
-    "B": "#3f7d20",
-    "C": "#9a7d0a",
-    "D": "#b5651d",
+    "A": "#19643f",
+    "B": "#326319",
+    "C": "#695607",
+    "D": "#834915",
     "F": "#a32020",
 }
 _LABEL = "GTFS quality"
-_FALLBACK_COLOR = "#5a5a5a"
+_FALLBACK_COLOR = "#575757"
 
 # Feed-status segment appended to the badge so a stale feed reads at a glance,
 # not only its letter grade. Keyed by metrics.expiry_status tokens; statuses not
-# listed here (current, unknown) add no segment.
+# listed here (current, unknown) add no segment. Reuses the grade palette
+# above (F's red for an expired feed, D's orange for one expiring soon) so the
+# badge has one AAA-checked colour set, not two.
 _STATUS_LABEL = {
     "lapsed": "feed expired",
     "stale": "feed expired",
     "expiring_soon": "expires soon",
 }
 _STATUS_COLOR = {
-    "lapsed": "#a32020",
-    "stale": "#a32020",
-    "expiring_soon": "#b5651d",
+    "lapsed": _GRADE_COLOR["F"],
+    "stale": _GRADE_COLOR["F"],
+    "expiring_soon": _GRADE_COLOR["D"],
 }
 
 # Rough monospace-ish width per character at 11px; good enough to size the
@@ -109,9 +116,10 @@ def render_badge(grade: str, score: float | None = None, expiry_status: str | No
 
 
 # Conformance mark colours: a single green seal, awarded only on a clean pass.
+# Reuses the grade-A green above, which is already AAA-checked for white text.
 _MARK_LABEL = "GTFS"
 _MARK_VALUE = "conformant"
-_MARK_COLOR = "#1f7a4d"
+_MARK_COLOR = _GRADE_COLOR["A"]
 
 
 def render_mark() -> str:

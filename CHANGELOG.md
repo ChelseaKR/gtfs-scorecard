@@ -107,6 +107,22 @@ the declared public surface).
   with `rpm -q` in the built image showing both packages at `3.5.8-1.amzn2023.0.1`.
   No change to `.trivyignore.yaml`: these were real, fixable CVEs, not false
   positives.
+- **The embeddable grade badge's own text failed the AAA bar it visibly
+  claims to meet (2026-09-16).** `badge.py` writes `badge.svg` and `mark.svg`
+  as white text on a coloured fill, and the site's merge-blocking contrast
+  gate (`check_contrast.py`, `make verify`) enforces AAA (7:1) on every other
+  text/background pair on the site. It never measured these two SVGs, because
+  they are Python-built strings, not CSS: grade C's white text measured
+  3.95:1 against its fill and grade D's 4.34:1, both below even AA (4.5:1);
+  grades A and B cleared AA (5.32:1, 5.04:1) but not AAA; only F passed. The
+  five grade colours and the unknown-grade fallback are now the closest shade
+  of the same hue that clears 7:1 (grade C: `#9a7d0a` to `#695607`; grade D:
+  `#b5651d` to `#834915`; similarly for A, B, and the fallback grey), and the
+  feed-status segment and the conformance mark now reuse those same checked
+  colours instead of carrying their own. `check_contrast.py` imports
+  `badge.py`'s colour dicts directly and checks each against white, so a
+  future colour change that drops back below 7:1 fails `make verify` instead
+  of shipping unmeasured.
 
 - **Two scheduled publish bounds that nothing measured (2026-09-13).**
   `refresh.yml`'s `timeout-minutes: 240` sat above the job's own 180-minute
