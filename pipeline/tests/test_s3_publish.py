@@ -301,6 +301,49 @@ def test_retirement_manifest_deletes_only_mutable_current_objects(tmp_path: Path
     assert second.retired == 0
 
 
+def test_retirement_permits_a_canonical_id_that_is_currently_withdrawn(tmp_path: Path) -> None:
+    """A withdrawn-but-still-canonical id (e.g. ``beloit-transit``) must publish.
+
+    ``_cmd_publish_artifacts`` computes ``protected_agency_ids`` as every
+    canonical id minus the currently-withdrawn set (corrections.py), so an
+    agency that is both canonical and withdrawn is not protected here: its
+    current pointer files are deleted like any other retirement, exactly as
+    ``test_retirement_manifest_deletes_only_mutable_current_objects`` proves
+    for an unregistered id. ``protected_agency_ids`` still carries an
+    unrelated canonical id, so this also proves the exclusion is scoped to
+    the withdrawn id and does not just empty the protection set.
+    ``test_retirement_rejects_current_canonical_ids`` proves the opposite
+    case still holds: an unexplained canonical id with no withdrawal is
+    still rejected.
+    """
+    root = tmp_path / "artifacts"
+    agency_id = "beloit-transit"
+    dated_key = f"{PREFIX}/{agency_id}/2026-01-01.json"
+    current_keys = {f"{PREFIX}/{agency_id}/{name}" for name in MUTABLE_PUBLIC_ARTIFACT_NAMES}
+    objects = {
+        **{key: b"stale current" for key in current_keys},
+        dated_key: b'{"snapshot_date": "2026-01-01"}',
+    }
+    client = _FakeS3(objects)
+    _write(root, f"{agency_id}/2026-01-01.json", '{"snapshot_date": "2026-01-01"}')
+    manifest = _retirement_manifest(tmp_path, [agency_id])
+
+    result = _publish(
+        client,
+        root,
+        retirement_manifest=manifest,
+        # beloit-transit is canonical but withdrawn, so it is excluded from
+        # protection; unitrans is canonical and not withdrawn, so it stays
+        # protected (and is not in this manifest, so nothing rejects it).
+        protected_agency_ids={"unitrans"},
+    )
+
+    assert set(client.deletes[0]) == current_keys
+    assert current_keys.isdisjoint(client.objects)
+    assert dated_key in client.objects
+    assert result.retired == len(MUTABLE_PUBLIC_ARTIFACT_NAMES)
+
+
 def test_retirement_rejects_a_local_current_pointer_before_deleting(tmp_path: Path) -> None:
     root = tmp_path / "artifacts"
     _write(root, "retired-demo/latest.json", '{"grade": "F"}')

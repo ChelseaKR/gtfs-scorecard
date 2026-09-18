@@ -3214,7 +3214,19 @@ def _cmd_shards(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
 
 def _cmd_publish_artifacts(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     """Publish a local tree to S3, uploading only objects whose bytes changed."""
+    from .corrections import load_corrections, withdrawn_now
     from .s3_publish import PublishError, publish_tree, s3_client
+
+    # A withdrawal (corrections.py) is not a retirement: the agency stays
+    # listed, canonical, and active in the registry, but its current grade is
+    # suppressed. The retirement manifest legitimately names it too (see
+    # publish.py), so it must not also be protected here -- otherwise the
+    # manifest and the protection set agree on the id and every publish fails
+    # closed. Only exclude ids the withdrawal actually covers right now;
+    # anything else canonical stays protected against showing up unexplained.
+    protected_agency_ids = {
+        agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed
+    } - set(withdrawn_now(load_corrections(), args.root))
 
     try:
         result = publish_tree(
@@ -3226,9 +3238,7 @@ def _cmd_publish_artifacts(args: argparse.Namespace, parser: argparse.ArgumentPa
             cache_control=args.cache_control,
             workers=args.workers,
             retirement_manifest=args.retirement_manifest,
-            protected_agency_ids={
-                agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed
-            },
+            protected_agency_ids=protected_agency_ids,
         )
     except PublishError as exc:
         parser.error(str(exc))
