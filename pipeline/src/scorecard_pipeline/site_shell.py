@@ -419,6 +419,39 @@ _MEASURE_KEY_LINE_RE = re.compile(
 # mistyped secret is better than one that ships a broken shim or an injection.
 _MEASURE_KEY_RE = re.compile(r"phc_[A-Za-z0-9]{8,}")
 
+# Google Analytics 4 (docs/decisions/0056-google-analytics-4.md): a second,
+# separate block in the same script, with its own marked line. The measurement
+# id is public by design, so it is committed in site-seo.json rather than kept
+# as a secret, and render-measure writes it into the assembled site the same
+# way it writes the PostHog key. An empty value leaves the block a no-op that
+# loads nothing.
+GA4_LOADER_HOST = "https://www.googletagmanager.com"
+GA4_ID_SETTING = "measurement_ga4_id"
+_GA4_ID_LINE_RE = re.compile(
+    r'^(?P<indent>[ \t]*)var GA4_ID = "(?P<id>[^"\n]*)"; // measure:ga4-id$', re.MULTILINE
+)
+# What a GA4 measurement id looks like. It is spliced into a string literal too.
+_GA4_ID_RE = re.compile(r"G-[A-Z0-9]{4,16}")
+
+
+def ga4_measurement_id(config: Path | None = None) -> str:
+    """The GA4 measurement id committed in ``site-seo.json``, or "" when unset.
+
+    ``config`` defaults to the repository's ``site-seo.json``. A value that is
+    not a string, or not shaped like a GA4 id, is refused here rather than at
+    the moment it would be written into JavaScript."""
+    path = config if config is not None else _repo_root() / "site-seo.json"
+    value = json.loads(path.read_text(encoding="utf-8")).get(GA4_ID_SETTING, "")
+    if not isinstance(value, str):
+        raise ValueError(f"{GA4_ID_SETTING} in {path.name} must be a string")
+    value = value.strip()
+    if value and not _GA4_ID_RE.fullmatch(value):
+        raise ValueError(
+            f"{GA4_ID_SETTING} in {path.name} does not look like a GA4 measurement id "
+            "(G- followed by capital letters and digits); refusing to write it into the site"
+        )
+    return value
+
 
 def measure_tag_count(html: str) -> int:
     """How many measurement script tags one document carries."""
@@ -459,12 +492,14 @@ def sync_static_measure() -> list[Path]:
     return changed
 
 
-def render_measure_script(key: str | None, source: str | None = None) -> str:
-    """The shim with ``key`` written into its one key line.
+def render_measure_script(key: str | None, source: str | None = None, *, ga4_id: str = "") -> str:
+    """The shim with ``key`` written into its one key line, and ``ga4_id``
+    into its one GA4 line.
 
     ``source`` defaults to the committed ``web/src/measure.js``. An empty or
     absent key renders the file byte-identical to a committed copy that carries
     no key, which is how a deploy with no secret set ships nothing that sends.
+    An empty ``ga4_id`` does the same for the GA4 block: nothing loads.
     """
     text = (
         source if source is not None else (_repo_root() / "web" / MEASURE_SCRIPT_PATH).read_text()
@@ -483,13 +518,34 @@ def render_measure_script(key: str | None, source: str | None = None) -> str:
         )
     match = matches[0]
     line = f'{match.group("indent")}var KEY = "{value}"; // measure:key'
+    text = text[: match.start()] + line + text[match.end() :]
+    return _with_ga4_id(text, ga4_id)
+
+
+def _with_ga4_id(text: str, ga4_id: str) -> str:
+    """``text`` with ``ga4_id`` written into its one GA4 line."""
+    matches = list(_GA4_ID_LINE_RE.finditer(text))
+    if len(matches) != 1:
+        raise ValueError(
+            f"{MEASURE_SCRIPT_PATH}: expected exactly one `var GA4_ID = ...; // measure:ga4-id` "
+            f"line, found {len(matches)}"
+        )
+    value = ga4_id.strip()
+    if value and not _GA4_ID_RE.fullmatch(value):
+        raise ValueError(
+            f"{GA4_ID_SETTING} does not look like a GA4 measurement id (G- followed by "
+            "capital letters and digits); refusing to write it into the site"
+        )
+    match = matches[0]
+    line = f'{match.group("indent")}var GA4_ID = "{value}"; // measure:ga4-id'
     return text[: match.start()] + line + text[match.end() :]
 
 
-def write_measure_script(out: Path, key: str | None) -> bool:
-    """Write the rendered shim to ``out``. Returns whether measurement is on,
-    which is the same question as whether a key was written."""
-    rendered = render_measure_script(key)
+def write_measure_script(out: Path, key: str | None, *, ga4_id: str = "") -> bool:
+    """Write the rendered shim to ``out``. Returns whether PostHog measurement
+    is on, which is the same question as whether a key was written. Whether
+    GA4 is on is whether ``ga4_id`` is non-empty, which the caller knows."""
+    rendered = render_measure_script(key, ga4_id=ga4_id)
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(rendered)
     return bool((key or "").strip())

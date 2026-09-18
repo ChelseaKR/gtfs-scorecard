@@ -20,19 +20,27 @@ this policy, not a curation edit to the record's note.
 
 ## Privacy
 
-The public scorecard counts page views and one further event, a click on a
-checkout link on the bundle page. It sets no cookie, keeps no identifier past
-the current browser tab, reads nothing a visitor types, and builds no rider or
-visitor profile. The full statement of what is recorded, where it goes, how
-long it is kept, and how to opt out is on the site at
+The public scorecard uses two measurement tools. PostHog counts page views and
+one further event, a click on a checkout link on the bundle page. It sets no
+cookie, keeps no identifier past the current browser tab, reads nothing a
+visitor types, and builds no rider or visitor profile. Google Analytics 4
+records page views and how a page is used (time on page, scrolling, links
+followed to other sites, file downloads), with the page's query string and the
+referrer's path dropped. Outside the EEA, the UK and Switzerland it sets the
+`_ga` cookies, which last up to two years; inside them it sets no cookie.
+Google signals and ad features are off, and Google keeps the event-level data
+for 14 months. The full statement of what is recorded, where it goes, how long it is
+kept, and how to opt out is on the site at
 [gtfsscorecard.org/about/#privacy](https://gtfsscorecard.org/about/#privacy).
-The script that does the recording is `web/src/measure.js`, the decision is
-[ADR 0055](decisions/0055-cookieless-site-measurement.md), and Global Privacy
-Control or Do Not Track switches it off. Site-quality checks use automated
+The script that loads both is `web/src/measure.js`, the decisions are
+[ADR 0055](decisions/0055-cookieless-site-measurement.md) and
+[ADR 0056](decisions/0056-google-analytics-4.md), and Global Privacy Control or
+Do Not Track switches both off. Site-quality checks use automated
 synthetic visits instead of observing real visitor sessions.
 
 Until 2026-09-13 the site recorded nothing about a visit at all. That rule
-was withdrawn on that date; this section and the site say what replaced it.
+was withdrawn on that date, and Google Analytics 4 was added on 2026-09-17;
+this section and the site say what replaced it.
 
 The domain owner may verify ownership through DNS and submit the public sitemap
 to Search Console outside this project. The repository contains no Search

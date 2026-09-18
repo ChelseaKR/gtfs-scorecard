@@ -63,9 +63,11 @@ recommending `@v1`.
 - [ ] Schema, API, methodology, accessibility, and migration documentation changed with
   the implementation when applicable.
 - [ ] Public pages load exactly one measurement script (`/src/measure.js`,
-  [ADR 0055](decisions/0055-cookieless-site-measurement.md)) and no other analytics
-  loader, tracking cookie, or visitor beacon, and `/about/#privacy` still says
-  exactly what that script sends. Search Console DNS verification and sitemap
+  [ADR 0055](decisions/0055-cookieless-site-measurement.md) and
+  [ADR 0056](decisions/0056-google-analytics-4.md)) and no other analytics
+  loader or visitor beacon. Google Analytics 4 is loaded only by that script,
+  and `/about/#privacy` still says exactly what the script and GA4 record,
+  including the `_ga` cookies. Search Console DNS verification and sitemap
   submission remain external owner tasks; no Search Console credentials or
   configuration are added to the repo.
 - [ ] Rollback is a revert of the merge commit; any data or infrastructure exception has

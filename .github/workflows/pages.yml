@@ -333,9 +333,12 @@ jobs:
       # page by design, held as a secret only so it can be set without a
       # commit. Unset, this writes the committed no-op shim and nothing is
       # sent; malformed, it fails the deploy with the reason rather than ship
-      # a broken file. It runs after the copy of web/ above and before the
-      # structural gate, which then checks the file it wrote: exactly one load
-      # on every page, none on a redirect stub, one destination host.
+      # a broken file. The same command writes the GA4 measurement id, which
+      # is committed as measurement_ga4_id in site-seo.json, not a secret
+      # (docs/decisions/0056-google-analytics-4.md). It runs after the copy of
+      # web/ above and before the structural gate, which then checks the file
+      # it wrote: exactly one load on every page, none on a redirect stub, and
+      # no host but the declared ones.
       - name: Write the measurement key into the assembled site
         working-directory: pipeline
         env:

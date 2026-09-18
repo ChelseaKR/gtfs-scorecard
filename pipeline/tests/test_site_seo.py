@@ -18,6 +18,8 @@ ORIGIN = "https://example.test"
 MEASURE_HOST = "https://measure.example.test"
 MEASURE_TAG = '<script src="/src/measure.js" defer></script>'
 MEASURE_SHIM = f'/* fixture shim */\nvar HOST = "{MEASURE_HOST}";\n'
+# ADR 0056: the one other host the declared script may name.
+GA4_LOADER_HOST = "https://www.googletagmanager.com"
 
 
 def _page(
@@ -88,6 +90,8 @@ def _config() -> dict[str, Any]:
         },
         "measurement_script": "/src/measure.js",
         "measurement_host": MEASURE_HOST,
+        "measurement_ga4_host": GA4_LOADER_HOST,
+        "measurement_ga4_id": "",
     }
 
 
@@ -669,8 +673,39 @@ def test_measurement_contract_holds_the_script_to_its_one_declared_host(
     assert [item["path"] for item in findings] == ["src/measure.js"]
     assert findings[0]["message"] == (
         "the measurement script names 'collector.example.org'; only "
-        "'measure.example.test' is declared for it"
+        "'measure.example.test' and 'www.googletagmanager.com' are declared for it"
     )
+
+
+def test_the_declared_script_may_load_ga4_and_nothing_else_may(tmp_path: Path) -> None:
+    """ADR 0056: GA4 reaches a page only through the declared script. The
+    same loader URL that passes inside it is a finding on a page, in an inline
+    script, or in any other JavaScript file, and so is a GA4 collection host."""
+    site, config = _write_fixture(tmp_path)
+    loader = f'var LOADER = "{GA4_LOADER_HOST}/gtag/js?id=";\n'
+    _write_text(site, "src/measure.js", MEASURE_SHIM + loader)
+    report = tmp_path / "report.json"
+
+    assert _run(site, config, report).returncode == 0, report.read_text(encoding="utf-8")
+
+    # Negative control: the same loader anywhere else fails, and the sabotage
+    # is asserted to have landed before the verdict is read.
+    _replace(
+        site / "index.html",
+        "</head>",
+        f'<script async src="{GA4_LOADER_HOST}/gtag/js?id=G-TEST1234"></script></head>',
+    )
+    _write_text(site, "other.js", "fetch('https://region1.analytics.google.com/g/collect');\n")
+    assert f"{GA4_LOADER_HOST}/gtag/js" in (site / "index.html").read_text(encoding="utf-8")
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    payload = json.loads(report.read_text(encoding="utf-8"))
+    by_code = {(item["code"], item["path"]) for item in payload["findings"]}
+    assert ("privacy.telemetry_asset", "index.html") in by_code
+    assert ("privacy.telemetry_script", "other.js") in by_code
+    assert not any(item["path"] == "src/measure.js" for item in payload["findings"])
 
 
 def test_measurement_contract_fails_when_the_declared_script_is_absent(
@@ -725,6 +760,12 @@ def test_measurement_may_come_only_from_the_declared_script(tmp_path: Path) -> N
         ("measurement_host", "https://measure.example.test/collect"),
         ("measurement_host", "https://user@measure.example.test"),
         ("measurement_host", 7),
+        ("measurement_ga4_host", "http://www.googletagmanager.com"),
+        ("measurement_ga4_host", "https://www.googletagmanager.com/gtag/js"),
+        ("measurement_ga4_id", "UA-12345-1"),
+        ("measurement_ga4_id", 'G-ABC123"; alert(1); //'),
+        ("measurement_ga4_id", "g-abc123"),
+        ("measurement_ga4_id", None),
     ],
 )
 def test_measurement_settings_are_validated_strictly(

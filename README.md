@@ -367,13 +367,21 @@ N/A (no network surface to probe). For Tier B, every fresh site build passes a
 blocking structural SEO check. Lighthouse gates code changes, and a weekly
 synthetic run checks representative production routes. Build-time SEO reports
 are retained for 14 days and production Lighthouse reports for 90 days.
-The public site carries one first-party measurement script, `web/src/measure.js`
-([ADR 0055](docs/decisions/0055-cookieless-site-measurement.md)): page views and
-bundle checkout clicks, sent to PostHog Cloud US with no cookie and no identifier
-that outlives the browser tab, off under Global Privacy Control or Do Not Track,
-and off entirely unless the deploy carries a `POSTHOG_KEY`. What it records is
+The public site carries one first-party measurement script, `web/src/measure.js`,
+with two separate blocks. The PostHog block
+([ADR 0055](docs/decisions/0055-cookieless-site-measurement.md)) sends page views
+and bundle checkout clicks to PostHog Cloud US with no cookie and no identifier
+that outlives the browser tab, and is off unless the deploy carries a
+`POSTHOG_KEY`. The Google Analytics 4 block
+([ADR 0056](docs/decisions/0056-google-analytics-4.md)) loads GA4 for the
+measurement id in `site-seo.json` (`measurement_ga4_id`). GA4 records page views
+and engagement with the query string and referrer path dropped. It sets the
+first-party `_ga` cookies, which last up to two years, except in the EEA, the UK
+and Switzerland, where analytics storage is denied and no cookie is set. Google
+signals, ad personalization and ad storage are off everywhere. Both blocks load
+nothing under Global Privacy Control or Do Not Track. What they record is
 stated at [/about/#privacy](https://gtfsscorecard.org/about/#privacy) and held by
-the structural check. It is not real-user monitoring: no Core Web Vitals are
+the structural check. Neither is real-user monitoring: no Core Web Vitals are
 collected. Search Console ownership verification and sitemap submission
 remain external domain-owner tasks; this repository stores no Search Console
 credentials or configuration. See the ADR and [deploy runbook](docs/deploy.md).

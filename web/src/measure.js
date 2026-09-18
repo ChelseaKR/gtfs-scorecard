@@ -1,10 +1,11 @@
 // @ts-check
-/* Site measurement (docs/decisions/0055-cookieless-site-measurement.md).
+/* Site measurement. This file is the whole of the measurement code the site
+ * serves, and it holds two blocks that share nothing, so either can be
+ * switched off without touching the other.
  *
- * One pageview per page load, and one event when a checkout link on /bundle/
- * is followed, sent to PostHog Cloud US from this file and from nothing else
- * on the site. This file is the whole of what the site collects about a
- * visitor, which is why it is short enough to read in full:
+ * The first block (docs/decisions/0055-cookieless-site-measurement.md) sends
+ * one pageview per page load, and one event when a checkout link on /bundle/
+ * is followed, to PostHog Cloud US. It is short enough to read in full:
  *
  * - No cookie, no localStorage, no fingerprint, no SDK. A visit id is drawn at
  *   random and kept in sessionStorage, which the browser discards when the tab
@@ -20,10 +21,14 @@
  * - With no key written by the deploy, the first line of logic returns and
  *   nothing is sent. The committed copy of this file has no key.
  *
+ * The second block (docs/decisions/0056-google-analytics-4.md) loads Google
+ * Analytics 4, whose own script and cookies are described in that ADR. The
+ * rules it keeps are written above it.
+ *
  * The disclosure a reader sees is /about/#privacy. The gates that keep this
  * file, that page, and every other page in step are
- * pipeline/tests/test_measure.py and the measurement section of
- * pipeline/scripts/check_site_seo.py.
+ * pipeline/tests/test_measure.py, pipeline/tests/test_measure_ga4.py and the
+ * measurement section of pipeline/scripts/check_site_seo.py.
  */
 (function () {
   "use strict";
@@ -188,4 +193,96 @@
     },
     true
   );
+})();
+
+// Google Analytics 4 (docs/decisions/0056-google-analytics-4.md).
+//
+// - With no measurement id written by the deploy, the first line of logic
+//   returns and nothing loads: no Google script, no cookie, no request. The
+//   committed copy of this file has no id. The id is measurement_ga4_id in
+//   site-seo.json, and render-measure writes it into the marked line below.
+// - Global Privacy Control or Do Not Track returns before anything loads.
+// - A page served from this machine (localhost) loads nothing, so local work
+//   and the Lighthouse runs in CI are never counted.
+// - Consent defaults (Consent Mode v2): ad storage, ad user data and ad
+//   personalization are denied everywhere. Analytics storage is denied in the
+//   European Economic Area, the United Kingdom and Switzerland, and granted
+//   elsewhere. There is no banner, so no _ga cookie is ever set in those
+//   regions.
+// - Google signals and ad personalization signals are off.
+// - The page address sent is the path only, and the referrer is the origin
+//   of the linking site only, for the reason the block above gives: the
+//   post-checkout page carries a Stripe order reference in its query string,
+//   and the page opened after it would carry that address as its referrer.
+(function () {
+  "use strict";
+
+  // Written at deploy time from measurement_ga4_id in site-seo.json by the
+  // render-measure command (scorecard_pipeline.site_shell.render_measure_script).
+  // A GA4 measurement id ships in every page by design; it is not a secret.
+  var GA4_ID = ""; // measure:ga4-id
+  var LOADER = "https://www.googletagmanager.com/gtag/js?id=";
+  // Where analytics storage stays denied: the 27 EU members, Iceland,
+  // Liechtenstein and Norway (the EEA), the United Kingdom and Switzerland,
+  // as the ISO 3166-1 codes the consent region parameter reads.
+  var CONSENT_REQUIRED = [
+    "AT", "BE", "BG", "CY", "CZ", "DE", "DK", "EE", "ES", "FI", "FR", "GR", "HR", "HU",
+    "IE", "IT", "LT", "LU", "LV", "MT", "NL", "PL", "PT", "RO", "SE", "SI", "SK",
+    "IS", "LI", "NO",
+    "GB",
+    "CH",
+  ];
+
+  if (!GA4_ID) return;
+  var nav = /** @type {any} */ (window.navigator || {});
+  var win = /** @type {any} */ (window);
+  var doc = /** @type {any} */ (document);
+  if (nav.globalPrivacyControl === true) return;
+  if (nav.doNotTrack === "1" || win.doNotTrack === "1" || nav.msDoNotTrack === "1") return;
+  if (!/^G-[A-Z0-9]+$/.test(GA4_ID)) return;
+  var host = win.location.hostname;
+  if (!host || host === "localhost" || host === "127.0.0.1" || host === "[::1]") return;
+
+  /** The origin of the linking site, with no path. @returns {string} */
+  function referrerOrigin() {
+    var ref = doc.referrer;
+    if (!ref) return "";
+    try {
+      return new URL(ref).origin + "/";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  win.dataLayer = win.dataLayer || [];
+  // gtag reads the arguments object itself, not an array made from it.
+  function gtag() {
+    win.dataLayer.push(arguments);
+  }
+
+  gtag("consent", "default", {
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+    analytics_storage: "denied",
+    region: CONSENT_REQUIRED,
+  });
+  gtag("consent", "default", {
+    ad_storage: "denied",
+    ad_user_data: "denied",
+    ad_personalization: "denied",
+    analytics_storage: "granted",
+  });
+  gtag("js", new Date());
+  gtag("config", GA4_ID, {
+    allow_google_signals: false,
+    allow_ad_personalization_signals: false,
+    page_location: win.location.origin + win.location.pathname,
+    page_referrer: referrerOrigin(),
+  });
+
+  var script = doc.createElement("script");
+  script.async = true;
+  script.src = LOADER + encodeURIComponent(GA4_ID);
+  (doc.head || doc.documentElement).appendChild(script);
 })();

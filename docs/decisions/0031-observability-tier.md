@@ -59,7 +59,10 @@ Declare, for the deployed system as it exists today:
     views and bundle checkout clicks, PostHog Cloud US). That is still not RUM:
     no Core Web Vitals are collected, and the field-SLI declination above
     stands. `docs/listing-policy.md` and `/about/#privacy` carry the current
-    public statement.
+    public statement. **Amended 2026-09-17 by
+    [ADR 0056](0056-google-analytics-4.md):** the same script now also loads
+    Google Analytics 4. GA4 is configured without a Core Web Vitals event, so
+    this is still not RUM and the declination stands.
   - Search Console is not a runtime or observability dependency. The domain
     owner may complete DNS ownership verification and submit the sitemap
     outside this repository. No Search Console credential, API configuration,

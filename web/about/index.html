@@ -112,36 +112,74 @@
 
     <!-- The one statement of what the site records about a visit. It describes
          web/src/measure.js and nothing more: a sentence here that the script does
-         not do is the thing tests/test_measure.py exists to catch, and a thing the
-         script does that this page omits is the other. Keep the two in step. -->
+         not do is the thing tests/test_measure.py and tests/test_measure_ga4.py
+         exist to catch, and a thing the script does that this page omits is the
+         other. Keep the two in step. -->
     <section aria-labelledby="privacy-h" id="privacy">
       <h2 class="section-title" id="privacy-h">What this site records about a visit</h2>
-      <p>The site counts page views. For each one it records the page opened (the path only,
+      <p>The site uses two measurement tools, PostHog and Google Analytics 4. One script loads
+      both, and it loads neither when your browser sends Global Privacy Control or Do Not
+      Track. The purpose is to learn which pages people land on and whether the paid bundle
+      page is reached and acted on.</p>
+
+      <h3 id="privacy-posthog">PostHog</h3>
+      <p>PostHog counts page views. For each one it records the page opened (the path only,
       never the part of the address after a question mark or a hash), the family the page
       belongs to (home, agency, program, bundle, support, fix guide, directory, or other), and
       the domain of the site that linked here. It records one further event: when a checkout
       link on <a href="/bundle/">the bundle page</a> is followed, the plan that link belongs
-      to. That is the whole list. The purpose is to learn which pages people land on and
-      whether the paid bundle page is reached and acted on.</p>
-      <p>No cookie is set, and nothing is kept on your device beyond the current tab. A random
-      visit id lives in the tab's session storage and is discarded when the tab closes, so two
-      visits cannot be joined and no profile is built. Nothing you type is recorded: the script
-      never reads a form or the page text, and the setup form after checkout, including the
-      email address on it, is marked so that no measurement tool can read it. There is no
+      to. That is the whole list for PostHog.</p>
+      <p>PostHog sets no cookie, and keeps nothing on your device beyond the current tab. A
+      random visit id lives in the tab's session storage and is discarded when the tab closes,
+      so two visits cannot be joined and no profile is built. Nothing you type is recorded: the
+      script never reads a form or the page text, and the setup form after checkout, including
+      the email address on it, is marked so that no measurement tool can read it. There is no
       session recording and no fingerprinting.</p>
       <p>The events go to PostHog Cloud US, run by PostHog Inc. in the United States. As with
       any web request, PostHog's servers receive your IP address and browser identifier to
       deliver the request; the project is configured to discard the IP address rather than
       store it with the event. PostHog keeps the events for one year on the plan this project
-      uses. Nothing is sold or shared with anyone else.</p>
-      <p>To opt out, turn on <a href="https://globalprivacycontrol.org/">Global Privacy
-      Control</a> or Do Not Track in your browser, or block requests to us.i.posthog.com. The
-      script checks both signals before it does anything and sends nothing when either is set,
-      and every part of the site works the same either way. The script is the full record of
-      what is collected and is published at
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/web/src/measure.js">web/src/measure.js</a>;
-      the decision behind it is
-      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/decisions/0055-cookieless-site-measurement.md">ADR 0055</a>.</p>
+      uses.</p>
+
+      <h3 id="privacy-google">Google Analytics 4</h3>
+      <p>Google Analytics records each page you open and how you use it. It gets the page
+      path, again without the part after a question mark or a hash, and the page title. For
+      the site that linked here, it gets only that site's main address. It also records how
+      long you stay, how far you scroll, which links to other sites you follow, and which files
+      you download. From your browser it learns the browser name, device type, screen size, and
+      language. Google works out a rough location, such as a city and country, from your IP
+      address. Google Analytics does not store the IP address itself.</p>
+      <p>Outside the European Economic Area, the United Kingdom, or Switzerland, Google
+      Analytics sets two cookies on this site. The one named <code>_ga</code> holds a random
+      id for your browser. The other, whose name starts with <code>_ga_</code>, keeps track of
+      the current visit. Both last up to two years, and they let Google tell a returning
+      browser from a new one.</p>
+      <p>If you are in the European Economic Area, the United Kingdom, or Switzerland, no
+      Google Analytics cookie is set and nothing is stored on your device. The script still
+      loads from Google and sends a short notice for each page, with no cookie and no lasting
+      id. Google uses these notices to estimate totals.</p>
+      <p>Google's ad features are off for every visitor. Google signals and ad personalization
+      are both off, and no ad cookie is allowed. Your visit is not tied to a Google account,
+      and it is not used for ads.</p>
+      <p>The data goes to Google LLC in the United States. Google keeps the detailed records
+      for 14 months and then deletes them. Totals built from them, such as page view counts,
+      are kept longer.</p>
+
+      <h3 id="privacy-opt-out">Saying no</h3>
+      <p>To opt out of both tools, turn on
+      <a href="https://globalprivacycontrol.org/">Global Privacy Control</a> or Do Not Track in
+      your browser. The script checks both signals before it does anything. When either is
+      set, it sends nothing to PostHog and loads nothing from Google. You can also block
+      requests to us.i.posthog.com, www.googletagmanager.com, and google-analytics.com. Every
+      part of the site works the same either way.</p>
+      <p>The project does not sell this data or share it beyond the two services named here.
+      The script is the full record of what the site asks for and is published at
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/web/src/measure.js">web/src/measure.js</a>.
+      The decisions behind it are
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/decisions/0055-cookieless-site-measurement.md">ADR 0055</a>
+      for PostHog and
+      <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/decisions/0056-google-analytics-4.md">ADR 0056</a>
+      for Google Analytics.</p>
     </section>
   </main>
 

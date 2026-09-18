@@ -97,10 +97,12 @@ HARDCODED_STRING_BASELINE = {
     "landing-scorecard.js": 121,
     "locale.js": 0,
     # The site-measurement shim (docs/decisions/0055): event and property
-    # names only, no reader-facing copy. The one match is the strict-mode
-    # directive, which this heuristic counts in theme.js and nav.js too. A
-    # sentence a reader sees does not belong in this file, so this stays at 1.
-    "measure.js": 1,
+    # names only, no reader-facing copy. The matches are the strict-mode
+    # directives, which this heuristic counts in theme.js and nav.js too: one
+    # for the PostHog block and, since ADR 0056, one for the separate GA4
+    # block. A sentence a reader sees does not belong in this file, so this
+    # stays at 2.
+    "measure.js": 2,
     "nav.js": 4,
     # The compact paid-tier summary the landing page and /support/ render from
     # web/bundle/plan.json. New module, so this is its first recorded baseline

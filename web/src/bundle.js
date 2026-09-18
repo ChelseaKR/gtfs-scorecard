@@ -196,9 +196,10 @@ function render(plan) {
       a.href = safeUrl(product.checkout_url);
       a.textContent = "Buy through Stripe";
       // The last thing this site can see of a purchase is this click; the
-      // checkout itself happens on Stripe. web/src/measure.js reports it under
-      // this event name with the plan id, and nothing else about the reader
-      // (docs/decisions/0055-cookieless-site-measurement.md).
+      // checkout itself happens on Stripe. web/src/measure.js reports it to
+      // PostHog under this event name with the plan id, and nothing else about
+      // the reader (docs/decisions/0055-cookieless-site-measurement.md). GA4
+      // sees it only as a click on a link to another site (ADR 0056).
       a.setAttribute("data-measure", "bundle_checkout_click");
       a.setAttribute("data-measure-plan", key);
       p.appendChild(a);

@@ -248,8 +248,10 @@ a SHA-256 hash of the buyer's (trimmed, lowercased) email, a conversion
 value and currency read straight off the Stripe event (`amount_total`,
 `currency` -- no second Stripe API call), a timestamp, and the plan. This
 is deliberately not a client-side pixel or tag: `web/src/measure.js`
-already keeps this site cookieless
-([`docs/decisions/0055-cookieless-site-measurement.md`](decisions/0055-cookieless-site-measurement.md)),
+captures no `gclid`, because it drops the query string before anything is
+sent and runs GA4 with ad storage denied
+([`docs/decisions/0055-cookieless-site-measurement.md`](decisions/0055-cookieless-site-measurement.md),
+[`docs/decisions/0056-google-analytics-4.md`](decisions/0056-google-analytics-4.md)),
 and Enhanced Conversions for Leads is the one Google Ads conversion path
 that needs no cookie, no script, and no `gclid` capture on the frontend --
 it matches server-side on the hashed identifier against Google's own
@@ -453,8 +455,8 @@ already merged from this lane.
    Conversions for Leads for it. Copy its resource name
    (`customers/<id>/conversionActions/<id>`, shown in the action's
    settings). **Expect a lower match rate than a typical Enhanced
-   Conversions setup**: this site captures no `gclid` at click time (by
-   the 2026-09-13 cookieless-measurement decision), so Google is matching
+   Conversions setup**: this site captures no `gclid` at click time (its
+   measurement drops the query string, ADRs 0055 and 0056), so Google is matching
    on the hashed email alone against its signed-in-user graph, not against
    a specific ad click -- a known, accepted trade-off, not a bug to chase.
    Then: set `google_ads_conversion_action` to that resource name (in

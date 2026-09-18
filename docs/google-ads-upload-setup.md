@@ -202,7 +202,8 @@ to turn the daily schedule on.
 
 Per `docs/paid-search-readiness.md` §7 step 8: expect a lower match rate
 than a typical Enhanced Conversions setup, because this site captures no
-`gclid` (it stays cookieless) — Google matches on the hashed email alone
+`gclid` (its measurement drops the query string, and GA4 runs with ad storage
+denied, per ADR 0056) — Google matches on the hashed email alone
 against its signed-in-user graph. That trade-off was accepted when the
 conversion action was designed and is not a bug to chase here.
 
