@@ -20,8 +20,9 @@ as the question needs, and saying no is honoured without a banner.
 ## Decision
 
 GA4 is a second, separate block at the end of `web/src/measure.js`. The
-PostHog block above it is unchanged. The two blocks share no variables, so
-either can be turned off without touching the other.
+PostHog block above it changes only to honour the footer opt-out described
+below. The two blocks share no variables, only the opt-out mark on the page,
+so either can be turned off without touching the other.
 
 **Where the id lives.** A GA4 measurement id is public by design, so it is
 committed rather than held in the repository's secrets. It is
@@ -67,11 +68,37 @@ page and none on a redirect stub. That is how GA4 reaches every page family
 the site emits, agency, board and brief views, program pages, `/bundle/`,
 `/query/`, `/status/` and the rest, without an edit to any renderer.
 
+**The footer opt-out.** Every page footer carries an "Opt out of analytics"
+link (owner decision, 2026-09-17, for all four public sites). Without
+scripts it is a link to `/about/#privacy-opt-out`. The first block of
+`measure.js`, which runs before PostHog and GA4 and whether or not either is
+configured, turns it into a toggle:
+
+- The choice is stored on the device in `localStorage` under
+  `scorecard-analytics` (`"off"` or absent). A stored `"off"` marks the page
+  `data-measure-stopped` before either tool block runs, and both return on
+  that mark.
+- Opting out mid-page stores the choice, marks the page, stops PostHog's later
+  events on that page, sets Google's `ga-disable-<id>` flag, and expires the
+  `_ga` and `_ga_<container>` cookies on the host and each parent domain.
+- The control then reads "Opt back in to analytics". Opting back in clears
+  the stored choice; the page stays stopped, and both tools start again from
+  the next page.
+- The wording and the status message a screen reader hears come from data
+  attributes in the footer markup (`ANALYTICS_OPT_OUT_HTML` and its Spanish
+  twin in `site_shell.py`), so the script carries no copy.
+
+`check_site_seo.py` fails any page that loads the measurement script without a
+`[data-analytics-toggle]` control, so the opt-out reaches every page type the
+measurement does. The cookieless pings GA4 sends in the EEA, the UK and
+Switzerland under denied consent were accepted as they are by the same owner
+decision.
+
 **The disclosure.** `/about/#privacy` gains a Google Analytics part. It says
 what GA4 records, names the `_ga` cookies and their two-year lifetime, says
 what changes in the EEA, the UK and Switzerland, says the ad features are off,
 names Google LLC and the 14-month retention of event-level data, and says how
-to opt out.
+to opt out, with the footer link first.
 
 ## Why these shapes
 

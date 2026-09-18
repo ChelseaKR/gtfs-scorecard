@@ -37,7 +37,7 @@ import yaml
 
 from .comparisons import same_producer_contract
 from .config import artifacts_dir
-from .site_shell import BASE_URL, CATEGORY_LABELS, CATEGORY_ORDER, esc
+from .site_shell import ANALYTICS_OPT_OUT_HTML, BASE_URL, CATEGORY_LABELS, CATEGORY_ORDER, esc
 
 # The rubric documents the report cites in its methodology footer.
 _RUBRIC_DOC_URL = "https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/rubric.md"
@@ -528,12 +528,16 @@ def _sample_chip_html() -> str:
 
 
 def _sample_foot_note_html() -> str:
+    # The sample is a page on the site and loads the measurement script, so it
+    # carries the same analytics opt-out every site footer does (ADR 0056). A
+    # purchased report never reaches this function.
     return (
         '<p class="muted">This page is a sample of the '
         f'<a href="{BASE_URL}/bundle/">Program Report Bundle</a>: one real, currently '
         "published agency score, shown with placeholder branding instead of a buyer's "
         "own. A purchased bundle carries your program's own name, logo, and accent "
         "color on every agency's cover, for every agency you choose.</p>\n      "
+        f'<p class="muted">{ANALYTICS_OPT_OUT_HTML}</p>\n      '
     )
 
 

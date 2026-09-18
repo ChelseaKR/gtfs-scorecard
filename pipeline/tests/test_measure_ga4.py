@@ -33,9 +33,16 @@ import pytest
 
 from scorecard_pipeline.cli import main
 from scorecard_pipeline.site_shell import (
+    ANALYTICS_OPT_OUT_HTML,
+    ANALYTICS_OPT_OUT_HTML_ES,
+    FOOTER_HTML,
+    FOOTER_HTML_ES,
+    FOOTER_HTML_WITHOUT_US_TOOLS,
     GA4_ID_SETTING,
     GA4_LOADER_HOST,
     MEASURE_SCRIPT_PATH,
+    MEASURED_STATIC_PAGES,
+    _page,
     ga4_measurement_id,
     render_measure_script,
 )
@@ -44,7 +51,12 @@ _REPO = Path(__file__).resolve().parents[2]
 _SHIM = (_REPO / "web" / MEASURE_SCRIPT_PATH).read_text()
 _GA4_MARKER = "// Google Analytics 4 (docs/decisions/0056"
 _GA4_BLOCK = _SHIM[_SHIM.index(_GA4_MARKER) :]
+# Where the PostHog block begins; the opt-out control runs before it.
+_POSTHOG_START = (
+    '(function () {\n  "use strict";\n\n  // Written at deploy time from the POSTHOG_KEY'
+)
 _GOLDEN_SITE = _REPO / "pipeline" / "tests" / "fixtures" / "golden_site" / "web"
+_GOLDENS = _REPO / "pipeline" / "tests" / "goldens"
 _ABOUT = (_REPO / "web" / "about" / "index.html").read_text()
 
 _ID = "G-TEST0A1B2C"
@@ -54,6 +66,7 @@ _GPC_GUARD = "  if (nav.globalPrivacyControl === true) return;\n"
 _DNT_GUARD = (
     '  if (nav.doNotTrack === "1" || win.doNotTrack === "1" || nav.msDoNotTrack === "1") return;\n'
 )
+_STOPPED_GUARD = 'if (doc.documentElement.hasAttribute("data-measure-stopped")) return;'
 _EMPTY_GUARDS = ("  if (!GA4_ID) return;\n", "  if (!/^G-[A-Z0-9]+$/.test(GA4_ID)) return;\n")
 
 # The European Economic Area (the 27 EU members, Iceland, Liechtenstein and
@@ -215,9 +228,13 @@ def test_the_block_names_one_host_and_reads_nothing_it_promises_not_to() -> None
         "location.search",
         "location.hash",
         "location.href",
-        "addEventListener",
     ):
         assert forbidden not in code, forbidden
+    # It listens for one thing, the opt-out, and writes a cookie only to expire
+    # one: every cookie assignment carries Max-Age=0.
+    assert re.findall(r'addEventListener\("([^"]+)"', code) == ["scorecard:measure-stopped"]
+    assert code.count("doc.cookie =") == 2
+    assert 'var gone = names[n] + "=; Max-Age=0; path=/";' in code
     # The referrer is read once, inside the helper that reduces it to an origin.
     assert code.count("doc.referrer") == 1
     assert "document.referrer" not in code
@@ -230,7 +247,8 @@ def test_the_opt_out_and_empty_checks_come_before_anything_loads() -> None:
     rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
     block = _code_only(rendered[rendered.index(_GA4_MARKER) :])
     first_effect = min(block.index("dataLayer"), block.index("createElement"))
-    for guard in ("if (!GA4_ID) return;", _GPC_GUARD.strip(), _DNT_GUARD.strip(), "localhost"):
+    guards = ("if (!GA4_ID) return;", _GPC_GUARD.strip(), _DNT_GUARD.strip(), _STOPPED_GUARD)
+    for guard in (*guards, "localhost"):
         assert guard in block, guard
         assert block.index(guard) < first_effect, guard
 
@@ -248,14 +266,60 @@ const fs = require("fs");
 const vm = require("vm");
 const source = fs.readFileSync(process.argv[1], "utf8");
 const cases = JSON.parse(process.argv[2]);
+
+class Element {}
+function element(attrs) {
+  const el = Object.create(Element.prototype);
+  el.attrs = Object.assign({}, attrs);
+  el.textContent = "";
+  el.listeners = {};
+  el.getAttribute = function (n) { return n in this.attrs ? this.attrs[n] : null; };
+  el.setAttribute = function (n, v) { this.attrs[n] = String(v); };
+  el.hasAttribute = function (n) { return n in this.attrs; };
+  el.removeAttribute = function (n) { delete this.attrs[n]; };
+  el.addEventListener = function (t, fn) {
+    (this.listeners[t] = this.listeners[t] || []).push(fn);
+  };
+  el.closest = function (sel) {
+    return sel === "[data-measure]" && this.hasAttribute("data-measure") ? this : null;
+  };
+  return el;
+}
+function fire(listeners, type, event) {
+  let prevented = false;
+  event.type = type;
+  event.preventDefault = function () { prevented = true; };
+  (listeners[type] || []).forEach(function (fn) { fn(event); });
+  return prevented;
+}
+
 const out = cases.map(function (c) {
   const appended = [];
   const sent = [];
-  const head = {
-    appendChild: function (el) {
-      appended.push({ tag: el.tagName, src: el.src, async: el.async });
-    },
+  const cookies = [];
+  const store = Object.assign({}, c.storage);
+  const root = element({});
+  root.appendChild = function (el) {
+    appended.push({ tag: el.tagName, src: el.src, async: el.async });
   };
+  const status = element({ "data-analytics-status": "" });
+  const toggle = element({
+    "data-analytics-toggle": "",
+    href: "/about/#privacy-opt-out",
+    "data-label-on": "LABEL-ON",
+    "data-label-off": "LABEL-OFF",
+    "data-status-on": "STATUS-ON",
+    "data-status-off": "STATUS-OFF",
+  });
+  toggle.textContent = "LABEL-ON";
+  toggle.parentNode = {
+    querySelector: function (sel) { return sel === "[data-analytics-status]" ? status : null; },
+  };
+  const checkout = element({
+    "data-measure": "bundle_checkout_click",
+    "data-measure-plan": "annual",
+  });
+  const docListeners = {};
   const location = {
     hostname: c.hostname,
     host: c.hostname,
@@ -268,11 +332,19 @@ const out = cases.map(function (c) {
   const navigator = Object.assign({}, c.navigator);
   const document = {
     referrer: c.referrer,
-    head: head,
-    documentElement: head,
+    head: root,
+    documentElement: root,
     createElement: function (tag) { return { tagName: tag.toUpperCase() }; },
-    addEventListener: function () {},
+    querySelectorAll: function (sel) {
+      return sel === "[data-analytics-toggle]" && c.toggle !== false ? [toggle] : [];
+    },
+    addEventListener: function (t, fn) { (docListeners[t] = docListeners[t] || []).push(fn); },
+    dispatchEvent: function (event) { fire(docListeners, event.type, event); return true; },
   };
+  Object.defineProperty(document, "cookie", {
+    get: function () { return ""; },
+    set: function (value) { cookies.push(value); },
+  });
   const window = Object.assign(
     {
       navigator: navigator,
@@ -289,20 +361,44 @@ const out = cases.map(function (c) {
         },
       },
       sessionStorage: { getItem: function () { return null; }, setItem: function () {} },
+      localStorage: {
+        getItem: function (k) { return k in store ? store[k] : null; },
+        setItem: function (k, v) { store[k] = String(v); },
+        removeItem: function (k) { delete store[k]; },
+      },
+      CustomEvent: function (type) { this.type = type; },
     },
     c.window
   );
   const context = vm.createContext({
     window: window, document: document, navigator: navigator, location: location,
-    URL: URL, Element: function () {},
+    URL: URL, Element: Element,
   });
   vm.runInContext(source, context);
+  const prevented = [];
+  (c.actions || []).forEach(function (action) {
+    if (action === "click") prevented.push(fire(toggle.listeners, "click", { target: toggle }));
+    if (action === "space") {
+      prevented.push(fire(toggle.listeners, "keydown", { target: toggle, key: " " }));
+    }
+    if (action === "checkout") fire(docListeners, "click", { target: checkout });
+  });
   return {
     appended: appended,
     sent: sent,
     dataLayer: window.dataLayer
       ? window.dataLayer.map(function (a) { return Array.from(a); })
       : null,
+    cookies: cookies,
+    storage: store,
+    stopped: root.getAttribute("data-measure-stopped"),
+    label: toggle.textContent,
+    status: status.textContent,
+    role: toggle.getAttribute("role"),
+    prevented: prevented,
+    gaDisabled: Object.keys(window).filter(function (k) {
+      return k.indexOf("ga-disable-") === 0 && window[k] === true;
+    }),
   };
 });
 process.stdout.write(JSON.stringify(out));
@@ -344,7 +440,8 @@ def _loaded(result: dict[str, Any]) -> bool:
 def test_with_no_id_nothing_loads(tmp_path: Path) -> None:
     unset = render_measure_script(None, source=_SHIM, ga4_id="")
     [result] = _run(tmp_path, unset, [_visit()])
-    assert result == {"appended": [], "sent": [], "dataLayer": None}
+    assert (result["appended"], result["sent"], result["dataLayer"]) == ([], [], None)
+    assert result["cookies"] == [] and result["gaDisabled"] == []
 
 
 def test_with_an_id_the_loader_is_added_once_with_the_promised_config(tmp_path: Path) -> None:
@@ -415,20 +512,107 @@ def test_a_false_privacy_signal_does_not_opt_out(tmp_path: Path) -> None:
     assert _loaded(result)
 
 
+# --- the footer opt-out, run in Node against the same stub page ------------
+
+_STORE = "scorecard-analytics"
+_OPTED_OUT = {_STORE: "off"}
+
+
+def _both() -> str:
+    return render_measure_script(_KEY, source=_SHIM, ga4_id=_ID)
+
+
+def test_a_stored_opt_out_stops_both_tools(tmp_path: Path) -> None:
+    [result] = _run(tmp_path, _both(), [_visit(storage=_OPTED_OUT, actions=["checkout"])])
+    assert result["sent"] == []
+    assert not _loaded(result)
+    assert result["stopped"] == "opted-out"
+    # The control says what a click would do now, and is a button to
+    # assistive technology.
+    assert (result["label"], result["role"]) == ("LABEL-OFF", "button")
+
+
+def test_opting_out_mid_page_stops_both_and_forgets_the_ga4_cookies(tmp_path: Path) -> None:
+    visit = _visit(actions=["checkout", "click", "checkout"])
+    [result] = _run(tmp_path, _both(), [visit])
+
+    # Before the click both tools ran; after it, PostHog reports nothing more
+    # and GA4 is switched off with Google's own flag for this id.
+    assert result["sent"] == ["$pageview", "bundle_checkout_click"]
+    assert len(result["appended"]) == 1
+    assert result["gaDisabled"] == [f"ga-disable-{_ID}"]
+    assert result["storage"] == _OPTED_OUT
+    assert result["stopped"] == "opted-out"
+    assert (result["label"], result["status"]) == ("LABEL-OFF", "STATUS-OFF")
+    assert result["prevented"] == [True]
+    # Every cookie write expires one of the two GA4 cookies, host-only and on
+    # each parent domain.
+    assert result["cookies"], "the opt-out wrote no cookie expiry"
+    assert all("=; Max-Age=0; path=/" in cookie for cookie in result["cookies"])
+    names = {cookie.split("=", 1)[0] for cookie in result["cookies"]}
+    assert names == {"_ga", f"_ga_{_ID.removeprefix('G-')}"}
+    assert "_ga=; Max-Age=0; path=/; domain=gtfsscorecard.org" in result["cookies"]
+
+
+def test_the_next_page_after_opting_out_loads_nothing(tmp_path: Path) -> None:
+    [first] = _run(tmp_path, _both(), [_visit(actions=["click"])])
+    assert first["storage"] == _OPTED_OUT
+    [second] = _run(tmp_path, _both(), [_visit(storage=first["storage"], actions=["checkout"])])
+    assert second["sent"] == [] and not _loaded(second)
+
+
+def test_opting_back_in_clears_the_choice_and_resumes_on_the_next_page(tmp_path: Path) -> None:
+    [back] = _run(tmp_path, _both(), [_visit(storage=_OPTED_OUT, actions=["click", "checkout"])])
+    assert back["storage"] == {}
+    assert (back["label"], back["status"]) == ("LABEL-ON", "STATUS-ON")
+    # This page stays stopped; the next one measures again.
+    assert back["stopped"] == "until-next-page"
+    assert back["sent"] == [] and not _loaded(back)
+    [next_page] = _run(tmp_path, _both(), [_visit(storage=back["storage"])])
+    assert next_page["sent"] == ["$pageview"] and len(next_page["appended"]) == 1
+
+
+def test_the_space_key_toggles_the_control(tmp_path: Path) -> None:
+    [result] = _run(tmp_path, _both(), [_visit(actions=["space"])])
+    assert result["storage"] == _OPTED_OUT and result["prevented"] == [True]
+
+
+def test_the_control_works_with_neither_tool_configured(tmp_path: Path) -> None:
+    """The footer link has to work on a deploy with no key and no id, so a
+    choice made then still holds once either is switched on."""
+    unset = render_measure_script(None, source=_SHIM, ga4_id="")
+    [result] = _run(tmp_path, unset, [_visit(actions=["click"])])
+    assert result["storage"] == _OPTED_OUT
+    assert (result["label"], result["role"]) == ("LABEL-OFF", "button")
+
+
+def test_the_opt_out_control_carries_no_reader_copy() -> None:
+    """Its wording comes from the markup, so the Spanish footer can carry
+    Spanish and this file carries no sentence a reader sees."""
+    block = _code_only(_SHIM[: _SHIM.index(_POSTHOG_START)])
+    literals = re.findall(r'"([^"\n]*)"', block)
+    assert literals, "the opt-out block was not found"
+    assert [text for text in literals if re.search(r"[A-Za-z]{2,} [A-Za-z]{2,}", text)] == [
+        "use strict"
+    ]
+
+
 # --- negative controls: the harness can see each guard fail -----------------
 
 
-def _sabotaged(source: str, *guards: str) -> str:
-    """``source`` with each guard removed from the GA4 block only. The PostHog
-    block above carries the same opt-out lines and is left as it is. Each
-    removal is asserted to have happened, and the result to differ."""
-    split = source.index(_GA4_MARKER)
-    head, block = source[:split], source[split:]
+def _sabotaged(source: str, *guards: str, posthog: bool = False) -> str:
+    """``source`` with each guard removed from one block only: the GA4 block,
+    or with ``posthog`` the PostHog block. The other blocks carry the same
+    opt-out lines and are left as they are. Each removal is asserted to have
+    happened, and the result to differ."""
+    start = source.index(_POSTHOG_START) if posthog else source.index(_GA4_MARKER)
+    end = source.index(_GA4_MARKER) if posthog else len(source)
+    head, block, tail = source[:start], source[start:end], source[end:]
     for guard in guards:
         assert block.count(guard) == 1, guard
         block = block.replace(guard, "")
         assert guard not in block, guard
-    broken = head + block
+    broken = head + block + tail
     assert broken != source
     return broken
 
@@ -445,6 +629,23 @@ def test_control_without_the_dnt_guard_the_harness_sees_ga_load(tmp_path: Path) 
     broken = _sabotaged(rendered, _DNT_GUARD)
     [result] = _run(tmp_path, broken, [_visit(**_OPT_OUTS["do not track"])])
     assert _loaded(result)
+
+
+def test_control_without_the_stopped_guard_ga4_loads_for_an_opted_out_reader(
+    tmp_path: Path,
+) -> None:
+    broken = _sabotaged(_both(), _STOPPED_GUARD)
+    [result] = _run(tmp_path, broken, [_visit(storage=_OPTED_OUT)])
+    assert len(result["appended"]) == 1
+
+
+def test_control_without_the_stopped_guards_posthog_sends_for_an_opted_out_reader(
+    tmp_path: Path,
+) -> None:
+    broken = _sabotaged(_both(), f"\n  {_STOPPED_GUARD}", f"\n    {_STOPPED_GUARD}", posthog=True)
+    [result] = _run(tmp_path, broken, [_visit(storage=_OPTED_OUT, actions=["checkout"])])
+    assert result["sent"] == ["$pageview", "bundle_checkout_click"]
+    assert not _loaded(result)  # GA4 kept its guard, so only PostHog broke
 
 
 def test_control_without_the_empty_id_guards_the_harness_sees_ga_load(tmp_path: Path) -> None:
@@ -494,6 +695,108 @@ def test_every_generated_page_reaches_ga4_only_through_the_measurement_script() 
     assert checked >= 30
 
 
+class _Controls(HTMLParser):
+    """Collect every opt-out control and status region in a document."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.controls: list[dict[str, str | None]] = []
+        self.statuses: list[dict[str, str | None]] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        values = dict(attrs)
+        if "data-analytics-toggle" in values:
+            self.controls.append({"tag": tag, **values})
+        if "data-analytics-status" in values:
+            self.statuses.append({"tag": tag, **values})
+
+
+def _controls(html: str) -> _Controls:
+    parser = _Controls()
+    parser.feed(html)
+    return parser
+
+
+_EN_LABELS = ("Opt out of analytics", "Opt back in to analytics")
+
+
+@pytest.mark.parametrize(
+    ("name", "footer", "labels"),
+    [
+        ("english", FOOTER_HTML, _EN_LABELS),
+        ("outside the US", FOOTER_HTML_WITHOUT_US_TOOLS, _EN_LABELS),
+        ("spanish", FOOTER_HTML_ES, ("Desactivar la analítica", "Volver a activar la analítica")),
+    ],
+)
+def test_every_footer_carries_one_opt_out_with_its_wording(
+    name: str, footer: str, labels: tuple[str, str]
+) -> None:
+    found = _controls(footer)
+    assert len(found.controls) == 1, name
+    control = found.controls[0]
+    assert control["tag"] == "a" and control["href"] == "/about/#privacy-opt-out"
+    assert (control["data-label-on"], control["data-label-off"]) == labels
+    assert control["data-status-on"] and control["data-status-off"]
+    assert [status["role"] for status in found.statuses] == ["status"]
+    assert f">{labels[0]}</a>" in footer
+
+
+def test_generated_pages_carry_the_opt_out_in_every_footer_variant() -> None:
+    variants: list[dict[str, Any]] = [{}, {"lang": "es"}, {"country_code": "CA"}]
+    for kwargs in variants:
+        html = _page(
+            title="A page",
+            description="A description of a page long enough to be one.",
+            canonical="https://gtfsscorecard.org/x/",
+            body="<h1>A page</h1>",
+            **kwargs,
+        )
+        assert len(_controls(html).controls) == 1, kwargs
+
+
+def test_every_hand_authored_page_carries_the_opt_out() -> None:
+    """The nav-synced pages get it from FOOTER_HTML; the two landing pages
+    carry their own footer and the same markup."""
+    for rel in MEASURED_STATIC_PAGES:
+        html = (_REPO / "web" / rel).read_text(encoding="utf-8")
+        assert len(_controls(html).controls) == 1, f"{rel}: run `make sync-static-nav`"
+    assert ANALYTICS_OPT_OUT_HTML in (_REPO / "web" / "index.html").read_text(encoding="utf-8")
+    assert ANALYTICS_OPT_OUT_HTML_ES in (_REPO / "web" / "es" / "index.html").read_text(
+        encoding="utf-8"
+    )
+
+
+def test_the_bundle_sample_page_offers_the_opt_out_and_a_buyer_report_never_does() -> None:
+    """The sample is the one report rendered as a page on the site, so it
+    measures and must offer the way out. A purchased report is a document,
+    loads no script, and carries no control."""
+    from scorecard_pipeline.report import _sample_foot_note_html
+
+    assert ANALYTICS_OPT_OUT_HTML in _sample_foot_note_html()
+    sample = (_REPO / "web" / "bundle" / "sample" / "index.html").read_text(encoding="utf-8")
+    assert "/src/measure.js" in sample
+    assert len(_controls(sample).controls) == 1
+    reports = sorted((_GOLDENS / "report").glob("*.html"))
+    assert reports
+    for report in reports:
+        assert "data-analytics-toggle" not in report.read_text(encoding="utf-8"), report.name
+
+
+def test_every_rendered_golden_page_that_measures_offers_the_opt_out() -> None:
+    """The render goldens cover each generated page family. A page that loads
+    the measurement script carries the control; a redirect stub carries
+    neither."""
+    pages = sorted({*_GOLDENS.rglob("*.html"), *_GOLDEN_SITE.rglob("*.html")})
+    measured = 0
+    for page in pages:
+        html = page.read_text(encoding="utf-8")
+        if "/src/measure.js" not in html:
+            continue
+        measured += 1
+        assert len(_controls(html).controls) == 1, page
+    assert measured >= 60
+
+
 # --- the disclosure ------------------------------------------------------------
 
 
@@ -513,5 +816,10 @@ def test_the_disclosure_describes_ga4_as_configured() -> None:
         "Do Not Track",
         "googletagmanager.com",
         "0056-google-analytics-4",
+        "Opt out of analytics",
+        "Opt back in to analytics",
+        "scorecard-analytics",
+        "deletes the\n      Google Analytics cookies",
+        "from the next page you open",
     ):
         assert phrase in privacy, phrase

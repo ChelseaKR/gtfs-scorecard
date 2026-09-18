@@ -48,7 +48,11 @@ the declared public surface).
   sabotage landed. `/about/#privacy`, `README.md`, `docs/listing-policy.md`,
   `docs/deploy.md`, `docs/release-checklist.md`, `docs/audits/dpia-lite.md`,
   and ADRs 0031 and 0055 now describe GA4, its `_ga` cookies and its 14-month
-  retention. The PostHog block is unchanged.
+  retention. Every page footer gains an "Opt out of analytics" link. The
+  choice is remembered on the device, stops both PostHog and GA4, expires the
+  GA4 cookies, and toggles to "Opt back in to analytics". The PostHog block
+  gains only the check for that choice. `check_site_seo.py` fails a measured
+  page without the control.
 
 - **Credentialed feed sources, the mechanism half (#371).** A registry record
   can now carry `fetch_auth: {kind: header|query|basic, name, secret}`, where

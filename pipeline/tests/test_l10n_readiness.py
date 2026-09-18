@@ -99,10 +99,11 @@ HARDCODED_STRING_BASELINE = {
     # The site-measurement shim (docs/decisions/0055): event and property
     # names only, no reader-facing copy. The matches are the strict-mode
     # directives, which this heuristic counts in theme.js and nav.js too: one
-    # for the PostHog block and, since ADR 0056, one for the separate GA4
-    # block. A sentence a reader sees does not belong in this file, so this
-    # stays at 2.
-    "measure.js": 2,
+    # for the PostHog block and, since ADR 0056, one each for the separate GA4
+    # block and the footer opt-out control, whose wording comes from the
+    # footer markup. A sentence a reader sees does not belong in this file, so
+    # this stays at 3.
+    "measure.js": 3,
     "nav.js": 4,
     # The compact paid-tier summary the landing page and /support/ render from
     # web/bundle/plan.json. New module, so this is its first recorded baseline

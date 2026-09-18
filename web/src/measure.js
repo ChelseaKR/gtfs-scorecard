@@ -1,7 +1,8 @@
 // @ts-check
 /* Site measurement. This file is the whole of the measurement code the site
- * serves, and it holds two blocks that share nothing, so either can be
- * switched off without touching the other.
+ * serves. It holds an opt-out control and two measurement blocks. The two
+ * blocks share nothing but the opt-out mark the control sets, so either can
+ * be switched off without touching the other.
  *
  * The first block (docs/decisions/0055-cookieless-site-measurement.md) sends
  * one pageview per page load, and one event when a checkout link on /bundle/
@@ -25,11 +26,102 @@
  * Analytics 4, whose own script and cookies are described in that ADR. The
  * rules it keeps are written above it.
  *
+ * Before both runs the opt-out control behind the analytics opt-out link
+ * in every page footer (also ADR 0056). A reader who opts out is
+ * remembered on that device, and both blocks load nothing for them.
+ *
  * The disclosure a reader sees is /about/#privacy. The gates that keep this
  * file, that page, and every other page in step are
  * pipeline/tests/test_measure.py, pipeline/tests/test_measure_ga4.py and the
  * measurement section of pipeline/scripts/check_site_seo.py.
  */
+// The opt-out control (docs/decisions/0056-google-analytics-4.md). It runs
+// first, whether or not either tool is configured, so the footer link always
+// works.
+//
+// - The choice is kept in localStorage under one key, and is the only thing
+//   this file stores there. It holds "off" or is absent.
+// - At load, a stored "off" marks the page with data-measure-stopped on the
+//   root element. Both blocks below check that mark and load nothing.
+// - Every [data-analytics-toggle] control in the page becomes a toggle. Its
+//   wording and the status it announces come from its own data attributes,
+//   so the Spanish footer carries Spanish copy and this file carries none.
+// - Opting out marks the page, stores "off", and tells the GA4 block to stop
+//   and forget its cookies. Opting back in clears the stored choice. The
+//   page stays stopped, and both tools start again from the next page.
+(function () {
+  "use strict";
+
+  var STORE = "scorecard-analytics";
+  var STOPPED = "data-measure-stopped";
+  var doc = /** @type {any} */ (document);
+  var win = /** @type {any} */ (window);
+  var root = doc.documentElement;
+
+  /** @returns {boolean} */
+  function storedOff() {
+    try {
+      return win.localStorage.getItem(STORE) === "off";
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /** @param {boolean} off */
+  function remember(off) {
+    try {
+      if (off) win.localStorage.setItem(STORE, "off");
+      else win.localStorage.removeItem(STORE);
+    } catch (e) {
+      // Private modes can refuse storage; the choice still holds on this page.
+    }
+  }
+
+  var off = storedOff();
+  if (off) root.setAttribute(STOPPED, "opted-out");
+
+  var controls = doc.querySelectorAll("[data-analytics-toggle]");
+
+  /** @param {any} control @param {boolean} announce */
+  function show(control, announce) {
+    var label = control.getAttribute(off ? "data-label-off" : "data-label-on");
+    if (label) control.textContent = label;
+    if (!announce) return;
+    var status = control.parentNode && control.parentNode.querySelector("[data-analytics-status]");
+    var said = control.getAttribute(off ? "data-status-off" : "data-status-on");
+    if (status && said) status.textContent = said;
+  }
+
+  function toggle() {
+    off = !off;
+    remember(off);
+    if (off) {
+      root.setAttribute(STOPPED, "opted-out");
+      doc.dispatchEvent(new win.CustomEvent("scorecard:measure-stopped"));
+    } else {
+      root.setAttribute(STOPPED, "until-next-page");
+    }
+    for (var i = 0; i < controls.length; i++) show(controls[i], true);
+  }
+
+  for (var i = 0; i < controls.length; i++) {
+    var control = controls[i];
+    // Without this script the control stays a plain link to the privacy
+    // statement, which explains the other ways to opt out.
+    control.setAttribute("role", "button");
+    control.addEventListener("click", function (/** @type {any} */ event) {
+      event.preventDefault();
+      toggle();
+    });
+    control.addEventListener("keydown", function (/** @type {any} */ event) {
+      if (event.key !== " ") return;
+      event.preventDefault();
+      toggle();
+    });
+    show(control, false);
+  }
+})();
+
 (function () {
   "use strict";
 
@@ -47,6 +139,7 @@
   var doc = /** @type {any} */ (document);
   if (nav.globalPrivacyControl === true) return;
   if (nav.doNotTrack === "1" || win.doNotTrack === "1" || nav.msDoNotTrack === "1") return;
+  if (doc.documentElement.hasAttribute("data-measure-stopped")) return;
   if (doc.prerendering) return;
   if (!win.fetch || !win.crypto || !win.crypto.getRandomValues) return;
 
@@ -130,6 +223,8 @@
 
   /** @param {string} event @param {Record<string, string>} props */
   function send(event, props) {
+    // A reader who opts out mid-page is not reported again on this page.
+    if (doc.documentElement.hasAttribute("data-measure-stopped")) return;
     /** @type {Record<string, unknown>} */
     var properties = {
       $process_person_profile: false,
@@ -201,7 +296,10 @@
 //   returns and nothing loads: no Google script, no cookie, no request. The
 //   committed copy of this file has no id. The id is measurement_ga4_id in
 //   site-seo.json, and render-measure writes it into the marked line below.
-// - Global Privacy Control or Do Not Track returns before anything loads.
+// - Global Privacy Control, Do Not Track, or an opt-out through the footer
+//   link returns before anything loads. Opting out on a page where GA4 has
+//   already loaded sets Google's own ga-disable flag for the id, which stops
+//   every later hit, and expires the two GA4 cookies.
 // - A page served from this machine (localhost) loads nothing, so local work
 //   and the Lighthouse runs in CI are never counted.
 // - Consent defaults (Consent Mode v2): ad storage, ad user data and ad
@@ -239,6 +337,7 @@
   var doc = /** @type {any} */ (document);
   if (nav.globalPrivacyControl === true) return;
   if (nav.doNotTrack === "1" || win.doNotTrack === "1" || nav.msDoNotTrack === "1") return;
+  if (doc.documentElement.hasAttribute("data-measure-stopped")) return;
   if (!/^G-[A-Z0-9]+$/.test(GA4_ID)) return;
   var host = win.location.hostname;
   if (!host || host === "localhost" || host === "127.0.0.1" || host === "[::1]") return;
@@ -279,6 +378,25 @@
     allow_ad_personalization_signals: false,
     page_location: win.location.origin + win.location.pathname,
     page_referrer: referrerOrigin(),
+  });
+
+  /** Expire the two GA4 cookies on this host and on each parent domain,
+   *  since gtag sets them on the widest domain it can. */
+  function forgetCookies() {
+    var names = ["_ga", "_ga_" + GA4_ID.slice(2)];
+    var parts = host.split(".");
+    for (var n = 0; n < names.length; n++) {
+      var gone = names[n] + "=; Max-Age=0; path=/";
+      doc.cookie = gone;
+      for (var i = 0; i < parts.length - 1; i++) {
+        doc.cookie = gone + "; domain=" + parts.slice(i).join(".");
+      }
+    }
+  }
+
+  doc.addEventListener("scorecard:measure-stopped", function () {
+    win["ga-disable-" + GA4_ID] = true;
+    forgetCookies();
   });
 
   var script = doc.createElement("script");

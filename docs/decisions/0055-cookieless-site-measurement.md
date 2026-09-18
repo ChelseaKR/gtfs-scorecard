@@ -4,7 +4,8 @@
 [ADR 0056](0056-google-analytics-4.md): `web/src/measure.js` also loads Google
 Analytics 4 in a second, separate block, so this script is no longer the whole
 of what the site collects, and the site is no longer cookieless outside the
-EEA, the UK and Switzerland. The PostHog block described here is unchanged.
+EEA, the UK and Switzerland. The PostHog block described here changes only to
+honour the footer "Opt out of analytics" link that ADR 0056 adds.
 
 ## Context
 

@@ -214,6 +214,31 @@ STATIC_NAV_PAGES: dict[str, str | None] = {
 
 # The one shared footer, single-sourced here so the generated pages and the
 # hand-authored static pages can never drift apart (same mechanism as the nav).
+#
+# Every footer carries the analytics opt-out (docs/decisions/0056). Without
+# scripts it is a link to the privacy statement; web/src/measure.js turns it
+# into a toggle that is remembered on the device and switches off both PostHog
+# and GA4. Its wording lives here, in data attributes, so the script carries no
+# copy and the Spanish footer can carry Spanish. The status span beside it
+# announces the change to screen readers. check_site_seo.py fails a page that
+# loads the measurement script without one of these.
+ANALYTICS_OPT_OUT_HTML = (
+    '<a href="/about/#privacy-opt-out" data-analytics-toggle'
+    ' data-label-on="Opt out of analytics" data-label-off="Opt back in to analytics"'
+    ' data-status-off="Analytics is off on this device."'
+    ' data-status-on="Analytics comes back on from the next page you open.">'
+    "Opt out of analytics</a>"
+    '<span class="visually-hidden" role="status" data-analytics-status></span>'
+)
+ANALYTICS_OPT_OUT_HTML_ES = (
+    '<a href="/about/#privacy-opt-out" hreflang="en" data-analytics-toggle'
+    ' data-label-on="Desactivar la analítica" data-label-off="Volver a activar la analítica"'
+    ' data-status-off="La analítica está desactivada en este dispositivo."'
+    ' data-status-on="La analítica vuelve a funcionar desde la próxima página que abra.">'
+    "Desactivar la analítica</a>"
+    '<span class="visually-hidden" role="status" data-analytics-status></span>'
+)
+
 _US_TOOLS_FOOTER_SECTION = """          <li class="footer-subhead">United States tools</li>
           <li><a href="/ntd/">U.S. NTD readiness</a></li>
           <li><a href="/equity/">U.S. equity</a></li>
@@ -281,6 +306,7 @@ FOOTER_HTML = f"""<footer class="site-footer">
             <li><a href="/press/">For reporters</a></li>
             <li><a href="/accessibility/">Accessibility</a></li>
             <li><a href="/about/#privacy">Privacy</a></li>
+            <li>{ANALYTICS_OPT_OUT_HTML}</li>
             <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
             <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
           </ul>
@@ -294,13 +320,14 @@ FOOTER_HTML = f"""<footer class="site-footer">
 # the labelled U.S. section discoverable, and U.S. agency pages remain unchanged.
 FOOTER_HTML_WITHOUT_US_TOOLS = FOOTER_HTML.replace(_US_TOOLS_FOOTER_SECTION.rstrip() + "\n", "")
 
-FOOTER_HTML_ES = """<footer class="site-footer">
+FOOTER_HTML_ES = f"""<footer class="site-footer">
     <div class="wrap">
       <p>Herramienta de código abierto para revisar datos de transporte público.</p>
       <p><a href="/es/">Buscar una agencia</a> ·
       <a href="/agencies/" hreflang="en">Directorio completo (en inglés)</a> ·
       <a href="/accessibility/" hreflang="en">Accesibilidad (en inglés)</a> ·
       <a href="/about/#privacy" hreflang="en">Privacidad (en inglés)</a> ·
+      {ANALYTICS_OPT_OUT_HTML_ES} ·
       <a href="/" hreflang="en">English</a></p>
     </div>
   </footer>"""

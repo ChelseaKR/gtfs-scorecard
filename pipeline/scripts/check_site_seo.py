@@ -190,6 +190,8 @@ class Page:
     og: dict[str, list[str]] = field(default_factory=lambda: defaultdict(list))
     ids: Counter[str] = field(default_factory=Counter)
     fragment_names: set[str] = field(default_factory=set)
+    # Elements carrying data-analytics-toggle, the footer opt-out (ADR 0056).
+    opt_out_controls: int = 0
 
 
 class PageParser(HTMLParser):
@@ -318,6 +320,8 @@ class PageParser(HTMLParser):
             self._inline_script_parts.append(data)
 
     def _collect_common(self, tag: str, values: dict[str, str]) -> None:
+        if "data-analytics-toggle" in values:
+            self.page.opt_out_controls += 1
         identifier = values.get("id", "").strip()
         if identifier:
             self.page.ids[identifier] += 1
@@ -977,9 +981,11 @@ def _validate_measurement(
     Four rules. Every page that is not a redirect stub loads the declared
     script exactly once, because a page without it is a page the disclosure
     on /about/#privacy does not describe, and a page with two of it reports
-    every view twice. A redirect stub loads nothing, since it is not a page a
-    reader is on. No page and no other script names a vendor analytics loader
-    or the measurement host itself, so the declared script stays the whole of
+    every view twice. Each such page also carries the footer opt-out control
+    (ADR 0056), so no page measures a reader without offering the way out.
+    A redirect stub loads nothing, since it is not a page a reader is on.
+    No page and no other script names a vendor analytics loader or the
+    measurement host itself, so the declared script stays the whole of
     what is sent. And the declared script names no https host but the ones
     declared for it (the measurement host, and the GA4 loader host of ADR
     0056), so another destination cannot arrive inside the file the contract
@@ -1039,6 +1045,16 @@ def _validate_page_measurement(page: Page, config: Config, findings: list[Findin
                 "measurement.duplicate",
                 page.relative_path,
                 f"page loads the measurement script {len(loads)} times (lines {lines})",
+            )
+        )
+        return 0
+    if not page.opt_out_controls:
+        # ADR 0056: a page that measures a reader offers the way to stop it.
+        findings.append(
+            Finding(
+                "measurement.opt_out_missing",
+                page.relative_path,
+                "page loads the measurement script but has no [data-analytics-toggle] opt-out",
             )
         )
         return 0

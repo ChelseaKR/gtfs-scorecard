@@ -67,7 +67,8 @@ recommending `@v1`.
   [ADR 0056](decisions/0056-google-analytics-4.md)) and no other analytics
   loader or visitor beacon. Google Analytics 4 is loaded only by that script,
   and `/about/#privacy` still says exactly what the script and GA4 record,
-  including the `_ga` cookies. Search Console DNS verification and sitemap
+  including the `_ga` cookies. Every page footer still carries the "Opt out of
+  analytics" control, and it still turns both tools off. Search Console DNS verification and sitemap
   submission remain external owner tasks; no Search Console credentials or
   configuration are added to the repo.
 - [ ] Rollback is a revert of the merge commit; any data or infrastructure exception has

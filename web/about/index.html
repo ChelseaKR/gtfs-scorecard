@@ -118,9 +118,9 @@
     <section aria-labelledby="privacy-h" id="privacy">
       <h2 class="section-title" id="privacy-h">What this site records about a visit</h2>
       <p>The site uses two measurement tools, PostHog and Google Analytics 4. One script loads
-      both, and it loads neither when your browser sends Global Privacy Control or Do Not
-      Track. The purpose is to learn which pages people land on and whether the paid bundle
-      page is reached and acted on.</p>
+      both. It loads neither if you opt out with the link at the foot of every page, or if
+      your browser sends Global Privacy Control or Do Not Track. The purpose is to learn which
+      pages people land on and whether the paid bundle page is reached and acted on.</p>
 
       <h3 id="privacy-posthog">PostHog</h3>
       <p>PostHog counts page views. For each one it records the page opened (the path only,
@@ -166,12 +166,18 @@
       are kept longer.</p>
 
       <h3 id="privacy-opt-out">Saying no</h3>
-      <p>To opt out of both tools, turn on
-      <a href="https://globalprivacycontrol.org/">Global Privacy Control</a> or Do Not Track in
-      your browser. The script checks both signals before it does anything. When either is
-      set, it sends nothing to PostHog and loads nothing from Google. You can also block
-      requests to us.i.posthog.com, www.googletagmanager.com, and google-analytics.com. Every
-      part of the site works the same either way.</p>
+      <p>To opt out of both tools, use the &ldquo;Opt out of analytics&rdquo; link at the foot
+      of any page. It turns off PostHog and Google Analytics at once, and it also deletes the
+      Google Analytics cookies. Your choice is saved in this browser on this device, in the
+      site's local storage under the name scorecard-analytics. It stays until you opt back in
+      or clear the site's data. The link then reads &ldquo;Opt back in to analytics&rdquo;, and
+      opting back in takes effect from the next page you open.</p>
+      <p>Your browser can say no for you, too. Turn on
+      <a href="https://globalprivacycontrol.org/">Global Privacy Control</a> or Do Not Track,
+      and the script checks both signals before it does anything. When either is set, it sends
+      nothing to PostHog and loads nothing from Google. You can also block requests to
+      us.i.posthog.com, www.googletagmanager.com, and google-analytics.com. Every part of the
+      site works the same either way.</p>
       <p>The project does not sell this data or share it beyond the two services named here.
       The script is the full record of what the site asks for and is published at
       <a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/web/src/measure.js">web/src/measure.js</a>.
@@ -247,6 +253,7 @@
             <li><a href="/press/">For reporters</a></li>
             <li><a href="/accessibility/">Accessibility</a></li>
             <li><a href="/about/#privacy">Privacy</a></li>
+            <li><a href="/about/#privacy-opt-out" data-analytics-toggle data-label-on="Opt out of analytics" data-label-off="Opt back in to analytics" data-status-off="Analytics is off on this device." data-status-on="Analytics comes back on from the next page you open.">Opt out of analytics</a><span class="visually-hidden" role="status" data-analytics-status></span></li>
             <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/CONTRIBUTING.md">Contribute</a></li>
             <li><a href="https://github.com/ChelseaKR/gtfs-scorecard/blob/main/docs/listing-policy.md">Listing &amp; removal policy</a></li>
           </ul>

@@ -39,9 +39,13 @@ from scorecard_pipeline.site_shell import (
 _REPO = Path(__file__).resolve().parents[2]
 _WEB = _REPO / "web"
 _SHIM = (_WEB / MEASURE_SCRIPT_PATH).read_text()
-# The PostHog block: everything before the GA4 block (ADR 0056), which
-# tests/test_measure_ga4.py holds. The promises below are PostHog's.
-_POSTHOG = _SHIM[: _SHIM.index("// Google Analytics 4 (docs/decisions/0056")]
+# The PostHog block: after the opt-out control and before the GA4 block (both
+# ADR 0056, held by tests/test_measure_ga4.py). The promises below are PostHog's.
+_POSTHOG = _SHIM[
+    _SHIM.index(
+        '(function () {\n  "use strict";\n\n  // Written at deploy time from the POSTHOG_KEY'
+    ) : _SHIM.index("// Google Analytics 4 (docs/decisions/0056")
+]
 _ABOUT = (_WEB / "about" / "index.html").read_text()
 _SETUP = (_WEB / "bundle" / "setup" / "index.html").read_text()
 _BUNDLE_JS = (_WEB / "src" / "bundle.js").read_text()
@@ -223,7 +227,7 @@ def test_the_shim_returns_before_sending_when_there_is_no_key() -> None:
     """The key check has to come before every other line of logic, so a deploy
     with no secret ships a file that does nothing rather than one that draws a
     visit id and then declines to send it."""
-    logic = _code_only(_SHIM[_SHIM.index('"use strict";') :])
+    logic = _code_only(_POSTHOG[_POSTHOG.index('"use strict";') :])
     assert logic.index("if (!KEY) return;") < logic.index("globalPrivacyControl")
     assert logic.index("if (!KEY) return;") < logic.index("sessionStorage")
     assert logic.index("if (!KEY) return;") < logic.index("fetch")

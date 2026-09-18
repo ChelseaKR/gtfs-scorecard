@@ -35,7 +35,8 @@ kept, and how to opt out is on the site at
 The script that loads both is `web/src/measure.js`, the decisions are
 [ADR 0055](decisions/0055-cookieless-site-measurement.md) and
 [ADR 0056](decisions/0056-google-analytics-4.md), and Global Privacy Control or
-Do Not Track switches both off. Site-quality checks use automated
+Do Not Track switches both off. So does the "Opt out of analytics" link in
+every page footer, which the browser remembers on that device. Site-quality checks use automated
 synthetic visits instead of observing real visitor sessions.
 
 Until 2026-09-13 the site recorded nothing about a visit at all. That rule

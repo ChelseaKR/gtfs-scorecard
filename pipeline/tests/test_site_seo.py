@@ -17,6 +17,8 @@ ORIGIN = "https://example.test"
 # one destination host, nothing else naming a telemetry host.
 MEASURE_HOST = "https://measure.example.test"
 MEASURE_TAG = '<script src="/src/measure.js" defer></script>'
+# ADR 0056: every measured page carries the footer opt-out control.
+OPT_OUT = "<span data-analytics-toggle>Opt out of analytics</span>"
 MEASURE_SHIM = f'/* fixture shim */\nvar HOST = "{MEASURE_HOST}";\n'
 # ADR 0056: the one other host the declared script may name.
 GA4_LOADER_HOST = "https://www.googletagmanager.com"
@@ -57,7 +59,7 @@ def _page(
   {measure}
   {extra_head}
 </head>
-<body>{heading}{body}</body>
+<body>{heading}{body}{OPT_OUT if measured else ""}</body>
 </html>
 """
 
@@ -650,6 +652,26 @@ def test_measurement_contract_requires_exactly_one_script_on_every_page(
     # The count beside html_files is of pages that hold the contract, so it
     # excludes all three and is printed even when the run fails.
     assert payload["summary"]["measured_pages"] == 6
+
+
+def test_measurement_contract_requires_the_opt_out_on_every_measured_page(
+    tmp_path: Path,
+) -> None:
+    site, config = _write_fixture(tmp_path)
+    report = tmp_path / "report.json"
+    assert _run(site, config, report).returncode == 0, report.read_text(encoding="utf-8")
+
+    # Negative control: strip the control from one page, assert it is gone,
+    # and the gate names that page.
+    _replace(site / "agencies/index.html", OPT_OUT, "")
+    assert "data-analytics-toggle" not in (site / "agencies/index.html").read_text(encoding="utf-8")
+
+    result = _run(site, config, report)
+
+    assert result.returncode == 1
+    payload = json.loads(report.read_text(encoding="utf-8"))
+    missing = [i["path"] for i in payload["findings"] if i["code"] == "measurement.opt_out_missing"]
+    assert missing == ["agencies/index.html"]
 
 
 def test_measurement_contract_holds_the_script_to_its_one_declared_host(

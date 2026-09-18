@@ -379,7 +379,9 @@ and engagement with the query string and referrer path dropped. It sets the
 first-party `_ga` cookies, which last up to two years, except in the EEA, the UK
 and Switzerland, where analytics storage is denied and no cookie is set. Google
 signals, ad personalization and ad storage are off everywhere. Both blocks load
-nothing under Global Privacy Control or Do Not Track. What they record is
+nothing under Global Privacy Control or Do Not Track, or for a reader who used
+the "Opt out of analytics" link in every page footer, which is remembered on
+that device and also deletes the GA4 cookies. What they record is
 stated at [/about/#privacy](https://gtfsscorecard.org/about/#privacy) and held by
 the structural check. Neither is real-user monitoring: no Core Web Vitals are
 collected. Search Console ownership verification and sitemap submission
