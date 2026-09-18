@@ -67,8 +67,20 @@ def _semgrep_ignores(path: str) -> bool:
 
 
 def _gitleaks_allowlisted(path: str) -> bool:
+    """Whether any global allowlist names ``path``.
+
+    Read from `[[allowlists]]`, the form .gitleaks.toml uses since #371, and
+    from the deprecated singular `[allowlist]` table too, so moving back to it
+    cannot make this check read an empty list and pass.
+    """
     config = tomllib.loads(GITLEAKS.read_text())
-    return any(re.search(pattern, path) for pattern in config["allowlist"]["paths"])
+    tables = list(config.get("allowlists", []))
+    if "allowlist" in config:
+        tables.append(config["allowlist"])
+    assert tables, ".gitleaks.toml has no global allowlist table to check"
+    patterns = [pattern for table in tables for pattern in table.get("paths", [])]
+    assert patterns, ".gitleaks.toml's allowlists name no paths; this check would be vacuous"
+    return any(re.search(pattern, path) for pattern in patterns)
 
 
 @pytest.mark.parametrize("path", HAND_WRITTEN)

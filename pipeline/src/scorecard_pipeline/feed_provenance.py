@@ -73,6 +73,29 @@ def confidence_source_note(provenance: FeedSourceProvenance, fetch_source: str) 
     )
 
 
+#: Plain-language wording for each fetch_auth kind (#371), used only in the
+#: sentence below. The credential itself never reaches any reader surface.
+_AUTH_KIND_WORDS = {
+    "header": "a request header",
+    "query": "a URL parameter",
+    "basic": "a user name and password",
+}
+
+
+def credentialed_fetch_note(auth_kind: str) -> str:
+    """Confidence note for bytes fetched from a registration-walled URL.
+
+    States that a credential was used and how it was presented, so a reader
+    knows the source is gated, and says plainly that the credential is not
+    part of the published record.
+    """
+    how = _AUTH_KIND_WORDS.get(auth_kind, "a credential")
+    return (
+        "The feed URL on file requires registration. This run presented the "
+        f"operator's credential as {how}; the credential itself is not published."
+    )
+
+
 def feed_source_lede(provenance: object, fetch_source: object) -> str:
     """Short page lede; malformed or legacy provenance fails closed to unverified."""
 

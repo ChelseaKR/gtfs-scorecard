@@ -267,6 +267,9 @@ Changelog:
              "user_agent": "...",     // the User-Agent presented to that server
              "max_attempts": 4,       // configured attempt ceiling; omitted when unknown
              "origin_error": "...",  // exception that forced the mirror; only on mirror fetches
+             "auth": "env-ref",       // only when the feed URL needed a credential (registry
+             "auth_kind": "header",   // fetch_auth): header, query, or basic. Never the
+                                      // credential; final_url then carries no query string
              "reader_archive_profile": "flat-single-root-v1",
              "reader_archive_normalized": true }, // optional; Scorecard readers flattened one
                                                    // root folder/trimmed filename whitespace

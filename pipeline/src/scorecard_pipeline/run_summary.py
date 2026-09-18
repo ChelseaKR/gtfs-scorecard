@@ -42,15 +42,23 @@ class AgencyOutcome:
     mirrored: bool = False
     cache_hit: bool = False
     wall_seconds: float = 0.0
+    # A fixed, named reason for an unreachable outcome when the pipeline knows
+    # one that is not the publisher's doing: today only "credential not
+    # configured" (#371). None, and absent from the JSON, otherwise, so every
+    # existing outcome line is byte-identical.
+    reason: str | None = None
 
     def to_json(self) -> dict[str, Any]:
-        return {
+        payload: dict[str, Any] = {
             "agency_id": self.agency_id,
             "outcome": self.outcome,
             "mirrored": self.mirrored,
             "cache_hit": self.cache_hit,
             "wall_seconds": round(self.wall_seconds, 3),
         }
+        if self.reason:
+            payload["reason"] = self.reason
+        return payload
 
     @staticmethod
     def from_json(d: dict[str, Any]) -> AgencyOutcome:
@@ -60,6 +68,7 @@ class AgencyOutcome:
             mirrored=bool(d.get("mirrored", False)),
             cache_hit=bool(d.get("cache_hit", False)),
             wall_seconds=float(d.get("wall_seconds", 0.0)),
+            reason=str(d["reason"]) if d.get("reason") else None,
         )
 
 
@@ -103,7 +112,8 @@ def build_shard_summary(
     scored = [o for o in outcomes if o.outcome == "scored"]
     reused = [o for o in outcomes if o.outcome == "reused"]
     unreachable = [o for o in outcomes if o.outcome == "unreachable"]
-    return {
+    reasons = {o.agency_id: o.reason for o in unreachable if o.reason}
+    summary: dict[str, Any] = {
         "shard": shard,
         "started_at": started_at.isoformat(),
         "finished_at": finished_at.isoformat(),
@@ -116,6 +126,11 @@ def build_shard_summary(
         "cache_hit": sum(1 for o in outcomes if o.cache_hit),
         "unreachable_agencies": sorted(o.agency_id for o in unreachable),
     }
+    if reasons:
+        # Only when some unreachable feed has a named reason, so a summary
+        # without one keeps its existing shape.
+        summary["unreachable_reasons"] = dict(sorted(reasons.items()))
+    return summary
 
 
 def merge_run_summaries(
@@ -157,6 +172,12 @@ def merge_run_summaries(
     unreachable_agencies = sorted(
         {aid for s in shards for aid in s.get("unreachable_agencies", [])}
     )
+    unreachable_reasons = {
+        str(aid): str(reason)
+        for s in shards
+        if isinstance(s.get("unreachable_reasons"), dict)
+        for aid, reason in s["unreachable_reasons"].items()
+    }
     fraction_unreachable = (total_unreachable / total_agencies) if total_agencies else 0.0
     missing_shards = (
         max(0, expected_shard_count - len(shards)) if expected_shard_count is not None else 0
@@ -176,7 +197,7 @@ def merge_run_summaries(
             f"{total_unreachable} of {total_agencies} attempted feed records could not be "
             f"refreshed, above the {round(DEGRADED_THRESHOLD * 100)}% warning threshold."
         )
-    return {
+    merged: dict[str, Any] = {
         "generated_at": generated_at.isoformat(),
         "shard_count": len(shards),
         "expected_shard_count": expected_shard_count,
@@ -193,3 +214,6 @@ def merge_run_summaries(
         "degraded_threshold": DEGRADED_THRESHOLD,
         "shards": shards,
     }
+    if unreachable_reasons:
+        merged["unreachable_reasons"] = dict(sorted(unreachable_reasons.items()))
+    return merged

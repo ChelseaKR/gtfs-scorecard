@@ -14,7 +14,8 @@ from typing import NoReturn
 
 import yaml
 
-from .config import AGENCIES, Agency, ReuseEvidence, repo_root, utc_today
+from .config import AGENCIES, Agency, FetchAuth, ReuseEvidence, repo_root, utc_today
+from .feed_auth import FETCH_AUTH_KEYS, FETCH_AUTH_KINDS, name_problem
 from .location import SUPPORTED_COUNTRY_CODES, normalize_location
 
 ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
@@ -168,6 +169,54 @@ def _parse_reuse_evidence(raw: object, *, entry_label: str, source: str) -> Reus
     )
 
 
+def _parse_fetch_auth(
+    entry: dict[str, object], *, entry_label: str, static_url: str, source: str
+) -> FetchAuth | None:
+    """Validate an entry's ``fetch_auth`` block's shape (issue #371); None when
+    the entry has none, which is every keyless feed.
+
+    Shape only. Whether ``secret`` is a proper environment-variable reference
+    rather than a literal credential is ``scorecard lint --strict``'s
+    ``literal_credential`` rule, and fetch time refuses it again (feed_auth.py).
+    No message here quotes ``secret``: if it holds a real credential, a loader
+    error printed to a CI log would publish it a second time.
+    """
+    field = "fetch_auth"
+    if field not in entry:
+        return None
+    raw = entry[field]
+    if not isinstance(raw, dict):
+        _fail(entry_label, f"{field} must be a mapping with kind and secret", source)
+    unknown = set(raw) - FETCH_AUTH_KEYS
+    if unknown:
+        # Key names are the curator's own structure, not the credential.
+        _fail(
+            entry_label, f"unknown {field} field(s): {', '.join(sorted(map(str, unknown)))}", source
+        )
+    kind = raw.get("kind")
+    if kind not in FETCH_AUTH_KINDS:
+        _fail(entry_label, f"{field}.kind must be one of {list(FETCH_AUTH_KINDS)}", source)
+    secret = raw.get("secret")
+    if not isinstance(secret, str) or not secret.strip():
+        _fail(
+            entry_label,
+            f"{field}.secret must name the environment variable that holds the credential",
+            source,
+        )
+    name = raw.get("name", "")
+    if not isinstance(name, str):
+        _fail(entry_label, f"{field}.name must be a string", source)
+    problem = name_problem(str(kind), name.strip())
+    if problem is not None:
+        _fail(entry_label, problem, source)
+    # A credential sent over plain http is readable by anyone on the path, and
+    # net.py scopes credential headers to the configured URL's scheme too, so an
+    # http record could never receive them after an https redirect either.
+    if not static_url.startswith("https://"):
+        _fail(entry_label, f"{field} requires an https static_gtfs_url", source)
+    return FetchAuth(kind=str(kind), secret=secret.strip(), name=name.strip())
+
+
 def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     raw: object,
     *,
@@ -248,6 +297,7 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             "fare_free",
             "large_feed",
             "reuse_evidence",
+            "fetch_auth",
         }
         if unknown:
             _fail(label, f"unknown field(s): {', '.join(sorted(unknown))}", entry_source)
@@ -305,6 +355,10 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         official_raw = entry.get("is_official")
         if official_raw is not None and not isinstance(official_raw, bool):
             _fail(label, f"is_official must be true or false, got {official_raw!r}", entry_source)
+
+        fetch_auth = _parse_fetch_auth(
+            entry, entry_label=label, static_url=static_url, source=entry_source
+        )
 
         reuse_evidence = None
         if "reuse_evidence" in entry:
@@ -379,6 +433,7 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                 fare_free=fare_free,
                 large_feed=large_feed,
                 reuse_evidence=reuse_evidence,
+                fetch_auth=fetch_auth,
             )
         )
     if not agencies:

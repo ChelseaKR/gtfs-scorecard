@@ -49,6 +49,21 @@ class ReuseEvidence:
 
 
 @dataclass(frozen=True)
+class FetchAuth:
+    """How to present a credential to a registration-walled feed URL (#371).
+
+    ``secret`` is the *name* of an environment variable, never the credential
+    itself; feed_auth.py resolves it at fetch time and fails closed when it is
+    missing. ``name`` is the header or query-parameter name the publisher
+    expects; it is empty for ``basic``, which always uses ``Authorization``.
+    """
+
+    kind: str
+    secret: str
+    name: str = ""
+
+
+@dataclass(frozen=True)
 class Agency:
     """One transit agency tracked by the scorecard."""
 
@@ -133,6 +148,11 @@ class Agency:
     # inspection) stay unchanged. Default False keeps every ordinary feed on the
     # tight standard caps. See fetch.LARGE_LIMITS and docs/global-coverage-roadmap.md.
     large_feed: bool = False
+    # A credential reference for a feed behind a registration wall (#371). None
+    # is every ordinary keyless feed. When set, fetching fails closed without
+    # the named environment variable and never falls back to a mirror. See
+    # feed_auth.py and registry/README.md.
+    fetch_auth: FetchAuth | None = None
 
     @property
     def organization_key(self) -> str:

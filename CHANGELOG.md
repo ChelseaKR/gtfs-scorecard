@@ -29,6 +29,23 @@ the declared public surface).
 
 ### Added
 
+- **Credentialed feed sources, the mechanism half (#371).** A registry record
+  can now carry `fetch_auth: {kind: header|query|basic, name, secret}`, where
+  `secret` names an environment variable in the `SCORECARD_FEED_AUTH_`
+  namespace and never holds the key (`feed_auth.py`, `registry/README.md`).
+  Fail-closed is the load-bearing part: an unset or empty variable raises
+  before any request, records the run outcome as unreachable with the reason
+  `credential not configured`, writes no artifact, and never falls back to the
+  Mobility Database mirror. With the variable set, the credential goes only to
+  the configured URL's own origin (a cross-host redirect does not receive it),
+  the artifact's `fetch` block adds `auth: env-ref` and `auth_kind`, the
+  published `final_url` drops its query string, and a failed request is
+  reported by exception class and HTTP status only. `scorecard lint --strict`
+  refuses a literal credential in the record as `literal_credential`, and the
+  keyless liveness check skips these records. No credential and no Austria or
+  New York record is added; admitting one still needs an owner-registered key
+  and a terms review, and the issue stays open for that.
+
 - **`scorecard license-audit` (part of
   [#372](https://github.com/ChelseaKR/gtfs-scorecard/issues/372)).** Counts
   every registry record by the one licence its `license_note` names, from a
@@ -98,6 +115,16 @@ the declared public surface).
   and ADR 0031 say the same thing the site does.
 
 ### Fixed
+
+- **The secret scan skipped registry YAML entirely, so no rule could fire there (#371).**
+  `.gitleaks.toml` allowlisted `^registry/.*\.ya?ml$` by path, and gitleaks
+  skips a path-allowlisted file for every rule without reading it, so a rule
+  aimed at the registry reported nothing. The allowlist now matches the shape
+  of the line instead: the six YAML fields that hold a feed URL, which is where
+  all six public feed-URL keys the default rules find in `registry/` sit. A new
+  rule, `scorecard-fetch-auth-literal-secret`, refuses any `fetch_auth.secret`
+  value that is not a `SCORECARD_FEED_AUTH_` name. A full-tree scan is clean
+  before and after the change.
 
 - **Advance the AL2023 snapshot pin past 18 HIGH openssl CVEs (2026-09-16).**
   Both Lambda images (`infra/compute`, `infra/instant-score`) `dnf upgrade`

@@ -309,9 +309,13 @@ anonymously (`GET /api/public/v1/data-sets`) but the file endpoint returns 401,
 and the platform's own documentation says accounts are created manually and
 cannot be scripted. MVO's terms already permit commercial reuse with
 attribution. One project account would unlock eight fixed-route feeds covering
-all nine Bundesländer plus six Flex feeds. This also needs code:
-`static_gtfs_url` assumes a keyless URL, so authenticated fetching does not
-exist in the pipeline.
+all nine Bundesländer plus six Flex feeds. The code half now exists (#371): a
+record can carry `fetch_auth` naming an environment variable, and a missing
+variable reads as unreachable with no mirror fallback (see
+`registry/README.md`). What remains is the owner's: register the account,
+store the key as a secret, and review MVO's terms into `reuse_evidence`, since
+a key grants access and not a licence. The same applies to New York's
+`datatools-511ny` bucket below. No such record is admitted yet.
 
 **ESHOT İzmir — a host that is down.** 19 MB, on `acikveri.bizizmir.com`, under
 the same CC BY 4.0 terms already approved for two registered İzmir records. TCP

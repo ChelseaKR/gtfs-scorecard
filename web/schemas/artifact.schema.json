@@ -213,6 +213,10 @@
         "final_url",
         "user_agent"
       ],
+      "dependentRequired": {
+        "auth": ["auth_kind"],
+        "auth_kind": ["auth"]
+      },
       "properties": {
         "source": {
           "type": "string"
@@ -228,6 +232,16 @@
         },
         "origin_error": {
           "type": "string"
+        },
+        "auth": {
+          "description": "Present only when the feed URL required a credential (issue #371). The credential was supplied by reference from the pipeline's environment; the artifact never carries the credential or the name of the variable holding it.",
+          "type": "string",
+          "const": "env-ref"
+        },
+        "auth_kind": {
+          "description": "How the credential was presented: as a request header, a URL query parameter, or HTTP basic authentication.",
+          "type": "string",
+          "enum": ["header", "query", "basic"]
         },
         "reader_archive_normalized": {
           "type": "boolean",

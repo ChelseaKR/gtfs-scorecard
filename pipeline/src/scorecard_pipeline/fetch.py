@@ -17,7 +17,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from .config import Agency, raw_dir
+from .config import Agency, FetchAuth, raw_dir
+from .feed_auth import (
+    AUTH_DISCLOSURE,
+    FETCH_AUTH_KINDS,
+    describe_failure,
+    published_url,
+    resolve_credential,
+)
 from .net import FetchTrace, UnresolvableHostError, UnsafeURLError, safe_download, safe_get
 
 log = logging.getLogger(__name__)
@@ -128,6 +135,19 @@ class FetchProvenance:
     final_url: str
     max_attempts: int
     origin_error: str | None = None
+    # The fetch_auth kind when the bytes came from a credentialed request
+    # (#371); None for every keyless fetch. Never the credential.
+    auth_kind: str | None = None
+
+
+class CredentialedFetchError(RuntimeError):
+    """A credentialed request failed; the message never quotes a URL.
+
+    A requests error names the full URL it was fetching, and a ``query``
+    credential is part of that URL. This replaces it with the exception class
+    and HTTP status. It is raised ``from None`` so the original, URL-bearing
+    exception is not printed as the cause either.
+    """
 
 
 @dataclass(frozen=True)
@@ -160,6 +180,9 @@ class FetchResult:
     # file in one directory or added surrounding filename whitespace.
     reader_path: Path | None = None
     reader_archive_normalized: bool = False
+    # The fetch_auth kind the bytes were fetched with (#371), read back from
+    # the provenance sidecar on reuse. None for a keyless fetch.
+    auth_kind: str | None = None
 
     @property
     def reader_view_path(self) -> Path:
@@ -418,12 +441,22 @@ def prepare_reader_archive(path: Path, limits: ArchiveLimits | None = None) -> R
     return ReaderArchive(path=output, normalized=True)
 
 
-def _fetch_to(url: str, dest: Path, *, max_bytes: int, retries: int, large: bool) -> str:
+def _fetch_to(
+    url: str,
+    dest: Path,
+    *,
+    max_bytes: int,
+    retries: int,
+    large: bool,
+    credential_headers: dict[str, str] | None = None,
+) -> str:
     """Fetch ``url`` into ``dest``, returning the served final URL.
 
     A large feed streams straight to disk with a bounded memory footprint
     (net.safe_download); a standard feed keeps the existing buffer-then-write
     path so the 1,300 ordinary feeds see byte-for-byte the same behavior.
+    ``credential_headers`` are passed only by the credentialed path, and net.py
+    sends them to the requested URL's own origin only.
     """
     trace = FetchTrace()
     if large:
@@ -435,6 +468,7 @@ def _fetch_to(url: str, dest: Path, *, max_bytes: int, retries: int, large: bool
             max_bytes=max_bytes,
             retries=retries,
             trace=trace,
+            credential_headers=credential_headers,
         )
     else:
         body = safe_get(
@@ -444,9 +478,48 @@ def _fetch_to(url: str, dest: Path, *, max_bytes: int, retries: int, large: bool
             max_bytes=max_bytes,
             retries=retries,
             trace=trace,
+            credential_headers=credential_headers,
         )
         dest.write_bytes(body)
     return trace.final_url or url
+
+
+def _download_credentialed(
+    agency: Agency, auth: FetchAuth, dest: Path, limits: ArchiveLimits | None
+) -> FetchProvenance:
+    """Fetch a registration-walled feed with the credential its record names.
+
+    Fail-closed by construction (issue #371, feed_auth.py): the credential is
+    resolved before anything touches the network, so a missing variable raises
+    CredentialNotConfiguredError with no request made. There is no mirror
+    branch here at all. A failed request raises CredentialedFetchError, whose
+    message carries no URL. The recorded final URL is the published form
+    (scheme, host, path), because the query can hold the credential.
+    """
+    import requests
+
+    credential = resolve_credential(auth)
+    large = limits is not None
+    max_bytes = limits.max_download_bytes if limits else MAX_GTFS_DOWNLOAD_BYTES
+    try:
+        final_url = _fetch_to(
+            credential.apply_to_url(agency.static_gtfs_url),
+            dest,
+            max_bytes=max_bytes,
+            retries=FETCH_RETRIES,
+            large=large,
+            credential_headers=credential.headers or None,
+        )
+    except (requests.exceptions.RequestException, UnsafeURLError) as exc:
+        raise CredentialedFetchError(
+            f"credentialed fetch of the configured feed failed: {describe_failure(exc)}"
+        ) from None
+    return FetchProvenance(
+        source="origin",
+        final_url=published_url(final_url),
+        max_attempts=FETCH_RETRIES + 1,
+        auth_kind=credential.kind,
+    )
 
 
 def _download_with_mirror_fallback(
@@ -464,8 +537,14 @@ def _download_with_mirror_fallback(
     Returns a FetchProvenance stating which URL actually served the bytes now on
     disk, so the published artifact can say "we scored the mirror copy" instead
     of passing a mirror fetch off as an origin fetch.
+
+    A record with ``fetch_auth`` never reaches the fallback below: it goes to
+    _download_credentialed, which has no mirror branch (issue #371).
     """
     import requests
+
+    if agency.fetch_auth is not None:
+        return _download_credentialed(agency, agency.fetch_auth, dest, limits)
 
     large = limits is not None
     max_bytes = limits.max_download_bytes if limits else MAX_GTFS_DOWNLOAD_BYTES
@@ -521,6 +600,11 @@ def _write_provenance_sidecar(dest: Path, prov: FetchProvenance) -> None:
     }
     if prov.origin_error:
         payload["origin_error"] = prov.origin_error
+    if prov.auth_kind:
+        # The disclosure, never the credential: a rerun that reuses these bytes
+        # must still say they came from a gated endpoint.
+        payload["auth"] = AUTH_DISCLOSURE
+        payload["auth_kind"] = prov.auth_kind
     sidecar = dest.parent / PROVENANCE_FILENAME
     sidecar.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")
 
@@ -537,6 +621,16 @@ def _read_provenance_sidecar(dest: Path) -> dict[str, Any]:
     except (OSError, json.JSONDecodeError):
         return {}
     return data if isinstance(data, dict) else {}
+
+
+def _recorded_auth_kind(recorded: dict[str, Any]) -> str | None:
+    """The auth kind a sidecar records, or None when it records none or an
+    unrecognised one. Only the fixed disclosure and a known kind are read
+    back, so a hand-edited sidecar cannot put arbitrary text in an artifact."""
+    kind = recorded.get("auth_kind")
+    if recorded.get("auth") == AUTH_DISCLOSURE and kind in FETCH_AUTH_KINDS:
+        return str(kind)
+    return None
 
 
 def fetch_static(agency: Agency, date: dt.date, force: bool = False) -> FetchResult:
@@ -571,6 +665,7 @@ def fetch_static(agency: Agency, date: dt.date, force: bool = False) -> FetchRes
             origin_error=str(recorded["origin_error"]) if recorded.get("origin_error") else None,
             reader_path=reader_archive.path,
             reader_archive_normalized=reader_archive.normalized,
+            auth_kind=_recorded_auth_kind(recorded),
         )
 
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -584,6 +679,8 @@ def fetch_static(agency: Agency, date: dt.date, force: bool = False) -> FetchRes
 
     if not zipfile.is_zipfile(tmp):
         tmp.unlink(missing_ok=True)
+        # static_gtfs_url is the credential-free URL on file, even for a
+        # credentialed record: a query credential is appended only in flight.
         raise ValueError(f"{agency.id}: response from {agency.static_gtfs_url} is not a zip")
     try:
         _validate_gtfs_archive(tmp, limits)
@@ -609,4 +706,5 @@ def fetch_static(agency: Agency, date: dt.date, force: bool = False) -> FetchRes
         origin_error=prov.origin_error,
         reader_path=reader_archive.path,
         reader_archive_normalized=reader_archive.normalized,
+        auth_kind=prov.auth_kind,
     )

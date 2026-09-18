@@ -1382,6 +1382,11 @@ def _confidence_section(artifact: dict[str, Any]) -> str:
     if not conf:
         return ""
     source_phrase = _confidence_source_phrase(artifact)
+    fetch_block = artifact.get("fetch")
+    if isinstance(fetch_block, dict) and fetch_block.get("auth") == "env-ref":
+        # Issue #371: the provenance line says the source is gated. Only the
+        # fixed disclosure is read, never anything that could hold the key.
+        source_phrase += ", using a registered credential"
     line = (
         f"Measured {conf.get('measured_categories', 0)} of "
         f"{conf.get('total_categories', 0)} score categories{source_phrase}."

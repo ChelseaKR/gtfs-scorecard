@@ -89,6 +89,15 @@ receipt. It records no participant action and makes no causal claim. Existing
 name the immutable 1.2 schema URL; regenerate one when you need the stricter
 assignment and decision guarantees.
 
+A feed behind a registration wall can still be admitted by hand with a
+`fetch_auth` block that names an environment variable, never the key itself
+(see [registry/README.md](../registry/README.md#credentialed-feeds-fetch_auth)).
+Your fork holds its own keys: add each one as an Actions secret named
+`SCORECARD_FEED_AUTH_<NAME>` and map it into the environment of the step that
+runs `scorecard run`. Until you do, that record reads as "credential not
+configured" and is not scored. Registering for a key does not license the
+feed, so review the publisher's terms as you would for any other record.
+
 ### 3. Set your branding
 
 ```sh
