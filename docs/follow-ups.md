@@ -229,6 +229,18 @@ What has to be decided, once, for both:
    not a curation one, and the affected agencies should be handled under
    [`listing-policy.md`](listing-policy.md).
 
+**Measured 2026-09-17 with `scorecard license-audit` (issue #372).** The
+registry's notes do not support 160, and the figure was not reproducible when
+this section landed either. 126 records name a share-alike licence as their
+only licence: 122 in France and one each in Germany, Italy, Bulgaria, and New
+Caledonia, all of them canonical. Six more name one beside another licence and
+need a curator's reading, not a count: four NVBW records whose notes say no
+ODbL condition applies, AVV Aachen (CC0 schedule data with ODbL route shapes),
+and AMAT Palermo (CC BY 4.0 with a CC BY-SA tram marking). Neither Estonian
+note names CC BY-SA, so the audit counts both as unknown. The question above is
+unchanged. Only its size is measured here, and the numbers above are left as
+written.
+
 Do not resolve this by editing one side quietly to match the other.
 
 ## Teach `discover` to check its own replacement candidate

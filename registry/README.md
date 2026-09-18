@@ -36,7 +36,10 @@ must not be guessed merely to choose a shard.
 - `rt_urls`: mapping whose supported keys are `trip_updates`,
   `vehicle_positions`, and `service_alerts`; every value is an `http(s)` URL.
 - `rt_note`, `license_note`, `operating_note`, `ntd_note`: curator-facing
-  explanatory text shown on the relevant scorecard surfaces.
+  explanatory text shown on the relevant scorecard surfaces. `scorecard
+  license-audit` reads `license_note` as data, so name the one licence that
+  applies by its usual name or SPDX id. A note that names a second licence,
+  even to say it does not apply, is reported as `unknown` for a curator to read.
 - `mdb_id`: Mobility Database source id used for exact feed rediscovery.
 - `ntd_id`: four- or five-digit US National Transit Database id.
 - `organization_id`: stable operator slug shared by related feeds.
