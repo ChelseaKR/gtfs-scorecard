@@ -719,8 +719,104 @@
           "minimum": 1,
           "maximum": 3,
           "description": "1-based position in top_fixes; present only there."
+        },
+        "consequence": {
+          "$ref": "#/$defs/consequence",
+          "description": "What this finding costs: network reach, annual rider-trips, and served-area need, each a value or null with a reason. Added in schema 1.19; absent on older snapshots."
         }
       },
+      "additionalProperties": false
+    },
+    "consequence": {
+      "type": "object",
+      "description": "Per-finding consequence block (consequence.py). Reach is computed from this artifact. Ridership and served-area need are properties of the feed and are null with a reason wherever the writer did not join them; not_joined_here means the step that wrote this record does not read that input, not that the data does not exist.",
+      "required": ["code", "reach", "ridership", "served_area_need", "line", "absences"],
+      "properties": {
+        "code": { "type": "string" },
+        "reach": { "$ref": "#/$defs/consequenceReach" },
+        "ridership": { "$ref": "#/$defs/consequenceRidership" },
+        "served_area_need": { "$ref": "#/$defs/consequenceNeed" },
+        "line": { "type": "string", "minLength": 1 },
+        "absences": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      },
+      "additionalProperties": false
+    },
+    "consequenceReach": {
+      "type": "object",
+      "description": "A share with an empty reason, or a null share with the reason it is not known. Never both. A finding with basis none has no share. Identifiers and labels that do not apply are null, never empty strings.",
+      "required": ["basis", "basis_label", "affected", "total", "share", "total_source", "reason"],
+      "properties": {
+        "basis": { "type": "string", "enum": ["stops", "boardable_stops", "routes", "trips", "none"] },
+        "basis_label": { "type": ["string", "null"], "minLength": 1 },
+        "affected": { "type": ["integer", "null"], "minimum": 0 },
+        "total": { "type": ["integer", "null"], "minimum": 1 },
+        "share": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
+        "total_source": { "type": ["string", "null"], "minLength": 1 },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "",
+            "feed_level",
+            "not_network_countable",
+            "sampled_window",
+            "validator_notice",
+            "unmapped_finding",
+            "denominator_missing",
+            "inconsistent_counts",
+            "count_missing"
+          ]
+        }
+      },
+      "oneOf": [
+        { "properties": { "share": { "type": "number" }, "reason": { "const": "" } } },
+        { "properties": { "share": { "type": "null" }, "reason": { "type": "string", "minLength": 1 } } }
+      ],
+      "if": { "properties": { "basis": { "const": "none" } } },
+      "then": { "properties": { "share": { "type": "null" }, "total": { "type": "null" }, "basis_label": { "type": "null" } } },
+      "additionalProperties": false
+    },
+    "consequenceRidership": {
+      "type": "object",
+      "description": "Annual rider-trips with an empty reason, or null with the reason they are not known. An absence is never published as zero.",
+      "required": ["annual_rider_trips", "ntd_id", "reason"],
+      "properties": {
+        "annual_rider_trips": { "type": ["integer", "null"], "minimum": 0 },
+        "ntd_id": { "type": ["string", "null"], "minLength": 1 },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "",
+            "outside_ridership_scope",
+            "no_ridership_data",
+            "no_ntd_id",
+            "duplicate_ntd_reporter",
+            "unmatched_ntd_id",
+            "not_joined_here"
+          ]
+        }
+      },
+      "oneOf": [
+        { "properties": { "annual_rider_trips": { "type": "integer" }, "reason": { "const": "" } } },
+        { "properties": { "annual_rider_trips": { "type": "null" }, "reason": { "type": "string", "minLength": 1 } } }
+      ],
+      "additionalProperties": false
+    },
+    "consequenceNeed": {
+      "type": "object",
+      "description": "A within-country need tier with the scale that produced it, or null with the reason it is not known. Tiers from different scales are not comparable.",
+      "required": ["tier", "scale", "reason"],
+      "properties": {
+        "tier": { "enum": ["high", "moderate", "lower", null] },
+        "scale": { "enum": ["us_acs", "ca_cimd", null] },
+        "reason": {
+          "type": "string",
+          "enum": ["", "outside_need_scope", "no_served_area_data", "unknown_tier", "not_joined_here"]
+        }
+      },
+      "oneOf": [
+        { "properties": { "tier": { "type": "string" }, "reason": { "const": "" } } },
+        { "properties": { "tier": { "type": "null" }, "reason": { "type": "string", "minLength": 1 } } }
+      ],
       "additionalProperties": false
     }
   }

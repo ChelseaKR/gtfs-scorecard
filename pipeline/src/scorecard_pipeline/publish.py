@@ -390,6 +390,24 @@ def _with_current_conformance(artifact: dict[str, Any]) -> dict[str, Any]:
     return current
 
 
+def _with_consequences(artifact: dict[str, Any], agencies: Iterable[Agency]) -> dict[str, Any]:
+    """Attach a consequence block to every finding (issue #367).
+
+    Done here rather than in ``build_artifact`` because both writers pass
+    through ``publish``: the full score and the freshness sweep, which rebuilds
+    ``top_fixes`` and the freshness findings from their fields and would drop a
+    block attached earlier. The shared-reporter quarantine is computed over
+    every canonical registry record, the same set ``rollups`` and
+    ``render_site`` use, so a record whose NTD reporter another feed also
+    claims gets an absence instead of that reporter's whole count.
+    """
+    from .consequence import with_consequences
+    from .ridership import duplicate_ntd_reporter_ids
+
+    quarantined = duplicate_ntd_reporter_ids(a for a in agencies if a.is_canonical_feed)
+    return with_consequences(artifact, quarantined_ntd_ids=quarantined)
+
+
 def publish(artifact: dict[str, Any]) -> Path:
     """Write historical evidence and, only for a current feed, current pointers.
 
@@ -400,7 +418,7 @@ def publish(artifact: dict[str, Any]) -> Path:
     """
     from .config import AGENCIES
 
-    artifact = _with_current_conformance(artifact)
+    artifact = _with_consequences(_with_current_conformance(artifact), AGENCIES.values())
     validate_artifact(artifact)
     agency_id = str(artifact["agency"]["id"])
     date = str(artifact["snapshot_date"])

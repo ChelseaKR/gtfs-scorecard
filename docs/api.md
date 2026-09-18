@@ -65,7 +65,7 @@ page counts.
 
 ## Versioning
 
-Every artifact carries a `schema_version` (currently `1.18`). The rule for
+Every artifact carries a `schema_version` (currently `1.19`). The rule for
 consumers: tolerate added fields, and treat a change in the major version as a
 breaking change worth pinning against. New fields are additive within a major
 version. When a field's meaning changes or a field is removed, the major
@@ -119,6 +119,13 @@ the bytes analysed. Releases:
 
 Changelog:
 
+- `1.19` adds an optional `consequence` block to every category finding and
+  `top_fixes` entry: the finding's network reach, plus annual rider-trips and
+  served-area need as values or as `null` with a reason. The per-agency
+  writer does not read the ridership snapshot or the need overlays, so
+  those two carry `not_joined_here` there. See "Consequence block" below.
+  The version bump rebuilds each unchanged feed's artifact once. Additive;
+  grades, fix order, and the scoring profile are unchanged.
 - `1.16` adds `reachable_kinds` to Realtime details and flattens exact
   TripUpdates, VehiclePositions, and ServiceAlerts latest-sample reachability
   into `api/v1/features.json`. It also exposes `realtime_fresh`, which is true
@@ -201,7 +208,7 @@ Changelog:
 
 ```jsonc
 {
-  "schema_version": "1.18",
+  "schema_version": "1.19",
   "rubric_version": "1.3",
   "scoring_profile": {
     "id": "gtfs-scorecard-1.3",
@@ -345,6 +352,55 @@ shapes), with a plain-language `detail` and, when not ready, a concrete `fix`.
 Like `ntd_ready`, it is a data-quality heads-up, never an official
 determination.
 
+## Consequence block
+
+From schema 1.19, every category finding and every `top_fixes` entry carries a
+`consequence` block. It says what the finding costs, not only what is wrong,
+and it states each number it does not have instead of filling one in.
+
+```jsonc
+"consequence": {
+  "code": "scorecard_wheelchair_boarding_unknown",
+  "reach": {
+    "basis": "stops", "basis_label": "stops",
+    "affected": 296, "total": 296, "share": 1.0,
+    "total_source": "geo.stop_count", "reason": ""
+  },
+  "ridership": { "annual_rider_trips": null, "ntd_id": "90142", "reason": "not_joined_here" },
+  "served_area_need": { "tier": null, "scale": "us_acs", "reason": "not_joined_here" },
+  "line": "Fixing this covers all 296 stops in the feed.",
+  "absences": ["This record does not include annual rider-trips. ...", "..."]
+}
+```
+
+- `reach` divides the finding's `count` by the one published total that the
+  finding is actually counted against (`basis`). A finding with no countable
+  share has `basis: "none"` and a `reason` such as `feed_level`,
+  `sampled_window`, or `validator_notice`. A count larger than its total is
+  reported as `inconsistent_counts`, never as a share above 1.
+- `ridership` is the feed's National Transit Database reporter's annual
+  rider-trips. The NTD covers United States reporters only, so a feed
+  elsewhere carries `outside_ridership_scope`: unknown, not zero. When more
+  than one registry record claims the same reporter, each carries
+  `duplicate_ntd_reporter` instead of the reporter's whole count.
+- `served_area_need` is a need tier with the within-country `scale` that
+  produced it (`us_acs` or `ca_cimd`). Tiers from different scales are not
+  comparable, so no comparison is made across them.
+
+Each of the three is either a value with an empty `reason` or `null` with a
+non-empty one, and the schema rejects any other combination. An identifier or
+label that does not apply (`ntd_id`, `scale`, `basis_label`, `total_source`) is
+`null`, never an empty string, and a finding with `basis: "none"` never carries
+a share. A consumer should read `null` as "not known here", never as zero.
+
+`not_joined_here` means the step that wrote the record does not read that
+input. It does not mean the data does not exist. Per-agency records are written
+in the daily score shards and the intraday refresh. The ridership snapshot is
+fetched later in the daily run, and the need overlays are built by their own
+workflows, so today every United States and Canadian record states those two
+as `not_joined_here`. Where they will be joined is still open (issue #367).
+Absent on artifacts published before schema 1.19.
+
 ## Freshness fields
 
 The `freshness` category's `details` carry the feed's validity window, and two
@@ -385,7 +441,7 @@ whole picture in a single request rather than fetching each `latest.json`.
 ```jsonc
 {
   "source": "https://gtfsscorecard.org",
-  "schema_version": "1.18",
+  "schema_version": "1.19",
   "rubric_version": "1.3",
   "license": "CC-BY-4.0",
   "attribution": "GTFS Scorecard (gtfsscorecard.org), scored on top of the MobilityData gtfs-validator",
@@ -650,7 +706,7 @@ rather than left for a consumer to discover.
 
 ```jsonc
 {
-  "schema_version": "1.18",
+  "schema_version": "1.19",
   "license": "CC-BY-4.0",
   "generated_at": "2026-06-20T13:25:01+00:00",
   "feed_record_count": 1128,
@@ -676,7 +732,7 @@ rather than left for a consumer to discover.
 
 ```jsonc
 {
-  "schema_version": "1.18",
+  "schema_version": "1.19",
   "rollup": { "id": "california", "name": "California agencies" },
   "agency_count": 2,
   "average_score": 78.2,
