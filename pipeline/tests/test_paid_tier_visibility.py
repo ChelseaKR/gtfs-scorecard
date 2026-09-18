@@ -4,11 +4,15 @@ The program report bundle (ADR 0049) is the only thing on this site that costs
 money, and the site's credibility rests on two claims that a visibility change
 is the easiest way to break:
 
-1. **Agency-facing scoring is free.** An agency looking at its own grade — on
-   its scorecard, in its call brief, on its board one-pager, or in the
-   self-contained report it hands a board — must never find a price next to it.
-   These tests assert the absence, because an absence is exactly what no
-   accessibility scan, golden diff, or link checker will notice going away.
+1. **Agency-facing scoring is free.** An agency's call brief, its board
+   one-pager, and the self-contained report it hands a board carry no offer at
+   all. Its scorecard page carries exactly one, the program panel addressed to
+   people who support several agencies, placed after the evidence and the
+   standards section and never in the hero beside the grade (ADR 0058, which
+   narrowed the earlier "no offer anywhere on an agency page" rule). These
+   tests assert the absences and the one exception's shape, because an absence
+   is exactly what no accessibility scan, golden diff, or link checker will
+   notice going away.
 2. **A price lives in web/bundle/plan.json and nowhere else.** A price copied
    into a template is a price that keeps selling after the plan changes. A
    price *generated* from that file into a delimited region, by
@@ -527,29 +531,62 @@ def test_the_home_page_states_the_tier_as_a_section_not_a_passing_mention() -> N
 # --- and it stays away from a specific agency's grade ----------------------
 
 
-def test_no_agency_facing_page_names_the_paid_tier_in_its_own_content() -> None:
-    """An agency page, its call brief, and its on-site board one-pager are the
-    free product. The shared footer reaches them like every other page; nothing
-    above it may.
+_PROGRAM_PANEL_RE = re.compile(
+    r'<section class="action-panel program-offer" aria-labelledby="program-offer-h">.*?</section>',
+    re.S,
+)
+
+
+def test_agency_pages_name_the_paid_tier_only_in_the_program_panel() -> None:
+    """The call brief and the on-site board one-pager are the free product and
+    name nothing paid above the shared footer. The scorecard page names it in
+    exactly one place, the program panel (ADR 0058), and that panel sits after
+    the standards section: below the grade, the fixes, and the evidence.
 
     Split on the footer rather than searching the whole document, or this test
-    would pass the moment the footer link were moved into the page body.
+    would pass the moment the footer link were moved into the page body. The
+    panel is subtracted by its exact opening tag, once, so a second offer, or
+    a /bundle/ link typed anywhere else on the page, still fails.
     """
     for rel in (
-        "agency/unitrans/index.html",
         "agency/unitrans/brief/index.html",
         "agency/unitrans/board/index.html",
-        "agency/yolobus/index.html",
+        "agency/yolobus/brief/index.html",
         "agency/yolobus/board/index.html",
+        "agency/barrie-transit/brief/index.html",
+        "agency/barrie-transit/board/index.html",
+    ):
+        html = (_GOLDENS / rel).read_text()
+        head, sep, _footer = html.partition(_FOOTER_TAG)
+        assert sep, f"{rel}: no shared footer found; the split below proves nothing"
+        assert "/bundle/" not in head, (
+            f"{rel}: the paid tier is named on an agency's brief or board page. "
+            "Those stay free of any offer; the scorecard's program panel is the one place."
+        )
+        assert "program-offer" not in head, f"{rel}: carries the program panel"
+
+    for rel in (
+        "agency/unitrans/index.html",
+        "agency/yolobus/index.html",
         "agency/barrie-transit/index.html",
     ):
         html = (_GOLDENS / rel).read_text()
-        head, sep, _footer = html.partition('<footer class="site-footer">')
+        head, sep, _footer = html.partition(_FOOTER_TAG)
         assert sep, f"{rel}: no shared footer found; the split below proves nothing"
-        assert "/bundle/" not in head, (
-            f"{rel}: the paid tier is named beside one agency's grade. "
-            "Program rollups (/program/<id>/) are the surface for that audience."
+        panels = _PROGRAM_PANEL_RE.findall(head)
+        assert len(panels) == 1, f"{rel}: expected exactly one program panel, found {len(panels)}"
+        assert "/bundle/" in panels[0], f"{rel}: the program panel no longer reaches /bundle/"
+        assert _INDEPENDENCE in panels[0], f"{rel}: the panel dropped the independence promise"
+        rest = _PROGRAM_PANEL_RE.sub("", head, count=1)
+        assert "/bundle/" not in rest, (
+            f"{rel}: the paid tier is named outside the program panel, "
+            "which is the only place on a scorecard page it may appear."
         )
+        assert head.index('id="standards-h"') < head.index('id="program-offer-h"'), (
+            f"{rel}: the program panel moved above the standards section, toward the grade"
+        )
+        hero_end = head.index('class="report-route"')
+        assert "/bundle/" not in head[:hero_end], f"{rel}: an offer reached the hero"
 
 
 def test_the_self_contained_board_report_carries_no_purchase_link() -> None:

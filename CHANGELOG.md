@@ -29,6 +29,22 @@ the declared public surface).
 
 ### Added
 
+- **A program panel on every agency scorecard (ADR 0058).** Agency pages
+  carried 97% of the site's search impressions, and until now their only route
+  to the paid bundle was the footer. Each `/agency/<id>/` page now ends its
+  report, after the standards section, with one panel for programs that
+  support several agencies. It says first that the scorecard and the board
+  one-pager stay free. It then lists what this agency's report in a bundle
+  would hold, from the page's own artifact: grade, score, and check date,
+  category scores, top fixes when there are any, and score history once there
+  are two checks. The cheapest one-time plan and the delivery promise are read
+  from `web/bundle/plan.json`. One button leads to `/bundle/`, and a text link
+  leads to the real sample. The panel renders nothing when the plan sells
+  nothing or the artifact lacks a measured grade, score, or check date. It is
+  hidden in print, and the call brief, the board one-pager, and the
+  self-contained report still name nothing paid. The rubric stamp beside each
+  grade now links the methodology section of `/how-to-read/`.
+
 - **A consequence block on every published finding (artifact schema 1.19,
   part of [#367](https://github.com/ChelseaKR/gtfs-scorecard/issues/367)).**
   `publish()` now attaches `consequence.py`'s block to each category finding

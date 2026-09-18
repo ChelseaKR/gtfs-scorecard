@@ -2607,7 +2607,7 @@ main:focus { outline: none; }
 
 @media print {
   .site-header, .site-footer, .filterbar, .skip-link, .backlink,
-  .cohort-remove, .picker-aside, .route-rule { display: none; }
+  .cohort-remove, .picker-aside, .route-rule, .program-offer { display: none; }
   body { background: #fff; }
   .agency-card, .fix-card, .finding, .cat-card, .program-row { box-shadow: none; }
   /* A call sheet: drop the note toggles, show the notes that exist, keep each
@@ -3540,6 +3540,12 @@ main {
 
 .agency-report .report-content > section + section {
   border-top: 1px solid var(--line);
+}
+
+/* The program panel (ADR 0058) keeps its own full border rather than the
+   hairline the sections above it share. Hidden in print with the footer. */
+.agency-report .report-content > .program-offer {
+  border-top: 1.5px solid var(--line);
 }
 
 .agency-report .report-content > section:target {
