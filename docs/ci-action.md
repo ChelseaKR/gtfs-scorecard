@@ -56,7 +56,10 @@ described under [Inputs](#inputs) is on `main` and is in no published release.
 `@v1.4.0` — and `@v1`, which points at the same commit today — still grade an
 archive that carries no schedule data rather than refusing it. The `history-path`
 input below is on `main` only as well, so a workflow pinned to `@v1.4.0` gets a
-warning about an unexpected input and no history. Version 1.5.0
+warning about an unexpected input and no history. So is the `evidence-packet`
+input, and that gap matters more: a workflow pinned to `@v1.4.0` that sets it
+gets the same warning and nothing else. No packet is retested, and the build
+does not fail on a finding that is still present. Version 1.5.0
 has a `CHANGELOG.md` entry but no tag and no release, so there is nothing newer
 to pin to yet. Tag namespaces and what each one promises are in
 [docs/release-checklist.md](release-checklist.md#tag-namespaces).
@@ -78,6 +81,7 @@ to pin to yet. Tag namespaces and what each one promises are in
 | `sarif` | no | _(skip)_ | Path to also write validator notices as SARIF 2.1.0, relative to the workspace. |
 | `sarif-base` | no | _(root)_ | Directory the feed's files sit in inside the repository being annotated, for example `gtfs/`. |
 | `history-path` | no | _(skip)_ | Directory for a private run history: each run appends one record for the feed, read back with `scorecard trend`. Not in `v1.4.0`; see [Keeping a private history](workspace-history.md). |
+| `evidence-packet` | no | _(skip)_ | An evidence packet JSON from `scorecard evidence-packet --format json`. The feed this run scored is retested against it, and the build fails unless every finding in the packet is cleared. Not in `v1.4.0`; see [Retesting against an evidence packet](#retesting-against-an-evidence-packet). |
 | `ref` | no | _(ignored)_ | Deprecated compatibility input. The scorer is bundled with the Action release and always matches the selected Action ref. |
 
 Leave a threshold blank to skip it. With neither `min-grade` nor
@@ -97,10 +101,12 @@ not what `@v1.4.0` or `@v1` do today. See [Which ref to pin](#which-ref-to-pin).
 ## Outputs and job summary
 
 The action exposes `grade`, `score`, `days-to-expiry`, `passed`,
-`result-json`, `comparable`, `regressed`, and `sarif`. The complete JSON is
-written before thresholds are applied, so later steps can upload or inspect it
-even when the gate fails. `comparable` and `regressed` are blank unless you set
-`baseline`; `sarif` is blank unless you set `sarif`.
+`result-json`, `comparable`, `regressed`, `sarif`, `retest-outcome`, and
+`retest-json`. The complete JSON is written before thresholds are applied, so
+later steps can upload or inspect it even when the gate fails. `comparable` and
+`regressed` are blank unless you set `baseline`; `sarif` is blank unless you set
+`sarif`; `retest-outcome` and `retest-json` are blank unless you set
+`evidence-packet`.
 
 ```yaml
       - id: gtfs
@@ -160,6 +166,57 @@ When a run stops measuring a category — realtime, say, because the endpoint
 stopped answering — the findings in that category disappear from the artifact.
 They are listed as **not measured in the newer artifact**, never as cleared.
 Nobody looked at them, which is not the same as their being fixed.
+
+## Retesting against an evidence packet
+
+**Not in `v1.4.0`.** The `evidence-packet` input is on `main` only. See
+[Which ref to pin](#which-ref-to-pin).
+
+An [evidence packet](vendor-evidence-packets.md) is the work order an agency
+sends to whoever produces its feed. Set `evidence-packet` to check each new
+export against it. These are the inputs to add to the Action step once a
+release carries the input:
+
+```yaml
+        with:
+          feed-url: https://example.org/gtfs/feed.zip
+          country: US
+          evidence-packet: gtfs/example-packet.json
+```
+
+The action scores the feed once, as it always does, and then runs
+`scorecard retest PACKET --artifact RESULT --country COUNTRY` over the result it
+has just written. The validator does not run a second time. Each finding in the
+packet is reported as cleared, still present, or not comparable:
+
+| Result | `retest-outcome` | Build |
+|---|---|---|
+| Every finding in the packet is cleared | `all_cleared` | Passes. |
+| Any finding is still present | `still_present` | Fails. |
+| A finding could not be compared, for example because the retest ran under a different validator | `non_comparable` | Fails. |
+| The packet or the scored result could not be read or retested | _(blank)_ | Fails, and the annotation gives the reason. |
+
+Setting the input is the request for this check, so only the first row passes.
+A retest that could not judge the packet never passes as though nothing were
+still present.
+
+- **Cleared means absent.** A notice raised with a count of zero, such as
+  "0 of 0 stops don't say whether a wheelchair user can board there", is still
+  present.
+- **Set `country` to the country the packet's scorecard used.** The packet does
+  not record it, and a result scored under a different country is refused.
+- **The retest runs even when a threshold fails,** because the feed was still
+  scored. When the feed could not be scored there is nothing to retest, and the
+  step says so rather than skipping the check. With `evidence-packet` set, a
+  result already at the `json` path from an earlier step is removed before the
+  feed is scored, so the packet is never judged against another run's result.
+- **The job summary includes the retest record.** `retest-json` is the path to
+  the record as JSON, for a later step to upload.
+
+A retest record is not a closure receipt. It does not confirm who published the
+feed or say who caused or fixed a finding. See
+[What a retest record is not](vendor-evidence-packets.md#what-a-retest-record-is-not).
+
 ## Findings in the Security tab (SARIF)
 
 Set `sarif` and upload the file to see each validator notice as a code-scanning

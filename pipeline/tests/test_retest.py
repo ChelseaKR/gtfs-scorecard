@@ -22,9 +22,12 @@ from scorecard_pipeline.retest import (
     CLEARED,
     NON_COMPARABLE,
     STILL_PRESENT,
+    ArtifactError,
     PacketError,
+    artifact_source,
     build_retest_record,
     describe_source,
+    read_scored_artifact,
     render_retest_markdown,
     retest_exit_code,
     validate_packet,
@@ -575,3 +578,177 @@ def test_the_country_must_be_stated(tmp_path: Path) -> None:
     with pytest.raises(SystemExit) as exc:
         _run([str(tmp_path / "packet.json"), "https://example.test/gtfs.zip"])
     assert exc.value.code == 2
+
+
+# --- --artifact: an export `scorecard try --json-out` already scored ------------------------
+
+
+def _scored_files(
+    tmp_path: Path, retest: dict[str, Any] | str, *, packet: dict[str, Any] | None = None
+) -> tuple[Path, Path]:
+    packet_path = tmp_path / "packet.json"
+    packet_path.write_text(
+        json.dumps(build_evidence_packet(_artifact()) if packet is None else packet)
+    )
+    artifact_path = tmp_path / "result.json"
+    artifact_path.write_text(retest if isinstance(retest, str) else json.dumps(retest))
+    return packet_path, artifact_path
+
+
+def _nothing_is_scored(monkeypatch: pytest.MonkeyPatch) -> None:
+    _no_registry(monkeypatch)
+    for name in ("run_adhoc_detailed", "fetch_static", "run_validator"):
+        monkeypatch.setattr(cli, name, lambda *a, _n=name, **k: pytest.fail(f"called {_n}"))
+
+
+def test_an_already_scored_artifact_is_retested_without_scoring_it_again(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _nothing_is_scored(monkeypatch)
+    packet, artifact = _scored_files(tmp_path, _artifact())
+    record_path = tmp_path / "record.json"
+
+    code = _run(
+        [
+            str(packet),
+            "--artifact",
+            str(artifact),
+            "--country",
+            "US",
+            "--json-out",
+            str(record_path),
+        ]
+    )
+
+    assert code == 1
+    record = json.loads(record_path.read_text())
+    assert _verdicts(record) == {WHEELCHAIR: STILL_PRESENT, HEADSIGN: STILL_PRESENT}
+    assert record["same_bytes_as_baseline"] is True
+    assert record["retest"]["source"] == "https://transit.example/gtfs.zip"
+    assert record["retest"]["country"] == "US"
+
+
+def test_an_already_scored_corrected_artifact_clears(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _nothing_is_scored(monkeypatch)
+    packet, artifact = _scored_files(tmp_path, _corrected())
+    assert _run([str(packet), "--artifact", str(artifact), "--country", "US"]) == 0
+
+
+def _country(code: str | None) -> dict[str, Any]:
+    artifact = _corrected()
+    if code is not None:
+        artifact["agency"]["country"] = code
+    return artifact
+
+
+@pytest.mark.parametrize(
+    ("retest", "country", "message"),
+    [
+        pytest.param(None, "US", "could not be read (No such file or directory)", id="missing"),
+        pytest.param("{", "US", "is not JSON (Expecting property name", id="not JSON"),
+        pytest.param("[1, 2]", "US", "is not a scorecard artifact", id="not an object"),
+        pytest.param("{}", "US", "is not a scorecard artifact", id="no categories"),
+        pytest.param(
+            _country("CA"), "US", "scored with validator country CA, not US", id="another country"
+        ),
+        pytest.param(_country(None), "FR", "scored with validator country US, not FR", id="US"),
+    ],
+)
+def test_an_artifact_that_cannot_be_retested_is_refused_and_writes_no_record(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+    retest: dict[str, Any] | str | None,
+    country: str,
+    message: str,
+) -> None:
+    """Each of these would otherwise reach the comparator. A corrected export, so
+    a refusal that fell through would read as every finding cleared."""
+    _nothing_is_scored(monkeypatch)
+    packet, artifact = _scored_files(tmp_path, "" if retest is None else retest)
+    if retest is None:
+        artifact.unlink()
+    record_path = tmp_path / "record.json"
+
+    code = _run(
+        [
+            str(packet),
+            "--artifact",
+            str(artifact),
+            "--country",
+            country,
+            "--json-out",
+            str(record_path),
+        ]
+    )
+
+    assert code == 2
+    assert not record_path.exists()
+    assert message in caplog.text
+    assert "cannot retest:" in caplog.text
+
+
+def test_a_country_the_artifact_was_scored_under_is_accepted(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _nothing_is_scored(monkeypatch)
+    packet, artifact = _scored_files(tmp_path, _country("CA"))
+    assert _run([str(packet), "--artifact", str(artifact), "--country", "ca"]) == 0
+
+
+def test_the_packet_is_refused_before_the_artifact_is_read(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    _nothing_is_scored(monkeypatch)
+    empty = _packet()
+    empty["work_items"] = []
+    packet, artifact = _scored_files(tmp_path, _corrected(), packet=empty)
+    artifact.unlink()
+
+    assert _run([str(packet), "--artifact", str(artifact), "--country", "US"]) == 2
+    assert "before reading the scored artifact: the packet requests no work" in caplog.text
+    assert "cannot retest" not in caplog.text
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [
+        pytest.param(["https://example.test/gtfs.zip"], id="a feed as well"),
+        pytest.param(["--name", "Other"], id="--name"),
+        pytest.param(["--date", "2026-06-11"], id="--date"),
+        pytest.param(["--large-feed"], id="--large-feed"),
+    ],
+)
+def test_options_that_only_apply_to_scoring_a_feed_are_refused_with_artifact(
+    tmp_path: Path, extra: list[str]
+) -> None:
+    with pytest.raises(SystemExit) as exc:
+        _run([str(tmp_path / "packet.json"), "--artifact", "r.json", "--country", "US", *extra])
+    assert exc.value.code == 2
+
+
+def test_a_feed_or_an_artifact_is_required(tmp_path: Path) -> None:
+    with pytest.raises(SystemExit) as exc:
+        _run([str(tmp_path / "packet.json"), "--country", "US"])
+    assert exc.value.code == 2
+
+
+def test_an_artifact_is_named_by_the_feed_it_scored() -> None:
+    path = Path("/runner/tmp/result.json")
+    assert artifact_source(_artifact(), path) == "https://transit.example/gtfs.zip"
+    local = _artifact()
+    local["feed"]["static_url"] = "corrected.zip"
+    assert artifact_source(local, path) == "local file corrected.zip"
+    unnamed = _artifact()
+    del unnamed["feed"]
+    assert artifact_source(unnamed, path) == "scored artifact result.json"
+
+
+def test_read_scored_artifact_returns_the_artifact(tmp_path: Path) -> None:
+    path = tmp_path / "result.json"
+    path.write_text(json.dumps(_artifact()))
+    assert read_scored_artifact(path, country="US") == _artifact()
+    with pytest.raises(ArtifactError, match="scored with validator country US, not CA"):
+        read_scored_artifact(path, country="CA")

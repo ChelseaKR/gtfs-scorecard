@@ -65,6 +65,8 @@ def test_action_declares_stable_outputs_and_json_input() -> None:
         "comparable",
         "regressed",
         "sarif",
+        "retest-outcome",
+        "retest-json",
     }
     assert action["inputs"]["json"]["required"] is False
     assert action["inputs"]["summary"]["default"] == "true"
