@@ -1,6 +1,6 @@
 // @ts-check
 /**
- * 1.4.8 colour-selection mechanism. A small, persisted control that lets a
+ * 1.4.8 color-selection mechanism. A small, persisted control that lets a
  * reader choose the page theme. Each theme re-points the CSS custom properties
  * (in styles.css and the landing page's inline tokens) via a data-theme
  * attribute on <html>, and every theme clears WCAG AAA contrast
@@ -65,7 +65,7 @@
   // applies it inline in <head> to avoid a flash).
   apply(saved());
 
-  /** Build the labelled menu control and wire it up. @param {HTMLElement} host */
+  /** Build the labeled menu control and wire it up. @param {HTMLElement} host */
   function mount(host) {
     host.classList.add("theme-control");
     var current = saved();
@@ -87,7 +87,7 @@
     menu.id = "theme-menu";
     menu.className = "theme-menu";
     menu.setAttribute("role", "menu");
-    menu.setAttribute("aria-label", "Choose a colour theme");
+    menu.setAttribute("aria-label", "Choose a color theme");
     menu.hidden = true;
 
     THEMES.forEach(function (t) {

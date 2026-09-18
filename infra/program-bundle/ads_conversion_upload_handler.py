@@ -145,7 +145,7 @@ def _client_from_env(credentials: dict[str, str]) -> Any:
             # proto-plus messages, not raw protobuf: every current Google Ads
             # client example uses attribute assignment
             # (click_conversion.conversion_value = 1.0), which is a
-            # proto-plus behaviour and the default (use_proto_plus=False)
+            # proto-plus behavior and the default (use_proto_plus=False)
             # does not support it the same way.
             "use_proto_plus": True,
         }

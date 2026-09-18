@@ -2,7 +2,7 @@
 # RESEARCH-ROADMAP.md E7). A researcher citing "the scorecard dataset" needs a
 # pinned, byte-verifiable reference, not a URL whose contents change daily. This tags
 # the start-of-month state as dataset-YYYY-MM and attaches the flat exports plus
-# the data dictionary, so a citation can verify the exact bytes analysed. The cut
+# the data dictionary, so a citation can verify the exact bytes analyzed. The cut
 # is attempted on day 1 and retried on days 2 and 3 if day 1 produced no
 # successful run; a month that cuts cleanly still runs exactly once.
 name: Dataset release
@@ -37,7 +37,7 @@ permissions:
 
 # A second concurrent run (manual dispatch racing the schedule) must not
 # double-create/overlap a release; the later tag-exists guard only checks
-# after the race, so serialize instead of cancelling (CICD-23).
+# after the race, so serialize instead of canceling (CICD-23).
 concurrency:
   group: dataset-release
   cancel-in-progress: false
@@ -193,7 +193,7 @@ jobs:
             fi
           else
             # A manual cut keeps the existing latest-main behavior. It is
-            # deliberately labelled separately rather than claiming day-1
+            # deliberately labeled separately rather than claiming day-1
             # Daily-run provenance it has not established.
             source_mode=manual-latest
             source_run_id=0

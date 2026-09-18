@@ -45,7 +45,7 @@ the declared public surface).
   (schema 1.2) show each fix's reach and join rider-trips and need when they
   are built, each with its source and snapshot date, or the plain reason there
   is none. The ridership fetch and both need overlays now record the date the
-  pages cite, and an undated snapshot is not joined. The US tier is labelled
+  pages cite, and an undated snapshot is not joined. The US tier is labeled
   as statewide, because the ACS overlay is state-level. Fix order and grades
   are unchanged.
 
@@ -107,13 +107,13 @@ the declared public surface).
 
 - **`scorecard license-audit` (part of
   [#372](https://github.com/ChelseaKR/gtfs-scorecard/issues/372)).** Counts
-  every registry record by the one licence its `license_note` names, from a
-  closed vocabulary of SPDX ids. A note naming two licences, only a link, or
+  every registry record by the one license its `license_note` names, from a
+  closed vocabulary of SPDX ids. A note naming two licenses, only a link, or
   terms outside the vocabulary is `unknown` with the reason, never a guess.
   The share-alike count is reported against the open owner decision in
   `docs/follow-ups.md` as `undecided`. On today's registry it reads 126
   records, not the 160 that document quotes, plus six whose notes name a
-  share-alike licence beside another and are listed for a curator. Text or
+  share-alike license beside another and are listed for a curator. Text or
   `--json`. A report only: it exits 0 and gates nothing.
 
 - **Google Ads conversion upload job (2026-09-15,
@@ -206,19 +206,19 @@ the declared public surface).
   positives.
 - **The embeddable grade badge's own text failed the AAA bar it visibly
   claims to meet (2026-09-16).** `badge.py` writes `badge.svg` and `mark.svg`
-  as white text on a coloured fill, and the site's merge-blocking contrast
+  as white text on a colored fill, and the site's merge-blocking contrast
   gate (`check_contrast.py`, `make verify`) enforces AAA (7:1) on every other
   text/background pair on the site. It never measured these two SVGs, because
   they are Python-built strings, not CSS: grade C's white text measured
   3.95:1 against its fill and grade D's 4.34:1, both below even AA (4.5:1);
   grades A and B cleared AA (5.32:1, 5.04:1) but not AAA; only F passed. The
-  five grade colours and the unknown-grade fallback are now the closest shade
+  five grade colors and the unknown-grade fallback are now the closest shade
   of the same hue that clears 7:1 (grade C: `#9a7d0a` to `#695607`; grade D:
-  `#b5651d` to `#834915`; similarly for A, B, and the fallback grey), and the
+  `#b5651d` to `#834915`; similarly for A, B, and the fallback gray), and the
   feed-status segment and the conformance mark now reuse those same checked
-  colours instead of carrying their own. `check_contrast.py` imports
-  `badge.py`'s colour dicts directly and checks each against white, so a
-  future colour change that drops back below 7:1 fails `make verify` instead
+  colors instead of carrying their own. `check_contrast.py` imports
+  `badge.py`'s color dicts directly and checks each against white, so a
+  future color change that drops back below 7:1 fails `make verify` instead
   of shipping unmeasured.
 
 - **Two scheduled publish bounds that nothing measured (2026-09-13).**
@@ -311,7 +311,7 @@ the declared public surface).
   and then failed on `Failed to FinalizeArtifact: ... (403) Forbidden`; run
   34461157937 (2026-09-10) read `Current status: updating_pages` from a healthy
   backend for the full 10 minutes `actions/deploy-pages` defaults to and then
-  *cancelled its own deployment* (`Timeout reached, aborting!`). Both were
+  *canceled its own deployment* (`Timeout reached, aborting!`). Both were
   Intraday refresh deploys, so in both the refreshed data reached S3 and the
   live site kept serving the previous generation until the next cycle three
   hours later, with a red scheduled run to read. The upload is now attempted
@@ -426,7 +426,7 @@ the declared public surface).
 - **Coverage for the delivery pipeline behind `/bundle/`, measured rather than
   asserted (2026-09-13).** The purchase page is well covered; the machinery
   that has to turn a payment into an archive was not covered to the same
-  standard, and that is where the money goes. Each behaviour was measured by
+  standard, and that is where the money goes. Each behavior was measured by
   sabotaging the property and running the suite, which found four things no
   test could see: the breach rule's blindness to DynamoDB's number type and the
   refund report's off-by-a-day date (both in Fixed above); an entitlement row
@@ -544,8 +544,8 @@ the declared public surface).
   rule link alone for a code with no written recipe, deliberately not the
   generated fallback wording that is honest beside a real count on a scorecard
   page but would be a made-up sentence handed to an assistant as knowledge, and
-  an unrecognised producing tool gets no guidance and a list of the keys that
-  are recognised rather than the nearest vendor's name; and `coverage_for`
+  an unrecognized producing tool gets no guidance and a list of the keys that
+  are recognized rather than the nearest vendor's name; and `coverage_for`
   reports an untracked place as not covered rather than as zero feeds, because
   "this scorecard tracks nothing here" and "there is nothing here" are different
   statements. Every response is bounded and says so (`returned`, `available`,
@@ -579,7 +579,7 @@ the declared public surface).
   closed. `scorecard bundle` renders one program's branded board reports for
   a cohort of up to 100 agencies as one archive with a manifest that names
   every id asked for and what happened to it; `report-bundle.yml` is the
-  on-demand fulfilment; `infra/program-bundle` (written, not applied) is the
+  on-demand fulfillment; `infra/program-bundle` (written, not applied) is the
   post-checkout form, the capability download route, the Stripe webhook, and
   the weekly refresh, with plan-failing preconditions that keep
   `payments_enabled` at "0" until the Stripe configuration is complete;
@@ -594,7 +594,7 @@ the declared public surface).
   rather than reading `score.py`. `scorecard explain ARTIFACT
   [--format text|markdown|json]` reads one artifact and prints each category's
   published score, the line items behind it, the rubric weight and the weight
-  actually applied after renormalisation, each category's contribution, the
+  actually applied after renormalization, each category's contribution, the
   total, the published rounding, and the grade band edges. It is pure: no
   fetch, no rescoring, and no published value changes.
 
@@ -621,7 +621,7 @@ the declared public surface).
 - **14 French feed records from the rentrée recheck pass (2026-09-01).** The
   2026-08-30 exhaustion left 100 candidates excluded only for short
   calendars. Two days later, fourteen had refreshed past the 60-day gate and
-  passed the same licence, identity, validator, and calendar path — SETRAM
+  passed the same license, identity, validator, and calendar path — SETRAM
   (Le Mans bus and tramway) and Linead (Dreux) among them, plus five Tarn
   networks from the Gaillac-Graulhet agglomeration. Saint-Sulpice-la-Pointe
   went from zero days of remaining service to 304 across those two days,
@@ -650,7 +650,7 @@ the declared public surface).
   exhaustion pass (2026-08-30).** Five weeks after the July exhaustion, the
   transport.data.gouv.fr API snapshot yielded 206 still-untracked datasets
   under Licence Ouverte 2.0 or ODbL. Every admission passed the same gates as
-  the first pass: portal licence and named legal-owner attribution recorded as
+  the first pass: portal license and named legal-owner attribution recorded as
   reuse evidence, identity review against the tracked registry, the pinned
   canonical MobilityData validator and complete scorecard path, and at least
   60 days of effective service. The pass adds records in twelve metropolitan
@@ -773,7 +773,7 @@ the declared public surface).
   `data/rt-health`'s newest commit is 2026-09-05 and the eleven runs after it
   are eleven of eleven `cancelled`. That conclusion is the reason it went
   unnoticed — GitHub records a job hitting its own bound as `cancelled`, not
-  as `timed_out` or `failure`, and a cancelled run reads as no verdict rather
+  as `timed_out` or `failure`, and a canceled run reads as no verdict rather
   than as a broken one. The bound is now 170 minutes, above every run this
   workflow has recorded and below its own 180-minute cron interval, which is
   the real ceiling because the concurrency group is serial. `Watchdog` now
@@ -845,7 +845,7 @@ the declared public surface).
   than to the build. A single observation is dated instead of being given no
   time reference at all, which is what it had. Naming the end date needs no
   staleness threshold and reads no clock, so it cannot drift and there is no
-  judgement in it to get wrong.
+  judgment in it to get wrong.
 
 - **Nineteen published F grades have been withdrawn, and the site now says so.**
   The refusal that shipped on 2026-09-01 stopped the scorer minting a grade for
@@ -892,12 +892,12 @@ the declared public surface).
   its calendar has 89 real rows, so freshness is a genuine measurement and
   `score_feed_content` does not refuse the feed. The next run would publish an A.
 
-- **Ten workflows cancelled the previous commit's CI run on every push to `main`.**
+- **Ten workflows canceled the previous commit's CI run on every push to `main`.**
   Each was keyed `<name>-${{ github.ref }}` with `cancel-in-progress: true`. On a pull
   request `github.ref` is `refs/pull/N/merge`, so that cancels superseded runs of the
   same pull request, which is the intent and the saving. On a push it is
   `refs/heads/main` for *every* commit, so two pushes in quick succession shared one
-  group and the second cancelled the first outright. Flipping `cancel-in-progress` to
+  group and the second canceled the first outright. Flipping `cancel-in-progress` to
   `false` does not fix it and is the trap worth naming: the second run then queues, and a
   third evicts the queued one from the pending slot. Both roads end at a commit on `main`
   whose only check-run is `cancelled`. Two commits reached `main` that way on 2026-09-06.
@@ -912,7 +912,7 @@ the declared public surface).
   `openssf-scorecard`, `security`, `standards-pin`. `codeql` has no `push` trigger today
   (CICD §11e) but carried the same key and is fixed with the rest, so the defect cannot
   come back with the trigger. Fixed-name groups — `artifacts-publish`, `pages`,
-  `rt-monitor` and the other publish serialisers — are deliberately untouched: queueing is
+  `rt-monitor` and the other publish serializers — are deliberately untouched: queueing is
   the point of those. `tests/test_workflow_concurrency.py` holds the rule, and was checked
   by putting the defect back and watching it fail.
 
@@ -927,7 +927,7 @@ the declared public surface).
   decoding `_read_table` and `iter_table_rows` already use, so CR, LF and CRLF
   all split into rows and a UTF-8 BOM is stripped rather than counted as
   content. Reported and fixed by @ghzhost in #336; the regression test is the
-  carriage-return case, with the BOM cases kept and labelled as passing either
+  carriage-return case, with the BOM cases kept and labeled as passing either
   way.
 
 - **Six more places where an absence was published as a number.** The same
@@ -948,7 +948,7 @@ the declared public surface).
     `net.py` already classifies as an origin availability failure) and a body
     that is not a parseable GTFS-Realtime protobuf remain the agency's outage.
     Everything else marks the sample not measured; the feed kind drops out of
-    reachability and the rest renormalise, and a window with nothing measurable
+    reachability and the rest renormalize, and a window with nothing measurable
     in it publishes no realtime category and records no uptime observation. A
     configured feed kind with no sample record at all keeps its deliberate
     fail-closed reading.
@@ -1160,7 +1160,7 @@ the declared public surface).
   is not in the archive; with no service to be the end of, the sentence and the
   100.0 were both about nothing, and both are now withheld.
 
-  **The published Action still carries the old behaviour.** This fix is
+  **The published Action still carries the old behavior.** This fix is
   unreleased. `v1.4.0` and the floating `v1` both point at `d800e0b4`
   (2026-07-25), which predates the refusal, so a workflow on
   `uses: ChelseaKR/gtfs-scorecard@v1` -- the form the README and
@@ -1290,7 +1290,7 @@ the declared public surface).
   records are different denominators that are never added, and giving the
   no-discoverable-feed range at both ends (473 to 641) rather than averaging a
   name-based join. A reporter with no discoverable feed is shown as a limit of
-  what open catalogues can see, never as a zero and never as a finding about
+  what open catalogs can see, never as a zero and never as a finding about
   that agency. The section publishes nothing at all if the snapshot does not
   declare its unit, if its tiers do not sum to its own denominator, or if it
   cannot say which report year it is from and when it was retrieved -- the fine
@@ -1585,7 +1585,7 @@ the declared public surface).
   implausible-predictions finding. And the anomaly detector compared
   adjacent history rows as if they were adjacent days — 1,114 published
   steps span 27 days — so a month-long regression could be labeled a
-  one-day glitch and both the dip and its recovery suppressed; neighbouring
+  one-day glitch and both the dip and its recovery suppressed; neighboring
   rows must now be within two days. No grade moves in any of the three: the
   gate is advisory, drift is not a score component, and no published
   history contained a gap-spanning dip.
@@ -1728,9 +1728,9 @@ the declared public surface).
   result, on 57 to 60 of 118 codes curated — a jump that is real but
   concentrated, and `docs/ideation/02-large-scale-fixes.md` now states why that
   number must never be reported without naming the codes that moved it.
-- **Correction to published behaviour: the subscribe form recorded a narrower
+- **Correction to published behavior: the subscribe form recorded a narrower
   consent than it appeared to offer.** `subscriptions.yaml` documents that
-  omitting `kinds` means every kind, and the YAML path honours that. The form
+  omitting `kinds` means every kind, and the YAML path honors that. The form
   path inverted it: the subscribe Lambda held
   `ALERT_KINDS = ("expiry", "regression")`, and a payload that omitted `kinds`
   was stored as that explicit closed two-item list rather than as a
@@ -1747,7 +1747,7 @@ the declared public surface).
   imports both and compares them. A test that had pinned the old two-item
   default — asserting the bug — was corrected in the same change.
   *Requires a Lambda deploy; code correctness alone does not change live
-  behaviour.*
+  behavior.*
 - **A published registry figure that would have gone stale, corrected before it
   did.** `docs/global-coverage-roadmap.md` said "The current registry contains
   2,185 feed records" in the present tense and the next paragraph multiplied
@@ -1808,7 +1808,7 @@ the declared public surface).
   the lockfile the images never read.
 - **`web/src/` is scanned again.** ~6,600 lines of hand-written browser
   JavaScript, including 24 `innerHTML` assignment sites, were excluded from
-  Semgrep (`.semgrepignore`) and gitleaks (`.gitleaks.toml`) and never analysed
+  Semgrep (`.semgrepignore`) and gitleaks (`.gitleaks.toml`) and never analyzed
   by CodeQL, which covers python and actions only — so the only code in this
   repository that runs in a rider's browser had no SAST and no secret scanning
   from any of the three. Both exclusions existed for the public GTFS feed-URL
@@ -2105,7 +2105,7 @@ the declared public surface).
   islands. Each feed is official, current, and explicitly open for reuse.
 - Add an ungraded ferry data profile for ferry-serving feeds. It reports the
   ferry subset's terminal hierarchy, `stop_access`, published accessibility,
-  bicycle and car carriage, plus clearly labelled whole-feed fare and realtime
+  bicycle and car carriage, plus clearly labeled whole-feed fare and realtime
   facts in agency pages, artifacts, and the feature API.
 - Publish an ungraded service-mode contract from GTFS `route_type` and trip
   counts. Mode membership and primary mode now flow through artifacts, the

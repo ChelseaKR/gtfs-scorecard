@@ -2,7 +2,7 @@
 
 /bundle/setup/ is the second half of a purchase. Stripe's Payment Links
 redirect to it with ``?session_id=cs_...`` after checkout, and it is the only
-route by which an order reaches the fulfilment workflow: the webhook records
+route by which an order reaches the fulfillment workflow: the webhook records
 that a checkout happened, but nothing builds until this form is submitted.
 
 It had never been run in a browser. The four Payment Links are live, the API

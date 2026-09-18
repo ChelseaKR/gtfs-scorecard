@@ -30,7 +30,7 @@ The default product is worldwide and coverage-bounded.
    with the feed's country code. A regional guideline may explain the result but
    does not silently change the worldwide core.
 4. U.S. NTD readiness, U.S. ridership, by-state compatibility endpoints, and
-   domestic equity data remain supported regional modules. They are labelled
+   domestic equity data remain supported regional modules. They are labeled
    “United States” and never order or define worldwide corpus views.
 5. API, MCP, submission, aggregate, map, and directory contracts use additive
    `country`, `subdivision_code`, and `subdivision_name` fields. Existing

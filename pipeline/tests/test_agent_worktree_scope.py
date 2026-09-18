@@ -54,7 +54,7 @@ def _repo_root_anchors(module: ast.Module, source: Path) -> set[str]:
 
     The idiom throughout this repo is ``NAME = Path(__file__).resolve()
     .parents[k]``. The name varies (ROOT, REPO_ROOT, REPO, _REPO), so the
-    binding is recognised by evaluating the subscript against the real path of
+    binding is recognized by evaluating the subscript against the real path of
     the file rather than by matching the name.
     """
     anchors: set[str] = set()

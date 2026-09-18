@@ -80,7 +80,7 @@ evidence in the review file.
 
 One limit is worth stating plainly. The retirement that was actually wrong
 (California's mdb-102) was **not** itself cross-state, because the record it
-pointed at was mislabelled as Californian too. What the flag caught was the
+pointed at was mislabeled as Californian too. What the flag caught was the
 Connecticut record retiring into the same place, and reading that cluster is
 what turned the California one up. A flag that makes someone look at a cluster
 is doing its job even when the defect is one record over.
@@ -97,7 +97,7 @@ that reads wrong from the metadata is Connecticut's mdb-529 into mdb-2242, a
 record filed under California. The feeds say the opposite. mdb-2242's stops span
 41.02-41.24N, 73.63-73.03W and its routes run to Norwalk Community College, SoNo
 Station and Norwalk Hospital: it is the **Connecticut** agency's current feed,
-mislabelled as California, with the California city's `organization_id` attached
+mislabeled as California, with the California city's `organization_id` attached
 to it. mdb-102, the record that also retires into it, is the genuine Los Angeles
 County agency (33.87-34.07N, 118.13-117.96W; Cerritos College, Rio Hondo, 166th
 Street).

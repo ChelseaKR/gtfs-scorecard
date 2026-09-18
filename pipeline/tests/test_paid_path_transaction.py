@@ -3,7 +3,7 @@ synthetic purchase.
 
 Everything behind /bundle/ is unit-tested a piece at a time in
 test_program_bundle_handlers.py (each Lambda), test_bundle.py (the build and
-the delivery email) and test_workflow_safety.py (the fulfilment workflow's
+the delivery email) and test_workflow_safety.py (the fulfillment workflow's
 own steps). Five joins between those pieces had never executed for a real buyer,
 because each of them only happens when somebody buys something, and nobody
 has in live mode:
@@ -321,7 +321,7 @@ def test_the_setup_page_accepts_the_reference_stripe_substitutes() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Step 3: the dispatch is one the fulfilment workflow accepts
+# Step 3: the dispatch is one the fulfillment workflow accepts
 # ---------------------------------------------------------------------------
 
 

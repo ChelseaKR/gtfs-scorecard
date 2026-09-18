@@ -145,7 +145,7 @@ class ExplainTrail:
     reconciliation_note: str
     margin_to_next_band: float | None
     margin_to_lower_band: float
-    renormalised: bool
+    renormalized: bool
 
     def to_json(self) -> dict[str, Any]:
         return {
@@ -156,7 +156,8 @@ class ExplainTrail:
             "scoring_profile_id": self.scoring_profile_id,
             "weights": {
                 "measured_total": round(self.total_weight, 4),
-                "renormalised": self.renormalised,
+                # British key kept: `scorecard explain --format json` output is public.
+                "renormalised": self.renormalized,
             },
             "categories": [
                 {
@@ -351,7 +352,7 @@ _STRUCTURAL_RESIDUAL_REASONS = {
         "findings need not sum to the drop"
     ),
     "completeness": (
-        "completeness renormalises over the components this feed could be measured on, "
+        "completeness renormalizes over the components this feed could be measured on, "
         "so component points need not sum to the drop"
     ),
     "realtime": (
@@ -525,7 +526,7 @@ def build_trail(artifact: dict[str, Any], *, rubric_version: str | None = None) 
         reconciliation_note=note,
         margin_to_next_band=margin_up,
         margin_to_lower_band=margin_down,
-        renormalised=len(measured_names) < len(CATEGORY_WEIGHTS),
+        renormalized=len(measured_names) < len(CATEGORY_WEIGHTS),
     )
 
 
@@ -583,7 +584,7 @@ def render_text(trail: ExplainTrail) -> str:
         lines.extend(_category_text(cat))
     lines.append("Overall")
     lines.append("-------")
-    if trail.renormalised:
+    if trail.renormalized:
         lines.append(
             f"Measured weight totals {trail.total_weight:g}, so each measured category's "
             "weight is divided by that to sum to 1."
@@ -646,7 +647,7 @@ def render_markdown(trail: ExplainTrail) -> str:
         lines.append("")
     lines.append("## Overall")
     lines.append("")
-    if trail.renormalised:
+    if trail.renormalized:
         lines.append(
             f"Measured weight totals {trail.total_weight:g}, so each measured category's "
             "weight is divided by that to sum to 1."

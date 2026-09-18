@@ -19,7 +19,7 @@ Two routes on the program-bundle API, both stateless per request:
     bundle purchase on the same address and covers the agencies that bundle
     covered (``_inherited_cap``). Without that rule the two refresh prices
     carried the 100-agency cap in their own right, so $49 a month bought the
-    archive the $349 bundle sells and then cancelled -- the cheapest product
+    archive the $349 bundle sells and then canceled -- the cheapest product
     on the page strictly dominating the most expensive one. A refresh with no
     bundle to renew is refused **before the checkout is claimed**, so the
     buyer is left holding an unused checkout they can cancel, not a consumed
@@ -220,7 +220,7 @@ def _paid_purchase(session_id: str) -> tuple[dict[str, Any], str, str]:
                     404,
                     {
                         "ok": False,
-                        "error": "That checkout reference is not one Stripe recognises. Open the "
+                        "error": "That checkout reference is not one Stripe recognizes. Open the "
                         "page Stripe sent you to after paying, address and all. If you have lost "
                         "it, reply to the receipt Stripe emailed you rather than paying again.",
                     },
@@ -444,7 +444,7 @@ def _record_subscription(
     Writing the whole row with ``put_item`` overwrote that answer with
     ``status: "active"``, and the form is submitted *after* checkout, so the
     events that can lose the race are the ones that matter: a subscription
-    cancelled from the Stripe receipt in the minutes before the buyer fills in
+    canceled from the Stripe receipt in the minutes before the buyer fills in
     this form came back as active, and the weekly refresh then sent a fresh
     archive every 28 days, for ever, for a subscription nobody was paying for.
     A failed first payment (``past_due``, ``unpaid``) was erased the same way.

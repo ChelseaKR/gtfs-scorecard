@@ -449,7 +449,7 @@ def test_feature_denominator_is_validated_from_the_feature_document() -> None:
     assert payload["ready"] is False
 
 
-def test_scope_is_exactly_eu27_plus_five_neighbouring_markets() -> None:
+def test_scope_is_exactly_eu27_plus_five_neighboring_markets() -> None:
     expected = {
         "AT",
         "BE",

@@ -146,12 +146,12 @@ def test_the_cli_prints_a_trail_and_exits_0(tmp_path: Path, capsys: Any) -> None
 # --------------------------------------------------------------------------
 
 
-def test_renormalised_weights_sum_to_one_when_realtime_is_unmeasured() -> None:
+def test_renormalized_weights_sum_to_one_when_realtime_is_unmeasured() -> None:
     trail = build_trail(_artifact())
     applied = [c.applied_weight for c in trail.categories if c.measured]
     assert len(applied) == 3
     assert round(sum(a for a in applied if a is not None), 6) == 1.0
-    assert trail.renormalised is True
+    assert trail.renormalized is True
     # 0.35 / 0.80, 0.20 / 0.80, 0.25 / 0.80 written out.
     by_name = {c.name: c.applied_weight for c in trail.categories if c.measured}
     assert by_name["correctness"] == pytest.approx(0.4375)
@@ -189,7 +189,7 @@ def test_all_four_measured_weights_sum_to_one_when_nothing_is_dropped() -> None:
     # 80.0*0.35 + 90.0*0.20 + 64.0*0.25 + 50.0*0.20 = 28 + 18 + 16 + 10 = 72.0
     art["overall"]["score"] = 72.0
     trail = build_trail(art)
-    assert trail.renormalised is False
+    assert trail.renormalized is False
     assert trail.recomputed_published == 72.0
     assert trail.reconciles is True
 

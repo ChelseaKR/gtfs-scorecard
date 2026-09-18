@@ -455,7 +455,7 @@ def test_the_amount_a_reader_sees_is_the_amount_the_offer_carries() -> None:
 # --- and the answers it gives a search result -------------------------------
 
 
-# Inline elements add nothing between their neighbours and everything else adds
+# Inline elements add nothing between their neighbors and everything else adds
 # a space, so "the <a>open-source command</a>." reads as one sentence rather
 # than as "command ." -- which is the difference between a drift check that
 # works and one that reports its own tag stripping as a finding.

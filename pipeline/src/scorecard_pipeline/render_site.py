@@ -410,7 +410,7 @@ def _fix_rule_reference(code: str) -> str:
     Surfaces the canonical rule a finding maps to: a gtfs-validator notice, a
     GTFS Best Practice, or a GTFS Schedule reference section. Where the
     scorecard's code diverges from the validator notice, the canonical notice is
-    named as an alias so the audience recognises it."""
+    named as an alias so the audience recognizes it."""
     link: RuleLink | None = RULE_LINKS.get(code)
     if link is None:
         return ""
@@ -563,7 +563,7 @@ def _spark_svg(
     positions the point, clamped to ``y_min``..``y_max`` (pass the data's own
     min/max for an autoscaled line), and its raw text rides in the dot's
     ``<title>`` so hover and long-press get a native readout. Every dot carries
-    that tooltip, the last one emphasised. The chart stays ``role="img"`` with
+    that tooltip, the last one emphasized. The chart stays ``role="img"`` with
     the full series appended to ``aria_label``, so the numbers are never
     image-only; callers pair it with a text table for the operable equivalent.
     """
@@ -599,7 +599,7 @@ def _spark_mini(history: list[dict[str, Any]] | None, name: str) -> str:
     the same accessible pattern as the big trend chart (dots with native
     tooltips, the series in the aria-label). Autoscaled to its own score range,
     like the national chart, so a few-point move is visible in a table cell (a
-    half-point margin keeps a flat series centred). Rows with fewer than two
+    half-point margin keeps a flat series centered). Rows with fewer than two
     checks render an em dash instead of an empty chart."""
     comparable = _current_rubric_history(history or [])
     points = [
@@ -662,7 +662,7 @@ def _service_bar_chart(
     note: str,
     css_class: str = "",
 ) -> str:
-    """Direct-labelled horizontal percentage bars for ranked comparisons.
+    """Direct-labeled horizontal percentage bars for ranked comparisons.
 
     The list is the chart and its text equivalent: every label, exact percentage,
     and supporting count stays visible in semantic HTML. The track is decorative
@@ -815,7 +815,7 @@ def _trend_section(history: list[dict[str, Any]]) -> str:
 
     # The "Show the numbers" table is the operable, screen-reader equivalent of
     # the sparkline: every check's date, score, and change from the check before,
-    # with the change carried in words and an arrow, never colour alone.
+    # with the change carried in words and an arrow, never color alone.
     trows = []
     for i, p in enumerate(history):
         if i == 0:
@@ -930,7 +930,7 @@ def _feeddiff_section(
 
     The trend section above shows the score's shape; this shows the substance of
     the change a manager can act on. Rendered as accessible lists with the severity
-    and direction stated in words, never by colour alone. Empty before there is a
+    and direction stated in words, never by color alone. Empty before there is a
     previous snapshot to compare against (the trend section covers the first
     check)."""
     if prev_artifact is None:
@@ -1284,14 +1284,14 @@ def _peer_context(record: dict[str, Any] | None) -> str:
     """Location context retained after public percentile claims were removed.
 
     The name is kept for internal-call compatibility. A scorecard may say where
-    its feed record is catalogued, but it does not claim a national or size-peer
+    its feed record is cataloged, but it does not claim a national or size-peer
     standing.
     """
     if not record:
         return ""
     location = _location_label(record)
     return (
-        f'<p class="peer-context">Catalogued in <bdi>{esc(location)}</bdi>.</p>' if location else ""
+        f'<p class="peer-context">Cataloged in <bdi>{esc(location)}</bdi>.</p>' if location else ""
     )
 
 
@@ -2317,7 +2317,7 @@ def _ferry_profile_section(artifact: dict[str, Any]) -> str:
         '<h2 class="section-title" id="ferry-profile-h">Ferry data profile</h2>'
         '<p class="page-lede">A ferry-specific view of what this GTFS feed publishes. '
         "Schedule measurements use ferry routes and trips only; fare and realtime facts are "
-        "labelled as whole-feed. Unknown values are not treated as no.</p>"
+        "labeled as whole-feed. Unknown values are not treated as no.</p>"
         f'<dl class="ferry-profile-grid">{cards}</dl>'
         '<p class="fineprint">Descriptive only. This profile does not change the grade or '
         "verify vessels, terminal facilities, vehicle carriage, fares, or accessibility in "
@@ -4004,7 +4004,7 @@ def _ntd_section(artifact: dict[str, Any]) -> str:
     """Map this feed's scores onto the FTA National Transit Database GTFS
     requirement, so an agency facing annual D-10 certification gets a direct
     'is my feed ready?' read. Four pillars (published, valid, current, agency_id),
-    each labelled in text as well as color so status never relies on color alone.
+    each labeled in text as well as color so status never relies on color alone.
 
     US-only: a non-US agency (agency.country != "US") has no FTA NTD, so this
     returns "" and the page shows just the GTFS-quality rubric. See ADR 0026.
@@ -4103,7 +4103,7 @@ def _rt_health_section(agency_id: str) -> str:
     ``rt-monitor.yml`` recorded nothing between 2026-09-05 and 2026-09-08, and
     this repository's own golden fixture renders "over the last 9 days" for a
     record whose newest observation is 2026-07-01. Naming the end date is
-    threshold-free and clock-free: it needs no judgement about how stale is
+    threshold-free and clock-free: it needs no judgment about how stale is
     too stale, it cannot drift, and a reader can compare it against the build
     date the page already carries."""
     from .rt_health import RtHealthRecordCorruptError, load_observations, summarize
@@ -4257,7 +4257,7 @@ def _conformance_section(artifact: dict[str, Any], agency_id: str, agency_name: 
     """The conformance trust mark: a pass/not-yet credential over the same checks
     the grade uses. When earned, the seal and a copy-paste embed appear; when not,
     the criteria show what is left, framed as a mark to earn rather than a failure.
-    Each criterion is labelled in text, never by color alone."""
+    Each criterion is labeled in text, never by color alone."""
     mark = conformance_assess(artifact)
     from .mode_language import adapt_text, boarding_place_noun, language_kind
 
@@ -4504,7 +4504,7 @@ def _california_guideline_checklist(artifact: dict[str, Any]) -> list[dict[str, 
 
 
 def _california_guideline_html(artifact: dict[str, Any]) -> str:
-    """The California checklist, rendered as a labelled list grouped by the
+    """The California checklist, rendered as a labeled list grouped by the
     guideline's own three sections. A pass/gap/not-measured read, never a
     compliance determination -- the official checklist and its own reporting
     are the authoritative source (docs/crosswalk.md)."""
@@ -4542,7 +4542,7 @@ def _standards_section(
 
     Universal GTFS references are shown globally. US agencies also receive the
     FTA NTD overlay; California receives its guideline, while selected state
-    programs are labelled as support resources rather than scoring authorities.
+    programs are labeled as support resources rather than scoring authorities.
     """
     country = str(artifact.get("agency", {}).get("country", "US"))
     guidance = guidance_for(country, subdivision_code, state)
@@ -4908,10 +4908,10 @@ def _collection_page_jsonld(name: str, description: str, canonical: str) -> dict
 
 
 def _grade_distribution_bar(dist: dict[str, Any], total: int) -> str:
-    """One labelled segment per grade, sized by share -- the Python twin of
+    """One labeled segment per grade, sized by share -- the Python twin of
     app.js's gradeDistributionBar, so the static program page shows the same
     shape crawlers and no-JS visitors get everywhere else. Decorative fill, but
-    each segment is a labelled list item so the same information (grade,
+    each segment is a labeled list item so the same information (grade,
     count, share) is available without color; empty when there is nothing to
     show a distribution over."""
     if not total:
@@ -5217,7 +5217,7 @@ def _rollup_dataset_jsonld(
       country; a ``Country`` place here would contradict the sentence above it.
     * **No ``about`` member list.** The members are named in the page's own
       markup and each one's ``/agency/<id>/`` page carries its own Dataset with
-      ``about`` naming that agency. Restating 2,182 organisations inside
+      ``about`` naming that agency. Restating 2,182 organizations inside
       /program/all/ would be the same claim at ten times the bytes.
     """
     rid = str(rollup["rollup"]["id"])
@@ -5521,9 +5521,9 @@ def _month_label(month: str) -> str:
 def _rollup_reconciliation_section(rollup: dict[str, Any]) -> str:
     """How this program's feed records line up with a transport authority's own directory.
 
-    The scorecard's registry was assembled from open feed catalogues, so it was
-    never the same list as the roster a state programme keeps. Saying how far
-    the two agree, and where they do not, lets a reader from that programme
+    The scorecard's registry was assembled from open feed catalogs, so it was
+    never the same list as the roster a state program keeps. Saying how far
+    the two agree, and where they do not, lets a reader from that program
     check this page against something they already trust. Uncertain matches are
     reported as their own figure and never counted as agreement. Absent when no
     directory has been mapped for the program.
@@ -5577,7 +5577,7 @@ def _rollup_reconciliation_section(rollup: dict[str, Any]) -> str:
 def _rollup_realtime_section(rollup: dict[str, Any]) -> str:
     """Realtime reliability across the program, agency by agency.
 
-    A state programme's monthly reports assess the schedule side and check
+    A state program's monthly reports assess the schedule side and check
     realtime presence at most a couple of times a month. The monitor here
     samples on a schedule and records whether each feed answered, how far
     behind its header timestamp was, and how much of the scheduled service
@@ -6258,7 +6258,7 @@ def _render_accessibility() -> str:
     <h1 class="page-title">Accessibility</h1>
     <p class="page-lede">This site is meant to be usable by everyone, including
     people who use a keyboard, a screen reader, a magnifier, or high-contrast
-    colours. Here is where we stand and how to tell us when something gets in
+    colors. Here is where we stand and how to tell us when something gets in
     your way.</p>
 
     {_route_rule()}
@@ -6271,7 +6271,7 @@ def _render_accessibility() -> str:
     and the printable brief.</p></section>
 
     <section><h2 class="section-title">How we check</h2>
-    <p>Every colour pair is verified to clear AAA contrast in all four themes by an
+    <p>Every color pair is verified to clear AAA contrast in all four themes by an
     automated gate. Axe checks a representative set of page families in the accessibility
     workflow, Lighthouse checks the landing page in the publishing workflow, and browser
     tests exercise keyboard and form journeys. We also review with a keyboard. A recorded
@@ -6284,7 +6284,7 @@ def _render_accessibility() -> str:
     <p>We keep an honest list. The agency map is a convenience layer built on a
     third-party component; everything it shows is also on the fully accessible
     <a href="/agencies/">agency list</a>, so no one is stranded. A few linked external
-    documents (federal rules, validator docs) are outside our control; we summarise
+    documents (federal rules, validator docs) are outside our control; we summarize
     them in plain language on our own pages.</p></section>
 
     <section><h2 class="section-title">Report a barrier</h2>
@@ -7502,9 +7502,9 @@ def _write_catalog(write: Callable[..., None], catalog: list[dict[str, Any]]) ->
     write("catalog.csv", buf.getvalue())
 
 
-# Grade colours for the map, matching the badge palette. Chosen to stay
-# distinguishable under common colour-vision deficiencies; the grade letter in
-# each popup and the legend carries the meaning, never colour alone.
+# Grade colors for the map, matching the badge palette. Chosen to stay
+# distinguishable under common color-vision deficiencies; the grade letter in
+# each popup and the legend carries the meaning, never color alone.
 _MAP_GRADE_COLOR = {
     "A": "#1f7a4d",
     "B": "#3f7d20",
@@ -7555,7 +7555,7 @@ def _map_feature(
             "subdivision_name": subdivision_name or state or "",
             "has_flex": has_flex,
             # The grade letter is drawn as the marker's label so grade is never
-            # carried by colour alone (WCAG 1.4.1); colour only reinforces it.
+            # carried by color alone (WCAG 1.4.1); color only reinforces it.
             "color": _MAP_GRADE_COLOR.get(grade, "#5a5a5a"),
             "url": f"/agency/{agency_id}/",
         },
@@ -7567,8 +7567,8 @@ _MAP_TABLE_INITIAL_ROWS = 50
 
 
 def _render_map_page(features: list[dict[str, Any]]) -> str:
-    """The agency map page: every located agency as a point labelled with its
-    grade letter and coloured by grade, rendered client-side by MapLibre over the
+    """The agency map page: every located agency as a point labeled with its
+    grade letter and colored by grade, rendered client-side by MapLibre over the
     keyless OpenFreeMap basemap and clustered at low zoom.
 
     The map is an enhancement. The conformant primary is the agency table below
@@ -7701,7 +7701,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
     <h1 class="page-title">Agency map.</h1>
     <p class="page-lede">Every tracked feed scorecard with locatable
     <abbr title="General Transit Feed Specification">GTFS</abbr> stops, placed at the feed's
-    service area, labelled with its grade letter and coloured by grade. {count} feed scorecards
+    service area, labeled with its grade letter and colored by grade. {count} feed scorecards
     are on the map. Select a point for its grade and a link to the scorecard, or work
     the list below.</p>
     <p class="page-lede">To see the actual route lines instead of one point per feed scorecard,
@@ -7736,7 +7736,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
     <div id="map" class="national-map national-map-pending" aria-hidden="true"><p class="map-fallback">
       The interactive map has not loaded. Use the complete-list control or the paginated agency
       directory for the same feed records, grades, locations, and scorecard links.</p></div>
-    <ul class="map-legend" aria-label="Grade colours">{legend_items}</ul>
+    <ul class="map-legend" aria-label="Grade colors">{legend_items}</ul>
     <p class="fineprint">Points are placed at each feed's median stop. Basemap:
       OpenFreeMap, &copy; OpenStreetMap contributors. Data: this scorecard, CC BY 4.0.</p>
     <section id="agency-list" tabindex="-1" aria-labelledby="agency-list-h">
@@ -8110,7 +8110,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
               "circle-stroke-width": 2, "circle-stroke-color": "#ffffff"
             }}
           }});
-          // The grade letter, drawn on every point so grade reads without colour.
+          // The grade letter, drawn on every point so grade reads without color.
           map.addLayer({{
             id: "agency-grade", type: "symbol", source: "agencies",
             filter: ["!", ["has", "point_count"]],
@@ -8267,7 +8267,7 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
     return _page(
         title="Agency map — GTFS Scorecard",
         description=(
-            "A world map of the feed scorecards currently covered, labelled and coloured "
+            "A world map of the feed scorecards currently covered, labeled and colored "
             "by GTFS data quality grade."
         ),
         canonical=f"{BASE_URL}/map/",
@@ -8282,11 +8282,11 @@ def _render_map_page(features: list[dict[str, Any]]) -> str:
 _PMTILES_LIB_VERSION = "3.2.1"
 
 # Where the committed national-routes archive lives, served by the same static
-# host as the rest of the site (GitHub Pages, which honours HTTP range requests).
+# host as the rest of the site (GitHub Pages, which honors HTTP range requests).
 _NATIONAL_ROUTES_PMTILES = "/tiles/national-routes.pmtiles"
 
-# Route-type colours for the all-routes map, paired with the words the legend
-# shows, so meaning never rides on colour alone (WCAG 1.4.1). Order is the legend
+# Route-type colors for the all-routes map, paired with the words the legend
+# shows, so meaning never rides on color alone (WCAG 1.4.1). Order is the legend
 # order; the trailing entry is the catch-all for less common modes.
 _ROUTE_TYPE_MAP_COLORS: list[tuple[str, str]] = [
     ("Bus", "#1A7A46"),
@@ -8300,7 +8300,7 @@ _ROUTE_TYPE_OTHER = ("Other modes", "#5a5a5a")
 
 
 def _route_type_color_expr() -> list[Any]:
-    """A MapLibre ``match`` expression: route ``type`` string -> line colour."""
+    """A MapLibre ``match`` expression: route ``type`` string -> line color."""
     expr: list[Any] = ["match", ["get", "type"]]
     for label, color in _ROUTE_TYPE_MAP_COLORS:
         expr.extend([label, color])
@@ -8309,7 +8309,7 @@ def _route_type_color_expr() -> list[Any]:
 
 
 def _grade_color_expr() -> list[Any]:
-    """A MapLibre ``match`` expression: agency ``grade`` letter -> line colour."""
+    """A MapLibre ``match`` expression: agency ``grade`` letter -> line color."""
     expr: list[Any] = ["match", ["get", "grade"]]
     for grade, color in _MAP_GRADE_COLOR.items():
         expr.extend([grade, color])
@@ -8322,10 +8322,10 @@ def _routes_map_script() -> str:
 
     Reads the vector tiles from a single PMTiles archive over the pmtiles://
     protocol (range requests, no tile server), draws every agency's route lines,
-    and lets the reader recolour by route type or agency grade. The canvas is a
+    and lets the reader recolor by route type or agency grade. The canvas is a
     visual enhancement marked aria-hidden: it carries no keyboard tab stop and no
     zoom controls, because the operable equivalent is the agencies list and the
-    per-agency route tables linked above it. prefers-reduced-motion is honoured
+    per-agency route tables linked above it. prefers-reduced-motion is honored
     (no animated fly-to on click)."""
     type_expr = json.dumps(_route_type_color_expr(), separators=(",", ":"))
     grade_expr = json.dumps(_grade_color_expr(), separators=(",", ":"))
@@ -8386,7 +8386,7 @@ def _routes_map_script() -> str:
           }});
           map.on("mouseenter", "routes-line", function () {{ map.getCanvas().style.cursor = "pointer"; }});
           map.on("mouseleave", "routes-line", function () {{ map.getCanvas().style.cursor = ""; }});
-          // Recolour control: route type (default) or agency grade. Each radio
+          // Recolor control: route type (default) or agency grade. Each radio
           // also toggles which text legend is shown.
           var radios = document.querySelectorAll('input[name="route-color-mode"]');
           function apply(mode) {{
@@ -8432,7 +8432,7 @@ def _render_routes_page(summary: dict[str, Any]) -> str:
     <p class="page-lede">The route shapes of every tracked feed record, drawn from each
     feed's own <abbr title="General Transit Feed Specification">GTFS</abbr> and
     combined on a single map. {route_count} routes from {agency_count} feed records are
-    on it. Recolour by route type or by the scorecard's data-quality grade, and select
+    on it. Recolor by route type or by the scorecard's data-quality grade, and select
     a line for the named operator and a link to its scorecard.</p>
     <p class="page-lede"><strong>This map is a visual extra, not the accessible way
     to read the data.</strong> A map of this many route lines can't be a data table.
@@ -8443,13 +8443,13 @@ def _render_routes_page(summary: dict[str, Any]) -> str:
       <h2 id="routes-map-h" class="section-title">All tracked routes</h2>
       <a class="skip-link-inline" href="#routes-after-map">Skip to the accessible scorecard list</a>
       <fieldset class="map-colormode">
-        <legend>Colour routes by</legend>
+        <legend>Color routes by</legend>
         <label><input type="radio" name="route-color-mode" value="type" checked> Route type</label>
         <label><input type="radio" name="route-color-mode" value="grade"> Scorecard grade</label>
       </fieldset>
       <div id="routes-map" class="national-map" aria-hidden="true"></div>
-      <ul class="map-legend" id="legend-type" aria-label="Route type colours">{type_legend_items}</ul>
-      <ul class="map-legend" id="legend-grade" aria-label="Scorecard grade colours" hidden>{grade_legend_items}</ul>
+      <ul class="map-legend" id="legend-type" aria-label="Route type colors">{type_legend_items}</ul>
+      <ul class="map-legend" id="legend-grade" aria-label="Scorecard grade colors" hidden>{grade_legend_items}</ul>
     </section>
     <div id="routes-after-map" tabindex="-1"></div>
     <p class="page-lede">Read the data without the map:</p>
@@ -8472,7 +8472,7 @@ def _render_routes_page(summary: dict[str, Any]) -> str:
         title="Every route on one map — GTFS Scorecard",
         description=(
             "A world vector map of every tracked feed record's transit routes, "
-            "coloured by route type or data-quality grade."
+            "colored by route type or data-quality grade."
         ),
         canonical=f"{BASE_URL}/routes/",
         body=body,
@@ -8538,9 +8538,9 @@ _NEED_LABELS = {
     "unknown": "Need unknown",
 }
 
-# Choropleth encoding for the equity need tiers. Colour is never the only signal:
+# Choropleth encoding for the equity need tiers. Color is never the only signal:
 # each tier also carries a distinct SVG fill pattern (hatch density) and its name
-# in the state's title text and the paired table, so the map reads in greyscale
+# in the state's title text and the paired table, so the map reads in grayscale
 # and to a screen reader (WCAG 1.4.1). Fills are the same family as the existing
 # expired-feed choropleth in styles.css (good green to rust).
 _NEED_TIER_FILL = {
@@ -8562,9 +8562,9 @@ def _equity_choropleth(states_geo: dict[str, Any], by_state: dict[str, dict[str,
     """An inline SVG choropleth of the ACS need tiers, built from the committed,
     public-domain simplified state geometry (web/us-states.json, see ADR 0022).
 
-    Each state is filled by tier colour with a tier-specific hatch pattern, and
+    Each state is filled by tier color with a tier-specific hatch pattern, and
     carries a <title> naming the tier and the numbers, so the map is operable
-    without colour and to assistive tech. States with no overlay row render faint
+    without color and to assistive tech. States with no overlay row render faint
     and inert. It is purely static (no script, no tiles), so reduced-motion needs
     nothing extra. The paired table below carries the same numbers."""
     geo = states_geo.get("states") or {}
@@ -8604,7 +8604,7 @@ def _equity_choropleth(states_geo: dict[str, Any], by_state: dict[str, dict[str,
             f"<title>{esc(label)}</title></path>"
         )
         # A hatch overlay path for the higher tiers, drawn on top with the same
-        # geometry so colour is reinforced by texture in greyscale.
+        # geometry so color is reinforced by texture in grayscale.
         if pattern:
             path += (
                 f'<path d="{esc(d)}" class="need-hatch" '
@@ -8687,7 +8687,7 @@ def _render_equity_page(overlay: dict[str, Any], states_geo: dict[str, Any] | No
     Rendered from the published overlay (the equity workflow's ACS join); shows a
     neutral note when the overlay has not been computed yet.
 
-    A state-level choropleth visualises the ACS need tiers when both the overlay
+    A state-level choropleth visualizes the ACS need tiers when both the overlay
     and the committed state geometry are present. The priority and per-state
     tables are the conformant primary: they carry every number the map encodes,
     reached by a 'Skip to the state tables' bypass before the map."""
@@ -8846,7 +8846,7 @@ def _reporter_coverage_section(coverage: dict[str, Any] | None) -> str:
 
     Three things this section is careful about. Every number is a count of
     reporters, and the registry counts feed records, so the two are never added.
-    A reporter with no discoverable feed is a limit of what open catalogues can
+    A reporter with no discoverable feed is a limit of what open catalogs can
     see, not a finding about the agency and never a zero. And the range is
     published at both ends, because a name-based join is wide and pretending
     otherwise would be the overclaim.
@@ -8860,7 +8860,7 @@ def _reporter_coverage_section(coverage: dict[str, Any] | None) -> str:
         f"<tr><td>{esc(label)}</td><td>{esc(f'{coverage[key]:,}')}</td></tr>"
         for key, label in (
             ("tracked_by_registry", "Matched to a feed this site tracks"),
-            ("discoverable_elsewhere", "Feed found in another open catalogue"),
+            ("discoverable_elsewhere", "Feed found in another open catalog"),
             ("needs_human_review", "Name overlap only, needs a human"),
         )
     )
@@ -8869,7 +8869,7 @@ def _reporter_coverage_section(coverage: dict[str, Any] | None) -> str:
       <p class="page-lede">Of the <strong>{esc(f"{obligated:,}")} NTD reporters</strong>
       that operated at least one fixed-route mode in Report Year
       {esc(coverage["report_year"])}, between <strong>{esc(f"{low:,}")} and
-      {esc(f"{high:,}")}</strong> have no feed discoverable in any open catalogue this
+      {esc(f"{high:,}")}</strong> have no feed discoverable in any open catalog this
       site reads. The low end counts a shared rare word in an agency name as a match;
       the high end does not. The gap between them is how wide a name-based join is,
       and it is stated rather than averaged away.</p>
@@ -8880,9 +8880,9 @@ def _reporter_coverage_section(coverage: dict[str, Any] | None) -> str:
       {esc(f"{obligated:,}")} above is a different denominator from the tracked-feed
       count at the top of this page, which counts feed records: one operator can
       publish several, and a regional feed can carry many operators. The two are never
-      added. A reporter with no discoverable feed is a limit of what open catalogues
+      added. A reporter with no discoverable feed is a limit of what open catalogs
       can see, not a finding about that agency, and the fix may belong to FTA's own
-      crosswalk or to a catalogue rather than to the agency. Report year
+      crosswalk or to a catalog rather than to the agency. Report year
       {esc(coverage["report_year"])}, retrieved {esc(coverage["retrieved_utc"][:10])};
       sources and terms are in <code>data/ntd/PROVENANCE.md</code>.</p>
     </section>"""
@@ -10957,7 +10957,7 @@ def _write_program_pages(art: Path, write: Callable[..., None]) -> None:
             lastmod=_rollup_content_date(payload) or None,
         )
     if rendered:
-        # The index changes whenever any rollup it summarises does, so the
+        # The index changes whenever any rollup it summarizes does, so the
         # newest member snapshot across them all is its own date -- read from the
         # same payloads the rows are built from.
         index_lastmod = max((_rollup_content_date(payload) for payload in rendered), default="")
@@ -11944,7 +11944,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     write("trends/index.html", _redirect_page("/pulse/#trend", "Coverage trend"))
 
     # National map: a single small GeoJSON of every located agency as a point
-    # coloured by grade, rendered client-side (no tile server). Agencies whose
+    # colored by grade, rendered client-side (no tile server). Agencies whose
     # feed has no located stops carry no geometry and are simply absent.
     geojson = {
         "type": "FeatureCollection",
@@ -12122,7 +12122,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             )
 
     # The coverage overview: worldwide comparisons stay score/delta-only. U.S.
-    # NTD ridership is shown in the explicitly labelled context sentence above,
+    # NTD ridership is shown in the explicitly labeled context sentence above,
     # never used to move U.S. feeds ahead of equally scored feeds elsewhere.
     # retired URLs redirect to their anchors so old links keep working.
     board = leaderboard(

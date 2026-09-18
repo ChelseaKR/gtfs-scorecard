@@ -294,7 +294,7 @@ def _render_compare_page(catalog: list[dict[str, Any]]) -> str:
           return e;
         }}
         // A score cell; when this side is measured, higher, and the gap is real,
-        // the number is emphasised with a text note, never colour alone.
+        // the number is emphasized with a text note, never color alone.
         function scoreCell(mine, theirs) {{
           var td = el("td");
           if (mine === null) {{ td.textContent = "Not yet published"; return td; }}
@@ -654,7 +654,7 @@ _FFLATE_VERSION = "0.8.2"
 # The check page's logic, kept out of the f-string so braces stay readable.
 # The five questions mirror the rubric's plain-language framing; every status
 # is carried in text ("Looks good" / "Needs attention" / "Can't tell yet"),
-# never colour. See _render_check_page for the page around it.
+# never color. See _render_check_page for the page around it.
 _CHECK_PAGE_SCRIPT = r"""    <script>
       (function () {
         var input = document.getElementById("check-file");
@@ -930,7 +930,7 @@ def _render_check_page() -> str:
     The person exporting a feed from scheduling software does not run CI; this
     meets them at the moment of export. The zip never leaves the page (fflate
     unzips it client-side, loaded only when a file arrives), the five answers
-    are framed as fixes with a text status never colour, and the page is loud
+    are framed as fixes with a text status never color, and the page is loud
     that the canonical validator remains the authority: it links try.html for
     the full scorecard. The file input is the accessible primary; the drop
     zone is an enhancement."""
@@ -972,7 +972,7 @@ def _render_check_page() -> str:
 #
 # The last field used to be derived from the href ("GitHub account" for
 # /try.html, "No account" for everything else), which had no way to say
-# "Paid" and would have labelled the program bundle free. It is stated per
+# "Paid" and would have labeled the program bundle free. It is stated per
 # entry now, so an entry that costs money cannot be described as one that
 # does not by default.
 _TOOLS = [

@@ -64,7 +64,7 @@ The job runs **two lanes**, both over the full history:
 Lane 2 is the previous gate, unchanged, over every path. That is what makes lane
 1's four extra exclusions cost nothing: the two lanes together are a **strict
 superset** of what this job checked before. `!cancelled()` so a lane 1 failure
-does not hide lane 2's verdict, while a cancelled run still stops both.
+does not hide lane 2's verdict, while a canceled run still stops both.
 
 Both lanes now also carry `version: "3.97.1"`. The action's `version:` input
 selects the image that scans (`ghcr.io/trufflesecurity/trufflehog:${VERSION}`) and
@@ -105,6 +105,6 @@ the pre-change workflow it fails four of its six assertions.
   coverage for the fix. Lane 2 is the price of lane 1 being safe.
 - **Strip presigned query strings out of `data/artifacts/**`.** That would edit
   recorded provenance to make a scanner quiet, which is the wrong direction: the
-  artefact is a record of what was fetched.
+  artifact is a record of what was fetched.
 
 [ADR 0044]: 0044-trufflehog-lob-detector-exclusion.md

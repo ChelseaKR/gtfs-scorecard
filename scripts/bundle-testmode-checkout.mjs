@@ -177,7 +177,7 @@ async function payHostedCheckout(page, args) {
     // click; the radio underneath never receives one, and Playwright refuses a
     // plain click on the radio because that button "intercepts pointer
     // events". A person's click lands on the button, but Playwright cannot
-    // synthesise it by coordinates either: a forced click is refused as
+    // synthesize it by coordinates either: a forced click is refused as
     // "outside of the viewport" because the cover has no box of its own. So
     // invoke the button's own click, which runs the handler a real click
     // reaches. The second and third real runs failed on those two attempts.
@@ -193,7 +193,7 @@ async function payHostedCheckout(page, args) {
 
   // "Save my information for faster checkout" (Link) is ticked by default and
   // asks for a phone number before Pay will go through. A test purchase has no
-  // reason to enrol in Link, so untick it rather than invent a phone number.
+  // reason to enroll in Link, so untick it rather than invent a phone number.
   const linkOptIn = page.locator("#enableStripePass");
   if ((await linkOptIn.count()) > 0 && (await linkOptIn.isChecked().catch(() => false))) {
     await linkOptIn.uncheck({ force: true });

@@ -307,7 +307,7 @@ finished `failure` with the validating step `cancelled`, the 55-minute job
 timeout nowhere near reached; `validate-one-feed.yml` has no `concurrency`
 block and no later run superseded any of them, which is the same signature the
 scheduled runs have carried since 08-17. It remains an inference from the
-absence of a cancelling actor rather than a positive signal from the platform.
+absence of a canceling actor rather than a positive signal from the platform.
 
 **So the memory parameters are not the variable.** Two of them have now been
 moved with no effect on the outcome, and the pairing that worked eight days ago
@@ -346,7 +346,7 @@ defect as a gate that cannot fail.
 
 **What changed now**
 
-1. `run_validator`'s failure quotes both streams, each labelled, each capped at
+1. `run_validator`'s failure quotes both streams, each labeled, each capped at
    8,000 characters head-and-tail with the omitted count stated, and names the
    exit code, the feed, the heap flag, the address-space ceiling and the exact
    command to reproduce by hand. An empty stream reads `(empty)` rather than as

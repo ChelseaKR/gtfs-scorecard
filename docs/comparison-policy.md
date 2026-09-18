@@ -30,7 +30,7 @@ than left to be inferred. Because the homogeneous set the aggregates use is the
 one most feeds share, and most feeds have no measured realtime, a feed **with**
 measured realtime is excluded from the corpus average, the trend series, and
 the change lists. On 2026-08-06 that was 145 of 1,783 comparable feeds. The
-exclusion is a measurement rule, not a judgement: a four-category overall score
+exclusion is a measurement rule, not a judgment: a four-category overall score
 is a different measurement from a three-category one, and averaging them would
 be worse than reporting one. Those feeds' realtime results are published on
 `/realtime/`, and `/pulse/` now says so beside the number.

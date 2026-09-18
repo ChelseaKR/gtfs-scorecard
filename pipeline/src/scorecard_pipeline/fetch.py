@@ -34,7 +34,7 @@ log = logging.getLogger(__name__)
 # blocked legitimate public-feed fetches used for exactly this kind of
 # consumption. Present as a current browser, the way Google's and Apple's
 # transit fetchers and ordinary trip planners do, with the Accept headers a
-# browser sends. We still fetch once a day and honour polling etiquette.
+# browser sends. We still fetch once a day and honor polling etiquette.
 USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36"
@@ -286,7 +286,7 @@ def _reader_members(archive: zipfile.ZipFile) -> list[ReaderMember]:
 #: Files whose presence in a directory marks that directory as the GTFS feed.
 #: The specification's required tables, plus the two calendar files and
 #: feed_info.txt, which is the same set the site's own "is this a feed?" check
-#: uses. A directory of producer notes, licence text, or shapefiles carries none
+#: uses. A directory of producer notes, license text, or shapefiles carries none
 #: of them, so it is never mistaken for the feed itself.
 GTFS_FEED_MARKER_TABLES = frozenset(
     {
@@ -625,7 +625,7 @@ def _read_provenance_sidecar(dest: Path) -> dict[str, Any]:
 
 def _recorded_auth_kind(recorded: dict[str, Any]) -> str | None:
     """The auth kind a sidecar records, or None when it records none or an
-    unrecognised one. Only the fixed disclosure and a known kind are read
+    unrecognized one. Only the fixed disclosure and a known kind are read
     back, so a hand-edited sidecar cannot put arbitrary text in an artifact."""
     kind = recorded.get("auth_kind")
     if recorded.get("auth") == AUTH_DISCLOSURE and kind in FETCH_AUTH_KINDS:

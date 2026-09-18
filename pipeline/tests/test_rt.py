@@ -460,7 +460,7 @@ class TestScoring:
 
     def test_a_sixty_second_lag_still_reads_as_fresh(self) -> None:
         # FRESH_FULL_SECONDS is the inclusive top of full credit: a feed exactly
-        # 60s behind keeps every freshness point and is not labelled stale.
+        # 60s behind keeps every freshness point and is not labeled stale.
         at_line = realtime(window_at_lag(FRESH_FULL_SECONDS), {"T1", "T2"})
         assert at_line.score == 100.0
         assert at_line.details["rt_freshness"] == "fresh"

@@ -15,12 +15,12 @@ turned off in the property.
 GA4 brings what PostHog's shim deliberately left out: Google's own script,
 first-party cookies, and Google as a second recipient. The bar ADR 0055 set
 still holds. A reader can find out exactly what is recorded, it is as little
-as the question needs, and saying no is honoured without a banner.
+as the question needs, and saying no is honored without a banner.
 
 ## Decision
 
 GA4 is a second, separate block at the end of `web/src/measure.js`. The
-PostHog block above it changes only to honour the footer opt-out described
+PostHog block above it changes only to honor the footer opt-out described
 below. The two blocks share no variables, only the opt-out mark on the page,
 so either can be turned off without touching the other.
 

@@ -1,6 +1,6 @@
 name: Program report bundle
 
-# The program tier's fulfilment step (docs/program-plan.md, ADR 0049): render
+# The program tier's fulfillment step (docs/program-plan.md, ADR 0049): render
 # one program's branded board reports for a cohort of agencies, zip them with
 # a manifest, put the archive behind a 30-day capability link, and email the
 # link. GitHub Actions is the on-demand compute, the same way onboard.yml
@@ -153,7 +153,7 @@ jobs:
       #
       # The checkout already carries a committed snapshot of data/artifacts,
       # which is the fallback when no bucket is configured. It must not be the
-      # fallback when a bucket IS configured: that snapshot is re-materialised
+      # fallback when a bucket IS configured: that snapshot is re-materialized
       # by hand and runs weeks behind, so a `cp` that failed for one agency
       # would leave a stale grade in place and the report would print it as
       # today's, dressed in a fresh history from the index that was fetched
@@ -174,7 +174,7 @@ jobs:
       # published for it yet". For a 404 that is the truth. For an S3 read
       # that failed three times it is a claim about the agency, manufactured
       # from a failed read of our own bucket, and the buyer -- who is paying
-      # for a judgement about exactly that -- has no way to see the
+      # for a judgment about exactly that -- has no way to see the
       # difference. So a 404 continues the build and an unreadable object
       # fails the run: late is recoverable by a re-run with the same inputs,
       # and the failure path is watched (watchdog.yml, and the "Say that a

@@ -37,4 +37,4 @@ tools expose this in the same export settings that write the rest of
 ## How long it usually takes
 
 One field, set once. Using a role inbox instead of a personal address is the
-only judgement call.
+only judgment call.

@@ -19,7 +19,7 @@ keeps it true except these checks. They hold it five ways.
    for its path, so a ``$ref`` pointing at the wrong schema fails.
 5. Its structure is what a static read API needs: GET only, unique operation
    ids, every path-template parameter declared, every reference resolvable, and
-   licence, attribution and versions bound to the pipeline's own constants.
+   license, attribution and versions bound to the pipeline's own constants.
 """
 
 from __future__ import annotations
@@ -335,7 +335,7 @@ def test_every_operation_is_a_get_with_a_unique_id_and_declared_parameters() -> 
     assert not problems, "\n".join(problems)
 
 
-def test_licence_attribution_and_versions_match_the_pipeline() -> None:
+def test_license_attribution_and_versions_match_the_pipeline() -> None:
     info = _openapi()["info"]
     assert info["license"]["identifier"] == DATA_LICENSE
     assert info["x-attribution"] == DATA_ATTRIBUTION

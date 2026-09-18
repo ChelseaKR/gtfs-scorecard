@@ -344,7 +344,7 @@ def test_bundle_jsonld_stubs_match_the_home_page_nodes() -> None:
 
     Repeating three fields is repeating three fields, so this asserts they have
     not drifted: the home page stays the definition, and renaming the
-    organisation there fails here instead of leaving two names in the graph.
+    organization there fails here instead of leaving two names in the graph.
     """
     web = _REPO / "web"
     definitions = dict(_page_identified_nodes((web / "index.html").read_text()))

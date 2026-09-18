@@ -164,7 +164,7 @@ existing surface without changing a grade or adding a service:
   (ADR 0051).
 - **Shipped 2026-08-27:** `/ntd/` and `ntd.json` publish the NTD reporter
   denominator alongside the tracked-feed one, from the committed RY2024
-  snapshot that nothing had read (#278). Reporter counts are labelled as such
+  snapshot that nothing had read (#278). Reporter counts are labeled as such
   and never added to feed-record counts, the no-discoverable-feed range is
   published at both ends, and the section renders nothing if the snapshot does
   not reconcile (ADR 0052).
@@ -178,7 +178,7 @@ existing surface without changing a grade or adding a service:
 
 ## Not on the ship list
 
-- More general score, map, viewer, catalogue, or validation surfaces.
+- More general score, map, viewer, catalog, or validation surfaces.
 - Public agency or vendor rankings.
 - A public raw-feed or continuous cross-agency realtime archive.
 - Broad international expansion without the source, license, identity, and

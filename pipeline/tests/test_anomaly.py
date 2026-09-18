@@ -101,7 +101,7 @@ def test_transient_one_day_dip_then_recovery() -> None:
 
 def test_drop_that_stood_for_weeks_is_not_a_transient_dip() -> None:
     # 8% of published history steps are not consecutive days (1,114 of them are
-    # 27-day gaps), so neighbouring rows are not neighbouring days. A feed that
+    # 27-day gaps), so neighboring rows are not neighboring days. A feed that
     # scored 40 on 06-11 and was next seen at 90 on 07-08 was broken for nearly
     # a month; calling that a one-day glitch both misstates the evidence and,
     # via alerts._anomaly_alert_items, suppresses the alert the agency needs.

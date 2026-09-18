@@ -27,7 +27,7 @@ GRADE_BANDS = [(90.0, "A"), (80.0, "B"), (70.0, "C"), (60.0, "D"), (0.0, "F")]
 # The overall score is published to one decimal. The letter and the band
 # margins have to be derived from that same published number, not from the
 # unrounded value behind it: a raw 79.96875 publishes as "80.0", and grading
-# the raw value labelled it C while docs/rubric.md and the published
+# the raw value labeled it C while docs/rubric.md and the published
 # scoring.json both say 80 is a B. Nine live artifacts carried a letter that
 # contradicted their own printed score that way (bus-eireann, express-bus-ie,
 # slieve-bloom-coach-tours, cape-ann-transportation-authority-cata-447,

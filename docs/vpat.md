@@ -73,10 +73,10 @@ completed before this report claims assistive-technology verification.
   nothing focusable is hidden from assistive tech. The conformant primary on the page is
   the filterable agency table (agency, grade, state, score, link), with grade, state, and
   a "Skip to the agency list" bypass; the same grade and state filters drive the map and
-  the table together, and grade is drawn as a letter on every marker, never colour alone.
+  the table together, and grade is drawn as a letter on every marker, never color alone.
   The page is axe-tested in CI like every other route (ADR 0022).
 - **Equity choropleth (`/equity/`):** a static inline-SVG state choropleth of the ACS need
-  tiers. Tiers are encoded by colour plus a hatch pattern and named in each state's title
+  tiers. Tiers are encoded by color plus a hatch pattern and named in each state's title
   text; the priority and full per-state tables carry every number the map shows, reached by
   a "Skip to the state tables" bypass. No map library or tiles, so it is fully keyboard- and
   screen-reader-operable.

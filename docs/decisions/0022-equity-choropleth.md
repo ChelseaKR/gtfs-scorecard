@@ -7,8 +7,8 @@ Status: accepted (2026-06)
 Two national-scale geographic views needed a visual upgrade without breaking the
 WCAG 2.2 AAA bar or the hermetic, deterministic static build:
 
-1. The national map (`/map/`) plotted every located agency as a grade-coloured
-   dot. Grade was carried by colour alone, there were no filters, and the only
+1. The national map (`/map/`) plotted every located agency as a grade-colored
+   dot. Grade was carried by color alone, there were no filters, and the only
    accessible equivalent was a link out to `/agencies/`.
 2. The equity overlay (`/equity/`) showed the ACS need tiers as a three-row
    priority table only. The published `equity.json` already carries a per-state
@@ -20,8 +20,8 @@ WCAG 2.2 AAA bar or the hermetic, deterministic static build:
 ### National grade map
 
 Reuse the already-pinned MapLibre GL (4.7.1) and the existing `map.geojson`.
-Each marker is now **labelled with its grade letter** (a MapLibre symbol layer)
-so grade never depends on colour (WCAG 1.4.1); colour only reinforces it. Points
+Each marker is now **labeled with its grade letter** (a MapLibre symbol layer)
+so grade never depends on color (WCAG 1.4.1); color only reinforces it. Points
 **cluster at low zoom**. Grade and state `<select>` filters drive the map (via
 `source.setData` on the filtered collection) and an on-page, filterable agency
 **table** (agency, grade, state, score, link) at the same time. The table is the
@@ -36,12 +36,12 @@ documented exception.
 Render an **inline SVG choropleth** of the ACS need tiers, server-side in Python,
 reusing the committed simplified state geometry in `web/us-states.json` (the same
 asset the national-overview choropleth already uses). Each state is filled by
-tier colour **and** a tier-specific hatch pattern (dense hatch = high, sparse
+tier color **and** a tier-specific hatch pattern (dense hatch = high, sparse
 hatch = moderate, solid = lower), and carries a `<title>` naming the tier and the
-numbers, so the map reads in greyscale and to a screen reader. The existing
+numbers, so the map reads in grayscale and to a screen reader. The existing
 priority table is kept and joined by a full per-state table that carries every
 number the map encodes; a "Skip to the state tables" bypass precedes the map.
-Being static SVG, it needs no tiles and honours reduced-motion with nothing extra.
+Being static SVG, it needs no tiles and honors reduced-motion with nothing extra.
 
 An SVG choropleth (not a second MapLibre map) keeps `/equity/` free of a map
 library, fully static, and trivially keyboard- and screen-reader-operable.
@@ -68,7 +68,7 @@ either way.
   artifacts (`map.geojson`, `equity.json`, `us-states.json`).
 - `/map/` joins the pa11y/axe route list; its 1.4k-row table uses the same
   extended timeout as `/agencies/`.
-- The choropleth and grade legend are not colour-only: pattern + label + table.
+- The choropleth and grade legend are not color-only: pattern + label + table.
 - Tract-level equity (ADR 0015) remains the future refinement; this stays
   state-level.
 

@@ -47,10 +47,10 @@ concurrency:
   # is kept.
   #
   # On a push it is `refs/heads/main` for EVERY commit, so consecutive pushes to main
-  # shared one group and the second cancelled the first outright. Flipping
+  # shared one group and the second canceled the first outright. Flipping
   # `cancel-in-progress` to false does not fix it either: a queued run is then evicted
   # from the pending slot by the next arrival. Both roads end with a commit on main whose
-  # only check-run is `cancelled`, and a cancelled run is no signal at all — not a pass,
+  # only check-run is `cancelled`, and a canceled run is no signal at all — not a pass,
   # not a failure, and easy to misread as either. Two commits lost their verdict this way
   # on 2026-09-06.
   #

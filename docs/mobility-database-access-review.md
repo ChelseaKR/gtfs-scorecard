@@ -1,7 +1,7 @@
 # Mobility Database access review
 
 **Status:** open question for the maintainer. Nothing in this document changes
-fetching behaviour; it exists so the decision can be made on facts.
+fetching behavior; it exists so the decision can be made on facts.
 
 **Reviewed:** 2026-08-15. All URLs and robots.txt bodies below were fetched on
 that date and are quoted verbatim.
@@ -144,7 +144,7 @@ RETRIABLE_STATUS = frozenset({403, 408, 425, 429, 500, 502, 503, 504})
 with `FETCH_RETRIES = 3` and exponential backoff, and the inline comment "a WAF
 403 that often lets a second request through." A 403 is the server saying no.
 Retrying it three times is, on the project's own stated rail, closer to
-circumventing a block than to honouring one. (The mirror fetch itself passes
+circumventing a block than to honoring one. (The mirror fetch itself passes
 `retries=0`, so this applies to origin fetches, not to the Mobility Database
 path.)
 
@@ -217,7 +217,7 @@ What it says:
 
 - The API codebase is Apache-2.0; **the catalog metadata is CC0 1.0** (public
   domain dedication). Individual feed contents remain under their own
-  publishers' licences, and the consumer is responsible for complying with each.
+  publishers' licenses, and the consumer is responsible for complying with each.
 - MobilityData may modify, suspend, or discontinue the API without notice, and
   disclaims liability for availability.
 - Terms may be amended at any time without notice.
@@ -226,7 +226,7 @@ What it says:
 What it does **not** say: there is no clause prohibiting automated downloading,
 no scraping prohibition, no rate limit, and no attribution requirement.
 
-So the operator's written terms do not forbid this use. The only artefact that
+So the operator's written terms do not forbid this use. The only artifact that
 arguably forbids it is the robots.txt.
 
 ---

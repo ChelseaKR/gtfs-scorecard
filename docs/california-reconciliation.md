@@ -9,7 +9,7 @@ Caltrans and Cal-ITP publish a
 [monthly GTFS quality report](https://reports.dds.dot.ca.gov/) for each
 California agency they carry, and the directory of those reports is the closest
 thing the state has to a roster of who publishes transit data here. This
-scorecard's registry grew from open feed catalogues instead, so the two lists
+scorecard's registry grew from open feed catalogs instead, so the two lists
 were assembled by different means and had never been lined up.
 
 That mattered for a specific reason. The California program page counts feed

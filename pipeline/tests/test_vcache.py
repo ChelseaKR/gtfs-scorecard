@@ -176,7 +176,7 @@ def test_s3_errors_never_fail_a_score(tmp_path, monkeypatch) -> None:  # type: i
     assert vcache.load_cached("demo", "abc123", "8.0.1") is None
 
 
-def test_no_bucket_keeps_file_only_behaviour(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+def test_no_bucket_keeps_file_only_behavior(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
     _point_cache_at(tmp_path, monkeypatch)
     monkeypatch.delenv("VALIDATOR_CACHE_BUCKET", raising=False)
     monkeypatch.delenv("ARTIFACTS_BUCKET", raising=False)

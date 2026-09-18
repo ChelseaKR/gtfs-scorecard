@@ -10,7 +10,7 @@ Code: `unknown_column` (MobilityData validator)
 ## What this means
 
 A file in your feed has a column header that is not a field in the GTFS spec.
-Apps ignore columns they do not recognise, so these do no harm on their own. The
+Apps ignore columns they do not recognize, so these do no harm on their own. The
 validator surfaces them because an unknown column is sometimes a misspelled real
 one, and that case does cause harm.
 

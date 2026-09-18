@@ -250,7 +250,7 @@ def test_fetch_raises_when_s3_read_fails(tmp_path, monkeypatch) -> None:  # type
         archive.fetch("c" * 64)
 
 
-def test_no_bucket_keeps_local_only_behaviour(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
+def test_no_bucket_keeps_local_only_behavior(tmp_path, monkeypatch) -> None:  # type: ignore[no-untyped-def]
     _point_archive_at(tmp_path, monkeypatch)
     src = _write_source_zip(tmp_path)
     monkeypatch.delenv("RAW_ARCHIVE_BUCKET", raising=False)

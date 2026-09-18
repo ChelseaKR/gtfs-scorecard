@@ -21,7 +21,7 @@ permissions:
 
 # Cancel superseded runs of the same PULL REQUEST to save minutes -- and only those.
 # `github.ref` is `refs/pull/N/merge` on a pull request, which is what the comment above
-# always meant. On a push it is `refs/heads/main` for every commit, so this cancelled one
+# always meant. On a push it is `refs/heads/main` for every commit, so this canceled one
 # commit's run when the next arrived, and a commit reached main whose only check-run was
 # `cancelled` -- no signal at all. A push is grouped by its own SHA and cancels nothing.
 concurrency:

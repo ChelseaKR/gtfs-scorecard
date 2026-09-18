@@ -16,7 +16,7 @@ successful run. This is the same refusal ``UnreadableValidatorReportError``
 makes on the scoring side, in the one output format that would otherwise present
 the absence as a pass.
 
-**A sampled count is labelled as sampled.** The gtfs-validator reports at most a
+**A sampled count is labeled as sampled.** The gtfs-validator reports at most a
 handful of example rows per notice code, and ``validate.parse_report_data`` keeps
 five of them. One SARIF result is emitted per notice *code*, carrying the true
 total in its message and as many locations as there are samples. Emitting one

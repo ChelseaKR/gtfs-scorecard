@@ -191,7 +191,7 @@ class TestTiers:
         )
         assert classify_against(reporter(), atlas=frozenset({"90218"}))[0] == "atlas_ntd_id"
 
-    def test_a_catalog_only_reporter_is_labelled_as_such(self) -> None:
+    def test_a_catalog_only_reporter_is_labeled_as_such(self) -> None:
         catalog = [FeedRecord("mdb-9", "CA", "Riverside County Transportation Commission")]
         tier, evidence = classify_against(reporter(), catalog=catalog)
         assert tier == "catalog_name_exact"

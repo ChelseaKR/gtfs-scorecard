@@ -6,7 +6,7 @@ Please report security issues privately rather than in a public issue. Use
 GitHub's [private vulnerability reporting](https://github.com/ChelseaKR/gtfs-scorecard/security/advisories/new)
 on this repository.
 
-**Response SLA:** acknowledgement within **72 hours**; a fix or a concrete
+**Response SLA:** acknowledgment within **72 hours**; a fix or a concrete
 remediation plan within **14 days** for HIGH-severity-or-above reports (lower
 severity reports get a plan, not necessarily a fix, on that timeline).
 

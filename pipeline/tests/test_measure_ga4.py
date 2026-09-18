@@ -13,7 +13,7 @@ tests hold what that gate cannot see:
 - that Global Privacy Control, Do Not Track, and a page served from this
   machine each stop it before anything loads.
 
-The behaviour tests execute the rendered script in Node against a stub page,
+The behavior tests execute the rendered script in Node against a stub page,
 the same harness shape ``test_frontend_guidance.py`` uses. Each negative
 control asserts that its sabotage changed the script before it reads the
 verdict, so a control that silently did nothing cannot pass.

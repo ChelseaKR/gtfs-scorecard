@@ -133,7 +133,7 @@ jobs:
       # ~82 MB out of S3 every cycle to serve the handful of feeds that changed;
       # fetch them by exact key instead, once the changed list exists. A feed
       # with no stored fingerprint simply has no diff to report, which is the
-      # same behaviour as its first ever run.
+      # same behavior as its first ever run.
       - name: Hydrate export fingerprints for the changed feeds
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         env:

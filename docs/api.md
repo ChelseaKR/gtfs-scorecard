@@ -114,7 +114,7 @@ For citation, do not cite the live site: it changes daily. A monthly
 `dataset-YYYY-MM` release (the `Dataset release` workflow) pins the flat
 exports, the parquet file, the NTD rollup, this data dictionary, and
 `CITATION.cff` to an immutable tag, so a paper's reference resolves to exactly
-the bytes analysed. Releases:
+the bytes analyzed. Releases:
 <https://github.com/ChelseaKR/gtfs-scorecard/releases>.
 
 Changelog:
@@ -553,7 +553,7 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | `api/v1/realtime.json` | Realtime reliability over sampled windows, overall and by portable country/subdivision. Backs `/realtime/`. Its `observed` block states when the observations behind it were taken — `newest_last_observation`, `median_last_observation` and `oldest_last_observation` across the monitored feed records, plus `feed_records_dated` and `feed_records_undated`. Read that, not `generated_at`, to judge how current the numbers are: `generated_at` is the build time and is rewritten at every render whether or not the monitor recorded anything. The three dates are null when no member records one, never the build date and never a zero. |
 | `api/v1/problems.json` | The most common validator findings across the covered corpus, with prevalence counts. Its input contains findings without agency identity, so this endpoint has no geographic rows. Backs `/problems/`. |
 | `api/v1/trend.json` | The covered-set quality time series. Backs the trend section at `/pulse/#trend`. |
-| `ntd.json` (linked from `api/v1/index.json` as `ntd_readiness`) | FTA NTD GTFS-readiness rolled up over tracked feed records, plus an additive `reporter_coverage` block counting **NTD reporters**, a different unit that must never be added to a feed-record count. `reporter_coverage` states its own denominator (`obligated_reporters`), how many reporters match a tracked feed, how many have a feed only in another open catalogue, and the low and high ends of the range with no discoverable feed anywhere. Absent entirely when the committed snapshot does not declare `unit: ntd_reporters` or its tiers do not sum to its own denominator (ADR 0052). |
+| `ntd.json` (linked from `api/v1/index.json` as `ntd_readiness`) | FTA NTD GTFS-readiness rolled up over tracked feed records, plus an additive `reporter_coverage` block counting **NTD reporters**, a different unit that must never be added to a feed-record count. `reporter_coverage` states its own denominator (`obligated_reporters`), how many reporters match a tracked feed, how many have a feed only in another open catalog, and the low and high ends of the range with no discoverable feed anywhere. Absent entirely when the committed snapshot does not declare `unit: ntd_reporters` or its tiers do not sum to its own denominator (ADR 0052). |
 | `api/v1/status.json` | Intended cadence plus liveness outcomes restricted to the current published artifact index. Its `scope` block discloses included and excluded liveness records. |
 | `api/v1/run-status.json` | Latest completed-run evidence. Aggregate counts retain that run's historical attempted set; named unreachable records are restricted to the current published catalog, with older records counted but not named. |
 | `api/v1/canada-equity.json` | Canada served-area equity overlay (StatCan CIMD, ADR 0027), refreshed monthly. Appears once the monthly job has run; `source` and `generated_on` date the overlay. |
@@ -672,7 +672,7 @@ queries genuinely appear. The decision and trigger are in
 ### OpenAPI description (`api/v1/openapi.yaml`)
 
 `api/v1/openapi.yaml` describes the paths in this document in OpenAPI 3.1, so a
-client generator or an API catalogue can read them without parsing prose. It
+client generator or an API catalog can read them without parsing prose. It
 describes files, not a server: every operation is a `GET` of a static file,
 and its one server entry is relative, so a fork's copy describes the fork.
 Where a path has a JSON Schema under `/schemas/`, the operation references it

@@ -155,7 +155,7 @@ def search_agencies(
         }
         for r in rows
     ]
-    # Honour the caller's limit exactly, clamped to 0..100; limit=0 means none.
+    # Honor the caller's limit exactly, clamped to 0..100; limit=0 means none.
     return {"total": len(slim), "agencies": slim[: max(0, min(int(limit), 100))]}
 
 
@@ -495,7 +495,7 @@ def get_evidence_packet(fetch: Fetch, agency_id: str) -> dict[str, Any]:
 def coverage_for(fetch: Fetch, country: str, subdivision: str = "") -> dict[str, Any]:
     """Covered-set totals for one country, or one subdivision inside it.
 
-    A country this scorecard does not cover returns explicit zeros **labelled as
+    A country this scorecard does not cover returns explicit zeros **labeled as
     not covered**, never a bare zero: "we track no feeds here" and "there are no
     feeds here" are different statements and only the first is one we can make.
     """

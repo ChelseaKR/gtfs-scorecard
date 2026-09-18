@@ -3,7 +3,7 @@
 The completeness category already records, per agency, whether a feed carries
 GTFS-Flex (demand-responsive/dial-a-ride service), fare data (legacy
 ``fare_attributes`` or the newer Fares v2 products and leg rules), station
-modelling with GTFS-Pathways, and rider-facing text in ``translations.txt``
+modeling with GTFS-Pathways, and rider-facing text in ``translations.txt``
 (see ``flex.py``, ``fares.py``, ``pathways.py``, ``translations.py``).
 That answers the question for one agency. Programs deciding where to invest, and
 anyone asking whether it is worth adding these to a feed, ask a different one:

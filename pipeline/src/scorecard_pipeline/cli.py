@@ -2565,7 +2565,7 @@ def _cmd_lint(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
 
 
 def _cmd_license_audit(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
-    """Count registry records by the licence each note names (issue #372).
+    """Count registry records by the license each note names (issue #372).
 
     A report, never a gate: it exits 0 whatever it finds, because the
     share-alike policy it would judge against is still an owner decision.
@@ -4799,7 +4799,7 @@ def main(argv: list[str] | None = None) -> int:
 
     license_audit = sub.add_parser(
         "license-audit",
-        help="count registry records by the licence their license_note names (report only)",
+        help="count registry records by the license their license_note names (report only)",
     )
     license_audit.add_argument("--json", action="store_true", help="print the report as JSON")
 

@@ -175,7 +175,7 @@ def test_color_name_matches_nearest_word() -> None:
 
 def test_shape_collapsing_to_one_point_is_not_drawn() -> None:
     # A two-point shape whose endpoints round to the same 5-decimal coordinate
-    # (a sub-metre span, or duplicate coordinates from a malformed export) must
+    # (a sub-meter span, or duplicate coordinates from a malformed export) must
     # not be emitted as a 1-coordinate LineString (invalid GeoJSON); the route
     # degrades to no-shape instead.
     routes = _routes({"route_id": "A", "route_short_name": "A", "route_type": "3"})

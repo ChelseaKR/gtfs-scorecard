@@ -30,7 +30,7 @@ The left side is the FTA NTD Annual Database Agency Information table for RY2024
 the Service by Mode table records at least one fixed-route mode for it in
 RY2024. That gives **1,253 reporters**.
 
-The right side is three open catalogues, consulted in order: this project's
+The right side is three open catalogs, consulted in order: this project's
 registry, the Transitland Atlas, and the Mobility Database.
 
 Each reporter lands in exactly one match tier. The tiers are ordered by how much
@@ -57,7 +57,7 @@ Of 1,253 RY2024 fixed-route NTD reporters:
 - **573** have a feed record in the GTFS Scorecard registry on strong evidence.
 - **39** have a feed in the Transitland Atlas or the Mobility Database that we
   do not track.
-- **473 to 641** have no discoverable feed in any of the three catalogues. The
+- **473 to 641** have no discoverable feed in any of the three catalogs. The
   low end counts a shared rare word as a match; the high end does not. The
   distance between them is the honest width of a name-based join, and it is
   wide.
@@ -85,10 +85,10 @@ it, and the number is recorded here only because it prices the decision open in
 PR #276. Read against the v2 catalog, the no-discoverable-feed range would be
 roughly 243 to 454 rather than 473 to 641.
 
-**The registry was seeded from the same catalogue.** That is why the legacy
+**The registry was seeded from the same catalog.** That is why the legacy
 Mobility Database copy adds almost nothing on top of `registry_name_exact`: the
 records it holds are largely the records we already hold. The Atlas leg is the
-only genuinely independent catalogue in the join, and it is thin, tagging 106
+only genuinely independent catalog in the join, and it is thin, tagging 106
 US operators with an NTD ID in total.
 
 ## Why the weak tier is quarantined
@@ -114,15 +114,15 @@ deviated fixed route, so agencies report it under Bus or under Demand Response.
 Demand Response is excluded here, which means some obligated reporters are not
 in the 1,253.
 
-A reporter in `no_candidate` may well publish a feed that no open catalogue has
-indexed. This measures catalogue coverage, not agency behaviour. It is not a
+A reporter in `no_candidate` may well publish a feed that no open catalog has
+indexed. This measures catalog coverage, not agency behavior. It is not a
 compliance determination, nobody is graded on it, and no score moves because of
 it. Where the gap is real, the fix may belong to FTA's own crosswalk or to a
-catalogue rather than to the agency.
+catalog rather than to the agency.
 
 Report Year 2024 is the most recent annual database available. A reporter that
 started publishing in 2025 or 2026 still appears in the roster, and its feed, if
-catalogued, still matches.
+cataloged, still matches.
 
 Every count above is a count of **NTD reporters**. The registry counts **feed
 records**, a different unit: regional feeds, modal variants, and retired aliases
@@ -140,6 +140,6 @@ each with its own denominator named, is tracked in issue #278.
 
 ## Sources
 
-Retrieval dates, exact URLs, row counts, byte hashes, and licence terms are in
+Retrieval dates, exact URLs, row counts, byte hashes, and license terms are in
 `data/ntd/PROVENANCE.md`. All four sources are public and free; two are US
 Government works in the public domain.

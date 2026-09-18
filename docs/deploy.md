@@ -364,7 +364,7 @@ to PostHog Cloud US only when the deploy wrote a `POSTHOG_KEY` into it (the
 committed copy has no key and sends nothing). The same step writes the GA4
 measurement id from `site-seo.json` into the script's second block, which then
 loads Google Analytics 4. The PostHog block sets no cookie; GA4 sets the `_ga`
-cookies outside the EEA, the UK and Switzerland. Both honour Global Privacy
+cookies outside the EEA, the UK and Switzerland. Both honor Global Privacy
 Control and Do Not Track, and GA4 never loads on `localhost`, so the Lighthouse
 runs above do not count as visits. See
 [ADR 0055](decisions/0055-cookieless-site-measurement.md),

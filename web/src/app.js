@@ -796,8 +796,8 @@ function downloadFeatureCsv(rows, context) {
   URL.revokeObjectURL(url);
 }
 
-/** A grade-distribution bar: one labelled segment per grade, sized
- *  by share. Decorative fill, but each segment is a labelled list item so the
+/** A grade-distribution bar: one labeled segment per grade, sized
+ *  by share. Decorative fill, but each segment is a labeled list item so the
  *  same information is available without color. @param {any} dist @param {number} total
  *  @param {string} [label] */
 function gradeDistributionBar(dist, total, label = "Grade distribution across comparable scorecards") {
@@ -1201,7 +1201,7 @@ function renderOverview(directory) {
   const coverageLimit = usFeedCount > 0
     ? `Coverage is not a census of any country or region. The United States currently represents
       ${formatNumber(usFeedCount)} of ${formatNumber(total)} tracked feed records; other countries are
-      small canary sets while regional source and licence review continues.`
+      small canary sets while regional source and license review continues.`
     : `Coverage is not a census of any country or region. Country counts describe only the feeds
       currently tracked here.`;
   const comparisonContract = comparisonContractText(s.comparison);
@@ -3025,7 +3025,7 @@ function ferryProfileSection(artifact) {
     <p class="ferry-profile-kicker">Ungraded capability read</p>
     <h2 class="section-title" id="ferry-profile-h">Ferry data profile</h2>
     <p class="page-lede">A ferry-specific view of what this GTFS feed publishes. Schedule
-      measurements use ferry routes and trips only; fare and realtime facts are labelled as
+      measurements use ferry routes and trips only; fare and realtime facts are labeled as
       whole-feed. Unknown values are not treated as no.</p>
     <dl class="ferry-profile-grid">${rows.map(([label, value]) =>
       `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("")}</dl>
@@ -3229,7 +3229,7 @@ function currentProducerHistory(history) {
 function peerContext(dirRecord) {
   if (!dirRecord) return "";
   const place = placeLabel(dirRecord);
-  return place ? `<p class="peer-context">Catalogued in <bdi>${esc(place)}</bdi>.</p>` : "";
+  return place ? `<p class="peer-context">Cataloged in <bdi>${esc(place)}</bdi>.</p>` : "";
 }
 
 /** @param {any} artifact */
@@ -3294,7 +3294,7 @@ function trendNote(history) {
 /** Inline SVG line of the overall score across checks, mirroring the static
  *  pages' shared sparkline (_spark_svg in render_site.py): a dot at every
  *  check carries a native hover tooltip (its date and score), the last one
- *  emphasised, and the aria-label carries the full series for screen readers.
+ *  emphasized, and the aria-label carries the full series for screen readers.
  *  The operable equivalent is the "Show the numbers" table below the chart.
  *  @param {any[]} history */
 function scoreSparkline(history) {
@@ -3326,7 +3326,7 @@ function scoreSparkline(history) {
 /** The "Show the numbers" table: the operable, screen-reader equivalent of the
  *  sparkline, mirroring the static pages' trend-table markup. Every check's
  *  date, score, and change from the check before, the change carried in words
- *  and an arrow, never colour alone.
+ *  and an arrow, never color alone.
  *  @param {any[]} history */
 function trendDataTable(history) {
   const rows = history
@@ -3852,7 +3852,7 @@ function presentedConformanceSummary(mark, place = "stop", artifact = null) {
 }
 
 /** Conformance mark: a pass/not-yet credential over the checks the grade uses.
- *  Reads the stored `conformance` block; "" if absent. Criteria are labelled in
+ *  Reads the stored `conformance` block; "" if absent. Criteria are labeled in
  *  text, never by color alone.
  *  @param {any} artifact @param {string} agencyId @param {string} agencyName */
 function conformanceSection(artifact, agencyId, agencyName) {

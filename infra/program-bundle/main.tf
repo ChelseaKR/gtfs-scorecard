@@ -82,7 +82,7 @@ variable "github_repo" {
 }
 
 variable "github_token" {
-  description = "Fine-scoped token on this repository. Needs Actions: Read and write to dispatch the fulfilment workflow, and Issues: Read and write for the daily reconciler's standing report. Widening it is an owner action; github_token_can_write_issues is where that is attested."
+  description = "Fine-scoped token on this repository. Needs Actions: Read and write to dispatch the fulfillment workflow, and Issues: Read and write for the daily reconciler's standing report. Widening it is an owner action; github_token_can_write_issues is where that is attested."
   type        = string
   sensitive   = true
 }

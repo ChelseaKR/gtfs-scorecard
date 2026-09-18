@@ -219,7 +219,7 @@ def test_the_contract_refuses_a_plan_that_would_ship_a_broken_checkout(
 ) -> None:
     plan = _live_plan()
     mutate(plan)
-    assert _errors(plan), "the schema accepted a plan the page cannot honour"
+    assert _errors(plan), "the schema accepted a plan the page cannot honor"
 
 
 def test_payments_may_be_turned_off_with_every_price_and_link_withdrawn() -> None:

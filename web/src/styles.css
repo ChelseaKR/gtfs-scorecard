@@ -936,7 +936,7 @@ main:focus { outline: none; }
 }
 .stat-lab { font-size: 0.8rem; color: var(--ink-soft); line-height: 1.3; }
 
-/* grade distribution: one proportional, labelled segment per grade */
+/* grade distribution: one proportional, labeled segment per grade */
 .grade-distribution {
   list-style: none;
   margin: 0;
@@ -974,7 +974,7 @@ main:focus { outline: none; }
 .grade-seg .seg-n { color: var(--ink-soft); font-weight: 400; font-variant-numeric: tabular-nums; }
 
 /* ---------- shared visualization grammar ----------
-   Ranked percentages use a zero-based "service route": a labelled line starts
+   Ranked percentages use a zero-based "service route": a labeled line starts
    at a stop marker and runs to the exact value. The semantic list is both chart
    and text equivalent, so no fact depends on SVG, hover, or color. */
 .service-chart {
@@ -1692,7 +1692,7 @@ main:focus { outline: none; }
   background: var(--card);
 }
 /* Placeholder text inside the map container; MapLibre clears it when it
-   initialises, so it shows until the visitor requests the enhancement. */
+   initializes, so it shows until the visitor requests the enhancement. */
 .national-map .map-fallback {
   padding: 1.2rem;
   color: var(--muted, inherit);
@@ -1757,7 +1757,7 @@ main:focus { outline: none; }
   border-radius: 50%;
   border: 1px solid var(--line);
 }
-/* The grade letter inside each legend dot, so the legend never leans on colour
+/* The grade letter inside each legend dot, so the legend never leans on color
    alone (it mirrors the grade letter drawn on every map marker). */
 .map-dot-letter {
   font-size: 0.62rem;
@@ -1832,8 +1832,8 @@ main:focus { outline: none; }
 .need-hatch { stroke: none; pointer-events: none; }
 .need-empty { fill: var(--paper-deep); stroke: var(--line); }
 /* Equity choropleth <-> state-table brushing (progressive enhancement; the state
-   table is the accessible primary). An outline in the text colour on the state
-   and a neutral row tint, both readable on every theme and not colour-only. */
+   table is the accessible primary). An outline in the text color on the state
+   and a neutral row tint, both readable on every theme and not color-only. */
 .need-state[data-state] { cursor: pointer; }
 .need-state.is-brushed { stroke: var(--ink); stroke-width: 1.8px; }
 .leaderboard tr.is-brushed th,
@@ -1851,7 +1851,7 @@ main:focus { outline: none; }
 .need-swatch.need-moderate { background: #d6894e; }
 .need-swatch.need-lower { background: #5b9c7a; }
 .need-swatch.need-empty { background: var(--paper-deep); }
-/* The legend swatch mirrors the map's hatch so the texture cue, not just colour,
+/* The legend swatch mirrors the map's hatch so the texture cue, not just color,
    distinguishes the high and moderate tiers. */
 .need-swatch.need-high::after,
 .need-swatch.need-moderate::after {
@@ -1891,7 +1891,7 @@ main:focus { outline: none; }
 .route-map-section { position: relative; }
 #route-data { outline: none; }
 #routes-after-map { outline: none; }
-/* Recolour control on the national all-routes map (/routes/). */
+/* Recolor control on the national all-routes map (/routes/). */
 .map-colormode {
   border: 1.5px solid var(--line);
   border-radius: var(--radius);
@@ -1954,8 +1954,8 @@ main:focus { outline: none; }
 /* Linked brushing between the route table and the map: the row whose line is
    hovered or tapped lights up, and the reverse. This is a transient hover and
    selection affordance, not data encoding, so a neutral tint (which keeps AAA
-   text contrast on every theme) carries it, with a left bar in the text colour
-   as a non-colour cue. */
+   text contrast on every theme) carries it, with a left bar in the text color
+   as a non-color cue. */
 .route-table tr[data-route-key] { cursor: pointer; }
 .route-table tr.is-brushed th,
 .route-table tr.is-brushed td { background: rgba(127, 127, 127, 0.18); }
@@ -2757,7 +2757,7 @@ main:focus { outline: none; }
 
 /* ===================================================================
    WCAG 2.2 AAA polish: line-length cap (1.4.8), target size (2.5.5),
-   and the colour-selection control (1.4.8).
+   and the color-selection control (1.4.8).
    =================================================================== */
 
 /* 1.4.8 visual presentation: cap prose measure so lines stay readable.
@@ -2793,7 +2793,7 @@ main p,
 .fix-guide { overflow-wrap: anywhere; }
 .cohort-note > summary { width: fit-content; padding: 0.2rem 0.2rem; }
 
-/* The colour-selection control (1.4.8), shared with the landing page. */
+/* The color-selection control (1.4.8), shared with the landing page. */
 .theme-control { position: relative; display: inline-flex; }
 .theme-control-footer { margin: 0.8rem 0 0; }
 .theme-toggle {
@@ -2884,7 +2884,7 @@ main p,
     background: var(--paper);
   }
 
-  /* Keep the grade letter and pressed-facet count light on their coloured fills. */
+  /* Keep the grade letter and pressed-facet count light on their colored fills. */
   :root:not([data-theme]) .grade-chip { color: #f2f3ee; }
   :root:not([data-theme]) .facet-chip[aria-pressed="true"] { color: #15181b; }
 

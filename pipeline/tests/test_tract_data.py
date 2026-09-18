@@ -136,7 +136,7 @@ def test_agency_tiers_maps_state_and_handles_missing() -> None:
 
 def test_fetch_tract_geometry_pages(monkeypatch: pytest.MonkeyPatch) -> None:
     """The TIGERweb fetch follows resultOffset paging until the service stops
-    signalling exceededTransferLimit, merging every page."""
+    signaling exceededTransferLimit, merging every page."""
     import scorecard_pipeline.net as net
 
     pages = [

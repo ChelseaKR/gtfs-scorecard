@@ -19,7 +19,7 @@ gate or a decoration, and none of them shows up as a red build when it breaks.
 3. **Every detector the widened lane switches off stays armed in another lane**, Lob
    aside. Lob matches this repository's own pytest function names under every tier
    (ADR 0044) and no lane can usefully run it. The other four exclusions exist only
-   because the widened tier surfaces committed third-party artefacts and synthetic test
+   because the widened tier surfaces committed third-party artifacts and synthetic test
    DSNs, and they are only safe while the verified-results lane still runs them.
 
 4. **The action ref and the `version:` input name the same release.** The input selects

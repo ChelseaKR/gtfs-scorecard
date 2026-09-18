@@ -302,7 +302,7 @@ class _Marked(HTMLParser):
 
 def test_the_setup_form_and_its_email_field_are_marked_no_capture() -> None:
     """The shim never reads a form; this is the belt for the day an SDK is
-    added, because ``ph-no-capture`` is what PostHog autocapture honours."""
+    added, because ``ph-no-capture`` is what PostHog autocapture honors."""
     parser = _Marked()
     parser.feed(_SETUP)
     assert "ph-no-capture" in parser.classes["setup-form"]

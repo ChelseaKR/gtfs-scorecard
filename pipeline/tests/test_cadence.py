@@ -93,7 +93,7 @@ def test_standard_feeds_spread_across_buckets() -> None:
 
 
 def test_hourly_cadence_keeps_the_previous_arithmetic() -> None:
-    # `step=1` has to reduce to the old `hour % period == bucket` behaviour, so
+    # `step=1` has to reduce to the old `hour % period == bucket` behavior, so
     # the change is a generalization rather than a different schedule.
     assert cycles_per_period(STANDARD_PERIOD, 1) == STANDARD_PERIOD
     hourly = [h for h in range(24) if is_due("some-agency", STANDARD, h, step=1)]

@@ -21,7 +21,7 @@ def test_badge_without_score_shows_letter_only() -> None:
 
 def test_distinct_grades_get_distinct_colors() -> None:
     colors = {g: render_badge(g) for g in "ABCDF"}
-    # the second fill in each badge is the grade-coloured segment
+    # the second fill in each badge is the grade-colored segment
     fills = {g: svg.split('fill="')[2].split('"')[0] for g, svg in colors.items()}
     assert len(set(fills.values())) == 5
 

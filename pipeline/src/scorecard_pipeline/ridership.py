@@ -13,7 +13,7 @@ not reachable from the build environment, and only a minority of feeds carry an
 NTD ID so far, so the weighting is honest only over the matched subset and reports
 its own coverage. Commit a ridership snapshot to ``data/ntd-ridership.csv`` and
 broaden NTD-ID coverage to make it national. Nothing here fabricates ridership;
-absent data yields an empty, clearly-labelled result rather than a guess.
+absent data yields an empty, clearly-labeled result rather than a guess.
 """
 
 from __future__ import annotations

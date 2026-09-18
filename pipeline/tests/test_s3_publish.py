@@ -739,7 +739,7 @@ def test_collect_still_refuses_to_retire_a_registered_agency_nothing_withdrew(
     assert f"{PREFIX}/unitrans/latest.json" in client.objects
 
 
-def test_a_staged_publish_root_still_honours_the_withdrawal_reindex_recorded(
+def test_a_staged_publish_root_still_honors_the_withdrawal_reindex_recorded(
     tmp_path: Path, isolated_repo_root: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     """Intraday refresh and targeted score publish a stage, not the corpus.

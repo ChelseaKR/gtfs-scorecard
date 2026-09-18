@@ -9,9 +9,9 @@ tags each line with the things the map needs at national scale:
 
 - ``agency`` and ``agency_name`` so a click can link back to the scorecard,
 - ``route`` (the human label) and ``type`` (Bus, Rail, ...) for the popup and
-  the route-type colouring,
+  the route-type coloring,
 - ``grade`` (the agency's letter grade, from ``catalog.json``) for the alternate
-  grade colouring.
+  grade coloring.
 
 The output is consumed two ways. ``write_geojsonl`` writes newline-delimited
 GeoJSON for tippecanoe to turn into zoom-aware vector tiles (then a ``.pmtiles``
@@ -56,7 +56,7 @@ def load_catalog_grades(catalog_path: Path) -> dict[str, dict[str, str]]:
     """agency id -> {name, grade} from a published ``catalog.json``.
 
     The catalog is the site's own record of every agency's grade and name, so the
-    national map can label and colour a route without re-reading each artifact. A
+    national map can label and color a route without re-reading each artifact. A
     missing or malformed catalog degrades to an empty map (every route keeps a
     neutral grade), never an error.
     """

@@ -159,7 +159,7 @@ def run_step(
     render_result: str | None = None,
     before: dict[str, str] | None = None,
 ) -> dict[str, Any]:
-    """Run the gate step once and return everything it did, with paths normalised.
+    """Run the gate step once and return everything it did, with paths normalized.
 
     ``inputs`` are the workflow's `with:` values. ``before`` writes files into
     the workspace (relative paths) or the runner's temporary directory (paths

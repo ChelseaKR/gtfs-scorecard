@@ -32,7 +32,7 @@ the wrong thing to ship on dishonest data:
 - The NTD ridership endpoints (`transit.dot.gov`, `data.transportation.gov`) are
   unreachable from the build environment, so no ridership snapshot is committed
   yet. Nothing in this module fabricates ridership; absent data yields an empty,
-  labelled result.
+  labeled result.
 - Only a minority of feeds carry an NTD ID so far (the crosswalk matches by exact
   feed URL and is deliberately conservative), so even with ridership in hand the
   weighting would cover a fraction of the corpus.

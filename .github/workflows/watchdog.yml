@@ -177,7 +177,7 @@ jobs:
               measured=$((measured + 1))
               echo "$workflow $job, run $id: $minutes of $bound minutes, $conclusion, $steps steps"
               if [ "$conclusion" = "cancelled" ] && [ "$steps" -gt 0 ] && [ "$minutes" -ge $((bound - 1)) ]; then
-                echo "::error::$workflow $job run $id was stopped by its own $bound-minute bound after $minutes minutes. GitHub records that as cancelled, not as a failure."
+                echo "::error::$workflow $job run $id was stopped by its own $bound-minute bound after $minutes minutes. GitHub records that as canceled, not as a failure."
                 fail=1
               elif [ $((minutes * 10)) -ge $((bound * 9)) ]; then
                 echo "::error::$workflow $job run $id took $minutes of its $bound-minute bound, 90% or more. The next heavier run is a timeout kill: re-measure the runtime and move the bound or the work before that happens."
@@ -220,7 +220,7 @@ jobs:
             exit 1
           fi
 
-      # report-bundle.yml is the program tier's fulfilment step, and every run
+      # report-bundle.yml is the program tier's fulfillment step, and every run
       # of it is an order somebody paid between $149 and $490 for. It is
       # dispatched, never scheduled, so it has no cadence to go stale against
       # and no page that looks wrong when it stops: a failed run is invisible

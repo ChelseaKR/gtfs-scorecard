@@ -4,7 +4,7 @@ Two scheduled publish cycles were lost in six days to the platform rather than
 to anything this repository produced: run 34245244731 (2026-09-08) uploaded the
 whole 204 MB artifact and died on `Failed to FinalizeArtifact ... (403)`, and
 run 34461157937 (2026-09-10) watched a healthy backend report `updating_pages`
-for the action's full 10-minute default and then *cancelled its own
+for the action's full 10-minute default and then *canceled its own
 deployment*. In both the refreshed data reached S3 and the site kept serving the
 previous generation until the next cycle.
 
@@ -60,7 +60,7 @@ def test_the_deploy_waits_longer_than_the_actions_default_and_less_than_its_job(
     timeout_ms = int(bound.group(1))
     assert timeout_ms > DEPLOY_PAGES_DEFAULT_TIMEOUT_MS, (
         "at the default the action cancels its own deployment after 10 minutes; "
-        "run 34461157937 was cancelled that way while the backend was still working"
+        "run 34461157937 was canceled that way while the backend was still working"
     )
     job_bound = re.search(r"^    timeout-minutes: (\d+)$", deploy_job, re.MULTILINE)
     assert job_bound, "the deploy job declares no timeout-minutes"

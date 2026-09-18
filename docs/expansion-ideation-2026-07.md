@@ -28,7 +28,7 @@ what the repo already ships. Claims that drive a recommendation carry a source.
 2. **The spec is growing in exactly the directions the rubric already watches.**
    The canonical validator's v7 line validates GTFS-Flex fully and covers
    Fares v2 rider categories; community votes are active on contactless-payment
-   signalling (cEMV), demand-responsive updates, and deprecating
+   signaling (cEMV), demand-responsive updates, and deprecating
    `TripUpdate.schedule_relationship = ADDED`
    ([MobilityData](https://gtfs.org/blog/author/mobilitydata/),
    [validator releases](https://github.com/MobilityData/gtfs-validator/releases)).

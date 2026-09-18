@@ -170,7 +170,7 @@ def test_a_flat_archive_is_read_exactly_as_it_is(tmp_path: Path) -> None:
 
 
 def test_extras_beside_the_feed_directory_do_not_hide_it(tmp_path: Path) -> None:
-    """A licence file at the root is not a GTFS table, so it does not win.
+    """A license file at the root is not a GTFS table, so it does not win.
 
     Root names are still preferred over a directory's, but only when the root
     actually holds the table being asked for. A producer who ships a README

@@ -18,7 +18,7 @@ Steps:
      S3+CloudFront, see docs/decisions/0023) can be made against the threshold.
 
 The aggregated GeoJSONL is deterministic; the PMTiles bytes are **not**
-guaranteed reproducible (tippecanoe embeds build metadata and may parallelise
+guaranteed reproducible (tippecanoe embeds build metadata and may parallelize
 feature ordering), so the archive is treated as a generated asset, not a
 checked-invariant.
 """

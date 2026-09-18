@@ -185,7 +185,7 @@ def test_the_page_says_the_two_denominators_are_different_units() -> None:
 def test_a_reporter_with_no_feed_is_a_measurement_limit_not_a_finding() -> None:
     """The neutral-treatment rule, with more force: the fix may not be theirs."""
     html = _page(_coverage())
-    assert "is a limit of what open catalogues\n      can see, not a finding about that agency" in (
+    assert "is a limit of what open catalogs\n      can see, not a finding about that agency" in (
         html.replace("\r", "")
     )
     assert "may belong to FTA's own\n      crosswalk" in html.replace("\r", "")

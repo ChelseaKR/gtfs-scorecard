@@ -7,7 +7,7 @@ state, or list of providers, pairs each GTFS Schedule feed with any realtime
 feeds that reference it, and emits reviewable registry blocks.
 
 A human still reviews and merges the output, so the registry stays curated.
-The point is to remove the typing, not the judgement: key-gated realtime feeds
+The point is to remove the typing, not the judgment: key-gated realtime feeds
 become an `rt_note` rather than a broken `rt_urls` entry, key-gated Schedule
 feeds are withheld, licenses are carried through, and feeds already present in
 the registry are skipped by stable catalog id or normalized URL.
@@ -385,7 +385,7 @@ def parse_catalog_records(csv_text: str) -> list[CatalogFeed]:
 
 def parse_catalog(csv_text: str) -> list[CatalogFeed]:
     """Parse the catalog CSV into feed records, skipping rows without a usable
-    download URL or a recognised data type."""
+    download URL or a recognized data type."""
     return [feed for feed in parse_catalog_records(csv_text) if feed.direct_download]
 
 
@@ -1026,7 +1026,7 @@ _catalog_cache: list[CatalogFeed] | None = None
 
 
 def load_catalog(*, force: bool = False) -> list[CatalogFeed]:
-    """The parsed Mobility Database catalog, fetched once and memoised.
+    """The parsed Mobility Database catalog, fetched once and memoized.
 
     Used by the fetch fallback, which only consults it when an agency's origin
     feed is unreachable, so the catalog download happens for the blocked

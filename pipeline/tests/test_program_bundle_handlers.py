@@ -233,7 +233,7 @@ class FakeTable:
     def update_item(self, **kwargs: Any) -> None:
         self.updates.append(kwargs)
         key_value = kwargs["Key"][self.key]
-        # Honouring the condition here is the difference between a test that
+        # Honoring the condition here is the difference between a test that
         # proves a foreign subscription creates no row and one that would
         # pass either way.
         if not self._allows(key_value, kwargs):
@@ -1281,7 +1281,7 @@ def test_setup_separates_an_unknown_checkout_from_a_stripe_outage(
     monkeypatch.setattr(setup_handler, "stripe_get", missing)
     resp = setup_handler.handler(_setup_event(_form()))
     assert resp["statusCode"] == 404
-    assert "not one Stripe recognises" in json.loads(resp["body"])["error"]
+    assert "not one Stripe recognizes" in json.loads(resp["body"])["error"]
     assert tables["BUNDLES_TABLE"].items == {}
 
 
@@ -1882,7 +1882,7 @@ def test_refresh_keeps_going_past_a_failed_dispatch(
 def test_refresh_dry_run_changes_nothing(
     monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
 ) -> None:
-    """DRY_RUN was reported in the response and never honoured. It is honoured
+    """DRY_RUN was reported in the response and never honored. It is honored
     now, from the environment or from a hand invoke's payload, and the proof
     is that nothing moved: no dispatch, no capability row, no last_refresh."""
     dispatched: list[dict[str, str]] = []
@@ -2052,7 +2052,7 @@ def _reconcile(tables: dict[str, FakeTable], s3: _ReconcileS3) -> dict[str, Any]
 def test_reconcile_reports_a_paid_order_whose_archive_never_arrived(
     tables: dict[str, FakeTable],
 ) -> None:
-    """The dispatch dead-end and a fulfilment run that died look the same
+    """The dispatch dead-end and a fulfillment run that died look the same
     from here, which is the point: the capability row is written before
     report-bundle.yml is dispatched, so one question covers both."""
     rows = tables["BUNDLES_TABLE"].items
@@ -2295,7 +2295,7 @@ def test_the_reconciler_keeps_one_standing_issue_and_never_closes_it(
     assert [m for m, _ in issues.calls if m == "DELETE"] == []
     assert not any("state" in patch for patch in issues.patches), "nothing closes an issue"
 
-    # An issue somebody else labelled is not ours to overwrite.
+    # An issue somebody else labeled is not ours to overwrite.
     issues.open = [{"number": 99, "title": "unrelated", "body": "no marker here"}]
     assert reconcile_handler.report_findings(findings) == "opened"
     assert len(issues.open) == 2
@@ -2316,7 +2316,7 @@ def test_the_reconciler_fails_loudly_when_it_cannot_file_the_report(
         reconcile_handler.handler({}, None)
 
 
-def test_reconcile_handler_files_the_report_and_honours_the_gates(
+def test_reconcile_handler_files_the_report_and_honors_the_gates(
     monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
 ) -> None:
     tables["BUNDLES_TABLE"].items["a" * 32] = _capability("a" * 32)
@@ -2451,7 +2451,7 @@ def test_the_promise_is_anchored_to_the_checkout_not_to_the_form(
 ) -> None:
     """A buyer who pays on Friday and fills the form in on Monday was
     promised two business days from Friday. Anchoring on the form would hand
-    us the weekend, which is the direction that quietly favours us."""
+    us the weekend, which is the direction that quietly favors us."""
     from scorecard_pipeline import deadline as dl
 
     # Friday 11 September 2026, 16:00 in the promise's own zone. Two business
@@ -2517,7 +2517,7 @@ def test_a_delivered_order_never_breaches_however_late_it_was(
     tables: dict[str, FakeTable],
 ) -> None:
     """Late and delivered is not a refund by this machinery's reckoning. The
-    buyer may still be owed one; that is a judgement, and it is hers."""
+    buyer may still be owed one; that is a judgment, and it is hers."""
     rows = tables["BUNDLES_TABLE"].items
     rows["a" * 32] = _capability("a" * 32, hours=72, deliver_by_epoch=_promised(-5))
     s3 = _ReconcileS3(present={f"program-bundles/{'a' * 32}/bundle.zip"})
@@ -2868,7 +2868,7 @@ def test_store_pending_upload_refuses_to_overwrite_an_uploaded_row(ad_table: Fak
 def test_emit_still_prints_the_cloudwatch_line_and_also_stores(
     ad_table: FakeTable, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    """emit()'s pre-existing behaviour (a spy every earlier test in this
+    """emit()'s pre-existing behavior (a spy every earlier test in this
     file relies on) is unchanged; storing is additive."""
     event = _pending_event("cs_emit_1")
     conversion_tracking.emit(event)

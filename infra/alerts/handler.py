@@ -50,7 +50,7 @@ SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 # They drifted once, and the shape of the bug is worth recording. The form path stores whatever
 # this tuple holds when a payload omits `kinds`, so a subscriber who chose nothing was written an
 # explicit closed two-item list rather than a "wants everything" marker. subscriptions.yaml
-# documents "omit for every kind" and the YAML path honours it; the form path silently inverted it,
+# documents "omit for every kind" and the YAML path honors it; the form path silently inverted it,
 # and a form subscriber was permanently opted out of lapse_risk, export_change and anomaly without
 # ever being told.
 ALERT_KINDS = ("expiry", "lapse_risk", "regression", "export_change", "anomaly")

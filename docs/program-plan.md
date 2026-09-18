@@ -22,7 +22,7 @@ metric and no new grade. It is packaging, branding, and delivery.
 | Piece | Where | Status |
 | --- | --- | --- |
 | Core: validate a request, classify ids against the registry, render each current one through `report.generate_report`, zip with a manifest | `pipeline/src/scorecard_pipeline/bundle.py`; `scorecard bundle`, `scorecard bundle-email` | Built, tested |
-| Fulfilment: on-demand render, upload behind a capability key, email the link | `.github/workflows/report-bundle.yml` | Built; delivery steps gated on Actions variables |
+| Fulfillment: on-demand render, upload behind a capability key, email the link | `.github/workflows/report-bundle.yml` | Built; delivery steps gated on Actions variables |
 | Purchase plumbing: post-checkout form (confirms the session is paid, dispatches), download route (presigns per click), Stripe webhook, weekly refresh, daily reconciler | `infra/program-bundle/` | **Applied and live** 2026-09-12; `payments_enabled = "1"`, `stripe_price_ids_are_live = true`. The daily reconciler's schedule (`reconciler_reporting_ready`) was confirmed and turned on the same day; see the reconciler status note below — this row previously read "DISABLED" and that was stale. |
 | Storage: `program-bundles/<id>/bundle.zip` expires after 30 days | `infra/artifacts/main.tf` lifecycle rule | Written; needs a re-apply of `infra/artifacts` |
 | Pages: plans read from `web/bundle/plan.json`; setup form posts to the API | `web/bundle/`, `web/src/bundle.js`, `web/src/bundle-setup.js` | Built; unlinked, `noindex`, out of the sitemap; `paymentsAvailable: false` |
@@ -217,7 +217,7 @@ description of what has to be true; the script is how it is done and checked.
    | Review | State |
    |---|---|
    | Tax treatment of the revenue | outstanding |
-   | Refund policy, written down | written 2026-09-14: the buy-terms list and FAQ on `/bundle/` state what happens on a late delivery, a wrong or broken archive, and a cancelled subscription, in the buyer's own words rather than a linked document. No separate policy page exists; see the trust/policy audit this row records. |
+   | Refund policy, written down | written 2026-09-14: the buy-terms list and FAQ on `/bundle/` state what happens on a late delivery, a wrong or broken archive, and a canceled subscription, in the buyer's own words rather than a linked document. No separate policy page exists; see the trust/policy audit this row records. |
    | The two-business-day delivery commitment, reviewed against what the pipeline actually guarantees | outstanding |
 
    The third is the one with teeth. `/bundle/` tells a buyer delivery is
@@ -328,7 +328,7 @@ would refund it. It runs none of them.
 
 ## When an order does not get built
 
-Payment and fulfilment are separate systems, so there is a gap between them
+Payment and fulfillment are separate systems, so there is a gap between them
 where a paid order can go quiet. Three ways it happens, and what answers each.
 
 **The dispatch fails.** GitHub is down, the token has lost `actions: write`,

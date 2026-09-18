@@ -20,7 +20,7 @@ Two rules keep the ledger auditable.
 * **A record measured differently is shown and never compared.** When the
   rubric, scoring profile, profile rubric, validator, reader archive profile
   or measured-category set differs from the previous record, its trend row is
-  a labelled boundary. The alert rules read only the run of records measured
+  a labeled boundary. The alert rules read only the run of records measured
   the same way as the newest one, exactly as ``scorecard alerts`` does.
 * **A line that cannot be read is skipped and named.** A corrupt line, or a
   record from a schema version this build does not read, is reported with its

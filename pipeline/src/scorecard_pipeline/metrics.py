@@ -172,7 +172,7 @@ def correctness(report: ValidationReport) -> CategoryResult:
 # treat the two cases differently in the directory: a recently lapsed feed is
 # a one-line re-export the agency can fix, while a long-dead URL is a prompt to
 # re-check the canonical endpoint in the Mobility Database before trusting the
-# grade. One year is the dividing line; it is a judgement call, documented here.
+# grade. One year is the dividing line; it is a judgment call, documented here.
 # The web app reads this value from web/src/generated/constants.js, rendered by
 # `scorecard render-constants`, so there is no hand-kept mirror to sync.
 STALE_FEED_DAYS = 365

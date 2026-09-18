@@ -310,7 +310,7 @@ _GRADE_ORDER = ["F", "D", "C", "B", "A"]
 def _is_drop(detail: str) -> bool:
     """Whether a grade_change detail string ('Grade went B to C, ...') describes a
     drop. Defaults to False when the grades can't be read, so an ambiguous detail
-    is not labelled an alert."""
+    is not labeled an alert."""
     try:
         # The detail is "Grade went B to C" with an optional ", <driver>." tail,
         # and ends in a period when there is no driver ("Grade went C to D.").

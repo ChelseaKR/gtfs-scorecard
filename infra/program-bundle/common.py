@@ -12,7 +12,7 @@ request validation is the pipeline's own parse_request and not a second copy.
 
 Environment (set by Terraform):
   GITHUB_TOKEN          fine-scoped token: actions: write to dispatch the
-                        fulfilment workflow, issues: write for the daily
+                        fulfillment workflow, issues: write for the daily
                         reconciler's standing report (reconcile_handler.py)
   GITHUB_REPO           owner/name, e.g. ChelseaKR/gtfs-scorecard
   WORKFLOW_FILE         report-bundle.yml
@@ -148,7 +148,7 @@ def epoch_in(days: int) -> int:
 
 
 # ---------------------------------------------------------------------------
-# GitHub: dispatch the fulfilment workflow
+# GitHub: dispatch the fulfillment workflow
 # ---------------------------------------------------------------------------
 
 
@@ -267,7 +267,7 @@ def price_plans() -> dict[str, str]:
     """Map each configured Stripe price id to the plan it sells.
 
     Read from STRIPE_PRICE_IDS on every call. A blank id, an unknown plan
-    key, or unreadable JSON recognises nothing, and an id configured for two
+    key, or unreadable JSON recognizes nothing, and an id configured for two
     plans is dropped rather than guessed: a half-configured deploy refuses a
     purchase it cannot place, and never sells more than was paid for.
     """
@@ -275,13 +275,13 @@ def price_plans() -> dict[str, str]:
     try:
         configured = json.loads(raw)
     except ValueError:
-        # Refusing everything is the right behaviour, but doing it silently is
+        # Refusing everything is the right behavior, but doing it silently is
         # not: from the outside a mangled price map is indistinguishable from
         # nobody having bought anything. Say so, once per call, in the log.
-        print("STRIPE_PRICE_IDS is not readable JSON; no price is recognised")
+        print("STRIPE_PRICE_IDS is not readable JSON; no price is recognized")
         return {}
     if not isinstance(configured, dict):
-        print("STRIPE_PRICE_IDS is not a JSON object; no price is recognised")
+        print("STRIPE_PRICE_IDS is not a JSON object; no price is recognized")
         return {}
     plans: dict[str, str] = {}
     ambiguous: set[str] = set()

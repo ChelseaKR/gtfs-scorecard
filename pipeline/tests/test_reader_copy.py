@@ -240,7 +240,7 @@ def test_finding_built_at_module_level_uses_module_scope(tmp_path: Path) -> None
     assert _texts(pkg)["sample_code.what"] == "Service data ended."
 
 
-def test_site_without_a_literal_code_is_labelled_by_module_and_line(tmp_path: Path) -> None:
+def test_site_without_a_literal_code_is_labeled_by_module_and_line(tmp_path: Path) -> None:
     pkg = _package(tmp_path, _finding(code="group.code"))
     labels = set(_texts(pkg))
     assert any(label.startswith("sample.py:") for label in labels)

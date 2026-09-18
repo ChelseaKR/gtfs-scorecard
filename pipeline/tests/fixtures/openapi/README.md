@@ -10,9 +10,9 @@ network fetch or a new dependency.
 - Retrieved: 2026-09-10
 - SHA-256: `da01ba28852cac0de53893797cb8d1942bc3b05084f526dcc216717dec314ed0`
   (the test pins it, so an edit to this copy fails rather than passing quietly)
-- Licence: Apache License, Version 2.0, the licence of the
+- License: Apache License, Version 2.0, the license of the
   [OpenAPI Specification repository](https://github.com/OAI/OpenAPI-Specification).
-  This repository is under the same licence; see `LICENSE` at its root.
+  This repository is under the same license; see `LICENSE` at its root.
 
 This is the variant "without schema validation": it checks the structure of an
 OpenAPI document (paths, operations, responses, parameters, components) and

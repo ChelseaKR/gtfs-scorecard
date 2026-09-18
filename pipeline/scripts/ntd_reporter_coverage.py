@@ -4,7 +4,7 @@
 Reads three public sources over the network, joins them with
 `scorecard_pipeline.ntd_coverage`, and writes `data/ntd/`. Not part of
 `make verify`: it needs the network, and the answer only moves when FTA
-publishes a new report year or a catalogue changes.
+publishes a new report year or a catalog changes.
 
     cd pipeline && uv run python scripts/ntd_reporter_coverage.py
 
@@ -287,7 +287,7 @@ def main() -> int:
                 "name": "Mobility Database catalog (storage.googleapis.com copy)",
                 "url": CATALOG_URL,
                 "sha256": catalog_raw.sha256,
-                "license": "See mobilitydatabase.org terms; per-feed licences vary",
+                "license": "See mobilitydatabase.org terms; per-feed licenses vary",
             },
         ],
     }

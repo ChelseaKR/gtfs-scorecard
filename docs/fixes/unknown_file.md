@@ -10,7 +10,7 @@ Code: `unknown_file` (MobilityData validator)
 ## What this means
 
 The zip contains a file whose name is not part of the GTFS spec. Apps ignore
-files they do not recognise, so an unknown file does no harm on its own. The
+files they do not recognize, so an unknown file does no harm on its own. The
 validator surfaces it because an unknown file is sometimes a misspelled required
 one, and that case does cause harm.
 

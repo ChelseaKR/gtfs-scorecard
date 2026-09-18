@@ -14,7 +14,7 @@ authorities:
   the validator's own notice code, so the link is built deterministically from
   it. A few scorecard-computed findings re-detect a validator concept under a
   scorecard code; those carry the canonical notice in ``canonical`` so the
-  audience recognises the alias.
+  audience recognizes the alias.
 - ``BEST_PRACTICE`` — a GTFS Best Practices recommendation, for scorecard
   completeness checks the validator does not flag (a present-but-empty field is
   valid GTFS, just poorer rider experience).

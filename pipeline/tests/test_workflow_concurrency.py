@@ -4,13 +4,13 @@ Ten workflows were keyed `<name>-${{ github.ref }}` with `cancel-in-progress: tr
 On a pull request `github.ref` is `refs/pull/N/merge`, so that cancels superseded runs
 of the same pull request -- the intent, and the saving. On a push it is
 `refs/heads/main` for every commit, so two pushes to main shared one group and the
-second cancelled the first outright.
+second canceled the first outright.
 
 Setting `cancel-in-progress: false` does not fix it and is the trap worth naming: a
 second run then queues, and a third **evicts the queued one from the pending slot**.
 Either way a commit reaches main whose only check-run is `cancelled`.
 
-That matters more than a missing green tick, because a cancelled run is *no signal*.
+That matters more than a missing green tick, because a canceled run is *no signal*.
 It is not a pass and not a failure, `gh run list` renders it beside real conclusions,
 and the drain brief for this portfolio has to warn in writing that "`cancelled` = NO
 SIGNAL, not a failure. Never reconstruct history from cancelled runs." Two commits on
@@ -21,7 +21,7 @@ group and cancels nothing.
 
 The rule is deliberately narrow. It applies only to a workflow that a `push` can
 trigger, and it says nothing about a fixed-name group like `artifacts-publish` or
-`pages`, where serialising is the whole point and a queue is the intended behaviour.
+`pages`, where serializing is the whole point and a queue is the intended behavior.
 """
 
 from __future__ import annotations
@@ -81,7 +81,7 @@ def test_a_push_triggered_workflow_never_cancels_a_run_on_a_shared_ref(path: Pat
     )
 
     # A group keyed only on the ref puts every commit on main in one group, which is
-    # the eviction case even when nothing is cancelled outright.
+    # the eviction case even when nothing is canceled outright.
     if "github.ref" in group and "github.sha" not in group:
         pytest.fail(
             f"{path.name}: the concurrency group is keyed on github.ref alone "
@@ -94,7 +94,7 @@ def test_a_push_triggered_workflow_never_cancels_a_run_on_a_shared_ref(path: Pat
 def test_the_ten_workflows_that_carried_the_defect_are_all_fixed() -> None:
     """A named inventory, so a fix cannot be lost to a later copy-paste.
 
-    Listed rather than derived: the parametrised guard above would pass just as
+    Listed rather than derived: the parametrized guard above would pass just as
     happily if one of these workflows lost its `push` trigger or its `concurrency`
     block, and that is not the same repository.
     """
@@ -125,12 +125,12 @@ def test_the_ten_workflows_that_carried_the_defect_are_all_fixed() -> None:
 
 
 def test_codeql_is_covered_even_though_only_pull_requests_trigger_it() -> None:
-    """The one in the inventory the parametrised guard skips, and why it is still fixed.
+    """The one in the inventory the parametrized guard skips, and why it is still fixed.
 
     `codeql.yml` runs on `pull_request` and `schedule` only -- the `push: main`
     trigger was removed deliberately (CICD §11e). So the guard above returns early for
     it, and it would have kept the defective key silently if the trigger ever came
-    back. Two scheduled runs also share `refs/heads/main`, and cancelling the older of
+    back. Two scheduled runs also share `refs/heads/main`, and canceling the older of
     those loses a code-scanning baseline refresh rather than a merge verdict.
     """
     doc = _load(WORKFLOWS / "codeql.yml")

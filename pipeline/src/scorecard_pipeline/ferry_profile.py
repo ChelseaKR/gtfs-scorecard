@@ -8,7 +8,7 @@ specification permits it: a boardable child location with ``parent_station``.
 
 These measurements never change a category score or grade. They describe the
 ferry subset of a feed; fare and realtime publication remain feed-level facts
-and are labelled that way in the public contract.
+and are labeled that way in the public contract.
 """
 
 from __future__ import annotations

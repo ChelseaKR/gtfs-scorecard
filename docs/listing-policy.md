@@ -14,7 +14,7 @@ sources are public feed catalogs (the Mobility Database, transit.land) and
 agency-submitted feeds.
 
 Reuse terms are part of what is listed. `scorecard license-audit` reports the
-licence each record's note names. When it shows a listed record whose terms
+license each record's note names. When it shows a listed record whose terms
 the project does not list, acting on that is a listing decision taken under
 this policy, not a curation edit to the record's note.
 

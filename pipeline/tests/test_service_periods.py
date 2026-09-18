@@ -3,7 +3,7 @@
 The load-bearing property is asymmetric. Reading a lapse as planned would let
 an abandoned feed be described gently, so every one of those paths is tested
 against a hostile artifact. Reading a planned boundary as a lapse is only the
-old behaviour, so those tests assert the softer wording is reached exactly when
+old behavior, so those tests assert the softer wording is reached exactly when
 the published record already supports it.
 """
 
