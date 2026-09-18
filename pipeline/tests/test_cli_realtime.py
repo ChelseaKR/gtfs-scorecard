@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import datetime as dt
-from collections.abc import Collection
+import time
+from collections.abc import Collection, Iterator
+from contextlib import contextmanager
 from pathlib import Path
 
 import pytest
 
 import scorecard_pipeline.cli as cli
+from scorecard_pipeline import worklock
 from scorecard_pipeline.config import Agency
 from scorecard_pipeline.metrics import CategoryResult
 from scorecard_pipeline.rt import RT_KINDS, RtSample, RtWindow
@@ -126,3 +129,57 @@ def test_cli_runs_only_analysis_for_configured_realtime_kinds(
         "plausibility": plausibility_result if expects_vehicle_positions else None,
         "configured_kinds": set(kinds),
     }
+
+
+def test_the_sampling_window_gives_the_heavy_turn_back_and_dates_the_schedule_to_it(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """A minute of sleeping between samples must not keep sibling runs out of
+    their validators (worklock.py). And the trips expected to be running are
+    the ones due when the samples were taken, not whenever this run next gets
+    the turn: a later instant would shift the schedule the samples are held to."""
+    monkeypatch.setenv(worklock.HEAVY_LOCK_ENV, str(tmp_path / "heavy.lock"))
+    agency = Agency(
+        id="yolobus",
+        name="Yolobus",
+        static_gtfs_url="https://example.test/gtfs.zip",
+        rt_urls={"trip_updates": "https://example.test/tu.pb"},
+    )
+    seen: dict[str, object] = {}
+    real_outside = worklock.outside_heavy_section
+
+    @contextmanager
+    def slow_to_retake() -> Iterator[None]:
+        with real_outside():
+            yield
+            seen["window_closed"] = dt.datetime.now(dt.UTC)
+        # A sibling's validator holding the turn when this run wants it back.
+        time.sleep(0.01)
+
+    def capture(*_args: object, **_kwargs: object) -> RtWindow:
+        seen["capture_held"] = worklock.held()
+        return RtWindow(samples=[RtSample(kind="trip_updates", fetched_at=1, ok=True)])
+
+    def schedule(_path: str, moment: dt.datetime) -> set[str]:
+        seen["schedule_held"] = worklock.held()
+        seen["moment"] = moment
+        return {"T1"}
+
+    monkeypatch.setattr(cli, "outside_heavy_section", slow_to_retake)
+    monkeypatch.setattr(cli, "capture_window", capture)
+    monkeypatch.setattr(cli, "scheduled_trip_ids_at", schedule)
+    monkeypatch.setattr(cli, "compute_drift", lambda *_a: None)
+    monkeypatch.setattr(
+        cli, "realtime", lambda *_a, **_k: CategoryResult("realtime", 90.0, "Measured.", [], {})
+    )
+
+    with worklock.heavy_section():
+        cli._realtime_categories(
+            agency, tmp_path / "static.zip", dt.date(2026, 9, 18), rt_samples=3, rt_interval=0
+        )
+
+    assert seen["capture_held"] is False
+    assert seen["schedule_held"] is True
+    assert isinstance(seen["moment"], dt.datetime)
+    assert isinstance(seen["window_closed"], dt.datetime)
+    assert seen["moment"] <= seen["window_closed"]
