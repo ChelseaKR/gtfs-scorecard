@@ -25,7 +25,7 @@ def test_no_weighted_trips_yields_no_expired_share() -> None:
     assert impact["matched_ntd_reporters"] == 1
     assert impact["total_annual_trips"] == 0
     assert impact["expired_trips_pct"] is None
-    # The neighbouring metric already answered this way on the same denominator.
+    # The neighboring metric already answered this way on the same denominator.
     assert impact["weighted_average_score"] is None
 
 

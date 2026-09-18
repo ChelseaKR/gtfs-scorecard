@@ -1857,7 +1857,7 @@ def test_peer_context_renders_only_catalog_location() -> None:
             "state": "New Mexico",
         }
     )
-    assert "Catalogued in <bdi>New Mexico</bdi>." in html
+    assert "Cataloged in <bdi>New Mexico</bdi>." in html
     assert "53%" not in html and "68%" not in html
     assert "percentile" not in html
 
@@ -2397,7 +2397,7 @@ def test_fix_rule_reference_names_canonical_alias_for_scorecard_code() -> None:
 
     html = _fix_rule_reference("scorecard_missing_feed_info_dates")
     assert "Authoritative rule" in html
-    # The reader sees the canonical validator notice they recognise.
+    # The reader sees the canonical validator notice they recognize.
     assert "missing_feed_info_date" in html
     assert "#missing_feed_info_date-rule" in html
 
@@ -2510,7 +2510,7 @@ def test_trend_section_shows_score_trend_and_category_deltas() -> None:
 
 def test_spark_svg_is_the_shared_accessible_sparkline() -> None:
     """The shared helper carries the three-part pattern: per-point hover titles,
-    the full series in the aria-label, and an emphasised last dot."""
+    the full series in the aria-label, and an emphasized last dot."""
     from scorecard_pipeline.render_site import _spark_svg
 
     svg = _spark_svg(
@@ -2521,7 +2521,7 @@ def test_spark_svg_is_the_shared_accessible_sparkline() -> None:
     assert 'role="img"' in svg
     assert 'aria-label="Overall score across 3 checks: ' in svg
     assert "2026-06-10 70.0; 2026-06-11 75.5; 2026-06-12 75.5" in svg
-    # Every check gets a hover/long-press readout; the last dot is emphasised.
+    # Every check gets a hover/long-press readout; the last dot is emphasized.
     assert svg.count("<title>") == 3
     assert "<title>2026-06-11: 75.5</title>" in svg
     assert svg.count('r="2.5"') == 2 and svg.count('r="4"') == 1
@@ -3237,7 +3237,7 @@ def test_ntd_section_renders_id_alignment_when_present() -> None:
     assert "Needs attention" not in html
     # The wording is recomputed at render time from the stored inputs, so a
     # stale artifact can never resurface pre-final-rule prescriptive copy: the
-    # fixture's baked-in strings are ignored in favour of the current ones.
+    # fixture's baked-in strings are ignored in favor of the current ones.
     assert "Confirm that P-50 crosswalks agency_id UNITRANS to NTD ID 90142" in html
     assert "Your feed uses agency_id UNITRANS." not in html
     # The fineprint states the P-50 crosswalk and rejects an equality mandate.
@@ -3665,7 +3665,7 @@ def test_map_feature_carries_grade_state_and_letter_color() -> None:
     assert props["state"] == "Iowa"
     assert props["score"] == 71.5
     assert props["url"] == "/agency/test-transit/"
-    # Colour is reinforcement only; the grade letter itself rides in the feature.
+    # Color is reinforcement only; the grade letter itself rides in the feature.
     assert props["color"].startswith("#")
 
 
@@ -3936,7 +3936,7 @@ def test_render_compare_page_form_is_shareable_and_neutral() -> None:
     # Loading and errors are announced, and the no-JS path is honest.
     assert 'role="status"' in html
     assert "<noscript>" in html
-    # The result table is emphasised in text, never colour alone.
+    # The result table is emphasized in text, never color alone.
     assert "visually-hidden" in html and "(higher)" in html
     assert "These scorecards are not like-for-like" in html
     assert "scoring profile" in html and "validator" in html
@@ -4047,7 +4047,7 @@ def test_render_map_page_marker_shows_grade_not_color_only() -> None:
     html = _render_map_page(_map_features())
     # A symbol layer draws the grade letter on every point (WCAG 1.4.1).
     assert '"text-field": ["get", "grade"]' in html
-    # Clustering at low zoom, and reduced-motion is honoured for the cluster zoom.
+    # Clustering at low zoom, and reduced-motion is honored for the cluster zoom.
     assert "cluster: true" in html
     assert "prefers-reduced-motion" in html
     # The canvas is an enhancement: aria-hidden, no on-canvas controls.
@@ -4117,7 +4117,7 @@ _GEO: dict[str, Any] = {
 def test_equity_choropleth_encodes_tier_with_text_and_pattern() -> None:
     by_state: dict[str, dict[str, Any]] = {s["state"]: s for s in _EQUITY["states"]}
     svg = _equity_choropleth(_GEO, by_state)
-    # High tier gets its colour class and a hatch pattern overlay (not colour only).
+    # High tier gets its color class and a hatch pattern overlay (not color only).
     assert "need-high" in svg and 'fill="url(#needHatchDense)"' in svg
     # Each state names its tier and numbers in title text for AT and hover.
     assert (
@@ -4126,7 +4126,7 @@ def test_equity_choropleth_encodes_tier_with_text_and_pattern() -> None:
     ) in svg
     # A state with no overlay row renders faint and inert.
     assert 'class="need-state need-empty" aria-hidden="true"' in svg
-    # The legend reinforces colour with words.
+    # The legend reinforces color with words.
     assert "High need" in svg and "Lower need" in svg
 
 
@@ -4520,7 +4520,7 @@ def test_check_page_is_private_accessible_and_defers_to_validator() -> None:
         "stop names readable",
     ):
         assert q in html, q
-    # Status is announced, statuses are text (never colour), no-JS path exists.
+    # Status is announced, statuses are text (never color), no-JS path exists.
     assert 'role="status"' in html
     assert "Needs attention" in html and "Looks good" in html
     assert "<noscript>" in html
@@ -5547,7 +5547,7 @@ def test_non_us_agency_title_and_peer_context_include_country() -> None:
     title = html.split("<title>", 1)[1].split("</title>", 1)[0]
 
     assert "(England, United Kingdom) GTFS quality report" in title
-    assert "Catalogued in <bdi>England, United Kingdom</bdi>." in _peer_context(record)
+    assert "Cataloged in <bdi>England, United Kingdom</bdi>." in _peer_context(record)
     assert "60%" not in _peer_context(record) and "55%" not in _peer_context(record)
     assert "Comparisons use agencies currently tracked worldwide." not in html
     assert "United States tools" not in html

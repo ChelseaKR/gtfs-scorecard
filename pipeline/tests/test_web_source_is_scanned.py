@@ -2,7 +2,7 @@
 
 Roughly 6,600 lines of browser JavaScript, including 24 innerHTML assignment
 sites in app.js, were excluded from Semgrep (.semgrepignore) and gitleaks
-(.gitleaks.toml) and never analysed by CodeQL, which is configured for python
+(.gitleaks.toml) and never analyzed by CodeQL, which is configured for python
 and actions only. Each exclusion was individually defensible -- both were
 written for the public GTFS feed-URL keys that appear in generated data under
 web/ -- and together they meant the only hand-written code that runs in a
@@ -49,7 +49,7 @@ def _semgrep_ignores(path: str) -> bool:
     gitignore semantics, restricted to the shapes this file actually uses:
     a trailing-slash directory prefix, or a glob. `!` negation is deliberately
     treated as non-excluding here and is separately asserted to be unused,
-    because semgrep does not honour it -- verified by adding `!web/src/` under
+    because semgrep does not honor it -- verified by adding `!web/src/` under
     `web/` and watching semgrep scan zero files.
     """
     for pattern in _semgrep_patterns():
@@ -108,7 +108,7 @@ def test_semgrepignore_uses_no_negation_lines() -> None:
     """
     negations = [p for p in _semgrep_patterns() if p.startswith("!")]
     assert not negations, (
-        "semgrep does not honour gitignore-style negation; name the generated "
+        "semgrep does not honor gitignore-style negation; name the generated "
         f"trees instead. Found: {negations}"
     )
 

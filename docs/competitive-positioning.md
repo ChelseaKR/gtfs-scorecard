@@ -5,7 +5,7 @@ Last reviewed: 2026-07-25
 ## Decision
 
 GTFS Scorecard should not compete to become another validator, feed editor,
-catalogue, or visual feed inspector. Those jobs are already served by capable
+catalog, or visual feed inspector. Those jobs are already served by capable
 open projects and public programs. The defensible job is to carry evidence
 through two accountable feedback loops:
 
@@ -41,7 +41,7 @@ check below passes validation and still fails riders:
 | Google and Apple Maps gate | Under four weeks of forward service, so the agency drops off the map riders actually use | A downstream consumer's published acceptance rule |
 | Routing QA | A graph builds, or does not, and sampled trips fail to plan | A routing engine and real origin and destination pairs |
 | Realtime drift | Predictions disagree with where vehicles are | Live vehicle data sampled over time |
-| Moved feed discovery | The URL a trip planner fetches now returns something else | A catalogue and yesterday's configured source |
+| Moved feed discovery | The URL a trip planner fetches now returns something else | A catalog and yesterday's configured source |
 | Vendor regression radar | Agencies behind one export tool acquire the same finding on the same day | The rest of the corpus, scored daily |
 
 None of these can be produced by reading one file once. Each needs a consumer's
@@ -71,7 +71,7 @@ does a job the scorecard should reuse, link to, or complement.
 
 | Project | Documented job | Implication for GTFS Scorecard |
 |---|---|---|
-| [Mobility Database catalogs](https://github.com/MobilityData/mobility-database-catalogs) | Publishes a worldwide catalogue with source identity, status, access, location, and license pointers. | Use it for discovery and source provenance. Do not build a competing feed registry or treat catalogue metadata as permission to republish a feed. |
+| [Mobility Database catalogs](https://github.com/MobilityData/mobility-database-catalogs) | Publishes a worldwide catalog with source identity, status, access, location, and license pointers. | Use it for discovery and source provenance. Do not build a competing feed registry or treat catalog metadata as permission to republish a feed. |
 | [Transitland feed versions](https://www.transit.land/documentation/concepts/static-gtfs-feed-versions/) | Archives distinct static GTFS versions, records checksums, and derives version metadata. | Link to its archive where useful. The scorecard's dated artifacts should add remediation context, not duplicate a general archive. |
 | [MobilityData canonical GTFS Schedule validator](https://github.com/MobilityData/gtfs-validator) | Validates a local file or URL against GTFS Schedule rules and produces HTML and JSON reports. | Keep it as the rule engine and preserve its notice codes and version. Do not reimplement its taxonomy. |
 | [gtfs.guru](https://github.com/abasis-ltd/gtfs.guru) | Provides a fast Rust validator across desktop, CLI, Python, web, WebAssembly, and CI surfaces. | Validation speed, local processing, and CI portability are active areas of competition. They are not a credible moat for this project. |
@@ -258,7 +258,7 @@ than attention.
 - **Overcorrection.** A valid producer challenge may tempt the project to exempt
   superficially similar feeds. Require structural evidence and regression cases
   that preserve the recommendation for ambiguous patterns.
-- **Workflow capture by a larger program.** Cal-ITP, a vendor, or a catalogue
+- **Workflow capture by a larger program.** Cal-ITP, a vendor, or a catalog
   could add closure tracking. The response is interoperability and an open,
   portable evidence format, not feature volume.
 - **Participation bias.** Cooperative maintainers may produce better outcomes

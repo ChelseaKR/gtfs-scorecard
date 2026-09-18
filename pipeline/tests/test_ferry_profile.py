@@ -105,7 +105,7 @@ def test_profile_preserves_unknown_enum_values() -> None:
     assert profile["cars"]["not_allowed_count"] == 1  # type: ignore[index]
 
 
-def test_feed_level_facts_are_labelled_and_ordered() -> None:
+def test_feed_level_facts_are_labeled_and_ordered() -> None:
     profile = _profile()
 
     assert profile["fares"] == {

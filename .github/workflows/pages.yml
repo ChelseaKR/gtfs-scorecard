@@ -197,7 +197,7 @@ jobs:
       # write non-atomically. `refresh.yml` (every three hours) and
       # `scorecard.yml` (daily) publish under the `artifacts-publish`
       # concurrency group; this workflow is in the `pages` group, so nothing
-      # serialises a deploy against a publish in flight. Both publishers commit
+      # serializes a deploy against a publish in flight. Both publishers commit
       # in two phases — every changed agency's latest.json first, then
       # index.json last as the commit pointer — and the bounded sync above
       # takes about three minutes against a commit window of seconds.

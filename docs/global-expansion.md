@@ -248,7 +248,7 @@ A same-day Central Europe wave adds ten more reviewed records: Wiener Linien
 (CC BY 4.0 on data.gv.at), the Swiss national timetable under the ODMCH
 terms, PID Prague and IDS JMK (CC-BY per the providers' and Brno's portals),
 the two gtfs.de national aggregates plus VRN and VRS under their stated
-German data licences, and Poznań and Szczecin under ZTM's developer terms
+German data licenses, and Poznań and Szczecin under ZTM's developer terms
 and CC0. That brings the cohort to 84 reviewed feed records across 17
 countries, with the United Kingdom the largest country at about 27%.
 
@@ -310,7 +310,7 @@ under CC0, and the gtfs.de long-distance rail aggregate under CC BY 4.0), two
 in France under the Licence Ouverte (SEMO in Normandie and the Zoom network in
 Chalon-sur-Saône), two in Italy under CC BY 3.0 Italia (TPER's Bologna and
 Ferrara networks, opening Emilia-Romagna), one in Spain (CRTM's interurban
-network under the consortium licence), and one in Portugal under CC0 (STCP in
+network under the consortium license), and one in Portugal under CC0 (STCP in
 Porto). Every record carried a live license check, a mechanical download and
 current-calendar preflight, and an ISO 3166-2 subdivision review.
 
@@ -324,7 +324,7 @@ and it still fails by design.
 A sixth wave stayed non-United-Kingdom and added 20 reviewed feed records,
 moving the European cohort from 165 to 185 records across 20 countries. It
 opened Bulgaria with Sofia's Urban Mobility Center feed (CC BY-SA on the
-municipal open data portal) and Croatia with Zagreb's ZET feed (Open Licence of
+municipal open data portal) and Croatia with Zagreb's ZET feed (Open License of
 the Republic of Croatia), the nineteenth and twentieth countries. The rest is
 depth in already-listed countries: eleven in France under the Licence Ouverte
 recorded on the national access point (DiviaMobilités, ilévia, Ametis,
@@ -337,7 +337,7 @@ a mechanical download and current-calendar preflight, and an ISO 3166-2
 subdivision review. Candidates that could not clear those gates were dropped:
 Luxembourg and Austrian rail lacked a stable current download, the Norway
 national aggregate exceeded the size guard, Athens (OASA) was non-commercial,
-and Slovakia, Greece, Romania, and Cyprus rail lacked a reviewable open licence.
+and Slovakia, Greece, Romania, and Cyprus rail lacked a reviewable open license.
 
 The balance criterion stays comfortable: the United Kingdom is now 18.4% of the
 cohort (34 of 185), and France, the largest country, is 22.2% (41 of 185), both
@@ -461,7 +461,7 @@ tracks each carry their own gate, and none of them opens as a side effect of
 registry growth.
 
 **Global South pilot.** [ADR 0028](decisions/0028-global-south-pilot.md)
-bounds this to a labelled demonstrator of three to five agencies. Onboarding
+bounds this to a labeled demonstrator of three to five agencies. Onboarding
 any new country waits for confirmed data licensing and operator or community
 consent. A partnership starts this track; registry additions alone do not.
 

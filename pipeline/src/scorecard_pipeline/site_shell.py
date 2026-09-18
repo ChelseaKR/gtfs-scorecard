@@ -168,7 +168,7 @@ def _nav_stops_html(active: str | None, lang: str = "en", path: str | None = Non
 def _nav_html(canonical: str, lang: str = "en") -> str:
     """The primary wayfinding nav: the site's sections as stops on a route line,
     with the current page's stop filled (aria-current). The #theme-control slot is
-    where theme.js mounts the colour-theme menu."""
+    where theme.js mounts the color-theme menu."""
     path = canonical.replace(BASE_URL, "") or "/"
     menu = "Menú" if lang == "es" else "Menu"
     return (
@@ -317,7 +317,7 @@ FOOTER_HTML = f"""<footer class="site-footer">
 
 # Agency pages outside the United States keep all shared global navigation but
 # do not foreground a policy tool that cannot apply to them. General pages keep
-# the labelled U.S. section discoverable, and U.S. agency pages remain unchanged.
+# the labeled U.S. section discoverable, and U.S. agency pages remain unchanged.
 FOOTER_HTML_WITHOUT_US_TOOLS = FOOTER_HTML.replace(_US_TOOLS_FOOTER_SECTION.rstrip() + "\n", "")
 
 FOOTER_HTML_ES = f"""<footer class="site-footer">
@@ -925,7 +925,7 @@ def _page(
     ``wide`` widens the main column for pages whose value is tabular: prose
     keeps its own measure, tables get the screen (WCAG 1.4.8 line-length
     limits apply to prose, not data tables). On an agency-scoped page,
-    ``country_code`` removes the labelled United States policy-tool links when
+    ``country_code`` removes the labeled United States policy-tool links when
     they cannot apply; shared global links and all U.S. pages stay unchanged.
     ``main_modifier`` adds a page-family hook without replacing the shared
     container classes."""

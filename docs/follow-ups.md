@@ -231,9 +231,9 @@ What has to be decided, once, for both:
 
 **Measured 2026-09-17 with `scorecard license-audit` (issue #372).** The
 registry's notes do not support 160, and the figure was not reproducible when
-this section landed either. 126 records name a share-alike licence as their
-only licence: 122 in France and one each in Germany, Italy, Bulgaria, and New
-Caledonia, all of them canonical. Six more name one beside another licence and
+this section landed either. 126 records name a share-alike license as their
+only license: 122 in France and one each in Germany, Italy, Bulgaria, and New
+Caledonia, all of them canonical. Six more name one beside another license and
 need a curator's reading, not a count: four NVBW records whose notes say no
 ODbL condition applies, AVV Aachen (CC0 schedule data with ODbL route shapes),
 and AMAT Palermo (CC BY 4.0 with a CC BY-SA tram marking). Neither Estonian
@@ -259,7 +259,7 @@ replaced" would stop a dead replacement being proposed at all.
 
 ## Feed sources blocked by the pipeline's HTTP client, not by policy
 
-**Status: open, opened 2026-09-01.** Several feeds pass source, licence,
+**Status: open, opened 2026-09-01.** Several feeds pass source, license,
 identity and calendar and fail only on how this pipeline fetches. Two of them
 were diagnosed exactly on 2026-09-01 against OpenSSL 3.5.7, whose default
 security level is 2:
@@ -277,7 +277,7 @@ security level is 2:
   simply under 2048 bits. This host carries Grand River Transit (CA-ON).
 - **`transport.act.gov.au`** (Canberra) is a different problem, not TLS: it
   answers every non-browser client with a Cloudflare interstitial, including
-  with full browser headers. The licence is fine and `data.act.gov.au` names
+  with full browser headers. The license is fine and `data.act.gov.au` names
   the exact archives.
 
 **The recommendation is not to weaken the client.** Lowering the security level
@@ -294,12 +294,12 @@ Waterloo their DH parameters are undersized. Both are ordinary server
 misconfigurations their operators would likely want to know about, and fixing
 them helps every consumer of those portals, not just this project.
 
-Until then these are worth separating from licence and freshness rejections
+Until then these are worth separating from license and freshness rejections
 when reading coverage gaps: no amount of sourcing effort closes them.
 
 ## Coverage blocked on a credential or an email, not on curation
 
-**Status: open, opened 2026-09-01.** Four cases where the licence is already the
+**Status: open, opened 2026-09-01.** Four cases where the license is already the
 right shape and the only obstacle is access. Each is one action away.
 
 **Austria's regional feeds — a registration wall.** All seven Verkehrsverbünde
@@ -314,7 +314,7 @@ record can carry `fetch_auth` naming an environment variable, and a missing
 variable reads as unreachable with no mirror fallback (see
 `registry/README.md`). What remains is the owner's: register the account,
 store the key as a secret, and review MVO's terms into `reuse_evidence`, since
-a key grants access and not a licence. The same applies to New York's
+a key grants access and not a license. The same applies to New York's
 `datatools-511ny` bucket below. No such record is admitted yet.
 
 **ESHOT İzmir — a host that is down.** 19 MB, on `acikveri.bizizmir.com`, under
@@ -344,17 +344,17 @@ does not hold. None was edited; all need a curator decision.
 
 - **`donan-bus`** (`registry/jp/01.yaml`, admitted 2026-07-17) is sourced from
   the `ckan.hoda.jp` dataset the 2026-09-01 pass rejected, so its evidence is
-  the CKAN licence field that gate 2 excludes. Its calendar now ends 2026-09-30
+  the CKAN license field that gate 2 excludes. Its calendar now ends 2026-09-30
   and no alternative URL exists.
 - **CUMTD** carries no `reuse_evidence` and would fail gate 2 today: its terms
   restrict use to purposes that "assist mass transportation riders", require an
   embedded key, and are revocable at will.
 - **`st-lawrence-county-public-transit`** (`registry/us/ny.yaml`) has a
-  `license_note` citing a data.ny.gov (OPEN-NY) licence PDF, but the feed is
+  `license_note` citing a data.ny.gov (OPEN-NY) license PDF, but the feed is
   served from the `datatools-511ny` bucket, which is governed by NYSDOT's
   Developer's Access Agreement and requires registration. Low impact, since the
   record claims no `reuse_evidence`, but the note misleads a reader.
 
-**Abashiri Bus** is the opposite case and worth a recheck: source and licence
+**Abashiri Bus** is the opposite case and worth a recheck: source and license
 are clean, and only `feed_info.feed_end_date` (2026-07-31) blocks it while its
 `calendar_dates` run to 2026-11-23.

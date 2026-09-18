@@ -127,14 +127,14 @@ jobs:
           : > "$SCORECARD_JVM_TEE"
           : > "$SCORECARD_JVM_GCLOG"
 
-          # `validate.py:_java_binary()` already honours a SCORECARD_JAVA
+          # `validate.py:_java_binary()` already honors a SCORECARD_JAVA
           # override, so the validator subprocess can be wrapped from here
           # without touching production code — no change to validate.py,
           # scorecard.yml or refresh.yml, and the scheduled tiers keep logging
           # exactly as they do today.
           #
           # The wrapper still delivers both streams to the pipes
-          # `subprocess.run` created, so the labelled both-streams RuntimeError
+          # `subprocess.run` created, so the labeled both-streams RuntimeError
           # from #326 keeps reporting an ordinary validator failure unchanged;
           # it additionally copies them to a file the sampler drains into the
           # job log. Handing the wrapper an inherited descriptor instead was
@@ -217,7 +217,7 @@ jobs:
           # `|| status=$?` rather than a bare call followed by `status=$?`. The
           # runner's `bash -e` aborts the step the moment the validation exits
           # non-zero, so the Result and GC blocks below never ran on exactly the
-          # runs worth summarising — visible in run 33264844507 (2026-08-29),
+          # runs worth summarizing — visible in run 33264844507 (2026-08-29),
           # which reported `Process completed with exit code 1` and no Result
           # section at all. The old `status=$?` could therefore only ever
           # observe 0.

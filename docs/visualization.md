@@ -12,7 +12,7 @@ Choose the form from the relationship in the data:
 | How did a value change over time? | Line with a dot for every check | Agency and national score history |
 | How do percentages compare? | Zero-based horizontal route bars | Capability adoption and problem prevalence |
 | How are records distributed across ordered ranges? | Zero-based bucket columns | Current scorecard age |
-| What is the composition of a whole? | Proportional labelled bands | Grade distribution |
+| What is the composition of a whole? | Proportional labeled bands | Grade distribution |
 | Which direction did a selected set move? | Two-part movement band | Material national score changes |
 | Where is a condition concentrated? | Geographic map with a visible legend, drill-down from world to country to subdivision | Feed expiry by country, then by state or province; equity by state |
 | What are the exact records? | Table or semantic list | Named changes, state detail, findings, and chart data |
@@ -32,7 +32,7 @@ interactive app stay aligned:
   zero-based column and names every bucket below it.
 - `.movement-chart` summarizes the direction of material changes and states
   that quiet feeds are outside that selected set.
-- `.grade-distribution` renders composition with a labelled segment per grade.
+- `.grade-distribution` renders composition with a labeled segment per grade.
 - `.trend-chart` and `.trend-data` pair a line with its full numeric table.
 
 Python chart helpers live in `pipeline/src/scorecard_pipeline/render_site.py`.

@@ -1,6 +1,6 @@
 """Credentialed feed sources: the registry names a secret and never holds one.
 
-Issue #371. A few publishers put a GTFS Schedule feed whose licence already
+Issue #371. A few publishers put a GTFS Schedule feed whose license already
 permits reuse behind a registration wall: the file endpoint answers 401 until
 a registered account's key is presented. docs/follow-ups.md names Austria's
 Verkehrsverbünde and New York's ``datatools-511ny`` bucket. A registry record

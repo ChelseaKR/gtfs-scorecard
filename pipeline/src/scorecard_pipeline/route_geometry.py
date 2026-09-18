@@ -292,7 +292,7 @@ def build_route_geometry(
             best_id = max(candidate_ids, key=lambda s: _shape_length(ordered_shapes[s]))
             coords = _round_line(_simplify(ordered_shapes[best_id], _SIMPLIFY_TOLERANCE_DEG))
         # A LineString needs at least two distinct positions. A shape that collapses
-        # to a single point after simplification and 5-decimal rounding (a sub-metre
+        # to a single point after simplification and 5-decimal rounding (a sub-meter
         # span, or duplicate coordinates from a malformed export) is not drawable, so
         # treat the route as having no shape rather than emitting invalid GeoJSON.
         has_shape = len(coords) >= 2

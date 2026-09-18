@@ -23,7 +23,7 @@ that can silently loosen is not a ratchet.
 
 **The published weight-sensitivity study graded the wrong number.** `score.py`
 documents the failure mode in its own comment: a raw 79.96875 publishes as
-"80.0", and grading the unrounded value labelled it C while `docs/rubric.md` and
+"80.0", and grading the unrounded value labeled it C while `docs/rubric.md` and
 the published `scoring.json` both say 80 is a B. Nine live artifacts carried a
 letter that contradicted their own printed score before `published_overall()`
 and `publish._validate_published_overall()` were added.

@@ -852,11 +852,11 @@ def test_the_intraday_rescore_loop_has_a_wall_clock_deadline() -> None:
 
     Measured 2026-09-14: four of that day's eight scheduled runs (06:56,
     09:37, 12:41, 18:34 UTC; run ids 34815554761, 34828962272, 34844837213,
-    34881574728) were cancelled at their 175-minute bound while still inside
+    34881574728) were canceled at their 175-minute bound while still inside
     this loop, each having already re-scored 100+ agencies before losing all
     of them -- and 34844837213's overrun then held the shared
     `artifacts-publish` concurrency slot long enough that the same day's Daily
-    scorecard `collect` job queued behind it and was evicted (cancelled, 0
+    scorecard `collect` job queued behind it and was evicted (canceled, 0
     steps) when the next scheduled refresh arrived. The loop now stops taking
     on new agencies once a deadline measured from the job's own start has
     passed, leaving slack for the steps after it. How it defers is tested in
@@ -1348,7 +1348,7 @@ def test_nothing_the_run_prints_carries_the_download_capability() -> None:
                 )
 
 
-def test_the_fulfilment_workflow_carries_the_promise_into_the_delivery_email() -> None:
+def test_the_fulfillment_workflow_carries_the_promise_into_the_delivery_email() -> None:
     """The refund promise is computed once, in the Lambda, and travels as an
     input. This is the leg nothing else can check.
 
@@ -1374,7 +1374,7 @@ def test_the_fulfilment_workflow_carries_the_promise_into_the_delivery_email() -
 
 
 def test_the_watchdog_watches_the_workflow_that_delivers_paid_orders() -> None:
-    """report-bundle.yml fulfils a purchase, and nothing else notices it fail.
+    """report-bundle.yml fulfills a purchase, and nothing else notices it fail.
 
     It is dispatched rather than scheduled, so there is no cadence for a
     staleness check to bite on and no published page that looks wrong when it
@@ -1408,7 +1408,7 @@ def test_the_watchdog_watches_the_workflow_that_delivers_paid_orders() -> None:
 
 
 def test_a_failed_paid_bundle_run_says_so_without_naming_the_order() -> None:
-    """The failure of a paid fulfilment run has to be visible, and the way it
+    """The failure of a paid fulfillment run has to be visible, and the way it
     is made visible has to be one that works.
 
     A failed render used to leave no trace anybody reads: the setup form had
@@ -1426,7 +1426,7 @@ def test_a_failed_paid_bundle_run_says_so_without_naming_the_order() -> None:
     """
     workflow = _workflow("report-bundle.yml")
     assert "if: ${{ failure() }}" in workflow, (
-        "a run that fulfils a paid order must say so when it fails"
+        "a run that fulfills a paid order must say so when it fails"
     )
     say_at = workflow.index("Say that a paid order failed")
     say = workflow[say_at:]
@@ -1529,7 +1529,7 @@ def test_an_artifact_s3_would_not_answer_for_does_not_ship_as_not_published(
     "tracked, but no scorecard is published for it yet". After three failed
     reads of our own bucket that sentence is a claim about the agency
     manufactured from a failed read, and the buyer -- who is paying for a
-    judgement about exactly that agency's data -- cannot tell it apart from
+    judgment about exactly that agency's data -- cannot tell it apart from
     the true one. The run fails instead, which is recoverable: a re-run with
     the same inputs fills the same S3 key behind the same link.
     """

@@ -44,7 +44,7 @@ EXPECTED_PHASES = [
     "config-js",
     "open-gate",
     "purchase",
-    "verify-fulfilment",
+    "verify-fulfillment",
     "verify-cap",
     "teardown-notes",
 ]
@@ -108,6 +108,22 @@ def test_from_the_first_phase_is_the_whole_run() -> None:
 def test_only_wins_over_from() -> None:
     result = _bash('resolve_phases "build" "purchase"')
     assert result.stdout.split() == ["build"]
+
+
+@pytest.mark.parametrize(
+    ("only", "frm", "expected"),
+    [
+        ("verify-fulfilment", "", ["verify-fulfillment"]),
+        ("", "verify-fulfilment", EXPECTED_PHASES[EXPECTED_PHASES.index("verify-fulfillment") :]),
+    ],
+)
+def test_the_british_phase_name_is_a_deprecated_alias(
+    only: str, frm: str, expected: list[str]
+) -> None:
+    """The phase shipped as `verify-fulfilment`; that name still resolves."""
+    result = _bash(f'resolve_phases "{only}" "{frm}"')
+    assert result.returncode == 0, result.stderr
+    assert result.stdout.split() == expected
 
 
 @pytest.mark.parametrize(

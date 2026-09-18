@@ -61,7 +61,7 @@ def reliability_band(uptime_pct: float) -> str:
 def observed_vintage(summaries: list[dict[str, Any]]) -> dict[str, Any]:
     """When the observations behind this rollup were actually taken.
 
-    The rollup carries one build date and the rows it summarises do not have to
+    The rollup carries one build date and the rows it summarizes do not have to
     share it. ``rt-monitor.yml`` recorded nothing between 2026-09-05 and
     2026-09-08 while ``/realtime/`` and ``api/v1/realtime.json`` were rebuilt on
     the intraday cadence, stamped with the build date and describing a corpus

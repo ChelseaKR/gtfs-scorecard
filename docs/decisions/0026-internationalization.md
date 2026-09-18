@@ -25,7 +25,7 @@ findings, in short:
   Points, so GTFS is often not the authoritative EU artifact; NeTEx-to-GTFS
   conversion exists (Entur, Chouette) but is Java-heavy and fragmented by
   per-country national profiles, a poor fit for the serverless model.
-- **The rubric has clean EU analogues.** NAPCORE's MMTIS Quality Framework
+- **The rubric has clean EU analogs.** NAPCORE's MMTIS Quality Framework
   (v1.0, April 2025) uses four dimensions (correctness, completeness, timeliness,
   reliability and usability) that mirror the rubric, and NAP obligations replace
   NTD-readiness. As of that framework, no adopted, graded, plain-language,
@@ -138,7 +138,7 @@ three groups:
   and WorldPop surfaces) carry population, not deprivation.
 - Deprivation, but country by country: Canada's Index of Multiple Deprivation
   (CIMD) is an open, pre-computed small-area index and the closest turnkey ACS
-  analogue; the European Deprivation Index and national deprivation indices exist
+  analog; the European Deprivation Index and national deprivation indices exist
   per country and are not mutually harmonized.
 - Global lower/middle-income wealth proxy: Meta's Relative Wealth Index covers
   90-plus countries but is within-country only and licensed CC BY-NC, a

@@ -51,7 +51,7 @@ complete the task without sighted, mouse-driven help.
 6. **Use the national map** (`/map/`). Confirm the map is announced as an image with a
    label that points to the agencies list, and that the list (`/agencies/`) carries the
    same information without the map.
-7. **Switch the colour theme.** Open the Theme menu from the keyboard, move with arrow
+7. **Switch the color theme.** Open the Theme menu from the keyboard, move with arrow
    keys, choose High contrast and Dark; the choice persists and is announced.
 8. **Navigate.** Use the skip link, then the primary nav. The current page's "stop" is
    announced as current. On a narrow window the menu button opens/closes the stops and
@@ -76,7 +76,7 @@ complete the task without sighted, mouse-driven help.
 - [ ] No content or function is lost; no horizontal scrolling of the page; nothing overlaps or clips.
 
 **Forced colors / high contrast**
-- [ ] All text and controls remain visible; focus indicators remain visible; meaning carried by colour also has text/shape.
+- [ ] All text and controls remain visible; focus indicators remain visible; meaning carried by color also has text/shape.
 
 **Reduced motion**
 - [ ] The grade reel, bar fills, and reveal animations are suppressed or instant.

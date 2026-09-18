@@ -2,7 +2,7 @@
 
 `ntd_crosswalk` populates an `ntd_id` outward from a feed we already track, so
 the population it can describe is closed by construction. A reporter with no
-feed in any catalogue can never enter that crosswalk, and therefore can never be
+feed in any catalog can never enter that crosswalk, and therefore can never be
 counted. The question a Caltrans district liaison or an FTA reviewer actually
 asks -- which reporters obligated to publish GTFS have nothing discoverable at
 all -- is unreachable from that direction.
@@ -17,8 +17,8 @@ the line wherever they trust it and read a different number.
 Three things this deliberately does not do.
 
 It does not grade anyone. A reporter with no discoverable feed is reported as a
-gap in what open catalogues can see, never as a zero and never as a finding
-about the agency. The fix may belong to FTA's own crosswalk, to a catalogue, or
+gap in what open catalogs can see, never as a zero and never as a finding
+about the agency. The fix may belong to FTA's own crosswalk, to a catalog, or
 to us.
 
 It does not guess. Where the evidence is a name that merely shares a token, the
@@ -154,7 +154,7 @@ def name_tokens(name: str) -> frozenset[str]:
 
 @dataclass(frozen=True)
 class FeedRecord:
-    """One catalogue entry, reduced to what the join can actually use."""
+    """One catalog entry, reduced to what the join can actually use."""
 
     key: str
     state: str  # two-letter US state or territory code, "" when unknown
@@ -188,7 +188,7 @@ class Match:
 
 
 class CatalogIndex:
-    """Name, domain, and token views of one catalogue, built once and reused."""
+    """Name, domain, and token views of one catalog, built once and reused."""
 
     def __init__(self, records: list[FeedRecord], *, label: str) -> None:
         self.label = label

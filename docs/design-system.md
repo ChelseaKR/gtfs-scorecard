@@ -239,7 +239,7 @@ Never solve overflow by shrinking body text or interactive targets.
 - `.platforms` / `.platform` present category scores as departure-board rows.
 - `.findings` / `.finding` hold exhaustive validator evidence.
 - `.feed-details` groups a bounded explanatory or standards section.
-- `.ntd-status` and its labelled variants communicate status in text and color.
+- `.ntd-status` and its labeled variants communicate status in text and color.
 - Native `<details>/<summary>` is the default progressive-disclosure primitive
   for long supporting material. The summary remains at least `44px` tall and
   the closed state must not hide the report's next required action.
@@ -331,7 +331,7 @@ in the same DOM order.
 ### Five-row scope ledger
 
 `.service-index` exposes the shipped product as one `.scope-ledger`, not a wall
-of equal cards. Every `.scope-row` is a labelled `<section>` with a work code,
+of equal cards. Every `.scope-row` is a labeled `<section>` with a work code,
 audience, short purpose, and visible links. The canonical row order is:
 
 | Code | Job |
@@ -370,7 +370,7 @@ compliance boundary.
 ## Signature pattern: report route
 
 `.report-route` turns the long agency report into a route the reader can scan
-without turning it into a generic dashboard. It is an in-page `<nav>` labelled
+without turning it into a generic dashboard. It is an in-page `<nav>` labeled
 “Report sections”; each link is a stop on one continuous line.
 
 The canonical order and targets are:

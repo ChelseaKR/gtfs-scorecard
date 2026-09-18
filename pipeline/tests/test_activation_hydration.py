@@ -702,7 +702,7 @@ def test_local_current_materializer_rejects_a_provenance_only_index_disagreement
     """A corpus read across a publish is refused, not repaired into the site.
 
     `refresh.yml` and `scorecard.yml` commit each changed agency's latest.json
-    and then index.json, so a reader that is not serialised against them can
+    and then index.json, so a reader that is not serialized against them can
     pair one generation's pointer with another's artifact. On 2026-09-13 the
     Pages deploy did exactly that for move-vendome and this guard stopped it.
 

@@ -91,7 +91,7 @@ with more than 2,100 numeric scorecards published. CI can only gate the
 snapshot figure, because `make verify` runs offline. A feed record is not
 always a distinct transit agency: regional feeds and modal variants are counted
 separately while the identity registry is reconciled. A record the Mobility
-Database has retired in favour of another is no longer one of them: it keeps
+Database has retired in favor of another is no longer one of them: it keeps
 its dated artifacts and redirects its old URL, and only its successor publishes
 a current grade, so one agency does not carry two
 (`docs/feed-supersessions.md`). That leaves the published count lower than it

@@ -10,7 +10,7 @@ evaluates it against the published directory and feature documents and writes
 `/api/v1/global-coverage.json`. Its thresholds are module-level constants:
 `MIN_REVIEWED_FEED_RECORDS = 250`, `MIN_COUNTRIES = 12`,
 `MAX_LARGEST_COUNTRY_SHARE_PCT = 40.0`, `MIN_FRESH_SCORECARD_PCT = 95.0`, and a
-closed `EUROPE_BETA_COUNTRY_CODES` set of the EU27 plus five named neighbouring
+closed `EUROPE_BETA_COUNTRY_CODES` set of the EU27 plus five named neighboring
 markets. Each of those numbers was chosen for the European market. The 250-record
 floor sits below the roughly 406 license-linked discovery rows so review can
 still reject candidates, and above a canary cohort so a consumer can make a

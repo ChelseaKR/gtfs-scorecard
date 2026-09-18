@@ -27,7 +27,7 @@ silently failing the daily run as over-cap since they were added.
 Raising the global caps to fit these feeds would weaken the guard for all 1,300
 ordinary feeds, which is the wrong trade: a bomb submitted as an ordinary feed
 would then be handed gigabytes of expansion room it has no reason to need. How
-large a feed is allowed to be should follow from a curator's judgement about that
+large a feed is allowed to be should follow from a curator's judgment about that
 specific feed, not from the largest feed anyone ever wants to score.
 
 ## Decision
@@ -38,7 +38,7 @@ real published export, not a bomb. The tier does three things and nothing else:
 
 1. **Streams the download to disk with bounded memory.** A standard feed keeps
    the existing buffer-then-write path (`net.safe_get` into memory), so the 1,300
-   ordinary feeds see byte-for-byte the same behaviour. A large feed routes
+   ordinary feeds see byte-for-byte the same behavior. A large feed routes
    through `net.safe_download`, which writes each response chunk straight to a
    `.netpart` file and renames on success. `safe_download` shares `_stream_guarded`
    with `safe_get`, so the SSRF check, the per-redirect public-address validation,

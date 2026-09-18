@@ -78,7 +78,7 @@ California program page now rolls that record up for the whole cohort:
 - **Trip coverage** as the median share of scheduled trips seen in TripUpdates,
   where the schedule feed makes that measurable.
 
-Least reliable first, because that is the order a support programme works in.
+Least reliable first, because that is the order a support program works in.
 Agencies with a configured endpoint the monitor has not yet sampled are counted
 as waiting, never shown as failing. Agencies with no realtime feed at all stay
 neutral, exactly as they are on their own scorecards.

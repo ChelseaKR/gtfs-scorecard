@@ -131,7 +131,7 @@ PAIRS: list[tuple[str, str, str, bool]] = [
     # ---- embeddable grade badge SVG (scorecard_pipeline/badge.py) ----
     # The badge is a standalone SVG with a fixed palette (literal hexes, no
     # theming), so these pairs hold in every theme pass, same as the og/mark
-    # pairs above. Colours come straight from badge.py so this list can't
+    # pairs above. Colors come straight from badge.py so this list can't
     # drift from what the pipeline actually writes to badge.svg. Badge text
     # is 11px, well under the AAA "large text" threshold, so 7:1 applies.
     *(

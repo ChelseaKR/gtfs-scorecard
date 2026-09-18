@@ -6,7 +6,7 @@ Status: accepted (2026-07)
 
 ADR 0026 made the scorecard country-aware and shipped the Canada pilot (three
 agencies), and its equity update found that Canada is the one country with a
-turnkey ACS analogue: the Statistics Canada Canadian Index of Multiple
+turnkey ACS analog: the Statistics Canada Canadian Index of Multiple
 Deprivation (CIMD), an open, pre-computed, small-area deprivation index. The US
 equity overlay does not extend abroad (it is state-level ACS), so a Canadian
 agency currently shows no need context. This ADR scopes adding one from the CIMD.
@@ -54,11 +54,11 @@ extending the ACS model:
 
 CIMD gives four dimensions; the overlay needs one served-area need signal. The
 transit-relevant dimensions are **Economic Dependency** and **Situational
-Vulnerability** (the closest analogues to the US poverty / vehicle-access /
+Vulnerability** (the closest analogs to the US poverty / vehicle-access /
 disability signals); Ethno-cultural Composition and Residential Instability are
 deliberately not used as "need," to avoid conflating demographic composition with
 disadvantage. Proposal: a served-area tier from the stop-weighted quintile of
-those two dimensions, labelled as a within-Canada CIMD measure. This is a
+those two dimensions, labeled as a within-Canada CIMD measure. This is a
 methodology choice and must be written up in `rubric.md` with the CIMD citation,
 not left implicit in code.
 

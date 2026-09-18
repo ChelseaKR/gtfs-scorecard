@@ -56,8 +56,8 @@ they are.
 
 - **Deployment frequency:** continuous. The site redeploys on merge and on the
   intraday refresh; of the last 100 "Deploy site" runs, 89 succeeded, 9 failed,
-  2 were cancelled. The intraday refresh over the last 7 days: 78 success,
-  8 failure, 1 cancelled. Those counts were recorded while the refresh ran
+  2 were canceled. The intraday refresh over the last 7 days: 78 success,
+  8 failure, 1 canceled. Those counts were recorded while the refresh ran
   hourly; it moved to every three hours in 2026-08 (ADR 0010), so the next
   window's run counts will be about a third of these.
 - **Lead time for changes:** across the last 30 merged PRs, median 6 minutes

@@ -104,7 +104,7 @@ The loop is:
 ```text
 source snapshot and hash -> cheap preflight -> identity/content clustering ->
 reuse decision -> 25-record canary -> three checks across seven days ->
-recommendation audit and upstream catalogue corrections
+recommendation audit and upstream catalog corrections
 ```
 
 Each new admission is paired with one legacy rights or identity audit until at
@@ -267,9 +267,9 @@ Rail, Brussels STIB/MIVB, Luxembourg's national feed, and Metlink Wellington.
 Unreachable or non-archive sources excluded METROFOR, four French local
 networks, Mexico City, Hyderabad Metro, and several Portuguese feeds. Santiago
 remained out because its official current-feed page did not state an explicit
-commercial-reuse licence. Bogotá's very large feed did not complete a bounded
-local score and its catalog licence is share-alike outside the project
-allowlist. Ambiguous source/licence identity excluded Cascais and Barreiro.
+commercial-reuse license. Bogotá's very large feed did not complete a bounded
+local score and its catalog license is share-alike outside the project
+allowlist. Ambiguous source/license identity excluded Cascais and Barreiro.
 These are future recheck targets, not silent omissions.
 
 A 20-loop continuation on 2026-07-23 then admitted 11 more records. Cyprus
@@ -284,9 +284,9 @@ The continuation also made its exhaustion results explicit. A 73-candidate
 official/licensed catalog set yielded 55 local score artifacts and 18 bounded
 source or archive failures before evidence review. Sardegna's eligible portal
 feeds were already tracked. Duplicate Madrid and Sardegna records, GTT Torino's
-non-commercial terms, Kraków's unresolved commercial licence, Bydgoszcz's
-community-converter provenance, Portugal's source/licence mismatches, Bogotá's
-share-alike licence, Santiago's unstated commercial grant, and short or expired
+non-commercial terms, Kraków's unresolved commercial license, Bydgoszcz's
+community-converter provenance, Portugal's source/license mismatches, Bogotá's
+share-alike license, Santiago's unstated commercial grant, and short or expired
 calendars in Australia, New Zealand, Belgium, Luxembourg, Canada, and Mexico
 all stayed out. The pass increases the reviewed sample without loosening the
 identity, reuse, validator, or calendar gates.
@@ -321,8 +321,8 @@ national-coverage claim. That figure records what the phase delivered and is
 not refreshed as the registry grows.
 
 A second National Access Point exhaustion ran on 2026-08-30, five weeks after
-the first. Of 206 still-untracked open-licence GTFS datasets, it admitted 76
-records under the unchanged licence, identity, validator, and 60-day calendar
+the first. Of 206 still-untracked open-license GTFS datasets, it admitted 76
+records under the unchanged license, identity, validator, and 60-day calendar
 gates, including Naolib (Nantes Métropole) as the first French record on the
 bounded large-feed tier after a full local score under its raised limits. The
 exclusion ledger is the larger half of the result: 100 candidates sat under
@@ -352,7 +352,7 @@ universe of 3,148 candidates — the Mobility Database and Transitland Atlas row
 not already tracked — and every candidate has a recorded disposition. Depth
 dominated: Japan 196, Ireland 60, France 57, Canada 16, Spain 11, Norway 10.
 Iceland and Luxembourg opened as new country codes, both on rechecks whose
-earlier failure was a stale calendar rather than a licence. Five of Japan's
+earlier failure was a stale calendar rather than a license. Five of Japan's
 seven empty prefectures closed — Fukui, Tottori, Hiroshima, Ehime, Miyazaki —
 after the pass established that gtfs-data.jp carries no feed in any of the
 seven, so each had to come from its own prefectural portal.
@@ -371,7 +371,7 @@ States: of 336 candidates one lane examined, 236 were live archives inside the
 calendar horizon and 206 of those publishers state no reuse terms anywhere on
 their own domain. Two state clearinghouses decline explicitly — Virginia DRPT
 ("The agencies retain full rights to the data") and Colorado CDOT, whose
-licence column reads "None" for every agency. Around 210 more candidates sit on
+license column reads "None" for every agency. Around 210 more candidates sit on
 National RTAP's GTFS Builder host, whose terms grant rights to National RTAP
 rather than to downstream reusers; because RTAP disclaims ownership, no
 platform-level decision by RTAP can release them, and the grant has to come
@@ -400,7 +400,7 @@ datasets through the working endpoint finds exactly three GTFS datasets. ÖBB is
 admitted on the large-feed tier from the current 2026 resource. Every regional
 Verkehrsverbund publishes instead on `data.mobilitaetsverbuende.at`, which is
 enumerable anonymously but returns 401 on the file endpoint by documented
-policy: 17 datasets, refreshed weekly, licence terms that already permit
+policy: 17 datasets, refreshed weekly, license terms that already permit
 commercial reuse with attribution, and a registration wall that one manually
 created account would clear. That is a partnership and credential decision, and
 it also needs code, because `static_gtfs_url` assumes a keyless URL.
@@ -417,7 +417,7 @@ Two large Japanese blocks stay out, and the reasoning matters more than the
 outcome. `ckan.hoda.jp` is a real municipal venue rather than a private
 re-host, but its GTFS is one third-party dataset in which 50 of 70 archives
 name a single vendor as publisher on a manufactured uniform calendar window,
-with no terms page and only a catalog licence field. OTTOP fails on reuse
+with no terms page and only a catalog license field. OTTOP fails on reuse
 terms, not on the local-steward gate: its terms impose indemnity, unilateral
 amendment and discretionary access restriction, which CC BY 4.0 forbids a
 licensor to add.
@@ -432,7 +432,7 @@ to re-derive it rather than assume those countries were documented as
 exhaustively as the other nineteen lanes.
 
 The pass also corrected the record in three places. A Japanese restriction
-string that had looked like a licence term, and had held up two admissions, is
+string that had looked like a license term, and had held up two admissions, is
 an export tool's own notice: it appears byte-identical in feeds from three
 unrelated publishers on three portals, always immediately after the tool
 version, always with the tool author's address in `feed_contact_email`. Two
@@ -444,7 +444,7 @@ sources including the European Commission's access-point register and an
 Internet Archive sweep of 8,000 URLs per host. Romania's national portal is
 still unreachable, but its European harvest holds 5,238 datasets and no GTFS,
 which disproves rather than defers the hypothesis that it carried the missing
-licences.
+licenses.
 
 ### Phase 4 — partnership-gated regions
 
@@ -455,7 +455,7 @@ sources are the [Digital Transport for Africa](https://digitaltransport4africa.o
 commons (managed by WRI and the Agence Française de Développement, feeds
 typically under ODbL) and the Digital Matatus lineage of university and
 community collaborations. These are community-produced, and a Northern-built
-tool that assigns them a letter grade risks reading as a deficit judgement of
+tool that assigns them a letter grade risks reading as a deficit judgment of
 the community rather than feedback to an accountable publisher. This project
 does not curate those feeds from a catalog.
 
@@ -485,7 +485,7 @@ project's existing no-shaming stance. Concretely:
 
 Gate: a named local steward accepts the licensing, source, identity, and
 consent responsibility; the reuse of each feed is established from a source the
-steward confirms; and the pilot stays bounded and labelled per ADR 0028. Absent
+steward confirms; and the pilot stays bounded and labeled per ADR 0028. Absent
 that, the region stays uncurated by design, and the roadmap says so rather than
 leaving a silent gap. The Digital Matatus project is the precedent worth
 following: it validated data with the operators and commuters it described and
@@ -552,7 +552,7 @@ These unblock more than one phase and are sequenced by first need.
   The reuse-evidence review handles these case by case today. A small controlled
   vocabulary of named government licenses, plus an explicit reviewer note for
   "openness established by statute, no per-file license," would keep those
-  judgements auditable without auto-approving any of them.
+  judgments auditable without auto-approving any of them.
 - **Per-region coverage denominators (shipped).** The finder and exports
   disclose the United-States-heavy global denominator, and each region now also
   discloses its own. Filtering the directory to a country or subdivision states

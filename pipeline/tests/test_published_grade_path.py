@@ -1,7 +1,7 @@
 """Every letter grade outside score.py is derived from the published score.
 
 `score.py` records the bug this exists to prevent, in its own words: a raw
-79.96875 publishes as "80.0", and grading the raw value labelled it C while
+79.96875 publishes as "80.0", and grading the raw value labeled it C while
 `docs/rubric.md` and the published `scoring.json` both say 80 is a B. Nine live
 artifacts carried a letter that contradicted their own printed score.
 
@@ -115,7 +115,7 @@ def test_no_module_outside_score_grades_a_raw_score() -> None:
     )
 
 
-def test_the_structural_check_recognises_a_raw_call(tmp_path: Path) -> None:
+def test_the_structural_check_recognizes_a_raw_call(tmp_path: Path) -> None:
     """Proof it bites: a raw call is reported, a published one is not."""
     raw = tmp_path / "raw.py"
     raw.write_text("x = letter_grade(rescore(cats, weights))\n", encoding="utf-8")

@@ -52,7 +52,7 @@ WEIGHT_PLAUSIBLE = 15.0
 FRESH_FULL_SECONDS = 60
 FRESH_ZERO_SECONDS = 600
 # Past this, the feed isn't merely stale, it has stopped: a header an hour or
-# more old means the realtime feed has lapsed, the realtime analogue of an
+# more old means the realtime feed has lapsed, the realtime analog of an
 # expired schedule. It reads as a freshness failure, not a missing-feed zero.
 RT_LAPSED_SECONDS = 3600
 
@@ -274,7 +274,7 @@ def measures_the_endpoint(exc: BaseException) -> bool:
     * anything else at all, which by construction came out of our own code and
       says nothing whatever about the agency's feed.
 
-    The fallback direction is the point. Before this, an unrecognised exception
+    The fallback direction is the point. Before this, an unrecognized exception
     fell into "the feed is down"; now it falls into "we did not measure it", so
     a bug of ours costs us a gap in our own coverage rather than costing an
     agency points in public.

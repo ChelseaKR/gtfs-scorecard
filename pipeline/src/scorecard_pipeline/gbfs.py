@@ -30,7 +30,7 @@ DEFAULT_CATALOG_URL = "https://raw.githubusercontent.com/MobilityData/gbfs/maste
 # GBFS 3.0 is the current major line; 2.3 is the last 2.x and still widely
 # deployed, so it is treated as supported rather than outdated. Anything below
 # 2.3 is outdated, and a system that states no version is unknown. These are the
-# bands a state program would act on, not a judgement on any one operator.
+# bands a state program would act on, not a judgment on any one operator.
 CURRENT_MAJOR = 3
 SUPPORTED_FLOOR = (2, 3)
 

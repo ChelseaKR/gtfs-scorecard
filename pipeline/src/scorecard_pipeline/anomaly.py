@@ -9,7 +9,7 @@ index.json, oldest to newest) and points out steps that are too large or too
 abrupt to be a normal day-to-day change.
 
 This is a heads-up layer, not a verdict: every finding names what looks off and
-leaves the judgement to the person reading it. Wiring it into the digest or the
+leaves the judgment to the person reading it. Wiring it into the digest or the
 site is a separate pass; here the logic stays pure and testable.
 """
 
@@ -37,7 +37,7 @@ TRANSIENT_DIP_POINTS = 20.0
 # History rows are not always consecutive days: a feed on the standard cadence,
 # a paused pipeline, or a newly added agency all leave gaps, and roughly one
 # published step in twelve spans more than a day. A dip is only "transient" if
-# the neighbouring rows sit that close in time; across a longer gap the low
+# the neighboring rows sit that close in time; across a longer gap the low
 # score stood for however long the gap lasted, which is a regression to alert on
 # rather than a glitch to suppress. Two days allows one missed daily run.
 TRANSIENT_DIP_MAX_STEP_DAYS = 2
@@ -185,7 +185,7 @@ def detect_anomalies(history: list[dict[str, Any]]) -> list[Anomaly]:
         if expiry is not None:
             anomalies.append(expiry)
 
-    # A transient dip needs a date and both of its neighbours, so it starts at the
+    # A transient dip needs a date and both of its neighbors, so it starts at the
     # second entry and stops before the last.
     for i in range(1, len(history) - 1):
         dip = _transient_dip(history[i - 1], history[i], history[i + 1])

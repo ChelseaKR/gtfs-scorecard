@@ -151,7 +151,7 @@ unreachable.
 This is not cosmetic. The committed snapshot has `"catalog_name_fuzzy": 0`. A
 snapshot missing *that* key still sums correctly, so the sum guard does not
 fire either. With the guard present the result is `None`, which is the intended
-fail-closed behaviour. With it gone the result is a `KeyError` raised from
+fail-closed behavior. With it gone the result is a `KeyError` raised from
 `published_reporter_coverage()` inside `render_site()`, an uncaught crash of the
 whole site render.
 

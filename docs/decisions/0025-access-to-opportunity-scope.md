@@ -43,7 +43,7 @@ demonstrator**, not a national feature:
 - Pick a few agencies (the two home systems plus one metro).
 - Offline, build the network from an OpenStreetMap extract plus the feed, join
   Census LODES jobs, and compute access-to-jobs at one time budget with r5r/R5.
-- Publish a small static artifact and a demo panel, clearly labelled a
+- Publish a small static artifact and a demo panel, clearly labeled a
   demonstrator over a handful of agencies, not a scored metric.
 
 Otherwise defer it until the project takes on a backend (a warehouse or a routing

@@ -18,8 +18,8 @@ These come from the project's quality bar and do not move:
 - Vanilla JavaScript, no build step, no framework. Charts today are hand-rolled
   inline SVG plus CSS bars. Maps use MapLibre GL JS 4.7.1 and PMTiles 3.2.1.
 - WCAG 2.2 AAA, visibly. Full keyboard operation, a text alternative for every
-  chart and map, colour is never the only signal, `prefers-reduced-motion` is
-  honoured, and AAA contrast holds across the light, high-contrast, and dark
+  chart and map, color is never the only signal, `prefers-reduced-motion` is
+  honored, and AAA contrast holds across the light, high-contrast, and dark
   themes.
 - Mobile-first, under two seconds on 4G, with a small total CSS and JS budget
   (roughly 130KB today).
@@ -78,7 +78,7 @@ Guide for Interactive Web Maps.
   the site already uses `maplibregl.Popup`. (W3C and MapLibre docs; confirmed
   against the version in use.)
 - For a map to reach AAA, add a keyboard equivalent for click, such as a
-  centre-crosshair "press to inspect the feature at centre" model, pair every
+  center-crosshair "press to inspect the feature at center" model, pair every
   map with a synced data table, and move focus to that table after a filter or
   search runs. (Minnesota IT.)
 - Small SVG charts stay tiny and accessible-friendly. Dependency-free sparkline

@@ -18,7 +18,7 @@ Three shapes, and each is a real path a paid order can take to silence:
 ``undelivered``
     A capability row whose archive is not in S3 after ``STALE_HOURS``. The
     setup route writes that row before it dispatches report-bundle.yml, so
-    this covers both a dispatch that never started and a fulfilment run that
+    this covers both a dispatch that never started and a fulfillment run that
     started and died. It is the broadest of the three and the one that
     catches failures this module has not thought of.
 

@@ -105,7 +105,7 @@ Checks run before accepting this:
 - **Rename the test functions.** Roughly 70 renames at HEAD, more in history,
   and the history cannot be edited. It would also encode a third-party regex
   quirk into this project's naming.
-- **Pin an older TruffleHog.** The detector behaviour is not new, and pinning
+- **Pin an older TruffleHog.** The detector behavior is not new, and pinning
   backwards would forfeit newer detectors.
 
 [SEC-19]: ../standards/SECURITY-AND-SUPPLY-CHAIN-STANDARD.md

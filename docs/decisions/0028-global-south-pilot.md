@@ -13,7 +13,7 @@ GAP-2 research (phase 2 feature expansion) investigated whether the GTFS scoreca
 
 ## Decision
 
-**Do not build a national, per-country Global South feed-quality overlay.** Instead, ship a **bounded, pilot demonstrator** with 3–5 agencies in high-potential cities, clearly labelled a pilot over a few countries, not a scored national metric.
+**Do not build a national, per-country Global South feed-quality overlay.** Instead, ship a **bounded, pilot demonstrator** with 3–5 agencies in high-potential cities, clearly labeled a pilot over a few countries, not a scored national metric.
 
 The scorecard's core rubric is suitable for LMICs as-is. A pilot proves value and surfaces what localization is needed (language, currency, local modes) before scaling.
 

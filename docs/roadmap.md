@@ -24,7 +24,7 @@ provenance-stamped verified closure
 
 The scorecards, read API, MCP server, GitHub Action, alerts, and program views
 remain useful. They are the acquisition and evidence layer for this workflow.
-Adding more validation, catalogue, or dashboard surface is not the current
+Adding more validation, catalog, or dashboard surface is not the current
 goal. The full competitive decision and its evidence are in
 [`competitive-positioning.md`](competitive-positioning.md).
 
@@ -188,7 +188,7 @@ These are valid options, not commitments:
 | Full interface localization | A named language steward owns translation review, pseudolocale and RTL checks, and ongoing copy quality. |
 | Broader worldwide curation | A local steward owns licensing, source verification, and the regional consent or partnership requirements. The phased, defensibility-ordered plan is [`global-coverage-roadmap.md`](global-coverage-roadmap.md); its partnership-gated phase names this same requirement. |
 | Deeper realtime sampling | A named program needs the result, grants endpoint access, and funds a bounded sampling plan. |
-| Research dataset expansion | Retention, privacy, licence, and citation requirements are settled. |
+| Research dataset expansion | Retention, privacy, license, and citation requirements are settled. |
 | Vendor or program intelligence | Enough comparable verified closures exist to report a pattern without ranking or blame. |
 
 ## Maintenance with explicit triggers

@@ -30,7 +30,7 @@ fix page for to its authoritative rule, and surface a verified link to that rule
   (`scorecard_missing_feed_info_dates` → `missing_feed_info_date`,
   `scorecard_no_feed_contact` → `missing_feed_contact_email_and_url`), the
   canonical notice is recorded as an alias and named on the page so the audience
-  recognises it.
+  recognizes it.
 - Findings with no honest mapping are left unlinked rather than pointed at a
   tenuous rule.
 

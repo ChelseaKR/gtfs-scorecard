@@ -3,7 +3,7 @@
 `refresh.yml` and `scorecard.yml` publish to the artifacts bucket under the
 `artifacts-publish` concurrency group, and they commit in two phases: every
 changed agency's `latest.json` first, then `index.json` last as the pointer.
-`pages.yml` is in the `pages` group, so nothing serialises a deploy against a
+`pages.yml` is in the `pages` group, so nothing serializes a deploy against a
 publish in flight, and its bounded sync runs for minutes against a commit
 window of seconds.
 

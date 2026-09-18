@@ -38,7 +38,7 @@ medians agree to within a few milliseconds.
 
 ### `median-run` does not select on LCP
 
-`computeRepresentativeRuns` in `@lhci/utils` picks one run per URL by minimising
+`computeRepresentativeRuns` in `@lhci/utils` picks one run per URL by minimizing
 squared distance to the median first-contentful-paint and the median
 time-to-interactive, then reads every `median-run` budget off that single run.
 Home-page FCP has an interquartile range 2 ms wide (1652 to 1654 ms) while LCP
@@ -170,7 +170,7 @@ of work is to reduce `/compare/`, then tighten the routes aggregation to
   into decoration.
 - **A throwaway Lighthouse pass before the asserted runs.** This addresses the
   warmup directly and costs about 12 s rather than 117 s. It is rejected here
-  because five runs also stabilise the median against the bimodal `/compare/`
+  because five runs also stabilize the median against the bimodal `/compare/`
   distribution, which a warmup pass does nothing about. It stays available if
   the added minutes become a problem.
 - **Edit the vendored standard to say 2750 ms.** `docs/standards/` is vendored

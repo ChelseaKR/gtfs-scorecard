@@ -530,7 +530,7 @@ def test_coverage_for_reports_a_country_and_its_subdivision() -> None:
     assert sub["subdivision_code"] == "US-CA"
 
 
-def test_an_uncovered_place_is_labelled_not_covered_rather_than_zero() -> None:
+def test_an_uncovered_place_is_labeled_not_covered_rather_than_zero() -> None:
     """ "We track no feeds here" and "there are no feeds here" are different claims."""
     country = call_tool("coverage_for", {"country": "ZZ"}, _fetch2)
     assert country["covered"] is False

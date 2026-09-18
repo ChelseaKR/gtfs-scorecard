@@ -14,13 +14,13 @@ from __future__ import annotations
 
 from xml.sax.saxutils import escape
 
-# Grade colours chosen for contrast on white and to stay distinguishable to
-# common colour-vision deficiencies; the letter itself is the primary signal,
-# never colour alone. The badge text is white at 11px -- WCAG "normal" text --
-# so every colour here is picked to clear this repo's AAA bar (7:1) against
+# Grade colors chosen for contrast on white and to stay distinguishable to
+# common color-vision deficiencies; the letter itself is the primary signal,
+# never color alone. The badge text is white at 11px -- WCAG "normal" text --
+# so every color here is picked to clear this repo's AAA bar (7:1) against
 # white, not just AA (4.5:1); pipeline/scripts/check_contrast.py imports
 # _GRADE_COLOR and _FALLBACK_COLOR directly and checks each against white, so
-# a colour cannot drift below 7:1 without failing the merge-blocking
+# a color cannot drift below 7:1 without failing the merge-blocking
 # `make verify` gate.
 _GRADE_COLOR = {
     "A": "#19643f",
@@ -36,7 +36,7 @@ _FALLBACK_COLOR = "#575757"
 # not only its letter grade. Keyed by metrics.expiry_status tokens; statuses not
 # listed here (current, unknown) add no segment. Reuses the grade palette
 # above (F's red for an expired feed, D's orange for one expiring soon) so the
-# badge has one AAA-checked colour set, not two.
+# badge has one AAA-checked color set, not two.
 _STATUS_LABEL = {
     "lapsed": "feed expired",
     "stale": "feed expired",
@@ -63,7 +63,7 @@ def render_badge(grade: str, score: float | None = None, expiry_status: str | No
 
     When a score is given it is shown alongside the letter (e.g. "B 84"), which
     is the form most useful on an agency's own page. When expiry_status marks a
-    feed as expired or expiring, a coloured status segment is appended so the
+    feed as expired or expiring, a colored status segment is appended so the
     feed's health reads at a glance, not only its grade.
     """
     grade = (grade or "?").upper()
@@ -115,7 +115,7 @@ def render_badge(grade: str, score: float | None = None, expiry_status: str | No
     )
 
 
-# Conformance mark colours: a single green seal, awarded only on a clean pass.
+# Conformance mark colors: a single green seal, awarded only on a clean pass.
 # Reuses the grade-A green above, which is already AAA-checked for white text.
 _MARK_LABEL = "GTFS"
 _MARK_VALUE = "conformant"

@@ -454,7 +454,7 @@ def _configured_rt_kinds() -> dict[str, tuple[str, ...]]:
 def _realtime_block(members: list[dict[str, Any]]) -> dict[str, Any]:
     """Realtime reliability across this program's members, agency by agency.
 
-    The monthly reports a state programme publishes assess the schedule side,
+    The monthly reports a state program publishes assess the schedule side,
     and check realtime presence at most a couple of times a month. The realtime
     monitor here already records reachability, header freshness, and trip
     coverage on a schedule (ADR 0012); this rolls that record up per program so

@@ -61,7 +61,7 @@ program with twenty agencies is packaging, branding, and delivery.
 
 **Replace the conversation with a checkout.** A real Stripe Checkout on a
 truthful page *is* the named-user gate. Nothing is built for a buyer until
-someone pays; the buyer identifies themselves by paying; fulfilment is
+someone pays; the buyer identifies themselves by paying; fulfillment is
 automated so the tier costs no attention after launch.
 
 Concretely, the **program report bundle**:
@@ -71,7 +71,7 @@ Concretely, the **program report bundle**:
   every requested id and what happened to it. The core is
   `scorecard_pipeline/bundle.py`; it computes nothing new and talks to no
   payment provider.
-- `.github/workflows/report-bundle.yml` is the on-demand fulfilment, the
+- `.github/workflows/report-bundle.yml` is the on-demand fulfillment, the
   same posture as `onboard.yml`: Actions is the compute, so the tier needs
   no always-on server for the work itself.
 - `infra/program-bundle` is the only always-on surface: a post-checkout

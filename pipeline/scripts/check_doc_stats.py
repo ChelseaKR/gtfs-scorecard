@@ -254,7 +254,7 @@ POINT_IN_TIME: list[tuple[str, str, str]] = [
     (
         "docs/expansion-research.md",
         r"\(([\d,]+)\+ feeds, terabytes\)",
-        "another operator's self-reported catalogue size",
+        "another operator's self-reported catalog size",
     ),
     (
         "docs/expansion-ideation-2026-07.md",

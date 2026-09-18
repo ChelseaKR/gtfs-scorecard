@@ -12,7 +12,7 @@ promotion rule. Every phase below cites where it came from.
 
 Three of those documents were written at different times and none sequences the
 others. That is the gap this file closes. It also records, in one place, which
-phases an agent can finish and which are waiting on a named person, a licence
+phases an agent can finish and which are waiting on a named person, a license
 answer, or a decision that belongs to the owner.
 
 ## The argument
@@ -117,7 +117,7 @@ site, or the public API."
 Done means the tiered reporter counts reach `/ntd/` and `api/v1/`, each with its
 own denominator stated, the existing tracked-feed figure untouched beside them,
 and a reporter with no discoverable feed shown as a limit of what open
-catalogues can see rather than as a zero.
+catalogs can see rather than as a zero.
 
 ## Track B: the closure proof, in the order the roadmaps already set
 
@@ -176,7 +176,7 @@ carries. None is an agent task, and none is promoted.
 | Community notice-to-fix knowledge base (EXP-08) | An ongoing moderation commitment | `ideation/03-expansions.md` EXP-08 |
 | Stand up your own scorecard (EXP-15) | External adopters; RR:E11 pluggable region rubric first | `ideation/03-expansions.md` EXP-15 |
 | Policy-effect study (EXP-16) | History spanning the RY2026 dates, plus a methodology SME | `ideation/03-expansions.md` EXP-16 |
-| Byte-exact raw archive on S3 (FIX-02 tier) | An AWS account and the cost gate; public redistribution needs the feed-licence answer | `ideation/02-large-scale-fixes.md` FIX-02 |
+| Byte-exact raw archive on S3 (FIX-02 tier) | An AWS account and the cost gate; public redistribution needs the feed-license answer | `ideation/02-large-scale-fixes.md` FIX-02 |
 | VoiceOver walkthrough | A human running assistive technology | issue #186 |
 | Add-your-agency walkthrough from a clean fork | An outside contributor | issue #188 |
 
@@ -194,7 +194,7 @@ coverage growth used as a success measure by itself.
 ## How to read a phase
 
 Built means the code, the tests and the documentation are in the repository and
-`make verify` is green over them. Gated means a named person, licence answer, or
+`make verify` is green over them. Gated means a named person, license answer, or
 owner decision is missing, and the gate is named above. No phase is represented
 in the codebase by a stub, a placeholder, or a dead configuration key: work that
 is not done lives in this file, not in the source.

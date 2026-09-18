@@ -3,7 +3,7 @@
 Caltrans and Cal-ITP publish a monthly GTFS quality report for each California
 agency they carry, and the directory of those reports is the closest thing the
 state has to a roster of who publishes transit data here. This scorecard's
-registry grew from open feed catalogues instead, so the two populations were
+registry grew from open feed catalogs instead, so the two populations were
 never lined up: some records here describe a feed the state does not carry,
 some organizations there have no record here, and one operator can appear
 under several feed records.

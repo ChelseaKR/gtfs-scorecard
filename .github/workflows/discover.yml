@@ -2,7 +2,7 @@ name: Discover moved feeds
 
 # Weekly check of tracked feeds against the Mobility Database
 # (docs/feature-roadmap.md, "discover on a schedule"): every expired feed's URL,
-# and every tracked record the catalog has retired in favour of another. The
+# and every tracked record the catalog has retired in favor of another. The
 # reports are always uploaded as artifacts. When a feed's canonical URL has
 # actually moved, or the catalog has replaced a record we publish, the job
 # rewrites the affected manifest-listed registry shard and opens a pull request
@@ -98,7 +98,7 @@ jobs:
           body: |
             The weekly check against the Mobility Database found either a tracked
             feed whose canonical download URL has moved (`static_gtfs_url` updated
-            to match) or a tracked feed record the catalog has retired in favour of
+            to match) or a tracked feed record the catalog has retired in favor of
             another (`alias_of` and `feed_status` recorded, so the retired record
             stops publishing a second current grade beside its successor). Review
             each change against the catalog before merging; the full reports are

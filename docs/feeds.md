@@ -13,12 +13,12 @@ discovery audit, source hierarchy, license-review rule, and public beta gate are
 in [global-expansion.md](global-expansion.md). The reviewed European records
 remain canaries until that gate passes.
 
-## Licence classes
+## License classes
 
 `scorecard license-audit` reads the `license_note` on every registry record and
-names the one licence the note states, from the closed vocabulary in
+names the one license the note states, from the closed vocabulary in
 `pipeline/src/scorecard_pipeline/license_audit.py`. A note that names two
-licences, only a link, or terms outside the vocabulary is `unknown`, with the
+licenses, only a link, or terms outside the vocabulary is `unknown`, with the
 reason. The audit never guesses, and it is a report: it blocks nothing.
 
 | Class | Share-alike | Attribution required | Listing policy |
@@ -32,7 +32,7 @@ reason. The audit never guesses, and it is a report: it blocks nothing.
 
 The share-alike rows are open on purpose. The admission gates say this project
 does not redistribute share-alike GTFS, while the registry already lists
-records whose notes name a share-alike licence. Which of those holds is an owner
+records whose notes name a share-alike license. Which of those holds is an owner
 decision, recorded in [follow-ups.md](follow-ups.md) under "Decide the
 share-alike question for records already listed". The audit counts those
 records and lists the ones a curator has to read, and it does not decide them.
@@ -204,7 +204,7 @@ national aggregate still counts as one feed record.
 - **Waltti Kotka, Finland (`FI-09`)** is one regional bus feed with five
   operator rows and 151 routes. The
   [Waltti open-data terms](https://opendata.waltti.fi/docs) apply CC BY 4.0 and
-  require source credit, a licence link, and disclosure of changes.
+  require source credit, a license link, and disclosure of changes.
 
 - **Rejseplanen, Denmark (`DK`)** is one national aggregate with 26 agency rows
   and bus, flex-bus, rail, metro, tram, and ferry service. The
@@ -344,7 +344,7 @@ reasons are also summarized in [global-expansion.md](global-expansion.md).
   3.0 Italia, opening Emilia-Romagna. Their download pins a dated version, so a
   curator refreshes the version parameter when TPER publishes a new archive.
 - **Spain (one record)**: CRTM's interurban regional bus network under the
-  consortium licence, a distinct feed from the tracked city bus and light rail.
+  consortium license, a distinct feed from the tracked city bus and light rail.
 - **Portugal (one record)**: STCP Porto under CC0, from the portal's current
   rolling resource rather than its dated snapshots.
 
@@ -465,7 +465,7 @@ Rejections again outnumbered additions, and the reasons are the review:
   Skånetrafiken, Västtrafik, and others, all API-key gated), the Slovenian
   National Access Point feeds on b2b.nap.si (CC BY-SA 4.0 but HTTP 401), De Lijn
   in Flanders, and the Austrian national access point, whose GTFS carries a
-  custom licence agreement and exposes only sample data.
+  custom license agreement and exposes only sample data.
 - **No stable current download**: the Luxembourg official ATP feed, which
   publishes only weekly-dated snapshots with per-release resource ids and no
   rolling latest URL, unchanged from the sixth wave, and the German HVV Hamburg
@@ -520,7 +520,7 @@ of 251), both under the 40% ceiling.
 - **Germany (two records)**: VVS Stuttgart (CC BY 4.0) and SWU Ulm (CC0 1.0),
   both read on MobiData BW, the Baden-Württemberg state mobility portal. SWU
   operates within the tracked DING association but is a distinct operator-level
-  feed under its own licence.
+  feed under its own license.
 - **Portugal (one record)**: Metropolitano de Lisboa under CC BY 4.0 on the
   national portal dados.gov.pt, using the portal's stable latest-version
   redirect.
@@ -1435,9 +1435,9 @@ first-party, openly licensed GTFS Schedule feeds. Discovery ran across the
 Mobility Database catalog, the Transitland Atlas, and Canadian and Australian
 open-data portals. Every candidate was preflighted on 2026-07-18: the source zip
 was downloaded, its `calendar.txt` and `calendar_dates.txt` window and size were
-read, the archive was deleted, and the reuse licence was confirmed at the
+read, the archive was deleted, and the reuse license was confirmed at the
 publisher before any record was written. The gate was fail-closed, so a
-candidate had to show a first-party publisher, a resolvable licence permitting
+candidate had to show a first-party publisher, a resolvable license permitting
 commercial reuse, a current service calendar, and a stable keyless download.
 Sixty-nine records were added.
 
@@ -1458,9 +1458,9 @@ Canada added fifty-seven records across five subdivisions:
 - British Columbia (thirty-five): BC Transit regional systems across the
   province, from the Victoria and Kelowna networks to small community systems
   such as 100 Mile House and Salt Spring Island. The BC Transit Open Data Terms
-  of Use grant a non-exclusive licence to use, reproduce, and redistribute the
+  of Use grant a non-exclusive license to use, reproduce, and redistribute the
   data including commercially, with attribution to BC Transit. It is a custom
-  government licence, recorded as such rather than as Creative Commons.
+  government license, recorded as such rather than as Creative Commons.
 - Québec (fourteen): the nine exo suburban sectors and the exo commuter-rail
   feed (CC BY 4.0 through Données Québec), plus RTC (Québec City), STS
   (Sherbrooke), STLévis, and Rouyn-Noranda, all CC BY 4.0.
@@ -1485,22 +1485,22 @@ The review rejected or deferred more than it kept, and the reasons cluster:
   404s.
 - Host unreachable or blocking automated fetch: Saskatoon Transit (HTTP 503) and
   MRC les Moulins (HTTP 403).
-- Licence forbids or conditions commercial reuse (fail closed): Metrobus
+- License forbids or conditions commercial reuse (fail closed): Metrobus
   (St. John's) reserves the right to charge commercial users a fee, and the
   Société de transport de Laval restricts commercial and quasi-commercial use.
   Neither is an open commercial-reuse grant.
 - Share-alike, held for consistency: Codiac Transpo (Moncton) publishes under
-  CC BY-SA. Share-alike is not on the accepted licence list.
-- Licence page not resolvable from the review environment (fail closed): Halifax
+  CC BY-SA. Share-alike is not on the accepted license list.
+- License page not resolvable from the review environment (fail closed): Halifax
   Transit, Lethbridge Transit, Red Deer Transit, Durham Region Transit, Greater
   Sudbury Transit, Burlington Transit, Transit Windsor, City of Regina, and STO
   (Gatineau) each returned a 403, a 404, or a JavaScript or bot-challenged
-  licence page, so the exact terms could not be read. They wait for a manual
-  licence read.
-- Licence unconfirmed in this pass (aggregator- or Metrolinx-hosted with no
-  dataset-level licence surfaced): Cornwall, Belleville, and Milton Transit
+  license page, so the exact terms could not be read. They wait for a manual
+  license read.
+- License unconfirmed in this pass (aggregator- or Metrolinx-hosted with no
+  dataset-level license surfaced): Cornwall, Belleville, and Milton Transit
   (served through metrolinx.tmix.se), Fredericton Transit (an ArcGIS item with
-  no licence field), Medicine Hat Transit, Thunder Bay Transit, and RTL
+  no license field), Medicine Hat Transit, Thunder Bay Transit, and RTL
   Longueuil (its conditions PDF 404s). These remain candidates for a later pass.
 - Aggregator-hosted rather than first-party: Maritime Bus is served only from a
   Trillium mirror, not an operator or government portal.
@@ -1508,7 +1508,7 @@ The review rejected or deferred more than it kept, and the reasons cluster:
   Transport for New South Wales (key-gated and over the download cap), Transport
   Canberra (HTTP 403, and its MyWay+ feed needs a key). Tasmania's superseding
   first-party aggregate is documented separately because its source, URL, and
-  licence all changed after this pass.
+  license all changed after this pass.
 
 ## United States small and rural depth wave
 
@@ -1955,12 +1955,12 @@ Réunion, Martinique, Mayotte, Normandie, Nouvelle-Aquitaine, Occitanie,
 Pays-de-la-Loire, and Provence-Alpes-Côte-d’Azur. Twenty-six publish official,
 keyless GTFS-Realtime endpoints through the same portal.
 
-Four new country samples cleared the same source, licence, identity, and
+Four new country samples cleared the same source, license, identity, and
 calendar gate:
 
 - **Albania:** Municipality of Tirana. The city's
   [open-data policy](https://tirana.al/faqe/open-data) states that its data is
-  available without licence restrictions.
+  available without license restrictions.
 - **Moldova:** Transport Public Ungheni. The operator's
   [open-data page](https://unghenitransport.md/retea-de-transport/open-data)
   applies CC BY 4.0.
@@ -1976,7 +1976,7 @@ Existing-country depth added Lethbridge Transit, Rimouski Transit, Réseau de
 transport de Longueuil, and Saint John Transit in Canada; MVG München and hvv
 Hamburg in Germany; and West Coast Motors plus the Essex Bus Network in the
 United Kingdom. Their recorded terms are the relevant Canadian municipal open
-government licences or CC BY 4.0, Germany's provider reuse terms or
+government licenses or CC BY 4.0, Germany's provider reuse terms or
 Datenlizenz Deutschland – Namensnennung 2.0, and the UK Open Government Licence
 v3.0.
 
@@ -1996,8 +1996,8 @@ The rejection set is part of this wave:
   portal records CC BY-SA 4.0, which is outside the project's general
   share-alike allowlist.
 - Cascais no longer exposes the catalog's named GTFS dataset in its official
-  data API. Barreiro's catalog licence link names a different publisher.
-  Neither identity/licence pair was inferred.
+  data API. Barreiro's catalog license link names a different publisher.
+  Neither identity/license pair was inferred.
 - Short-calendar, expired, dead, registration-gated, aggregate, and
   multi-fragment candidates elsewhere remained out under their previously
   documented reasons.
@@ -2011,7 +2011,7 @@ country codes are not a census of any country or region.
 A further 20 grouped discovery and verification loops on 2026-07-23 tested
 both new-country candidates and additional publishers in represented countries.
 The pass began with every still-untracked Mobility Database record marked
-official and carrying a licence link, then crossed each plausible result against
+official and carrying a license link, then crossed each plausible result against
 the publisher or responsible government portal. Seventy-three candidates ran
 through the bounded download, pinned canonical MobilityData validator, full
 scorecard, and 60-day effective-calendar path. Fifty-five produced score
@@ -2048,12 +2048,12 @@ The 20 loops also recorded their no-add outcomes:
 7. Italy: GTT Torino's terms are non-commercial, so it stayed out.
 8. Sardegna: 12 portal feeds were tested; the current eligible files were
    already tracked, while the rest were expired, short-calendar, or unreachable.
-9. Poland: Kraków lacked an explicit commercial licence and Bydgoszcz was a
+9. Poland: Kraków lacked an explicit commercial license and Bydgoszcz was a
    community converter rather than a first-party schedule publisher.
 10. Portugal: Cascais, Barreiro, and Metro Sul do Tejo still lacked a matching
-    current publisher/source/licence chain.
+    current publisher/source/license chain.
 11. Chile: Santiago's current page still lacked an explicit commercial grant.
-12. Colombia: Bogotá's CC BY-SA licence remains outside the general allowlist.
+12. Colombia: Bogotá's CC BY-SA license remains outside the general allowlist.
 13. Australia: Canberra Light Rail failed the effective-calendar gate.
 14. New Zealand: Metlink had only 30 days of effective service remaining.
 15. Belgium: STIB/MIVB's downloaded calendar was expired.
@@ -2130,7 +2130,7 @@ The no-add ledger matters:
   record's terms.
 - Tursib's terms allow only personal, non-commercial use. Oman and Santiago
   still lack an explicit commercial grant. Polish community mirrors,
-  mismatched API records, and catalog-only licence claims were not substituted
+  mismatched API records, and catalog-only license claims were not substituted
   for first-party evidence.
 - Short-calendar, expired, unreachable, timed-out, and overlapping candidates
   elsewhere remained out. A successful validator run alone was never treated
@@ -2196,7 +2196,7 @@ census of agencies, operators, or national coverage.
 A second exhaustive loop over France's National Access Point ran on
 2026-08-30, five weeks after the first. The API snapshot held 784 datasets,
 475 of them carrying a GTFS Schedule resource. After removing datasets under
-no admitted open licence (ten unspecified, two under the restricted "Licence
+no admitted open license (ten unspecified, two under the restricted "Licence
 mobilités") and every dataset already matched to a tracked registry endpoint,
 206 candidate datasets remained. Each was taken as one canonical current
 resource per dataset and, unless excluded first, run through the bounded

@@ -62,7 +62,7 @@ PHASES=(
   config-js
   open-gate
   purchase
-  verify-fulfilment
+  verify-fulfillment
   verify-cap
   teardown-notes
 )
@@ -235,10 +235,23 @@ phase_index() {
   return 1
 }
 
+# canonical_phase <name> -> the current name for a phase.
+# `verify-fulfilment` is the British spelling this phase shipped under; it is
+# kept as a deprecated alias so an existing `--only`/`--from` invocation still
+# resolves. Every other name passes through unchanged.
+canonical_phase() {
+  case "$1" in
+    verify-fulfilment) printf '%s' "verify-fulfillment" ;;
+    *) printf '%s' "$1" ;;
+  esac
+}
+
 # resolve_phases <only> <from> -> one phase name per line.
 # --only wins over --from; an unknown name is an error, never an empty run.
 resolve_phases() {
-  local only="${1:-}" from="${2:-}" start=0 i=0 phase
+  local only from start=0 i=0 phase
+  only="$(canonical_phase "${1:-}")"
+  from="$(canonical_phase "${2:-}")"
   if [ -n "$only" ]; then
     if ! phase_index "$only" >/dev/null; then
       printf 'unknown phase: %s\n' "$only" >&2
@@ -1515,7 +1528,7 @@ phase_purchase() {
 }
 
 # ---------------------------------------------------------------------------
-# Phase: verify-fulfilment
+# Phase: verify-fulfillment
 # ---------------------------------------------------------------------------
 
 bundles_table() { printf 'gtfs-scorecard-program-bundles'; }
@@ -1543,7 +1556,7 @@ wait_for_run() {
   printf '%s %s\n' "$run_id" "$conclusion"
 }
 
-phase_verify_fulfilment() {
+phase_verify_fulfillment() {
   local api bundle_id session_id since
   api="$(state_get '.api_base')"
   bundle_id="$(state_get '.bundle_id')"

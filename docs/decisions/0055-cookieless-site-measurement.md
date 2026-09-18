@@ -5,7 +5,7 @@
 Analytics 4 in a second, separate block, so this script is no longer the whole
 of what the site collects, and the site is no longer cookieless outside the
 EEA, the UK and Switzerland. The PostHog block described here changes only to
-honour the footer "Opt out of analytics" link that ADR 0056 adds.
+honor the footer "Opt out of analytics" link that ADR 0056 adds.
 
 ## Context
 
@@ -27,7 +27,7 @@ give per page.
 
 The site is a civic tool whose readers include state staff and agencies. The
 bar for measuring them is that a reader can find out exactly what is recorded,
-that it is as little as the question needs, and that saying no is honoured
+that it is as little as the question needs, and that saying no is honored
 without a banner.
 
 ## Decision

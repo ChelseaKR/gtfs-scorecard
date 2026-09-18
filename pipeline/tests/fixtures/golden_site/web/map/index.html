@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Agency map — GTFS Scorecard</title>
-  <meta name="description" content="A world map of the feed scorecards currently covered, labelled and coloured by GTFS data quality grade.">
+  <meta name="description" content="A world map of the feed scorecards currently covered, labeled and colored by GTFS data quality grade.">
   <link rel="canonical" href="https://gtfsscorecard.org/map/">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Agency map — GTFS Scorecard">
-  <meta property="og:description" content="A world map of the feed scorecards currently covered, labelled and coloured by GTFS data quality grade.">
+  <meta property="og:description" content="A world map of the feed scorecards currently covered, labeled and colored by GTFS data quality grade.">
   <meta property="og:url" content="https://gtfsscorecard.org/map/">
   <meta property="og:image" content="https://gtfsscorecard.org/og.png">
   <meta property="og:image:width" content="1200">
@@ -53,7 +53,7 @@
     <h1 class="page-title">Agency map.</h1>
     <p class="page-lede">Every tracked feed scorecard with locatable
     <abbr title="General Transit Feed Specification">GTFS</abbr> stops, placed at the feed's
-    service area, labelled with its grade letter and coloured by grade. 3 feed scorecards
+    service area, labeled with its grade letter and colored by grade. 3 feed scorecards
     are on the map. Select a point for its grade and a link to the scorecard, or work
     the list below.</p>
     <p class="page-lede">To see the actual route lines instead of one point per feed scorecard,
@@ -88,7 +88,7 @@
     <div id="map" class="national-map national-map-pending" aria-hidden="true"><p class="map-fallback">
       The interactive map has not loaded. Use the complete-list control or the paginated agency
       directory for the same feed records, grades, locations, and scorecard links.</p></div>
-    <ul class="map-legend" aria-label="Grade colours"><li><span class="map-dot" style="background:#1f7a4d"><span class="map-dot-letter" aria-hidden="true">A</span></span>Grade A</li><li><span class="map-dot" style="background:#3f7d20"><span class="map-dot-letter" aria-hidden="true">B</span></span>Grade B</li><li><span class="map-dot" style="background:#9a7d0a"><span class="map-dot-letter" aria-hidden="true">C</span></span>Grade C</li><li><span class="map-dot" style="background:#b5651d"><span class="map-dot-letter" aria-hidden="true">D</span></span>Grade D</li><li><span class="map-dot" style="background:#a32020"><span class="map-dot-letter" aria-hidden="true">F</span></span>Grade F</li></ul>
+    <ul class="map-legend" aria-label="Grade colors"><li><span class="map-dot" style="background:#1f7a4d"><span class="map-dot-letter" aria-hidden="true">A</span></span>Grade A</li><li><span class="map-dot" style="background:#3f7d20"><span class="map-dot-letter" aria-hidden="true">B</span></span>Grade B</li><li><span class="map-dot" style="background:#9a7d0a"><span class="map-dot-letter" aria-hidden="true">C</span></span>Grade C</li><li><span class="map-dot" style="background:#b5651d"><span class="map-dot-letter" aria-hidden="true">D</span></span>Grade D</li><li><span class="map-dot" style="background:#a32020"><span class="map-dot-letter" aria-hidden="true">F</span></span>Grade F</li></ul>
     <p class="fineprint">Points are placed at each feed's median stop. Basemap:
       OpenFreeMap, &copy; OpenStreetMap contributors. Data: this scorecard, CC BY 4.0.</p>
     <section id="agency-list" tabindex="-1" aria-labelledby="agency-list-h">
@@ -462,7 +462,7 @@
               "circle-stroke-width": 2, "circle-stroke-color": "#ffffff"
             }
           });
-          // The grade letter, drawn on every point so grade reads without colour.
+          // The grade letter, drawn on every point so grade reads without color.
           map.addLayer({
             id: "agency-grade", type: "symbol", source: "agencies",
             filter: ["!", ["has", "point_count"]],

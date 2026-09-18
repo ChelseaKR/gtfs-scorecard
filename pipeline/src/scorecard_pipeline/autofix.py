@@ -5,7 +5,7 @@ findings that have one unambiguous correct edit. The point is to hand an agency 
 already-corrected feed for the safe cases, not to guess. So the recipes here are
 deliberately conservative: each one changes only what is mechanically certain
 (surrounding whitespace, shouting stop names), preserves every other byte of the
-feed, and reports exactly what it touched. Anything that needs judgement (a
+feed, and reports exactly what it touched. Anything that needs judgment (a
 missing fare, an unknown wheelchair value, a real contact email) is left for the
 agency, with the scorecard's plain-language fix.
 

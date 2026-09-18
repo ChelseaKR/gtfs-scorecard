@@ -32,7 +32,7 @@ command -v jq >/dev/null || { echo "jq not found" >&2; exit 2; }
 case "$STRIPE_SECRET_KEY" in
   sk_test_*|rk_test_*) MODE="test" ;;
   sk_live_*|rk_live_*) MODE="live" ;;
-  *) echo "Unrecognised key prefix; refusing to guess the mode." >&2; exit 2 ;;
+  *) echo "Unrecognized key prefix; refusing to guess the mode." >&2; exit 2 ;;
 esac
 echo "Mode: $MODE  Site: $SITE" >&2
 

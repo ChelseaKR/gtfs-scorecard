@@ -18,7 +18,7 @@ about one finding, and refuses each of them out loud when the data is not there:
    against boardable stops, not all stops, and ``scorecard_station_missing_step_free_data``
    counts *files*, so it has no network share at all.
 2. **Ridership.** Annual rider-trips for the feed's National Transit Database
-   reporter. The NTD is a United States federal programme (ADR 0026), and one
+   reporter. The NTD is a United States federal program (ADR 0026), and one
    reporter's trips must never be applied to several feed records
    (``ridership.duplicate_ntd_reporter_ids``), so both cases return an explicit
    absence.

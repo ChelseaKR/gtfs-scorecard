@@ -44,7 +44,7 @@ tracked-feed line is untouched beside it, because it is a different, honest
 measurement.
 
 **The range is published at both ends.** Between 473 and 641 reporters have no
-feed discoverable in any open catalogue read. The low end counts a shared rare
+feed discoverable in any open catalog read. The low end counts a shared rare
 word in an agency name as a match; the high end does not. That gap is how wide a
 name-based join is, and the 168 reporters matched on name overlap alone are
 reported on their own line and counted on neither side. Averaging the ends, or
@@ -52,7 +52,7 @@ publishing one of them alone, would be the overclaim.
 
 **A reporter with no discoverable feed is a measurement limit, not a finding.**
 Nobody is graded, nothing is shown as a zero, and the page says the fix may
-belong to FTA's own crosswalk or to a catalogue rather than to the agency. This
+belong to FTA's own crosswalk or to a catalog rather than to the agency. This
 is the neutral-treatment rule the rubric already applies to an agency without
 realtime, with more force: the observation here is about discoverability, and
 the agency may have done nothing wrong at all.

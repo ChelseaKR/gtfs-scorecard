@@ -38,7 +38,7 @@ reference.
   that runs the validator, for when the daily run outgrows the Actions matrix
   (Year 2). Scaffolding with the wiring and IAM; the worker image is built from
   `pipeline/` (see `docs/decisions/0003-fan-out-compute.md`). Not yet applied.
-- `program-bundle/` — the program tier's fulfilment plumbing
+- `program-bundle/` — the program tier's fulfillment plumbing
   (docs/program-plan.md, ADR 0049): a post-checkout setup form that confirms a
   Stripe Checkout Session is paid and dispatches `report-bundle.yml`, a
   download route that presigns one archive per capability link, a Stripe

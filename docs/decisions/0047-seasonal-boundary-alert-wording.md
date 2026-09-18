@@ -79,7 +79,7 @@ old wording was accuracy, not urgency, and only accuracy changed.
 The asymmetry is deliberate and is what the tests assert hardest. Reading a
 genuine lapse as planned would let an abandoned feed be described gently, so
 every path to "planned" is tested against a hostile artifact. Reading a planned
-boundary as a lapse is only the previous behaviour, so those tests assert the
+boundary as a lapse is only the previous behavior, so those tests assert the
 softer wording is reached exactly when the published record supports it.
 
 `portfolio_digest`'s persisted weekly snapshot gains a `planned_boundary` key.

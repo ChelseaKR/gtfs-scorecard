@@ -69,8 +69,8 @@ safety module; the run now clears it.
 
 | Bucket | Mutants | Meaning |
 |--------|---------|---------|
-| Real gap, now closed | 313 | Changed grading behaviour a reader would notice, and nothing failed. New assertions kill them. |
-| Equivalent | 32 | Cannot change observable behaviour: unreachable inputs, or arithmetic that lands on the same number. |
+| Real gap, now closed | 313 | Changed grading behavior a reader would notice, and nothing failed. New assertions kill them. |
+| Equivalent | 32 | Cannot change observable behavior: unreachable inputs, or arithmetic that lands on the same number. |
 | Out of contract | 400 | Changes something the rubric does not specify: wording, log lines, internal diagnostics, fetch plumbing. |
 
 No scoring code changed. Only `tests/test_score.py`, `tests/test_metrics.py`,
@@ -100,7 +100,7 @@ Each entry names the requirement the new test states, not the mutant.
    `expiry_status()` puts exactly 30 into `expiring_soon`, so a feed with exactly
    30 days of runway is bucketed one way in the directory and warned about
    differently on its own page. Both readings satisfy the Caltrans "at least 30
-   days" wording, so the tests pin the behaviour as it stands. Changing either
+   days" wording, so the tests pin the behavior as it stands. Changing either
    line moves published grades and belongs in a governed rubric change.
 
 3. **On-demand service was never scored.** `demand_response` is the second
@@ -249,7 +249,7 @@ groups is a missing assertion, not noise.
 ## Notable survivors the coverage tests missed (2026-06, `score.py`)
 
 These mutants survived the original 100%-coverage suite. Each was a real gap:
-the line ran in a test, but no assertion pinned its behaviour. Tests in
+the line ran in a test, but no assertion pinned its behavior. Tests in
 `tests/test_score.py` kill them.
 
 1. **The letter grade was never asserted end to end.** Mutating

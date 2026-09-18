@@ -74,8 +74,8 @@ the data rather than in the prose here:
   project has a generated fallback wording used on scorecard pages next to a real
   count; it is deliberately not served here, because as an answer to "what does
   this code mean" it would be a sentence the project made up handed to an
-  assistant as knowledge. An unrecognised `tool` likewise returns no guidance and
-  lists the keys that are recognised, rather than naming the nearest vendor.
+  assistant as knowledge. An unrecognized `tool` likewise returns no guidance and
+  lists the keys that are recognized, rather than naming the nearest vendor.
 - **`coverage_for` reports an untracked place as not covered, never as zero
   feeds.** "This scorecard tracks nothing here" and "there is nothing here" are
   different statements and only the first is one this project can make.

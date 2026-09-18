@@ -41,7 +41,7 @@ jobs:
 
 Name a full release tag, as the example does, or a commit SHA. `v1.4.0` is the
 newest published Action release, so a workflow that pins it runs a build whose
-behaviour is written down on this page and cannot change underneath it.
+behavior is written down on this page and cannot change underneath it.
 
 **The floating major `@v1` is not recommended.** The Marketplace convention
 offers it, and this repository keeps it for the consumers who already use it,
@@ -95,7 +95,7 @@ a zip is. The step fails with `could not score <url>: ...` and `passed` is
 `false`. Before that change such a feed was graded and the default
 configuration reported `passed=true` for it.
 
-**This behaviour is on `main` only.** It is in no published release, so it is
+**This behavior is on `main` only.** It is in no published release, so it is
 not what `@v1.4.0` or `@v1` do today. See [Which ref to pin](#which-ref-to-pin).
 
 ## Outputs and job summary

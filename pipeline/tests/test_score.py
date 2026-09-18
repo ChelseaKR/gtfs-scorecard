@@ -183,7 +183,7 @@ def test_duplicate_category_name_rejected() -> None:
 
 # The tests below were added to kill surviving mutants from the advisory mutmut
 # run on score.py (docs/mutation-testing.md). Line/branch coverage was already
-# 100%; these pin behaviour the assertions were letting slip.
+# 100%; these pin behavior the assertions were letting slip.
 
 
 def test_build_scorecard_sets_the_letter_grade() -> None:

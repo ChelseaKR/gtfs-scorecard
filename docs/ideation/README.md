@@ -59,5 +59,5 @@ dated snapshot and must not override the current roadmap.
 
 The original warnings remain useful. These ideas were not automatically
 validated with a real user, approved for infrastructure spend, or cleared for
-public data redistribution. Human, partner, licence, and longitudinal-data gates
+public data redistribution. Human, partner, license, and longitudinal-data gates
 must still be satisfied rather than worked around.

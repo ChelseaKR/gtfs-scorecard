@@ -26,7 +26,7 @@ MAX_LARGEST_COUNTRY_SHARE_PCT = 40.0
 MIN_FRESH_SCORECARD_PCT = 95.0
 REQUIRED_COMPLETE_PCT = 100.0
 
-# EU27 plus the five explicitly included neighbouring markets.  Keep this
+# EU27 plus the five explicitly included neighboring markets.  Keep this
 # closed and visible: expanding the gate's geography is a product decision,
 # not a side effect of adding another registry record.
 EUROPE_BETA_COUNTRY_CODES = frozenset(

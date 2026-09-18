@@ -18,7 +18,7 @@ For the official assessment, use the sources linked below.
 The agency page builds its guidance in layers. Every agency receives the
 universal GTFS layer. A US agency also receives the FTA National Transit Database
 layer. California receives its published state guideline, while selected state
-programs are labelled as support resources rather than scoring authorities.
+programs are labeled as support resources rather than scoring authorities.
 
 ### Universal GTFS layer
 

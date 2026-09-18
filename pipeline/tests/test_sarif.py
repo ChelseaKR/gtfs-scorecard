@@ -326,7 +326,7 @@ def test_try_writes_sarif_from_the_validator_report_not_the_artifact(
     result = payload["runs"][0]["results"][0]
     assert result["ruleId"] == "stop_too_far"
     assert result["locations"][0]["physicalLocation"]["region"]["startLine"] == 12
-    # The scorecard's own wording travelled with it.
+    # The scorecard's own wording traveled with it.
     assert "Some stops are far from their trips." in result["message"]["text"]
     assert payload["runs"][0]["invocations"][0]["executionSuccessful"] is True
 

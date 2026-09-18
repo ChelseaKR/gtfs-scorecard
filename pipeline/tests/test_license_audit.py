@@ -1,4 +1,4 @@
-"""Tests for the licence audit: one licence per note, or unknown with its reason."""
+"""Tests for the license audit: one license per note, or unknown with its reason."""
 
 from __future__ import annotations
 
@@ -12,8 +12,8 @@ from scorecard_pipeline.config import Agency
 from scorecard_pipeline.license_audit import (
     CLASSES,
     LINK_ONLY,
-    MORE_THAN_ONE_LICENCE,
-    NO_LICENCE_STATED,
+    MORE_THAN_ONE_LICENSE,
+    NO_LICENSE_STATED,
     NO_NOTE,
     NOT_IN_VOCABULARY,
     SHARE_ALIKE_POLICY,
@@ -55,11 +55,11 @@ def agency(
     )
 
 
-# --- one licence named --------------------------------------------------------
+# --- one license named --------------------------------------------------------
 
 
 @pytest.mark.parametrize(
-    ("note", "licence"),
+    ("note", "license"),
     [
         (ODBL_NOTE, "ODbL-1.0"),
         (
@@ -69,7 +69,7 @@ def agency(
         ),
         ("CC BY-SA through Sofia Municipality's open data portal.", "CC-BY-SA"),
         ("CC BY 4.0; credit Waltti, link the licence, and indicate any changes.", "CC-BY-4.0"),
-        # An unversioned mention of the same licence is not a second licence.
+        # An unversioned mention of the same license is not a second license.
         (
             "CC BY 4.0 per the Stadt Wien dataset record; the operator page states all data "
             "is published under CC BY with source credit.",
@@ -95,19 +95,19 @@ def agency(
         ),
     ],
 )
-def test_a_note_naming_one_licence_gets_that_licence(note: str, licence: str) -> None:
+def test_a_note_naming_one_license_gets_that_license(note: str, license: str) -> None:
     result = classify_note(note)
-    assert result.licence == licence
+    assert result.license == license
     assert result.reason == ""
     assert result.known
 
 
-def test_share_alike_follows_the_licence_class() -> None:
+def test_share_alike_follows_the_license_class() -> None:
     assert classify_note(ODBL_NOTE).share_alike is True
     assert classify_note("CC BY 4.0; credit the operator.").share_alike is False
 
 
-# --- no licence named -----------------------------------------------------------
+# --- no license named -----------------------------------------------------------
 
 
 @pytest.mark.parametrize(
@@ -117,7 +117,7 @@ def test_share_alike_follows_the_licence_class() -> None:
         (None, NO_NOTE),
         (
             "No stated data license in the Mobility Database; verify before publishing.",
-            NO_LICENCE_STATED,
+            NO_LICENSE_STATED,
         ),
         ("License: https://www3.septa.org/developer/", LINK_ONLY),
         (
@@ -130,15 +130,15 @@ def test_share_alike_follows_the_licence_class() -> None:
         ),
     ],
 )
-def test_a_note_naming_no_licence_is_unknown_and_says_why(note: str | None, reason: str) -> None:
+def test_a_note_naming_no_license_is_unknown_and_says_why(note: str | None, reason: str) -> None:
     result = classify_note(note)
-    assert result.licence == UNKNOWN
+    assert result.license == UNKNOWN
     assert result.reason == reason
     # Unknown is not "not share-alike". It is not known either way.
     assert result.share_alike is None
 
 
-def test_a_municipal_licence_based_on_ogl_canada_is_not_ogl_canada() -> None:
+def test_a_municipal_license_based_on_ogl_canada_is_not_ogl_canada() -> None:
     note = (
         "Open Government Licence – Halifax, based on version 2.0 of the Open Government "
         "Licence – Canada: a worldwide, royalty-free, perpetual, non-exclusive licence."
@@ -146,7 +146,7 @@ def test_a_municipal_licence_based_on_ogl_canada_is_not_ogl_canada() -> None:
     assert classify_note(note).reason == NOT_IN_VOCABULARY
 
 
-def test_a_negated_mention_is_not_read_as_the_licence() -> None:
+def test_a_negated_mention_is_not_read_as_the_license() -> None:
     """The NVBW notes name ODbL only to say it does not apply.
 
     A text search counts them as share-alike. The audit cannot tell a negation
@@ -154,8 +154,8 @@ def test_a_negated_mention_is_not_read_as_the_licence() -> None:
     curator.
     """
     result = classify_note(NVBW_NOTE)
-    assert result.licence == UNKNOWN
-    assert result.reason == MORE_THAN_ONE_LICENCE
+    assert result.license == UNKNOWN
+    assert result.reason == MORE_THAN_ONE_LICENSE
     assert set(result.named) == {"ODbL-1.0", "DL-DE-BY-2.0"}
     assert result.share_alike is None
     assert result.names_share_alike
@@ -169,9 +169,9 @@ def test_a_negated_mention_is_not_read_as_the_licence() -> None:
         "CC0 public domain dedication. The operator separately offers it under CC BY 4.0.",
     ],
 )
-def test_two_licences_in_one_note_are_never_resolved_by_a_pattern(note: str) -> None:
+def test_two_licenses_in_one_note_are_never_resolved_by_a_pattern(note: str) -> None:
     result = classify_note(note)
-    assert (result.licence, result.reason) == (UNKNOWN, MORE_THAN_ONE_LICENCE)
+    assert (result.license, result.reason) == (UNKNOWN, MORE_THAN_ONE_LICENSE)
     assert len(result.named) == 2
 
 
@@ -179,12 +179,12 @@ def test_the_vocabulary_has_distinct_ids_and_every_pattern_compiles() -> None:
     ids = [c.id for c in CLASSES]
     assert len(ids) == len(set(ids))
     assert UNKNOWN not in ids
-    for licence in CLASSES:
-        assert licence.patterns
-        for pattern in licence.patterns:
+    for license in CLASSES:
+        assert license.patterns
+        for pattern in license.patterns:
             re.compile(pattern)
-        if licence.subsumes:
-            assert licence.subsumes in ids
+        if license.subsumes:
+            assert license.subsumes in ids
 
 
 # --- the audit --------------------------------------------------------------------
@@ -207,10 +207,10 @@ def test_the_audit_counts_every_record_once() -> None:
     report = license_audit(_fixture_registry())
     assert report["records"] == 6
     assert report["canonical_records"] == 5
-    assert sum(report["by_licence"].values()) == report["records"]
-    assert sum(report["unknown_by_reason"].values()) == report["by_licence"][UNKNOWN]
-    assert report["by_licence"] == {"CC-BY-4.0": 2, "ODbL-1.0": 2, UNKNOWN: 2}
-    assert report["unknown_by_reason"] == {MORE_THAN_ONE_LICENCE: 1, NO_LICENCE_STATED: 1}
+    assert sum(report["by_license"].values()) == report["records"]
+    assert sum(report["unknown_by_reason"].values()) == report["by_license"][UNKNOWN]
+    assert report["by_license"] == {"CC-BY-4.0": 2, "ODbL-1.0": 2, UNKNOWN: 2}
+    assert report["unknown_by_reason"] == {MORE_THAN_ONE_LICENSE: 1, NO_LICENSE_STATED: 1}
 
 
 def test_the_audit_reports_share_alike_without_a_verdict() -> None:
@@ -221,11 +221,11 @@ def test_the_audit_reports_share_alike_without_a_verdict() -> None:
     assert share_alike["canonical_records"] == 1
     assert share_alike["ids"] == ["rennes", "rennes-old"]
     assert share_alike["by_country"] == {"FR": 2}
-    assert share_alike["named_with_another_licence"] == [
+    assert share_alike["named_with_another_license"] == [
         {"id": "nvbw", "country": "DE", "named": ["ODbL-1.0", "DL-DE-BY-2.0"]}
     ]
-    assert share_alike["mentioned_without_a_share_alike_licence"] == [
-        {"id": "wording", "country": "IE", "licence": "CC-BY-4.0"}
+    assert share_alike["mentioned_without_a_share_alike_license"] == [
+        {"id": "wording", "country": "IE", "license": "CC-BY-4.0"}
     ]
 
 
@@ -233,7 +233,7 @@ def test_the_text_report_names_its_basis_and_the_open_decision() -> None:
     text = render_text(license_audit(_fixture_registry()))
     assert "Basis: The license_note of every registry record" in text
     assert "Share-alike policy: undecided" in text
-    assert "Share-alike as the only named licence: 2 records (1 canonical)." in text
+    assert "Share-alike as the only named license: 2 records (1 canonical)." in text
     assert "nvbw (DE): ODbL-1.0, DL-DE-BY-2.0" in text
     assert "wording (IE): CC-BY-4.0" in text
 
@@ -258,8 +258,8 @@ def test_the_committed_registry_reconciles_with_the_measured_text_search(
     share_alike = license_audit(agencies)["share_alike"]
     buckets = (
         share_alike["records"]
-        + len(share_alike["named_with_another_licence"])
-        + len(share_alike["mentioned_without_a_share_alike_licence"])
+        + len(share_alike["named_with_another_license"])
+        + len(share_alike["mentioned_without_a_share_alike_license"])
     )
     assert searched > 0, "the committed registry should carry share-alike notes"
     assert buckets == searched
@@ -306,5 +306,5 @@ def test_the_verb_prints_text_by_default(
     _write_registry(isolated_repo_root)
     assert main(["license-audit"]) == 0
     out = capsys.readouterr().out
-    assert out.startswith("Licence audit: 2 registry records (2 canonical).")
+    assert out.startswith("License audit: 2 registry records (2 canonical).")
     assert "Share-alike policy: undecided" in out

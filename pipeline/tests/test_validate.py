@@ -406,7 +406,7 @@ def test_run_validator_failure_names_the_context_needed_to_act(
         validate.run_validator(gtfs, out, large_feed=True)
     message = str(excinfo.value)
     assert "exit 1" in message
-    # Each assertion pins its own labelled line. Bare substrings would also
+    # Each assertion pins its own labeled line. Bare substrings would also
     # match the reproduced command below and so would pass with the context
     # block deleted, which is a test that cannot fail.
     assert f"feed: {gtfs}" in message
