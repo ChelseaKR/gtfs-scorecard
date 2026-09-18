@@ -587,3 +587,153 @@ def test_the_cli_fails_when_publishing_fails(
                 PREFIX,
             ]
         )
+
+
+# --- the Daily scorecard `collect` handoff (2026-09-15 .. 09-17) -------------
+#
+# Daily scorecard runs 34975445619, 35102283767 and 35227438125 each scored
+# every shard and then exited 2 in "Publish artifacts to S3":
+#
+#   scorecard: error: retirement manifest includes current canonical agency
+#   id(s): beloit-transit, massachusetts-area-express-max
+#
+# `reindex` wrote a withdrawn, still-registered id into the retirement manifest
+# (#432 made the withdrawal hold over the same unread bytes re-dated
+# 2026-08-10), and `publish-artifacts` then refused its own manifest. #456
+# fixed the protection set inside `_cmd_publish_artifacts`, but its test drives
+# `publish_tree` with a hand-built set, so reverting the CLI change leaves it
+# green. These drive the two commands collect actually runs, in order, through
+# `main`, which is where the exit 2 came from.
+
+_WITHDRAWN_SHA = "2f047947b9b64e479c96d384f0d68819294658c727b61ca7e1fc363d2889241c"
+
+
+def _registry_with_a_withdrawal(repo: Path) -> None:
+    """Two registered feeds, one of them withdrawn as ``beloit-transit`` is."""
+    repo.mkdir(parents=True, exist_ok=True)
+    (repo / "agencies.yaml").write_text(
+        "agencies:\n"
+        "  - id: unitrans\n"
+        "    name: Unitrans\n"
+        "    static_gtfs_url: https://example.org/unitrans.zip\n"
+        "  - id: beloit-transit\n"
+        "    name: Beloit Transit\n"
+        "    static_gtfs_url: https://example.org/beloit.zip\n"
+    )
+    (repo / "corrections.yaml").write_text(
+        "schema_version: 1\n"
+        "corrections:\n"
+        "  - agency_id: beloit-transit\n"
+        "    agency_name: Beloit Transit\n"
+        '    snapshot_date: "2026-07-25"\n'
+        f"    feed_sha256: {_WITHDRAWN_SHA}\n"
+        "    grade: F\n"
+        "    score: 37.8\n"
+        '    published_from: "2026-06-19"\n'
+        '    published_until: "2026-09-05"\n'
+        "    cause: no_schedule_tables\n"
+        "    outcome: not_measured\n"
+        "    evidence: >-\n"
+        "      Every table holds a header row and nothing else.\n"
+    )
+
+
+def _empty_feed_artifact(date: str) -> str:
+    """A letter over an archive with 0 stops and 0 trips (corrections.py)."""
+    return json.dumps(
+        {
+            "agency": {"id": "beloit-transit", "name": "Beloit Transit"},
+            "snapshot_date": date,
+            "feed": {"sha256": _WITHDRAWN_SHA},
+            "overall": {"grade": "F", "score": 37.8},
+            "categories": {
+                "completeness": {
+                    "status": "measured",
+                    "score": 0.0,
+                    "details": {"stops": 0, "trips": 0},
+                }
+            },
+        }
+    )
+
+
+def _publish_args(root: Path, manifest: Path) -> list[str]:
+    """The flags the Daily scorecard's publish step passes, minus the bucket."""
+    return [
+        "publish-artifacts",
+        "--root",
+        str(root),
+        "--bucket",
+        BUCKET,
+        "--prefix",
+        PREFIX,
+        "--retirement-manifest",
+        str(manifest),
+        "--exclude",
+        "index.json",
+        "--exclude",
+        "*/fixlog.json",
+    ]
+
+
+def test_collect_publishes_the_manifest_reindex_wrote_for_a_withdrawn_agency(
+    isolated_repo_root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from scorecard_pipeline.artifact_lifecycle import retirement_manifest_path
+    from scorecard_pipeline.cli import main
+    from scorecard_pipeline.config import artifacts_dir
+
+    _registry_with_a_withdrawal(isolated_repo_root)
+    root = artifacts_dir()
+    # The checkout carries the withdrawn record; collect's hydrate adds what
+    # S3 still serves: the same unread bytes re-dated, as the current pointer.
+    _write(root, "beloit-transit/2026-07-25.json", _empty_feed_artifact("2026-07-25"))
+    _write(root, "beloit-transit/2026-08-10.json", _empty_feed_artifact("2026-08-10"))
+    _write(root, "beloit-transit/latest.json", _empty_feed_artifact("2026-08-10"))
+
+    assert main(["reindex"]) == 0
+    manifest = retirement_manifest_path(root)
+    assert json.loads(manifest.read_text())["agency_ids"] == ["beloit-transit"]
+    assert not (root / "beloit-transit" / "latest.json").exists()
+
+    current = {f"{PREFIX}/beloit-transit/{name}" for name in MUTABLE_PUBLIC_ARTIFACT_NAMES}
+    dated = f"{PREFIX}/beloit-transit/2026-08-10.json"
+    client = _FakeS3({**{key: b"withdrawn F" for key in current}, dated: b"evidence"})
+    monkeypatch.setattr(s3_publish, "s3_client", lambda workers: client)
+
+    assert main(_publish_args(root, manifest)) == 0
+
+    # The withdrawn grade's current pointers are gone from the store; the
+    # dated evidence it was withdrawn over is not.
+    assert not current & set(client.objects)
+    assert dated in client.objects
+
+
+def test_collect_still_refuses_to_retire_a_registered_agency_nothing_withdrew(
+    tmp_path: Path,
+    isolated_repo_root: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The exemption is the withdrawal, not every id that shows up in a manifest."""
+    from scorecard_pipeline.cli import main
+    from scorecard_pipeline.config import artifacts_dir
+
+    _registry_with_a_withdrawal(isolated_repo_root)
+    root = artifacts_dir()
+    _write(root, "beloit-transit/2026-07-25.json", _empty_feed_artifact("2026-07-25"))
+    _write(root, "unitrans/2026-09-17.json", '{"snapshot_date": "2026-09-17"}')
+    manifest = _retirement_manifest(tmp_path, ["unitrans"])
+    client = _FakeS3({f"{PREFIX}/unitrans/latest.json": b"current B"})
+    monkeypatch.setattr(s3_publish, "s3_client", lambda workers: client)
+
+    with pytest.raises(SystemExit) as exited:
+        main(_publish_args(root, manifest))
+
+    assert exited.value.code == 2
+    assert (
+        "retirement manifest includes current canonical agency id(s): unitrans"
+        in capsys.readouterr().err
+    )
+    assert client.deletes == []
+    assert f"{PREFIX}/unitrans/latest.json" in client.objects
