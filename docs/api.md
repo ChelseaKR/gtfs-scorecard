@@ -369,7 +369,7 @@ and it states each number it does not have instead of filling one in.
   "ridership": { "annual_rider_trips": null, "ntd_id": "90142", "reason": "not_joined_here" },
   "served_area_need": { "tier": null, "scale": "us_acs", "reason": "not_joined_here" },
   "line": "Fixing this covers all 296 stops in the feed.",
-  "absences": ["This record does not include annual rider-trips. ...", "..."]
+  "absences": ["This record does not store annual rider-trips. ...", "..."]
 }
 ```
 
@@ -397,9 +397,19 @@ a share. A consumer should read `null` as "not known here", never as zero.
 input. It does not mean the data does not exist. Per-agency records are written
 in the daily score shards and the intraday refresh. The ridership snapshot is
 fetched later in the daily run, and the need overlays are built by their own
-workflows, so today every United States and Canadian record states those two
-as `not_joined_here`. Where they will be joined is still open (issue #367).
-Absent on artifacts published before schema 1.19.
+workflows, so every United States and Canadian record states those two as
+`not_joined_here`. Absent on artifacts published before schema 1.19.
+
+Ridership and need are joined when the agency page, call brief, board
+one-pager, and evidence packet are built (issue #367). Each joined number names
+its source and the date of its snapshot. The ridership snapshot records its NTD
+report year and fetch date in `data/ntd-ridership.meta.json`, and the two need
+overlays record `generated_on` (with `acs_year` for `equity.json` and `source`
+for `canada-equity.json`). A snapshot that does not record its date is not
+joined, and the page says so. The US tier comes from the state-level ACS
+overlay (ADR 0015), so the page labels it as a statewide reading, not one for
+the feed's service area. The joined values are a description of one feed. They
+never rank agencies and never change a grade or the order of the fixes.
 
 ## Freshness fields
 
@@ -532,7 +542,7 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | `api/v1/by-state.json` | Legacy U.S.-state rollups. `count` covers every U.S. published row in the state; `comparison_eligible_count`, median score, and grade distribution use the guarded comparison cohort. U.S. feeds without a known state group under `Unlocated`. |
 | `api/v1/by-location.json` | Portable country rollups with nested ISO 3166-2 subdivisions. Each `count` covers every published row in that location; `comparison_eligible_count`, median score, and grade distribution use the guarded comparison cohort. Null codes collect rows whose curated location is unknown. |
 | `api/v1/stats.json` | Covered-row count and current-feed share over every published row, plus average score, median score, and grade distribution over the guarded cohort. `comparison_eligible_count` and the `comparison` block state that narrower denominator and its exclusions. |
-| `api/v1/equity.json` | United States-only state ACS need tiers (poverty, zero-vehicle, disability) joined to agency grades. Refreshed weekly from U.S. Census ACS. |
+| `api/v1/equity.json` | United States-only state ACS need tiers (poverty, zero-vehicle, disability) joined to agency grades. Refreshed weekly from U.S. Census ACS; `acs_year` and `generated_on` date the overlay. |
 | `api/v1/ids.json` | Identity crosswalk: every agency's scorecard slug joined to its Mobility Database id, NTD id, and feed URL, so grades join to either registry (or FTA data) without fuzzy matching. |
 | `api/v1/ridership-impact.json` | United States-only quality context weighted by NTD annual rider-trips (ADR 0021). Weighting uses the guarded comparison cohort and only unique, unambiguous NTD reporter matches. `matched_ntd_reporters`, `total_feed_records`, and the duplicate-reporter exclusion fields disclose coverage; legacy `matched_agencies` and `total_agencies` keys remain as aliases. Present when the daily NTD fetch succeeded. |
 | `api/v1/scoring.json` | The same machine-readable methodology as `scoring.json` at the artifact base (weights, grade bands, deductions), served under the versioned path. |
@@ -546,7 +556,7 @@ but existing fields keep their meaning and type, and a breaking change lands at
 | `ntd.json` (linked from `api/v1/index.json` as `ntd_readiness`) | FTA NTD GTFS-readiness rolled up over tracked feed records, plus an additive `reporter_coverage` block counting **NTD reporters**, a different unit that must never be added to a feed-record count. `reporter_coverage` states its own denominator (`obligated_reporters`), how many reporters match a tracked feed, how many have a feed only in another open catalogue, and the low and high ends of the range with no discoverable feed anywhere. Absent entirely when the committed snapshot does not declare `unit: ntd_reporters` or its tiers do not sum to its own denominator (ADR 0052). |
 | `api/v1/status.json` | Intended cadence plus liveness outcomes restricted to the current published artifact index. Its `scope` block discloses included and excluded liveness records. |
 | `api/v1/run-status.json` | Latest completed-run evidence. Aggregate counts retain that run's historical attempted set; named unreachable records are restricted to the current published catalog, with older records counted but not named. |
-| `api/v1/canada-equity.json` | Canada served-area equity overlay (StatCan CIMD, ADR 0027), refreshed monthly. Appears once the monthly job has run. |
+| `api/v1/canada-equity.json` | Canada served-area equity overlay (StatCan CIMD, ADR 0027), refreshed monthly. Appears once the monthly job has run; `source` and `generated_on` date the overlay. |
 
 `features.json` keeps the feature-measurement denominator separate from the
 score-comparison denominator. `capability_measured_count` and

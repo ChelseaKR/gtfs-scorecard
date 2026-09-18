@@ -41,8 +41,13 @@ the declared public surface).
   the need overlays, and saying "no snapshot was supplied" would have been
   false about the project. The schema accepts a value with an empty reason or
   `null` with a reason, and nothing else, so an absence cannot be published
-  as zero. Nothing renders the block yet, and fix order and grades are
-  unchanged.
+  as zero. The agency page, call brief, board one-pager, and evidence packet
+  (schema 1.2) show each fix's reach and join rider-trips and need when they
+  are built, each with its source and snapshot date, or the plain reason there
+  is none. The ridership fetch and both need overlays now record the date the
+  pages cite, and an undated snapshot is not joined. The US tier is labelled
+  as statewide, because the ACS overlay is state-level. Fix order and grades
+  are unchanged.
 
 - **The Action's `evidence-packet` input, and `scorecard retest --artifact`
   (#366).** Set `evidence-packet` to a packet from `scorecard evidence-packet

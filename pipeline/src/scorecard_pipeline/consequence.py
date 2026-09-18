@@ -40,7 +40,8 @@ no fetching and no disk. ``with_consequences`` is the artifact-level entry point
 finding. That writer runs in the score shards and the intraday refresh, and
 neither reads the ridership snapshot or the need overlays, so the block it
 writes states those two as ``not_joined_here`` rather than as missing data
-(issue #367). Rendering the block on the agency page is a separate change.
+(issue #367). The pages join them at render time with ``join_feed_context``,
+below, and name the source and date of every number they join.
 """
 
 from __future__ import annotations
@@ -229,8 +230,15 @@ UNKNOWN_TIER = "unknown_tier"
 # got nothing: the score shards write the artifact before the daily run fetches
 # the ridership snapshot, and the need overlays are built by their own
 # workflows. "No snapshot was supplied" would be true of the shard and false
-# about the project, which holds the snapshot one job later.
+# about the project, which holds the snapshot one job later. Both are joined at
+# render time instead (``join_feed_context``), where the source can be named.
 NOT_JOINED_HERE = "not_joined_here"
+# A snapshot is on hand but does not record when it was taken. A joined number
+# must state its source and date, so an undated one is not shown at all.
+UNDATED_SNAPSHOT = "undated_snapshot"
+# Reasons only a render-time join produces. The per-agency writer never emits
+# them, so the artifact schema does not list them.
+RENDER_ONLY_REASONS = frozenset({UNDATED_SNAPSHOT})
 
 
 # --- results -----------------------------------------------------------------
@@ -651,7 +659,10 @@ _RIDERSHIP_ABSENCE: dict[str, str] = {
         "Rider-trip figures come from the United States National Transit Database, "
         "which does not cover this feed's country."
     ),
-    NO_RIDERSHIP_DATA: "No ridership snapshot was supplied, so annual rider-trips are not known.",
+    NO_RIDERSHIP_DATA: (
+        "No ridership snapshot was on hand when this was built, so annual rider-trips "
+        "are not known."
+    ),
     NO_NTD_ID: (
         "This feed carries no National Transit Database ID, so annual rider-trips "
         "are not known for it."
@@ -664,8 +675,12 @@ _RIDERSHIP_ABSENCE: dict[str, str] = {
         "The ridership snapshot has no row for this feed's National Transit Database ID."
     ),
     NOT_JOINED_HERE: (
-        "This record does not include annual rider-trips. The scorecard reads its "
-        "ridership snapshot in a separate step, not in the step that writes this record."
+        "This record does not store annual rider-trips. The agency page and its reports "
+        "add them from the ridership snapshot and name its date."
+    ),
+    UNDATED_SNAPSHOT: (
+        "The ridership snapshot on hand does not record its report year or fetch date, "
+        "so its figures are not shown."
     ),
 }
 
@@ -674,13 +689,19 @@ _NEED_ABSENCE: dict[str, str] = {
         "The served-area need overlays cover the United States and Canada, "
         "so none of them applies to this feed."
     ),
-    NO_SERVED_AREA_DATA: "No served-area indicators were supplied, so transit need is not known.",
+    NO_SERVED_AREA_DATA: (
+        "No need reading for this feed was on hand when this was built, so transit need "
+        "is not known."
+    ),
     UNKNOWN_TIER: (
         "No served-area indicator covered this feed's stops, so transit need is not known."
     ),
     NOT_JOINED_HERE: (
-        "This record does not include transit need for the area it serves. The scorecard "
-        "builds its need overlays in a separate step, not in the step that writes this record."
+        "This record does not store transit need. The agency page and its reports add it "
+        "from the need overlays and name their date."
+    ),
+    UNDATED_SNAPSHOT: (
+        "The need overlay on hand does not record when it was built, so its reading is not shown."
     ),
 }
 
@@ -755,3 +776,183 @@ def absence_notes(consequence: Consequence) -> list[str]:
         if note:
             notes.append(note)
     return notes
+
+
+# --- joined at render time (issue #367) --------------------------------------
+#
+# The per-agency record carries reach and states ridership and need as
+# ``not_joined_here``. The agency page, board one-pager, call brief, and evidence
+# packet join those two when they are built, from the snapshots the render step
+# holds. Every joined number names its source and the date of the snapshot, and
+# a snapshot that does not record its date is not joined at all. This part is
+# pure too: ``consequence_sources`` does the disk reads.
+
+#: The US need overlay is joined by state (ADR 0015), so its tier describes the
+#: whole state, not this feed's service area. The copy says so every time.
+US_STATE_NEED_SCALE = "us_acs_state"
+
+_SHOWN_TIERS = frozenset({"high", "moderate", "lower"})
+
+
+@dataclass(frozen=True)
+class SourceStamp:
+    """Where a joined number came from, and the date of that snapshot."""
+
+    source: str
+    as_of: str
+
+    def phrase(self) -> str:
+        return f"Source: {self.source}, as of {self.as_of}."
+
+    def to_json(self) -> dict[str, str]:
+        return {"source": self.source, "as_of": self.as_of}
+
+
+@dataclass(frozen=True)
+class RidershipSnapshot:
+    """Annual rider-trips per NTD id, and the stamp the fetch recorded (or ``None``)."""
+
+    trips: dict[str, int]
+    stamp: SourceStamp | None = None
+
+
+@dataclass(frozen=True)
+class NeedOverlay:
+    """Need tiers keyed by state name (US) or agency id (Canada), with their stamp."""
+
+    tiers: dict[str, str]
+    stamp: SourceStamp | None = None
+
+
+@dataclass(frozen=True)
+class RenderSources:
+    """What the render step holds. A ``None`` field means that file was missing.
+
+    ``quarantined_ntd_ids`` must come from ``ridership.duplicate_ntd_reporter_ids``
+    over the canonical registry, as ``publish`` computes it.
+    """
+
+    ridership: RidershipSnapshot | None
+    quarantined_ntd_ids: frozenset[str]
+    us_need: NeedOverlay | None
+    ca_need: NeedOverlay | None
+
+
+@dataclass(frozen=True)
+class FeedContext:
+    """Ridership and need for one feed as a page states them: a value with its
+    source and date, or the reason there is none."""
+
+    ridership: Ridership
+    need: ServedAreaNeed
+    ridership_source: SourceStamp | None = None
+    need_source: SourceStamp | None = None
+    need_area: str = ""
+
+    def ridership_line(self) -> str:
+        trips = self.ridership.annual_rider_trips
+        if trips is not None and self.ridership_source is not None:
+            return (
+                "The agency files its rider counts under National Transit Database ID "
+                f"{self.ridership.ntd_id}. It counted {trips:,} rider trips in a year. "
+                f"{self.ridership_source.phrase()}"
+            )
+        return _RIDERSHIP_ABSENCE.get(
+            self.ridership.reason, "Annual rider-trips are not known for this feed."
+        )
+
+    def need_line(self) -> str:
+        tier = self.need.tier
+        if tier is not None and self.need_source is not None:
+            if self.need.scale == US_STATE_NEED_SCALE:
+                return (
+                    f"{self.need_area} as a whole measures {tier} on transit need. That is "
+                    "a statewide reading, not one for this feed's service area. "
+                    f"{self.need_source.phrase()}"
+                )
+            return (
+                f"The areas this feed serves measure {tier} on transit need, on a "
+                f"within-Canada scale. {self.need_source.phrase()}"
+            )
+        return _NEED_ABSENCE.get(self.need.reason, "Transit need is not known for this feed.")
+
+    def lines(self) -> list[str]:
+        return [self.ridership_line(), self.need_line()]
+
+    def to_json(self) -> dict[str, Any]:
+        ridership = self.ridership.to_json()
+        ridership["source"] = self.ridership_source.to_json() if self.ridership_source else None
+        need = self.need.to_json()
+        need["area"] = self.need_area or None
+        need["source"] = self.need_source.to_json() if self.need_source else None
+        return {"ridership": ridership, "served_area_need": need, "lines": self.lines()}
+
+
+def _join_ridership(
+    artifact: dict[str, Any], sources: RenderSources
+) -> tuple[Ridership, SourceStamp | None]:
+    snapshot = sources.ridership
+    rider = ridership_for(
+        artifact,
+        snapshot.trips if snapshot is not None else None,
+        quarantined_ntd_ids=sources.quarantined_ntd_ids,
+    )
+    if snapshot is None or not (rider.known or rider.reason == UNMATCHED_NTD_ID):
+        return rider, None
+    if snapshot.stamp is None:
+        # "No row for this id" is also a claim about the snapshot's contents, so
+        # an undated snapshot cannot support it either.
+        return Ridership(ntd_id=rider.ntd_id, reason=UNDATED_SNAPSHOT), None
+    return rider, snapshot.stamp if rider.known else None
+
+
+def _join_need(
+    artifact: dict[str, Any], sources: RenderSources, us_state: str
+) -> tuple[ServedAreaNeed, SourceStamp | None, str]:
+    country = _country(artifact)
+    if country == "US":
+        overlay, scale, key, area = sources.us_need, US_STATE_NEED_SCALE, us_state, us_state
+    elif country == "CA":
+        agency = artifact.get("agency")
+        agency_id = str(agency.get("id") or "") if isinstance(agency, dict) else ""
+        overlay, scale, key, area = sources.ca_need, NEED_SCALES["CA"], agency_id, ""
+    else:
+        return ServedAreaNeed(reason=OUTSIDE_NEED_SCOPE), None, ""
+    if overlay is None or not key or key not in overlay.tiers:
+        return ServedAreaNeed(scale=scale, reason=NO_SERVED_AREA_DATA), None, area
+    if overlay.stamp is None:
+        return ServedAreaNeed(scale=scale, reason=UNDATED_SNAPSHOT), None, area
+    tier = str(overlay.tiers.get(key) or "").strip().lower()
+    if tier not in _SHOWN_TIERS:
+        return ServedAreaNeed(scale=scale, reason=UNKNOWN_TIER), None, area
+    return ServedAreaNeed(tier=tier, scale=scale), overlay.stamp, area
+
+
+def join_feed_context(
+    artifact: dict[str, Any],
+    sources: RenderSources | None = None,
+    *,
+    us_state: str = "",
+) -> FeedContext:
+    """Join ridership and need for one feed at render time, or say why not.
+
+    With ``sources=None`` the caller holds no snapshots at all, such as an
+    evidence packet built from a fetched artifact, so the result is the
+    artifact's own view: scope absences plus ``not_joined_here``. ``us_state`` is
+    the feed's state name as the catalog records it, which is the key the US
+    overlay uses.
+    """
+    if sources is None:
+        return FeedContext(
+            ridership=ridership_for(artifact, joined=False),
+            need=served_area_need_for(artifact, joined=False),
+        )
+    rider, rider_stamp = _join_ridership(artifact, sources)
+    need, need_stamp, area = _join_need(artifact, sources, us_state)
+    return FeedContext(
+        ridership=rider,
+        need=need,
+        ridership_source=rider_stamp,
+        need_source=need_stamp,
+        need_area=area,
+    )

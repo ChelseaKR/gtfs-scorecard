@@ -493,7 +493,7 @@ def test_an_unjoined_snapshot_is_its_own_reason_not_missing_data() -> None:
         finding("scorecard_orphan_stops", 22), artifact(), ridership_joined=False
     )
     notes = " ".join(result.absences)
-    assert "separate step" in notes
+    assert "agency page and its reports add them" in notes
     assert "was supplied" not in notes
 
 
@@ -625,8 +625,13 @@ def test_the_published_schema_lists_every_absence_reason_the_module_can_emit() -
     """A new reason must reach the schema in the same change, or publish fails."""
     from scorecard_pipeline import consequence as c
 
-    assert _published_schema_enum("consequenceRidership", "reason") == {"", *c._RIDERSHIP_ABSENCE}
-    assert _published_schema_enum("consequenceNeed", "reason") == {"", *c._NEED_ABSENCE}
+    ridership = {"", *c._RIDERSHIP_ABSENCE} - c.RENDER_ONLY_REASONS
+    need = {"", *c._NEED_ABSENCE} - c.RENDER_ONLY_REASONS
+    assert _published_schema_enum("consequenceRidership", "reason") == ridership
+    assert _published_schema_enum("consequenceNeed", "reason") == need
+    # And the render-only set is not quietly empty.
+    assert c.UNDATED_SNAPSHOT in c.RENDER_ONLY_REASONS
+    assert c.UNDATED_SNAPSHOT not in _published_schema_enum("consequenceRidership", "reason")
     reach_reasons = {
         "",
         *c._REACH_ABSENCE,

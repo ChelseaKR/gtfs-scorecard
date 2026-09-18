@@ -57,7 +57,7 @@ def test_packet_is_deterministic_and_carries_reproducibility_evidence() -> None:
     second = build_evidence_packet(_artifact())
 
     assert first == second
-    assert first["schema_version"] == "1.1"
+    assert first["schema_version"] == "1.2"
     assert first["packet_id"] == second["packet_id"]
     assert first["baseline"]["feed_sha256"] == "a" * 64
     assert first["baseline"]["validator_version"] == "8.0.1"

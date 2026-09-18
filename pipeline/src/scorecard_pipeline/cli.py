@@ -1889,7 +1889,24 @@ def _cmd_evidence_packet(args: argparse.Namespace, parser: argparse.ArgumentPars
         artifact = json.loads(artifact_path.read_text())
     except (OSError, json.JSONDecodeError) as exc:
         parser.error(f"could not read scorecard artifact: {exc}")
-    packet = build_evidence_packet(artifact, scorecard_url=args.scorecard_url)
+    # Rider-trips and need are joined here, when the packet is built, from the
+    # same snapshots the agency page reads (issue #367). The quarantine needs the
+    # registry, which _dispatch has loaded.
+    from .consequence import join_feed_context
+    from .consequence_sources import load_render_sources
+    from .ridership import duplicate_ntd_reporter_ids
+
+    sources = load_render_sources(
+        repo_root(),
+        frozenset(duplicate_ntd_reporter_ids(a for a in AGENCIES.values() if a.is_canonical_feed)),
+    )
+    agency_id = str((artifact.get("agency") or {}).get("id") or "")
+    feed_context = join_feed_context(
+        artifact, sources, us_state=_published_states().get(agency_id, "")
+    )
+    packet = build_evidence_packet(
+        artifact, scorecard_url=args.scorecard_url, feed_context=feed_context
+    )
     output = (
         render_evidence_packet_markdown(packet)
         if args.format == "markdown"
@@ -2362,6 +2379,7 @@ def _cmd_ntd_crosswalk(args: argparse.Namespace, parser: argparse.ArgumentParser
 def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .comparisons import build_comparison_cohort, reader_archive_profile
     from .config import repo_root
+    from .consequence_sources import ridership_meta
     from .metrics import expiry_status
     from .ridership import (
         duplicate_ntd_reporter_ids,
@@ -2384,6 +2402,13 @@ def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser
             if len(parse_ridership_csv(text)) > 100:
                 csv_path.parent.mkdir(parents=True, exist_ok=True)
                 csv_path.write_text(text)
+                # The stamp pages cite when they join these trips (issue #367).
+                # Without it the join refuses to show them, so a hand-committed
+                # CSV never reads as a dated snapshot.
+                csv_path.with_suffix(".meta.json").write_text(
+                    json.dumps(ridership_meta(candidate, utc_today()), indent=2, sort_keys=True)
+                    + "\n"
+                )
                 log.info("Fetched NTD %s ridership to %s.", candidate, csv_path)
                 break
         else:
@@ -2888,7 +2913,7 @@ def _cmd_equity(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
 
     from .config import artifacts_dir
     from .dataset import build_quality_dataset
-    from .equity import build_overlay, fetch_state_indicators, render_overlay
+    from .equity import ACS_YEAR, build_overlay, fetch_state_indicators, render_overlay
 
     index_path = artifacts_dir() / "index.json"
     index = _json.loads(index_path.read_text()) if index_path.exists() else {"agencies": {}}
@@ -2931,6 +2956,10 @@ def _cmd_equity(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
             len(overlay["states"]),
         )
         return 1
+    # The ACS vintage and build date, which a page cites when it joins a
+    # state's tier to a feed (issue #367). An undated overlay is not joined.
+    overlay["acs_year"] = ACS_YEAR
+    overlay["generated_on"] = utc_today().isoformat()
     if args.json_out:
         Path(args.json_out).write_text(_json.dumps(overlay, indent=2, sort_keys=True) + "\n")
         log.info("Wrote equity overlay JSON to %s", args.json_out)
@@ -2950,6 +2979,7 @@ def _cmd_canada_equity(args: argparse.Namespace, parser: argparse.ArgumentParser
     from .agencies import load_agencies
     from .cimd import agency_cimd
     from .config import AGENCIES, artifacts_dir
+    from .consequence_sources import CIMD_SOURCE
     from .tract_data import stops_from_geometry
 
     load_agencies()
@@ -2974,7 +3004,13 @@ def _cmd_canada_equity(args: argparse.Namespace, parser: argparse.ArgumentParser
             continue
         results[agency.id] = {"name": agency.name, "need_tier": tier, "mean_quintile": quintile}
         log.info("canada-equity: %s -> %s (mean quintile %s)", agency.id, tier, quintile)
-    doc: dict[str, Any] = {"schema_version": 1, "agencies": results}
+    # Source and build date, which a page cites when it joins a tier (#367).
+    doc: dict[str, Any] = {
+        "schema_version": 1,
+        "agencies": results,
+        "source": CIMD_SOURCE,
+        "generated_on": utc_today().isoformat(),
+    }
     out_path = Path(args.out) if args.out else artifacts_dir() / "canada-equity.json"
 
     # Every failure above is a `continue`, so without these two checks a StatCan

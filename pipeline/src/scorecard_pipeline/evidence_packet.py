@@ -13,8 +13,12 @@ from dataclasses import dataclass
 from typing import Any
 
 from .comparisons import producer_contract
+from .consequence import FeedContext, join_feed_context, reach_for, reach_sentence
 
-PACKET_SCHEMA_VERSION = "1.1"
+# 1.2 adds each work item's ``consequence`` (what a fix covers) and a packet-level
+# ``consequence_context`` (rider-trips and need, joined when the packet is built,
+# with source and date or the reason there is none). Additive (issue #367).
+PACKET_SCHEMA_VERSION = "1.2"
 
 
 def _packet_id(artifact: dict[str, Any]) -> str:
@@ -173,17 +177,31 @@ def acceptance_test_passes(
     return observation.present and observation.instances == expected_instances
 
 
+def _work_item_consequence(fix: dict[str, Any], artifact: dict[str, Any]) -> dict[str, Any]:
+    """What fixing this item covers, from the artifact's own counts."""
+    reach = reach_for(fix, artifact)
+    return {"reach": reach.to_json(), "line": reach_sentence(reach)}
+
+
 def build_evidence_packet(
     artifact: dict[str, Any],
     *,
     scorecard_url: str | None = None,
+    feed_context: FeedContext | None = None,
 ) -> dict[str, Any]:
     """Return a deterministic vendor remediation packet for one artifact.
 
     The packet repeats the artifact's snapshot and generated timestamps rather
     than using the wall clock, so rerunning it over the same evidence produces
     byte-equivalent JSON after canonical serialization.
+
+    ``feed_context`` is the render-time join of rider-trips and need
+    (``consequence.join_feed_context``). A caller holding no snapshots passes
+    nothing, and the packet then states those two as not joined rather than
+    omitting them. The context never enters ``packet_id``: it describes the
+    feed, not the evidence a retest is held to.
     """
+    context = feed_context if feed_context is not None else join_feed_context(artifact)
     agency = artifact.get("agency", {})
     feed = artifact.get("feed", {})
     overall = artifact.get("overall", {})
@@ -210,6 +228,7 @@ def build_evidence_packet(
                 "requested_change": str(fix.get("fix", "")),
                 "effort_hint": str(fix.get("effort", "")),
                 "likely_owner": str(fix.get("owner", "Unassigned")),
+                "consequence": _work_item_consequence(fix, artifact),
                 "acceptance_test": {
                     "notice_code": code,
                     "expected_instances": 0,
@@ -252,6 +271,7 @@ def build_evidence_packet(
             "artifact_schema_version": artifact.get("schema_version"),
         },
         "work_items": work_items,
+        "consequence_context": context.to_json(),
         "completion": {
             "required": [
                 "Publish corrected GTFS at the agency's canonical feed URL.",
@@ -308,6 +328,8 @@ def render_evidence_packet_markdown(packet: dict[str, Any]) -> str:
                 "",
                 f"**Why it matters:** {item['rider_or_operational_impact']}",
                 "",
+                f"**What a fix covers:** {item.get('consequence', {}).get('line', '')}",
+                "",
                 f"**Requested change:** {item['requested_change']}",
                 "",
                 f"**Effort hint:** {item['effort_hint']}",
@@ -315,6 +337,19 @@ def render_evidence_packet_markdown(packet: dict[str, Any]) -> str:
                 "**Acceptance:** rerun under the baseline producer contract, confirm "
                 f"`{category}` remains measured, and confirm `{item['notice_code']}` has "
                 f"{acceptance['expected_instances']} instances.",
+                "",
+            ]
+        )
+    context = packet.get("consequence_context") or {}
+    context_lines = [str(line) for line in context.get("lines") or [] if str(line).strip()]
+    if context_lines:
+        lines.extend(["## Riders and need behind these fixes", ""])
+        lines.extend(f"- {line}" for line in context_lines)
+        lines.extend(
+            [
+                "",
+                "These describe this feed only. They do not rank agencies, and they do not "
+                "change the grade or the order of the work items.",
                 "",
             ]
         )
