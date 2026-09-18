@@ -13,6 +13,30 @@ discovery audit, source hierarchy, license-review rule, and public beta gate are
 in [global-expansion.md](global-expansion.md). The reviewed European records
 remain canaries until that gate passes.
 
+## Licence classes
+
+`scorecard license-audit` reads the `license_note` on every registry record and
+names the one licence the note states, from the closed vocabulary in
+`pipeline/src/scorecard_pipeline/license_audit.py`. A note that names two
+licences, only a link, or terms outside the vocabulary is `unknown`, with the
+reason. The audit never guesses, and it is a report: it blocks nothing.
+
+| Class | Share-alike | Attribution required | Listing policy |
+| --- | --- | --- | --- |
+| `ODbL-1.0` | yes | yes | Undecided (see below) |
+| `CC-BY-SA-4.0`, `CC-BY-SA-3.0`, `CC-BY-SA` (no version stated) | yes | yes | Undecided (see below) |
+| `CC-BY-4.0`, `CC-BY-2.1-JP`, `CC-BY` (no version stated) | no | yes | Reviewed record by record |
+| `etalab-2.0`, `NLOD-2.0`, `DL-DE-BY-2.0`, `OGL-UK-3.0`, `OGL-Canada-2.0`, `ODC-By-1.0` | no | yes | Reviewed record by record |
+| `CC0-1.0`, `DL-DE-ZERO-2.0`, `public-domain` | no | no | Reviewed record by record |
+| `unknown` | not known | not known | Reviewed record by record |
+
+The share-alike rows are open on purpose. The admission gates say this project
+does not redistribute share-alike GTFS, while the registry already lists
+records whose notes name a share-alike licence. Which of those holds is an owner
+decision, recorded in [follow-ups.md](follow-ups.md) under "Decide the
+share-alike question for records already listed". The audit counts those
+records and lists the ones a curator has to read, and it does not decide them.
+
 ## First worldwide canaries
 
 These feeds are official, openly reusable, and deliberately span three

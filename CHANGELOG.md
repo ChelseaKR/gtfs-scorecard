@@ -29,6 +29,17 @@ the declared public surface).
 
 ### Added
 
+- **`scorecard license-audit` (part of
+  [#372](https://github.com/ChelseaKR/gtfs-scorecard/issues/372)).** Counts
+  every registry record by the one licence its `license_note` names, from a
+  closed vocabulary of SPDX ids. A note naming two licences, only a link, or
+  terms outside the vocabulary is `unknown` with the reason, never a guess.
+  The share-alike count is reported against the open owner decision in
+  `docs/follow-ups.md` as `undecided`. On today's registry it reads 126
+  records, not the 160 that document quotes, plus six whose notes name a
+  share-alike licence beside another and are listed for a curator. Text or
+  `--json`. A report only: it exits 0 and gates nothing.
+
 - **Google Ads conversion upload job (2026-09-15,
   [docs/google-ads-upload-setup.md](docs/google-ads-upload-setup.md)).** A
   real conversion action now exists

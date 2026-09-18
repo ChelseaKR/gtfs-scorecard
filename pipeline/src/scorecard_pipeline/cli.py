@@ -2478,6 +2478,22 @@ def _cmd_lint(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     return 0
 
 
+def _cmd_license_audit(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Count registry records by the licence each note names (issue #372).
+
+    A report, never a gate: it exits 0 whatever it finds, because the
+    share-alike policy it would judge against is still an owner decision.
+    """
+    from .license_audit import license_audit, render_text
+
+    report = license_audit(AGENCIES.values())
+    if args.json:
+        print(json.dumps(report, indent=2, sort_keys=True, ensure_ascii=False))
+    else:
+        print(render_text(report), end="")
+    return 0
+
+
 def _cmd_identity(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .identity import build_identity_ledger
 
@@ -4640,6 +4656,12 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
 
+    license_audit = sub.add_parser(
+        "license-audit",
+        help="count registry records by the licence their license_note names (report only)",
+    )
+    license_audit.add_argument("--json", action="store_true", help="print the report as JSON")
+
     identity = sub.add_parser(
         "identity", help="report feed records, canonical feeds, organizations, and aliases"
     )
@@ -4864,6 +4886,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "program-refunds": _cmd_program_refunds,
         "backfill-state": _cmd_backfill_state,
         "lint": _cmd_lint,
+        "license-audit": _cmd_license_audit,
         "identity": _cmd_identity,
         "freshness-sweep": _cmd_freshness_sweep,
         "liveness": _cmd_liveness,
