@@ -28,9 +28,51 @@ const SERVICE_URL = "https://gtfsscorecard.org/bundle/";
 const SERVICE_NAME = "Program report bundle";
 const OFFER_SCRIPT_ID = "plan-offers-jsonld";
 
+/** The plan the button at the top of the page sells: the entry bundle. */
+const LEAD_PLAN = "bundle_25";
+/** The document event web/src/measure.js forwards to GA4 as a conversion
+ * step (docs/decisions/0057-bundle-conversion-events.md). It carries plan ids
+ * and prices from plan.json and nothing about the reader. */
+const COMMERCE_EVENT = "scorecard:commerce";
+
 const grid = /** @type {HTMLElement | null} */ (document.getElementById("plan-grid"));
 const notice = /** @type {HTMLElement | null} */ (document.getElementById("plan-notice"));
 const fineprint = /** @type {HTMLElement | null} */ (document.getElementById("plan-fineprint"));
+const leadPrice = /** @type {HTMLElement | null} */ (document.getElementById("buy-box-price"));
+const leadLink = /** @type {HTMLAnchorElement | null} */ (document.getElementById("buy-box-cta"));
+
+/**
+ * Announce a step toward a purchase. The measurement script decides whether
+ * anything is sent (it sends nothing under an opt-out, Global Privacy Control
+ * or Do Not Track) and checks every field before it does.
+ * @param {"view_item" | "begin_checkout"} event
+ * @param {string} currency
+ * @param {Array<{ item_id: string, price: number }>} items
+ */
+function announce(event, currency, items) {
+  if (items.length === 0) return;
+  document.dispatchEvent(
+    new CustomEvent(COMMERCE_EVENT, {
+      detail: { event, currency, amount: items[0].price, items },
+    }),
+  );
+}
+
+/**
+ * Make a link a checkout link for one plan: the Stripe address, the PostHog
+ * click event (ADR 0055), and the GA4 begin_checkout step (ADR 0057).
+ * @param {HTMLAnchorElement} a @param {string} key @param {number} price @param {string} currency
+ */
+function checkoutLink(a, key, price, currency) {
+  // The last thing this site can see of a purchase is this click; the
+  // checkout itself happens on Stripe. web/src/measure.js reports it to
+  // PostHog under this event name with the plan id, and nothing else about
+  // the reader (docs/decisions/0055-cookieless-site-measurement.md), and to
+  // GA4 as begin_checkout with the plan id and its price.
+  a.setAttribute("data-measure", "bundle_checkout_click");
+  a.setAttribute("data-measure-plan", key);
+  a.addEventListener("click", () => announce("begin_checkout", currency, [{ item_id: key, price }]));
+}
 
 /** @param {string} message @param {"info"|"err"} kind */
 function setNotice(message, kind) {
@@ -144,13 +186,39 @@ function publishOffers(plan, order) {
   document.head.appendChild(script);
 }
 
+/**
+ * The price and checkout button at the top of the page, for the entry bundle.
+ * Whenever the plan cannot sell that bundle they keep their static sentence
+ * and stay a link to the plan list, so the top of the page never offers what
+ * the list below cannot.
+ * @param {Record<string, any>} plan
+ */
+function renderLead(plan) {
+  if (!leadPrice || !leadLink || leadLink.hasAttribute("data-measure")) return;
+  const product = (plan.products || {})[LEAD_PLAN];
+  if (plan.paymentsAvailable !== true || !product || typeof product.price !== "number") return;
+  const url = safeUrl(product.checkout_url);
+  if (!url.startsWith("https:")) return;
+  const currency = String(plan.currency || "USD");
+  const price = money(product.price, currency);
+  const cadence = product.interval ? `per ${product.interval}` : "paid once";
+  leadPrice.textContent = `${String(product.label || LEAD_PLAN)}: ${price}, ${cadence}.`;
+  leadLink.href = url;
+  leadLink.textContent = `Buy for ${price} through Stripe`;
+  checkoutLink(leadLink, LEAD_PLAN, product.price, currency);
+}
+
 /** @param {Record<string, any>} plan */
 function render(plan) {
   const order = ["bundle_25", "bundle_100", "refresh_mo", "refresh_yr"];
   publishOffers(plan, order);
+  renderLead(plan);
   if (!grid) return;
   grid.replaceChildren();
   const products = plan.products || {};
+  const currency = String(plan.currency || "USD");
+  /** @type {Array<{ item_id: string, price: number }>} */
+  const shown = [];
   for (const key of order) {
     const product = products[key];
     if (!product) continue;
@@ -195,18 +263,16 @@ function render(plan) {
       a.className = "submit-button";
       a.href = safeUrl(product.checkout_url);
       a.textContent = "Buy through Stripe";
-      // The last thing this site can see of a purchase is this click; the
-      // checkout itself happens on Stripe. web/src/measure.js reports it to
-      // PostHog under this event name with the plan id, and nothing else about
-      // the reader (docs/decisions/0055-cookieless-site-measurement.md). GA4
-      // sees it only as a click on a link to another site (ADR 0056).
-      a.setAttribute("data-measure", "bundle_checkout_click");
-      a.setAttribute("data-measure-plan", key);
+      checkoutLink(a, key, product.price, currency);
       p.appendChild(a);
       card.appendChild(p);
+      shown.push({ item_id: key, price: product.price });
     }
     grid.appendChild(card);
   }
+  // The plans a reader can buy were shown: the GA4 view_item, valued at the
+  // first of them, the entry bundle.
+  announce("view_item", currency, shown);
   if (plan.paymentsAvailable === true) {
     setNotice(
       `Checkout is open. After paying you set the program name, accent, logo, and the agency ids your plan covers, and the archive is emailed within ${plan.provisioning_business_days || 2} business days — refunded if it is later than that.`,

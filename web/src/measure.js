@@ -23,8 +23,10 @@
  *   nothing is sent. The committed copy of this file has no key.
  *
  * The second block (docs/decisions/0056-google-analytics-4.md) loads Google
- * Analytics 4, whose own script and cookies are described in that ADR. The
- * rules it keeps are written above it.
+ * Analytics 4, whose own script and cookies are described in that ADR. It
+ * also forwards the conversion events of the bundle pages to GA4
+ * (docs/decisions/0057-bundle-conversion-events.md). The rules it keeps are
+ * written above it.
  *
  * Before both runs the opt-out control behind the analytics opt-out link
  * in every page footer (also ADR 0056). A reader who opts out is
@@ -394,9 +396,127 @@
     }
   }
 
+  // Conversion events (docs/decisions/0057-bundle-conversion-events.md).
+  //
+  // The bundle pages announce three steps toward a purchase as a
+  // "scorecard:commerce" event on the document: the plans were shown
+  // (view_item), a checkout link was followed (begin_checkout), and Stripe
+  // sent a buyer back with an order (purchase). This block alone forwards
+  // them to GA4, and it rebuilds every parameter from fields it checks one at
+  // a time, so nothing else a page script put in the event can reach Google:
+  //
+  // - the event name is one of those three;
+  // - a plan is a short lowercase id from plan.json with a plain number for
+  //   its price, and the currency is three capital letters;
+  // - an order is named only by a transaction id of 32 hex characters, which
+  //   the setup page makes by hashing the Stripe order reference, so the
+  //   reference itself never reaches this block;
+  // - the page address and referrer are the same path-only values the page
+  //   view carries.
+  //
+  // The plan a buyer chose is kept in the session storage of this tab from the
+  // checkout click until the page Stripe returns to, because the address of
+  // that page does not say what was bought. Only this block writes it, and only
+  // while GA4 is on. Once the purchase is reported it holds the hash of the order
+  // instead, so reloading that page does not count the purchase twice, and
+  // opting out removes it.
+  var COMMERCE = ["view_item", "begin_checkout", "purchase"];
+  var CHECKOUT_KEY = "scorecard-checkout";
+  var PAGE = win.location.origin + win.location.pathname;
+  var REFERRER = referrerOrigin();
+
+  /** @param {unknown} raw @returns {number | null} */
+  function amount(raw) {
+    return typeof raw === "number" && isFinite(raw) && raw >= 0 && raw <= 100000 ? raw : null;
+  }
+
+  /** One plan as GA4 reads it, or null. @param {any} raw */
+  function planItem(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    var id = raw.item_id;
+    var price = amount(raw.price);
+    if (typeof id !== "string" || !/^[a-z0-9_]{1,40}$/.test(id) || price === null) return null;
+    return { item_id: id, price: price, quantity: 1 };
+  }
+
+  /** @param {unknown} raw @returns {string} */
+  function currency(raw) {
+    return typeof raw === "string" && /^[A-Z]{3}$/.test(raw) ? raw : "";
+  }
+
+  /** @param {unknown} value */
+  function keep(value) {
+    try {
+      if (value === null) win.sessionStorage.removeItem(CHECKOUT_KEY);
+      else win.sessionStorage.setItem(CHECKOUT_KEY, JSON.stringify(value));
+    } catch (e) {
+      // Storage refused: the purchase is still reported, without its plan.
+    }
+  }
+
+  /** @returns {any} */
+  function kept() {
+    try {
+      return JSON.parse(win.sessionStorage.getItem(CHECKOUT_KEY) || "null");
+    } catch (e) {
+      return null;
+    }
+  }
+
+  doc.addEventListener("scorecard:commerce", function (/** @type {any} */ event) {
+    // Set by the opt-out below; gtag.js reads the same flag before every hit.
+    if (win["ga-disable-" + GA4_ID]) return;
+    var detail = event && event.detail;
+    if (!detail || typeof detail !== "object") return;
+    var name = detail.event;
+    if (COMMERCE.indexOf(name) < 0) return;
+    if (name === "purchase") {
+      var order = detail.transaction_id;
+      if (typeof order !== "string" || !/^[0-9a-f]{32}$/.test(order)) return;
+      var chosen = kept();
+      if (chosen && chosen.reported === order) return;
+      var bought = chosen && planItem(chosen.item);
+      var paid = chosen && currency(chosen.currency);
+      keep({ reported: order });
+      gtag(
+        "event",
+        "purchase",
+        bought && paid
+          ? {
+              transaction_id: order,
+              currency: paid,
+              value: bought.price,
+              items: [bought],
+              page_location: PAGE,
+              page_referrer: REFERRER,
+            }
+          : { transaction_id: order, page_location: PAGE, page_referrer: REFERRER }
+      );
+      return;
+    }
+    var list = [];
+    var raw = Array.isArray(detail.items) ? detail.items.slice(0, 8) : [];
+    for (var i = 0; i < raw.length; i++) {
+      var item = planItem(raw[i]);
+      if (item) list.push(item);
+    }
+    var money = currency(detail.currency);
+    var total = amount(detail.amount);
+    if (!list.length || !money || total === null) return;
+    if (name === "begin_checkout") keep({ item: list[0], currency: money });
+    gtag("event", name, {
+      currency: money,
+      value: total,
+      items: list,
+      page_location: PAGE,
+      page_referrer: REFERRER,
+    });
+  });
+
   doc.addEventListener("scorecard:measure-stopped", function () {
     win["ga-disable-" + GA4_ID] = true;
     forgetCookies();
+    keep(null);
   });
 
   var script = doc.createElement("script");
