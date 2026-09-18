@@ -102,7 +102,9 @@ secret is set, from the site's own page-view count
 ([ADR 0055](decisions/0055-cookieless-site-measurement.md)), which is the only
 one of the two that can say whether a visit reached `/bundle/` and followed a
 checkout link (the `bundle_checkout_click` event carries the plan id). The
-count starts at launch.
+count starts at launch. Google Analytics 4 counts visitors as well from
+2026-09-17 ([ADR 0056](decisions/0056-google-analytics-4.md)), though it cannot
+join visits in the EEA, the UK or Switzerland, where it sets no cookie.
 
 ## Runbook: from "written" to "on"
 

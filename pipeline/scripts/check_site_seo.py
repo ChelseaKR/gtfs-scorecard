@@ -37,6 +37,8 @@ _CONFIG_KEYS = {
     "description_length",
     "measurement_script",
     "measurement_host",
+    "measurement_ga4_host",
+    "measurement_ga4_id",
 }
 _IGNORED_SCHEMES = {"blob", "data", "javascript", "mailto", "sms", "tel"}
 _HEADING_TAGS = ("h1", "h2", "h3", "h4", "h5", "h6")
@@ -86,8 +88,13 @@ _SITEMAP_NAMESPACE = "http://www.sitemaps.org/schemas/sitemap/0.9"
 # bring autocapture and session recording with it. The declared measurement
 # host is deliberately not on this list: the rule for it is that only the
 # declared script may name it, and that the declared script names nothing else.
+# Google Analytics 4 (docs/decisions/0056-google-analytics-4.md) follows the
+# same rule: its loader host is declared as measurement_ga4_host, the declared
+# script may name it, and nothing else on the site may name any Google
+# Analytics host, so GA4 can reach a page only through the declared script.
 _FORBIDDEN_TELEMETRY_HOST_SUFFIXES = (
     "google-analytics.com",
+    "analytics.google.com",
     "googletagmanager.com",
     "us-assets.i.posthog.com",
     "eu-assets.i.posthog.com",
@@ -119,6 +126,8 @@ class Config:
     description_length: tuple[int, int]
     measurement_script: str
     measurement_host: str
+    measurement_ga4_host: str
+    measurement_ga4_id: str
 
 
 @dataclass(frozen=True, order=True)
@@ -181,6 +190,8 @@ class Page:
     og: dict[str, list[str]] = field(default_factory=lambda: defaultdict(list))
     ids: Counter[str] = field(default_factory=Counter)
     fragment_names: set[str] = field(default_factory=set)
+    # Elements carrying data-analytics-toggle, the footer opt-out (ADR 0056).
+    opt_out_controls: int = 0
 
 
 class PageParser(HTMLParser):
@@ -309,6 +320,8 @@ class PageParser(HTMLParser):
             self._inline_script_parts.append(data)
 
     def _collect_common(self, tag: str, values: dict[str, str]) -> None:
+        if "data-analytics-toggle" in values:
+            self.page.opt_out_controls += 1
         identifier = values.get("id", "").strip()
         if identifier:
             self.page.ids[identifier] += 1
@@ -678,6 +691,36 @@ def _validate_terminal_aliases(
             raise ConfigError(f"alias target must not be a configured noindex page: {source!r}")
 
 
+_GA4_ID_RE = re.compile(r"^G-[A-Z0-9]{4,16}$")
+
+
+def _https_origin(raw: dict[str, Any], key: str) -> str:
+    """``raw[key]`` as an https origin with no path, or a ConfigError."""
+    host = raw[key]
+    if not isinstance(host, str):
+        raise ConfigError(f"{key} must be an https origin with no path")
+    parts = urlsplit(host)
+    if (
+        parts.scheme != "https"
+        or not parts.hostname
+        or "@" in parts.netloc
+        or parts.path
+        or parts.query
+        or parts.fragment
+    ):
+        raise ConfigError(f"{key} must be an https origin with no path")
+    return host
+
+
+def _ga4_settings(raw: dict[str, Any]) -> tuple[str, str]:
+    """The GA4 loader origin the declared script may also name, and the GA4
+    measurement id, empty when GA4 is off (docs/decisions/0056)."""
+    ga4_id = raw["measurement_ga4_id"]
+    if not isinstance(ga4_id, str) or (ga4_id and not _GA4_ID_RE.fullmatch(ga4_id)):
+        raise ConfigError("measurement_ga4_id must be empty or a GA4 measurement id (G-...)")
+    return _https_origin(raw, "measurement_ga4_host"), ga4_id
+
+
 def _measurement_settings(raw: dict[str, Any]) -> tuple[str, str]:
     """The declared measurement script (a root-relative .js path) and the one
     https origin it may send to."""
@@ -690,20 +733,7 @@ def _measurement_settings(raw: dict[str, Any]) -> tuple[str, str]:
         or ".." in script.split("/")
     ):
         raise ConfigError("measurement_script must be a root-relative .js path")
-    host = raw["measurement_host"]
-    if not isinstance(host, str):
-        raise ConfigError("measurement_host must be an https origin with no path")
-    parts = urlsplit(host)
-    if (
-        parts.scheme != "https"
-        or not parts.hostname
-        or "@" in parts.netloc
-        or parts.path
-        or parts.query
-        or parts.fragment
-    ):
-        raise ConfigError("measurement_host must be an https origin with no path")
-    return script, host
+    return script, _https_origin(raw, "measurement_host")
 
 
 def load_config(path: Path) -> Config:
@@ -713,6 +743,7 @@ def load_config(path: Path) -> Config:
     origin = _site_origin(raw)
     fragment_prefixes, noindex_patterns = _config_path_lists(raw)
     measurement_script, measurement_host = _measurement_settings(raw)
+    measurement_ga4_host, measurement_ga4_id = _ga4_settings(raw)
 
     canonical_aliases = _path_mapping(raw, "canonical_aliases", allow_fragment=False)
     redirect_aliases = _path_mapping(raw, "redirect_aliases", allow_fragment=True)
@@ -737,6 +768,8 @@ def load_config(path: Path) -> Config:
         description_length=_length_bounds(raw, "description_length"),
         measurement_script=measurement_script,
         measurement_host=measurement_host,
+        measurement_ga4_host=measurement_ga4_host,
+        measurement_ga4_id=measurement_ga4_id,
     )
 
 
@@ -948,12 +981,15 @@ def _validate_measurement(
     Four rules. Every page that is not a redirect stub loads the declared
     script exactly once, because a page without it is a page the disclosure
     on /about/#privacy does not describe, and a page with two of it reports
-    every view twice. A redirect stub loads nothing, since it is not a page a
-    reader is on. No page and no other script names a vendor analytics loader
-    or the measurement host itself, so the declared script stays the whole of
-    what is sent. And the declared script names no https host but the one
-    declared for it, so a second destination cannot arrive inside the file the
-    contract allows.
+    every view twice. Each such page also carries the footer opt-out control
+    (ADR 0056), so no page measures a reader without offering the way out.
+    A redirect stub loads nothing, since it is not a page a reader is on.
+    No page and no other script names a vendor analytics loader or the
+    measurement host itself, so the declared script stays the whole of
+    what is sent. And the declared script names no https host but the ones
+    declared for it (the measurement host, and the GA4 loader host of ADR
+    0056), so another destination cannot arrive inside the file the contract
+    allows.
     """
     script_relative = config.measurement_script.lstrip("/")
     if script_relative not in files:
@@ -1012,6 +1048,16 @@ def _validate_page_measurement(page: Page, config: Config, findings: list[Findin
             )
         )
         return 0
+    if not page.opt_out_controls:
+        # ADR 0056: a page that measures a reader offers the way to stop it.
+        findings.append(
+            Finding(
+                "measurement.opt_out_missing",
+                page.relative_path,
+                "page loads the measurement script but has no [data-analytics-toggle] opt-out",
+            )
+        )
+        return 0
     return 1
 
 
@@ -1058,13 +1104,14 @@ def _validate_script_telemetry(
     script_source = (site_root / relative_path).read_text(encoding="utf-8")
     if relative_path == script_relative:
         named = {match.group(1).casefold() for match in _HTTPS_HOST_RE.finditer(script_source)}
-        for other in sorted(named - {measurement_host}):
+        ga4_host = (urlsplit(config.measurement_ga4_host).hostname or "").casefold()
+        declared = " and ".join(repr(host) for host in (measurement_host, ga4_host))
+        for other in sorted(named - {measurement_host, ga4_host}):
             findings.append(
                 Finding(
                     "measurement.undeclared_host",
                     relative_path,
-                    f"the measurement script names {other!r}; only "
-                    f"{measurement_host!r} is declared for it",
+                    f"the measurement script names {other!r}; only {declared} are declared for it",
                 )
             )
         return

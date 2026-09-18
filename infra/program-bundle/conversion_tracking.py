@@ -13,9 +13,10 @@ behavior is unchanged from before this module existed.
 This targets Google Ads' "Enhanced conversions for leads" shape: a hashed
 customer identifier plus a conversion value and time, matched by Google
 against its own signed-in-user graph. Deliberately not a client-side pixel
-or tag: web/src/measure.js already keeps this site cookieless
-(docs/decisions/0055-cookieless-site-measurement.md), and this module adds no
-script, no cookie, and no gclid capture to the frontend. The email hashed
+or tag: web/src/measure.js captures no gclid, because it drops the query
+string and runs GA4 with ad storage denied (docs/decisions/0055 and 0056),
+and this module adds no script, no cookie, and no gclid capture to the
+frontend. The email hashed
 below is the same one the webhook already stores in the bundles table
 (webhook_handler.py); nothing new is collected, only reused, server-side,
 after a sale is already known.

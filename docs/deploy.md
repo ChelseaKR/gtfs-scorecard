@@ -46,6 +46,7 @@ set them, and forks keep working with nothing set:
 | Send the feed-health email digest | `SES_FROM` | a verified SES sender, `infra/alerts` applied |
 | AWS region (optional) | `AWS_REGION` | defaults to `us-west-2` |
 | Count page views and bundle checkout clicks ([ADR 0055](decisions/0055-cookieless-site-measurement.md)) | `POSTHOG_KEY` (a **secret**, not a variable) | a PostHog Cloud US project with "Discard client IP data" on; unset keeps the site silent |
+| Google Analytics 4 ([ADR 0056](decisions/0056-google-analytics-4.md)) | nothing: the measurement id is committed as `measurement_ga4_id` in `site-seo.json` | a GA4 web data stream with Google signals off and enhanced measurement's history, site search and form interaction options off; `""` turns GA4 off |
 
 Set variables and secrets under **Settings → Secrets and variables → Actions**.
 
@@ -330,7 +331,8 @@ page metadata, exact canonical aliases, sitemap and robots rules, reciprocal
 HTTPS language links, required structured-data identity and dates, and the
 site-measurement contract: exactly one `/src/measure.js` on every page, none on
 a redirect stub, no other telemetry host anywhere on the site, and no host but
-the declared one inside that script. A finding stops the build. The report's
+the declared ones inside that script (the PostHog host and, for GA4, the
+`measurement_ga4_host` loader origin). A finding stops the build. The report's
 `measured_pages` sits beside `html_files` so the two can be read together.
 
 It also measures two things a page can get wrong while every element is
@@ -359,9 +361,14 @@ These are synthetic checks. The deployed pages load one first-party measurement
 script, `web/src/measure.js`, which sends page views and bundle checkout clicks
 to PostHog Cloud US only when the deploy wrote a `POSTHOG_KEY` into it (the
 "Write the measurement key into the assembled site" step in `pages.yml`; the
-committed copy has no key and sends nothing). It sets no cookie and honours
-Global Privacy Control and Do Not Track; see
-[ADR 0055](decisions/0055-cookieless-site-measurement.md) and the statement at
+committed copy has no key and sends nothing). The same step writes the GA4
+measurement id from `site-seo.json` into the script's second block, which then
+loads Google Analytics 4. The PostHog block sets no cookie; GA4 sets the `_ga`
+cookies outside the EEA, the UK and Switzerland. Both honour Global Privacy
+Control and Do Not Track, and GA4 never loads on `localhost`, so the Lighthouse
+runs above do not count as visits. See
+[ADR 0055](decisions/0055-cookieless-site-measurement.md),
+[ADR 0056](decisions/0056-google-analytics-4.md), and the statement at
 `/about/#privacy`. Search Console setup is deliberately
 outside the deployment: the domain owner can complete DNS verification and
 submit `https://gtfsscorecard.org/sitemap.xml`, but this repository must not

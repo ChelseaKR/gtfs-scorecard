@@ -29,6 +29,31 @@ the declared public surface).
 
 ### Added
 
+- **Google Analytics 4 beside PostHog, loaded from the same script
+  (2026-09-17, [ADR 0056](docs/decisions/0056-google-analytics-4.md)).**
+  `web/src/measure.js` gains a second, separate block that loads GA4 for the
+  measurement id committed as `measurement_ga4_id` in `site-seo.json`
+  (`G-45H8Q9H93F`). `scorecard render-measure` writes it into the assembled
+  site at deploy; the committed script carries no id, and an empty value loads
+  nothing. The block loads nothing under Global Privacy Control, Do Not Track,
+  or on `localhost`. Consent Mode v2 denies ad storage, ad user data and ad
+  personalization everywhere and analytics storage in the EEA, the UK and
+  Switzerland. The config turns off Google signals and ad personalization
+  signals, and sends the page path and the referring origin only, so the
+  Stripe order reference on `/bundle/setup/` never reaches Google.
+  `check_site_seo.py` declares the GA4 loader origin (`measurement_ga4_host`)
+  as the one other host the declared script may name, and forbids every Google
+  Analytics host everywhere else. `tests/test_measure_ga4.py` runs the rendered
+  script in Node against a stub page, with negative controls that assert their
+  sabotage landed. `/about/#privacy`, `README.md`, `docs/listing-policy.md`,
+  `docs/deploy.md`, `docs/release-checklist.md`, `docs/audits/dpia-lite.md`,
+  and ADRs 0031 and 0055 now describe GA4, its `_ga` cookies and its 14-month
+  retention. Every page footer gains an "Opt out of analytics" link. The
+  choice is remembered on the device, stops both PostHog and GA4, expires the
+  GA4 cookies, and toggles to "Opt back in to analytics". The PostHog block
+  gains only the check for that choice. `check_site_seo.py` fails a measured
+  page without the control.
+
 - **Credentialed feed sources, the mechanism half (#371).** A registry record
   can now carry `fetch_auth: {kind: header|query|basic, name, secret}`, where
   `secret` names an environment variable in the `SCORECARD_FEED_AUTH_`

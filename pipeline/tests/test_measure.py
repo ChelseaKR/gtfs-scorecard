@@ -28,6 +28,7 @@ from scorecard_pipeline.site_shell import (
     STATIC_NAV_PAGES,
     _page,
     _redirect_page,
+    ga4_measurement_id,
     measure_tag_count,
     render_measure_script,
     with_measure_tag,
@@ -38,6 +39,13 @@ from scorecard_pipeline.site_shell import (
 _REPO = Path(__file__).resolve().parents[2]
 _WEB = _REPO / "web"
 _SHIM = (_WEB / MEASURE_SCRIPT_PATH).read_text()
+# The PostHog block: after the opt-out control and before the GA4 block (both
+# ADR 0056, held by tests/test_measure_ga4.py). The promises below are PostHog's.
+_POSTHOG = _SHIM[
+    _SHIM.index(
+        '(function () {\n  "use strict";\n\n  // Written at deploy time from the POSTHOG_KEY'
+    ) : _SHIM.index("// Google Analytics 4 (docs/decisions/0056")
+]
 _ABOUT = (_WEB / "about" / "index.html").read_text()
 _SETUP = (_WEB / "bundle" / "setup" / "index.html").read_text()
 _BUNDLE_JS = (_WEB / "src" / "bundle.js").read_text()
@@ -152,16 +160,21 @@ def test_render_measure_command_reads_the_key_from_the_environment(
 ) -> None:
     monkeypatch.setenv("SCORECARD_ROOT", str(_REPO))
     out = tmp_path / "measure.js"
+    # The GA4 id is whatever the repository's site-seo.json commits (ADR 0056);
+    # this test is about the PostHog key, so it holds the rest of the file to
+    # that render.
+    ga4_id = ga4_measurement_id(_REPO / "site-seo.json")
 
     monkeypatch.delenv("POSTHOG_KEY", raising=False)
     assert main(["render-measure", "--out", str(out)]) == 0
-    assert out.read_text() == _SHIM
-    assert "off" in capsys.readouterr().out
+    assert out.read_text() == render_measure_script(None, source=_SHIM, ga4_id=ga4_id)
+    assert 'var KEY = ""; // measure:key' in out.read_text()
+    assert "site measurement off" in capsys.readouterr().out
 
     monkeypatch.setenv("POSTHOG_KEY", _KEY)
     assert main(["render-measure", "--out", str(out)]) == 0
     assert _KEY in out.read_text()
-    assert "on" in capsys.readouterr().out
+    assert "site measurement on" in capsys.readouterr().out
 
     monkeypatch.setenv("POSTHOG_KEY", "nope")
     with pytest.raises(SystemExit) as failed:
@@ -182,8 +195,8 @@ def _code_only(source: str) -> str:
 
 
 def test_the_shim_sends_to_one_host_and_never_reads_what_it_promises_not_to() -> None:
-    code = _code_only(_SHIM)
-    hosts = {match.group(1) for match in re.finditer(r"https://([a-z0-9.-]+)", _SHIM)}
+    code = _code_only(_POSTHOG)
+    hosts = {match.group(1) for match in re.finditer(r"https://([a-z0-9.-]+)", _POSTHOG)}
     assert hosts == {MEASURE_HOST.removeprefix("https://")}
     assert 'HOST + "/i/v0/e/"' in code
     assert "$process_person_profile: false" in code
@@ -214,7 +227,7 @@ def test_the_shim_returns_before_sending_when_there_is_no_key() -> None:
     """The key check has to come before every other line of logic, so a deploy
     with no secret ships a file that does nothing rather than one that draws a
     visit id and then declines to send it."""
-    logic = _code_only(_SHIM[_SHIM.index('"use strict";') :])
+    logic = _code_only(_POSTHOG[_POSTHOG.index('"use strict";') :])
     assert logic.index("if (!KEY) return;") < logic.index("globalPrivacyControl")
     assert logic.index("if (!KEY) return;") < logic.index("sessionStorage")
     assert logic.index("if (!KEY) return;") < logic.index("fetch")
@@ -262,7 +275,7 @@ def test_the_disclosure_names_the_destination_the_retention_and_both_opt_outs() 
     assert "one year" in privacy
     assert "Global Privacy" in privacy
     assert "Do Not Track" in privacy
-    assert "No cookie is set" in privacy
+    assert "PostHog sets no cookie" in privacy
     assert "session storage" in privacy
     assert "never the part of the address after a question mark" in privacy
     assert "web/src/measure.js" in privacy

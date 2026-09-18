@@ -3701,17 +3701,30 @@ def _cmd_render_constants(args: argparse.Namespace, parser: argparse.ArgumentPar
 
 
 def _cmd_render_measure(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
-    from .site_shell import MEASURE_KEY_ENV, write_measure_script
+    from .site_shell import (
+        GA4_ID_SETTING,
+        MEASURE_KEY_ENV,
+        ga4_measurement_id,
+        write_measure_script,
+    )
 
     # The deploy's one chance to turn measurement on. An unset or empty secret
     # writes the committed no-op shim; a malformed one fails the deploy with
-    # the reason, rather than shipping a broken file (ADR 0055).
+    # the reason, rather than shipping a broken file (ADR 0055). The GA4 id
+    # comes from site-seo.json, not the environment, and is held to the same
+    # rule (ADR 0056).
     try:
-        on = write_measure_script(Path(args.out), os.environ.get(MEASURE_KEY_ENV))
+        ga4_id = ga4_measurement_id()
+        on = write_measure_script(Path(args.out), os.environ.get(MEASURE_KEY_ENV), ga4_id=ga4_id)
     except ValueError as exc:
         parser.error(str(exc))
     state = "on" if on else f"off ({MEASURE_KEY_ENV} is not set; nothing will be sent)"
-    print(f"wrote {args.out}: site measurement {state}")
+    ga4_state = (
+        f"on ({ga4_id})"
+        if ga4_id
+        else f"off ({GA4_ID_SETTING} in site-seo.json is empty; nothing will load)"
+    )
+    print(f"wrote {args.out}: site measurement {state}; Google Analytics {ga4_state}")
     return 0
 
 
@@ -4599,7 +4612,10 @@ def main(argv: list[str] | None = None) -> int:
     )
     render_measure = sub.add_parser(
         "render-measure",
-        help="write web/src/measure.js with the POSTHOG_KEY from the environment (deploy only)",
+        help=(
+            "write web/src/measure.js with the POSTHOG_KEY from the environment and the "
+            "GA4 id from site-seo.json (deploy only)"
+        ),
     )
     render_measure.add_argument(
         "--out",

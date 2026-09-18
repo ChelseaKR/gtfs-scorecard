@@ -204,8 +204,9 @@ def parse_event(row: dict[str, Any]) -> dict[str, Any] | None:
 
 def build_click_conversion(client: Any, event: dict[str, Any]) -> Any:
     """One ClickConversion proto for the Google Ads upload request. No
-    ``gclid`` is ever set: this site captures none (it is cookieless --
-    docs/decisions/0055-cookieless-site-measurement.md), and Enhanced
+    ``gclid`` is ever set: this site captures none (its measurement drops the
+    query string and runs GA4 with ad storage denied -- docs/decisions/0055
+    and 0056), and Enhanced
     Conversions for Leads matches on the hashed email identifier alone."""
     click_conversion = client.get_type("ClickConversion")
     click_conversion.conversion_action = event["conversion_action"]
