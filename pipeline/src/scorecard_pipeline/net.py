@@ -24,7 +24,7 @@ from __future__ import annotations
 import ipaddress
 import socket
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
 from urllib.parse import urljoin, urlsplit
@@ -115,6 +115,18 @@ def _is_retriable(exc: Exception) -> bool:
     return False
 
 
+def _origin(url: str) -> tuple[str, str, int | None]:
+    """The (scheme, host, port) a credential is scoped to; the default port is
+    made explicit so ``https://h/`` and ``https://h:443/`` are one origin."""
+    parts = urlsplit(url)
+    scheme = parts.scheme.lower()
+    try:
+        port = parts.port or {"https": 443, "http": 80}.get(scheme)
+    except ValueError:
+        port = None
+    return scheme, (parts.hostname or "").lower(), port
+
+
 def safe_get(
     url: str,
     *,
@@ -125,6 +137,7 @@ def safe_get(
     retries: int = 0,
     backoff: float = 2.0,
     trace: FetchTrace | None = None,
+    credential_headers: Mapping[str, str] | None = None,
 ) -> bytes:
     """Fetch a URL's body with SSRF and size guards, validating each redirect hop.
 
@@ -146,6 +159,7 @@ def safe_get(
                 max_bytes=max_bytes,
                 max_redirects=max_redirects,
                 trace=trace,
+                credential_headers=credential_headers,
             )
         except (requests.exceptions.RequestException, UnsafeURLError) as exc:
             if attempt >= retries or not _is_retriable(exc):
@@ -165,6 +179,7 @@ def safe_download(
     retries: int = 0,
     backoff: float = 2.0,
     trace: FetchTrace | None = None,
+    credential_headers: Mapping[str, str] | None = None,
 ) -> int:
     """Stream a URL's body to ``dest`` with the same guards as :func:`safe_get`.
 
@@ -188,6 +203,7 @@ def safe_download(
                 max_bytes=max_bytes,
                 max_redirects=max_redirects,
                 trace=trace,
+                credential_headers=credential_headers,
             )
             part.replace(dest)
             return size
@@ -210,6 +226,7 @@ def _fetch_once(
     max_bytes: int,
     max_redirects: int,
     trace: FetchTrace | None = None,
+    credential_headers: Mapping[str, str] | None = None,
 ) -> bytes:
     """A single in-memory fetch attempt with SSRF, redirect, and size guards."""
     body = bytearray()
@@ -221,6 +238,7 @@ def _fetch_once(
         max_redirects=max_redirects,
         sink=body.extend,
         trace=trace,
+        credential_headers=credential_headers,
     )
     return bytes(body)
 
@@ -234,6 +252,7 @@ def _download_once(
     max_bytes: int,
     max_redirects: int,
     trace: FetchTrace | None = None,
+    credential_headers: Mapping[str, str] | None = None,
 ) -> int:
     """A single streaming-to-disk fetch attempt sharing the guards of _fetch_once."""
     written = 0
@@ -252,6 +271,7 @@ def _download_once(
             max_redirects=max_redirects,
             sink=sink,
             trace=trace,
+            credential_headers=credential_headers,
         )
     return written
 
@@ -265,6 +285,7 @@ def _stream_guarded(
     max_redirects: int,
     sink: Callable[[bytes], None],
     trace: FetchTrace | None = None,
+    credential_headers: Mapping[str, str] | None = None,
 ) -> None:
     """A single fetch attempt with SSRF, redirect, and size guards.
 
@@ -272,14 +293,24 @@ def _stream_guarded(
     :func:`safe_get`, a file writer for :func:`safe_download`) so the guard
     logic — per-hop public-address validation, redirect following, declared and
     streamed size caps — is identical regardless of where the bytes land.
+
+    ``credential_headers`` (issue #371) are sent only on hops whose origin
+    (scheme, host, port) is the requested URL's own. Redirects are followed by
+    hand here, so requests' own cross-host Authorization stripping never runs;
+    without this check a publisher's redirect to a CDN, or to anywhere else,
+    would receive the key.
     """
     session = requests.Session()
     current = url
     redirect_chain = [url]
+    credential_origin = _origin(url) if credential_headers else None
     for _ in range(max_redirects + 1):
         validate_public_url(current)
+        hop_headers = headers
+        if credential_headers and _origin(current) == credential_origin:
+            hop_headers = {**(headers or {}), **credential_headers}
         resp = session.get(
-            current, headers=headers, timeout=timeout, stream=True, allow_redirects=False
+            current, headers=hop_headers, timeout=timeout, stream=True, allow_redirects=False
         )
         try:
             if resp.is_redirect or resp.is_permanent_redirect:

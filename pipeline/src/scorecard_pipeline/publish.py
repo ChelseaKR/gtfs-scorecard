@@ -40,10 +40,12 @@ from .effort_calibration import (
     agency_episodes,
     stats_from_episodes,
 )
+from .feed_auth import AUTH_DISCLOSURE
 from .feed_provenance import (
     FeedSourceProvenance,
     classify_feed_source,
     confidence_source_note,
+    credentialed_fetch_note,
 )
 from .fetch import FetchResult
 from .fixlog import diff_receipts, load_fixlog_candidates, merge_receipts, reconcile_receipts
@@ -120,6 +122,8 @@ def _confidence(
     if fetch.source in {"mirror", "unknown"}:
         rank -= 1
     notes.append(confidence_source_note(source_provenance, fetch.source))
+    if fetch.auth_kind:
+        notes.append(credentialed_fetch_note(fetch.auth_kind))
 
     feed_age_days = max(0, (generated_at.date() - fetch.fetched_date).days)
     if feed_age_days:
@@ -137,6 +141,42 @@ def _confidence(
         "feed_age_days": feed_age_days,
         "notes": notes,
     }
+
+
+def _fetch_block(fetch: FetchResult) -> dict[str, Any]:
+    """The artifact's ``fetch`` block for one scored snapshot."""
+    # Fetch provenance: how the graded bytes were obtained — origin vs the
+    # Mobility Database mirror, the URL that actually served them, and the
+    # User-Agent presented — so a grade is a citable record and a mirror-scored
+    # snapshot is distinguishable from an origin fetch. Additive to the schema
+    # (consumers tolerate new fields, docs/api.md); optional fields are omitted
+    # when unknown so artifacts stay byte-stable.
+    fetch_block: dict[str, Any] = {
+        "source": fetch.source,
+        # A snapshot from before provenance recording has no final_url on disk;
+        # the configured feed URL is the best available statement of the fetch.
+        "final_url": fetch.final_url or fetch.url,
+        "user_agent": fetch.user_agent,
+        "reader_archive_profile": fetch.reader_archive_profile,
+    }
+    if fetch.max_attempts is not None:
+        fetch_block["max_attempts"] = fetch.max_attempts
+    if fetch.origin_error:
+        fetch_block["origin_error"] = fetch.origin_error
+    # Credentialed fetch disclosure (#371): that the bytes came from a gated
+    # endpoint and how the credential was presented, never the credential or
+    # the name of the variable that holds it. Omitted for keyless fetches, so
+    # every existing artifact is byte-identical.
+    if fetch.auth_kind:
+        fetch_block["auth"] = AUTH_DISCLOSURE
+        fetch_block["auth_kind"] = fetch.auth_kind
+    # The feed hash and validator still describe the exact raw archive. This
+    # optional flag discloses that Scorecard-owned readers used the bounded
+    # single-root/filename-whitespace view prepared by fetch.py.
+    fetch_block.update(
+        {"reader_archive_normalized": True} if fetch.reader_archive_normalized else {}
+    )
+    return fetch_block
 
 
 def build_artifact(
@@ -175,30 +215,7 @@ def build_artifact(
         agency_block["subdivision_code"] = agency.subdivision_code
     if agency.subdivision_name:
         agency_block["subdivision_name"] = agency.subdivision_name
-    # Fetch provenance: how the graded bytes were obtained — origin vs the
-    # Mobility Database mirror, the URL that actually served them, and the
-    # User-Agent presented — so a grade is a citable record and a mirror-scored
-    # snapshot is distinguishable from an origin fetch. Additive to the schema
-    # (consumers tolerate new fields, docs/api.md); optional fields are omitted
-    # when unknown so artifacts stay byte-stable.
-    fetch_block: dict[str, Any] = {
-        "source": fetch.source,
-        # A snapshot from before provenance recording has no final_url on disk;
-        # the configured feed URL is the best available statement of the fetch.
-        "final_url": fetch.final_url or fetch.url,
-        "user_agent": fetch.user_agent,
-        "reader_archive_profile": fetch.reader_archive_profile,
-    }
-    if fetch.max_attempts is not None:
-        fetch_block["max_attempts"] = fetch.max_attempts
-    if fetch.origin_error:
-        fetch_block["origin_error"] = fetch.origin_error
-    # The feed hash and validator still describe the exact raw archive. This
-    # optional flag discloses that Scorecard-owned readers used the bounded
-    # single-root/filename-whitespace view prepared by fetch.py.
-    fetch_block.update(
-        {"reader_archive_normalized": True} if fetch.reader_archive_normalized else {}
-    )
+    fetch_block = _fetch_block(fetch)
     artifact: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         # Provenance: which methodology and which validator produced this grade,

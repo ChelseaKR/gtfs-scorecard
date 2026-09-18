@@ -962,6 +962,12 @@ def _liveness_unchanged(agency_id: str) -> bool:
         return False
 
     agency = AGENCIES[agency_id]
+    if agency.fetch_auth is not None:
+        # The conditional GET carries no credential (#371), so a gated URL
+        # would answer 401 and count as a liveness failure against a feed that
+        # is fine. Score it; the credentialed fetch is the real check.
+        log.info("Re-scoring %s: credentialed feeds skip the keyless liveness check", agency_id)
+        return False
     state_path = repo_root() / "data" / "liveness.json"
     state = load_state(state_path)
     prev = state.get(agency_id)
@@ -1050,14 +1056,24 @@ def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
             failures += 1
             _log_run_failure(agency_id, exc, single=len(targets) == 1)
             if outcome_out:
+                from .feed_auth import CredentialNotConfiguredError
                 from .run_summary import AgencyOutcome, append_outcome
 
+                # A missing credential is our configuration, not the feed's
+                # fault (#371): name that reason so /status/ and the operator
+                # can tell it apart from a publisher outage.
+                reason = (
+                    CredentialNotConfiguredError.reason
+                    if isinstance(exc, CredentialNotConfiguredError)
+                    else None
+                )
                 append_outcome(
                     outcome_out,
                     AgencyOutcome(
                         agency_id=agency_id,
                         outcome="unreachable",
                         wall_seconds=time.monotonic() - started,
+                        reason=reason,
                     ),
                 )
     if failures:
@@ -2420,7 +2436,11 @@ def _cmd_ntd_ridership(args: argparse.Namespace, parser: argparse.ArgumentParser
 #: Hygiene kinds that ``--strict`` refuses to merge over. Everything else
 #: ``lint_registry`` reports is advisory: a standing backlog about the whole
 #: registry, not a verdict on the entry in front of you.
-STRICT_LINT_KINDS = frozenset({"feed_descriptor_name", "duplicate_mdb_id", "duplicate_feed_url"})
+#: ``literal_credential`` (#371) blocks because a merged literal credential is
+#: published the moment it lands, and the registry is public.
+STRICT_LINT_KINDS = frozenset(
+    {"feed_descriptor_name", "duplicate_mdb_id", "duplicate_feed_url", "literal_credential"}
+)
 
 
 def _cmd_lint(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
@@ -3152,9 +3172,14 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         only = {line.strip() for line in Path(args.only).read_text().splitlines() if line.strip()}
 
     for agency_id, agency in sorted(AGENCIES.items()):
-        if not agency.is_canonical_feed:
+        if not agency.is_canonical_feed or (only is not None and agency_id not in only):
             continue
-        if only is not None and agency_id not in only:
+        # The keyless conditional GET would read a gated URL's 401 as an
+        # outage (#371). Nothing is recorded, so no failure streak builds
+        # against a feed the scoring run fetches with its credential.
+        credentialed = agency.fetch_auth is not None
+        tally["credentialed_skipped"] += credentialed
+        if credentialed:
             continue
         prev = state.get(agency_id)
         record, classification = check_feed(agency.static_gtfs_url, prev, timeout=args.timeout)
@@ -3186,11 +3211,13 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         save_state(state_path, state)
         log.info("Wrote liveness state for %d feeds.", len(state))
     log.info(
-        "Liveness: %d changed, %d unreachable, %d recovered, %d unchanged.%s",
+        "Liveness: %d changed, %d unreachable, %d recovered, %d unchanged, "
+        "%d credentialed not checked.%s",
         len(changed),
         len(unreachable),
         len(recovered_ids),
         tally.get("unchanged", 0),
+        tally.get("credentialed_skipped", 0),
         "" if args.apply else " Report only; re-run with --apply to persist state.",
     )
     return 0

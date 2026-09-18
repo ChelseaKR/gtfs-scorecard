@@ -1,13 +1,15 @@
-# gitleaks configuration — extends the default ruleset with a path-scoped
-# allowlist for known false positives. Everything listed here is PUBLIC
-# third-party data, not a credential owned by this repo:
+# gitleaks configuration — extends the default ruleset with scoped allowlists
+# for known false positives, and adds one rule of its own. Everything
+# allowlisted here is PUBLIC third-party data, not a credential owned by this
+# repo:
 #
 #   * registry/ data shards — GTFS/GTFS-RT feed URLs sourced from the Mobility
 #     Database frequently embed an access key in the URL itself (e.g.
 #     `?key=...` / `?apiKey=...`). Those keys are published by the transit
 #     agencies as part of their public feed URL and are already world-readable
-#     in the upstream registry. Only YAML data is allowlisted; documentation or
-#     any future source file under registry/ remains scanned.
+#     in the upstream registry. Only the YAML lines that hold one of those
+#     feed URLs are allowlisted, not whole files (see the entry below), so
+#     every other line under registry/ remains scanned.
 #   * pipeline/tests/fixtures/ — golden-site fixtures derived from the same
 #     registry entries (same public feed-URL keys).
 #   * data/ — machine-generated pipeline artifacts (per-agency JSON) that echo
@@ -18,16 +20,19 @@
 #
 # Hand-written source code (pipeline/src, scripts, workflows) is NOT
 # allowlisted; a real credential committed there still fails the scan.
+#
+# The file uses `[[allowlists]]` (gitleaks >= 8.25) rather than the single
+# deprecated `[allowlist]` table: each entry below has its own match target,
+# and the singular table cannot be combined with the plural one.
 
 title = "gtfs-scorecard gitleaks config"
 
 [extend]
 useDefault = true
 
-[allowlist]
-description = "Public GTFS registry feed-URL keys and generated artifacts that echo them"
+[[allowlists]]
+description = "Generated artifacts and fixtures that echo public registry feed-URL keys"
 paths = [
-    '''^registry/.*\.ya?ml$''',
     '''^pipeline/tests/fixtures/''',
     '''^data/''',
     # The generated half of web/ only. A blanket ^web/ also allowlisted
@@ -44,6 +49,28 @@ paths = [
     '''^web/catalog\.(json|csv)$''',
     '''^web/dataset\.(json|csv)$''',
 ]
+
+# Issue #371. This was a whole-file path allowlist, `^registry/.*\.ya?ml$`.
+# gitleaks skips a globally path-allowlisted file without reading it, for
+# every rule, so the `fetch_auth.secret` rule below reported nothing at all in
+# the one directory it exists for. An AND condition does not help: verified on
+# 8.30.1, a global allowlist that names paths still skips the whole file.
+#
+# So the allowlist is now the shape of the line rather than the path: a YAML
+# field that holds a feed URL (`static_gtfs_url`, the three `rt_urls` kinds,
+# and the two `reuse_evidence` links) and whose value is an http(s) URL. With
+# the old path entry removed, the default rules find 6 keys in registry/, all
+# generic-api-key and all on `static_gtfs_url` or `vehicle_positions` lines,
+# which this covers. A `secret:` line matches none of these field names and is
+# scanned by every rule. The anchor means a quoted Python string such as
+# `"    static_gtfs_url: ..."` in hand-written source does not match.
+[[allowlists]]
+description = "Public feed-URL keys on registry-shaped URL field lines"
+regexTarget = "line"
+regexes = [
+    '''^\s*(?:-\s+)?(?:static_gtfs_url|trip_updates|vehicle_positions|service_alerts|provider_source_url|terms_url):\s*["']?https?://''',
+]
+
 # ADR 0055 / PR #439: pipeline/tests/test_measure.py's `_KEY` fixture is a
 # synthetic PostHog-shaped project key (`phc_` + a sequential, readable
 # 0-9/a-v run — not random) used only to exercise render_measure_script's
@@ -53,6 +80,27 @@ paths = [
 # generic-api-key rule matches the fixture's shape. A path allowlist for the
 # whole test file would be broader than the false positive; matching the
 # literal fixture string wherever it appears is exact instead.
+[[allowlists]]
+description = "Synthetic PostHog-shaped fixture key in test_measure.py"
 regexes = [
     '''phc_TestKey0123456789abcdefghijklmnopqrstuv''',
 ]
+
+# Issue #371: a registry record names its feed credential by environment
+# variable (`fetch_auth.secret: SCORECARD_FEED_AUTH_<NAME>`) and never holds
+# it. Any other value there is a literal credential committed to a public
+# repository. `scorecard lint --strict` refuses it as `literal_credential`;
+# this rule is the same refusal at the secret-scan gates (pre-commit and the
+# blocking CI diff scan), so it holds even for a change that never ran lint.
+# No entropy floor: a short or readable literal is still a literal.
+[[rules]]
+id = "scorecard-fetch-auth-literal-secret"
+description = "fetch_auth.secret must name a SCORECARD_FEED_AUTH_ environment variable, not hold a credential"
+path = '''^registry/.*\.ya?ml$'''
+regex = '''\bsecret\s*:\s*["']?([^\s"',}#]+)'''
+secretGroup = 1
+keywords = ["secret"]
+
+[[rules.allowlists]]
+description = "An environment-variable reference in the SCORECARD_FEED_AUTH_ namespace"
+regexes = ['''^SCORECARD_FEED_AUTH_[A-Z0-9]+(?:_[A-Z0-9]+)*$''']

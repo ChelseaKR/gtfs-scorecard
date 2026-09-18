@@ -46,6 +46,8 @@ must not be guessed merely to choose a shard.
 - `is_official`: `true` or `false` when catalog provenance establishes it.
 - `service_type`: `fixed` (default), `seasonal`, or `demand_response`.
 - `fare_free`: `true` only when fare-free operation is a verified policy.
+- `fetch_auth`: a credential reference for a feed behind a registration wall;
+  see [Credentialed feeds](#credentialed-feeds-fetch_auth) below.
 
 A replaced endpoint may remain in the registry as `feed_status: deprecated`
 with `alias_of` pointing to its active successor. It is then excluded from
@@ -101,6 +103,68 @@ review date that is not in the future, non-empty attribution and reviewer, and
 an explicit identity review. Unknown keys or inferred evidence fail registry
 loading. Absence means no approved evidence record is on file; it is not a
 claim that the feed is unlicensed.
+
+### Credentialed feeds (`fetch_auth`)
+
+Some publishers put a feed whose licence already permits reuse behind a
+registration wall: the file answers 401 until a registered account's key is
+sent. `fetch_auth` lets a record name that key without containing it.
+
+```yaml
+fetch_auth:
+  kind: header                         # header, query, or basic
+  name: X-Api-Key                      # header or query-parameter name; omit for basic
+  secret: SCORECARD_FEED_AUTH_EXAMPLE  # the NAME of an environment variable
+```
+
+- `kind: header` sends the variable's value in the header called `name`.
+- `kind: query` appends `name=<value>` to `static_gtfs_url`. Leave the
+  parameter out of the URL on file; `lint --strict` refuses a URL that already
+  carries it.
+- `kind: basic` sends HTTP basic authentication. The variable holds
+  `user:password`, and `name` is not used.
+
+`secret` is never the credential. It must be an environment variable name that
+starts with `SCORECARD_FEED_AUTH_` and uses only capital letters, digits, and
+underscores. `scorecard lint --strict` blocks anything else as
+`literal_credential`, and the secret scan (`.gitleaks.toml`) blocks it too.
+The prefix also stops a record from pointing the fetcher at another secret the
+pipeline holds and sending it to the host the record names. A user name or
+password written into any feed URL (`https://user:pass@host/`) is blocked the
+same way; use `kind: basic` instead. A credentialed record needs an `https`
+`static_gtfs_url`.
+
+What happens at fetch time:
+
+- **Variable unset or empty:** the feed is recorded as unreachable with the
+  reason `credential not configured`, and nothing is requested. There is no
+  keyless attempt and no fallback to the Mobility Database mirror, and no
+  artifact is written, so no grade appears. The last published scorecard, if
+  there is one, stays as it was.
+- **Variable set:** the credential goes only to the feed URL's own host.
+  If the publisher redirects to another host, the credential is not sent
+  there. The artifact's `fetch` block records `auth: env-ref` and
+  `auth_kind`, and never the credential or the variable's name. For a
+  credentialed fetch, `fetch.final_url` is published without its query string.
+- **Request fails:** the error names the exception and HTTP status only,
+  because a full error message would quote a URL that can hold the credential.
+
+The keyless liveness check skips credentialed records, so a gated URL's 401 is
+never counted as an outage. The daily run scores them every day instead.
+
+**A key is access, not a licence.** Registering for an account shows that we
+can download the feed. It does not show that the scorecard may republish or
+grade it. A credentialed record still needs `reuse_evidence` reviewed against
+the publisher's terms, exactly like any other record, before it is admitted.
+
+Where the value lives is up to whoever runs the pipeline, never this
+repository. In GitHub Actions, store it as a repository secret and map it
+into the scoring step's environment with
+`SCORECARD_FEED_AUTH_EXAMPLE: ${{ secrets.SCORECARD_FEED_AUTH_EXAMPLE }}`.
+Elsewhere, set it in that runtime's environment from its own secret store,
+never in a committed file. Pull requests from forks get no secrets, so a
+credentialed record reads as `credential not configured` there, which is the
+intended result.
 
 Unknown fields, malformed URLs or locations, duplicate ids, missing alias
 targets, and alias cycles fail registry loading. Run the same gates as CI before
