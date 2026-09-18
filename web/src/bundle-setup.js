@@ -13,6 +13,34 @@ const status = /** @type {HTMLElement | null} */ (document.getElementById("form-
 const endpoint = /** @type {any} */ (window).SCORECARD_BUNDLE_URL;
 const sessionId = new URLSearchParams(location.search).get("session_id") || "";
 
+/**
+ * Report the purchase this page stands for, once, as the GA4 purchase event
+ * (docs/decisions/0057-bundle-conversion-events.md). Stripe only sends a
+ * buyer here with an order reference after a completed checkout, so a
+ * well-formed one is the purchase. The reference itself never leaves this
+ * function: it is hashed with SHA-256 and the first 32 hex characters become
+ * the transaction id, which lets GA4 count a reload or a second visit to this
+ * address as the same order. web/src/measure.js adds the plan and price the
+ * buyer chose, sends nothing under an opt-out, Global Privacy Control or Do
+ * Not Track, and does not report the same order twice from this tab.
+ * @param {string} reference
+ */
+async function reportPurchase(reference) {
+  const subtle = window.crypto && window.crypto.subtle;
+  if (!subtle || !/^cs_[A-Za-z0-9_]+$/.test(reference)) return;
+  const digest = await subtle.digest("SHA-256", new TextEncoder().encode(reference));
+  const order = Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, 32);
+  document.dispatchEvent(
+    new CustomEvent("scorecard:commerce", { detail: { event: "purchase", transaction_id: order } }),
+  );
+}
+
+reportPurchase(sessionId).catch(() => {
+  // Measurement never surfaces an error to a buyer.
+});
+
 /** @param {string} message @param {"ok"|"err"|"info"} kind */
 function setStatus(message, kind) {
   if (!status) return;

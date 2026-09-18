@@ -219,7 +219,6 @@ def test_the_block_names_one_host_and_reads_nothing_it_promises_not_to() -> None
     assert hosts == {GA4_LOADER_HOST.removeprefix("https://")}
     for forbidden in (
         "localStorage",
-        "sessionStorage",
         "document.cookie",
         "FormData",
         ".value",
@@ -230,9 +229,21 @@ def test_the_block_names_one_host_and_reads_nothing_it_promises_not_to() -> None
         "location.href",
     ):
         assert forbidden not in code, forbidden
-    # It listens for one thing, the opt-out, and writes a cookie only to expire
-    # one: every cookie assignment carries Max-Age=0.
-    assert re.findall(r'addEventListener\("([^"]+)"', code) == ["scorecard:measure-stopped"]
+    # It listens for two things, the bundle pages' conversion steps (ADR 0057)
+    # and the opt-out, and writes a cookie only to expire one: every cookie
+    # assignment carries Max-Age=0.
+    assert re.findall(r'addEventListener\("([^"]+)"', code) == [
+        "scorecard:commerce",
+        "scorecard:measure-stopped",
+    ]
+    # Session storage holds one key, the plan chosen at checkout (ADR 0057),
+    # read and written only inside the two helpers named for it.
+    assert 'var CHECKOUT_KEY = "scorecard-checkout";' in code
+    assert re.findall(r"sessionStorage\.(\w+)\(([^,)]*)", code) == [
+        ("removeItem", "CHECKOUT_KEY"),
+        ("setItem", "CHECKOUT_KEY"),
+        ("getItem", "CHECKOUT_KEY"),
+    ]
     assert code.count("doc.cookie =") == 2
     assert 'var gone = names[n] + "=; Max-Age=0; path=/";' in code
     # The referrer is read once, inside the helper that reduces it to an origin.
@@ -298,6 +309,7 @@ const out = cases.map(function (c) {
   const sent = [];
   const cookies = [];
   const store = Object.assign({}, c.storage);
+  const session = Object.assign({}, c.session);
   const root = element({});
   root.appendChild = function (el) {
     appended.push({ tag: el.tagName, src: el.src, async: el.async });
@@ -360,7 +372,11 @@ const out = cases.map(function (c) {
           return b;
         },
       },
-      sessionStorage: { getItem: function () { return null; }, setItem: function () {} },
+      sessionStorage: {
+        getItem: function (k) { return k in session ? session[k] : null; },
+        setItem: function (k, v) { session[k] = String(v); },
+        removeItem: function (k) { delete session[k]; },
+      },
       localStorage: {
         getItem: function (k) { return k in store ? store[k] : null; },
         setItem: function (k, v) { store[k] = String(v); },
@@ -382,6 +398,9 @@ const out = cases.map(function (c) {
       prevented.push(fire(toggle.listeners, "keydown", { target: toggle, key: " " }));
     }
     if (action === "checkout") fire(docListeners, "click", { target: checkout });
+    if (action && action.commerce) {
+      fire(docListeners, "scorecard:commerce", { detail: action.commerce });
+    }
   });
   return {
     appended: appended,
@@ -391,6 +410,7 @@ const out = cases.map(function (c) {
       : null,
     cookies: cookies,
     storage: store,
+    session: session,
     stopped: root.getAttribute("data-measure-stopped"),
     label: toggle.textContent,
     status: status.textContent,
@@ -510,6 +530,206 @@ def test_a_false_privacy_signal_does_not_opt_out(tmp_path: Path) -> None:
     visit = _visit(navigator={"globalPrivacyControl": False, "doNotTrack": "0"})
     [result] = _run(tmp_path, rendered, [visit])
     assert _loaded(result)
+
+
+# --- conversion events (ADR 0057), run in Node against the same stub page ---
+
+_PAGE = "https://gtfsscorecard.org/bundle/setup/"
+_REFERRER = "https://checkout.stripe.com/"
+_ORDER_REFERENCE = "cs_test_order_reference"
+_ORDER = "0123456789abcdef0123456789abcdef"
+_BUNDLE = {"item_id": "bundle_25", "price": 149}
+_VIEW = {
+    "event": "view_item",
+    "currency": "USD",
+    "amount": 149,
+    "items": [_BUNDLE, {"item_id": "refresh_mo", "price": 49}],
+}
+_BEGIN = {"event": "begin_checkout", "currency": "USD", "amount": 149, "items": [_BUNDLE]}
+_PURCHASE = {"event": "purchase", "transaction_id": _ORDER}
+# Everything a careless edit could put in an event, none of which may reach
+# Google: a reader's email and name, and Stripe's order reference.
+_PII = {
+    "email": "reader@example.org",
+    "name": "Jane Reader",
+    "session_id": _ORDER_REFERENCE,
+    "customer": "cus_Example123",
+}
+
+
+def _events(result: dict[str, Any]) -> list[list[Any]]:
+    return [entry for entry in result["dataLayer"] or [] if entry[0] == "event"]
+
+
+def _commerce(*details: dict[str, Any], **overrides: Any) -> dict[str, Any]:
+    return _visit(actions=[{"commerce": detail} for detail in details], **overrides)
+
+
+def test_the_plans_shown_and_a_checkout_followed_are_sent_with_checked_fields(
+    tmp_path: Path,
+) -> None:
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    [result] = _run(tmp_path, rendered, [_commerce(_VIEW, _BEGIN)])
+    assert _events(result) == [
+        [
+            "event",
+            "view_item",
+            {
+                "currency": "USD",
+                "value": 149,
+                "items": [
+                    {"item_id": "bundle_25", "price": 149, "quantity": 1},
+                    {"item_id": "refresh_mo", "price": 49, "quantity": 1},
+                ],
+                "page_location": _PAGE,
+                "page_referrer": _REFERRER,
+            },
+        ],
+        [
+            "event",
+            "begin_checkout",
+            {
+                "currency": "USD",
+                "value": 149,
+                "items": [{"item_id": "bundle_25", "price": 149, "quantity": 1}],
+                "page_location": _PAGE,
+                "page_referrer": _REFERRER,
+            },
+        ],
+    ]
+    # The checkout remembers its plan for the page Stripe returns to.
+    assert json.loads(result["session"]["scorecard-checkout"]) == {
+        "item": {"item_id": "bundle_25", "price": 149, "quantity": 1},
+        "currency": "USD",
+    }
+
+
+def test_a_purchase_carries_the_plan_chosen_at_checkout_and_counts_once(tmp_path: Path) -> None:
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    [result] = _run(tmp_path, rendered, [_commerce(_BEGIN, _PURCHASE, _PURCHASE)])
+    purchases = [entry for entry in _events(result) if entry[1] == "purchase"]
+    assert purchases == [
+        [
+            "event",
+            "purchase",
+            {
+                "transaction_id": _ORDER,
+                "currency": "USD",
+                "value": 149,
+                "items": [{"item_id": "bundle_25", "price": 149, "quantity": 1}],
+                "page_location": _PAGE,
+                "page_referrer": _REFERRER,
+            },
+        ]
+    ]
+    assert json.loads(result["session"]["scorecard-checkout"]) == {"reported": _ORDER}
+    # A reload of the setup page in the same tab is the same order.
+    [reload] = _run(tmp_path, rendered, [_commerce(_PURCHASE, session=result["session"])])
+    assert _events(reload) == []
+
+
+def test_a_purchase_in_a_tab_with_no_checkout_is_counted_without_a_value(tmp_path: Path) -> None:
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    [result] = _run(tmp_path, rendered, [_commerce(_PURCHASE)])
+    assert _events(result) == [
+        [
+            "event",
+            "purchase",
+            {"transaction_id": _ORDER, "page_location": _PAGE, "page_referrer": _REFERRER},
+        ]
+    ]
+
+
+def test_nothing_but_the_checked_fields_reaches_google(tmp_path: Path) -> None:
+    """An event loaded with a reader's details and the raw order reference
+    sends only the fields the block rebuilds, so none of them reach dataLayer."""
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    loaded_item = {**_BUNDLE, **_PII, "item_name": "Jane's program"}
+    cases = [
+        _commerce({**_VIEW, **_PII, "items": [loaded_item]}),
+        _commerce({**_BEGIN, **_PII, "items": [loaded_item]}, {**_PURCHASE, **_PII}),
+    ]
+    results = _run(tmp_path, rendered, cases)
+    assert [len(_events(result)) for result in results] == [1, 2]
+    for result in results:
+        sent = json.dumps(result["dataLayer"]) + json.dumps(result["session"])
+        # ("cs_" alone would match "analytics_storage" in the consent call.)
+        for value in (*_PII.values(), "Jane", "@", "cs_test", "cus_"):
+            assert value not in sent, value
+        for entry in _events(result):
+            assert set(entry[2]) <= {
+                "transaction_id",
+                "currency",
+                "value",
+                "items",
+                "page_location",
+                "page_referrer",
+            }
+
+
+@pytest.mark.parametrize(
+    "detail",
+    [
+        {**_VIEW, "event": "sign_up"},
+        {**_VIEW, "event": "view_item_list"},
+        {**_VIEW, "currency": "usd"},
+        {**_VIEW, "currency": 840},
+        {**_VIEW, "amount": -1},
+        {**_VIEW, "amount": "149"},
+        {**_VIEW, "items": []},
+        {**_VIEW, "items": [{"item_id": "reader@example.org", "price": 149}]},
+        {**_VIEW, "items": [{"item_id": "Bundle 25", "price": 149}]},
+        {**_VIEW, "items": [{"item_id": "bundle_25", "price": "149"}]},
+        {"event": "purchase", "transaction_id": _ORDER_REFERENCE},
+        {"event": "purchase", "transaction_id": _ORDER.upper()},
+        {"event": "purchase", "transaction_id": _ORDER[:31]},
+        {"event": "purchase"},
+    ],
+)
+def test_a_malformed_step_is_dropped_whole(tmp_path: Path, detail: dict[str, Any]) -> None:
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    [result] = _run(tmp_path, rendered, [_commerce(detail)])
+    assert _events(result) == []
+    assert result["session"] == {}
+
+
+@pytest.mark.parametrize("name", sorted(_OPT_OUTS))
+def test_no_step_is_sent_or_kept_under_an_opt_out(tmp_path: Path, name: str) -> None:
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    [result] = _run(tmp_path, rendered, [_commerce(_BEGIN, _PURCHASE, **_OPT_OUTS[name])])
+    assert result["dataLayer"] is None and result["session"] == {}, name
+
+
+def test_opting_out_mid_page_forgets_the_checkout_and_sends_no_more_steps(
+    tmp_path: Path,
+) -> None:
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    visit = _visit(actions=[{"commerce": _BEGIN}, "click", {"commerce": _PURCHASE}])
+    [result] = _run(tmp_path, rendered, [visit])
+    assert [entry[1] for entry in _events(result)] == ["begin_checkout"]
+    assert "scorecard-checkout" not in result["session"]
+
+
+def test_control_without_the_kill_switch_check_a_step_follows_an_opt_out(
+    tmp_path: Path,
+) -> None:
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    broken = _sabotaged(rendered, '    if (win["ga-disable-" + GA4_ID]) return;\n')
+    visit = _visit(actions=[{"commerce": _BEGIN}, "click", {"commerce": _VIEW}])
+    [result] = _run(tmp_path, broken, [visit])
+    assert [entry[1] for entry in _events(result)] == ["begin_checkout", "view_item"]
+
+
+def test_control_without_the_order_check_the_raw_reference_would_be_sent(
+    tmp_path: Path,
+) -> None:
+    rendered = render_measure_script(None, source=_SHIM, ga4_id=_ID)
+    check = "!/^[0-9a-f]{32}$/.test(order)"
+    assert rendered.count(check) == 1
+    broken = rendered.replace(check, "!/./.test(order)")
+    assert broken != rendered
+    [result] = _run(tmp_path, broken, [_commerce({"event": "purchase", "transaction_id": "cs_x"})])
+    assert [entry[2]["transaction_id"] for entry in _events(result)] == ["cs_x"]
 
 
 # --- the footer opt-out, run in Node against the same stub page ------------
@@ -821,5 +1041,11 @@ def test_the_disclosure_describes_ga4_as_configured() -> None:
         "scorecard-analytics",
         "deletes the\n      Google Analytics cookies",
         "from the next page you open",
+        # ADR 0057: the purchase steps, what they carry, and the one key kept.
+        'id="privacy-purchase-steps"',
+        "three steps toward a purchase",
+        "hashing Stripe's order reference",
+        "scorecard-checkout",
+        "any plan kept for a checkout",
     ):
         assert phrase in privacy, phrase

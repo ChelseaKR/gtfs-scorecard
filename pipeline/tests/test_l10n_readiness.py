@@ -84,7 +84,12 @@ HARDCODED_STRING_BASELINE = {
     # words; this is the first two-word literal the offers node itself has
     # carried. Not user-facing copy, so it is recorded rather than moved into
     # the catalog.
-    "bundle.js": 10,
+    # Raised 10 -> 12 (ADR 0057): the checkout button at the top of the page
+    # names the entry bundle's price ("Buy for ... through Stripe") and its
+    # cadence ("paid once"), both built from plan.json so no amount is typed.
+    # A deliberate increase, to move into the catalog with the rest of the
+    # tier copy when the tier joins it.
+    "bundle.js": 12,
     "config.js": 1,
     "es.js": 2,
     "i18n.js": 0,

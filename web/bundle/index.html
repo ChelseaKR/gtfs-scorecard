@@ -89,15 +89,31 @@
   <main id="main" class="wrap wrap-wide" tabindex="-1">
     <a class="backlink" href="/support/">&larr; Support</a>
     <h1 class="page-title">Board reports for every agency you support</h1>
-    <p class="page-lede">GTFS Scorecard grades a transit agency's published GTFS feed for data
-    quality and rider-information gaps, free, for any agency, at gtfsscorecard.org. A state
-    program, a technical-assistance center, a feed vendor, or a consultancy preparing packets
-    for many agencies can get every agency's board report in one archive, with the program's
-    own name, logo, and accent on each cover, and refreshed monthly if you want. Each file is
-    the same self-contained report the site already ships for one agency; the bundle is the
-    packaging.</p>
+    <p class="page-lede">One archive with a GTFS data quality board report for each transit
+    agency your program supports, with your program's name, logo, and accent color on every
+    cover.</p>
 
-    <p id="plan-notice" class="form-status" role="status" aria-live="polite" hidden></p>
+    <!-- The path to a purchase, above the fold on a phone: what it costs and one
+         checkout button, then the sample and the rest of the plans. The price and the
+         checkout link come from /bundle/plan.json through web/src/bundle.js, like every
+         other price on this page, so nothing here names an amount. Without scripting,
+         or while the plan cannot be read, the button stays a link to the plan list. -->
+    <div class="action-panel buy-box">
+      <p id="buy-box-price" class="plan-price">Every plan and its price is listed below.</p>
+      <p><a id="buy-box-cta" class="submit-button" href="#plans-h">See plans and prices</a></p>
+      <p class="fineprint">Normally delivered within the hour, always within two business
+      days, or the purchase is refunded. <a href="/bundle/sample/">See a sample report</a>
+      first, or <a href="#plans-h">compare every plan</a>, including up to 100 agencies and a
+      monthly refresh.</p>
+    </div>
+
+    <p>GTFS Scorecard grades a transit agency's published GTFS feed for data quality and
+    rider-information gaps, free, for any agency, at gtfsscorecard.org. A state program, a
+    technical-assistance center, a feed vendor, or a consultancy preparing packets for many
+    agencies can get every agency's board report in one archive, with the program's own name,
+    logo, and accent on each cover, and refreshed monthly if you want. Each file is the same
+    self-contained report the site already ships for one agency; the bundle is the
+    packaging.</p>
 
     <ul class="buy-terms">
       <li><strong>What arrives?</strong> One self-contained board report per agency id you name,
@@ -149,6 +165,7 @@
     what a purchased cover looks like before you buy. Marked SAMPLE throughout.</p>
 
     <h2 class="section-title" id="plans-h">Plans and prices</h2>
+    <p id="plan-notice" class="form-status" role="status" aria-live="polite" hidden></p>
     <!-- The plan list for a reader with no scripting, generated from
          /bundle/plan.json by `make sync-bundle-offers` alongside the offers
          JSON-LD above. Never edited by hand, and emitted only while the plan

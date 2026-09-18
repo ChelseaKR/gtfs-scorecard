@@ -149,6 +149,15 @@
       you download. From your browser it learns the browser name, device type, screen size, and
       language. Google works out a rough location, such as a city and country, from your IP
       address. Google Analytics does not store the IP address itself.</p>
+      <p id="privacy-purchase-steps">On <a href="/bundle/">the bundle page</a> and the setup
+      page after checkout, Google Analytics also records three steps toward a purchase: the
+      plans were shown, a checkout link was followed, and Stripe sent a buyer back after
+      paying. Each step carries only plan ids, their prices, and the currency. The last one
+      also carries an order number made by hashing Stripe's order reference, so the
+      reference itself is never sent, and nothing about the buyer is. From the checkout link
+      until Stripe sends you back, the plan you chose is kept in the tab's session storage
+      under the name scorecard-checkout, and the browser discards it when the tab
+      closes.</p>
       <p>Outside the European Economic Area, the United Kingdom, or Switzerland, Google
       Analytics sets two cookies on this site. The one named <code>_ga</code> holds a random
       id for your browser. The other, whose name starts with <code>_ga_</code>, keeps track of
@@ -168,7 +177,7 @@
       <h3 id="privacy-opt-out">Saying no</h3>
       <p>To opt out of both tools, use the &ldquo;Opt out of analytics&rdquo; link at the foot
       of any page. It turns off PostHog and Google Analytics at once, and it also deletes the
-      Google Analytics cookies. Your choice is saved in this browser on this device, in the
+      Google Analytics cookies and any plan kept for a checkout. Your choice is saved in this browser on this device, in the
       site's local storage under the name scorecard-analytics. It stays until you opt back in
       or clear the site's data. The link then reads &ldquo;Opt back in to analytics&rdquo;, and
       opting back in takes effect from the next page you open.</p>
