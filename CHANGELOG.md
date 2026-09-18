@@ -29,6 +29,20 @@ the declared public surface).
 
 ### Added
 
+- **The Action's `evidence-packet` input, and `scorecard retest --artifact`
+  (#366).** Set `evidence-packet` to a packet from `scorecard evidence-packet
+  --format json` and the Action retests the feed it has just scored against
+  the packet's acceptance tests, failing the build unless every finding is
+  cleared. It reads the run's own `result-json` through the new `retest
+  --artifact RESULT`, so the validator runs once. A packet or result the
+  retest cannot read or judge fails the build with the reason in the
+  annotation, and is never read as nothing still present; an artifact scored
+  under a different `--country` is refused. New outputs `retest-outcome` and
+  `retest-json`. With the input unset the step is byte-identical to before:
+  the same commands and arguments, outputs, summary, annotations, files and
+  exit code, checked against transcripts captured from the step before this
+  change. The input is on `main` only; it is not in `v1.4.0`.
+
 - **Google Analytics 4 beside PostHog, loaded from the same script
   (2026-09-17, [ADR 0056](docs/decisions/0056-google-analytics-4.md)).**
   `web/src/measure.js` gains a second, separate block that loads GA4 for the

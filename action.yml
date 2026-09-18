@@ -30,6 +30,12 @@ outputs:
   sarif:
     description: "Path to the SARIF file, when the sarif input was set. Blank otherwise."
     value: ${{ steps.gate.outputs.sarif }}
+  retest-outcome:
+    description: "all_cleared, still_present, or non_comparable when evidence-packet was set and the retest wrote a record; blank when the packet could not be retested or evidence-packet was not set."
+    value: ${{ steps.gate.outputs.retest-outcome }}
+  retest-json:
+    description: "Path to the retest record JSON when evidence-packet was set and the retest wrote one. Blank otherwise."
+    value: ${{ steps.gate.outputs.retest-json }}
 
 inputs:
   feed-url:
@@ -83,6 +89,10 @@ inputs:
     description: "Directory for a private run history. Each run appends one record for the feed, counts and codes only, and nothing is published; read it back with scorecard trend. Keep the directory between runs with actions/cache or by committing it. Leave blank to skip."
     required: false
     default: ""
+  evidence-packet:
+    description: "Path to an evidence packet JSON written by scorecard evidence-packet --format json. When set, the feed this run scored is checked against the packet's acceptance tests with scorecard retest, reading this run's result rather than validating the feed again, and the build fails unless every finding in the packet is cleared. A packet that cannot be read or retested fails the build with the reason. Leave blank to skip."
+    required: false
+    default: ""
   ref:
     description: "Deprecated compatibility input. The scorer is bundled with the Action release, so its version always matches the Action ref."
     required: false
@@ -119,6 +129,7 @@ runs:
         SARIF_OUT: ${{ inputs.sarif }}
         SARIF_BASE: ${{ inputs.sarif-base }}
         HISTORY_PATH: ${{ inputs.history-path }}
+        EVIDENCE_PACKET: ${{ inputs.evidence-packet }}
         # Keep the downloaded Action tree immutable and all feed/validator
         # scratch data under the runner's temporary directory.
         SCORECARD_ROOT: ${{ runner.temp }}/gtfs-scorecard-work
@@ -126,6 +137,11 @@ runs:
       run: |
         set -euo pipefail
         result_json="${JSON_OUT:-${RUNNER_TEMP}/gtfs-scorecard-result.json}"
+        # The evidence-packet retest reads the result this run writes. A result
+        # left at the same path by an earlier step in the job must not outlive a
+        # run that could not score the feed, or the packet would be judged
+        # against another run's bytes.
+        if [[ -n "$EVIDENCE_PACKET" ]]; then rm -f -- "$result_json"; fi
         args=("$FEED_URL")
         args+=(--country "$FEED_COUNTRY")
         if [[ -n "$FEED_NAME" ]]; then args+=(--name "$FEED_NAME"); fi
@@ -164,6 +180,42 @@ runs:
           set -e
         fi
 
+        # The evidence-packet retest (#366). `scorecard retest --artifact` reads
+        # the result scored above, so the validator runs once. Exit codes: 0
+        # every finding cleared, 1 any still present, 2 it could not judge (a
+        # refused packet, an unreadable result, or a finding not comparable).
+        # It runs whatever the gate said: a threshold failure still leaves a
+        # scored result to retest, and when there is none the retest refuses
+        # with the reason rather than being skipped, because a skipped retest
+        # looks exactly like one that found nothing still present. Its stderr
+        # is kept so render_result.py can put that reason in the annotation.
+        retest_rc=""
+        retest_json=""
+        retest_md=""
+        retest_log=""
+        retest_args=()
+        if [[ -n "$EVIDENCE_PACKET" ]]; then
+          retest_json="${RUNNER_TEMP}/gtfs-scorecard-retest.json"
+          retest_md="${RUNNER_TEMP}/gtfs-scorecard-retest.md"
+          retest_log="${RUNNER_TEMP}/gtfs-scorecard-retest.log"
+          rm -f -- "$retest_json" "$retest_md" "$retest_log"
+          set +e
+          uv run --project "${GITHUB_ACTION_PATH}/pipeline" --locked --no-dev \
+            scorecard retest "$EVIDENCE_PACKET" --artifact "$result_json" \
+            --country "$FEED_COUNTRY" --json-out "$retest_json" --markdown-out "$retest_md" \
+            2>"$retest_log"
+          retest_rc=$?
+          set -e
+          cat "$retest_log" >&2
+          retest_args=(
+            --evidence-packet "$EVIDENCE_PACKET"
+            --retest-rc "$retest_rc"
+            --retest-json "$retest_json"
+            --retest-markdown "$retest_md"
+            --retest-log "$retest_log"
+          )
+        fi
+
         set +e
         python "${GITHUB_ACTION_PATH}/action/render_result.py" \
           --json "$result_json" \
@@ -175,7 +227,8 @@ runs:
           --diff-rc "$diff_rc" \
           --diff-markdown "$diff_md" \
           --fail-on-regression "$FAIL_ON_REGRESSION" \
-          --sarif "$SARIF_OUT"
+          --sarif "$SARIF_OUT" \
+          ${retest_args[@]+"${retest_args[@]}"}
         render_rc=$?
         set -e
         if [[ "$gate_rc" -ne 0 ]]; then exit "$gate_rc"; fi

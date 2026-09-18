@@ -36,6 +36,7 @@ Three rules carry the honesty of the verdicts.
 
 from __future__ import annotations
 
+import json
 import urllib.parse
 from pathlib import Path
 from typing import Any
@@ -79,6 +80,10 @@ _LABELS = {
 
 class PacketError(ValueError):
     """The packet cannot be retested. Raised before any feed is fetched."""
+
+
+class ArtifactError(ValueError):
+    """An already-scored artifact passed with ``--artifact`` cannot be retested."""
 
 
 Contract = tuple[str, str, str, str, str, tuple[str, ...]]
@@ -196,6 +201,68 @@ def describe_source(feed: str) -> str:
     if urllib.parse.urlparse(feed).scheme in {"http", "https"}:
         return feed
     return f"local file {Path(feed).name}"
+
+
+def read_scored_artifact(path: Path, *, country: str) -> dict[str, Any]:
+    """Read an artifact `scorecard try --json-out` already wrote, for ``--artifact``.
+
+    This is how the Action's `evidence-packet` input retests a feed without
+    running the validator a second time: it hands over the artifact the run
+    has just scored. Everything that would let a retest judge something other
+    than that scored feed is refused here, with the reason, and never reaches
+    the comparator:
+
+    * a file that is missing, unreadable or not JSON;
+    * JSON that is not a scorecard artifact, meaning it has no ``categories``
+      object. Read on, it would give every finding "not comparable" for want
+      of a producer contract, and that would blame the packet for a wrong
+      path.
+    * an artifact scored under a different validator country from the one
+      named. The packet does not record a country, so ``--country`` is the
+      only statement of which rules the packet was scored under, and an
+      artifact validated under another country's rules is not that
+      measurement. An artifact records its country only when it is not the
+      US (``publish.build_artifact``), so a missing one reads as US.
+    """
+    try:
+        text = path.read_text()
+    except OSError as exc:
+        raise ArtifactError(
+            f"the scored artifact {path} could not be read ({exc.strerror or exc})"
+        ) from exc
+    try:
+        artifact = json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise ArtifactError(
+            f"the scored artifact {path} is not JSON ({exc.msg} at line {exc.lineno})"
+        ) from exc
+    if not isinstance(artifact, dict) or not isinstance(artifact.get("categories"), dict):
+        raise ArtifactError(
+            f"{path} is not a scorecard artifact: it has no categories to read findings from"
+        )
+    agency = artifact.get("agency")
+    scored = (agency.get("country") if isinstance(agency, dict) else None) or "US"
+    if scored != country:
+        raise ArtifactError(
+            f"{path} was scored with validator country {scored}, not {country}; the "
+            "retest has to read the measurement the packet was made under"
+        )
+    return artifact
+
+
+def artifact_source(artifact: dict[str, Any], path: Path) -> str:
+    """How the record names the feed behind an already-scored artifact.
+
+    The feed the artifact scored, named as :func:`describe_source` names one
+    (``scorecard try`` already records a local zip by file name only). An
+    artifact that does not say which feed it scored is named by its own file
+    name, which is all that is known about it.
+    """
+    feed = artifact.get("feed")
+    url = feed.get("static_url") if isinstance(feed, dict) else None
+    if isinstance(url, str) and url:
+        return describe_source(url)
+    return f"scored artifact {path.name}"
 
 
 def _contract_dict(contract: Contract) -> dict[str, Any]:

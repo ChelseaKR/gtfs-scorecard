@@ -1903,47 +1903,88 @@ def _cmd_evidence_packet(args: argparse.Namespace, parser: argparse.ArgumentPars
     return 0
 
 
+#: `retest` options that only mean something when it scores FEED itself.
+_RETEST_FEED_ONLY = (("--name", "name"), ("--date", "date"), ("--large-feed", "large_feed"))
+
+
 def _cmd_retest(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
-    """Score a new export and check it against an evidence packet (#366).
+    """Check a new export against an evidence packet (#366).
 
-    The packet is read and validated before anything is fetched, so a refused
-    packet costs no download and no validator run. Exit 0 when every packet
-    finding is cleared, 1 when any is still present, and 2 for anything this
-    command could not judge: a refused packet, a feed that could not be scored,
-    or a finding that is not comparable.
+    The export is either scored here (FEED) or was already scored by
+    `scorecard try --json-out` (``--artifact``), which is how the Action's
+    `evidence-packet` input avoids running the validator twice. The packet is
+    read and validated first either way, so a refused packet costs no download,
+    no validator run and no artifact read. Exit 0 when every packet finding is
+    cleared, 1 when any is still present, and 2 for anything this command could
+    not judge: a refused packet, a feed that could not be scored, an artifact
+    that could not be read, or a finding that is not comparable.
     """
-    from .retest import (
-        PacketError,
-        build_retest_record,
-        describe_source,
-        render_retest_markdown,
-        retest_exit_code,
-        validate_packet,
-    )
+    from .retest import PacketError, validate_packet
 
+    if bool(args.feed) == bool(args.artifact):
+        parser.error("give exactly one of FEED to score or --artifact for an export already scored")
+    if args.artifact:
+        # Refused rather than ignored: the artifact was scored already, so a
+        # name, date or large-feed ceiling given here would change nothing
+        # while reading as though it had.
+        ignored = [flag for flag, attr in _RETEST_FEED_ONLY if getattr(args, attr)]
+        if ignored:
+            parser.error(f"{', '.join(ignored)} apply only when retest scores FEED itself")
     packet_path = Path(args.packet)
     try:
         packet = validate_packet(json.loads(packet_path.read_text()))
     except (OSError, json.JSONDecodeError, PacketError) as exc:
-        log.error("refusing %s before fetching anything: %s", packet_path, exc)
+        log.error(
+            "refusing %s before %s: %s",
+            packet_path,
+            "reading the scored artifact" if args.artifact else "fetching anything",
+            exc,
+        )
         return 2
+    scored = _retest_scored(args, packet)
+    if scored is None:
+        return 2
+    return _write_retest(args, packet, *scored)
+
+
+def _retest_scored(
+    args: argparse.Namespace, packet: dict[str, Any]
+) -> tuple[dict[str, Any], str] | None:
+    """The retest's artifact and how the record names its feed, or ``None`` after
+    logging why there is none. A feed nobody could read is a retest nobody could
+    judge, not a finding that is still present, so the caller exits 2 for it."""
+    from .retest import ArtifactError, artifact_source, describe_source, read_scored_artifact
+
+    if args.artifact:
+        path = Path(args.artifact)
+        try:
+            artifact = read_scored_artifact(path, country=args.country)
+        except ArtifactError as exc:
+            log.error("cannot retest: %s", exc)
+            return None
+        return artifact, artifact_source(artifact, path)
     try:
         artifact, _report = run_adhoc_detailed(
             args.feed,
             args.name or str(packet["agency"].get("name") or "") or None,
-            args.date,
+            args.date or utc_today(),
             country=args.country,
             large_feed=args.large_feed,
         )
     except Exception as exc:
-        # The same breadth `scorecard try` catches. Here it is exit 2, not 1: a
-        # feed nobody could read is a retest nobody could judge, not a finding
-        # that is still present.
+        # The same breadth `scorecard try` catches.
         log.error("could not score %s: %s", args.feed, exc)
-        return 2
-    record = build_retest_record(
-        packet, artifact, retest_source=describe_source(args.feed), country=args.country
-    )
+        return None
+    return artifact, describe_source(args.feed)
+
+
+def _write_retest(
+    args: argparse.Namespace, packet: dict[str, Any], artifact: dict[str, Any], source: str
+) -> int:
+    """Build the retest record, write and print it, and return its exit code."""
+    from .retest import build_retest_record, render_retest_markdown, retest_exit_code
+
+    record = build_retest_record(packet, artifact, retest_source=source, country=args.country)
     markdown = render_retest_markdown(record)
     if args.json_out:
         out = Path(args.json_out)
@@ -4292,7 +4333,19 @@ def main(argv: list[str] | None = None) -> int:
     retest.add_argument(
         "packet", help="evidence packet JSON written by `scorecard evidence-packet --format json`"
     )
-    retest.add_argument("feed", help="direct link or local path to the new GTFS Schedule zip")
+    retest.add_argument(
+        "feed",
+        nargs="?",
+        help="direct link or local path to the new GTFS Schedule zip (or use --artifact)",
+    )
+    retest.add_argument(
+        "--artifact",
+        help=(
+            "scorecard JSON the export was already scored into by `scorecard try "
+            "--json-out`, to retest instead of scoring FEED; the Action's "
+            "evidence-packet input uses this so the validator runs once"
+        ),
+    )
     retest.add_argument(
         "--country",
         type=_country_arg,
@@ -4308,8 +4361,7 @@ def main(argv: list[str] | None = None) -> int:
     retest.add_argument(
         "--date",
         type=dt.date.fromisoformat,
-        default=utc_today(),
-        help="snapshot date to score the export under (default: today in UTC)",
+        help="snapshot date to score FEED under (default: today in UTC)",
     )
     retest.add_argument(
         "--large-feed",
