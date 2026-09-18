@@ -326,6 +326,24 @@ POINT_IN_TIME: list[tuple[str, str, str]] = [
         r"would require more than ([\d,]+)\s*\n?records",
         "the 100x scale argument's own arithmetic, floored alongside its input",
     ),
+    # The 2026-09-15 launch draft quotes one read of /api/v1/coverage.json,
+    # reproduced verbatim in its grounding note, and its post copy repeats
+    # that read. These two name the figure itself rather than a digit class:
+    # a dated value never moves, so an edit that "refreshes" it stops matching
+    # here and has to be argued again instead of inheriting the exemption.
+    (
+        "docs/launch-content-2026-09-15.md",
+        r"(2,671)(?: curated feed)? records",
+        "the registry count the dated launch draft read from coverage.json on "
+        "2026-09-15, after the 2026-09-14 NTD-matched sync pass",
+    ),
+    (
+        "docs/launch-content-2026-09-15.md",
+        r"(2,400)\+ published scorecards",
+        "rounded down from the 2,451 live pages that same 2026-09-15 read "
+        "returned; the pages denominator here is the snapshot frozen at "
+        "2026-08-07, so no rule can gate a live page count",
+    ),
 ]
 
 
