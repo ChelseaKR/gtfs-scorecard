@@ -1744,3 +1744,8 @@ def test_canada_equity_writes_when_every_published_agency_reports(
     written = json.loads(out_path.read_text())
     assert set(written["agencies"]) == {"barrie-transit", "london-transit"}
     assert written["agencies"]["barrie-transit"]["need_tier"] == "moderate"
+    # The stamp a page cites when it joins these tiers (issue #367).
+    assert written["source"] == "Canadian Index of Multiple Deprivation 2021"
+    import datetime
+
+    assert datetime.date.fromisoformat(written["generated_on"])

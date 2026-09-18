@@ -29,6 +29,26 @@ the declared public surface).
 
 ### Added
 
+- **A consequence block on every published finding (artifact schema 1.19,
+  part of [#367](https://github.com/ChelseaKR/gtfs-scorecard/issues/367)).**
+  `publish()` now attaches `consequence.py`'s block to each category finding
+  and each `top_fixes` entry, so both the full score and the freshness sweep
+  write it. Reach is computed from the artifact itself. Ridership and
+  served-area need are stated as absences with a reason. A non-US feed carries
+  `outside_ridership_scope`, and a record sharing an NTD reporter with another
+  carries `duplicate_ntd_reporter`. A US or Canadian feed otherwise carries
+  the new `not_joined_here`: the writer never reads the ridership snapshot or
+  the need overlays, and saying "no snapshot was supplied" would have been
+  false about the project. The schema accepts a value with an empty reason or
+  `null` with a reason, and nothing else, so an absence cannot be published
+  as zero. The agency page, call brief, board one-pager, and evidence packet
+  (schema 1.2) show each fix's reach and join rider-trips and need when they
+  are built, each with its source and snapshot date, or the plain reason there
+  is none. The ridership fetch and both need overlays now record the date the
+  pages cite, and an undated snapshot is not joined. The US tier is labelled
+  as statewide, because the ACS overlay is state-level. Fix order and grades
+  are unchanged.
+
 - **The Action's `evidence-packet` input, and `scorecard retest --artifact`
   (#366).** Set `evidence-packet` to a packet from `scorecard evidence-packet
   --format json` and the Action retests the feed it has just scored against

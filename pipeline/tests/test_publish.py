@@ -5,6 +5,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -851,3 +852,225 @@ def test_history_entry_letter_comes_from_its_own_score() -> None:
     artifact = make_artifact(dt.date(2026, 6, 19))
     point = _history_entry(_contradicting(artifact))
     assert (point["score"], point["grade"]) == (80.0, "B")
+
+
+# --- the consequence block on every finding (issue #367) ---------------------
+
+
+def _artifact_with_findings(
+    agency: Agency = AGENCY, *, ntd_id: str | None = "90142"
+) -> dict[str, Any]:
+    from scorecard_pipeline.metrics import Finding
+
+    def make(code: str, count: int, deduction: float) -> Finding:
+        return Finding(
+            code=code,
+            severity="WARNING",
+            count=count,
+            what="w",
+            why="y",
+            fix="f",
+            effort="e",
+            deduction=deduction,
+        )
+
+    card = build_scorecard(
+        [
+            CategoryResult(
+                name="completeness",
+                score=70.0,
+                summary="s",
+                findings=[
+                    make("scorecard_wheelchair_boarding_unknown", 120, 10.0),
+                    make("scorecard_orphan_stops", 4, 2.0),
+                    make("scorecard_no_fare_data", 1, 5.0),
+                ],
+            )
+        ]
+    )
+    artifact = build_artifact(agency, make_fetch(dt.date(2026, 6, 11)), card, GENERATED_AT)
+    artifact["geo"] = {"stop_count": 296}
+    artifact["routability"] = {"boardable_stops": 274, "trips_total": 1794}
+    if ntd_id is not None:
+        artifact["ntd_id_alignment"] = {"ntd_id": ntd_id}
+    return artifact
+
+
+def _every_block(published: dict[str, Any]) -> list[dict[str, Any]]:
+    blocks = [
+        f["consequence"]
+        for cat in published["categories"].values()
+        for f in cat.get("findings", [])
+    ]
+    blocks.extend(f["consequence"] for f in published["top_fixes"])
+    return blocks
+
+
+def test_publish_attaches_a_consequence_block_to_every_finding() -> None:
+    dated = publish(_artifact_with_findings())
+    published = json.loads(dated.read_text())
+    blocks = _every_block(published)
+    assert len(blocks) == 3 + len(published["top_fixes"])
+    assert published["top_fixes"], "the fixture must produce top fixes to check"
+    by_code = {b["code"]: b for b in blocks}
+    assert by_code["scorecard_wheelchair_boarding_unknown"]["reach"]["total"] == 296
+    assert by_code["scorecard_orphan_stops"]["reach"]["total_source"] == (
+        "routability.boardable_stops"
+    )
+    assert by_code["scorecard_no_fare_data"]["reach"]["reason"] == "feed_level"
+    # latest.json is the same record as the dated evidence.
+    latest = json.loads((dated.parent / "latest.json").read_text())
+    assert _every_block(latest) == blocks
+
+
+def test_published_absences_are_never_written_as_values() -> None:
+    """A US record's writer joins neither input, and says so rather than zero."""
+    published = json.loads(publish(_artifact_with_findings()).read_text())
+    for block in _every_block(published):
+        assert block["ridership"]["annual_rider_trips"] is None
+        assert block["ridership"]["reason"] == "not_joined_here"
+        assert block["served_area_need"]["tier"] is None
+        assert block["served_area_need"]["reason"] == "not_joined_here"
+        assert "annual rider-trips" not in block["line"]
+        assert not any("was supplied" in note for note in block["absences"])
+
+
+def test_a_canadian_record_publishes_the_ntd_scope_absence() -> None:
+    canadian = Agency(
+        id="grt",
+        name="Grand River Transit",
+        static_gtfs_url="https://example.org/grt.zip",
+        country="CA",
+    )
+    published = json.loads(publish(_artifact_with_findings(canadian, ntd_id=None)).read_text())
+    for block in _every_block(published):
+        assert block["ridership"] == {
+            "annual_rider_trips": None,
+            "ntd_id": None,
+            "reason": "outside_ridership_scope",
+        }
+        assert block["served_area_need"]["scale"] == "ca_cimd"
+        assert any("United States National Transit Database" in n for n in block["absences"])
+
+
+def test_two_records_sharing_an_ntd_reporter_both_publish_an_absence() -> None:
+    from scorecard_pipeline.config import AGENCIES
+
+    first = Agency(id="a1", name="A one", static_gtfs_url="https://e.org/1.zip", ntd_id="90142")
+    second = Agency(id="a2", name="A two", static_gtfs_url="https://e.org/2.zip", ntd_id="0090142")
+    alone = Agency(id="a3", name="A three", static_gtfs_url="https://e.org/3.zip", ntd_id="90001")
+    for agency in (first, second, alone):
+        AGENCIES[agency.id] = agency
+
+    for agency in (first, second):
+        published = json.loads(publish(_artifact_with_findings(agency)).read_text())
+        for block in _every_block(published):
+            assert block["ridership"]["annual_rider_trips"] is None
+            assert block["ridership"]["reason"] == "duplicate_ntd_reporter"
+
+    published = json.loads(publish(_artifact_with_findings(alone, ntd_id="90001")).read_text())
+    assert {b["ridership"]["reason"] for b in _every_block(published)} == {"not_joined_here"}
+
+
+def test_a_retired_alias_does_not_quarantine_its_successors_reporter() -> None:
+    from scorecard_pipeline.config import AGENCIES
+
+    live = Agency(id="live", name="Live", static_gtfs_url="https://e.org/l.zip", ntd_id="90142")
+    retired = Agency(
+        id="old",
+        name="Old",
+        static_gtfs_url="https://e.org/o.zip",
+        ntd_id="90142",
+        alias_of="live",
+    )
+    AGENCIES.update({"live": live, "old": retired})
+    published = json.loads(publish(_artifact_with_findings(live)).read_text())
+    assert {b["ridership"]["reason"] for b in _every_block(published)} == {"not_joined_here"}
+
+
+def test_publish_rebuilds_the_block_a_sweep_carried_forward() -> None:
+    artifact = _artifact_with_findings()
+    first = json.loads(publish(artifact).read_text())
+    carried = json.loads(json.dumps(first))
+    # The sweep copies category findings forward and rebuilds top_fixes from
+    # their fields, so the block arrives stale on one list and absent on the other.
+    for cat in carried["categories"].values():
+        for f in cat.get("findings", []):
+            f["consequence"]["reach"]["affected"] = 999_999
+    for fix in carried["top_fixes"]:
+        del fix["consequence"]
+    again = json.loads(publish(carried).read_text())
+    assert _every_block(again) == _every_block(first)
+
+
+def test_the_schema_refuses_an_absence_written_as_a_value() -> None:
+    """Negative controls: each sabotage must land, and each must be refused.
+
+    The schema's only job here is the portfolio's most common defect: a missing
+    number published as zero. A sabotage that silently failed to apply would
+    read as a pass, so every mutation is asserted before it is validated.
+    """
+    import copy
+
+    import jsonschema
+
+    from scorecard_pipeline.publish import validate_artifact
+
+    published = json.loads(publish(_artifact_with_findings()).read_text())
+    validate_artifact(published)  # the untouched record is valid
+
+    def sabotaged(path: tuple[str, str], value: object) -> dict[str, Any]:
+        bad: dict[str, Any] = copy.deepcopy(published)
+        block = bad["top_fixes"][0]["consequence"]
+        block[path[0]][path[1]] = value
+        assert bad["top_fixes"][0]["consequence"][path[0]][path[1]] == value
+        assert bad != published
+        return bad
+
+    for path, value in (
+        (("ridership", "annual_rider_trips"), 0),
+        (("served_area_need", "tier"), "lower"),
+        (("reach", "reason"), "feed_level"),
+        (("ridership", "reason"), ""),
+        # An absent identifier written as an empty string reads as a value too.
+        (("ridership", "ntd_id"), ""),
+        (("served_area_need", "scale"), ""),
+    ):
+        bad = sabotaged(path, value)
+        with pytest.raises(jsonschema.ValidationError):
+            validate_artifact(bad)
+
+
+def test_the_schema_refuses_a_share_for_a_finding_with_no_basis() -> None:
+    """A feed-level finding has no share, even one that looks plausible."""
+    import copy
+
+    import jsonschema
+
+    from scorecard_pipeline.publish import validate_artifact
+
+    published = json.loads(publish(_artifact_with_findings()).read_text())
+    findings = published["categories"]["completeness"]["findings"]
+    index = next(i for i, f in enumerate(findings) if f["consequence"]["reach"]["basis"] == "none")
+    bad = copy.deepcopy(published)
+    reach = bad["categories"]["completeness"]["findings"][index]["consequence"]["reach"]
+    reach.update({"share": 1.0, "affected": 1, "total": 1, "reason": ""})
+    assert (
+        bad["categories"]["completeness"]["findings"][index]["consequence"]["reach"]["share"] == 1.0
+    )
+    with pytest.raises(jsonschema.ValidationError):
+        validate_artifact(bad)
+
+
+def test_the_schema_still_accepts_a_joined_value() -> None:
+    """The controls above are not vacuous: a real value with no reason passes."""
+    import copy
+
+    from scorecard_pipeline.publish import validate_artifact
+
+    published = json.loads(publish(_artifact_with_findings()).read_text())
+    good = copy.deepcopy(published)
+    block = good["top_fixes"][0]["consequence"]
+    block["ridership"] = {"annual_rider_trips": 0, "ntd_id": "90142", "reason": ""}
+    block["served_area_need"] = {"tier": "high", "scale": "us_acs", "reason": ""}
+    validate_artifact(good)

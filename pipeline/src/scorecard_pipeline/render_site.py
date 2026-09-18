@@ -50,6 +50,7 @@ from .comparisons import (
 from .completeness import WEIGHTS as COMPLETENESS_WEIGHTS
 from .config import Agency, artifacts_dir
 from .conformance import assess as conformance_assess
+from .consequence import FeedContext
 from .constants_export import GRADE_RANK
 from .directory import build_directory
 from .feed_provenance import feed_source_lede
@@ -2693,6 +2694,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     effort_bands: dict[str, str] | None = None,
     seo_metadata: AgencySeoMetadata | None = None,
     program_ids: set[str] | None = None,
+    feed_context: FeedContext | None = None,
 ) -> str:
     name = artifact["agency"]["id"], artifact["agency"]["name"]
     agency_id, agency_name = name
@@ -2753,10 +2755,16 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                 f'<div class="alert"{finding_attrs}><span class="badge{cls}">Fix {i + 1:02d}</span>'
                 f'<div><p class="afix">{esc(f["fix"])}{owner_tag}</p>'
                 f'<p class="awhy">{esc(f["what"])} {esc(f["why"])}</p>'
+                f'<p class="awhy">{esc(_reach_line(f, artifact))}</p>'
                 f'<p class="aeta">⏱ {esc(f["effort"])}{worth}</p>'
                 f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</div></div>"
             )
-        fixes_html = '<div class="alerts">' + "".join(alerts) + "</div>"
+        fixes_html = (
+            '<div class="alerts">'
+            + "".join(alerts)
+            + "</div>"
+            + _consequence_context_html(artifact, feed_context, "consequence-h")
+        )
     else:
         fixes_html = (
             '<p class="all-clear">Nothing urgent. This feed passed every check we '
@@ -3202,6 +3210,7 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     liveness: dict[str, Any] | None = None,
     program_ids: set[str] | None = None,
     effort_bands: dict[str, str] | None = None,
+    feed_context: FeedContext | None = None,
 ) -> str:
     """A calm, print-clean one-page brief for a program liaison to have open or
     printed during an agency check-in. Renders only precomputed artifact fields:
@@ -3228,11 +3237,14 @@ def _render_brief(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             f'<li class="brief-fix"{_finding_card_attrs(f)}>'
             f'<p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
             f'<p class="brief-fix-why">{esc(f.get("what", ""))} {esc(f.get("why", ""))}</p>'
+            f'<p class="brief-fix-why">{esc(_reach_line(f, artifact))}</p>'
             f'<p class="brief-fix-eta">Effort: {esc(f.get("effort", ""))}</p>'
             f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</li>"
             for f in fixes
         )
-        fixes_html = f'<ol class="brief-fixes">{fix_items}</ol>'
+        fixes_html = f'<ol class="brief-fixes">{fix_items}</ol>' + _consequence_context_html(
+            artifact, feed_context, "brief-consequence-h"
+        )
     else:
         fixes_html = "<p>Nothing urgent. This feed passed every check we translate into a fix.</p>"
 
@@ -3428,6 +3440,7 @@ def _render_board_page(
     prev_artifact: dict[str, Any] | None = None,
     dir_record: dict[str, Any] | None = None,
     effort_bands: dict[str, str] | None = None,
+    feed_context: FeedContext | None = None,
 ) -> str:
     """A one-page summary written for an agency's board packet (docs/
     RESEARCH-ROADMAP.md E6). The call brief prepares the liaison; this page is
@@ -3468,6 +3481,7 @@ def _render_board_page(
             f'<li class="brief-fix"{_finding_card_attrs(f)}>'
             f'<p class="brief-fix-do">{esc(f.get("fix", ""))}</p>'
             f'<p class="brief-fix-why">{esc(f.get("what", ""))} {esc(f.get("why", ""))}</p>'
+            f'<p class="brief-fix-why">{esc(_reach_line(f, artifact))}</p>'
             f'<p class="brief-fix-eta">Estimated effort: {esc(f.get("effort", ""))}</p>'
             f"{_effort_band_html(str(f.get('code', '')), effort_bands)}</li>"
             for f in fixes
@@ -3476,6 +3490,7 @@ def _render_board_page(
             "<p>Three improvements, in priority order, each sized so the board "
             "can see what it is approving:</p>"
             f'<ol class="brief-fixes">{ask_items}</ol>'
+            + _consequence_context_html(artifact, feed_context, "board-consequence-h")
         )
     else:
         asks_html = (
@@ -3903,6 +3918,45 @@ def _shapes_readiness_html(artifact: dict[str, Any]) -> str:
         '<dl class="standards-list">'
         f'<dt>shapes.txt covers your trips <span class="ntd-status {_ntd_status_class(status)}">'
         f"{esc(label)}</span></dt><dd>{body}</dd></dl>"
+    )
+
+
+def _reach_line(fix: dict[str, Any], artifact: dict[str, Any]) -> str:
+    """What fixing this finding covers, computed from the artifact's own counts.
+
+    Read from the artifact rather than from its stored ``consequence`` block, so a
+    record published before schema 1.19 gets the same sentence.
+    """
+    from .consequence import reach_for, reach_sentence
+
+    return reach_sentence(reach_for(fix, artifact))
+
+
+# Stated under every consequence block. It says what the two joined numbers are
+# not: a ranking, or an input to the grade or the fix order.
+_CONSEQUENCE_NOT_A_RANKING = (
+    "These describe this feed only. They do not rank agencies, and they do not change "
+    "the grade or the order of the fixes."
+)
+
+
+def _consequence_context_html(
+    artifact: dict[str, Any], feed_context: FeedContext | None, heading_id: str
+) -> str:
+    """Rider-trips and need for the feed behind the fixes, joined at render time.
+
+    Each line is either a number with its source and snapshot date or the reason
+    there is none. ``feed_context=None`` means the caller holds no snapshots, and
+    the block then says that plainly rather than going quiet (issue #367).
+    """
+    from .consequence import join_feed_context
+
+    context = feed_context if feed_context is not None else join_feed_context(artifact)
+    items = "".join(f"<li>{esc(line)}</li>" for line in context.lines())
+    return (
+        f'<div class="consequence"><h3 id="{esc(heading_id)}">Riders and need behind these '
+        f"fixes</h3><ul>{items}</ul>"
+        f'<p class="fineprint">{esc(_CONSEQUENCE_NOT_A_RANKING)}</p></div>'
     )
 
 
@@ -11463,6 +11517,20 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
         except (json.JSONDecodeError, OSError):
             canada_equity = {}
 
+    # The snapshots the consequence block joins at render time (issue #367):
+    # the NTD ridership CSV, the state-level ACS overlay, and the CIMD overlay,
+    # each with the stamp it records. The shared-reporter quarantine is computed
+    # over canonical registry records, as publish() and the rollups do.
+    from .config import AGENCIES as _REGISTRY
+    from .consequence import join_feed_context
+    from .consequence_sources import load_render_sources
+    from .ridership import duplicate_ntd_reporter_ids as _duplicate_reporters
+
+    consequence_sources = load_render_sources(
+        root,
+        frozenset(_duplicate_reporters(a for a in _REGISTRY.values() if a.is_canonical_feed)),
+    )
+
     # Published rollup slugs, read once so an agency page and its brief link a
     # portfolio page only when that page will actually exist. Gated on the
     # payload file the render loop below reads, not on the index listing it:
@@ -11530,6 +11598,11 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             # bloating it. Absent or unreadable geometry simply means no stop list.
             stop_names = _geometry_stop_names(art / agency_id / "geometry.geojson")
             receipts = load_fixlog(art / agency_id)
+            feed_context = join_feed_context(
+                artifact,
+                consequence_sources,
+                us_state=str(by_id[agency_id].get("state") or ""),
+            )
             write(
                 f"agency/{agency_id}/index.html",
                 _render_agency(
@@ -11545,6 +11618,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                     effort_bands=effort_bands,
                     seo_metadata=agency_seo_metadata[agency_id],
                     program_ids=program_ids,
+                    feed_context=feed_context,
                 ),
                 f"{BASE_URL}/agency/{agency_id}/",
                 lastmod=str(artifact.get("snapshot_date") or "") or None,
@@ -11559,6 +11633,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                     liveness_state.get(agency_id),
                     program_ids,
                     effort_bands=effort_bands,
+                    feed_context=feed_context,
                 ),
             )
             # The board packet one-pager: same precomputed fields, different reader
@@ -11567,7 +11642,12 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
             write(
                 f"agency/{agency_id}/board/index.html",
                 _render_board_page(
-                    artifact, history, prev_artifact, by_id[agency_id], effort_bands=effort_bands
+                    artifact,
+                    history,
+                    prev_artifact,
+                    by_id[agency_id],
+                    effort_bands=effort_bands,
+                    feed_context=feed_context,
                 ),
             )
             # The durable clearance log, only once the collect step has recorded at

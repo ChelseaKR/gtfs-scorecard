@@ -3,6 +3,11 @@
 from .instance import BASE_URL as _BASE_URL
 from .instance import SITE_NAME as _SITE_NAME
 
+# 1.19: additive consequence block on every category finding and top fix:
+# network reach computed from the artifact, plus annual rider-trips and
+# served-area need as values or explicit absences. The per-agency writer
+# joins neither of the last two, so it states them as not_joined_here, never
+# as zero (issue #367). Grades and the scoring profile are unchanged.
 # 1.18: additive feed.source_provenance classification, separating registry
 # evidence about an official, third-party, archived, or unverified configured
 # source from fetch.source (how this run obtained the bytes), plus a versioned
@@ -51,7 +56,7 @@ from .instance import SITE_NAME as _SITE_NAME
 # reproducible, joinable to the Mobility Database, and reusable.
 # 1.3: additive freshness fields exposed to consumers (days_until_expiry in
 # index history, expiry_status in the catalog and rollup members).
-SCHEMA_VERSION = "1.18"
+SCHEMA_VERSION = "1.19"
 
 # The license the public scorecard data is offered under. Carried on the catalog
 # and directory documents so a consumer (OSS project, consultant, researcher)

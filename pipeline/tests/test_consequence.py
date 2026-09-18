@@ -375,6 +375,20 @@ def test_a_bare_artifact_still_yields_reach_plus_two_absences() -> None:
     assert len(result.absences) == 2
 
 
+def test_to_json_publishes_an_absent_identifier_as_null_not_empty() -> None:
+    payload = consequence_for(
+        finding("scorecard_feed_expired"), artifact(country="NZ", ntd_id=None)
+    )
+    as_json = payload.to_json()
+    assert as_json["ridership"]["ntd_id"] is None
+    assert as_json["served_area_need"]["scale"] is None
+    assert as_json["reach"]["basis_label"] is None
+    assert as_json["reach"]["total_source"] is None
+    # Reasons stay strings: "" means nothing is missing, and here each is set.
+    assert as_json["ridership"]["reason"] == OUTSIDE_RIDERSHIP_SCOPE
+    assert as_json["served_area_need"]["reason"] == OUTSIDE_NEED_SCOPE
+
+
 def test_to_json_is_serializable_and_complete() -> None:
     result = consequence_for(
         finding("scorecard_orphan_stops", 22),
@@ -455,3 +469,194 @@ def test_every_mapped_basis_is_a_known_basis() -> None:
     from scorecard_pipeline.consequence import BASIS_LABEL
 
     assert set(FINDING_BASIS.values()) <= set(BASIS_LABEL)
+
+
+# --- not joined where the record is written (issue #367) ---------------------
+
+
+def test_an_unjoined_snapshot_is_its_own_reason_not_missing_data() -> None:
+    """The writer that never reads the snapshot must not claim none was supplied.
+
+    "No ridership snapshot was supplied" is true of a score shard and false about
+    the project, which fetches the snapshot one job later. The two reasons, and
+    the sentences they publish, must stay distinct.
+    """
+    from scorecard_pipeline.consequence import NOT_JOINED_HERE
+
+    unjoined = ridership_for(artifact(), {"90142": 1_234_567}, joined=False)
+    assert unjoined.annual_rider_trips is None
+    assert unjoined.ntd_id == "90142"
+    assert unjoined.reason == NOT_JOINED_HERE
+    assert unjoined.reason != NO_RIDERSHIP_DATA
+
+    result = consequence_for(
+        finding("scorecard_orphan_stops", 22), artifact(), ridership_joined=False
+    )
+    notes = " ".join(result.absences)
+    assert "agency page and its reports add them" in notes
+    assert "was supplied" not in notes
+
+
+def test_unjoined_ridership_keeps_every_absence_the_artifact_settles_alone() -> None:
+    from scorecard_pipeline.consequence import NOT_JOINED_HERE
+
+    assert (
+        ridership_for(artifact(country="CA", ntd_id=None), joined=False).reason
+        == OUTSIDE_RIDERSHIP_SCOPE
+    )
+    assert ridership_for(artifact(ntd_id=None), joined=False).reason == NO_NTD_ID
+    shared = ridership_for(artifact(), quarantined_ntd_ids=["90142"], joined=False)
+    assert shared.reason == DUPLICATE_NTD_REPORTER
+    assert ridership_for(artifact(ntd_id="11111"), joined=False).reason == NOT_JOINED_HERE
+
+
+def test_unjoined_need_keeps_its_scale_and_the_out_of_scope_absence() -> None:
+    from scorecard_pipeline.consequence import NOT_JOINED_HERE
+
+    us = served_area_need_for(artifact(), "high", joined=False)
+    assert (us.tier, us.scale, us.reason) == (None, "us_acs", NOT_JOINED_HERE)
+    ca = served_area_need_for(artifact(country="CA"), joined=False)
+    assert (ca.tier, ca.scale, ca.reason) == (None, "ca_cimd", NOT_JOINED_HERE)
+    elsewhere = served_area_need_for(artifact(country="NZ"), joined=False)
+    assert (elsewhere.tier, elsewhere.reason) == (None, OUTSIDE_NEED_SCOPE)
+
+
+def _artifact_with_findings(**kwargs: Any) -> dict[str, Any]:
+    art = artifact(**kwargs)
+    art["categories"] = {
+        "completeness": {
+            "name": "completeness",
+            "status": "measured",
+            "findings": [
+                finding("scorecard_wheelchair_boarding_unknown", 296),
+                finding("scorecard_feed_expired"),
+            ],
+        },
+        "realtime": {"name": "realtime", "status": "not_yet_measured"},
+    }
+    art["top_fixes"] = [{**finding("scorecard_orphan_stops", 22), "rank": 1}]
+    return art
+
+
+def test_with_consequences_covers_every_finding_and_leaves_the_input_alone() -> None:
+    from scorecard_pipeline.consequence import NOT_JOINED_HERE, with_consequences
+
+    original = _artifact_with_findings()
+    result = with_consequences(original)
+
+    assert "consequence" not in original["top_fixes"][0]
+    assert all("consequence" not in f for f in original["categories"]["completeness"]["findings"])
+
+    blocks = [f["consequence"] for f in result["categories"]["completeness"]["findings"]]
+    blocks.append(result["top_fixes"][0]["consequence"])
+    assert [b["code"] for b in blocks] == [
+        "scorecard_wheelchair_boarding_unknown",
+        "scorecard_feed_expired",
+        "scorecard_orphan_stops",
+    ]
+    assert blocks[0]["reach"]["share"] == 1.0
+    assert blocks[1]["reach"]["share"] is None
+    assert blocks[1]["reach"]["reason"] == FEED_LEVEL
+    assert blocks[2]["reach"]["affected"] == 22
+    for block in blocks:
+        assert block["ridership"] == {
+            "annual_rider_trips": None,
+            "ntd_id": "90142",
+            "reason": NOT_JOINED_HERE,
+        }
+        assert block["served_area_need"] == {
+            "tier": None,
+            "scale": "us_acs",
+            "reason": NOT_JOINED_HERE,
+        }
+        assert len(block["absences"]) == 2
+    assert result["top_fixes"][0]["rank"] == 1
+    assert result["categories"]["realtime"] == {"name": "realtime", "status": "not_yet_measured"}
+
+
+def test_with_consequences_replaces_a_stale_block_instead_of_trusting_it() -> None:
+    from scorecard_pipeline.consequence import with_consequences
+
+    stale = _artifact_with_findings()
+    stale["top_fixes"][0]["consequence"] = {"code": "scorecard_orphan_stops", "stale": True}
+    result = with_consequences(stale)
+    assert "stale" not in result["top_fixes"][0]["consequence"]
+    assert result["top_fixes"][0]["consequence"]["reach"]["affected"] == 22
+
+
+def test_with_consequences_tolerates_shapes_it_does_not_own() -> None:
+    from scorecard_pipeline.consequence import with_consequences
+
+    odd = artifact()
+    odd["categories"] = {"correctness": "not a dict", "freshness": {"findings": ["x"]}}
+    odd["top_fixes"] = "not a list"
+    result = with_consequences(odd)
+    assert result["categories"] == {"correctness": "not a dict", "freshness": {"findings": ["x"]}}
+    assert result["top_fixes"] == "not a list"
+    assert "categories" not in with_consequences(artifact())
+
+
+def test_the_canadian_and_shared_reporter_cases_named_by_the_issue() -> None:
+    """#367's "done when": a Canadian record and two US records sharing an id."""
+    from scorecard_pipeline.consequence import with_consequences
+
+    canadian = with_consequences(_artifact_with_findings(country="CA", ntd_id=None))
+    block = canadian["top_fixes"][0]["consequence"]
+    assert block["ridership"]["reason"] == OUTSIDE_RIDERSHIP_SCOPE
+    assert block["ridership"]["annual_rider_trips"] is None
+    assert any("United States National Transit Database" in note for note in block["absences"])
+
+    for record in (_artifact_with_findings(), _artifact_with_findings(ntd_id="0090142")):
+        shared = with_consequences(record, quarantined_ntd_ids={"90142"})
+        assert shared["top_fixes"][0]["consequence"]["ridership"]["reason"] == (
+            DUPLICATE_NTD_REPORTER
+        )
+
+
+def _published_schema_enum(definition: str, field: str) -> set[str | None]:
+    import json
+
+    path = Path(__file__).resolve().parents[2] / "web" / "schemas" / "artifact.schema.json"
+    schema = json.loads(path.read_text())
+    return set(schema["$defs"][definition]["properties"][field]["enum"])
+
+
+def test_the_published_schema_lists_every_absence_reason_the_module_can_emit() -> None:
+    """A new reason must reach the schema in the same change, or publish fails."""
+    from scorecard_pipeline import consequence as c
+
+    ridership = {"", *c._RIDERSHIP_ABSENCE} - c.RENDER_ONLY_REASONS
+    need = {"", *c._NEED_ABSENCE} - c.RENDER_ONLY_REASONS
+    assert _published_schema_enum("consequenceRidership", "reason") == ridership
+    assert _published_schema_enum("consequenceNeed", "reason") == need
+    # And the render-only set is not quietly empty.
+    assert c.UNDATED_SNAPSHOT in c.RENDER_ONLY_REASONS
+    assert c.UNDATED_SNAPSHOT not in _published_schema_enum("consequenceRidership", "reason")
+    reach_reasons = {
+        "",
+        *c._REACH_ABSENCE,
+        *c._NO_BASIS_REASON.values(),
+        c.DENOMINATOR_MISSING,
+        c.INCONSISTENT_COUNTS,
+    }
+    assert _published_schema_enum("consequenceReach", "reason") == reach_reasons
+    assert _published_schema_enum("consequenceNeed", "scale") == {None, *c.NEED_SCALES.values()}
+    assert _published_schema_enum("consequenceReach", "basis") == set(c.BASIS_LABEL)
+
+
+def test_the_new_absence_copy_clears_the_plain_language_bars() -> None:
+    import importlib.util
+
+    from scorecard_pipeline.consequence import _NEED_ABSENCE, _RIDERSHIP_ABSENCE, NOT_JOINED_HERE
+
+    path = Path(__file__).resolve().parents[1] / "scripts" / "check_readability.py"
+    spec = importlib.util.spec_from_file_location("check_readability", path)
+    assert spec is not None and spec.loader is not None
+    readability = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(readability)
+
+    for reason, text in (
+        ("ridership", _RIDERSHIP_ABSENCE[NOT_JOINED_HERE]),
+        ("need", _NEED_ABSENCE[NOT_JOINED_HERE]),
+    ):
+        assert readability.check_text(reason, text) == []
