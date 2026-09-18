@@ -737,3 +737,41 @@ def test_collect_still_refuses_to_retire_a_registered_agency_nothing_withdrew(
     )
     assert client.deletes == []
     assert f"{PREFIX}/unitrans/latest.json" in client.objects
+
+
+def test_a_staged_publish_root_still_honours_the_withdrawal_reindex_recorded(
+    tmp_path: Path, isolated_repo_root: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Intraday refresh and targeted score publish a stage, not the corpus.
+
+    `refresh.yml` stages only the feeds it changed or swept and passes that
+    directory as ``--root``, with the manifest reindex wrote under
+    ``data/artifacts``. A withdrawn agency is rarely in the stage, so the
+    withdrawal has to be read from the tree the manifest came from. Reading it
+    from ``--root`` is how Intraday refresh 35299487909 still exited 2 on the
+    commit that fixed the Daily scorecard.
+    """
+    from scorecard_pipeline.artifact_lifecycle import retirement_manifest_path
+    from scorecard_pipeline.cli import main
+    from scorecard_pipeline.config import artifacts_dir
+
+    _registry_with_a_withdrawal(isolated_repo_root)
+    corpus = artifacts_dir()
+    _write(corpus, "beloit-transit/2026-07-25.json", _empty_feed_artifact("2026-07-25"))
+    _write(corpus, "beloit-transit/latest.json", _empty_feed_artifact("2026-08-10"))
+    _write(corpus, "unitrans/2026-09-18.json", '{"snapshot_date": "2026-09-18"}')
+    assert main(["reindex"]) == 0
+    manifest = retirement_manifest_path(corpus)
+    assert json.loads(manifest.read_text())["agency_ids"] == ["beloit-transit"]
+
+    # The refresh stage: only the feed this cycle touched.
+    stage = tmp_path / "public-artifacts"
+    _write(stage, "unitrans/2026-09-18.json", '{"snapshot_date": "2026-09-18"}')
+    current = {f"{PREFIX}/beloit-transit/{name}" for name in MUTABLE_PUBLIC_ARTIFACT_NAMES}
+    client = _FakeS3({key: b"withdrawn F" for key in current})
+    monkeypatch.setattr(s3_publish, "s3_client", lambda workers: client)
+
+    assert main(_publish_args(stage, manifest)) == 0
+
+    assert not current & set(client.objects)
+    assert client.put_keys == [f"{PREFIX}/unitrans/2026-09-18.json"]

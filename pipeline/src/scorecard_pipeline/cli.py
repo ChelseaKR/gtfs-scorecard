@@ -3240,9 +3240,19 @@ def _cmd_publish_artifacts(args: argparse.Namespace, parser: argparse.ArgumentPa
     # manifest and the protection set agree on the id and every publish fails
     # closed. Only exclude ids the withdrawal actually covers right now;
     # anything else canonical stays protected against showing up unexplained.
+    #
+    # Ask that of the tree reindex wrote the manifest from, which is the
+    # directory the manifest sits in, not of --root. The two differ in the
+    # intraday refresh and the targeted score, which publish a staging tree
+    # holding only the feeds they touched. A withdrawn id is almost never among
+    # them, so asking --root found nothing withdrawn and refused the manifest
+    # anyway: Intraday refresh 35299487909, on #456's own commit.
+    lifecycle_root = (
+        args.retirement_manifest.parent if args.retirement_manifest is not None else args.root
+    )
     protected_agency_ids = {
         agency_id for agency_id, agency in AGENCIES.items() if agency.is_canonical_feed
-    } - set(withdrawn_now(load_corrections(), args.root))
+    } - set(withdrawn_now(load_corrections(), lifecycle_root))
 
     try:
         result = publish_tree(
