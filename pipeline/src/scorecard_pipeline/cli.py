@@ -69,8 +69,10 @@ from .validate import (
     run_validator,
     validator_country_code,
 )
+from .worklock import heavy_section, outside_heavy_section
 
 if TYPE_CHECKING:  # imported lazily at runtime, inside the commands that use it
+    from .liveness import LivenessRecord
     from .mobilitydb import FeedMatch
 
 log = logging.getLogger(__name__)
@@ -130,14 +132,16 @@ def _realtime_categories(
     configured keeps a partial realtime feed from paying irrelevant CPU and
     memory costs or failing on data that its score does not use.
     """
-    window = capture_window(agency, date, samples=rt_samples, interval_seconds=rt_interval)
+    # The window is a minute of mostly sleeping, so it gives the shared turn
+    # back (worklock.py). Its end is read before the turn is taken again: the
+    # scheduled trips are the ones due when the samples were taken, however
+    # long a sibling's validator then keeps this run waiting.
+    with outside_heavy_section():
+        window = capture_window(agency, date, samples=rt_samples, interval_seconds=rt_interval)
+        sampled_at = dt.datetime.now(dt.UTC)
     has_trip_updates = "trip_updates" in agency.rt_urls
     has_vehicle_positions = "vehicle_positions" in agency.rt_urls
-    scheduled = (
-        scheduled_trip_ids_at(str(static_path), dt.datetime.now(dt.UTC))
-        if has_trip_updates
-        else None
-    )
+    scheduled = scheduled_trip_ids_at(str(static_path), sampled_at) if has_trip_updates else None
     drift = compute_drift(window.samples, str(static_path)) if has_trip_updates else None
     plausibility = (
         vehicle_plausibility(window.samples, str(static_path)) if has_vehicle_positions else None
@@ -905,6 +909,17 @@ def _country_arg(value: str) -> str:
         raise argparse.ArgumentTypeError(str(exc)) from exc
 
 
+def _positive_int(value: str) -> int:
+    """Argparse adapter for a count or duration that has to be at least 1."""
+    try:
+        number = int(value)
+    except ValueError as exc:
+        raise argparse.ArgumentTypeError(f"not a whole number: {value!r}") from exc
+    if number < 1:
+        raise argparse.ArgumentTypeError(f"must be at least 1, got {number}")
+    return number
+
+
 def _artifact_contract_current(agency_id: str) -> bool:
     """Whether the last artifact was built with today's scoring contract.
 
@@ -1030,14 +1045,19 @@ def _cmd_run(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
                 )
             continue
         try:
-            result = run_agency(
-                agency_id,
-                args.date,
-                force_fetch=args.force_fetch,
-                rt_samples=args.rt_samples,
-                rt_interval=args.rt_interval,
-                skip_rt=args.skip_rt,
-            )
+            # A no-op unless the intraday rescore set SCORECARD_HEAVY_LOCK, in
+            # which case sibling runs take turns at validating and scoring.
+            # The download and the realtime sampling window give the turn
+            # back while they wait (worklock.py).
+            with heavy_section():
+                result = run_agency(
+                    agency_id,
+                    args.date,
+                    force_fetch=args.force_fetch,
+                    rt_samples=args.rt_samples,
+                    rt_interval=args.rt_interval,
+                    skip_rt=args.skip_rt,
+                )
             print(result.path)
             if outcome_out:
                 from .run_summary import AgencyOutcome, append_outcome
@@ -3240,30 +3260,11 @@ def _cmd_freshness_sweep(args: argparse.Namespace, parser: argparse.ArgumentPars
     return 0
 
 
-def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
-    from collections import Counter
-
-    from .config import repo_root
-    from .liveness import (
-        CHANGED,
-        UNREACHABLE,
-        check_feed,
-        load_state,
-        recovered,
-        save_state,
-    )
-
-    state_path = repo_root() / "data" / "liveness.json"
-    state = load_state(state_path)
-    tally: Counter[str] = Counter()
-    changed: list[str] = []
-    unreachable: list[str] = []
-    recovered_ids: list[str] = []
-
-    only: set[str] | None = None
-    if args.only:
-        only = {line.strip() for line in Path(args.only).read_text().splitlines() if line.strip()}
-
+def _liveness_targets(
+    state: dict[str, LivenessRecord], only: set[str] | None, tally: Counter[str]
+) -> list[tuple[str, str, LivenessRecord | None]]:
+    """The canonical feeds a liveness sweep checks, in id order, with their last record."""
+    targets: list[tuple[str, str, LivenessRecord | None]] = []
     for agency_id, agency in sorted(AGENCIES.items()):
         if not agency.is_canonical_feed or (only is not None and agency_id not in only):
             continue
@@ -3274,8 +3275,41 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         tally["credentialed_skipped"] += credentialed
         if credentialed:
             continue
-        prev = state.get(agency_id)
-        record, classification = check_feed(agency.static_gtfs_url, prev, timeout=args.timeout)
+        targets.append((agency_id, agency.static_gtfs_url, state.get(agency_id)))
+    return targets
+
+
+def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
+    from .config import repo_root
+    from .liveness import (
+        CHANGED,
+        UNREACHABLE,
+        check_feeds,
+        load_state,
+        recovered,
+        save_state,
+    )
+
+    state_path = repo_root() / "data" / "liveness.json"
+    state = load_state(state_path)
+    if args.baseline_out:
+        # What every record looked like before this sweep, so a feed the
+        # rescore later defers can be put back (`scorecard rescore
+        # --liveness-baseline`) instead of reading as unchanged next cycle.
+        save_state(Path(args.baseline_out), state)
+    tally: Counter[str] = Counter()
+    changed: list[str] = []
+    unreachable: list[str] = []
+    recovered_ids: list[str] = []
+
+    only: set[str] | None = None
+    if args.only:
+        only = {line.strip() for line in Path(args.only).read_text().splitlines() if line.strip()}
+
+    targets = _liveness_targets(state, only, tally)
+    results = check_feeds(targets, workers=args.workers, timeout=args.timeout)
+    for agency_id, _url, prev in targets:
+        record, classification = results[agency_id]
         if recovered(prev, classification):
             recovered_ids.append(agency_id)
         state[agency_id] = record
@@ -3314,6 +3348,61 @@ def _cmd_liveness(args: argparse.Namespace, parser: argparse.ArgumentParser) -> 
         "" if args.apply else " Report only; re-run with --apply to persist state.",
     )
     return 0
+
+
+def _cmd_rescore(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Re-score the intraday refresh's changed feeds, several at a time (rescore.py)."""
+    import tempfile
+
+    from .config import repo_root
+    from .liveness import load_state, requeue, save_state
+    from .rescore import job_for, launch_run, report, run_batch
+
+    ids_path = Path(args.ids)
+    ids = (
+        [line.strip() for line in ids_path.read_text().splitlines() if line.strip()]
+        if ids_path.is_file()
+        else []
+    )
+    if args.deferred_out is not None:
+        args.deferred_out.write_text("")
+    if not ids:
+        print("No changed feeds to re-score.")
+        return 0
+
+    deadline = args.started_epoch + args.budget_seconds
+    jobs = [job_for(AGENCIES[agency_id]) for agency_id in ids if agency_id in AGENCIES]
+    print(
+        f"re-scoring {len(jobs)} changed feed(s), up to {args.workers} at a time; none starts "
+        f"after {dt.datetime.fromtimestamp(deadline, dt.UTC).isoformat(timespec='seconds')}"
+    )
+    with tempfile.TemporaryDirectory(prefix="rescore-") as log_dir:
+        tally = run_batch(
+            jobs,
+            workers=args.workers,
+            deadline=deadline,
+            launch=lambda job: launch_run(job, log_dir=Path(log_dir), heavy_lock=args.heavy_lock),
+        )
+    # Every id here came from the liveness sweep, which reads the same
+    # registry, so this should never fire. `scorecard run` answers an unknown
+    # id with argparse's exit 2, the code reserved for "unchanged", so one
+    # must be caught here and named rather than counted as a success.
+    for agency_id in ids:
+        if agency_id not in AGENCIES:
+            tally.attempted += 1
+            tally.failed.append(agency_id)
+            print(f"::warning title=rescore failed::{agency_id} is not in the registry")
+
+    if args.deferred_out is not None:
+        args.deferred_out.write_text("".join(f"{agency_id}\n" for agency_id in tally.deferred))
+    requeued = False
+    if tally.deferred and args.liveness_baseline is not None:
+        state_path = repo_root() / "data" / "liveness.json"
+        state = load_state(state_path)
+        requeue(state, load_state(args.liveness_baseline), tally.deferred)
+        save_state(state_path, state)
+        requeued = True
+    return report(tally, budget_minutes=args.budget_seconds // 60, requeued=requeued)
 
 
 def _cmd_shards(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
@@ -4841,6 +4930,54 @@ def main(argv: list[str] | None = None) -> int:
     liveness.add_argument(
         "--only", help="check only the feed ids listed in this file (one per line)"
     )
+    liveness.add_argument(
+        "--workers",
+        type=_positive_int,
+        default=1,
+        help="hosts checked at the same time; never more than one request per host (default: 1)",
+    )
+    liveness.add_argument(
+        "--baseline-out",
+        dest="baseline_out",
+        help="write the liveness state as it was before this sweep here",
+    )
+
+    rescore = sub.add_parser(
+        "rescore",
+        help="re-score a list of feeds a few at a time within a deadline (intraday refresh)",
+    )
+    rescore.add_argument(
+        "--ids", required=True, help="feed ids to re-score, one per line (missing or empty: none)"
+    )
+    rescore.add_argument(
+        "--workers",
+        type=_positive_int,
+        default=1,
+        help="feeds in flight at once; they take turns validating and scoring (default: 1)",
+    )
+    rescore.add_argument(
+        "--started-epoch",
+        type=int,
+        required=True,
+        help="when the job began, in Unix seconds; the budget is measured from here",
+    )
+    rescore.add_argument(
+        "--budget-seconds",
+        type=_positive_int,
+        required=True,
+        help="start no feed once this many seconds have passed since --started-epoch",
+    )
+    rescore.add_argument(
+        "--heavy-lock",
+        type=Path,
+        help="lock file the runs take turns on for validating and scoring",
+    )
+    rescore.add_argument(
+        "--liveness-baseline",
+        type=Path,
+        help="put deferred feeds' liveness records back from this pre-sweep state file",
+    )
+    rescore.add_argument("--deferred-out", type=Path, help="write deferred feed ids here")
 
     cadence = sub.add_parser(
         "cadence",
@@ -5031,6 +5168,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "identity": _cmd_identity,
         "freshness-sweep": _cmd_freshness_sweep,
         "liveness": _cmd_liveness,
+        "rescore": _cmd_rescore,
         "cadence": _cmd_cadence,
         "feedapi": _cmd_feedapi,
         "canary": _cmd_canary,

@@ -23,12 +23,14 @@ from __future__ import annotations
 import datetime as dt
 import hashlib
 import json
-from collections.abc import Callable
+from collections.abc import Callable, Iterable, Sequence
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass
 from http.client import HTTPException
 from pathlib import Path
 from typing import Any, Protocol
 from urllib.error import HTTPError, URLError
+from urllib.parse import urlsplit
 from urllib.request import Request, urlopen
 
 from .instance import BASE_URL
@@ -193,6 +195,83 @@ def _carry_forward(
         changed_at=base.changed_at,
         consecutive_failures=0 if ok else base.consecutive_failures + 1,
     )
+
+
+def host_of(url: str) -> str:
+    """The host name a request to ``url`` goes to: the unit politeness counts in.
+
+    Lower-cased by urllib. A URL with no parseable host keys on itself, so it
+    never shares a slot with another feed and is never grouped by accident.
+    """
+    try:
+        host = urlsplit(url).hostname
+    except ValueError:
+        host = None
+    return host or url
+
+
+def check_feeds(
+    targets: Sequence[tuple[str, str, LivenessRecord | None]],
+    *,
+    workers: int = 1,
+    timeout: float = 30.0,
+) -> dict[str, tuple[LivenessRecord, str]]:
+    """Check many feeds, side by side across hosts and one at a time within one.
+
+    ``targets`` is ``(agency_id, url, previous record)``. The feeds are grouped
+    by host name and each group is walked in order by a single worker, so a
+    host never has two requests from this sweep in flight at once: the load
+    the serial sweep put on it, arriving no faster. What changes is that
+    different hosts are checked at the same time. Measured 2026-09-18, the
+    serial sweep took 44-45 minutes a cycle for about 1,500 due feeds across
+    some 500 hosts, most of it spent waiting on one server at a time.
+
+    The longest groups start first, since the largest host (505 feeds on
+    2026-09-18) is the floor under the whole sweep's duration. ``workers=1``
+    is a plain serial sweep.
+    """
+    if workers < 1:
+        raise ValueError(f"workers must be at least 1, got {workers}")
+    by_host: dict[str, list[tuple[str, str, LivenessRecord | None]]] = {}
+    for target in targets:
+        by_host.setdefault(host_of(target[1]), []).append(target)
+    lanes = sorted(by_host.values(), key=len, reverse=True)
+
+    def walk(
+        lane: list[tuple[str, str, LivenessRecord | None]],
+    ) -> list[tuple[str, tuple[LivenessRecord, str]]]:
+        # Looked up at call time, so a test that replaces the module's
+        # check_feed replaces it here too.
+        return [(aid, check_feed(url, prev, timeout=timeout)) for aid, url, prev in lane]
+
+    results: dict[str, tuple[LivenessRecord, str]] = {}
+    with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="liveness") as pool:
+        for lane_results in pool.map(walk, lanes):
+            results.update(lane_results)
+    return results
+
+
+def requeue(
+    state: dict[str, LivenessRecord],
+    baseline: dict[str, LivenessRecord],
+    agency_ids: Iterable[str],
+) -> None:
+    """Put back the pre-check record of feeds a cycle detected but never re-scored.
+
+    The intraday refresh records what it saw at every checked URL before it
+    re-scores the changed ones. A feed its rescore deferred to the time budget
+    would otherwise carry this cycle's new hash forward, and its next check
+    would read it as unchanged: the change would wait for the next daily run
+    while the refresh's own warning said it would be picked up. Restoring the
+    record it had before this cycle (or dropping it, when there was none)
+    makes the next check classify the feed exactly as this one did.
+    """
+    for agency_id in agency_ids:
+        previous = baseline.get(agency_id)
+        if previous is None:
+            state.pop(agency_id, None)
+        else:
+            state[agency_id] = previous
 
 
 def recovered(prev: LivenessRecord | None, classification: str) -> bool:

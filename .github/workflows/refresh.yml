@@ -62,6 +62,22 @@ jobs:
     # up against its own bound" compares each run's duration with it, and
     # pipeline/tests/test_workflow_safety.py holds it between the measured
     # runtime and the cadence.
+    #
+    # Re-measured 2026-09-18, when that check failed on run 35316236534 (160
+    # of 175 minutes), and answered by trimming the work rather than moving
+    # the bound. From 2026-09-14 to 2026-09-18 every cycle's publish was
+    # refused (fixed by #464), so no cycle saved its liveness state: each one
+    # re-found the same growing backlog (234 to 384 changed feeds), re-ran the
+    # whole day's freshness sweep (~25 minutes), and re-scored until the
+    # rescore deadline pinned the job at ~160 minutes. Before that window,
+    # cycles took 64-128 minutes (2026-09-11..13); the two after it took 141
+    # and 100 as the backlog drained. Most of every cycle was two serial
+    # steps waiting: the liveness sweep (23-45 minutes) on one server at a
+    # time, and the rescore (31-94) on servers and realtime sampling windows.
+    # Both now overlap that waiting (see each step). Replaying the measured
+    # per-feed timings of eight cycles through the new rescore took each from
+    # 33-94 minutes to 10-49. The bound stays at 175 so the watchdog's 90%
+    # line keeps meaning "this job has outgrown its cadence".
     timeout-minutes: 175
     concurrency:
       group: artifacts-publish
@@ -120,11 +136,22 @@ jobs:
         working-directory: pipeline
         run: uv run scorecard cadence --out "$RUNNER_TEMP/due.txt"
 
+      # Hosts are checked side by side and each host's feeds one at a time, so
+      # no agency's server has two requests from this sweep in flight: the
+      # load the serial sweep put on it, arriving no faster. Serial, this step
+      # took 44-45 minutes a cycle on 2026-09-18 for ~1,500 due feeds, most of
+      # it waiting on one server at a time. Sixteen lanes let the ~500 quiet
+      # hosts finish behind the few busy ones, and the busiest sets the floor:
+      # api.gtfs-data.jp carries 505 registered feeds at about a second a
+      # check. The baseline is the state before this sweep, for the rescore
+      # to put back any feed it defers (`scorecard rescore --liveness-baseline`).
       - name: Detect changed and unreachable feeds (due subset)
         working-directory: pipeline
         run: |
           uv run scorecard liveness --apply \
             --only "$RUNNER_TEMP/due.txt" \
+            --workers 16 \
+            --baseline-out "$RUNNER_TEMP/liveness.before.json" \
             --changed-out "$RUNNER_TEMP/changed.txt"
 
       # Export fingerprints are read by `export_diff` (exportdiff.py), which runs
@@ -138,16 +165,22 @@ jobs:
         if: ${{ vars.ARTIFACTS_BUCKET != '' }}
         env:
           ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        #
+        # Eight copies at a time. One `aws s3 cp` per feed took about a second
+        # and a half, which serially was 5-9 minutes a cycle while 200-400
+        # feeds were changed (2026-09-14..18). `|| true` is per object, as it
+        # was in the loop this replaces: a missing fingerprint is the normal
+        # first-run case, and a feed without one reports no diff.
         run: |
           set -euo pipefail
           mkdir -p data/cache/structure
           [ -s "$RUNNER_TEMP/changed.txt" ] || exit 0
-          while IFS= read -r id; do
-            [ -n "$id" ] || continue
-            aws s3 cp \
-              "s3://${ARTIFACTS_BUCKET}/cache/structure/${id}.json" \
-              "data/cache/structure/${id}.json" --only-show-errors || true
-          done < "$RUNNER_TEMP/changed.txt"
+          # The single quotes are the point: the child shell expands $1 per id.
+          # shellcheck disable=SC2016
+          xargs -P 8 -n 1 sh -c '
+            aws s3 cp "s3://${ARTIFACTS_BUCKET}/cache/structure/$1.json" \
+              "data/cache/structure/$1.json" --only-show-errors || true
+          ' fingerprint < "$RUNNER_TEMP/changed.txt"
 
       - name: Refresh expiry from calendar data (no fetch, no validator)
         working-directory: pipeline
@@ -155,78 +188,63 @@ jobs:
           uv run scorecard freshness-sweep --apply \
             --changed-out "$RUNNER_TEMP/swept.txt"
 
+      # `scorecard rescore` (pipeline/src/scorecard_pipeline/rescore.py) is
+      # the loop that used to be written out here, with the same outcome
+      # counting, deadline, floor and annotations, and unit tests in place of
+      # string checks on this file. What it adds is overlap. Measured
+      # 2026-09-18 on run 35345841643, the serial loop spent 48.0 minutes on
+      # 91 feeds, and only 16.5 of them validating and scoring: the rest was
+      # 25 realtime sampling windows (24.2), interpreter start-up (4.8) and
+      # downloads (2.4). Several runs are now in flight at once, and they take
+      # turns at validating and scoring through the heavy lock, so the part
+      # that needs memory still runs one feed at a time. A `large_feed` runs
+      # with nothing else in flight, and two feeds that share a host are
+      # never in flight together.
+      #
+      # The floor is the one scorecard.yml has (its "Verify shard artifacts
+      # before publishing" step). Before it, every non-zero exit here became
+      # an `echo`, so an intraday cycle in which every changed feed failed to
+      # re-score still ran reindex, rollups, render-site, the S3 publish and
+      # the Pages deploy, and reported success. Republishing yesterday's
+      # corpus under today's deployment timestamp is the one outcome a
+      # refresh must not report as a refresh, so a cycle that attempted feeds
+      # and re-scored none exits 1. A cycle that deferred everything to the
+      # budget (nothing attempted) is not that: it still applied the freshness
+      # sweep and publishes that.
       - name: Re-score only the feeds that changed
         working-directory: pipeline
         env:
-          # Stop starting new agencies once this many seconds have elapsed
-          # since the job began, leaving the rest of `timeout-minutes: 175`
-          # for the two steps that come after this loop: rebuilding the index
-          # and rollups, and publishing to S3. 9300s = 155 minutes; measured
-          # 2026-09-14, those two steps plus the AWS credential renewal
-          # between them have taken 2-4 minutes on every run recorded, so 20
-          # minutes of slack is generous headroom, not a tight budget. A
-          # deferred feed keeps its last good artifact (the same outcome a
-          # real per-feed failure already produces below) and stays in the due
-          # list for the next cycle; the daily `scorecard.yml` run
-          # re-validates every canonical feed regardless of liveness state at
+          # Start no new agency once this many seconds have elapsed since the
+          # job began, leaving the rest of `timeout-minutes: 175` for the two
+          # steps after this one: rebuilding the index and rollups, and
+          # publishing to S3. 9300s = 155 minutes; measured 2026-09-14, those
+          # two steps plus the AWS credential renewal between them took 2-4
+          # minutes on every run recorded. Runs already in flight at the
+          # deadline finish, as the serial loop's current feed did, and their
+          # heavy parts queue on the lock: measured 2026-09-11..18 over 2,023
+          # re-scores of feeds that are not `large_feed`, that part took 62s at
+          # the 99th percentile and 176s at most, so four in flight cost well
+          # under the 20 minutes of slack. A deferred feed keeps its last good
+          # artifact and its liveness record is put back as it was before this
+          # cycle's sweep, so its next check reads it as changed again; the
+          # daily `scorecard.yml` run re-validates every canonical feed at
           # least once every 24h either way.
           REFRESH_RESCORE_DEADLINE_SECONDS: "9300"
+          # Runs in flight at once. The overlap is waiting (downloads and
+          # sampling windows), not memory, so this is not the runner's core
+          # count. Replaying eight measured cycles, three workers left 2-5
+          # minutes on the table against four, and six or eight did no better.
+          REFRESH_RESCORE_WORKERS: "4"
         run: |
-          set -uo pipefail
-          changed="$RUNNER_TEMP/changed.txt"
-          [ -s "$changed" ] || { echo "No changed feeds to re-score."; exit 0; }
-          deadline=$(( job_started_epoch + REFRESH_RESCORE_DEADLINE_SECONDS ))
-          attempted=0
-          refreshed=0
-          failed=0
-          deferred=0
-          # A single feed's vendor outage must not abort the batch; warn and move on.
-          while read -r id; do
-            [ -n "$id" ] || continue
-            if [ "$(date -u +%s)" -ge "$deadline" ]; then
-              deferred=$(( deferred + 1 ))
-              continue
-            fi
-            attempted=$(( attempted + 1 ))
-            echo "::group::rescore $id"
-            uv run scorecard run --agency "$id" && EXIT=0 || EXIT=$?
-            if [ "$EXIT" -eq 0 ]; then
-              refreshed=$(( refreshed + 1 ))
-            elif [ "$EXIT" -eq 2 ]; then
-              # `scorecard run` reserves exit 2 for "the feed had not changed
-              # after all", which is an outcome and not a failure. It can only
-              # occur under --skip-unchanged, which this tier does not pass
-              # today; counted correctly here so adding that flag later cannot
-              # make the floor below fire on a cycle where nothing needed doing.
-              refreshed=$(( refreshed + 1 ))
-              echo "feed unchanged, keeping last artifact"
-            else
-              failed=$(( failed + 1 ))
-              echo "::warning title=rescore failed::$id kept its last good artifact"
-            fi
-            echo "::endgroup::"
-          done < "$changed"
-          echo "re-scored $refreshed of $attempted changed feeds ($failed failed, $deferred deferred to next cycle)"
-          if [ "$deferred" -gt 0 ]; then
-            echo "::warning title=refresh budget exhausted::$deferred changed feed(s) were not attempted this cycle; the rescore loop stopped $((REFRESH_RESCORE_DEADLINE_SECONDS / 60)) minutes into the job so it can still publish what it scored. Deferred feeds kept their last good artifact and stay due next cycle."
-          fi
-          # The floor scorecard.yml has (its "Verify shard artifacts before
-          # publishing" step) and this tier did not. Every non-zero exit above
-          # became an `echo`, and nothing downstream counted them, so an
-          # intraday cycle in which every changed feed failed to re-score still
-          # ran reindex, rollups, render-site, the S3 publish and the Pages
-          # deploy, and reported success. Republishing yesterday's corpus under
-          # today's deployment timestamp is the one outcome a refresh must not
-          # report as a refresh. A cycle that deferred everything to the budget
-          # (attempted=0) is not this: it still applied the freshness sweep and
-          # will publish that, and next cycle picks the deferred feeds back up.
-          if [ "$attempted" -gt 0 ] && [ "$refreshed" -eq 0 ]; then
-            echo "::error::None of the $attempted changed feeds re-scored this cycle. Refusing to publish a refresh that refreshed nothing; each feed's cause is in the warnings above."
-            exit 1
-          fi
-          if [ "$failed" -gt 0 ]; then
-            echo "::warning title=partial refresh::$failed of $attempted changed feeds did not re-score this cycle and kept their previous scorecard."
-          fi
+          set -euo pipefail
+          uv run scorecard rescore \
+            --ids "$RUNNER_TEMP/changed.txt" \
+            --workers "$REFRESH_RESCORE_WORKERS" \
+            --started-epoch "$job_started_epoch" \
+            --budget-seconds "$REFRESH_RESCORE_DEADLINE_SECONDS" \
+            --heavy-lock "$RUNNER_TEMP/rescore-heavy.lock" \
+            --liveness-baseline "$RUNNER_TEMP/liveness.before.json" \
+            --deferred-out "$RUNNER_TEMP/deferred.txt"
 
       - name: Rebuild index and rollups
         working-directory: pipeline

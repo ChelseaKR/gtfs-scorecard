@@ -175,6 +175,26 @@ the declared public surface).
 
 ### Fixed
 
+- **The intraday refresh overlaps its waiting instead of timing out on it.**
+  The watchdog's bound check failed on 2026-09-18: Intraday refresh run
+  35316236534 took 160 of its 175 minutes. That run was the tail of four days
+  in which every refresh's publish was refused (fixed by #464), so no cycle
+  saved its liveness state and each one re-scored the same growing backlog
+  until the rescore deadline. Under it sat two serial steps that were mostly
+  waiting: the liveness sweep (44-45 minutes a cycle for ~1,500 due feeds)
+  and the rescore (48 minutes for 91 feeds in run 35345841643, of which 16.5
+  were validating and scoring). `scorecard liveness --workers` now checks
+  hosts side by side, one request per host at a time. The rescore loop moved
+  into `scorecard rescore`, which keeps four `scorecard run`s in flight that
+  take turns validating and scoring through a lock file (`worklock.py`), runs
+  a `large_feed` alone, and never overlaps two feeds that share a host.
+  Replaying eight measured cycles through it took their rescore from 33-94
+  minutes to 10-49. The 175-minute bound and the watchdog's 90% line are
+  unchanged. A feed the rescore defers to its deadline now has its liveness
+  record put back, so its next check reads it as changed; the old warning
+  said such feeds "stay due next cycle", and nothing re-scored them before the
+  next daily run.
+
 - **The secret scan skipped registry YAML entirely, so no rule could fire there (#371).**
   `.gitleaks.toml` allowlisted `^registry/.*\.ya?ml$` by path, and gitleaks
   skips a path-allowlisted file for every rule without reading it, so a rule

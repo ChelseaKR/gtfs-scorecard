@@ -140,6 +140,29 @@ The agency page also shows a monitoring line ("checked for changes N hours ago;
 last changed ...") from the liveness state, so a reader can see how current the
 change detection is.
 
+## Overlapped waiting (2026-09)
+
+By September a refresh cycle spent most of its three hours waiting. The liveness
+sweep checked about 1,500 due feeds one at a time (44-45 minutes a cycle on
+2026-09-18), and the rescore ran one `scorecard run` after another, most of
+which was a download or a realtime sampling window (three samples thirty seconds
+apart). The watchdog's bound check failed at 160 of the job's 175 minutes.
+
+Both steps now overlap that waiting, under one politeness rule: no host sees more
+requests at once than the serial version sent it, which is one.
+
+- `scorecard liveness --workers N` groups due feeds by host name and walks each
+  host's feeds in order on a single worker, several hosts at a time.
+- `scorecard rescore` keeps a few `scorecard run` processes in flight, never two
+  that share a host (schedule or realtime), and runs a `large_feed` alone. The
+  runs take turns at validating and scoring through a lock file, and give the
+  turn back only to download or to wait out a sampling window, so the memory
+  profile that took a runner down in #297 is still one feed's.
+- The trips a realtime sample is held to are the ones scheduled when it was
+  taken, not when the run next got its turn.
+- A feed the rescore defers to its time budget has its liveness record put back
+  as it was before the sweep, so the next check still reads it as changed.
+
 ## Not yet
 
 Active service-window realtime sampling (timing a capture to when buses are

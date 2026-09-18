@@ -10,6 +10,8 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[2]
 
 
@@ -782,37 +784,63 @@ def test_the_advisory_performance_annotation_greps_a_log_that_can_hold_it() -> N
     assert "2>&1 | tee lhci-representative.log" in grep_block
 
 
+def _rescore_step() -> str:
+    workflow = _workflow("refresh.yml")
+    step_at = workflow.index("- name: Re-score only the feeds that changed")
+    return workflow[step_at : workflow.index("- name: Rebuild index and rollups", step_at)]
+
+
 def test_the_intraday_refresh_has_a_floor_under_its_rescore_loop() -> None:
     """`refresh.yml` deploys roughly nine times a day and turned every
     per-feed failure into an `echo`. Nothing counted them, so a cycle in which
     every changed feed failed to re-score still ran reindex, rollups,
     render-site, the S3 publish and the Pages deploy, and reported success.
     `scorecard.yml` has had a floor since #298; this tier had none at all
-    (`grep -n '::error\\|exit 1' refresh.yml` returned nothing)."""
-    workflow = _workflow("refresh.yml")
-    step_at = workflow.index("Re-score only the feeds that changed")
-    step = workflow[step_at : workflow.index("Rebuild index and rollups", step_at)]
+    (`grep -n '::error\\|exit 1' refresh.yml` returned nothing).
 
-    assert "::error::" in step, "a cycle that refreshed nothing must fail, not warn"
-    assert "exit 1" in step
-    assert '[ "$refreshed" -eq 0 ]' in step, (
-        "the floor has to be counted from real per-feed outcomes, not inferred"
+    The loop now lives in `scorecard rescore`, whose floor is tested by what
+    it returns (test_rescore.py). What is left to hold here is the wiring: the
+    step runs it, and nothing between its exit code and the job swallows it.
+    """
+    step = _rescore_step()
+
+    assert "uv run scorecard rescore" in step
+    assert "set -euo pipefail" in step
+    assert "|| true" not in step and "|| echo" not in step, (
+        "the rescore's exit 1 is the floor; a fallback here would put the echo back"
     )
-    assert "::warning title=partial refresh::" in step, (
-        "a partial refresh must still say how much of it was partial"
-    )
 
 
-def test_the_intraday_rescore_loop_tells_unchanged_apart_from_failed() -> None:
+def test_the_intraday_rescore_loop_tells_unchanged_apart_from_failed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """`scorecard run` reserves exit 2 for "the feed had not changed after
-    all". `scorecard.yml` has always separated it; this loop treated every
-    non-zero exit identically, which would make the new floor fire on a cycle
-    where nothing needed doing the moment --skip-unchanged is added here."""
-    workflow = _workflow("refresh.yml")
-    step_at = workflow.index("Re-score only the feeds that changed")
-    step = workflow[step_at : workflow.index("Rebuild index and rollups", step_at)]
+    all". `scorecard.yml` has always separated it; the shell loop treated every
+    non-zero exit identically, which would make the floor fire on a cycle
+    where nothing needed doing the moment --skip-unchanged is added here. The
+    rescore's constant is held to what `scorecard run` actually returns."""
+    import argparse
 
-    assert '[ "$EXIT" -eq 2 ]' in step
+    from scorecard_pipeline import cli
+    from scorecard_pipeline.config import Agency
+    from scorecard_pipeline.rescore import UNCHANGED_EXIT
+
+    agency = Agency(id="unitrans", name="Unitrans", static_gtfs_url="https://u.example/g.zip")
+    monkeypatch.setattr(cli, "AGENCIES", {agency.id: agency})
+    monkeypatch.setattr(cli, "_liveness_unchanged", lambda _agency_id: True)
+    args = argparse.Namespace(
+        all=False,
+        agency=agency.id,
+        date=None,
+        force_fetch=False,
+        rt_samples=1,
+        rt_interval=0,
+        skip_rt=True,
+        skip_unchanged=True,
+        outcome_out=None,
+    )
+
+    assert cli._cmd_run(args, argparse.ArgumentParser()) == UNCHANGED_EXIT
 
 
 def test_the_intraday_rescore_loop_has_a_wall_clock_deadline() -> None:
@@ -831,7 +859,8 @@ def test_the_intraday_rescore_loop_has_a_wall_clock_deadline() -> None:
     scorecard `collect` job queued behind it and was evicted (canceled, 0
     steps) when the next scheduled refresh arrived. The loop now stops taking
     on new agencies once a deadline measured from the job's own start has
-    passed, leaving slack for the steps after it.
+    passed, leaving slack for the steps after it. How it defers is tested in
+    test_rescore.py; this holds the budget it is handed.
     """
     workflow = _workflow("refresh.yml")
     job_timeout = _job_timeout(workflow, "refresh")
@@ -845,9 +874,10 @@ def test_the_intraday_rescore_loop_has_a_wall_clock_deadline() -> None:
     step_at = workflow.index("Re-score only the feeds that changed")
     assert record_at < step_at, "the job start time must be recorded before the loop reads it"
 
-    step = workflow[step_at : workflow.index("Rebuild index and rollups", step_at)]
+    step = _rescore_step()
 
-    assert "job_started_epoch" in step
+    assert '--started-epoch "$job_started_epoch"' in step
+    assert '--budget-seconds "$REFRESH_RESCORE_DEADLINE_SECONDS"' in step
     deadline_match = re.search(r'REFRESH_RESCORE_DEADLINE_SECONDS: "(\d+)"', step)
     assert deadline_match, "the deadline must be a fixed, readable number of seconds"
     deadline_seconds = int(deadline_match.group(1))
@@ -862,14 +892,39 @@ def test_the_intraday_rescore_loop_has_a_wall_clock_deadline() -> None:
         "steps that publish whatever this loop managed to score"
     )
 
-    assert 'if [ "$(date -u +%s)" -ge "$deadline" ]' in step
-    assert "deferred=$(( deferred + 1 ))" in step
-    assert "::warning title=refresh budget exhausted::" in step
 
-    # A cycle that deferred every changed feed to the budget (attempted=0)
-    # must not trip the "refreshed nothing" failure: that guard is for a feed
-    # that was attempted and failed, not one never attempted at all.
-    assert '[ "$attempted" -gt 0 ] && [ "$refreshed" -eq 0 ]' in step
+def test_a_deferred_feed_is_put_back_for_its_next_check() -> None:
+    """The deferral warning used to say deferred feeds "stay due next cycle".
+    They stayed due, but the liveness sweep had already recorded their new
+    hash, so the next check read them as unchanged and nothing re-scored them
+    until the daily run. The sweep now saves the state it started from and the
+    rescore puts a deferred feed's record back from it."""
+    workflow = _workflow("refresh.yml")
+    sweep_at = workflow.index("- name: Detect changed and unreachable feeds")
+    sweep = workflow[sweep_at : workflow.index("\n      - name:", sweep_at + 1)]
+    step = _rescore_step()
+
+    assert '--baseline-out "$RUNNER_TEMP/liveness.before.json"' in sweep
+    assert '--liveness-baseline "$RUNNER_TEMP/liveness.before.json"' in step
+    # And the state it rewrites is the one the publish step uploads.
+    publish = workflow[workflow.index("- name: Publish refreshed artifacts to S3") :]
+    assert "aws s3 cp data/liveness.json" in publish
+
+
+def test_the_rescore_and_sweep_run_several_at_once_but_politely() -> None:
+    """Both steps overlap waiting, not load on any one host: the sweep keeps
+    one request per host in flight and the rescore one feed per host, and the
+    rescore's children take turns at the heavy part through the lock file."""
+    workflow = _workflow("refresh.yml")
+    sweep_at = workflow.index("- name: Detect changed and unreachable feeds")
+    sweep = workflow[sweep_at : workflow.index("\n      - name:", sweep_at + 1)]
+    step = _rescore_step()
+
+    assert re.search(r"--workers (\d+)", sweep)
+    assert '--workers "$REFRESH_RESCORE_WORKERS"' in step
+    workers = re.search(r'REFRESH_RESCORE_WORKERS: "(\d+)"', step)
+    assert workers and 1 <= int(workers.group(1)) <= 8
+    assert '--heavy-lock "$RUNNER_TEMP/' in step
 
 
 def test_the_shard_step_runs_under_pipefail() -> None:

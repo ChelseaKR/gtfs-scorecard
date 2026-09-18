@@ -26,6 +26,7 @@ from .feed_auth import (
     resolve_credential,
 )
 from .net import FetchTrace, UnresolvableHostError, UnsafeURLError, safe_download, safe_get
+from .worklock import outside_heavy_section
 
 log = logging.getLogger(__name__)
 
@@ -672,7 +673,10 @@ def fetch_static(agency: Agency, date: dt.date, force: bool = False) -> FetchRes
     log.info("%s: downloading %s", agency.id, agency.static_gtfs_url)
     tmp = dest.with_suffix(".zip.part")
     try:
-        prov = _download_with_mirror_fallback(agency, tmp, limits)
+        # Waiting on a server is not heavy work: a sibling run may validate
+        # meanwhile (worklock.py; a no-op outside the intraday rescore).
+        with outside_heavy_section():
+            prov = _download_with_mirror_fallback(agency, tmp, limits)
     except BaseException:
         tmp.unlink(missing_ok=True)
         raise

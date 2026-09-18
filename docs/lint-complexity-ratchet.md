@@ -16,7 +16,15 @@ debt explicitly here with a dated, visible `# noqa: C901` at each site
 pointing back to this file — rather than leaving `C90` out of `select`
 (which would let the audit's FAIL stand unchanged) or leaving CI red.
 
-**Last synced:** 2026-09-12, on publishing `/program/` as a static index of the
+**Last synced:** 2026-09-18, on the intraday refresh's time budget.
+`_cmd_liveness` fell from 13 to 12: choosing which feeds a sweep checks moved
+into `_liveness_targets`, and the checks themselves into `liveness.check_feeds`,
+which now runs them side by side across hosts. `run_agency` did not change. The
+turn at heavy work it now runs inside is taken by `_cmd_run` and handed back
+inside `fetch_static` and `_realtime_categories`, so it gained no branch. Only
+the `_cmd_liveness` row was edited, and the table still holds fourteen.
+
+**Synced before this:** 2026-09-12, on publishing `/program/` as a static index of the
 program rollups. Two numbers fell and none rose: `render_site` 56 to 53, because
 the rollup loop and both its guards moved into `_write_program_pages` rather than
 the index being written inside the one function in this module already listed as
@@ -80,10 +88,10 @@ without discussion.
 | `parse_subscribers` | `src/scorecard_pipeline/notify.py:87` | 15 | Subscriber YAML parsing and validation; candidate: split per-field validators (same shape as `parse_agencies`). |
 | `_render_brief` | `src/scorecard_pipeline/render_site.py:3148` | 14 | Template string assembly. |
 | `parse_ridership_csv` | `src/scorecard_pipeline/ridership.py:58` | 14 | CSV column-mapping heuristics; candidate: extract per-column parsers. |
-| `_cmd_liveness` | `src/scorecard_pipeline/cli.py:3076` | 13 | CLI subcommand with several independent check branches; candidate: table-driven checks. |
 | `_render_agency` | `src/scorecard_pipeline/render_site.py:2652` | 13 | Template string assembly. Its suppression pointed at this file and had no row; added here. |
 | `route_type_family` | `src/scorecard_pipeline/modes.py:48` | 13 | GTFS route-type classification. Moved here from `route_geometry.py`, which now keeps a two-line wrapper with no suppression. Its `# noqa` carries its own rationale ("explicit spec range mapping") rather than pointing at this file; that is a deliberate permanent exemption, listed so the count reconciles. |
 | `_board_hero` | `src/scorecard_pipeline/render_site.py:1155` | 12 | Template string assembly with several conditional blocks. |
+| `_cmd_liveness` | `src/scorecard_pipeline/cli.py:3246` | 12 | CLI subcommand with several independent check branches; candidate: table-driven checks. |
 | `compute_drift` | `src/scorecard_pipeline/rt_drift.py:96` | 12 | Schedule-vs-RT drift computation; candidate: extract per-window drift helper. |
 | `run_agency` | `src/scorecard_pipeline/cli.py:183` | 12 | Per-agency run driver. Was suppressed with a bare `# noqa: C901` and no row; both fixed here. |
 
