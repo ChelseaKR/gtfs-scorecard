@@ -380,12 +380,13 @@ def capture_window(
     unreachable in round 1 scores identically whether this stops there or
     grinds through two more rounds of the same result. Those two rounds are
     not free: each is `len(agency.rt_urls)` fetches at up to a 30s connect
-    timeout apiece plus a fixed `interval_seconds` sleep, serially, inside a
-    single-threaded per-agency loop (refresh.yml's "Re-score only the feeds
-    that changed"). One agency with a dead RT host was measured costing that
-    loop about 5.5 minutes for three all-failed rounds; this bounds the same
-    agency to about 1.5. A partial failure (some kinds up, one down) still
-    runs every round, because that is exactly the case still worth sampling.
+    timeout apiece plus a fixed `interval_seconds` sleep, serially, inside one
+    agency's run in refresh.yml's "Re-score only the feeds that changed", which
+    holds one of that step's few worker slots throughout. One agency with a
+    dead RT host was measured costing the then-serial loop about 5.5 minutes
+    for three all-failed rounds; this bounds the same agency to about 1.5. A
+    partial failure (some kinds up, one down) still runs every round, because
+    that is exactly the case still worth sampling.
     """
     window = RtWindow()
     for i in range(samples):
