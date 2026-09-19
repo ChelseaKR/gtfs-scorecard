@@ -181,8 +181,10 @@ from its documentation as last read; confirm it on the page.
    `clients/typescript/package.json`, and the READMEs.
 2. **Tag scheme.** `release-sign.yml` runs on tags matching `v[0-9]+.[0-9]+.[0-9]+`.
    The clients have their own version series (currently `0.1.0`), so their tags
-   should not match that pattern. A suggestion: `gtfs-scorecard-client-v0.1.0` and
-   `gtfs-scorecard-client-npm-v0.1.0`. The version gate,
+   should not match that pattern, and `release-sign.yml` will then not sign or
+   attest them; the publish workflow's own signature check stands in. A
+   suggestion: `gtfs-scorecard-client-v0.1.0` and `gtfs-scorecard-client-npm-v0.1.0`.
+   The version gate,
    `pipeline/scripts/check_versions.py`, covers only the pipeline, `CITATION.cff`
    and `server.json`, so the publish workflow needs its own check that the tag
    equals the package version.
@@ -209,7 +211,9 @@ API token stored anywhere.
    chose.
 4. Add the publish workflow in a separate pull request. It should follow the
    [release standard](standards/RELEASE-AND-VERSIONING-STANDARD.md): authorize the
-   tag with the shared `release-authorize` workflow at a full commit SHA, check
+   tag with the shared `release-authorize` workflow at a full commit SHA (the
+   standard has it read `.github/allowed_signers`; this repository's signer file
+   is `.github/release-signers`, so confirm which name the workflow accepts), check
    that the tag equals the version in `clients/python/pyproject.toml`, run
    `make clients-check clients-test` at the tagged commit, build with
    `uv build --project clients/python`, and publish from a checkout-free job with
