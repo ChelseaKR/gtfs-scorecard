@@ -706,19 +706,39 @@ _NEED_ABSENCE: dict[str, str] = {
 }
 
 
+# The sentence shapes a reach line is built from. They are data, not f-strings,
+# so the interactive app (web/src/consequence.js) fills the same templates from
+# ``consequence_copy`` instead of keeping a second copy of the wording.
+REACH_NONE_AFFECTED = "None of the feed's {total} {basis} are affected."
+REACH_ALL_AFFECTED = "Fixing this covers all {total} {basis} in the feed."
+REACH_PARTIAL = "Fixing this covers {affected} of {total} {basis}, {share} of them."
+REACH_COUNT_NOT_PUBLISHED = (
+    "The feed's {basis} count is not published here, so no share is reported."
+)
+PERCENT_UNDER_ONE = "under 1%"
+PERCENT_NEARLY_ALL = "nearly all"
+PERCENT_ABOUT = "about {percent}%"
+
+# The noun used when a reach has no label of its own, so an unfamiliar reason
+# code or a missing denominator still reads as plain language.
+NETWORK_NOUN = "network"
+
+
 def _percent_phrase(share: float) -> str:
     """A percentage a reader can say out loud, without pretending to precision.
 
     Only reached for a partial share, so the two ends round away from the
     absolutes: 3 of 9,850 stops is "under 1%", not "0%", and 9,847 of 9,850 is
     "nearly all", not the "100%" that would contradict the counts beside it.
+    The middle rounds half to even (Python's ``round``); the app does the same,
+    and a test walks every four-place share to keep the two in step.
     """
     pct = share * 100
     if pct < 1:
-        return "under 1%"
+        return PERCENT_UNDER_ONE
     if pct >= 99.5:
-        return "nearly all"
-    return f"about {round(pct)}%"
+        return PERCENT_NEARLY_ALL
+    return PERCENT_ABOUT.format(percent=round(pct))
 
 
 def reach_sentence(reach: Reach) -> str:
@@ -726,17 +746,19 @@ def reach_sentence(reach: Reach) -> str:
     if not reach.known or reach.affected is None or reach.total is None:
         return _REACH_ABSENCE.get(
             reach.reason,
-            f"The feed's {reach.basis_label or 'network'} count is not published here, "
-            "so no share is reported.",
+            REACH_COUNT_NOT_PUBLISHED.format(basis=reach.basis_label or NETWORK_NOUN),
         )
+    total = f"{reach.total:,}"
     if reach.affected == 0:
-        return f"None of the feed's {reach.total:,} {reach.basis_label} are affected."
+        return REACH_NONE_AFFECTED.format(total=total, basis=reach.basis_label)
     if reach.affected == reach.total:
-        return f"Fixing this covers all {reach.total:,} {reach.basis_label} in the feed."
+        return REACH_ALL_AFFECTED.format(total=total, basis=reach.basis_label)
     share = reach.share if reach.share is not None else 0.0
-    return (
-        f"Fixing this covers {reach.affected:,} of {reach.total:,} "
-        f"{reach.basis_label}, {_percent_phrase(share)} of them."
+    return REACH_PARTIAL.format(
+        affected=f"{reach.affected:,}",
+        total=total,
+        basis=reach.basis_label,
+        share=_percent_phrase(share),
     )
 
 
@@ -838,6 +860,19 @@ class RenderSources:
     ca_need: NeedOverlay | None
 
 
+#: The heading over the ridership and need lines, and the sentence under them.
+#: One definition for the static pages and the interactive app.
+CONTEXT_HEADING = "Riders and need behind these fixes"
+NOT_A_RANKING = (
+    "These describe this feed only. They do not rank agencies, and they do not change "
+    "the grade or the order of the fixes."
+)
+#: Read when a reason has no curated sentence, so an unfamiliar reason still says
+#: plainly that the number is not known instead of going quiet or reading as zero.
+RIDERSHIP_UNKNOWN = "Annual rider-trips are not known for this feed."
+NEED_UNKNOWN = "Transit need is not known for this feed."
+
+
 @dataclass(frozen=True)
 class FeedContext:
     """Ridership and need for one feed as a page states them: a value with its
@@ -857,9 +892,7 @@ class FeedContext:
                 f"{self.ridership.ntd_id}. It counted {trips:,} rider trips in a year. "
                 f"{self.ridership_source.phrase()}"
             )
-        return _RIDERSHIP_ABSENCE.get(
-            self.ridership.reason, "Annual rider-trips are not known for this feed."
-        )
+        return _RIDERSHIP_ABSENCE.get(self.ridership.reason, RIDERSHIP_UNKNOWN)
 
     def need_line(self) -> str:
         tier = self.need.tier
@@ -874,7 +907,7 @@ class FeedContext:
                 f"The areas this feed serves measure {tier} on transit need, on a "
                 f"within-Canada scale. {self.need_source.phrase()}"
             )
-        return _NEED_ABSENCE.get(self.need.reason, "Transit need is not known for this feed.")
+        return _NEED_ABSENCE.get(self.need.reason, NEED_UNKNOWN)
 
     def lines(self) -> list[str]:
         return [self.ridership_line(), self.need_line()]
@@ -956,3 +989,33 @@ def join_feed_context(
         need_source=need_stamp,
         need_area=area,
     )
+
+
+def consequence_copy() -> dict[str, Any]:
+    """The wording the interactive app shares with the static pages.
+
+    ``constants_export`` writes this into ``web/src/generated/constants.js``, and
+    ``web/src/consequence.js`` fills the same templates from it. The reach
+    templates take ``{total}``, ``{affected}``, ``{basis}``, and ``{share}``
+    placeholders; the absence tables are keyed by the reason codes the artifact
+    schema lists. Nothing here is computed from a feed.
+    """
+    return {
+        "reach": {
+            "none_affected": REACH_NONE_AFFECTED,
+            "all_affected": REACH_ALL_AFFECTED,
+            "partial": REACH_PARTIAL,
+            "not_published": REACH_COUNT_NOT_PUBLISHED,
+            "network_noun": NETWORK_NOUN,
+            "percent_under_one": PERCENT_UNDER_ONE,
+            "percent_nearly_all": PERCENT_NEARLY_ALL,
+            "percent_about": PERCENT_ABOUT,
+        },
+        "reach_absence": dict(_REACH_ABSENCE),
+        "ridership_absence": dict(_RIDERSHIP_ABSENCE),
+        "need_absence": dict(_NEED_ABSENCE),
+        "ridership_unknown": RIDERSHIP_UNKNOWN,
+        "need_unknown": NEED_UNKNOWN,
+        "heading": CONTEXT_HEADING,
+        "not_a_ranking": NOT_A_RANKING,
+    }
