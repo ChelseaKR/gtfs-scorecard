@@ -25,6 +25,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import repo_root
+from .consequence import consequence_copy
 from .jurisdiction_guidance import (
     JURISDICTION_GUIDANCE,
     SUPPORT_RESOURCES,
@@ -109,6 +110,7 @@ def _exports() -> dict[str, Any]:
         "JURISDICTION_GUIDANCE": JURISDICTION_GUIDANCE,
         "SUPPORT_RESOURCES": SUPPORT_RESOURCES,
         "US_STATE_SUBDIVISION_CODES": US_STATE_SUBDIVISION_CODES,
+        "CONSEQUENCE_COPY": consequence_copy(),
     }
 
 

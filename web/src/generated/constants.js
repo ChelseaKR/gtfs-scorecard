@@ -425,3 +425,44 @@ export const US_STATE_SUBDIVISION_CODES = {
   "Oregon": "US-OR",
   "Washington": "US-WA"
 };
+
+export const CONSEQUENCE_COPY = {
+  "heading": "Riders and need behind these fixes",
+  "need_absence": {
+    "no_served_area_data": "No need reading for this feed was on hand when this was built, so transit need is not known.",
+    "not_joined_here": "This record does not store transit need. The agency page and its reports add it from the need overlays and name their date.",
+    "outside_need_scope": "The served-area need overlays cover the United States and Canada, so none of them applies to this feed.",
+    "undated_snapshot": "The need overlay on hand does not record when it was built, so its reading is not shown.",
+    "unknown_tier": "No served-area indicator covered this feed's stops, so transit need is not known."
+  },
+  "need_unknown": "Transit need is not known for this feed.",
+  "not_a_ranking": "These describe this feed only. They do not rank agencies, and they do not change the grade or the order of the fixes.",
+  "reach": {
+    "all_affected": "Fixing this covers all {total} {basis} in the feed.",
+    "network_noun": "network",
+    "none_affected": "None of the feed's {total} {basis} are affected.",
+    "not_published": "The feed's {basis} count is not published here, so no share is reported.",
+    "partial": "Fixing this covers {affected} of {total} {basis}, {share} of them.",
+    "percent_about": "about {percent}%",
+    "percent_nearly_all": "nearly all",
+    "percent_under_one": "under 1%"
+  },
+  "reach_absence": {
+    "count_missing": "This finding carries no usable count, so no share is reported.",
+    "feed_level": "This one is about the feed as a whole, so there is no share of it to count.",
+    "not_network_countable": "What this one counts is not stops, routes, or trips, so there is no network share.",
+    "sampled_window": "This was measured over a realtime sampling window, so it has no feed-wide share.",
+    "unmapped_finding": "This finding has no reviewed denominator yet, so no share is reported for it.",
+    "validator_notice": "This is a validator notice, and the validator decides what each instance covers, so no share of the network can be read from it here."
+  },
+  "ridership_absence": {
+    "duplicate_ntd_reporter": "More than one feed record claims this National Transit Database reporter, so its rider-trips are held back rather than counted against any single feed.",
+    "no_ntd_id": "This feed carries no National Transit Database ID, so annual rider-trips are not known for it.",
+    "no_ridership_data": "No ridership snapshot was on hand when this was built, so annual rider-trips are not known.",
+    "not_joined_here": "This record does not store annual rider-trips. The agency page and its reports add them from the ridership snapshot and name its date.",
+    "outside_ridership_scope": "Rider-trip figures come from the United States National Transit Database, which does not cover this feed's country.",
+    "undated_snapshot": "The ridership snapshot on hand does not record its report year or fetch date, so its figures are not shown.",
+    "unmatched_ntd_id": "The ridership snapshot has no row for this feed's National Transit Database ID."
+  },
+  "ridership_unknown": "Annual rider-trips are not known for this feed."
+};
