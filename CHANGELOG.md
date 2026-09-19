@@ -203,6 +203,24 @@ the declared public surface).
   Lambda environment variables), nothing serves it, and no lifecycle rule
   expires it.
 
+- **The daily feed-health digest can no longer print a subscriber's address
+  into a public run log, and one refused address no longer skips everyone
+  after it.** This repository is public, so each run log is a publication, and
+  the digest step is the one scheduled step that reads real subscribers.
+  Amazon SES quotes the recipient in its own error text when it will not send
+  to an address, and the send loop let that exception escape: the message
+  landed in the log and every later recipient was skipped. `notify` now
+  registers an `::add-mask::` for each address, webhook URL and unsubscribe
+  token before it sends anything, reports a failed send by position and error
+  code only, keeps sending to the rest, and still exits non-zero so the step
+  turns red. The sender address travels through the environment rather than
+  being expanded into the script text the log prints. Nothing had leaked: the
+  digest step's log for the daily runs from 2026-09-08 through 2026-09-18
+  shows counts and the sender address only, and the one email sent in that
+  window (2026-09-18) went through cleanly. The exposure was the next refused
+  address, not a past one. Tests cover the refusal, the masks-first ordering,
+  and a workflow lint on the step.
+
 - **The intraday refresh overlaps its waiting instead of timing out on it.**
   The watchdog's bound check failed on 2026-09-18: Intraday refresh run
   35316236534 took 160 of its 175 minutes. That run was the tail of four days

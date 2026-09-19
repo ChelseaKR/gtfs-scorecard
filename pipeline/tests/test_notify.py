@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+from pathlib import Path
 
 import pytest
 
@@ -604,3 +605,199 @@ def test_build_portfolio_emails_only_sends_subscribed_rollups() -> None:
     )
     # The only digest built this week is for a rollup the subscriber did not opt into.
     assert build_portfolio_emails(subs, {"all": _portfolio_digest()}) == []
+
+
+# --- The digest step runs in a public repository's Actions log ----------------
+#
+# The digest is the one scheduled job that reads real subscribers' addresses,
+# and its run log is a publication. SES's own error text quotes the recipient it
+# refuses ("Email address is not verified ... failed the check ...: <address>"),
+# and an exception escaping the send loop used to print that into the log and
+# skip every later recipient. These tests hold the two halves: masks registered
+# first, and a failure reported by position and code, never by recipient.
+
+_VICTIM = "refused.person@example.org"
+_OTHERS = ("first@example.org", "third@example.org")
+
+
+class _SesRefusal(Exception):
+    """Shaped like botocore's ClientError: the message quotes the recipient and the
+    structured error carries a code."""
+
+    def __init__(self, recipient: str) -> None:
+        super().__init__(
+            "An error occurred (MessageRejected) when calling the SendEmail operation: "
+            f"Email address is not verified. The following identities failed the check in "
+            f"region US-WEST-2: {recipient}"
+        )
+        self.response = {"Error": {"Code": "MessageRejected", "Message": recipient}}
+
+
+def _fake_boto3(monkeypatch: pytest.MonkeyPatch, refuse: str) -> list[str]:
+    """Install a boto3 whose SES client refuses one recipient; return who was sent to."""
+    import sys
+    import types
+
+    delivered: list[str] = []
+
+    class _Ses:
+        def send_email(self, **kwargs: object) -> None:
+            to = kwargs["Destination"]["ToAddresses"][0]  # type: ignore[index]
+            if to == refuse:
+                raise _SesRefusal(to)
+            delivered.append(to)
+
+    fake = types.ModuleType("boto3")
+    fake.client = lambda *_a, **_kw: _Ses()  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "boto3", fake)
+    return delivered
+
+
+def _three_emails() -> list[object]:
+    from scorecard_pipeline.notify import Email
+
+    return [Email(to=to, subject="s", body="b") for to in (_OTHERS[0], _VICTIM, _OTHERS[1])]
+
+
+def test_a_refused_recipient_does_not_stop_the_rest_or_get_named(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    from scorecard_pipeline.notify import SendReport, send_via_ses
+
+    delivered = _fake_boto3(monkeypatch, refuse=_VICTIM)
+    with caplog.at_level("DEBUG"):
+        report = send_via_ses(_three_emails(), "alerts@sender.example")  # type: ignore[arg-type]
+
+    assert report == SendReport(sent=2, failed=1)
+    assert delivered == list(_OTHERS), "the recipients after the refused one were still sent to"
+    logged = caplog.text
+    assert "digest email 2 of 3 was not sent (MessageRejected)" in logged
+    assert _VICTIM not in logged, "the refused address reached the log"
+    assert "Email address is not verified" not in logged, "SES's own message reached the log"
+
+
+def test_a_failure_with_no_error_code_is_named_by_its_class_only(
+    monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+) -> None:
+    import sys
+    import types
+
+    from scorecard_pipeline.notify import Email, send_via_ses
+
+    class _Ses:
+        def send_email(self, **kwargs: object) -> None:
+            raise ConnectionError(f"could not reach the endpoint for {_VICTIM}")
+
+    fake = types.ModuleType("boto3")
+    fake.client = lambda *_a, **_kw: _Ses()  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "boto3", fake)
+    with caplog.at_level("DEBUG"):
+        report = send_via_ses([Email(to=_VICTIM, subject="s", body="b")], "a@sender.example")
+
+    assert (report.sent, report.failed) == (0, 1)
+    assert "(ConnectionError)" in caplog.text
+    assert _VICTIM not in caplog.text
+
+
+def test_mask_lines_cover_every_value_a_digest_run_handles() -> None:
+    from scorecard_pipeline.notify import mask_lines
+
+    subs = parse_subscribers(
+        {
+            "subscribers": [
+                {
+                    "email": "a@example.org",
+                    "agencies": ["x"],
+                    "webhook_url": "https://hooks.example.org/secret-path",
+                }
+            ]
+        }
+    )
+    lines = mask_lines(subs, sender="alerts@sender.example")
+    assert "::add-mask::a@example.org" in lines
+    assert "::add-mask::https://hooks.example.org/secret-path" in lines
+    assert "::add-mask::alerts@sender.example" in lines
+    # Longest first, so a value that contains another is masked whole.
+    assert lines == sorted(lines, key=lambda line: (-len(line), line))
+
+
+def test_mask_lines_skip_what_cannot_be_one_command() -> None:
+    from scorecard_pipeline.notify import Subscriber, mask_lines
+
+    odd = Subscriber(email="a\nb@example.org", agency_ids=None, unsub_token="")
+    assert mask_lines([odd], sender="") == []
+
+
+def test_the_cli_masks_before_it_sends_and_never_prints_a_recipient(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    caplog: pytest.LogCaptureFixture,
+    tmp_path: Path,
+) -> None:
+    """End to end through `scorecard notify --send` as the workflow runs it: in
+    Actions, a mask for each address is the first thing printed, one refused
+    address does not stop the others, the step still fails, and the address
+    appears nowhere but inside its mask command."""
+    from scorecard_pipeline import alerts, cli
+    from scorecard_pipeline.cli import main
+
+    # The digest itself is stubbed below, so nothing here needs the registry.
+    monkeypatch.setattr(cli, "load_agencies", lambda: None)
+    delivered = _fake_boto3(monkeypatch, refuse=_VICTIM)
+    subs_file = tmp_path / "subs.yaml"
+    subs_file.write_text(
+        "subscribers:\n"
+        + "".join(
+            f"  - email: {who}\n    verified: true\n    all: true\n"
+            for who in (_OTHERS[0], _VICTIM, _OTHERS[1])
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        alerts,
+        "build_digest",
+        lambda **_kw: Digest(as_of=dt.date(2026, 9, 18), items=[_item("unitrans", "Unitrans")]),
+    )
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    monkeypatch.delenv("SUBSCRIPTIONS_TABLE", raising=False)
+    monkeypatch.setenv("SES_FROM", "alerts@sender.example")
+
+    with caplog.at_level("DEBUG"):
+        code = main(["notify", "--send", "--subscriptions", str(subs_file)])
+
+    out = capsys.readouterr()
+    assert code == 1, "a refused recipient must leave the step red"
+    assert delivered == list(_OTHERS)
+    first_lines = out.out.splitlines()[:5]
+    assert f"::add-mask::{_VICTIM}" in first_lines, "masks are registered before any send"
+    assert "::add-mask::alerts@sender.example" in first_lines
+    unmasked = [
+        line
+        for line in (out.out + out.err + caplog.text).splitlines()
+        if "::add-mask::" not in line
+    ]
+    everything_else = "\n".join(unmasked)
+    assert _VICTIM not in everything_else
+    assert "alerts@sender.example" not in everything_else
+    assert "Sent 2 of 3 digest email(s) via SES." in caplog.text
+
+
+def test_the_cli_prints_no_masks_outside_actions(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str], tmp_path: Path
+) -> None:
+    from scorecard_pipeline import alerts, cli
+    from scorecard_pipeline.cli import main
+
+    monkeypatch.setattr(cli, "load_agencies", lambda: None)
+    subs_file = tmp_path / "subs.yaml"
+    subs_file.write_text(
+        "subscribers:\n  - email: a@example.org\n    verified: true\n    all: true\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(
+        alerts, "build_digest", lambda **_kw: Digest(as_of=dt.date(2026, 9, 18), items=[])
+    )
+    monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+    monkeypatch.delenv("SUBSCRIPTIONS_TABLE", raising=False)
+    assert main(["notify", "--subscriptions", str(subs_file)]) == 0
+    assert "::add-mask::" not in capsys.readouterr().out

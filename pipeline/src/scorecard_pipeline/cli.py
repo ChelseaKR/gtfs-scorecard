@@ -3624,6 +3624,35 @@ def _cmd_trend(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int
     return 0
 
 
+def _send_digests(
+    args: argparse.Namespace,
+    parser: argparse.ArgumentParser,
+    emails: list[Any],
+    webhooks: list[Any],
+) -> int:
+    """Send the rendered digests. One recipient SES refuses does not stop the
+    others and is never named (see notify.send_via_ses); the step still fails, so
+    an operator looks, and the log carries counts and error codes only."""
+    from .notify import send_via_ses, send_webhooks
+
+    email_failures = 0
+    if emails:
+        sender = args.sender or os.environ.get("SES_FROM")
+        if not sender:
+            parser.error("--send requires --from or the SES_FROM environment variable")
+        region = os.environ.get("AWS_REGION", "us-west-2")
+        report = send_via_ses(emails, sender, region=region)
+        log.info("Sent %d of %d digest email(s) via SES.", report.sent, len(emails))
+        email_failures = report.failed
+    if webhooks:
+        sent_hooks = send_webhooks(webhooks)
+        log.info("Posted %d digest webhook(s) of %d configured.", sent_hooks, len(webhooks))
+    if email_failures:
+        log.error("%d digest email(s) could not be sent; see the warnings above.", email_failures)
+        return 1
+    return 0
+
+
 def _cmd_notify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .alerts import build_digest
     from .notify import (
@@ -3631,8 +3660,7 @@ def _cmd_notify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
         build_webhook_notifications,
         load_subscribers,
         load_subscribers_from_dynamo,
-        send_via_ses,
-        send_webhooks,
+        mask_lines,
     )
 
     table = args.table or os.environ.get("SUBSCRIPTIONS_TABLE")
@@ -3642,6 +3670,13 @@ def _cmd_notify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     else:
         subs_path = Path(args.subscriptions) if args.subscriptions else None
         subscribers = load_subscribers(subs_path)
+    if os.environ.get("GITHUB_ACTIONS") == "true":
+        # This repository is public, so its run logs are a publication. Register
+        # a mask for every address, webhook URL and token before anything that
+        # could print one runs: the dry-run listing below, a library error that
+        # quotes a recipient, or a future log line.
+        for command in mask_lines(subscribers, args.sender or os.environ.get("SES_FROM", "")):
+            print(command, flush=True)
     digest = build_digest(today=args.date, expiry_days=args.expiry_days)
     unsubscribe_base = os.environ.get("ALERTS_API_BASE")
     emails = build_emails(subscribers, digest, unsubscribe_base=unsubscribe_base)
@@ -3654,17 +3689,7 @@ def _cmd_notify(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
         return 0
 
     if args.send:
-        if emails:
-            sender = args.sender or os.environ.get("SES_FROM")
-            if not sender:
-                parser.error("--send requires --from or the SES_FROM environment variable")
-            region = os.environ.get("AWS_REGION", "us-west-2")
-            sent = send_via_ses(emails, sender, region=region)
-            log.info("Sent %d digest email(s) via SES from %s.", sent, sender)
-        if webhooks:
-            sent_hooks = send_webhooks(webhooks)
-            log.info("Posted %d digest webhook(s) of %d configured.", sent_hooks, len(webhooks))
-        return 0
+        return _send_digests(args, parser, emails, webhooks)
 
     for email in emails:
         print(f"=== To: {email.to}\nSubject: {email.subject}\n\n{email.body}")
