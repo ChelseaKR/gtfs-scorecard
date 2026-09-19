@@ -14,8 +14,9 @@ from typing import NoReturn
 
 import yaml
 
-from .config import AGENCIES, Agency, FetchAuth, ReuseEvidence, repo_root, utc_today
+from .config import AGENCIES, Agency, FetchAuth, LicenseBlock, ReuseEvidence, repo_root, utc_today
 from .feed_auth import FETCH_AUTH_KEYS, FETCH_AUTH_KINDS, name_problem
+from .license_ledger import check_block
 from .location import SUPPORTED_COUNTRY_CODES, normalize_location
 
 ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
@@ -227,6 +228,25 @@ def _parse_fetch_auth(
     return FetchAuth(kind=str(kind), secret=secret.strip(), name=name.strip())
 
 
+def _parse_license_block(
+    entry: dict[str, object], *, entry_label: str, source: str
+) -> LicenseBlock | None:
+    """Validate an entry's structured ``license`` block (issue #372); None when
+    the entry has none, which is every record today.
+
+    Strict about shape, silent about substance: a malformed block fails loading
+    with a sentence, like any other malformed field, but nothing here reads what
+    the block says to admit, score, or publish a feed. ``scorecard license-lint``
+    reports a missing or inconsistent block, as advice only.
+    """
+    if "license" not in entry:
+        return None
+    block, problems = check_block(entry["license"], today=_today())
+    if block is None:
+        _fail(entry_label, "; ".join(problems), source)
+    return block
+
+
 def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     raw: object,
     *,
@@ -309,6 +329,7 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             "own_shard",
             "reuse_evidence",
             "fetch_auth",
+            "license",
         }
         if unknown:
             _fail(label, f"unknown field(s): {', '.join(sorted(unknown))}", entry_source)
@@ -379,6 +400,8 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                 entry["reuse_evidence"], entry_label=label, source=entry_source
             )
 
+        license_block = _parse_license_block(entry, entry_label=label, source=entry_source)
+
         country = str(entry.get("country") or "US").strip().upper()
         subdivision_code = str(entry.get("subdivision_code") or "").strip().upper()
         subdivision_name = str(entry.get("subdivision_name") or "").strip()
@@ -448,6 +471,7 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                 own_shard=own_shard,
                 reuse_evidence=reuse_evidence,
                 fetch_auth=fetch_auth,
+                license_block=license_block,
             )
         )
     if not agencies:

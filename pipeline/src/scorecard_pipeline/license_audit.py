@@ -24,8 +24,10 @@ The audit is a report. It reads the committed registry, does no network I/O,
 and never fails: the share-alike policy it would measure against is an open
 owner decision (``docs/follow-ups.md``, "Decide the share-alike question for
 records already listed"), so it reports ``undecided`` rather than a verdict.
-The structured per-record ``license`` block, its migration, and a ``lint
---strict`` admission rule are later parts of the same issue.
+The structured per-record ``license`` block, its advisory lint and its dry-run
+migration live in ``license_ledger`` and ``license_migrate``. This audit still
+reads only ``license_note``. A ``lint --strict`` admission rule is a later part
+of the same issue and waits on the owner decision named above.
 """
 
 from __future__ import annotations

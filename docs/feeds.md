@@ -37,6 +37,83 @@ decision, recorded in [follow-ups.md](follow-ups.md) under "Decide the
 share-alike question for records already listed". The audit counts those
 records and lists the ones a curator has to read, and it does not decide them.
 
+### The structured license block
+
+The class table above comes from reading prose. A record can also carry a
+structured `license` block beside its `license_note` (field list and rules in
+[`registry/README.md`](../registry/README.md#structured-license-block-license),
+JSON Schema in `registry/license.schema.json`). It records what the terms state
+as data: the license class, whether attribution is required, whether
+redistribution is allowed, whether the license is share-alike, the terms link,
+the day the terms were read, and a review status. Every term is `true`, `false`
+or `unknown`. There is no default, so a license nobody read is recorded as
+unknown and never as a permissive one.
+
+The flow, and what is built:
+
+1. **Report.** `scorecard license-audit` reads the notes and counts records per
+   class. Built.
+2. **Advisory lint.** `scorecard license-lint` lists records that have no block,
+   whose block says `unknown`, or whose block contradicts itself, its license
+   class, or its note. It states in its own output that it is advisory and it
+   always exits 0. It changes nothing about which feeds are admitted, scored, or
+   published, and nothing else in the pipeline reads a block. Built.
+3. **Dry-run migration.** `scorecard license-migrate` proposes a block for every
+   record from its note and prints one line per record. A note that names one
+   license in the vocabulary gets that license, marked `unreviewed`. Everything
+   else (no license stated, only a link, terms outside the vocabulary, more than
+   one license) gets `unknown` and `needs_review`, with the reason. It never
+   writes a reviewer or a review date, and it writes nothing at all unless given
+   `--apply`. Built. The registry has not been migrated.
+4. **Owner reviews the dry run.** Someone reads the per-record report before any
+   block is written. Not done.
+5. **Apply.** `scorecard license-migrate --apply` inserts the blocks as text,
+   verifies every edit by re-reading the YAML, and is a no-op the second time.
+   It belongs in a pull request of its own, because it adds a block to every
+   record. Not done.
+6. **Curators review.** A curator reads a record's terms, fills in `terms_url`,
+   `retrieved_on` and `redistribution_allowed`, and sets `status: reviewed` with
+   their handle and the date. Not done.
+7. **An admission rule.** `lint --strict` refusing a new record without a
+   reviewed class waits on steps 5 and 6 and on the decision below. Not built,
+   deliberately.
+
+#### The decision left to the owner
+
+The tooling records `share_alike` and stops there. It does not decide what a
+share-alike license means for this project, and this page does not either. The
+question, stated once:
+
+> **Does this project list feeds whose license is share-alike, and if it does,
+> on what condition?**
+
+The options, with what each one changes:
+
+- **A. No.** The exclusion in the admission gates stands. The records already
+  listed under a share-alike license are retired under
+  [`listing-policy.md`](listing-policy.md), which reduces published coverage and
+  unpublishes their scorecards. The datasets deferred for this reason stay
+  deferred.
+- **B. Yes, as a class.** Share-alike feeds are listed like any other license.
+  The exclusion text on this page and in the admission gates is amended, the
+  existing records stay, and the deferred datasets become admissible. The
+  attribution and share-alike obligations for what the scorecard publishes would
+  then need to be stated on the site.
+- **C. Yes, one record at a time.** A share-alike record is listed only after a
+  curator records, in that record's block, that they read the license terms
+  against what the scorecard publishes (scores and findings, never feed bytes)
+  and found the conditions met, with `status: reviewed`. Records without that
+  review are unlisted. This needs a reading of each license's conditions that
+  this project has not made, and it is the slowest option.
+
+Whichever option is chosen, a second answer is needed for the records already
+listed: do they follow the decision at once, or stay listed until reviewed. The
+Estonian records are a separate case, because their notes name no license at all
+and a curator has to read the publisher's terms first.
+
+The measured size of the question is in
+[`follow-ups.md`](follow-ups.md#decide-the-share-alike-question-for-records-already-listed).
+
 ## First worldwide canaries
 
 These feeds are official, openly reusable, and deliberately span three

@@ -241,6 +241,15 @@ note names CC BY-SA, so the audit counts both as unknown. The question above is
 unchanged. Only its size is measured here, and the numbers above are left as
 written.
 
+**Ledger built 2026-09-19 (issue #372, advisory part).** The decision now has
+somewhere to land. A structured `license` block can sit beside `license_note`
+and records share-alike as a neutral fact. `scorecard license-lint` reports
+records with no block or an unknown or inconsistent one, and `scorecard
+license-migrate` proposes blocks from the notes as a dry run. Both are advisory:
+nothing in the pipeline reads a block to admit, score, or publish a feed, and the
+registry has not been migrated. The question above is unchanged, and the options
+for it are written out in [`feeds.md`](feeds.md#the-decision-left-to-the-owner).
+
 Do not resolve this by editing one side quietly to match the other.
 
 ## Teach `discover` to check its own replacement candidate

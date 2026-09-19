@@ -40,6 +40,8 @@ must not be guessed merely to choose a shard.
   license-audit` reads `license_note` as data, so name the one licence that
   applies by its usual name or SPDX id. A note that names a second licence,
   even to say it does not apply, is reported as `unknown` for a curator to read.
+  The optional [`license` block](#structured-license-block-license) records the
+  same terms as data beside the note.
 - `mdb_id`: Mobility Database source id used for exact feed rediscovery.
 - `ntd_id`: four- or five-digit US National Transit Database id.
 - `organization_id`: stable operator slug shared by related feeds.
@@ -113,6 +115,64 @@ review date that is not in the future, non-empty attribution and reviewer, and
 an explicit identity review. Unknown keys or inferred evidence fail registry
 loading. Absence means no approved evidence record is on file; it is not a
 claim that the feed is unlicensed.
+
+### Structured license block (`license`)
+
+`license_note` is prose. The optional `license` block records the same terms as
+data, next to the note and never in place of it. Nothing reads the block to
+admit, score, or publish a feed: it is a ledger, and the tooling around it
+(`scorecard license-lint`, `scorecard license-migrate`) is advisory. Absence is
+allowed and means only that no block has been written yet.
+
+```yaml
+license:
+  id: CC-BY-4.0                 # required: one value from the list below
+  attribution_required: true    # required: true, false, or unknown
+  redistribution_allowed: unknown  # required: true, false, or unknown
+  share_alike: false            # required: true, false, or unknown
+  status: unreviewed            # required: unreviewed, needs_review, or reviewed
+  name: ""                      # required only when id is other or proprietary-terms
+  terms_url: https://provider.example/terms   # optional http(s) link to the terms
+  retrieved_on: "2026-09-19"    # optional: the day the terms were last read
+  attribution: Provider name.   # optional: the credit text the terms ask for
+  reviewed_by: curator-handle   # only with status reviewed, and then required
+  reviewed_on: "2026-09-19"     # only with status reviewed, and then required
+  reviewer_note: Free text.     # optional
+```
+
+- `id` is a license class from `license_audit.CLASSES` (SPDX identifiers where
+  one exists: `CC-BY-4.0`, `ODbL-1.0`, `CC-BY-SA-3.0`, `CC0-1.0`, `etalab-2.0`,
+  and the rest of that list), or one of three states: `other` for a named
+  license outside the list (give its `name`), `proprietary-terms` for bespoke
+  terms a curator has read (give a `name`), and `unknown`.
+- **Unknown is a recorded state, never a default.** The three terms are
+  required and take exactly `true`, `false`, or `unknown`. There is no default
+  and no `null`, so a term nobody measured cannot read as a permissive one.
+  Write `unknown` when you do not know. A block with `id: unknown` whose terms
+  say anything else is reported as inconsistent.
+- `share_alike` is a neutral recorded fact: what the license states. It does not
+  say whether this project lists share-alike feeds; that is an open owner
+  decision (see [`docs/feeds.md`](../docs/feeds.md)).
+- `status: reviewed` means a named person read the terms. It needs `reviewed_by`
+  and `reviewed_on` (a quoted, past ISO date), and those two fields are refused
+  on any other status, so a review nobody did cannot be recorded. Quote every
+  date: YAML reads a bare `2026-09-19` as a date, not a string, and the loader
+  rejects it.
+- The loader rejects unknown keys, a missing required key, a value outside the
+  lists above, and a malformed URL or date, with a sentence naming the record.
+  [`license.schema.json`](license.schema.json) states the same shape as a JSON
+  Schema (draft 2020-12). It is generated from
+  `pipeline/src/scorecard_pipeline/license_ledger.py`, and a test fails if the
+  two differ. The parser also checks real calendar dates and that a date is not
+  in the future, which a schema cannot.
+
+To see what is missing or inconsistent, run `uv run scorecard license-lint`
+(add `--all` to list every record without a block). It always exits 0. To see
+what blocks the existing notes support, run `uv run scorecard license-migrate`:
+a dry run that writes nothing and prints one line per record. Only
+`--apply` writes, and it is meant for a reviewed pull request of its own. The
+flow and the one open decision are in
+[`docs/feeds.md`](../docs/feeds.md#the-structured-license-block).
 
 ### Credentialed feeds (`fetch_auth`)
 

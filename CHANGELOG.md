@@ -29,6 +29,26 @@ the declared public surface).
 
 ### Added
 
+- **A structured `license` block for registry records, an advisory lint, and a
+  dry-run migration
+  ([#372](https://github.com/ChelseaKR/gtfs-scorecard/issues/372), part 2).**
+  A record may now carry a `license` block beside its `license_note`: the
+  license class (SPDX ids where they exist), whether attribution is required,
+  whether redistribution is allowed, whether the license is share-alike, the
+  terms link, the day the terms were read, and a review status. Every term is
+  `true`, `false` or `unknown` with no default, so an unread license cannot read
+  as a permissive one. The loader validates the block strictly, and
+  `registry/license.schema.json` states the same shape as a JSON Schema that a
+  test holds to the parser's verdict. `scorecard license-lint` reports records
+  with no block, an `unknown` license, or a block that contradicts itself or its
+  note; it says in its own output that it is advisory and exits 0. `scorecard
+  license-migrate` proposes blocks from the existing notes, one line per record,
+  and writes nothing unless given `--apply`; a note that is ambiguous becomes
+  `unknown` and `needs_review`, never a guess, and the migration never records a
+  review. Nothing reads a block to admit, score or publish a feed, no registry
+  record was changed, and no published artifact changes. What remains of #372 is
+  the owner's decision on share-alike, the reviewed migration, and an admission
+  rule; `docs/feeds.md` states the decision as a question with its options.
 - **Typed Python and TypeScript clients for the read API, generated and drift-checked
   ([#370](https://github.com/ChelseaKR/gtfs-scorecard/issues/370)).**
   `clients/python` (`gtfs-scorecard-client`) and `clients/typescript`

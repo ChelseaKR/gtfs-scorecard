@@ -2600,6 +2600,77 @@ def _cmd_license_audit(args: argparse.Namespace, parser: argparse.ArgumentParser
     return 0
 
 
+def _cmd_license_lint(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Report records with no structured license block, or an inconsistent one (issue #372).
+
+    Advisory, and it says so in its own output: it does not change which feeds
+    are admitted, scored, or published, and it exits 0 whatever it finds. There
+    is no ``--strict``; an admission rule waits on the migration and on the
+    owner's share-alike decision.
+    """
+    from .license_ledger import NO_LICENSE_BLOCK, STATUSES, ledger_report
+
+    report = ledger_report(AGENCIES.values())
+    if args.json:
+        print(json.dumps(report, indent=2, sort_keys=True, ensure_ascii=False))
+        return 0
+    by_kind = report["by_kind"]
+    lines = [
+        f"License ledger lint. {report['notice']}",
+        f"Records: {report['records']}. With a structured license block: "
+        f"{report['with_block']}. Without: {report['without_block']}.",
+        "Blocks by status: "
+        + ", ".join(f"{status} {report['by_status'][status]}" for status in STATUSES)
+        + ".",
+        "Findings by kind:",
+        *(f"  {kind:<38} {count:>6}" for kind, count in by_kind.items()),
+        f"Records with no finding: {report['clean_records']}.",
+    ]
+    rows = [f for f in report["findings"] if args.all or f["kind"] != NO_LICENSE_BLOCK]
+    if rows:
+        lines.append("")
+        lines.extend(f"{f['kind']}\t{f['agency_id']}\t{f['detail']}" for f in rows)
+    hidden = by_kind[NO_LICENSE_BLOCK] if not args.all else 0
+    if hidden:
+        lines.append("")
+        lines.append(f"{hidden} {NO_LICENSE_BLOCK} rows not listed; pass --all to list them.")
+    print("\n".join(lines))
+    return 0
+
+
+def _cmd_license_migrate(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Propose structured license blocks from license notes; a dry run unless --apply (#372).
+
+    Mechanical mappings only: a note that names one vocabulary license gets that
+    block as ``unreviewed``, and everything else gets ``unknown`` and
+    ``needs_review``. It never writes a review. ``--apply`` edits the registry
+    shards after verifying every edit in memory; without it nothing is written.
+    """
+    from .license_migrate import (
+        MigrationError,
+        apply_migration,
+        migration_report,
+        plan_migration,
+        render_rows,
+        render_summary,
+    )
+
+    plan = plan_migration(AGENCIES.values())
+    files_changed = 0
+    if args.apply:
+        try:
+            files_changed = apply_migration(plan)
+        except MigrationError as exc:
+            print(f"License migration FAILED, nothing was written: {exc}", file=sys.stderr)
+            return 1
+    report = migration_report(plan, applied=args.apply, files_changed=files_changed)
+    if args.json:
+        print(json.dumps(report, indent=2, sort_keys=True, ensure_ascii=False))
+    else:
+        print(render_summary(report) + "\n" + render_rows(report), end="")
+    return 0
+
+
 def _cmd_identity(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     from .identity import build_identity_ledger
 
@@ -4931,6 +5002,32 @@ def main(argv: list[str] | None = None) -> int:
     )
     license_audit.add_argument("--json", action="store_true", help="print the report as JSON")
 
+    license_lint = sub.add_parser(
+        "license-lint",
+        help=(
+            "report records with no structured license block or an inconsistent one "
+            "(advisory only; changes nothing about admission)"
+        ),
+    )
+    license_lint.add_argument("--json", action="store_true", help="print the report as JSON")
+    license_lint.add_argument(
+        "--all", action="store_true", help="also list every record that has no block yet"
+    )
+
+    license_migrate = sub.add_parser(
+        "license-migrate",
+        help=(
+            "propose structured license blocks from license notes; a dry run unless --apply "
+            "is given"
+        ),
+    )
+    license_migrate.add_argument("--json", action="store_true", help="print the report as JSON")
+    license_migrate.add_argument(
+        "--apply",
+        action="store_true",
+        help="write the proposed blocks into the registry shards (default: a dry run)",
+    )
+
     identity = sub.add_parser(
         "identity", help="report feed records, canonical feeds, organizations, and aliases"
     )
@@ -5204,6 +5301,8 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "backfill-state": _cmd_backfill_state,
         "lint": _cmd_lint,
         "license-audit": _cmd_license_audit,
+        "license-lint": _cmd_license_lint,
+        "license-migrate": _cmd_license_migrate,
         "identity": _cmd_identity,
         "freshness-sweep": _cmd_freshness_sweep,
         "liveness": _cmd_liveness,
