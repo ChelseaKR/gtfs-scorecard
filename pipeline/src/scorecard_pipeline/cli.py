@@ -3910,7 +3910,7 @@ def _cmd_report(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
 def _cmd_bundle(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     """Program report bundle (docs/program-plan.md): validate a request, and
     either print the build plan (--plan) or render the zip + manifest."""
-    from .bundle import BundleError, build_bundle, parse_request, plan
+    from .bundle import MAX_AGENCIES, BundleError, build_bundle, parse_request, plan
 
     try:
         raw = json.loads(Path(args.request).read_text())
@@ -3918,7 +3918,10 @@ def _cmd_bundle(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
         print(f"error: could not read request {args.request}: {err}", file=sys.stderr)
         return 2
     try:
-        request = parse_request(raw if isinstance(raw, dict) else {})
+        request = parse_request(
+            raw if isinstance(raw, dict) else {},
+            max_agencies=args.max_agencies or MAX_AGENCIES,
+        )
         if args.plan is not None:
             args.plan.parent.mkdir(parents=True, exist_ok=True)
             args.plan.write_text(json.dumps(plan(request), indent=2) + "\n")
@@ -4830,6 +4833,13 @@ def main(argv: list[str] | None = None) -> int:
         type=Path,
         default=None,
         help="write the build plan (ids to fetch, ids refused) and stop; renders nothing",
+    )
+    bundle.add_argument(
+        "--max-agencies",
+        type=int,
+        default=None,
+        metavar="N",
+        help="hold the cohort to what the order was sold with (setup route stores it)",
     )
     bundle_sample = sub.add_parser(
         "bundle-sample",

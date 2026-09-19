@@ -2,8 +2,11 @@
 
 EventBridge invokes this once a week. For every subscription whose status is
 ``active`` and whose last refresh is at least ``REFRESH_DAYS`` old, it mints a
-new bundle id, stores the capability row, re-dispatches report-bundle.yml
-with the stored request, and stamps the subscription's ``last_refresh``.
+new bundle id, stores the capability row, writes the stored request to the
+bucket under a fresh random order reference, re-dispatches report-bundle.yml
+with that reference alone (a run log on a public repository prints every
+input, so the buyer's details never travel as one), and stamps the
+subscription's ``last_refresh``.
 
 "Monthly" is enforced here as a minimum interval, not a calendar day: a
 subscription refreshed on the 3rd is eligible again on the 31st and runs on
@@ -55,14 +58,15 @@ from common import (
     UpstreamError,
     bundle_row,
     dispatch_bundle_workflow,
+    new_order_ref,
     now_iso,
     payments_enabled,
     price_plans,
+    store_request,
     table,
-    workflow_inputs,
 )
 
-from scorecard_pipeline.bundle import new_bundle_id
+from scorecard_pipeline.bundle import MAX_AGENCIES, new_bundle_id
 
 REFRESH_DAYS = 28
 
@@ -195,14 +199,24 @@ def refresh(
             continue
         request["bundle_id"] = new_bundle_id()
         request["cadence"] = "monthly"
+        order_ref = new_order_ref()
         # The capability row first. The workflow uploads the archive and emails
         # the link on its own clock; if this Lambda times out between the
         # dispatch and the put, the buyer gets a link to a row that does not
         # exist and reads "expired or never issued" for a bundle sitting in
         # the bucket. A row with no archive behind it is the harmless order.
-        bundles.put_item(Item=bundle_row(request, source="refresh"))
+        bundles.put_item(Item=bundle_row(request, source="refresh", order_ref=order_ref))
         try:
-            dispatch_bundle_workflow(workflow_inputs(request))
+            # The workflow is dispatched with the order reference alone: a run
+            # log on a public repository prints every input, so the buyer's
+            # address, the program name, the agency list and the bundle id all
+            # travel inside the stored order. The cap rides with it, so the
+            # render holds the archive to what the subscription covers even
+            # when the row predates the cap field.
+            order = dict(request)
+            order["max_agencies"] = cap if cap is not None else MAX_AGENCIES
+            store_request(order_ref, order)
+            dispatch_bundle_workflow(order_ref)
         except UpstreamError as err:
             print(f"refresh {row.get('id')}: dispatch failed: {err}")
             counts["failed"] += 1

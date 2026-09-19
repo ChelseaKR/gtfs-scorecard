@@ -185,9 +185,12 @@ description of what has to be true; the script is how it is done and checked.
    `/bundle/setup/` → form → workflow run → email → download link → archive
    with the right cover and a manifest that names every id. Then cancel a
    test subscription from the Stripe customer portal and confirm the row
-   reads `canceled`. Run `report-bundle.yml` by hand once with a deliberately
-   bad id to see it listed in the manifest, not dropped. Dispatch it with
-   `--ref main`: the OIDC role trusts `refs/heads/main` and nothing
+   reads `canceled`. Include one agency id the scorecard does not track in a
+   test purchase, to see it listed in the manifest, not dropped (a malformed
+   id is refused by the setup route before any order is stored, so it can no
+   longer reach a run). A hand re-run for a make-good takes the `order_ref`
+   from the order's capability row and must be dispatched with `--ref main`:
+   the OIDC role trusts `refs/heads/main` and nothing
    else (`infra/artifacts/github_oidc.tf`), so a run dispatched on any other
    ref cannot assume the role and fails at the upload.
    Buy a `bundle_25` and try 26 agency ids as well: the plan's cap is
@@ -339,21 +342,41 @@ finishes the same bundle id rather than opening a second order. One payment
 can still only ever produce one bundle.
 
 **The build fails.** `report-bundle.yml` writes an annotation and a run
-summary saying that a paid order did not complete, and deliberately does not
-name it: a run page on a public repository is a publication, and the bundle id
-is the download credential. The order is identified in the bundles table and in
-the reconciler's CloudWatch log, both private. Nor does that step send mail —
-`SES_FROM` is an address on a domain with no MX record, so the alert it used to
-send was delivered nowhere, which is the same defect as no alert wearing a coat.
-Re-dispatching with the same inputs is the repair: the archive and the
-download link are both keyed on the bundle id, so the re-run fills the object
-the buyer's existing link already points at. That also makes the ambiguous
+summary saying that a paid order did not complete. The only thing it names is
+`order_ref`, the random reference to the stored order, which carries no buyer
+data and grants nothing on its own: a run page on a public repository is a
+publication, and the bundle id is the download credential. The order is
+identified in the bundles table and in the reconciler's CloudWatch log, both
+private. Nor does that step send mail — `SES_FROM` is an address on a domain
+with no MX record, so the alert it used to send was delivered nowhere, which
+is the same defect as no alert wearing a coat. Re-dispatching with the same
+`order_ref` is the repair: the archive and the download link are both keyed
+on the bundle id stored inside the order, so the re-run fills the object the
+buyer's existing link already points at. That also makes the ambiguous
 failure safe — a dispatch whose socket timed out after GitHub had queued the
 run — because the retry resumes the same bundle id, so both runs render to one
 archive key under one capability row. `watchdog.yml` reads that
 workflow's most recent conclusion every six hours as the backstop, and counts
 `cancelled` as a failure because that is what a job killed by its own
 `timeout-minutes` records.
+
+**The workflow is never handed buyer data.** An earlier shape of
+`report-bundle.yml` took the delivery address, the program name, the agency
+list and the bundle id as `workflow_dispatch` inputs. GitHub prints each
+step's environment in the run log, this repository's run logs are public, and
+two hand test runs on 2026-09-11 published all of it that way before the tier
+had a real customer. The dispatch now carries `order_ref` alone: the setup
+and refresh handlers write the validated order to the private artifacts
+bucket (`program-requests/`, 30-day lifecycle, outside the CloudFront
+allow-list) and the workflow reads it back with its own OIDC role, which
+trusts runs on main only. The first thing the run does with the object is
+register an `::add-mask::` for every value in it — the bundle id, the
+delivery address, the program name, the logo address and each agency id —
+before validating it, so even an error message that quotes one prints blank.
+The reference is random and not derived from the bundle id, so the concurrency
+group that names it publishes nothing. `pipeline/tests/test_workflow_safety.py`
+fails the suite if a buyer field comes back as an input, an `env:` value, an
+unmasked rendered line, or an xtrace flag.
 
 **Nobody comes back.** The buyer pays and closes the tab before the setup
 form, or hits a failed dispatch and never retries. The daily reconciler
@@ -397,13 +420,14 @@ creates, reads or touches a Stripe object.
   endpoint is rewritten to the test server and every external request is
   aborted. Stripe substituting `{CHECKOUT_SESSION_ID}` into the address is the
   part it takes on Stripe's word.
-- **The setup route to `report-bundle.yml`.** The inputs the Lambda sends are
-  compared with the inputs the workflow declares (an undeclared input, or a
-  required one left empty, is a 422 and an order that never starts), and one
-  purchase is run from the form through the workflow's own two pipeline steps
-  to the archive key the download route presigns, the email, and the
-  reconciler's verdict with the archive there and with it gone. The deployed
-  token's `actions: write` scope is the one thing this cannot check.
+- **The setup route to `report-bundle.yml`.** The one input the Lambda sends
+  (`order_ref`) is compared with the one input the workflow declares (an
+  undeclared input, or a required one left empty, is a 422 and an order that
+  never starts), and one purchase is run from the form through the stored
+  order and the workflow's own pipeline steps to the archive key the download
+  route presigns, the email, and the reconciler's verdict with the archive
+  there and with it gone. The deployed token's `actions: write` scope is the
+  one thing this cannot check.
 - **The weekly tick.** A subscription is bought, its stored request is read
   back 28 days later by `refresh_handler`, and the dispatch it produces is
   built. The EventBridge rule is checked by its own log, not by a purchase:

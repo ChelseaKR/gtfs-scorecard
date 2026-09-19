@@ -14,6 +14,15 @@ Two routes on the program-bundle API, both stateless per request:
     stores the capability row, dispatches report-bundle.yml, and for a
     subscription stores the request so the weekly refresh can re-dispatch it.
 
+    The workflow is dispatched with an order reference and nothing else. This
+    repository is public, and a run log prints every ``workflow_dispatch``
+    input, so the buyer's address, the program name, the agency list and the
+    bundle id -- the download capability -- must never be inputs. The
+    validated request is written to the private artifacts bucket under a
+    random 128-bit name (``common.store_request``) and the workflow reads it
+    back with its own AWS role, masking every value it holds before anything
+    else can print it.
+
     **A refresh renews a bundle.** A one-time bundle is its own entitlement,
     but ``refresh_mo`` and ``refresh_yr`` are not: each requires an earlier
     bundle purchase on the same address and covers the agencies that bundle
@@ -55,6 +64,7 @@ from typing import Any, NamedTuple
 from common import (
     CHECKOUT_PREFIX,
     ONE_TIME_PLANS,
+    ORDER_REF_RE,
     PLAN_AGENCY_CAPS,
     SESSION_PREFIX,
     SUBSCRIPTION_PLANS,
@@ -64,12 +74,13 @@ from common import (
     dispatch_bundle_workflow,
     html_response,
     json_response,
+    new_order_ref,
     now_iso,
     payments_enabled,
     scan_all,
+    store_request,
     stripe_get,
     table,
-    workflow_inputs,
 )
 
 from scorecard_pipeline import deadline
@@ -558,6 +569,7 @@ def setup(event: dict[str, Any]) -> dict[str, Any]:
     except BundleError as err:
         return json_response(400, {"ok": False, "error": str(err)})
 
+    order_ref = new_order_ref()
     if not _claim_session(bundles, session_id, request.bundle_id, plan, _checkout_email(session)):
         # The session is spoken for. Whether a build actually started decides
         # what to say: answering "this checkout already produced a bundle" to
@@ -571,6 +583,13 @@ def setup(event: dict[str, Any]) -> dict[str, Any]:
         # Finish the earlier order under its own bundle id, so one payment
         # still yields exactly one bundle and one download link.
         request = replace(request, bundle_id=unfinished)
+        # And under its own order reference. The first attempt may have
+        # reached GitHub even though its answer never came back, and the
+        # workflow's concurrency group is keyed on this reference: reusing it
+        # queues a duplicate run behind the first instead of beside it.
+        earlier = bundles.get_item(Key={"bundle_id": unfinished}).get("Item") or {}
+        if ORDER_REF_RE.fullmatch(str(earlier.get("order_ref") or "")):
+            order_ref = str(earlier["order_ref"])
     # The promise, computed once, here, from Stripe's own record of when the
     # money moved. Not from the moment this form was submitted: a buyer who
     # pays on Friday and fills the form in on Monday was promised two business
@@ -590,6 +609,7 @@ def setup(event: dict[str, Any]) -> dict[str, Any]:
         source="checkout",
         session_id=session_id,
         deliver_by_epoch=deadline.deadline_epoch(checkout_at),
+        order_ref=order_ref,
     )
     row["deliver_by_anchor"] = anchored
     bundles.put_item(Item=row)
@@ -597,26 +617,34 @@ def setup(event: dict[str, Any]) -> dict[str, Any]:
     _record_subscription(session, request, price=price, plan=plan, entitlement=entitlement)
 
     try:
-        # The workflow carries the promised date so the delivery email can
-        # state the commitment it is meeting. Carried, not recomputed there:
-        # one function decides this date, and it has already decided.
-        dispatch = request.as_dict()
-        dispatch["promised_by"] = deadline.spoken_date(deadline.deadline_date(checkout_at))
-        dispatch_bundle_workflow(workflow_inputs(dispatch))
+        # The workflow is handed nothing but the row's order reference: this
+        # repository is public and a run log prints every input, so the
+        # buyer's address, the program name, the agency list and the bundle id
+        # (the download capability) travel inside the stored order instead.
+        # The promised date and the plan's cap ride with it, so the delivery
+        # email can state the commitment it is meeting and the render can hold
+        # the archive to what was paid for. Carried, not recomputed in the
+        # workflow: one function decides this date, and it has already decided.
+        order = request.as_dict()
+        order["promised_by"] = deadline.spoken_date(deadline.deadline_date(checkout_at))
+        order["max_agencies"] = entitlement.cap
+        store_request(order_ref, order)
+        dispatch_bundle_workflow(order_ref)
     except UpstreamError as err:
         # A paid order that never started a build is the one failure nobody
         # else can see: the workflow leaves no run, and the buyer is told to
-        # wait. Print it so CloudWatch holds the session and bundle ids, and
+        # wait. Print it so CloudWatch holds the reference and the plan, and
         # leave the claim's `dispatched` False so a second submission of the
-        # same form finishes the order instead of being refused.
+        # same form finishes the order instead of being refused. By reference
+        # only: the bundle id is a download credential and the address is the
+        # buyer's; both are in the bundles table, found from the session id.
         print(
             json.dumps(
                 {
                     "event": "dispatch_failed",
                     "session_id": session_id,
-                    "bundle_id": request.bundle_id,
+                    "order_ref": order_ref,
                     "plan": plan,
-                    "deliver_to": request.deliver_to,
                     "error": str(err),
                 }
             )
