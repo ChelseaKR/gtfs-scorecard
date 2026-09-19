@@ -18,6 +18,15 @@ license each record's note names. When it shows a listed record whose terms
 the project does not list, acting on that is a listing decision taken under
 this policy, not a curation edit to the record's note.
 
+A record may also carry a structured `license` block, and `scorecard
+license-lint` reports records whose block is missing, unknown, or inconsistent.
+That report is advisory. It changes nothing about which feeds are listed, and a
+finding in it is a prompt for a curator to read the terms, not a listing action.
+
+Feeds whose license requires share-alike are listed, with a reuse notice on the
+scorecard and in the flat exports ([feeds.md](feeds.md#share-alike-admitted-with-a-notice)).
+A share-alike license is not grounds for removing a listing.
+
 ## Privacy
 
 The public scorecard uses two measurement tools. PostHog counts page views and

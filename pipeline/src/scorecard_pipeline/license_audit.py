@@ -21,11 +21,13 @@ and only when the note is unambiguous:
 Nothing is guessed, and ``unknown`` is never counted as open or as closed.
 
 The audit is a report. It reads the committed registry, does no network I/O,
-and never fails: the share-alike policy it would measure against is an open
-owner decision (``docs/follow-ups.md``, "Decide the share-alike question for
-records already listed"), so it reports ``undecided`` rather than a verdict.
-The structured per-record ``license`` block, its migration, and a ``lint
---strict`` admission rule are later parts of the same issue.
+and never fails. Share-alike is admitted with a notice (owner decision,
+2026-09-19, ``docs/feeds.md``), so the share-alike count is a measurement of
+which records carry the notice once their blocks are written, not a list of
+records to remove. The structured per-record ``license`` block, its advisory lint and its dry-run
+migration live in ``license_ledger`` and ``license_migrate``. This audit still
+reads only ``license_note``. A ``lint --strict`` admission rule is a later part
+of the same issue and waits on the migration; it would not refuse share-alike.
 """
 
 from __future__ import annotations
@@ -206,10 +208,8 @@ _SHARE_ALIKE_WORDING_RE = re.compile(
     r"\bodbl\b|open database licen[cs]e|by[- ]sa\b|share[- ]?alike", re.IGNORECASE
 )
 
-SHARE_ALIKE_POLICY = "undecided"
-SHARE_ALIKE_POLICY_SOURCE = (
-    'docs/follow-ups.md, "Decide the share-alike question for records already listed"'
-)
+SHARE_ALIKE_POLICY = "admitted_with_notice"
+SHARE_ALIKE_POLICY_SOURCE = 'docs/feeds.md, "Share-alike: admitted with a notice"'
 BASIS = (
     "The license_note of every registry record, classified by "
     "license_audit.CLASSES. A note naming more than one license is unknown, never "

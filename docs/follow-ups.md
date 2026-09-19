@@ -198,7 +198,7 @@ Steps, after step 3 of the section above lands:
 
 ## Decide the share-alike question for records already listed
 
-**Status: open, opened 2026-09-01.** Two findings from the 2026-09-01 coverage
+**Status: decided 2026-09-19, see below; opened 2026-09-01.** Two findings from the 2026-09-01 coverage
 pass are the same question, and neither is safe to settle inside a wave whose
 job was adding records.
 
@@ -240,6 +240,21 @@ and AMAT Palermo (CC BY 4.0 with a CC BY-SA tram marking). Neither Estonian
 note names CC BY-SA, so the audit counts both as unknown. The question above is
 unchanged. Only its size is measured here, and the numbers above are left as
 written.
+
+**Decided 2026-09-19: share-alike is admitted with a notice.** The owner's
+answer to the three questions above: this project does list share-alike feeds,
+the exclusion in the admission gates does not stand, and no existing record is
+retired for its license. A feed whose recorded license requires share-alike
+carries a reuse notice on its scorecard page and in the flat exports. The
+records already listed are unchanged. The mechanism is described in
+[`feeds.md`](feeds.md#share-alike-admitted-with-a-notice). The structured
+`license` block, `scorecard license-lint` and `scorecard license-migrate` are
+built and advisory, and the registry has not been migrated, so no notice appears
+anywhere yet. The measured counts above are left as written.
+
+Still open from this section: the roughly 100 deferred datasets are not admitted
+by this decision alone (each still needs its own reviewed block and every other
+gate), and the two Estonian records need a curator to read the publisher's terms.
 
 Do not resolve this by editing one side quietly to match the other.
 
