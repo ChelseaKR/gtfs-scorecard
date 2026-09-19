@@ -1,6 +1,6 @@
 # 0032 — Repo layout: `pipeline/` + `web/` + `infra/`, no root `pyproject.toml`
 
-Status: accepted
+Status: accepted; amended by ADR 0059, which adds a fourth component, `clients/`
 Date: 2026-07-05
 
 ## Context

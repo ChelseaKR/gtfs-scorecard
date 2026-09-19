@@ -619,7 +619,7 @@ components:
       headers:
         Access-Control-Allow-Origin: {$ref: "#/components/headers/AccessControlAllowOrigin"}
       content:
-        application/yaml:
+        text/yaml:
           schema:
             type: string
     NoCurrentFile:

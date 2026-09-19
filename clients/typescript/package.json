@@ -1,0 +1,53 @@
+{
+  "name": "@gtfs-scorecard/client",
+  "version": "0.1.0",
+  "description": "Typed TypeScript client for the GTFS Scorecard static read API, generated from its OpenAPI description.",
+  "keywords": [
+    "gtfs",
+    "transit",
+    "data-quality",
+    "openapi"
+  ],
+  "license": "Apache-2.0",
+  "author": "Chelsea Kelly-Reif",
+  "homepage": "https://gtfsscorecard.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ChelseaKR/gtfs-scorecard.git",
+    "directory": "clients/typescript"
+  },
+  "bugs": "https://github.com/ChelseaKR/gtfs-scorecard/issues",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "node --test src/contract.test.ts"
+  },
+  "dependencies": {
+    "openapi-fetch": "0.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.6",
+    "openapi-typescript": "7.13.0",
+    "typescript": "5.9.3"
+  }
+}

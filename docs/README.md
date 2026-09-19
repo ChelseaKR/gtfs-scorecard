@@ -18,6 +18,7 @@ This index is the handoff point for the documentation sweep last reviewed on 202
 - [Contributing](../CONTRIBUTING.md)
 - [Accessibility](accessibility.md)
 - [API](api.md)
+- [Typed clients](typed-clients.md)
 - [Interactivity Roadmap](INTERACTIVITY-ROADMAP.md)
 - [OTP Wiring Pattern](OTP_WIRING_PATTERN.md)
 - [Research Roadmap](RESEARCH-ROADMAP.md)

@@ -1,7 +1,7 @@
 # Convenience targets. CI runs the same commands directly (see .github/workflows);
 # these just give them stable names. `uv` runs inside the pipeline/ project.
 
-.PHONY: verify tiles tiles-geojsonl map-geometry render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav sync-measure sync-bundle-offers mutation mutation-results iac
+.PHONY: clients clients-check clients-control clients-test clients-build verify tiles tiles-geojsonl map-geometry render-site render-constants golden-refresh test contrast readability no-todos sync-static-nav sync-measure sync-bundle-offers mutation mutation-results iac
 
 # The merge-blocking gate: lint, format, types, tests, the AAA contrast check,
 # and the plain-language readability check. Mirrors .github/workflows/ci.yml.
@@ -143,3 +143,40 @@ iac:
 		terraform -chdir="$$dir" init -backend=false -input=false >/dev/null; \
 		terraform -chdir="$$dir" validate; \
 	done
+
+# Typed clients generated from web/api/v1/openapi.yaml (#370). The generators
+# are dev tooling pinned by exact version in clients/python/pyproject.toml and
+# clients/typescript/package.json, with lockfiles, and they never reach the
+# pipeline or the web app. Nothing here publishes anything; the owner steps for
+# that are in docs/typed-clients.md.
+#
+#   clients          regenerate everything under clients/ that is derived
+#   clients-check    regenerate to a temp directory, fail on any difference
+#   clients-control  prove clients-check fails on a stale description, a stale
+#                    schema and a hand edit (the negative control)
+#   clients-test     contract tests for both clients, against recorded responses
+#   clients-build    build both packages without publishing them
+#
+# The cheap half of the drift check, which needs no generator, runs inside
+# `make verify` as pipeline/tests/test_clients_drift.py. clients.yml runs the rest.
+CLIENTS_UV = uv run --project clients/python --locked --only-group dev
+
+clients:
+	cd clients/typescript && npm ci --ignore-scripts
+	$(CLIENTS_UV) python pipeline/scripts/generate_clients.py
+
+clients-check:
+	cd clients/typescript && npm ci --ignore-scripts
+	$(CLIENTS_UV) python pipeline/scripts/generate_clients.py --check
+
+clients-control:
+	cd clients/typescript && npm ci --ignore-scripts
+	$(CLIENTS_UV) python pipeline/scripts/generate_clients.py --control
+
+clients-test:
+	cd clients/python && uv run --locked pytest -q
+	cd clients/typescript && npm ci --ignore-scripts && npm run typecheck && npm test
+
+clients-build:
+	cd clients/python && uv build --wheel --out-dir "$$(mktemp -d)"
+	cd clients/typescript && npm ci --ignore-scripts && npm run build && npm pack --dry-run
