@@ -23,16 +23,16 @@ measured cannot read as a permissive one, and ``id: unknown`` is a recorded
 state, not a hole. A block that says ``unknown`` for the license but ``true``
 for a term is reported as inconsistent.
 
-**Share-alike is a neutral recorded fact.** ``share_alike`` says what the
-license states. Whether this project may list a share-alike feed is the owner's
-open decision (``docs/follow-ups.md``, "Decide the share-alike question for
-records already listed"), and nothing in this module answers it.
+**Share-alike is a recorded fact, and it is admitted.** ``share_alike`` says what
+the license states. Owner decision, 2026-09-19: a feed whose license requires
+share-alike is admitted, with a reuse notice (``license_notice``). Nothing in
+this module excludes or flags a share-alike feed for being share-alike.
 
 **The lint is advisory, always.** ``lint_ledger`` reports records that lack a
 block or carry an inconsistent one. Nothing here reads its findings to admit,
 score, or publish a feed, and the CLI verb exits 0 whatever it finds. Turning it
-into an admission rule is a separate change that waits on the migration and on
-the owner's decision.
+into an admission rule is a separate change that waits on the migration, and it
+would not refuse share-alike.
 
 The parser is the source of truth. ``json_schema`` derives the committed
 ``registry/license.schema.json`` from the same constants, and a test holds the

@@ -34,6 +34,7 @@ from . import SCHEMA_VERSION
 from .comparisons import build_comparison_cohort, reader_archive_profile
 from .config import Agency
 from .identity import resolve_published_agency_name
+from .license_notice import notice_for_agency
 from .metrics import resolve_service_horizon_status
 
 # The four rubric categories, flattened into their own columns. "realtime" is
@@ -60,6 +61,16 @@ COLUMNS: tuple[str, ...] = (
     "days_until_expiry",
     "service_horizon_status",
 )
+
+# The reuse-notice column (issue #372). It is not in COLUMNS on purpose: it is
+# added to a build only when at least one row carries a notice, so until a record
+# has a share-alike license block recorded, every export is byte-for-byte what it
+# was. When it is present it is the last column, on every row, and the dataset's
+# schema_version is 1.4. An empty value means no share-alike license is recorded
+# for that record; it does not mean the license is known or permissive.
+NOTICE_COLUMN = "license_notice"
+SCHEMA_VERSION_BASE = "1.3"
+SCHEMA_VERSION_WITH_NOTICE = "1.4"
 
 # The grades the rubric can assign, in order. Fixing the set means the
 # distribution always reports every grade, including the ones at zero, so a
@@ -101,7 +112,7 @@ def _row_for_agency(agency_id: str, entry: dict[str, Any]) -> dict[str, Any] | N
 def build_quality_dataset(
     index: dict[str, Any],
     *,
-    schema_version: str = "1.3",
+    schema_version: str | None = None,
     agencies: Iterable[Agency] | None = None,
 ) -> dict[str, Any]:
     """Build the flat open dataset from a published index.
@@ -116,6 +127,11 @@ def build_quality_dataset(
 
     `schema_version` versions the dataset's own shape, independent of the
     pipeline's SCHEMA_VERSION, so a downstream citation can pin the table layout.
+    Left unset it is 1.3, or 1.4 when the `license_notice` column is present.
+
+    `license_notice` (issue #372) carries the plain-language reuse notice for a
+    record whose recorded license is share-alike, and is empty for every other
+    record. The column appears only when some row has a notice.
     """
     entries = index.get("agencies") or {}
     agency_records = list(agencies) if agencies is not None else None
@@ -134,10 +150,20 @@ def build_quality_dataset(
     comparable_ids = {str(row.get("id") or "") for row in comparable}
     for row in rows:
         row["comparison_eligible"] = str(row.get("id") or "") in comparable_ids
+    notices = {
+        agency.id: notice.export_text()
+        for agency in (agency_records or ())
+        if (notice := notice_for_agency(agency)) is not None
+    }
+    has_notice = any(str(row["id"]) in notices for row in rows)
+    if has_notice:
+        for row in rows:
+            row[NOTICE_COLUMN] = notices.get(str(row["id"]))
     return {
-        "schema_version": schema_version,
+        "schema_version": schema_version
+        or (SCHEMA_VERSION_WITH_NOTICE if has_notice else SCHEMA_VERSION_BASE),
         "pipeline_schema_version": SCHEMA_VERSION,
-        "generated_fields": list(COLUMNS),
+        "generated_fields": [*COLUMNS, NOTICE_COLUMN] if has_notice else list(COLUMNS),
         "comparison": comparison,
         "rows": rows,
     }
@@ -160,9 +186,10 @@ def to_csv(dataset: dict[str, Any]) -> str:
     """
     buf = io.StringIO()
     writer = csv.writer(buf, lineterminator="\n")
-    writer.writerow(COLUMNS)
+    columns = dataset.get("generated_fields") or list(COLUMNS)
+    writer.writerow(columns)
     for row in dataset.get("rows", []):
-        writer.writerow([_csv_cell(row.get(col)) for col in COLUMNS])
+        writer.writerow([_csv_cell(row.get(col)) for col in columns])
     return buf.getvalue()
 
 

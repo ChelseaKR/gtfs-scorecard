@@ -438,10 +438,29 @@ def test_a_block_that_contradicts_its_own_license_is_inconsistent(
     assert expected in kinds(lint_ledger([with_block("a", "", **overrides)]))
 
 
-def test_a_share_alike_block_that_agrees_with_its_license_is_clean() -> None:
-    """Neutral: the lint records share-alike as a fact and does not flag it."""
-    record = with_block("a", "", id="ODbL-1.0", share_alike=True)
-    assert lint_ledger([record]) == []
+@pytest.mark.parametrize("license_id", ["ODbL-1.0", "CC-BY-SA-4.0", "CC-BY-SA-3.0", "CC-BY-SA"])
+@pytest.mark.parametrize("status", ["unreviewed", "needs_review"])
+def test_a_share_alike_feed_is_never_a_finding_for_being_share_alike(
+    license_id: str, status: str
+) -> None:
+    """Owner decision, 2026-09-19: share-alike is admitted with a notice. The lint
+    records share-alike as a neutral fact and must not flag, exclude, or block a
+    record for it. (A needs_review status is its own finding, and only that.)"""
+    record = with_block("a", "", id=license_id, share_alike=True, status=status)
+    found = kinds(lint_ledger([record]))
+    assert found == ([NEEDS_REVIEW_STATUS] if status == "needs_review" else [])
+    assert SHARE_ALIKE_MISMATCH not in found
+    assert "share_alike" not in " ".join(f.detail for f in lint_ledger([record]))
+
+
+def test_no_finding_kind_is_about_a_license_being_share_alike() -> None:
+    """A source-level guard: every kind is about a missing, unknown, or contradictory
+    block, and none names share-alike as a defect."""
+    from scorecard_pipeline.license_ledger import KINDS
+
+    assert not [
+        kind for kind in KINDS if kind.startswith("share_alike") and kind != SHARE_ALIKE_MISMATCH
+    ]
 
 
 def test_unknown_terms_beside_a_known_license_are_not_a_contradiction() -> None:
@@ -534,30 +553,43 @@ def test_a_license_block_changes_nothing_the_registry_gates_read(
         assert [a.is_canonical_feed for a in stamped] == canonical_before
 
 
-def test_only_the_ledger_modules_the_loader_and_the_cli_read_the_block() -> None:
-    """Nothing that admits, scores, or publishes may read ``license_block``.
+def _modules_matching(pattern: str) -> list[str]:
+    src = REPO_ROOT / "pipeline" / "src" / "scorecard_pipeline"
+    return sorted(
+        path.name
+        for path in src.glob("*.py")
+        if re.search(pattern, path.read_text("utf-8"), re.MULTILINE)
+    )
 
-    A source scan rather than a behavior test, because the property is about
-    every code path, including ones no test exercises. If a later change needs
-    to read the block for a decision, this fails and the change has to say so.
+
+def test_only_the_ledger_the_loader_and_the_notice_read_a_block() -> None:
+    """Nothing that fetches, validates, scores, ranks, or admits may read a license
+    block; the one thing a block changes is the reuse notice.
+
+    A source scan rather than a behavior test, because the property is about every
+    code path, including ones no test exercises. If a later change needs the block
+    for a decision, this fails and the change has to say so.
     """
-    allowed = {
+    readers = _modules_matching(r"license_block")
+    assert readers == [
         "agencies.py",
-        "cli.py",
         "config.py",
         "license_ledger.py",
         "license_migrate.py",
-    }
-    src = REPO_ROOT / "pipeline" / "src" / "scorecard_pipeline"
-    readers = sorted(
-        path.name
-        for path in src.glob("*.py")
-        if re.search(
-            r"license_block|license_ledger|license_migrate", path.read_text(encoding="utf-8")
-        )
-        and path.name not in allowed
-    )
-    assert readers == []
+        "license_notice.py",
+    ]
+    # The ledger modules are reached only by the loader, the CLI verbs, and the
+    # notice; the notice only by the two publishers that print it.
+    assert _modules_matching(r"^\s*from \.license_(?:ledger|migrate) import") == [
+        "agencies.py",
+        "cli.py",
+        "license_migrate.py",
+        "license_notice.py",
+    ]
+    assert _modules_matching(r"^\s*from \.license_notice import") == [
+        "dataset.py",
+        "render_site.py",
+    ]
 
 
 def test_the_registry_loader_and_lint_strict_are_untouched() -> None:

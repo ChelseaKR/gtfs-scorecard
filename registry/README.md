@@ -120,8 +120,9 @@ claim that the feed is unlicensed.
 
 `license_note` is prose. The optional `license` block records the same terms as
 data, next to the note and never in place of it. Nothing reads the block to
-admit, score, or publish a feed: it is a ledger, and the tooling around it
-(`scorecard license-lint`, `scorecard license-migrate`) is advisory. Absence is
+admit or score a feed: it is a ledger, and the tooling around it
+(`scorecard license-lint`, `scorecard license-migrate`) is advisory. The one thing
+a block changes is the reuse notice for a share-alike feed. Absence is
 allowed and means only that no block has been written yet.
 
 ```yaml
@@ -150,9 +151,10 @@ license:
   and no `null`, so a term nobody measured cannot read as a permissive one.
   Write `unknown` when you do not know. A block with `id: unknown` whose terms
   say anything else is reported as inconsistent.
-- `share_alike` is a neutral recorded fact: what the license states. It does not
-  say whether this project lists share-alike feeds; that is an open owner
-  decision (see [`docs/feeds.md`](../docs/feeds.md)).
+- `share_alike` records what the license states. Share-alike feeds are listed,
+  with a reuse notice on the scorecard and in the flat exports, but only when the
+  block says `share_alike: true` for a license it names; `unknown` and a missing
+  block never produce one (see [`docs/feeds.md`](../docs/feeds.md#share-alike-admitted-with-a-notice)).
 - `status: reviewed` means a named person read the terms. It needs `reviewed_by`
   and `reviewed_on` (a quoted, past ISO date), and those two fields are refused
   on any other status, so a review nobody did cannot be recorded. Quote every
@@ -171,7 +173,7 @@ To see what is missing or inconsistent, run `uv run scorecard license-lint`
 what blocks the existing notes support, run `uv run scorecard license-migrate`:
 a dry run that writes nothing and prints one line per record. Only
 `--apply` writes, and it is meant for a reviewed pull request of its own. The
-flow and the one open decision are in
+flow and the share-alike decision are in
 [`docs/feeds.md`](../docs/feeds.md#the-structured-license-block).
 
 ### Credentialed feeds (`fetch_auth`)

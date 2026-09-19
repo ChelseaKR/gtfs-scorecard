@@ -2587,8 +2587,9 @@ def _cmd_lint(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
 def _cmd_license_audit(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
     """Count registry records by the license each note names (issue #372).
 
-    A report, never a gate: it exits 0 whatever it finds, because the
-    share-alike policy it would judge against is still an owner decision.
+    A report, never a gate: it exits 0 whatever it finds. Share-alike is admitted
+    with a notice (owner decision, 2026-09-19), so its share-alike count is a
+    measurement, not a list of records to remove.
     """
     from .license_audit import license_audit, render_text
 
@@ -2605,8 +2606,8 @@ def _cmd_license_lint(args: argparse.Namespace, parser: argparse.ArgumentParser)
 
     Advisory, and it says so in its own output: it does not change which feeds
     are admitted, scored, or published, and it exits 0 whatever it finds. There
-    is no ``--strict``; an admission rule waits on the migration and on the
-    owner's share-alike decision.
+    is no ``--strict``; an admission rule waits on the migration, and it would
+    not refuse a share-alike license.
     """
     from .license_ledger import NO_LICENSE_BLOCK, STATUSES, ledger_report
 

@@ -236,8 +236,9 @@ def _parse_license_block(
 
     Strict about shape, silent about substance: a malformed block fails loading
     with a sentence, like any other malformed field, but nothing here reads what
-    the block says to admit, score, or publish a feed. ``scorecard license-lint``
-    reports a missing or inconsistent block, as advice only.
+    the block says to admit or score a feed. ``scorecard license-lint`` reports a
+    missing or inconsistent block, as advice only, and ``license_notice`` is the
+    one reader of a share-alike block.
     """
     if "license" not in entry:
         return None

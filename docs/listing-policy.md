@@ -22,8 +22,10 @@ A record may also carry a structured `license` block, and `scorecard
 license-lint` reports records whose block is missing, unknown, or inconsistent.
 That report is advisory. It changes nothing about which feeds are listed, and a
 finding in it is a prompt for a curator to read the terms, not a listing action.
-How share-alike licenses are treated is still the owner's decision
-([feeds.md](feeds.md#the-decision-left-to-the-owner)).
+
+Feeds whose license requires share-alike are listed, with a reuse notice on the
+scorecard and in the flat exports ([feeds.md](feeds.md#share-alike-admitted-with-a-notice)).
+A share-alike license is not grounds for removing a listing.
 
 ## Privacy
 

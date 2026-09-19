@@ -65,9 +65,9 @@ class LicenseBlock:
     ``license_ledger.py`` for the vocabulary and every validation rule, and
     ``registry/license.schema.json`` for the same shape as a JSON Schema.
 
-    ``share_alike`` is a neutral recorded fact: whether this project may list a
-    share-alike license is the owner's open decision (``docs/follow-ups.md``),
-    and no field here answers it.
+    ``share_alike`` records what the license states. Share-alike feeds are
+    admitted, with a reuse notice (owner decision, 2026-09-19); see
+    ``license_notice.py``.
     """
 
     id: str
@@ -198,7 +198,8 @@ class Agency:
     fetch_auth: FetchAuth | None = None
     # The structured license block (issue #372), or None when the record has
     # not been given one. None means "no block on file", never "unrestricted";
-    # nothing reads it to admit, score, or publish a feed. The free-text
+    # nothing reads it to admit or score a feed, and the only thing it changes in
+    # what is published is the share-alike reuse notice. The free-text
     # ``license_note`` above stays the record's prose.
     license_block: LicenseBlock | None = None
 

@@ -13,7 +13,7 @@ import pytest
 import yaml
 from jsonschema import Draft202012Validator
 
-from scorecard_pipeline import license_migrate
+from scorecard_pipeline import license_ledger, license_migrate
 from scorecard_pipeline.agencies import read_agencies
 from scorecard_pipeline.config import Agency
 from scorecard_pipeline.license_audit import license_audit
@@ -108,7 +108,6 @@ def test_anything_ambiguous_is_needs_review_with_every_term_unknown(note: str, r
     assert entry.block.attribution_required == "unknown"
     assert entry.block.redistribution_allowed == "unknown"
     assert entry.block.share_alike == "unknown"
-    assert entry.block.share_alike is not False
 
 
 def test_a_record_that_already_has_a_block_is_left_alone() -> None:
@@ -159,7 +158,7 @@ def test_the_summary_says_dry_run_first() -> None:
     plan = plan_migration([agency("a", "CC BY 4.0")])
     text = license_migrate.render_summary(migration_report(plan, applied=False))
     assert text.startswith("License migration DRY RUN: nothing was written.")
-    assert "not a listing decision" in text
+    assert "listed with a reuse notice, not excluded" in text
 
 
 # --- the migration over the committed registry ----------------------------------
@@ -407,13 +406,13 @@ def test_apply_writes_nothing_when_an_edit_fails_its_own_verification(
     before any file changes, in whichever shard it happens."""
     one, two = _write_two_shards(isolated_repo_root)
     before = (one.read_bytes(), two.read_bytes())
-    real = license_migrate.block_to_yaml_lines
+    real = license_ledger.block_to_yaml_lines
 
     def sabotage(block: Any, *, indent: int) -> list[str]:
         lines = real(block, indent=indent)
         return [*lines, f"{' ' * indent}rt_note: injected"]
 
-    monkeypatch.setattr(license_migrate, "block_to_yaml_lines", sabotage)
+    monkeypatch.setattr("scorecard_pipeline.license_migrate.block_to_yaml_lines", sabotage)
     with pytest.raises(MigrationError, match="changed beyond its license block"):
         apply_migration(plan_migration(read_agencies()))
     assert (one.read_bytes(), two.read_bytes()) == before

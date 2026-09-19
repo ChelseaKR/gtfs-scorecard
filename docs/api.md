@@ -110,6 +110,18 @@ resolve to `raw-v1`. Rows scored through `flat-single-root-v1` remain public
 and filterable, but the default cross-feed aggregate cohort requires `raw-v1`
 so a reader-view change cannot manufacture a trend or clearance claim.
 
+Flat export schema `1.4` adds `license_notice`, the last column. It appears only
+in a build where at least one record's recorded license requires share-alike;
+until then the exports are schema `1.3` and have no such column. On an affected
+record it holds a short, plain-language reuse notice: it names the license and
+says what share-alike asks of anyone who copies, adapts, or builds on the data
+and shares the result (share it under the same license and credit the source).
+An empty value means only that no share-alike license is recorded for that
+record. It does not mean the license is known, and it does not mean the data is
+free of conditions: a record whose license is unknown or unrecorded has an empty
+`license_notice` too. Read the publisher's terms before reusing any feed's data.
+The same notice appears on that record's scorecard page.
+
 For citation, do not cite the live site: it changes daily. A monthly
 `dataset-YYYY-MM` release (the `Dataset release` workflow) pins the flat
 exports, the parquet file, the NTD rollup, this data dictionary, and

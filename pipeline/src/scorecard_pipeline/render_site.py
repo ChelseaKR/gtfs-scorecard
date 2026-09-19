@@ -70,6 +70,7 @@ from .i18n import (
 from .identity import normalized_mdb_id, resolve_published_agency_name
 from .instance import ORG_NAME
 from .jurisdiction_guidance import guidance_for
+from .license_notice import LicenseNotice, notice_for_agency, notice_html
 from .location import country_name, resolve_published_location
 from .metrics import (
     expiry_status,
@@ -2698,6 +2699,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     program_ids: set[str] | None = None,
     feed_context: FeedContext | None = None,
     program_offer: ProgramOffer | None = None,
+    license_notice: LicenseNotice | None = None,
 ) -> str:
     name = artifact["agency"]["id"], artifact["agency"]["name"]
     agency_id, agency_name = name
@@ -2866,6 +2868,10 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     # did before this feature.
     confidence = _confidence_section(artifact)
     confidence_block = f"\n    {confidence}" if confidence else ""
+    # The reuse notice for a share-alike feed (issue #372). Present only when the
+    # record's license block affirmatively says share-alike, so every other page
+    # renders byte-for-byte as it did before this feature.
+    license_notice_block = f"\n    {notice_html(license_notice)}" if license_notice else ""
     ferry_profile = _ferry_profile_section(artifact)
     ferry_profile_block = f"\n    {ferry_profile}" if ferry_profile else ""
     _outreach_block = _outreach_section(artifact, canonical)
@@ -2967,7 +2973,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     </div>
     {report_route}
     <div class="report-content">
-    {_liveness_note(liveness, now)}{confidence_block}
+    {_liveness_note(liveness, now)}{confidence_block}{license_notice_block}
     {_route_rule()}
     <section aria-labelledby="fixes-h">
       <h2 class="section-title" id="fixes-h">Top things to fix</h2>
@@ -11827,6 +11833,7 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                         if agency_cfg is not None and agency_cfg.is_canonical_feed
                         else None
                     ),
+                    license_notice=notice_for_agency(agency_cfg),
                 ),
                 f"{BASE_URL}/agency/{agency_id}/",
                 lastmod=str(artifact.get("snapshot_date") or "") or None,

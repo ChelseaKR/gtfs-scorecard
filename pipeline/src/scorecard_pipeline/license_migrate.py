@@ -222,7 +222,7 @@ def render_summary(report: dict[str, Any]) -> str:
         + (", ".join(f"{k} {v}" for k, v in report["proposed_by_license"].items()) or "none")
         + ".",
         f"Of those, {report['proposed_share_alike']} state a share-alike license. That is a "
-        "recorded fact, not a listing decision; the share-alike question is the owner's.",
+        "recorded fact and a share-alike feed is listed with a reuse notice, not excluded.",
         "Needs review, by reason: "
         + (", ".join(f"{k} ({v})" for k, v in report["needs_review_by_reason"].items()) or "none")
         + ".",
