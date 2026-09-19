@@ -29,6 +29,21 @@ the declared public surface).
 
 ### Added
 
+- **A published schema for `scorecard explain --format json`
+  ([#364](https://github.com/ChelseaKR/gtfs-scorecard/issues/364)).**
+  `web/schemas/explain.schema.json` describes the audit trail behind a grade:
+  each category with its rubric weight, the weight actually applied, its
+  contribution and its listed deductions, and the overall block with its
+  reconciliation note and band margins. A category that was not measured must
+  carry null for every figure and no deductions, so a missing category cannot
+  be read as a zero. The trail has no `schema_version` field, and adding one
+  would change public output, so the schema describes the shape as it is and
+  a change to that shape changes the file in the same commit. Every
+  explainable artifact in the committed corpus validates against it,
+  including the ones that do not reconcile and the ones with a renormalized
+  weight set, and fourteen mutations are each rejected. Still open in #364:
+  the "Show the arithmetic" link from the agency page's confidence section.
+
 - **A program panel on every agency scorecard (ADR 0058).** Agency pages
   carried 97% of the site's search impressions, and until now their only route
   to the paid bundle was the footer. Each `/agency/<id>/` page now ends its

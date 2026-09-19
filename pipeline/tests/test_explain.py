@@ -435,3 +435,137 @@ def test_every_explained_artifact_renders_in_all_three_formats() -> None:
         json.loads(render_json(trail))
         rendered += 1
     assert rendered > 0
+
+
+# --------------------------------------------------------------------------
+# The published shape: web/schemas/explain.schema.json.
+#
+# `scorecard explain --format json` is the one output of this module other
+# people write code against, and until the schema existed nothing held it to a
+# shape. These tests hold the schema to the real output and, just as
+# importantly, hold the schema to its own claims: a schema that accepts a
+# measured-looking number for a category that was not measured would let
+# "no data" read as a value, the defect this project keeps naming.
+# --------------------------------------------------------------------------
+
+EXPLAIN_SCHEMA = REPO_ROOT / "web" / "schemas" / "explain.schema.json"
+
+
+def _explain_validator() -> Any:
+    from jsonschema import Draft202012Validator
+
+    schema = json.loads(EXPLAIN_SCHEMA.read_text(encoding="utf-8"))
+    Draft202012Validator.check_schema(schema)
+    return Draft202012Validator(schema)
+
+
+def _trail_json(**overrides: Any) -> dict[str, Any]:
+    trail: dict[str, Any] = json.loads(render_json(build_trail(_artifact(**overrides))))
+    return trail
+
+
+def test_the_schema_is_published_under_its_own_id() -> None:
+    schema = json.loads(EXPLAIN_SCHEMA.read_text(encoding="utf-8"))
+    assert schema["$id"] == "https://gtfsscorecard.org/schemas/explain.schema.json"
+
+
+def test_a_hand_built_trail_conforms_with_and_without_realtime() -> None:
+    validator = _explain_validator()
+    renormalized = _trail_json()
+    assert renormalized["weights"]["renormalised"] is True
+    validator.validate(renormalized)
+
+    artifact = _artifact()
+    artifact["categories"]["realtime"] = {
+        "name": "realtime",
+        "status": "measured",
+        "score": 70.0,
+        "weight": 0.20,
+        "findings": [],
+        "details": {},
+    }
+    artifact["overall"].update(score=76.0, grade="C", margin_to_next_band=4.0)
+    four = json.loads(render_json(build_trail(artifact)))
+    assert four["weights"]["renormalised"] is False
+    validator.validate(four)
+
+
+@pytest.mark.skipif(not ARTIFACTS.is_dir(), reason="published corpus not in this checkout")
+def test_every_explainable_artifact_in_the_corpus_conforms() -> None:
+    """The real output, not a fixture: every rubric-1.3 artifact the corpus
+    holds, including the ones that do not reconcile and the ones with a
+    renormalized weight set."""
+    validator = _explain_validator()
+    conformed = unreconciled = renormalized = 0
+    for path in _published_artifacts(limit=100_000):
+        try:
+            trail = build_trail(json.loads(path.read_text()))
+        except (UnknownRubricVersion, OSError, json.JSONDecodeError):
+            continue
+        document = json.loads(render_json(trail))
+        errors = sorted(validator.iter_errors(document), key=lambda e: list(e.path))
+        assert not errors, f"{path.parent.name}: {errors[0].message} at {list(errors[0].path)}"
+        conformed += 1
+        unreconciled += 0 if trail.reconciles else 1
+        renormalized += 1 if trail.renormalized else 0
+    assert conformed > 0, "no artifact was explained"
+    assert unreconciled > 0, "the schema was never shown a trail that does not reconcile"
+    assert renormalized > 0, "the schema was never shown a renormalized weight set"
+
+
+def _mutate(document: dict[str, Any], apply: Any) -> dict[str, Any]:
+    changed = copy.deepcopy(document)
+    apply(changed)
+    assert changed != document, "the mutation did not apply, so it proves nothing"
+    return changed
+
+
+def _unmeasured_index(document: dict[str, Any]) -> int:
+    return next(i for i, c in enumerate(document["categories"]) if not c["measured"])
+
+
+@pytest.mark.parametrize(
+    "apply",
+    [
+        # An unmeasured category must publish absence, never a number.
+        lambda d: d["categories"][_unmeasured_index(d)].update(score=0.0),
+        lambda d: d["categories"][_unmeasured_index(d)].update(contribution=0.0),
+        lambda d: d["categories"][_unmeasured_index(d)].update(applied_weight=0.2),
+        lambda d: d["categories"][_unmeasured_index(d)].update(
+            deductions=[{"label": "x", "points": 1.0, "detail": ""}]
+        ),
+        # A measured category must carry its figures.
+        lambda d: d["categories"][0].update(score=None),
+        lambda d: d["categories"][0].update(contribution=None),
+        lambda d: d["categories"][0].update(applied_weight=None),
+        # Shape.
+        lambda d: d.update(surprise=1),
+        lambda d: d["overall"].update(grade="E"),
+        lambda d: d["overall"].pop("reconciliation_note"),
+        lambda d: d["categories"][0].update(name="accessibility"),
+        lambda d: d["categories"][0].update(score=100.5),
+        lambda d: d["weights"].update(renormalised="yes"),
+        lambda d: d["categories"][0]["deductions"][0].pop("detail"),
+    ],
+    ids=[
+        "unmeasured-score",
+        "unmeasured-contribution",
+        "unmeasured-weight",
+        "unmeasured-deductions",
+        "measured-without-score",
+        "measured-without-contribution",
+        "measured-without-weight",
+        "unknown-top-level-key",
+        "grade-outside-A-to-F",
+        "missing-reconciliation-note",
+        "unknown-category",
+        "score-above-100",
+        "renormalised-not-boolean",
+        "deduction-without-detail",
+    ],
+)
+def test_the_schema_rejects_what_it_claims_to_reject(apply: Any) -> None:
+    validator = _explain_validator()
+    base = _trail_json()
+    validator.validate(base)  # the control: the unmutated trail is valid
+    assert not validator.is_valid(_mutate(base, apply))
