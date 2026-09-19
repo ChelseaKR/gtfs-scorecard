@@ -1,6 +1,6 @@
 # Daily scorecard silently skipped four consecutive publishes
 
-**Status:** Reopened 2026-08-26, see "Recurrence" at the end
+**Status:** Reopened 2026-08-26, see "Recurrence" at the end. The runner death last occurred on 2026-09-05; see "Status, 2026-09-18" for what has failed since and why.
 **Issue:** [#297](https://github.com/ChelseaKR/gtfs-scorecard/issues/297)
 **Severity:** SEV3 (public data went stale for up to a day at a time; the live
 site never served an error, and Intraday refresh kept most of the corpus
@@ -386,3 +386,30 @@ printing a bare exit code. The heap and the ceiling have each been moved once
 with no effect, so the next experiments worth running are the ones that vary
 something else — the runner image, the feed's own bytes against a pinned
 earlier copy, or the validator version.
+
+
+## Status, 2026-09-18: the runner death has stopped, and the daily failed for other reasons
+
+Checked against Actions run history rather than carried forward from the sections above.
+
+**The `ovapi-netherlands` shard has not been killed since 2026-09-05.** The validator step ran to completion on all 14 daily runs from 2026-09-06 through 2026-09-18, including the 2026-09-18 manual dispatch. Thirteen of them ran the Java validator against fresh bytes, in 3 to 4.5 minutes, inside a shard of their own. The 2026-09-18 scheduled run answered the feed from the validator cache. The last kill was run [33968878878](https://github.com/ChelseaKR/gtfs-scorecard/actions/runs/33968878878) on 2026-09-05, at the same point as before ("The runner has received a shutdown signal", about four minutes into `running gtfs-validator`). This record does not know why the deaths stopped. The runner image was the same (`ubuntu24/20260831.293.1`) on that last kill and on the first clean run the next day, so it is not the image. The trigger was never identified and a return is possible. What bounds it is the one-feed-per-shard plan from 2026-08-29: a death now costs one record, not about 65.
+
+**What made the daily red on 2026-09-14 through 2026-09-17 was not the shard.** Every score shard succeeded on each of those runs.
+
+| Run (UTC) | What failed |
+|---|---|
+| 2026-09-14 | `collect` was cancelled after 66 minutes waiting in the `artifacts-publish` group, at the moment an Intraday refresh (run 34862670218) arrived and took the single pending slot. A wedged refresh already held the group. This is the eviction the `collect` timeout comment describes. |
+| 2026-09-15, 09-16, 09-17 | `publish-artifacts` refused to publish: "retirement manifest includes current canonical agency id(s): beloit-transit, massachusetts-area-express-max". A false positive in the retirement guard, fixed by #456 and #464 (2026-09-18). The Intraday refresh failed at the same step on the same days. |
+| 2026-09-18 | Both runs, the 04:10 dispatch and the 13:28 schedule, green. |
+
+**A near miss that was invisible.** The score job is bounded at 55 minutes, and the workflow comment argued that from "the slowest recent successful shard (~32 min)". Measured over the 11 daily runs from 2026-09-09, the slowest shard took 31 to 53 minutes, and 47 to 53 on eight of them (53 on 2026-09-09, 52 on 2026-09-14). One record explains it: `autolinee-toscane` took 20.6 minutes in the 2026-09-17 run, mostly two source requests of about 9 minutes each, and the next slowest record in that run took 4.3. A shard stopped at its bound is `cancelled`, never reaches `upload-artifact`, and loses everything it had scored, the same cost as a dead runner. The Watchdog's bound check covered `refresh` and `collect` and could not see the shards, whose job names are matrix labels.
+
+**What changed now**
+
+1. A registry field, `own_shard`, gives a record a shard to itself the way `large_feed` does, without raising any archive ceiling. `autolinee-toscane` carries it, with the measurement in a comment beside it. The next slowest shard took 33 to 37 minutes.
+2. The Watchdog's bound check reads the longest `score (...)` shard of each of the last two Daily runs and fails at 90% of 55 minutes. The 2026-09-09 and 2026-09-14 runs would have failed it. The 2026-09-18 run, at 48 minutes, does not.
+
+**Still open, and the owner's**
+
+- The pending-slot eviction on 2026-09-14 is a structural property of one `artifacts-publish` group shared by the Daily's `collect` and every Intraday refresh. Nothing here changes it. Options are for the owner: skip an Intraday cycle while a Daily run is in flight, or give `collect` a separate way to wait for the slot.
+- The trigger for the runner death is still unconfirmed.

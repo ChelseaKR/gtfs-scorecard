@@ -108,6 +108,12 @@ agencies:
     subdivision_code: IT-52
     subdivision_name: Toscana
     is_official: true
+    # Measured 2026-09-17 (Daily run 35227438125): this record took 20.6 minutes
+    # to score, mostly two requests to the source of about 9 minutes each. The
+    # next slowest record in the run took 4.3. On a shared shard it pushed that
+    # shard to 49 of its 55 minutes. A shard of its own keeps the wait from using
+    # its neighbors' budget. It does not change how the feed is fetched or scored.
+    own_shard: true
     static_gtfs_url: https://regionetoscana.smartregion.toscana.it/mobility/artifacts/gtfs
     license_note: >-
       Creative Commons Attribution through Regione Toscana's open data

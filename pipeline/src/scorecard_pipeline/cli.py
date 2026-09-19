@@ -3413,11 +3413,15 @@ def _cmd_shards(args: argparse.Namespace, parser: argparse.ArgumentParser) -> in
     )
     # issue #297: a `large_feed` gets a shard to itself, so a killed runner
     # costs that one feed rather than the ~65 records its shard had already
-    # scored and had not yet uploaded. See plan_shards.
-    large_feeds = frozenset(
-        agency_id for agency_id in current_ids if AGENCIES[agency_id].large_feed
+    # scored and had not yet uploaded. A record marked `own_shard` gets the same
+    # treatment for a different reason: a source that takes minutes to serve one
+    # feed must not spend its neighbors' job budget. See plan_shards.
+    solo_feeds = frozenset(
+        agency_id
+        for agency_id in current_ids
+        if AGENCIES[agency_id].large_feed or AGENCIES[agency_id].own_shard
     )
-    print(json.dumps(plan_shards(current_ids, args.count, isolate=large_feeds)))
+    print(json.dumps(plan_shards(current_ids, args.count, isolate=solo_feeds)))
     return 0
 
 

@@ -169,6 +169,16 @@ def _parse_reuse_evidence(raw: object, *, entry_label: str, source: str) -> Reus
     )
 
 
+def _bool_field(entry: dict[str, object], name: str, label: str, source: str) -> bool:
+    """An optional true/false registry field, false when absent. Kept out of
+    ``parse_agencies`` so a new flag does not add a branch to its tracked
+    complexity (docs/lint-complexity-ratchet.md)."""
+    value = entry.get(name, False)
+    if not isinstance(value, bool):
+        _fail(label, f"{name} must be true or false, got {value!r}", source)
+    return value
+
+
 def _parse_fetch_auth(
     entry: dict[str, object], *, entry_label: str, static_url: str, source: str
 ) -> FetchAuth | None:
@@ -296,6 +306,7 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             "service_type",
             "fare_free",
             "large_feed",
+            "own_shard",
             "reuse_evidence",
             "fetch_auth",
         }
@@ -328,6 +339,8 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         large_feed = entry.get("large_feed", False)
         if not isinstance(large_feed, bool):
             _fail(label, f"large_feed must be true or false, got {large_feed!r}", entry_source)
+
+        own_shard = _bool_field(entry, "own_shard", label, entry_source)
 
         organization_id = str(entry.get("organization_id") or "").strip()
         if organization_id and not ID_PATTERN.match(organization_id):
@@ -432,6 +445,7 @@ def parse_agencies(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
                 service_type=service_type,
                 fare_free=fare_free,
                 large_feed=large_feed,
+                own_shard=own_shard,
                 reuse_evidence=reuse_evidence,
                 fetch_auth=fetch_auth,
             )

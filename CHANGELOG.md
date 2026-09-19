@@ -191,6 +191,24 @@ the declared public surface).
 
 ### Fixed
 
+- **The Daily's slowest score shard no longer runs within two minutes of its
+  bound, and the Watchdog now measures it.** The `ovapi-netherlands` runner
+  death last occurred on 2026-09-05; every daily run since has finished its
+  validator. What the daily lost since was elsewhere (a publish-slot eviction
+  on 2026-09-14, and the retirement-guard false positive on 2026-09-15 to
+  2026-09-17, fixed in #456 and #464). Reading the run history for the cause
+  found a near miss: the shard holding `autolinee-toscane` ran 47 to 53 of its
+  55 minutes on eight of 11 daily runs, because that one record takes about 20
+  minutes to score, and the workflow comment still said the slowest shard
+  took about 32. A shard stopped at its bound loses every record it had
+  scored. The registry gains an `own_shard` field, which isolates a record on
+  its own shard the way `large_feed` does but raises no size ceiling, and
+  `autolinee-toscane` carries it. The Watchdog's bound check, which could
+  only see `refresh` and `collect` because the shards' job names are matrix
+  labels, now reads the longest `score (...)` shard of each Daily run and
+  fails at 90% of the bound. The incident record for #297 gains a dated
+  status section with the evidence.
+
 - **The bundle Lambdas deploy again: the package outgrew Lambda's direct
   upload.** Adding the ads-conversion handler pulled the google-ads
   dependency tree into the shared zip, which reached 82 MB against Lambda's

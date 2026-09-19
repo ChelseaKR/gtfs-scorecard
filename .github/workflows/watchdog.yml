@@ -150,9 +150,18 @@ jobs:
           # workflow|job|timeout-minutes|completed runs to read. Refresh fires
           # every 3 hours and this step every 6, so it reads 3 runs to see
           # every one.
+          #
+          # `score` is the Daily's matrix: its jobs are named `score (<ids>)`, so
+          # a row names the prefix and the step measures the longest shard of
+          # each run. A score shard killed at its bound loses every record it had
+          # scored and not yet uploaded (about 65), the same loss as a dead
+          # runner, and nothing measured it: on 2026-09-09 and 2026-09-14 the
+          # slowest shard ran 53 and 52 of its 55 minutes. Daily fires once a day
+          # and this step four times, so it reads 2 runs.
           BOUNDED_JOBS: |
             refresh.yml|refresh|175|3
             scorecard.yml|collect|90|2
+            scorecard.yml|score|55|2
         run: |
           set -euo pipefail
           fail=0
@@ -168,8 +177,14 @@ jobs:
             fi
             measured=0
             for id in $ids; do
+              # A job is either named exactly `$job` or is one leg of a matrix
+              # named `$job (...)`. Of the matching jobs only the longest is
+              # read: it is the one nearest its bound, and a shard stopped at
+              # the bound is by definition the longest. One page of 100 jobs
+              # covers a run today (about 50); a Daily plan past ~97 shards
+              # would need paging here.
               row=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$id/jobs?per_page=100" \
-                --jq ".jobs[] | select(.name == \"$job\" and .started_at != null and .completed_at != null) | [.started_at, .completed_at, .conclusion, (.steps | length)] | @tsv" \
+                --jq "[.jobs[] | select((.name == \"$job\" or (.name | startswith(\"$job (\"))) and .started_at != null and .completed_at != null)] | sort_by(-((.completed_at | fromdate) - (.started_at | fromdate))) | .[0:1][] | [.started_at, .completed_at, .conclusion, (.steps | length)] | @tsv" \
                 2>/dev/null || true)
               [ -z "$row" ] && continue
               IFS=$'\t' read -r started completed conclusion steps <<< "$row"
