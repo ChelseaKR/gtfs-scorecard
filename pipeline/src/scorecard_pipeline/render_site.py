@@ -103,6 +103,7 @@ from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
     _SOCIAL_IMAGE_URL,
     _SOCIAL_IMAGE_WIDTH,
     BASE_URL,
+    BUNDLE_PLAN_PATH,
     CATEGORY_LABELS,
     CATEGORY_ORDER,
     SEVERITY_LABELS,
@@ -115,6 +116,7 @@ from .site_shell import (  # noqa: F401  (re-exported: the site's shared shell)
     _page,
     _redirect_page,
     _repo_root,
+    bundle_offer_nodes,
     esc,
     sync_static_navs,
 )
@@ -2695,6 +2697,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     seo_metadata: AgencySeoMetadata | None = None,
     program_ids: set[str] | None = None,
     feed_context: FeedContext | None = None,
+    program_offer: ProgramOffer | None = None,
 ) -> str:
     name = artifact["agency"]["id"], artifact["agency"]["name"]
     agency_id, agency_name = name
@@ -2908,6 +2911,16 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
             ("Standards", "#standards-h"),
         ]
     )
+    # The program panel (ADR 0058) renders only for a tracked agency with a
+    # measured grade and a sellable plan; the route lists it only when it does.
+    program_offer_block = _program_offer_section(
+        artifact, agency_id, agency_name, program_offer, history
+    )
+    report_stops.extend([("For programs", "#program-offer-h")] if program_offer_block else [])
+    # Its own line only when it renders, so a page without it (the CLI's
+    # standalone scorecard, a feed with no measured grade) is byte-for-byte
+    # what it was before the panel existed.
+    program_offer_line = f"\n    {program_offer_block}" if program_offer_block else ""
     report_route = (
         '<nav class="report-route" aria-label="On this scorecard">'
         '<p class="report-route-kicker">Report route</p>'
@@ -2926,10 +2939,10 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
         else ""
     )
     # A pointer to the free group view this agency sits in, for the reader who
-    # supports several. It names a rollup, never the paid tier: no price, no
-    # /bundle/ link, nothing that would sit beside this agency's own grade —
-    # test_no_agency_facing_page_names_the_paid_tier_in_its_own_content still
-    # holds, and is what keeps this line honest if anyone extends it.
+    # supports several. It names a rollup, never the paid tier. The paid tier
+    # has exactly one place on this page, the program panel right after it
+    # (ADR 0058); test_paid_tier_visibility.py fails if /bundle/ appears
+    # anywhere else above the footer.
     portfolio_line = _portfolio_pointer(
         dir_record,
         artifact,
@@ -2950,7 +2963,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
       determination from any transit program.
       <a href="/how-to-read/">New to this? How to read your scorecard.</a>
       <a href="/app/#/agency/{esc(agency_id)}">Interactive view of this scorecard.</a>
-      Rubric v{esc(artifact.get("rubric_version", "—"))}, validator {esc(artifact.get("validator_version", "—"))}.</p>
+      {_rubric_version_html(artifact)}, validator {esc(artifact.get("validator_version", "—"))}.</p>
     </div>
     {report_route}
     <div class="report-content">
@@ -2993,7 +3006,7 @@ def _render_agency(  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
     {_google_gate_line(artifact, now)}
     {_route_rule()}
     {_standards_section(artifact, (dir_record or {}).get("state", ""), (dir_record or {}).get("subdivision_code", ""))}
-    {portfolio_line}
+    {portfolio_line}{program_offer_line}
     {_route_rule()}
     {_embed_block}
     {_citation_block}
@@ -5398,7 +5411,9 @@ def _bundle_pointer(lead: str, anchor: str) -> str:
 
     Placement rule, same as ``_ROLLUP_BUNDLE_SECTION`` below: this belongs on a
     page about a group of feeds, or about setting a standard for one, and never
-    beside a single agency's grade. ``lead`` says why the reader of that page
+    beside a single agency's grade. (An agency's scorecard has its own, fuller
+    panel below its evidence and standards, ``_program_offer_section``; ADR
+    0058.) ``lead`` says why the reader of that page
     would want it and ``anchor`` is the link text, varied per page so the site
     does not repeat one sentence at every turn. Both are authored markup, not
     data, and the price stays on /bundle/ where plan.json owns it.
@@ -5413,10 +5428,11 @@ def _bundle_pointer(lead: str, anchor: str) -> str:
 # Program rollups are the generated page family that names the paid tier most
 # fully, and the reasoning is the placement rule, not the conversion rate.
 # The tier is for people who manage many agencies at once; this page is the view
-# those people already use. An agency's own scorecard, its call brief, and its
-# board report are the free product and stay clean: no price appears beside a
-# single agency's grade, and report.py's methodology footer is untouched, so the
-# document an agency hands its board carries no offer to sell anything.
+# those people already use. An agency's call brief and its board report are the
+# free product and stay clean, and report.py's methodology footer is untouched,
+# so the document an agency hands its board carries no offer to sell anything.
+# The agency's scorecard page carries one program panel, after its evidence and
+# standards and never in the hero beside the grade (ADR 0058).
 _ROLLUP_BUNDLE_SECTION = (
     '<section aria-labelledby="bundle-h">'
     '<h2 class="section-title" id="bundle-h">Board reports for this group</h2>'
@@ -5427,6 +5443,190 @@ _ROLLUP_BUNDLE_SECTION = (
     f"{_BUNDLE_INDEPENDENCE} The archive contains the same numbers published here.</p>"
     "</section>"
 )
+
+
+@dataclass(frozen=True)
+class ProgramOffer:
+    """The one plan an agency page's program panel quotes, read from plan.json.
+
+    Nothing here is authored: every field comes out of ``bundle_offer_nodes``,
+    which applies the same refusals the /bundle/ page's generated offers block
+    does (payments switched on, a numeric price, an https checkout link). A
+    plan that sells nothing yields no ``ProgramOffer`` at all, so no agency
+    page can quote a price the checkout would not honor.
+    """
+
+    label: str
+    amount: str
+    other_plans: bool
+    has_refresh: bool
+    delivery_days: int | None
+
+
+def _plan_amount(price: str, currency: str) -> str:
+    """``"149"`` and ``"USD"`` as a reader writes them, without typing a price."""
+    value = float(price)
+    number = f"{value:,.0f}" if value.is_integer() else f"{value:,.2f}"
+    return f"${number}" if currency == "USD" else f"{number} {currency}"
+
+
+def load_program_offer(web_root: Path | None = None) -> ProgramOffer | None:
+    """The cheapest one-time bundle in ``web/bundle/plan.json``, or ``None``.
+
+    ``None`` whenever the plan is missing, unreadable, switched off, or lists
+    no one-time product that passes ``bundle_offer_nodes``. Read once per
+    render, from the same checkout the deploy copies ``plan.json`` out of, so
+    the amount on an agency page and the amount on /bundle/ always come from
+    one commit.
+    """
+    path = (web_root or _repo_root() / "web") / BUNDLE_PLAN_PATH
+    try:
+        plan = json.loads(path.read_text())
+    except (OSError, json.JSONDecodeError):
+        return None
+    if not isinstance(plan, dict):
+        return None
+    nodes = bundle_offer_nodes(plan)
+    one_time = [node for node in nodes if node["category"] == "one-time"]
+    if not one_time:
+        return None
+    cheapest = min(one_time, key=lambda node: float(node["price"]))
+    days = plan.get("provisioning_business_days")
+    return ProgramOffer(
+        label=str(cheapest["name"]),
+        amount=_plan_amount(str(cheapest["price"]), str(cheapest["priceCurrency"])),
+        other_plans=len(nodes) > 1,
+        has_refresh=any(node["category"] == "subscription" for node in nodes),
+        delivery_days=days
+        if isinstance(days, int) and not isinstance(days, bool) and days > 0
+        else None,
+    )
+
+
+def _measured_overall(artifact: dict[str, Any]) -> tuple[str, int | float, str] | None:
+    """(grade, score, check date) when the artifact carries all three, else None.
+
+    The program panel quotes these back to the reader, so each one has to be a
+    measured value: a letter on the published scale, a finite number, and the
+    date of the check. Anything else is an absence, and an absence is never
+    rendered as a grade (docs/decisions/0058). The score comes back exactly as
+    the artifact holds it, so the panel prints it the way the hero above does.
+    """
+    overall = artifact.get("overall")
+    if not isinstance(overall, dict):
+        return None
+    grade = overall.get("grade")
+    score = overall.get("score")
+    checked = artifact.get("snapshot_date")
+    if not isinstance(grade, str) or grade not in _GRADES:
+        return None
+    if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(score):
+        return None
+    if not isinstance(checked, str) or not checked.strip():
+        return None
+    return grade, score, checked
+
+
+def _rubric_version_html(artifact: dict[str, Any]) -> str:
+    """The scorecard's rubric stamp, linked to the methodology it names.
+
+    A reader deciding whether to trust (or pay for) a grade should reach the
+    method in one step from the grade itself. The link appears only when the
+    artifact records a version; a missing one keeps the old dash, with nothing
+    to link to.
+    """
+    version = artifact.get("rubric_version")
+    if not version:
+        return "Rubric v—"
+    return f'<a href="/how-to-read/#methodology-h">Rubric v{esc(version)}</a>'
+
+
+def _plain_list(items: list[str]) -> str:
+    """``a``, ``a and b``, or ``a, b, and c``."""
+    if len(items) <= 2:
+        return " and ".join(items)
+    return f"{', '.join(items[:-1])}, and {items[-1]}"
+
+
+def _program_offer_section(
+    artifact: dict[str, Any],
+    agency_id: str,
+    agency_name: str,
+    offer: ProgramOffer | None,
+    history: list[dict[str, Any]] | None,
+) -> str:
+    """The one place an agency's scorecard names the paid tier (ADR 0058).
+
+    Addressed to the people the bundle is for, a program or consultancy that
+    supports several agencies, and placed after the standards section, below
+    the grade, the fixes, and the evidence. Everything it says about this
+    agency is read from the artifact this page already renders, and the price
+    comes from ``offer`` (plan.json). It renders nothing unless there is a
+    sellable plan and a measured grade, score, and check date: a page with
+    missing data offers nothing, rather than describing a report it cannot
+    show. The call brief, the board one-pager, and report.py's document stay
+    free of it.
+    """
+    if offer is None:
+        return ""
+    measured = _measured_overall(artifact)
+    if measured is None:
+        return ""
+    grade, score, checked = measured
+    name = esc(agency_name)
+    # What report.py actually puts in this agency's document: category scores
+    # always, the top-fixes list only when the artifact has fixes, and the
+    # "Over time" table only once there are two checks to list.
+    contents = [
+        f"grade {esc(grade)} ({esc(score)} out of 100) as of the check on {esc(checked)}",
+        "its category scores",
+    ]
+    if artifact.get("top_fixes"):
+        contents.append("its top fixes")
+    if len(history or []) >= 2:
+        contents.append("its score at each check")
+    delivery = (
+        f", delivered within {offer.delivery_days} business days or refunded"
+        if offer.delivery_days
+        else ""
+    )
+    if offer.has_refresh:
+        more = " Other plans, including a monthly refresh, are on the bundle page."
+    elif offer.other_plans:
+        more = " Other plans are on the bundle page."
+    else:
+        more = ""
+    rubric = artifact.get("rubric_version")
+    validator = artifact.get("validator_version")
+    method = f", scored with rubric v{esc(rubric)}" if rubric else ""
+    if validator:
+        method += (
+            f"{' and' if rubric else ', scored with'} MobilityData gtfs-validator {esc(validator)}"
+        )
+    lede = feed_source_lede(_artifact_source_provenance(artifact), _artifact_fetch_source(artifact))
+    return (
+        '<section class="action-panel program-offer" aria-labelledby="program-offer-h">'
+        '<h2 class="section-title" id="program-offer-h">For programs that support several agencies</h2>'
+        f'<p>This scorecard and the <a href="/agency/{esc(agency_id)}/board/">board one-pager for '
+        f"<bdi>{name}</bdi></a> are free, and they stay free. If you support several "
+        "agencies, as a state program, a technical-assistance center, a feed vendor, or a "
+        "consultancy, you can buy the program report bundle. It puts this agency's board report "
+        "in one archive with the reports for the other agencies you support, and each cover "
+        "carries your program's name, logo, and accent color.</p>"
+        f"<p>The report for <bdi>{name}</bdi> uses the same numbers as this page: "
+        f"{_plain_list(contents)}.</p>"
+        f"<p><strong>{esc(offer.label)}:</strong> {esc(offer.amount)}, paid once"
+        f"{delivery}.{more}</p>"
+        '<p class="report-actions">'
+        '<a class="report-action report-action-primary" href="/bundle/">'
+        "See the program report bundle</a></p>"
+        '<p><a href="/bundle/sample/">See a sample bundle report</a>: a real agency\'s current '
+        "grade, with placeholder branding.</p>"
+        f'<p class="fineprint">{_BUNDLE_INDEPENDENCE} The grade on this page comes from the '
+        f"check on {esc(checked)}{method}. {esc(lede)}. "
+        '<a href="/how-to-read/#methodology-h">Read how the grade is calculated</a>.</p>'
+        "</section>"
+    )
 
 
 def _rollup_member_row(m: dict[str, Any], note: str) -> str:
@@ -11000,6 +11200,10 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
     # Empty when the corpus has not yet written a calibration file, which keeps
     # the causally neutral band purely additive (EXP-03).
     effort_bands = _load_effort_bands()
+    # The plan an agency page's program panel quotes (ADR 0058), read once from
+    # the same web/bundle/plan.json the deploy serves. None switches every
+    # panel off, which is what a plan with payments off must do.
+    program_offer = load_program_offer(web)
     written: list[Path] = []
     # The hand-authored pages, which this render lists but does not write. They
     # carry no <lastmod>, and that is a decision rather than an omission: a
@@ -11619,6 +11823,13 @@ def render_site(now: dt.datetime | None = None) -> list[Path]:  # noqa: C901 - t
                     seo_metadata=agency_seo_metadata[agency_id],
                     program_ids=program_ids,
                     feed_context=feed_context,
+                    # Only a current canonical record can become a report in
+                    # a bundle (bundle.classify), so only its page offers one.
+                    program_offer=(
+                        program_offer
+                        if agency_cfg is not None and agency_cfg.is_canonical_feed
+                        else None
+                    ),
                 ),
                 f"{BASE_URL}/agency/{agency_id}/",
                 lastmod=str(artifact.get("snapshot_date") or "") or None,
