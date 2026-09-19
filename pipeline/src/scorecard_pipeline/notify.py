@@ -13,7 +13,9 @@ function so the core needs no AWS dependency.
 
 from __future__ import annotations
 
+import logging
 import re
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -25,6 +27,8 @@ from .alerts import Digest, render_digest
 from .config import repo_root
 from .instance import BASE_URL
 from .portfolio_digest import PortfolioDigest, render_portfolio_digest
+
+log = logging.getLogger(__name__)
 
 # Enough to catch a typo without policing addresses, but restricted to the
 # characters a real address uses, so a registered address can't smuggle URL or
@@ -354,19 +358,79 @@ def verification_email(email: str, token: str, base_url: str = BASE_URL) -> Emai
     return Email(to=email, subject="Confirm your GTFS Scorecard alerts", body=body)
 
 
-def send_via_ses(emails: list[Email], sender: str, region: str = "us-west-2") -> int:
+@dataclass(frozen=True)
+class SendReport:
+    """What a batch of sends did, without naming a single recipient."""
+
+    sent: int
+    failed: int
+
+
+def mask_lines(subscribers: Iterable[Subscriber], sender: str = "") -> list[str]:
+    """One ``::add-mask::`` workflow command per value in a digest run that must
+    never reach a public Actions log: every subscriber's address, webhook URL and
+    unsubscribe token, and the sender.
+
+    This repository is public, so its run logs are a publication. The digest step
+    handles the only real personal data any scheduled job here touches, and a
+    library that raises with a recipient in its message (SES does, for an address
+    it will not send to) would otherwise print it. Registering the masks before
+    the first send means a message that quotes a value is redacted whatever wrote
+    it. A value holding a line break cannot be a single command and is skipped;
+    none of the loaders accept one as a valid address."""
+    values: set[str] = {sender.strip()}
+    for sub in subscribers:
+        values.update((sub.email.strip(), sub.webhook_url.strip(), sub.unsub_token.strip()))
+    return [
+        f"::add-mask::{value}"
+        for value in sorted(values, key=lambda v: (-len(v), v))
+        if value and "\n" not in value and "\r" not in value
+    ]
+
+
+def _failure_code(exc: Exception) -> str:
+    """A short, recipient-free name for why a send failed: the SES error code
+    when the exception carries one, else the exception's class."""
+    response = getattr(exc, "response", None)
+    if isinstance(response, dict):
+        code = (response.get("Error") or {}).get("Code")
+        if isinstance(code, str) and re.fullmatch(r"[A-Za-z0-9._-]{1,64}", code):
+            return code
+    return type(exc).__name__
+
+
+def send_via_ses(emails: list[Email], sender: str, region: str = "us-west-2") -> SendReport:
     """Send each email through Amazon SES. boto3 is imported lazily so the core
-    pipeline has no AWS dependency; only the send path needs it."""
+    pipeline has no AWS dependency; only the send path needs it.
+
+    One address SES will not send to must not stop the rest, and must not be
+    named. SES's own error text quotes the recipient ("Email address is not
+    verified. The following identities failed the check ...: someone@example.org"),
+    so a failure is reported by position and error code only, and the exception's
+    message is never logged. The caller decides what a non-zero ``failed`` means."""
     import boto3
 
     ses = boto3.client("ses", region_name=region)
-    for email in emails:
-        ses.send_email(
-            Source=sender,
-            Destination={"ToAddresses": [email.to]},
-            Message={
-                "Subject": {"Data": email.subject},
-                "Body": {"Text": {"Data": email.body}},
-            },
-        )
-    return len(emails)
+    sent = 0
+    failed = 0
+    for index, email in enumerate(emails, start=1):
+        try:
+            ses.send_email(
+                Source=sender,
+                Destination={"ToAddresses": [email.to]},
+                Message={
+                    "Subject": {"Data": email.subject},
+                    "Body": {"Text": {"Data": email.body}},
+                },
+            )
+        except Exception as exc:  # the docstring says why: its text can name the recipient
+            failed += 1
+            log.warning(
+                "digest email %d of %d was not sent (%s); the recipient is not logged",
+                index,
+                len(emails),
+                _failure_code(exc),
+            )
+        else:
+            sent += 1
+    return SendReport(sent=sent, failed=failed)

@@ -675,7 +675,17 @@ jobs:
         env:
           SUBSCRIPTIONS_TABLE: gtfs-scorecard-subscriptions
           ALERTS_API_BASE: https://5oemr66b9a.execute-api.us-west-2.amazonaws.com
-        run: uv run --with boto3 python -m scorecard_pipeline.cli notify --send --from "${{ vars.SES_FROM }}"
+          # The sender reaches the command through the environment, which the
+          # command reads itself, rather than being expanded into the script
+          # text that the run log prints.
+          SES_FROM: ${{ vars.SES_FROM }}
+        # PRIVACY: this repository is public, so this step's log is a
+        # publication, and this is the one step that reads real subscribers'
+        # addresses. `notify` registers an ::add-mask:: for every address,
+        # webhook URL and unsubscribe token before it sends anything, and a
+        # failed send is reported by position and error code, never by
+        # recipient. tests/test_workflow_safety.py holds both.
+        run: uv run --with boto3 python -m scorecard_pipeline.cli notify --send
 
       # The digest silently never sending is worse than it loudly not sending:
       # if the variable is unset, say so in the run summary every day so an

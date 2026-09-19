@@ -1436,6 +1436,45 @@ def test_no_workflow_takes_a_buyer_field_as_a_dispatch_input() -> None:
         assert not leaked, f"{path.name} takes buyer field(s) {leaked} as dispatch inputs"
 
 
+def _digest_step() -> dict[str, Any]:
+    """The Daily run's feed-health digest step, the one scheduled step that reads
+    real subscribers' addresses."""
+    import yaml
+
+    workflow = yaml.safe_load(_workflow("scorecard.yml"))
+    found = [
+        step
+        for step in workflow["jobs"]["collect"]["steps"]
+        if step.get("name") == "Send feed-health digest"
+    ]
+    assert len(found) == 1, "the digest step moved or was renamed; update this test with it"
+    return dict(found[0])
+
+
+def test_the_digest_step_keeps_its_sender_out_of_the_script_text() -> None:
+    """A run log prints a step's script after expanding any expression in it, so
+    a sender interpolated into the command is published. It travels through the
+    environment instead, which the command reads itself. The command is still the
+    sending one: a dry run prints every recipient."""
+    step = _digest_step()
+    run = str(step["run"])
+    assert "${{" not in run, run
+    assert "notify --send" in run, run
+    assert "--from" not in run, run
+    assert "SES_FROM" in (step.get("env") or {}), step.get("env")
+
+
+def test_no_workflow_expands_the_sender_address_into_a_script() -> None:
+    import yaml
+
+    for path in sorted((ROOT / ".github" / "workflows").glob("*.y*ml")):
+        for job, step in _steps(yaml.safe_load(path.read_text(encoding="utf-8"))):
+            run = str(step.get("run") or "")
+            assert "vars.SES_FROM" not in run, (
+                f"{path.name} {job}/{step.get('name')} expands vars.SES_FROM into its script"
+            )
+
+
 def test_the_concurrency_group_is_per_order_and_names_only_the_reference() -> None:
     """GitHub keeps one pending run per concurrency group, so a shared group
     would let a third arrival evict a queued, paid order. Scoped per order, an
