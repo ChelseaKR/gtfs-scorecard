@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gtfsscorecard.org/schemas/explain.schema.json",
+  "title": "GTFS Scorecard grade audit trail",
+  "description": "The output of `scorecard explain ARTIFACT --format json` (#364): how one published grade was reached, rebuilt from the artifact and the scoring constants of its rubric_version. It is a report, not a published API document: it is written on demand, and an artifact scored under a rubric this build has no constants for is refused with exit code 2 and produces no document at all. The document has no schema_version field. This schema describes the shape as of rubric 1.3, and a change to that shape changes this file in the same commit. A category that was not measured carries null for every figure, never zero, and its weight is redistributed across the measured categories.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "agency",
+    "snapshot_date",
+    "rubric_version",
+    "validator_version",
+    "scoring_profile_id",
+    "weights",
+    "categories",
+    "overall"
+  ],
+  "properties": {
+    "agency": {"type": "string", "description": "The registry id of the feed record."},
+    "snapshot_date": {"type": "string", "description": "The artifact's snapshot date, YYYY-MM-DD."},
+    "rubric_version": {"type": "string", "minLength": 1},
+    "validator_version": {"type": "string"},
+    "scoring_profile_id": {"type": "string"},
+    "weights": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["measured_total", "renormalised"],
+      "properties": {
+        "measured_total": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "description": "The sum of the rubric weights of the categories that were measured. Below 1 exactly when a category was not measured."
+        },
+        "renormalised": {
+          "type": "boolean",
+          "description": "True when a category was not measured and its weight was redistributed across the measured ones. The key keeps its original spelling because this output is public."
+        }
+      }
+    },
+    "categories": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/category"}
+    },
+    "overall": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recomputed",
+        "recomputed_published",
+        "published",
+        "grade",
+        "reconciles",
+        "reconciliation_note",
+        "margin_to_next_band",
+        "margin_to_lower_band"
+      ],
+      "properties": {
+        "recomputed": {"type": "number", "description": "The weighted sum of the exact contributions, unrounded beyond four decimals."},
+        "recomputed_published": {"type": "number", "description": "The recomputed sum at the published rounding."},
+        "published": {"type": "number", "description": "The overall score the artifact publishes."},
+        "grade": {"enum": ["A", "B", "C", "D", "F"]},
+        "reconciles": {
+          "type": "boolean",
+          "description": "Whether the recomputed score equals the published one at the published rounding. False is reported, never hidden: see reconciliation_note."
+        },
+        "reconciliation_note": {"type": "string", "minLength": 1},
+        "margin_to_next_band": {
+          "type": ["number", "null"],
+          "description": "Points to the next grade band up, or null at the top band."
+        },
+        "margin_to_lower_band": {"type": "number", "description": "Points above the floor of the current grade band."}
+      }
+    }
+  },
+  "$defs": {
+    "category": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "measured",
+        "score",
+        "rubric_weight",
+        "applied_weight",
+        "contribution",
+        "deductions",
+        "points_total",
+        "score_delta",
+        "residual",
+        "residual_reason",
+        "notes"
+      ],
+      "properties": {
+        "name": {"enum": ["correctness", "freshness", "completeness", "realtime"]},
+        "measured": {"type": "boolean"},
+        "score": {"type": ["number", "null"], "minimum": 0, "maximum": 100},
+        "rubric_weight": {"type": "number", "exclusiveMinimum": 0, "maximum": 1, "description": "The category's weight in the rubric before any redistribution."},
+        "applied_weight": {"type": ["number", "null"], "exclusiveMinimum": 0, "maximum": 1, "description": "The weight actually applied: the rubric weight divided by the measured total. Null when the category was not measured."},
+        "contribution": {"type": ["number", "null"], "description": "score times applied_weight, this category's exact share of the overall score."},
+        "deductions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["label", "points", "detail"],
+            "properties": {
+              "label": {"type": "string", "minLength": 1},
+              "points": {"type": "number", "minimum": 0},
+              "detail": {"type": "string"}
+            }
+          }
+        },
+        "points_total": {"type": ["number", "null"], "description": "The sum of the listed deductions, or null when the category was not measured."},
+        "score_delta": {"type": ["number", "null"], "description": "The category's distance from 100, or null when the category was not measured."},
+        "residual": {"type": ["number", "null"], "description": "What the listed deductions do not account for. Reported with its reason, never absorbed."},
+        "residual_reason": {"type": "string", "description": "Why a residual is not an error, or \"unexplained\" when it is one. Empty when there is no residual."},
+        "notes": {"type": "array", "items": {"type": "string"}}
+      },
+      "if": {"properties": {"measured": {"const": true}}},
+      "then": {
+        "properties": {
+          "score": {"type": "number"},
+          "applied_weight": {"type": "number"},
+          "contribution": {"type": "number"},
+          "points_total": {"type": "number"},
+          "score_delta": {"type": "number"},
+          "residual": {"type": "number"}
+        }
+      },
+      "else": {
+        "properties": {
+          "score": {"type": "null"},
+          "applied_weight": {"type": "null"},
+          "contribution": {"type": "null"},
+          "points_total": {"type": "null"},
+          "score_delta": {"type": "null"},
+          "residual": {"type": "null"},
+          "deductions": {"maxItems": 0}
+        }
+      }
+    }
+  }
+}
