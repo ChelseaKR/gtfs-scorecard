@@ -1,0 +1,12 @@
+# Configuration for openapi-python-client (pinned in pyproject.toml). The
+# generator runs with --meta none, so it writes only the package and this file
+# controls how that package is formatted.
+#
+# `--isolated` keeps ruff from picking up whatever pyproject.toml or ruff.toml
+# sits above the output directory, so the same input gives the same bytes in a
+# temp directory, in a checkout, and on a CI runner.
+project_name_override: gtfs-scorecard-client
+package_name_override: generated
+post_hooks:
+  - "ruff check . --isolated --fix-only"
+  - "ruff format . --isolated"

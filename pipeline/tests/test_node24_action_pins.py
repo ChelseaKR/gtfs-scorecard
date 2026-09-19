@@ -33,6 +33,10 @@ NODE24_PINS = {
         "dded0888837ed1f317902acf8a20df0ad188d165",
         "v5.0.0",
     ),
+    "actions/setup-node": (
+        "820762786026740c76f36085b0efc47a31fe5020",
+        "v7.0.0",
+    ),
     "actions/upload-artifact": (
         "b7c566a772e6b6bfb58ed0dc250532a479d7789f",
         "v6.0.0",

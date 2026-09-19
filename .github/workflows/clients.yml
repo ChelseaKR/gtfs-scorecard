@@ -1,0 +1,88 @@
+name: Clients
+
+# The typed Python and TypeScript clients under clients/ are generated from
+# web/api/v1/openapi.yaml and the schemas in web/schemas/ (#370). This workflow
+# regenerates them and fails when the committed output differs, proves that
+# check can fail, runs both clients' contract tests against recorded
+# responses, and builds both packages. It does not publish anything: there is
+# no registry credential here and no release step. The owner steps that would
+# publish are in docs/typed-clients.md.
+#
+# It is path-filtered, so it is advisory rather than a required check (a
+# required check that never reports on an unrelated pull request blocks it).
+# The merge-blocking half of the drift check needs no generator and runs inside
+# `make verify` as pipeline/tests/test_clients_drift.py: it fails when the
+# description or a schema changes and the committed bundle does not.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/api/v1/openapi.yaml"
+      - "web/schemas/**"
+      - "clients/**"
+      - "pipeline/scripts/bundle_openapi.py"
+      - "pipeline/scripts/generate_clients.py"
+      - "Makefile"
+      - ".github/workflows/clients.yml"
+  pull_request:
+    paths:
+      - "web/api/v1/openapi.yaml"
+      - "web/schemas/**"
+      - "clients/**"
+      - "pipeline/scripts/bundle_openapi.py"
+      - "pipeline/scripts/generate_clients.py"
+      - "Makefile"
+      - ".github/workflows/clients.yml"
+
+permissions:
+  contents: read
+
+# Cancel superseded runs on the same ref (new push to a PR) to save minutes.
+concurrency:
+  # `github.ref` is `refs/pull/N/merge` on a pull request, so grouping by it cancels
+  # superseded runs of the SAME pull request. On a push it is `refs/heads/main` for
+  # EVERY commit, so a push is grouped by its own SHA and cancels nothing: one
+  # commit, one verdict (see ci.yml for the incident that taught this).
+  group: clients-${{ github.event_name == 'pull_request' && github.ref || github.sha }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  clients:
+    name: Typed clients (drift, contract tests, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
+        with:
+          enable-cache: true
+          python-version: "3.12"
+          cache-dependency-glob: clients/python/uv.lock
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version-file: clients/typescript/.node-version
+          cache: npm
+          cache-dependency-path: clients/typescript/package-lock.json
+      # Regenerate into a temp directory and compare every derived file byte for
+      # byte. This is the check that sees a hand edit inside generated code and a
+      # generator whose output moved under an unchanged pin.
+      - name: Regenerate the clients and compare with the committed tree
+        run: make clients-check
+      # The negative control: change a copy of the description, a copy of a
+      # schema and a copy of the generated code, and require the check above to
+      # fail for each. A drift check that passes on a stale tree proves nothing.
+      - name: Prove the drift check can fail
+        run: make clients-control
+      - name: Contract tests against recorded responses
+        run: make clients-test
+      # Build both packages without publishing them, so a broken package layout
+      # fails here and not on the day the owner publishes.
+      - name: Build both packages (no publish)
+        run: make clients-build
+      # SEC-12: no HIGH or CRITICAL advisory in the client's npm tree.
+      - name: npm audit
+        working-directory: clients/typescript
+        run: npm audit --audit-level=high

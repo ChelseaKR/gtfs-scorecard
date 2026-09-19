@@ -29,6 +29,23 @@ the declared public surface).
 
 ### Added
 
+- **Typed Python and TypeScript clients for the read API, generated and drift-checked
+  ([#370](https://github.com/ChelseaKR/gtfs-scorecard/issues/370)).**
+  `clients/python` (`gtfs-scorecard-client`) and `clients/typescript`
+  (`@gtfs-scorecard/client`) are generated from `web/api/v1/openapi.yaml` with
+  `openapi-python-client` and `openapi-typescript`, pinned by exact version and
+  installed as dev tooling only. `pipeline/tests/test_clients_drift.py` runs in
+  `make verify` and fails when the description or a schema changes and the
+  committed bundle does not; `make clients-check` (the `Clients` workflow)
+  regenerates and diffs every derived file, and `make clients-control` proves it
+  fails on a stale description, a stale schema and a hand edit. Contract tests
+  run both clients against recorded responses for every described path and
+  assert that an unmeasured value stays absent or null and is never a zero. A
+  `schema_version` guard rejects a major version the client was not generated
+  for. Nothing is published: `docs/typed-clients.md` lists the owner steps for
+  PyPI and npm. One defect in the pinned Python generator (a property named
+  `d` shadowing its local, which broke `by-location.json` and every rollup) is
+  patched at generation time.
 - **A published schema for `scorecard explain --format json`
   ([#364](https://github.com/ChelseaKR/gtfs-scorecard/issues/364)).**
   `web/schemas/explain.schema.json` describes the audit trail behind a grade:

@@ -1,0 +1,9 @@
+{
+  "note": "Written by pipeline/scripts/generate_clients.py. Ties every generated file under clients/ to the bundle and the generator versions that produced it.",
+  "bundle": "openapi.bundled.json",
+  "bundle_sha256": "4a4ed79eafa91c8a91dad3c998eab8f5b228ad148c357bb04f985e71ee5d71b6",
+  "generators": {
+    "openapi-python-client": "0.29.1",
+    "openapi-typescript": "7.13.0"
+  }
+}

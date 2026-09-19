@@ -176,6 +176,8 @@ jobs:
         with:
           scan-args: |-
             --lockfile=pipeline/uv.lock
+            --lockfile=clients/python/uv.lock
+            --lockfile=clients/typescript/package-lock.json
 
   # SEC-15-approx: the closest committed approximation to "block on a
   # Dependabot alert >= 7.0" available to a solo repo without an Enterprise

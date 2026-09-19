@@ -1,5 +1,9 @@
 # Local guardrails that mirror the CI merge gate. Install with `uvx pre-commit install`.
 # Revisions are pinned to full commit SHAs (tag noted alongside); bump deliberately via a reviewed PR.
+# Everything `make clients` writes (#370). Reformatting it here would make it
+# differ from what the generators produce, and the drift check would fail.
+exclude: ^clients/(python/src/gtfs_scorecard_client/generated/|typescript/src/generated/|openapi\.bundled\.json$)
+
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b  # v5.0.0

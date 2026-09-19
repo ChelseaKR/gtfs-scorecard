@@ -693,6 +693,10 @@ single file under a templated path can still disappear for the reasons the
 HTTP contract below gives, such as a retired agency alias; that is not a
 deprecation.
 
+Typed Python and TypeScript clients generated from this description live under
+`clients/`; see [typed-clients.md](typed-clients.md). They are not yet published
+to PyPI or npm.
+
 ## Change feed (`changes/latest.json`)
 
 For consumers that ingest transitions rather than diffing the whole catalog each

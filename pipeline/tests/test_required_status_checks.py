@@ -48,6 +48,15 @@ ADVISORY_JOBS: dict[str, str] = {
     # red on every PR would teach people to ignore it. Promote it to the
     # ruleset (file and live) once a week of scheduled runs is clean.
     "money pages have no dead links": "external-host dependency; unverified first cycle",
+    # clients.yml (#370): regenerates the typed clients and diffs them. It is
+    # path-filtered, and a required check that never reports on a pull request
+    # that touches none of those paths blocks that pull request, so it cannot
+    # be required. The half of the drift check that matters most, a changed
+    # description or schema with no regeneration, needs no generator and is
+    # inside `make verify` as tests/test_clients_drift.py, which is required.
+    "Typed clients (drift, contract tests, build)": (
+        "path-filtered; the merge-blocking half runs in make verify"
+    ),
 }
 
 _MATRIX_REF = re.compile(r"\$\{\{\s*matrix\.([A-Za-z_][A-Za-z0-9_-]*)\s*\}\}")
