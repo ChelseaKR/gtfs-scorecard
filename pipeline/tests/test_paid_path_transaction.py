@@ -22,8 +22,10 @@ has in live mode:
 3. **The Lambda's ``workflow_dispatch`` is one report-bundle.yml accepts.**
    An input the workflow does not declare is a 422 from GitHub and a paid
    order that never starts; a declared input the Lambda omits with no default
-   is the same 422. Nothing compared the two files until now, and the first
-   comparison would otherwise have been the first sale.
+   is the same 422. The dispatch now carries one input, ``order_ref``, because
+   a public run log prints every input; the order itself is stored in the
+   private bucket, and the key the Lambda writes has to be the key the
+   workflow reads.
 
 4. **The weekly tick rebuilds a subscription a month later.** The request is
    stored as JSON at checkout and read back by another Lambda four weeks on.
@@ -35,8 +37,9 @@ has in live mode:
    ever been tested against hand-written rows.
 
 The transaction test below runs 1 purchase through the whole of it: the setup
-route mints the bundle and dispatches, the dispatch's own inputs are fed to
-the pipeline that report-bundle.yml runs, the archive lands under the key the
+route mints the bundle, stores the order and dispatches its reference, the
+stored order is collected and fed to the same commands report-bundle.yml
+runs, the archive lands under the key the
 download route presigns, the email carries the URL that route answers on, and
 the reconciler is asked -- with the archive there and with it gone -- whether
 the order was delivered.
@@ -58,12 +61,11 @@ from typing import Any
 import pytest
 import yaml
 
+from scorecard_pipeline import bundle_order
 from scorecard_pipeline.bundle import (
     BundleRequest,
     archive_key,
     build_bundle,
-    delivery_email,
-    expires_on,
     parse_request,
 )
 from scorecard_pipeline.config import AGENCIES, Agency
@@ -144,6 +146,9 @@ class _Bucket:
 
     def put(self, key: str, body: bytes) -> None:
         self.objects[key] = body
+
+    def put_object(self, Bucket: str, Key: str, Body: bytes, **_kwargs: Any) -> None:
+        self.objects[Key] = Body
 
     def head_object(self, Bucket: str, Key: str) -> None:
         if Key not in self.objects:
@@ -253,17 +258,31 @@ def _declared_inputs() -> dict[str, dict[str, Any]]:
     return declared
 
 
-def _run_the_build(inputs: dict[str, str], out_zip: Path) -> tuple[BundleRequest, dict[str, Any]]:
-    """What report-bundle.yml does with a dispatch: validate, then render.
+def _collect(bucket: _Bucket, order_ref: str, workdir: Path) -> Path:
+    """What report-bundle.yml's collect step does: copy the stored order the
+    dispatch names out of the bucket into request.json. The key is derived by
+    the Lambda's own ``request_key``; the workflow spells the same prefix."""
+    key = common.request_key(order_ref)
+    assert key in bucket.objects, f"the Lambda dispatched {order_ref} and stored no order there"
+    workdir.mkdir(parents=True, exist_ok=True)
+    path = workdir / "request.json"
+    path.write_bytes(bucket.objects[key])
+    return path
 
-    The workflow writes the seven request fields from ``inputs.*`` into
-    request.json and hands it to ``scorecard bundle``, which is
-    ``parse_request`` and ``build_bundle``. Calling them here with the same
-    seven keys is the same two steps without a runner.
+
+def _run_the_build(request_json: Path, out_zip: Path) -> tuple[BundleRequest, dict[str, Any]]:
+    """What report-bundle.yml does with the collected order: mask, validate
+    against the cap it was sold with, then render.
+
+    ``bundle_order.main(["mask", ...])`` is the collect step's own command,
+    and ``cap`` feeds ``scorecard bundle --max-agencies``; calling them here
+    is the same steps without a runner.
     """
-    fields = ("bundle_id", "program_name", "accent", "logo", "agency_ids", "deliver_to", "cadence")
-    request = parse_request({key: inputs[key] for key in fields})
-    manifest = build_bundle(request, out_zip, now=FROZEN)
+    assert bundle_order.main(["mask", str(request_json)]) == 0
+    request, raw = bundle_order.load_order(request_json)
+    manifest = build_bundle(
+        parse_request(raw, max_agencies=bundle_order.order_cap(raw)), out_zip, now=FROZEN
+    )
     return request, manifest
 
 
@@ -336,17 +355,19 @@ def test_every_input_the_lambda_dispatches_is_one_the_workflow_declares() -> Non
     would have been the first sale.
     """
     declared = _declared_inputs()
-    sent = common.workflow_inputs(
-        {
-            "bundle_id": "a" * 32,
-            "program_name": "Example Program",
-            "accent": "#2c5f70",
-            "logo": "",
-            "agency_ids": ["unitrans", "yolobus"],
-            "deliver_to": "liaison@example.org",
-            "cadence": "monthly",
-            "promised_by": "Tuesday 16 September",
-        }
+    posted: list[dict[str, Any]] = []
+
+    def capture(method: str, url: str, headers: dict[str, str], payload: Any = None) -> Any:
+        posted.append(payload)
+        return {}
+
+    with pytest.MonkeyPatch.context() as patch:
+        patch.setattr(common, "_request", capture)
+        common.dispatch_bundle_workflow(common.new_order_ref())
+    sent: dict[str, Any] = posted[0]["inputs"]
+    # Nothing about the buyer is an input: a public run log prints each one.
+    assert set(sent) == set(declared) == {"order_ref"}, (
+        f"report-bundle.yml must take the order reference alone; it declares {sorted(declared)}"
     )
 
     unknown = sorted(set(sent) - set(declared))
@@ -373,58 +394,55 @@ def test_every_input_the_lambda_dispatches_is_one_the_workflow_declares() -> Non
 
 
 @pytest.mark.parametrize("cadence", ["one_time", "monthly"])
-def test_the_cadence_the_lambda_sends_is_one_the_workflow_offers(cadence: str) -> None:
-    """``cadence`` is a ``choice``, so GitHub refuses any value not listed.
-
-    The two dispatchers send different ones -- the setup route sends the plan's
-    cadence, the weekly refresh always sends ``monthly`` -- so a narrowed list
-    would break one of them and not the other.
-    """
-    options = _declared_inputs()["cadence"]["options"]
-    sent = common.workflow_inputs(
+def test_both_cadences_survive_the_stored_order(
+    cadence: str, bucket: _Bucket, tmp_path: Path
+) -> None:
+    """The two dispatchers store different cadences -- the setup route the
+    plan's, the weekly refresh always ``monthly`` -- and the workflow reads
+    them back out of the stored object. Both have to validate there."""
+    ref = common.new_order_ref()
+    common.store_request(
+        ref,
         {
             "bundle_id": "b" * 32,
             "program_name": "Example Program",
             "agency_ids": ["unitrans"],
             "deliver_to": "liaison@example.org",
             "cadence": cadence,
-        }
+            "max_agencies": 25,
+        },
     )
-    assert sent["cadence"] in options, f"{cadence} is not one of report-bundle.yml's {options}"
+    request, raw = bundle_order.load_order(_collect(bucket, ref, tmp_path))
+    assert request.cadence == cadence
+    assert bundle_order.order_cap(raw) == 25
 
 
-def test_the_workflow_hands_the_pipeline_the_seven_fields_it_validates(tmp_path: Path) -> None:
-    """The request step's ``env:`` is the whole of what reaches parse_request.
-
-    A dropped ``IN_`` line there is not a syntax error and not a red run: the
-    field simply arrives empty, and an empty accent or logo is legal. An empty
-    ``program_name`` is not, and it would fail the build of a paid order after
-    the buyer was told it had started -- so the set is pinned here against the
-    fields ``parse_request`` actually reads.
-    """
+def test_the_workflow_collects_the_order_from_where_the_lambda_stores_it() -> None:
+    """The two halves of the order hand-off are written in different files and
+    deployed separately: the Lambda's ``request_key`` names the object, the
+    workflow's collect step spells the same path, and Terraform grants the one
+    a write and expires the prefix. A drift between any two is a paid order the
+    workflow cannot find, so all four are held to one prefix here."""
     step = next(
         s
         for s in _workflow()["jobs"]["bundle"]["steps"]
-        if str(s.get("name") or "") == "Write and validate the request"
+        if str(s.get("name") or "") == "Collect the order and mask what it holds"
     )
-    carried = {
-        name.removeprefix("IN_").lower()
-        for name in (step.get("env") or {})
-        if name.startswith("IN_")
-    }
-    assert carried == {
-        "bundle_id",
-        "program_name",
-        "accent",
-        "logo",
-        "agency_ids",
-        "deliver_to",
-        "cadence",
-    }, f"the request step carries {sorted(carried)}"
-    for field in carried:
-        assert str(step["env"][f"IN_{field.upper()}"]) == f"${{{{ inputs.{field} }}}}", (
-            f"IN_{field.upper()} must come from the dispatch input of the same name"
-        )
+    run = str(step["run"])
+    assert f"s3://${{ARTIFACTS_BUCKET}}/{common.REQUESTS_PREFIX}${{ORDER_REF}}.json" in run
+    assert "bundle_order mask request.json" in run
+    lambda_tf = (REPO / "infra" / "program-bundle" / "main.tf").read_text(encoding="utf-8")
+    assert f"/{common.REQUESTS_PREFIX}*" in lambda_tf, "the Lambda role cannot store an order"
+    artifacts_tf = (REPO / "infra" / "artifacts" / "main.tf").read_text(encoding="utf-8")
+    assert f'prefix = "{common.REQUESTS_PREFIX}"' in artifacts_tf, (
+        "stored orders hold a buyer's address and must expire with the link they built"
+    )
+    cloudfront = (REPO / "infra" / "artifacts" / "public-artifacts-only.js").read_text(
+        encoding="utf-8"
+    )
+    assert common.REQUESTS_PREFIX.rstrip("/") not in cloudfront, (
+        "stored orders must stay outside the public CloudFront allow-list"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -449,7 +467,7 @@ def test_one_purchase_reaches_a_download_the_reconciler_calls_delivered(
     stubs none of them -- Stripe and GitHub are fixtures, and everything
     between them is the real code.
     """
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     H._stripe(monkeypatch, price=H.PRICE_BUNDLE_100)
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
 
@@ -460,36 +478,47 @@ def test_one_purchase_reaches_a_download_the_reconciler_calls_delivered(
     bundle_id = body["bundle_id"]
     assert body["promise"] and body["deliver_by"], "the buyer is told the date they were promised"
 
-    # 2. GitHub took exactly one dispatch, for this order.
+    # 2. GitHub took exactly one dispatch, for this order, naming it by a
+    #    reference that is not the download capability.
     assert len(dispatched) == 1
-    inputs = dispatched[0]
-    assert inputs["bundle_id"] == bundle_id
+    order_ref = dispatched[0]
+    assert bundle_id not in order_ref
+    assert tables["BUNDLES_TABLE"].items[bundle_id]["order_ref"] == order_ref
 
-    # 3. report-bundle.yml validates and renders from those inputs alone.
-    request, manifest = _run_the_build(inputs, tmp_path / "bundle.zip")
+    # 3. report-bundle.yml collects the stored order and renders from it alone.
+    request_json = _collect(bucket, order_ref, tmp_path / "run")
+    request, manifest = _run_the_build(request_json, tmp_path / "bundle.zip")
+    assert request.bundle_id == bundle_id
     assert manifest["bundle_id"] == bundle_id
     assert manifest["included"] == 1, manifest
     with zipfile.ZipFile(tmp_path / "bundle.zip") as archive:
         assert f"reports/{published}-board-report.html" in archive.namelist()
 
-    # 4. The archive goes to the key the workflow's `aws s3 cp` names.
+    # 4. The archive goes to the key the workflow's `archive-key` command names.
     key = archive_key(bundle_id)
     assert key == f"program-bundles/{bundle_id}/bundle.zip"
     bucket.put(key, (tmp_path / "bundle.zip").read_bytes())
+    manifest_json = tmp_path / "run" / "manifest.json"
+    manifest_json.write_text(json.dumps(manifest))
 
     # 5. The email carries the URL the download route answers on, and the
-    #    promised date the setup route computed.
-    download_url = f"{BUNDLE_API_BASE}/download/{bundle_id}"
-    email = delivery_email(
-        request,
-        manifest,
-        download_url,
-        expires_on(FROZEN),
-        promised_by=inputs["promised_by"],
+    #    promised date the setup route computed -- built by the workflow's own
+    #    `email` command from the stored order and the environment.
+    sent: list[tuple[str, str, str, str]] = []
+    bundle_order.send_delivery_email(
+        request_json,
+        manifest_json,
+        api_base=BUNDLE_API_BASE,
+        source="reports@example.org",
+        send=lambda *mail: sent.append(mail),
+        now=FROZEN,
     )
-    assert download_url in email.body
-    assert inputs["promised_by"] in email.body
-    assert email.to == request.deliver_to
+    [(source, to, _subject, email_body)] = sent
+    download_url = f"{BUNDLE_API_BASE}/download/{bundle_id}"
+    promised_by = json.loads(request_json.read_text())["promised_by"]
+    assert download_url in email_body
+    assert promised_by and promised_by in email_body
+    assert to == request.deliver_to and source == "reports@example.org"
 
     # 6. Clicking that URL presigns the object that was just uploaded.
     redirect = setup_handler.handler(
@@ -528,6 +557,7 @@ def test_one_purchase_reaches_a_download_the_reconciler_calls_delivered(
 def test_the_weekly_tick_rebuilds_the_subscription_it_stored_a_month_earlier(
     monkeypatch: pytest.MonkeyPatch,
     tables: dict[str, Any],
+    bucket: _Bucket,
     published: str,
     tmp_path: Path,
 ) -> None:
@@ -550,28 +580,30 @@ def test_the_weekly_tick_rebuilds_the_subscription_it_stored_a_month_earlier(
 
     # Twenty-eight days on, with nothing else changed.
     stored["last_refresh"] = "2026-01-01T00:00:00+00:00"
-    refreshed: list[dict[str, str]] = []
+    refreshed: list[str] = []
     monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", refreshed.append)
 
     counts = refresh_handler.handler({"detail-type": "Scheduled Event", "detail": {}})
     assert counts["dispatched"] == 1, counts
     assert len(refreshed) == 1
-    inputs = refreshed[0]
+    request_json = _collect(bucket, refreshed[0], tmp_path / "run")
+    order = json.loads(request_json.read_text())
 
     # A new capability, not the one bought in month one: the archive it
     # renews expires after thirty days, so a refresh that reused the id would
     # deliver a link that had already gone dead.
-    assert inputs["bundle_id"] != json.loads(first["body"])["bundle_id"]
-    assert inputs["cadence"] == "monthly"
+    assert order["bundle_id"] != json.loads(first["body"])["bundle_id"]
+    assert order["cadence"] == "monthly"
     # A refresh makes no two-business-day promise, so it carries no date.
-    assert inputs["promised_by"] == ""
+    assert not order.get("promised_by")
+    # And it is held to the cap the subscription was sold under.
+    assert bundle_order.order_cap(order) == 100
 
-    request, manifest = _run_the_build(inputs, tmp_path / "refresh.zip")
+    request, manifest = _run_the_build(request_json, tmp_path / "refresh.zip")
     assert manifest["included"] == 1, manifest
     assert request.agency_ids == (published,)
     assert (
-        tables["SUBSCRIPTIONS_TABLE"].items["sub_example"]["last_bundle_id"]
-        == (inputs["bundle_id"])
+        tables["SUBSCRIPTIONS_TABLE"].items["sub_example"]["last_bundle_id"] == order["bundle_id"]
     )
 
 
@@ -581,7 +613,7 @@ def test_the_weekly_tick_rebuilds_the_subscription_it_stored_a_month_earlier(
 
 
 def test_a_signed_checkout_event_is_the_purchase_a_later_refresh_renews(
-    monkeypatch: pytest.MonkeyPatch, tables: dict[str, Any]
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, Any], bucket: _Bucket
 ) -> None:
     """The webhook writes the only record of a buyer who paid and never came
     back to the setup form, and the entitlement check reads it months later.
@@ -630,7 +662,7 @@ def test_a_signed_checkout_event_is_the_purchase_a_later_refresh_renews(
         H._paid_session(subscription="sub_later", customer_details={"email": "buyer@example.org"}),
         price=H.PRICE_REFRESH_MO,
     )
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
 
     resp = setup_handler.handler(
@@ -643,7 +675,7 @@ def test_a_signed_checkout_event_is_the_purchase_a_later_refresh_renews(
 
 
 def test_a_refresh_with_only_a_webhook_row_of_the_smaller_bundle_inherits_its_cap(
-    monkeypatch: pytest.MonkeyPatch, tables: dict[str, Any]
+    monkeypatch: pytest.MonkeyPatch, tables: dict[str, Any], bucket: _Bucket
 ) -> None:
     """The negative half of the test above: the cap that travels is the one
     the webhook recorded, not the widest one on the price list.

@@ -8,92 +8,51 @@ name: Program report bundle
 #
 # Dispatched by infra/program-bundle (the post-checkout setup Lambda, and the
 # weekly refresh Lambda for subscriptions). It can also be dispatched by hand
-# for a test-mode run or a make-good. Payment is settled before dispatch; this
-# workflow never talks to Stripe.
+# on main for a make-good: the repair for an undelivered order is a re-run
+# with the same order_ref. Payment is settled before dispatch; this workflow
+# never talks to Stripe.
 #
-# Every input is untrusted. Inputs reach the pipeline through environment
-# variables and a JSON file written by Python, never interpolated into a
-# shell command, and the pipeline's parse_request validates all of them
-# (id pattern, cohort cap, accent, email, logo shape) before anything is
-# fetched or rendered.
+# NOTHING ABOUT THE BUYER IS AN INPUT. This repository is public, and GitHub
+# prints each step's environment -- including any value that came from a
+# workflow_dispatch input -- in a run log anyone can read. An earlier shape of
+# this workflow took the buyer's email address, the program name, the agency
+# list, and the bundle id (the download capability) as inputs, and published
+# every one of them into the run log for each order; two hand test runs on
+# 2026-09-11 did exactly that before the tier had a real customer. The only
+# input now is `order_ref`: a random 128-bit name for an object the setup
+# Lambda wrote to the private artifacts bucket. On its own it grants nothing;
+# reading the object needs this workflow's AWS role, which trusts runs on main
+# only. Every value read from the object is registered with ::add-mask:: by
+# the collect step before any later step can print it, so an error message
+# that happens to quote an address or an agency id is masked too.
 #
-# Delivery degrades honestly. Without an artifacts bucket, the committed
-# snapshot is used. Without the program-bundle API (BUNDLE_API_BASE) no email
-# is sent, because an email with a link that will not work is worse than no
-# email. Nothing is kept on the run in either case: a run artifact of a public
-# repository is published, and the archive is the paid deliverable and carries
-# its own download capability. The repair for an undelivered order is a re-run
-# with the same inputs.
+# Delivery degrades honestly. The archive is the paid deliverable and carries
+# its own download capability, so nothing is kept on the run in any case: a
+# run artifact of a public repository is published. Without the delivery
+# configuration (ARTIFACTS_BUCKET, BUNDLE_API_BASE, SES_FROM) the run refuses
+# to start rather than degrading, because the stored order lives in that
+# bucket -- there is no build to fall back to, and an uploaded archive with no
+# email reads as a delivered order everywhere else in this system. The repair
+# for an undelivered order is a re-run with the same order_ref.
 
 on:
   workflow_dispatch:
     inputs:
-      bundle_id:
-        description: "32 lowercase hex characters; the download capability"
+      order_ref:
+        description: "32 lowercase hex characters naming a stored order; carries no buyer data"
         required: true
-        type: string
-      program_name:
-        description: "Goes on every report cover (120 characters max)"
-        required: true
-        type: string
-      accent:
-        description: "#rrggbb accent for the cover band and rules"
-        required: false
-        default: ""
-        type: string
-      logo:
-        description: "https URL or SVG/PNG/JPEG data: URI, optional"
-        required: false
-        default: ""
-        type: string
-      agency_ids:
-        description: "Comma-separated scorecard ids, up to 100"
-        required: true
-        type: string
-      deliver_to:
-        description: "Email address the download link goes to"
-        required: true
-        type: string
-      cadence:
-        description: "one_time or monthly (changes the email's wording only)"
-        required: false
-        default: "one_time"
-        type: choice
-        options: [one_time, monthly]
-      dispatch_key:
-        description: "sha256(bundle_id) truncated; groups this bundle's runs without naming it"
-        required: false
-        default: ""
-        type: string
-      promised_by:
-        description: "The delivery date this order was committed to, as the buyer was told it"
-        required: false
-        default: ""
         type: string
 
 permissions:
   contents: read
 
-# `bundle_id` is the download capability (see infra/program-bundle/setup_handler.py:
-# "the capability in the email is the credential"), and this repository is public.
-# It must not appear in any string GitHub may render on a run page. That rules it
-# out here and in the artifact name below, and a concurrency expression cannot
-# hash anything, so the dispatcher supplies `dispatch_key` -- sha256 of the bundle
-# id, truncated -- instead.
-#
-# Grouping still has to be per bundle rather than global. A single group would
-# make two buyers' builds queue, and GitHub keeps only ONE pending run per group:
-# a third arrival evicts the queued one, which here is a paid order dropped in
-# silence. Scoped to one bundle, that eviction can only ever drop a duplicate run
-# of the same build.
-#
-# The `|| github.run_id` fallback is for a hand dispatch, and for the window
-# between this workflow reaching main and the Lambda being redeployed to send the
-# key. It degrades to "no grouping", never to "one shared group": no grouping
-# risks two identical runs writing one S3 key, which is harmless, while a shared
-# group risks losing an order.
+# Scoped per order rather than global: GitHub keeps only one pending run per
+# concurrency group, so a shared group would let a third arrival evict a
+# queued, paid order. Scoped to one order, an eviction can only ever drop a
+# duplicate run of the same build. order_ref is safe to name here because it
+# carries nothing: it is not the bundle id and is not derived from it.
 concurrency:
-  group: report-bundle-${{ inputs.dispatch_key || github.run_id }}
+  group: report-bundle-${{ inputs.order_ref }}
   cancel-in-progress: false
 
 jobs:
@@ -102,50 +61,83 @@ jobs:
     timeout-minutes: 30
     permissions:
       contents: read
-      id-token: write # read/write the artifacts bucket through AWS OIDC
+      id-token: write # read the order and write the archive through AWS OIDC
     defaults:
       run:
         working-directory: pipeline
     steps:
+      # A paid order has nowhere to go without these three, so their absence fails the run
+      # (and the run's failure is what tells the owner) rather than building an archive nobody
+      # can reach. Checked here rather than in each later step's `if:`: gated there, a blank
+      # variable skipped delivery and the run still ended green with the archive sitting in S3,
+      # which is precisely the evidence the daily reconciler reads as a delivered order.
+      - name: Refuse to start without the delivery configuration
+        shell: bash
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+          BUNDLE_API_BASE: ${{ vars.BUNDLE_API_BASE }}
+          SES_FROM: ${{ vars.SES_FROM }}
+          ORDER_REF: ${{ inputs.order_ref }}
+        run: |
+          set -euo pipefail
+          if [ -z "${ARTIFACTS_BUCKET}" ] || [ -z "${BUNDLE_API_BASE}" ] || [ -z "${SES_FROM}" ]; then
+            echo "::error::ARTIFACTS_BUCKET, BUNDLE_API_BASE and SES_FROM must all be set as repository variables before an order can be fulfilled. See docs/program-plan.md."
+            exit 1
+          fi
+          # An explicit class, not a range: bash's =~ ranges follow the locale.
+          if ! [[ "${ORDER_REF}" =~ ^[0123456789abcdef]{32}$ ]]; then
+            echo "::error::order_ref must be 32 lowercase hex characters."
+            exit 1
+          fi
+
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
           persist-credentials: false
       - uses: astral-sh/setup-uv@eb1897b8dc4b5d5bfe39a428a8f2304605e0983c # v7.0.0
         with:
           python-version: "3.12"
-      - run: uv sync --locked
-
-      - name: Write and validate the request
-        env:
-          IN_BUNDLE_ID: ${{ inputs.bundle_id }}
-          IN_PROGRAM_NAME: ${{ inputs.program_name }}
-          IN_ACCENT: ${{ inputs.accent }}
-          IN_LOGO: ${{ inputs.logo }}
-          IN_AGENCY_IDS: ${{ inputs.agency_ids }}
-          IN_DELIVER_TO: ${{ inputs.deliver_to }}
-          IN_CADENCE: ${{ inputs.cadence }}
+      - name: Install the locked environment
+        shell: bash
         run: |
-          uv run python - <<'PY'
-          import json, os
-          keys = ("bundle_id", "program_name", "accent", "logo", "agency_ids", "deliver_to", "cadence")
-          request = {k: os.environ.get(f"IN_{k.upper()}", "") for k in keys}
-          with open("request.json", "w") as fh:
-              json.dump(request, fh)
-          PY
+          set -euo pipefail
+          uv sync --locked
+
+      - name: Authenticate to AWS
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
+
+      # The object is read into request.json and every buyer-supplied value in it is masked
+      # before anything else runs. The masking happens inside Python reading the file, so no
+      # value ever appears in a step's rendered script or environment block. This is the first
+      # step that touches the order, and it must stay ahead of every step that could print
+      # one of its values (tests/test_workflow_safety.py fails if a step overtakes it).
+      - name: Collect the order and mask what it holds
+        shell: bash
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+          ORDER_REF: ${{ inputs.order_ref }}
+        run: |
+          set -euo pipefail
+          aws s3 cp "s3://${ARTIFACTS_BUCKET}/program-requests/${ORDER_REF}.json" request.json --only-show-errors
+          uv run python -m scorecard_pipeline.bundle_order mask request.json
+
+      # The plan names which ids to hydrate and which were refused up front. The counts go to
+      # the summary; the ids do not (they are masked by the step above in any case, and the
+      # manifest inside the delivered archive is where the buyer reads the per-id detail).
+      - name: Write the build plan
+        shell: bash
+        run: |
+          set -euo pipefail
           uv run scorecard bundle --request request.json --plan plan.json
           {
             echo "## Program report bundle"
             echo
             echo "Fetching $(jq '.current | length' plan.json) current agencies;"
             echo "$(jq '.refused | length' plan.json) ids refused before the build (see manifest)."
+            echo "Nothing identifying the order is shown on this page."
           } >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Authenticate to AWS
-        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
-        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
-        with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION || 'us-west-2' }}
 
       # Only what the report reads: the index (history) and each requested
       # agency's current artifact. Not the whole corpus; a bundle is a hundred
@@ -176,12 +168,12 @@ jobs:
       # from a failed read of our own bucket, and the buyer -- who is paying
       # for a judgment about exactly that -- has no way to see the
       # difference. So a 404 continues the build and an unreadable object
-      # fails the run: late is recoverable by a re-run with the same inputs,
+      # fails the run: late is recoverable by a re-run with the same order_ref,
       # and the failure path is watched (watchdog.yml, and the "Say that a
       # paid order failed" step below). A wrong sentence about an agency is
       # delivered and believed.
       - name: Hydrate the requested artifacts from S3
-        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        shell: bash
         env:
           ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
         run: |
@@ -225,9 +217,10 @@ jobs:
           if [ -s unhydrated.txt ]; then
             {
               echo
-              echo "**Not hydrated from S3** (S3 has no current artifact for these ids; each is"
-              echo "named in the manifest as not published, which is what it is):"
-              sed 's/^/  - /' unhydrated.txt
+              echo "**Not hydrated from S3** for $(wc -l < unhydrated.txt | tr -d ' ') of the requested"
+              echo "ids: S3 has no current artifact for them, and each is named in the buyer's"
+              echo "manifest as not published, which is what it is. The ids are not listed here:"
+              echo "this page is public and they are a paying program's caseload."
             } >> "$GITHUB_STEP_SUMMARY"
           fi
           if [ -s unreadable.txt ]; then
@@ -236,99 +229,55 @@ jobs:
               echo "**S3 would not answer** for $(wc -l < unreadable.txt | tr -d ' ') of the"
               echo "requested ids after three attempts each. The ids are not listed here: this"
               echo "page is public and they are a paying program's caseload. Re-run this"
-              echo "workflow with the same inputs."
+              echo "workflow with the same order_ref."
             } >> "$GITHUB_STEP_SUMMARY"
-            echo "::error::S3 would not answer for one or more requested agencies after three attempts. Failing rather than building: an agency whose artifact could not be read renders in the buyer's manifest as \"tracked, but no scorecard is published for it yet\", which is a statement about that agency and would not be true. Re-run with the same inputs."
+            echo "::error::S3 would not answer for one or more requested agencies after three attempts. Failing rather than building: an agency whose artifact could not be read renders in the buyer's manifest as \"tracked, but no scorecard is published for it yet\", which is a statement about that agency and would not be true. Re-run with the same order_ref."
             exit 1
           fi
 
+      # Held to the cap the order was sold with, a second time: the setup route
+      # enforced it before storing the order, and the render enforces it again
+      # so a hand-edited stored order cannot ship more than was bought.
       - name: Render the bundle
-        run: uv run scorecard bundle --request request.json --out bundle.zip --manifest manifest.json
-
-      - name: Upload the archive behind its capability key
-        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
-        env:
-          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
-          BUNDLE_ID: ${{ inputs.bundle_id }}
+        shell: bash
         run: |
           set -euo pipefail
-          # program-bundles/ is outside the CloudFront allow-list and expires
-          # after 30 days (infra/artifacts lifecycle). The only way to it is
-          # the download route in infra/program-bundle, which presigns per click.
-          aws s3 cp bundle.zip "s3://${ARTIFACTS_BUCKET}/program-bundles/${BUNDLE_ID}/bundle.zip" \
+          cap="$(uv run python -m scorecard_pipeline.bundle_order cap request.json)"
+          uv run scorecard bundle --request request.json --max-agencies "${cap}" \
+            --out bundle.zip --manifest manifest.json
+
+      # program-bundles/ is outside the CloudFront allow-list and expires after
+      # 30 days (infra/artifacts lifecycle). The only way to it is the download
+      # route in infra/program-bundle, which presigns per click.
+      - name: Upload the archive behind its capability key
+        shell: bash
+        env:
+          ARTIFACTS_BUCKET: ${{ vars.ARTIFACTS_BUCKET }}
+        run: |
+          set -euo pipefail
+          key="$(uv run python -m scorecard_pipeline.bundle_order archive-key request.json)"
+          aws s3 cp bundle.zip "s3://${ARTIFACTS_BUCKET}/${key}" \
             --content-type application/zip --only-show-errors
 
       # Once the step above has run, the archive is in the bucket and the
-      # buyer's only route to it is this email.
-      #
-      # That is why the two variables the email needs are checked *inside* this
-      # step rather than in its `if:`. Gated there, a blank BUNDLE_API_BASE or
-      # SES_FROM skipped the send, and the run still ended green with the
-      # archive sitting in S3 -- which is precisely the evidence the daily
-      # reconciler reads as a delivered order (reconcile_handler._capability_
-      # finding asks S3 whether the object exists, and nothing anywhere asks
-      # whether the mail was sent). One deleted or renamed repository variable
-      # would therefore have stopped delivery for every paid order, with a
-      # green run, no watchdog alarm, no reconciler finding, and a buyer who
-      # had been told on the setup form that the build had started.
-      #
-      # The failure is the alarm: watchdog.yml reads this workflow's conclusion
-      # every six hours, and the step below says a paid order did not complete.
+      # buyer's only route to it is this email. The link is computed inside
+      # Python from the environment, so the URL never appears in a command
+      # line, and the buyer's address is read from the stored order there too.
       - name: Email the download link
-        if: ${{ vars.ARTIFACTS_BUCKET != '' }}
+        shell: bash
         env:
           BUNDLE_API_BASE: ${{ vars.BUNDLE_API_BASE }}
-          BUNDLE_ID: ${{ inputs.bundle_id }}
-          PROMISED_BY: ${{ inputs.promised_by }}
           SES_FROM: ${{ vars.SES_FROM }}
         run: |
           set -euo pipefail
-          if [ -z "${BUNDLE_API_BASE}" ] || [ -z "${SES_FROM}" ]; then
-            echo "::error::The archive was uploaded but the delivery route is not configured (BUNDLE_API_BASE and SES_FROM must both be set), so the download link cannot be sent. Failing this run: an uploaded archive with no email reads as a delivered order everywhere else in this system."
-            exit 1
-          fi
-          expires="$(date -u -d '+30 days' +%Y-%m-%d)"
-          uv run --with boto3 python -m scorecard_pipeline.cli bundle-email \
-            --request request.json --manifest manifest.json \
-            --download-url "${BUNDLE_API_BASE%/}/download/${BUNDLE_ID}" \
-            --expires-on "$expires" --promised-by "$PROMISED_BY" \
-            --out email.txt --send --from "$SES_FROM"
+          uv run --with boto3 python -m scorecard_pipeline.bundle_order email request.json manifest.json
 
-      # Only the no-bucket case now. A bucket with no delivery route is not a
-      # degraded mode, it is an undelivered paid order, and the step above
-      # fails on it instead of writing a note nobody reads.
-      - name: Say when delivery is off
-        if: ${{ vars.ARTIFACTS_BUCKET == '' }}
-        run: |
-          {
-            echo
-            echo "**No email was sent.** ARTIFACTS_BUCKET, BUNDLE_API_BASE, and SES_FROM must all be"
-            echo "set for delivery. The archive is not attached to this run either: a run artifact"
-            echo "of a public repository is published, and this one is a paid deliverable that"
-            echo "carries its own download capability. Set the three variables and re-run this"
-            echo "workflow with the same inputs."
-          } >> "$GITHUB_STEP_SUMMARY"
-
-      # The artifact name is public. Measured 2026-09-12 against the two runs
-      # that existed: an unauthenticated GET of
-      # /repos/ChelseaKR/gtfs-scorecard/actions/runs/<id>/artifacts returned
-      # `program-bundle-<the 32-hex bundle id>`, the same string renders on the
-      # run page, and GET <api>/download/<that id> answered 302 to a presigned
-      # S3 URL while a never-issued id answered 404. The name was a working
-      # download credential for anyone reading the Actions tab.
-      # A run of this workflow is a paid order, and until this step existed
-      # nothing in the repository noticed when one died. The buyer's form had
-      # already told them the build was starting; no email is sent on the
-      # failure path; the capability row sits in DynamoDB until its 30-day TTL
-      # removes the evidence. The only trace was a red row in the Actions tab
-      # that nobody watches.
-      #
-      # What this may NOT do is name the order. The bundle id is the download
-      # credential and annotations and run summaries are public on a public
-      # repository -- that was the leak fixed earlier, and
-      # tests/test_workflow_safety.py fails if it comes back through a helpful
-      # error message. So this says only that an order failed, and points at
-      # the two private places that do name it.
+      # What this may NOT do is name the order's contents: the bundle id is the
+      # download capability, and annotations and run summaries are public on a
+      # public repository. order_ref is safe to print because it carries
+      # nothing -- it is a random name for the stored order, and reading that
+      # object needs this workflow's AWS role. This says only that an order
+      # failed and how to repair it.
       #
       # There is deliberately no email here. This step used to mail SES_FROM,
       # and SES_FROM is an address on a domain with no MX record, so that mail
@@ -339,22 +288,21 @@ jobs:
       # the undelivered order as a GitHub issue.
       - name: Say that a paid order failed
         if: ${{ failure() }}
+        shell: bash
         env:
-          DISPATCH_KEY: ${{ inputs.dispatch_key }}
+          ORDER_REF: ${{ inputs.order_ref }}
         run: |
-          set -uo pipefail
-          echo "::error::A paid program report bundle did not complete. The buyer was told the build had started and nothing else will tell them otherwise. Which order it was is in the program-bundles table and in the reconciler's CloudWatch log; it is deliberately not printed here, because this log is public."
+          set -euo pipefail
+          echo "::error::A paid program report bundle did not complete. The buyer was told the build had started and nothing else will tell them otherwise. Re-running this workflow on main with the same order_ref is the repair. Nothing else about the order is printed because this log is public; it is identified in the private bundles table and the reconciler's CloudWatch log."
           {
             echo
             echo "## A paid order was not delivered"
             echo
-            echo "- run group: \`${DISPATCH_KEY:-none}\`"
+            echo "- order_ref: \`${ORDER_REF}\` (names the stored order; carries no buyer data)"
             echo
-            echo "Re-running this workflow with the same inputs is the repair, and it is"
-            echo "safe: the archive and the download link are both keyed on the bundle id,"
-            echo "so a re-run fills the object the buyer's existing link already points at."
-            echo "The inputs are not shown on this page. The order is identified in the"
-            echo "program-bundles table, and the daily reconciler files the counts as an issue."
+            echo "Re-running this workflow with the same order_ref is safe: the archive and the"
+            echo "download link are both keyed on the bundle id inside the stored order, so a"
+            echo "re-run fills the object the buyer's existing link already points at."
           } >> "$GITHUB_STEP_SUMMARY"
 
       # There is deliberately no upload-artifact step here, and adding one back
@@ -364,18 +312,14 @@ jobs:
       # download it for its whole retention window, and the REST artifact
       # listing answers unauthenticated.
       #
-      # What was being uploaded was `pipeline/bundle.zip` and
-      # `pipeline/manifest.json` -- the paid deliverable itself, the buying
-      # program's name, and, inside the archive's own README.txt and manifest,
-      # the 32-hex bundle id. That id IS the download capability
-      # (infra/program-bundle/setup_handler.py: "the capability in the email is
-      # the credential"), so the archive was also a copy of the credential that
-      # fetches it from S3 for thirty days. Renaming the artifact (#407) took
-      # the id off the run page; it did not take it out of the file.
-      #
-      # Delivery does not need it. The archive goes to
-      # program-bundles/<id>/bundle.zip in the artifacts bucket, which is
-      # outside the CloudFront allow-list and reachable only through the
-      # presigning download route, and the buyer gets a link to that. A failed
-      # run is repaired by re-running this workflow with the same inputs, which
-      # is what the failure summary above already says.
+      # What an artifact would carry here is worse than a name: bundle.zip is
+      # the paid deliverable, and request.json and manifest.json name the
+      # buying program, its caseload, and the 32-hex bundle id that IS the
+      # download capability (infra/program-bundle/setup_handler.py: "the
+      # capability in the email is the credential"). Delivery does not need a
+      # run artifact. The archive goes to program-bundles/<id>/bundle.zip in
+      # the artifacts bucket, which is outside the CloudFront allow-list and
+      # reachable only through the presigning download route, and the buyer
+      # gets a link to that. A failed run is repaired by re-running this
+      # workflow with the same order_ref, which is what the failure summary
+      # above already says.

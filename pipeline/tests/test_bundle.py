@@ -199,8 +199,8 @@ def test_parse_request_narrows_the_cap_to_the_plan_that_was_bought() -> None:
 
 def test_parse_request_default_cap_is_unchanged_for_existing_callers() -> None:
     """`scorecard bundle` and `scorecard bundle-email` call parse_request with
-    no cap (cli.py), and report-bundle.yml re-validates workflow inputs the
-    same way. The default has to stay the product ceiling."""
+    no cap (cli.py) unless one is passed, and report-bundle.yml passes the
+    stored order's own cap. The default has to stay the product ceiling."""
     ids = ",".join(f"agency{i}" for i in range(MAX_AGENCIES))
     assert len(parse_request(_raw(agency_ids=ids)).agency_ids) == MAX_AGENCIES
 
@@ -420,8 +420,8 @@ def test_delivery_email_states_the_date_the_order_was_promised_by() -> None:
     """The last link in the refund promise, and the only one the buyer keeps.
 
     /bundle/ commits to two business days "or the purchase is refunded", the
-    setup route computes that date at checkout and carries it through
-    report-bundle.yml's `promised_by` input to this email. A buyer holding a
+    setup route computes that date at checkout and stores it on the order
+    report-bundle.yml collects, from which this email is built. A buyer holding a
     late archive should not have to take our word for when it was due, so the
     date is in the message they received rather than only in a table they
     cannot see.

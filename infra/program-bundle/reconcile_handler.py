@@ -192,7 +192,8 @@ def _session_finding(
         "plan": str(row.get("plan") or ""),
         "age_hours": _age_hours(claimed, now=now),
         "action": "The checkout was claimed and report-bundle.yml never started. "
-        "Dispatch it by hand with this bundle id, or tell the buyer to submit the "
+        "Dispatch it by hand with the order_ref on this order's capability row "
+        f"({bundle_id}), or tell the buyer to submit the "
         "setup form again -- the claim is still open and a retry resumes this same "
         "order.",
     }
@@ -244,8 +245,10 @@ def _capability_finding(
     if state == _ARTIFACT_MISSING:
         action = (
             f"No archive at {archive_key(key)}. Re-dispatch "
-            "report-bundle.yml with this bundle id; the download link the buyer "
-            "holds already points at that key."
+            "report-bundle.yml with this row's order_ref; the download link "
+            "the buyer holds already points at that key. If the stored order "
+            "object is gone too, the buyer resubmitting the setup form is the "
+            "repair."
         )
         if age is not None and age >= (EXPIRY_DAYS - 1) * 24:
             action += f" This row is within a day of its {EXPIRY_DAYS}-day TTL."
@@ -266,6 +269,7 @@ def _capability_finding(
         if breached
         else ("undelivered" if state == _ARTIFACT_MISSING else "unreadable"),
         "key": key,
+        "order_ref": str(row.get("order_ref") or ""),
         "deliver_to": str(row.get("deliver_to") or ""),
         "program_name": str(row.get("program_name") or ""),
         "source": str(row.get("source") or ""),

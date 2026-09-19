@@ -301,6 +301,35 @@ def _env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.delenv("DRY_RUN", raising=False)
 
 
+# Orders the handlers stored for report-bundle.yml, by reference. The
+# dispatch carries only the reference, so what a test used to read off the
+# dispatch inputs it now reads here -- the same object the workflow collects.
+_STORED: dict[str, dict[str, Any]] = {}
+
+
+@pytest.fixture(autouse=True)
+def _stored_orders(monkeypatch: pytest.MonkeyPatch) -> dict[str, dict[str, Any]]:
+    _STORED.clear()
+
+    def store(order_ref: str, request: dict[str, Any]) -> None:
+        common.request_key(order_ref)  # the real handler refuses a malformed reference
+        _STORED[order_ref] = json.loads(json.dumps(request))
+
+    for mod in (setup_handler, refresh_handler):
+        monkeypatch.setattr(mod, "store_request", store)
+    return _STORED
+
+
+def _sent(order_ref: str) -> dict[str, Any]:
+    """The order a dispatch named, with the agency list flattened the way the
+    old dispatch inputs carried it, so a count reads the same either way."""
+    assert isinstance(order_ref, str), "the dispatch must carry a reference, not the order"
+    order = dict(_STORED[order_ref])
+    ids = order.get("agency_ids") or []
+    order["agency_ids"] = ",".join(ids) if isinstance(ids, list) else str(ids)
+    return order
+
+
 @pytest.fixture
 def tables(monkeypatch: pytest.MonkeyPatch) -> dict[str, FakeTable]:
     fakes = {"SUBSCRIPTIONS_TABLE": FakeTable(key="id"), "BUNDLES_TABLE": FakeTable()}
@@ -337,42 +366,48 @@ def test_signature_accepts_any_matching_v1_among_several() -> None:
     assert common.verify_stripe_signature(body, header, SIGNING_SECRET)
 
 
-def test_workflow_inputs_flatten_ids_and_default_the_optional_fields() -> None:
-    inputs = common.workflow_inputs(
-        {
-            "bundle_id": "a" * 32,
-            "program_name": "P",
-            "agency_ids": ["x", "y"],
-            "deliver_to": "p@example.org",
-        }
+def test_an_order_reference_is_fresh_random_and_not_the_bundle_id() -> None:
+    """report-bundle.yml's concurrency group and failure summary print the
+    order reference on a public run page, and the bundle id is the download
+    credential. The reference is therefore minted on its own, never derived
+    from the id, so nothing printed can lead back to it."""
+    first, second = common.new_order_ref(), common.new_order_ref()
+    assert first != second
+    for ref in (first, second):
+        assert common.ORDER_REF_RE.fullmatch(ref)
+        assert common.request_key(ref) == f"program-requests/{ref}.json"
+    for bad in ("", "A" * 32, "a" * 31, "../" + "a" * 29, "a" * 32 + "/x"):
+        with pytest.raises(ValueError):
+            common.request_key(bad)
+
+
+def test_store_request_writes_the_order_privately_and_fails_as_upstream(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    puts: list[dict[str, Any]] = []
+
+    class _S3:
+        def put_object(self, **kwargs: Any) -> None:
+            puts.append(kwargs)
+
+    fake = type("boto3", (), {"client": staticmethod(lambda *a, **k: _S3())})
+    monkeypatch.setitem(sys.modules, "boto3", fake)
+    ref = "c" * 32
+    common.store_request(ref, {"bundle_id": "a" * 32, "agency_ids": ["x"]})
+    assert puts[0]["Bucket"] == "example-artifacts"
+    assert puts[0]["Key"] == f"program-requests/{ref}.json"
+    assert puts[0]["ServerSideEncryption"] == "AES256"
+    assert json.loads(puts[0]["Body"]) == {"bundle_id": "a" * 32, "agency_ids": ["x"]}
+
+    class _Down:
+        def put_object(self, **kwargs: Any) -> None:
+            raise RuntimeError("endpoint unreachable")
+
+    monkeypatch.setitem(
+        sys.modules, "boto3", type("boto3", (), {"client": staticmethod(lambda *a, **k: _Down())})
     )
-    assert inputs == {
-        "bundle_id": "a" * 32,
-        "program_name": "P",
-        "accent": "",
-        "logo": "",
-        "agency_ids": "x,y",
-        "deliver_to": "p@example.org",
-        "cadence": "one_time",
-        "dispatch_key": common.dispatch_key("a" * 32),
-        "promised_by": "",
-    }
-
-
-def test_the_dispatch_key_names_a_bundle_without_naming_it() -> None:
-    """report-bundle.yml's artifact name and concurrency group are rendered on
-    a public run page, and the bundle id is the download credential. This is
-    what they carry instead: stable per bundle, different for every bundle,
-    and no way back to the id it came from."""
-    first, second = "a" * 32, "b" * 32
-    key = common.dispatch_key(first)
-
-    assert key == common.dispatch_key(first), "the same bundle must group with itself"
-    assert key != common.dispatch_key(second), "two bundles must not share a group"
-    assert first not in key and key not in first, "the key must not contain the id, or vice versa"
-    assert len(key) == 16 and all(c in "0123456789abcdef" for c in key)
-    # A truncated digest of a 128-bit token, so it is a name and not a hint.
-    assert key == hashlib.sha256(first.encode()).hexdigest()[:16]
+    with pytest.raises(common.UpstreamError, match="storing the order request failed"):
+        common.store_request(ref, {})
 
 
 def test_dispatch_posts_to_the_workflow_dispatch_endpoint(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -383,14 +418,20 @@ def test_dispatch_posts_to_the_workflow_dispatch_endpoint(monkeypatch: pytest.Mo
         return {}
 
     monkeypatch.setattr(common, "_request", fake_request)
-    common.dispatch_bundle_workflow({"bundle_id": "b"})
+    ref = "d" * 32
+    common.dispatch_bundle_workflow(ref)
+    # The reference and nothing else: a run log on a public repository prints
+    # every workflow_dispatch input.
     assert calls == [
         (
             "POST",
             "https://api.github.com/repos/example/scorecard/actions/workflows/report-bundle.yml/dispatches",
-            {"ref": "main", "inputs": {"bundle_id": "b"}},
+            {"ref": "main", "inputs": {"order_ref": ref}},
         )
     ]
+    with pytest.raises(ValueError):
+        common.dispatch_bundle_workflow("not-a-reference")
+    assert len(calls) == 1, "a malformed reference must be refused before anything is sent"
 
 
 def test_request_wraps_http_errors_as_upstream(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -514,7 +555,7 @@ def _bought_earlier(
 def test_setup_paid_one_time_dispatches_and_records_the_capability(
     monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
 ) -> None:
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     paths = _stripe(monkeypatch, price=PRICE_BUNDLE_100)
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
 
@@ -523,9 +564,9 @@ def test_setup_paid_one_time_dispatches_and_records_the_capability(
     assert resp["statusCode"] == 200, body
     bundle_id = body["bundle_id"]
     assert len(bundle_id) == 32
-    assert dispatched[0]["bundle_id"] == bundle_id
-    assert dispatched[0]["agency_ids"] == "unitrans,yolobus"
-    assert dispatched[0]["cadence"] == "one_time"
+    assert _sent(dispatched[0])["bundle_id"] == bundle_id
+    assert _sent(dispatched[0])["agency_ids"] == "unitrans,yolobus"
+    assert _sent(dispatched[0])["cadence"] == "one_time"
     rows = tables["BUNDLES_TABLE"].items
     assert rows[bundle_id]["deliver_to"] == "liaison@example.org"
     assert rows[bundle_id]["source"] == "checkout"
@@ -540,6 +581,51 @@ def test_setup_paid_one_time_dispatches_and_records_the_capability(
         "/v1/checkout/sessions/cs_test_example",
         "/v1/checkout/sessions/cs_test_example/line_items?limit=10",
     ]
+
+
+def test_setup_dispatches_a_reference_and_keeps_the_order_off_the_dispatch(
+    monkeypatch: pytest.MonkeyPatch,
+    tables: dict[str, FakeTable],
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """The fulfillment workflow's run log is public, and it prints every
+    workflow_dispatch input. So the dispatch carries a random reference, the
+    order behind it is stored where only the workflow's role can read it, and
+    the capability row keeps the reference so a make-good re-run has it.
+
+    The failure log is CloudWatch, which is private, but it still names the
+    order by reference only: the address and the bundle id are in the table.
+    """
+    dispatched: list[str] = []
+    _stripe(monkeypatch, price=PRICE_BUNDLE_25)
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
+
+    resp = setup_handler.handler(_setup_event(_form()))
+    assert resp["statusCode"] == 200, resp["body"]
+    bundle_id = json.loads(resp["body"])["bundle_id"]
+    [ref] = dispatched
+    assert common.ORDER_REF_RE.fullmatch(ref)
+    assert ref != bundle_id and bundle_id not in ref
+    assert tables["BUNDLES_TABLE"].items[bundle_id]["order_ref"] == ref
+    order = _STORED[ref]
+    assert order["bundle_id"] == bundle_id
+    assert order["deliver_to"] == "liaison@example.org"
+    # The plan's cap and the promise travel inside the order, not the dispatch.
+    assert order["max_agencies"] == 25
+    assert order["promised_by"]
+
+    def github_down(order_ref: str) -> None:
+        raise common.UpstreamError("github 500")
+
+    monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", github_down)
+    capsys.readouterr()
+    failed = setup_handler.handler(_setup_event(_form(session_id="cs_test_other")))
+    assert failed["statusCode"] == 502
+    logged = capsys.readouterr().out
+    event = json.loads(logged.strip().splitlines()[-1])
+    assert event["event"] == "dispatch_failed" and common.ORDER_REF_RE.fullmatch(event["order_ref"])
+    assert "liaison@example.org" not in logged
+    assert json.loads(failed["body"])["bundle_id"] not in logged
 
 
 def test_setup_subscription_stores_the_request_and_price_for_the_refresh(
@@ -606,7 +692,7 @@ def test_the_setup_form_does_not_reactivate_a_subscription_stripe_has_ended(
     assert json.loads(sub["request"])["cadence"] == "monthly"
 
     # And the consequence the buyer would have been billed nothing for.
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", dispatched.append)
     counts = refresh_handler.refresh(
         subscriptions=tables["SUBSCRIPTIONS_TABLE"],
@@ -636,7 +722,7 @@ def test_a_subscription_purchase_does_not_refresh_itself_days_later(
     stamped = tables["SUBSCRIPTIONS_TABLE"].items["sub_example"]["last_refresh"]
     assert stamped, "the purchase left no record that an archive had just been sent"
 
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", dispatched.append)
     started = dt.datetime.fromisoformat(stamped)
 
@@ -674,7 +760,7 @@ def test_setup_refuses_a_paid_checkout_for_a_price_that_is_not_ours(
 ) -> None:
     """The family-greenhouse case: a real, paid Checkout Session on the same
     Stripe account, for something that is not a report bundle."""
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     _stripe(monkeypatch, price=PRICE_FOREIGN)
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
 
@@ -689,7 +775,7 @@ def test_setup_refuses_a_paid_checkout_for_a_price_that_is_not_ours(
 def test_setup_refuses_a_session_whose_line_items_are_not_one_known_price(
     monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
 ) -> None:
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
 
     for items in (
@@ -709,7 +795,7 @@ def test_setup_refuses_everything_when_no_prices_are_configured(
 ) -> None:
     """A half-configured deploy sells nothing rather than selling anything.
     Each of these leaves the Lambda unable to say what a price buys."""
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     _stripe(monkeypatch, price=PRICE_BUNDLE_25)
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
 
@@ -736,7 +822,7 @@ def test_setup_holds_a_bundle_25_purchase_to_twenty_five_agencies(
     """`plan.json` sells bundle_25 as "One bundle, up to 25 agencies". The
     26th id is refused with the reason, so the same checkout can be sent
     again with a shorter list; it is not trimmed and not upgraded."""
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     _stripe(monkeypatch, price=PRICE_BUNDLE_25)
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
 
@@ -751,19 +837,19 @@ def test_setup_holds_a_bundle_25_purchase_to_twenty_five_agencies(
 
     twenty_five = ",".join(f"agency-{n}" for n in range(25))
     assert setup_handler.handler(_setup_event(_form(agency_ids=twenty_five)))["statusCode"] == 200
-    assert len(dispatched[0]["agency_ids"].split(",")) == 25
+    assert len(_sent(dispatched[0])["agency_ids"].split(",")) == 25
 
 
 def test_setup_lets_a_bundle_100_purchase_list_more_than_twenty_five(
     monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
 ) -> None:
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     _stripe(monkeypatch, price=PRICE_BUNDLE_100)
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
 
     ids = ",".join(f"agency-{n}" for n in range(26))
     assert setup_handler.handler(_setup_event(_form(agency_ids=ids)))["statusCode"] == 200
-    assert len(dispatched[0]["agency_ids"].split(",")) == 26
+    assert len(_sent(dispatched[0])["agency_ids"].split(",")) == 26
 
     # 101 is over the product's own ceiling, whatever was paid for.
     too_many = ",".join(f"agency-{n}" for n in range(101))
@@ -809,8 +895,8 @@ def _refresh_setup(
     *,
     price: str = PRICE_REFRESH_MO,
     session: dict[str, Any] | None = None,
-) -> list[dict[str, str]]:
-    dispatched: list[dict[str, str]] = []
+) -> list[str]:
+    dispatched: list[str] = []
     served = (
         session
         if session is not None
@@ -881,7 +967,7 @@ def test_a_refresh_never_covers_more_agencies_than_the_bundle_it_renews(
         _setup_event(_form(agency_ids=",".join(f"agency-{n}" for n in range(covered))))
     )
     assert ok["statusCode"] == 200, ok["body"]
-    assert len(dispatched[0]["agency_ids"].split(",")) == covered
+    assert len(_sent(dispatched[0])["agency_ids"].split(",")) == covered
     assert tables["SUBSCRIPTIONS_TABLE"].items["sub_example"]["agency_cap"] == covered
 
 
@@ -925,7 +1011,7 @@ def test_a_refresh_finds_a_bundle_whose_capability_row_is_long_gone(
             _setup_event(_form(agency_ids=",".join(f"agency-{n}" for n in range(100))))
         )
         assert resp["statusCode"] == 200, (prefix, resp["body"])
-        assert len(dispatched[0]["agency_ids"].split(",")) == 100
+        assert len(_sent(dispatched[0])["agency_ids"].split(",")) == 100
         assert tables["SUBSCRIPTIONS_TABLE"].items["sub_example"]["agency_cap"] == 100
 
 
@@ -1000,7 +1086,7 @@ def test_an_earlier_checkout_the_webhook_could_not_read_is_settled_not_discounte
     customer. Stripe still has the session, so it is asked.
     """
     session = _paid_session(mode="subscription", subscription="sub_example")
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
     asked: list[str] = []
 
@@ -1027,7 +1113,7 @@ def test_an_outage_while_settling_says_not_yet_rather_than_you_never_bought(
     monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
 ) -> None:
     session = _paid_session(mode="subscription", subscription="sub_example")
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
     _no_claims_allowed(monkeypatch)
 
@@ -1096,14 +1182,14 @@ def test_a_one_time_bundle_still_needs_nothing_before_it(
     still be able to buy one, with an empty table behind them."""
     for price, allowed in ((PRICE_BUNDLE_25, 25), (PRICE_BUNDLE_100, 100)):
         tables["BUNDLES_TABLE"].items.clear()
-        dispatched: list[dict[str, str]] = []
+        dispatched: list[str] = []
         _stripe(monkeypatch, price=price)
         monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
         resp = setup_handler.handler(
             _setup_event(_form(agency_ids=",".join(f"agency-{n}" for n in range(allowed))))
         )
         assert resp["statusCode"] == 200, (price, resp["body"])
-        assert len(dispatched[0]["agency_ids"].split(",")) == allowed
+        assert len(_sent(dispatched[0])["agency_ids"].split(",")) == allowed
 
 
 def test_every_configured_plan_is_either_a_bundle_or_a_subscription() -> None:
@@ -1122,7 +1208,7 @@ def test_setup_refuses_everything_while_payments_are_disabled(
     """Defense in depth behind the Terraform gate that removes the route:
     a stale route or a direct invoke still builds nothing, and the checkout
     is not consumed, so the buyer can come back."""
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     paths = _stripe(monkeypatch, price=PRICE_BUNDLE_25)
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
 
@@ -1195,7 +1281,7 @@ def test_setup_reports_upstream_failures_without_losing_the_order(
     assert resp["statusCode"] == 502
     assert tables["BUNDLES_TABLE"].items == {}
 
-    def github_down(inputs: dict[str, str]) -> None:
+    def github_down(order_ref: str) -> None:
         raise common.UpstreamError("github 500")
 
     _stripe(monkeypatch)
@@ -1216,10 +1302,10 @@ def test_setup_lets_a_buyer_finish_an_order_whose_dispatch_never_started(
     bundle" is false and leaves a paying buyer with no move left. The retry
     finishes the order instead, under the SAME bundle id, so one payment
     still yields exactly one bundle and one download link."""
-    attempts: list[dict[str, str]] = []
+    attempts: list[str] = []
 
-    def first_call_fails(inputs: dict[str, str]) -> None:
-        attempts.append(inputs)
+    def first_call_fails(order_ref: str) -> None:
+        attempts.append(order_ref)
         if len(attempts) == 1:
             raise common.UpstreamError("github 502")
 
@@ -1236,7 +1322,7 @@ def test_setup_lets_a_buyer_finish_an_order_whose_dispatch_never_started(
     retried = setup_handler.handler(_setup_event(_form()))
     assert retried["statusCode"] == 200, retried["body"]
     assert json.loads(retried["body"])["bundle_id"] == bundle_id
-    assert [a["bundle_id"] for a in attempts] == [bundle_id, bundle_id]
+    assert [_sent(a)["bundle_id"] for a in attempts] == [bundle_id, bundle_id]
     assert tables["BUNDLES_TABLE"].items["session#cs_test_example"]["dispatched"] is True
 
     # And once a build really started, a third submission is refused again.
@@ -1254,7 +1340,7 @@ def test_setup_will_not_rebuild_a_claim_that_predates_the_dispatched_flag(
     accepted the dispatch -- must not be re-dispatched on a guess, or one
     payment would buy two builds."""
     _stripe(monkeypatch)
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
     tables["BUNDLES_TABLE"].items["session#cs_test_example"] = {
         "bundle_id": "session#cs_test_example",
@@ -1705,7 +1791,7 @@ def test_refresh_dispatches_only_active_due_subscriptions(
     subs.items["sub_recent"] = _sub(id="sub_recent", last_refresh="2026-09-20T00:00:00+00:00")
     subs.items["sub_canceled"] = _sub(id="sub_canceled", status="canceled")
     subs.items["sub_broken"] = _sub(id="sub_broken", request="{}")
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", dispatched.append)
 
     counts = refresh_handler.refresh(subscriptions=subs, bundles=tables["BUNDLES_TABLE"], now=now)
@@ -1724,9 +1810,9 @@ def test_refresh_dispatches_only_active_due_subscriptions(
         "would_dispatch": 0,
         "failed": 0,
     }
-    assert {d["cadence"] for d in dispatched} == {"monthly"}
-    assert len({d["bundle_id"] for d in dispatched}) == 2
-    assert all(len(d["bundle_id"]) == 32 for d in dispatched)
+    assert {_sent(d)["cadence"] for d in dispatched} == {"monthly"}
+    assert len({_sent(d)["bundle_id"] for d in dispatched}) == 2
+    assert all(len(_sent(d)["bundle_id"]) == 32 for d in dispatched)
     assert subs.items["sub_never"]["last_bundle_id"] in tables["BUNDLES_TABLE"].items
     assert subs.items["sub_old"]["last_refresh"]
     assert "last_refresh" not in subs.items["sub_broken"]
@@ -1745,7 +1831,7 @@ def test_refresh_skips_rows_that_are_not_on_a_configured_refresh_price(
     subs.items["sub_foreign"] = _sub(id="sub_foreign", price=PRICE_FOREIGN)
     subs.items["sub_one_time"] = _sub(id="sub_one_time", price=PRICE_BUNDLE_25)
     subs.items["sub_no_price"] = _sub(id="sub_no_price", price="")
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", dispatched.append)
 
     counts = refresh_handler.refresh(subscriptions=subs, bundles=tables["BUNDLES_TABLE"])
@@ -1766,7 +1852,7 @@ def test_refresh_refuses_the_whole_run_when_no_refresh_price_is_configured(
     configuration failure has to fail, not be published as a per-row fact."""
     subs = tables["SUBSCRIPTIONS_TABLE"]
     subs.items["sub_a"] = _sub(id="sub_a")
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", dispatched.append)
 
     for value in ("{}", "not json", "[]", json.dumps({"bundle_25": PRICE_BUNDLE_25})):
@@ -1798,7 +1884,7 @@ def test_refresh_writes_the_capability_row_before_it_dispatches(
     tables["SUBSCRIPTIONS_TABLE"].items["sub_a"] = _sub(id="sub_a")
     seen: list[list[str]] = []
 
-    def note_rows(inputs: dict[str, str]) -> None:
+    def note_rows(order_ref: str) -> None:
         seen.append(sorted(bundles.items))
 
     monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", note_rows)
@@ -1845,13 +1931,13 @@ def test_refresh_never_sends_more_agencies_than_the_subscription_was_sold(
     # cap of any size, and cutting off a paying subscriber over one would be an
     # absence dressed up as a decision.
     subs.items["sub_legacy"] = _sub(id="sub_legacy", request=json.dumps(outside))
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", dispatched.append)
 
     counts = refresh_handler.refresh(subscriptions=subs, bundles=tables["BUNDLES_TABLE"])
     assert counts["over_cap"] == 1
     assert counts["dispatched"] == 2
-    sent = {len(d["agency_ids"].split(",")) for d in dispatched}
+    sent = {len(_sent(d)["agency_ids"].split(",")) for d in dispatched}
     assert sent == {25, 26}, "the over-cap row was dispatched"
     assert "last_refresh" not in subs.items["sub_over"]
     assert subs.items["sub_ok"]["last_refresh"]
@@ -1866,8 +1952,8 @@ def test_refresh_keeps_going_past_a_failed_dispatch(
     subs.items["sub_b"] = _sub(id="sub_b")
     seen: list[str] = []
 
-    def flaky(inputs: dict[str, str]) -> None:
-        seen.append(inputs["bundle_id"])
+    def flaky(order_ref: str) -> None:
+        seen.append(_sent(order_ref)["bundle_id"])
         if len(seen) == 1:
             raise common.UpstreamError("github 502")
 
@@ -1885,7 +1971,7 @@ def test_refresh_dry_run_changes_nothing(
     """DRY_RUN was reported in the response and never honored. It is honored
     now, from the environment or from a hand invoke's payload, and the proof
     is that nothing moved: no dispatch, no capability row, no last_refresh."""
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", dispatched.append)
 
     def fresh_subs() -> FakeTable:
@@ -1933,7 +2019,7 @@ def test_refresh_dry_run_changes_nothing(
 def test_refresh_does_nothing_while_payments_are_disabled(
     monkeypatch: pytest.MonkeyPatch, tables: dict[str, FakeTable]
 ) -> None:
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     monkeypatch.setattr(refresh_handler, "dispatch_bundle_workflow", dispatched.append)
     tables["SUBSCRIPTIONS_TABLE"].items["sub_a"] = _sub(id="sub_a")
 
@@ -2425,7 +2511,7 @@ def test_setup_records_the_promised_date_and_tells_the_buyer(
     does not work it out again, and neither does the email."""
     from scorecard_pipeline import deadline as dl
 
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     # Monday 14 September 2026, 09:00 in the promise's own zone.
     checkout = 1789401600
     _stripe(monkeypatch, _paid_session(created=checkout), price=PRICE_BUNDLE_25)
@@ -2443,7 +2529,7 @@ def test_setup_records_the_promised_date_and_tells_the_buyer(
     row = tables["BUNDLES_TABLE"].items[body["bundle_id"]]
     assert row["deliver_by_epoch"] == dl.deadline_epoch(dl.from_epoch(checkout))
     assert row["deliver_by_anchor"] == "checkout"
-    assert dispatched[0]["promised_by"] == dl.spoken_date(expected)
+    assert _sent(dispatched[0])["promised_by"] == dl.spoken_date(expected)
 
 
 def test_the_promise_is_anchored_to_the_checkout_not_to_the_form(
@@ -2632,10 +2718,10 @@ def test_one_payment_leaves_one_bundle_when_a_dispatch_fails_after_github_took_i
     """
     from scorecard_pipeline.bundle import archive_key
 
-    attempts: list[dict[str, str]] = []
+    attempts: list[str] = []
 
-    def timeout_then_succeed(inputs: dict[str, str]) -> None:
-        attempts.append(inputs)
+    def timeout_then_succeed(order_ref: str) -> None:
+        attempts.append(order_ref)
         if len(attempts) == 1:
             # GitHub queued it; the answer never came back.
             raise common.UpstreamError("POST .../dispatches failed: timed out")
@@ -2647,16 +2733,17 @@ def test_one_payment_leaves_one_bundle_when_a_dispatch_fails_after_github_took_i
     second = json.loads(setup_handler.handler(_setup_event(_form()))["body"])
     assert second["bundle_id"] == first["bundle_id"]
 
-    ids = {a["bundle_id"] for a in attempts}
+    ids = {_sent(a)["bundle_id"] for a in attempts}
     assert len(attempts) == 2 and ids == {first["bundle_id"]}
-    # The run group and the S3 key are both derived from the bundle id, so
-    # two runs of one order cannot collide with anything but each other.
-    assert len({a["dispatch_key"] for a in attempts}) == 1
-    assert len({archive_key(a["bundle_id"]) for a in attempts}) == 1
+    # The run group is keyed on the order reference and the S3 key on the
+    # bundle id inside the stored order. The retry reuses both, so two runs of
+    # one order queue behind each other and cannot collide with anything else.
+    assert len(set(attempts)) == 1, "the retry dispatched under a new run group"
+    assert len({archive_key(_sent(a)["bundle_id"]) for a in attempts}) == 1
     # And the promise did not move: it is anchored to Stripe's `created`,
     # which the retry did not change. A deadline that slipped on every retry
     # would be a refund liability the buyer was never told about.
-    assert len({a["promised_by"] for a in attempts}) == 1
+    assert len({_sent(a)["promised_by"] for a in attempts}) == 1
 
     rows = tables["BUNDLES_TABLE"].items
     capabilities = [k for k in rows if "#" not in k]
@@ -2681,7 +2768,7 @@ def test_an_entitlement_row_with_nobody_s_address_on_it_grants_nothing(
     """
     session = _paid_session(mode="subscription", subscription="sub_example")
     paths = _stripe(monkeypatch, session, price=PRICE_REFRESH_MO)
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
     _no_claims_allowed(monkeypatch)
     rows = tables["BUNDLES_TABLE"].items
@@ -2724,7 +2811,7 @@ def test_an_agency_id_the_form_rejects_is_named_and_consumes_nothing(
     is built, and above all the checkout is not claimed, or the correction
     would be answered "this checkout already produced a bundle".
     """
-    dispatched: list[dict[str, str]] = []
+    dispatched: list[str] = []
     _stripe(monkeypatch, price=PRICE_BUNDLE_25)
     monkeypatch.setattr(setup_handler, "dispatch_bundle_workflow", dispatched.append)
 
@@ -2739,7 +2826,7 @@ def test_an_agency_id_the_form_rejects_is_named_and_consumes_nothing(
     # The same checkout, corrected, still works.
     fixed = setup_handler.handler(_setup_event(_form(agency_ids="unitrans,yolobus,sactrans")))
     assert fixed["statusCode"] == 200, fixed["body"]
-    assert dispatched[0]["agency_ids"] == "unitrans,yolobus,sactrans"
+    assert _sent(dispatched[0])["agency_ids"] == "unitrans,yolobus,sactrans"
 
 
 def test_every_table_walk_reads_past_the_first_page(
@@ -2780,7 +2867,7 @@ def test_every_table_walk_reads_past_the_first_page(
     hundred = ",".join(f"agency-{n}" for n in range(100))
     resp = setup_handler.handler(_setup_event(_form(agency_ids=hundred)))
     assert resp["statusCode"] == 200, resp["body"]
-    assert len(dispatched[0]["agency_ids"].split(",")) == 100
+    assert len(_sent(dispatched[0])["agency_ids"].split(",")) == 100
 
     # 3. the weekly refresh: the due subscription is on the last page.
     subs.items.clear()

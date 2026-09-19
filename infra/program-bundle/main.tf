@@ -435,6 +435,19 @@ resource "aws_iam_role_policy" "lambda" {
         Effect   = "Allow"
         Action   = ["s3:GetObject"]
         Resource = "${data.aws_s3_bucket.artifacts.arn}/program-bundles/*"
+      },
+      {
+        # Write only, and only the order prefix: the setup and refresh
+        # handlers store a validated order for report-bundle.yml to collect.
+        # The workflow reads these objects with its own OIDC role
+        # (infra/artifacts/github_oidc.tf), never with this role, so the
+        # Lambda can start a build it cannot read back the buyer details of.
+        # The prefix is outside the CloudFront allow-list and expires with
+        # the same 30-day rule as the archives (infra/artifacts/main.tf).
+        Sid      = "Orders"
+        Effect   = "Allow"
+        Action   = ["s3:PutObject"]
+        Resource = "${data.aws_s3_bucket.artifacts.arn}/program-requests/*"
       }
     ]
   })

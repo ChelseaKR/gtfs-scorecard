@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import json
 import os
 import re
@@ -1219,60 +1220,197 @@ def test_the_watchdog_reads_a_job_timeout_as_a_failure_not_as_silence() -> None:
 
 
 # ---------------------------------------------------------------------------
-# report-bundle.yml: the download capability must not reach a public surface
+# report-bundle.yml: nothing about the buyer reaches a public run log
 # ---------------------------------------------------------------------------
 
-# The bundle id IS the download credential: infra/program-bundle/setup_handler.py
-# says so in terms ("the capability in the email is the credential"), and its
-# download route checks the id's shape and nothing else. This repository is
-# public, so anything GitHub renders about a run is a publication.
+# This repository is public, so everything GitHub renders about a run is a
+# publication: the run log (each step's script, its env block, and every line
+# it prints), annotations, the step summary, step and job names, the
+# concurrency group, and any run artifact. GitHub prints a step's env block in
+# the log, including values that came from workflow_dispatch inputs. That is
+# how two hand test runs on 2026-09-11 published a buyer's address, program
+# name and download capability, back when those were inputs.
 #
-# `deliver_to` rides along because it is a buyer's email address.
-CAPABILITY_INPUTS = ("bundle_id", "deliver_to")
+# So the rule is structural rather than "be careful what you echo". The
+# workflow takes one input, an opaque random order reference. The order is
+# read from the private bucket inside Python, which registers an ::add-mask::
+# for every buyer value before any later step can print one. And nothing on a
+# command line, in an env block, or in an echo names a buyer field.
+# `pii_log_findings` is the lint that holds that, and the negative controls
+# below prove it catches each way back in.
 
-# Measured unauthenticated on 2026-09-12, which is why this list is these
-# entries and not a guess:
-#   * artifact name  -- LEAKED. GET /repos/.../actions/runs/<id>/artifacts with
-#     no token returned `program-bundle-<32 hex>` for both existing runs, the
-#     same string renders on the run page, and the id worked as a download
-#     credential against the live API (302 vs 404 for a never-issued id).
-#   * dispatch inputs -- not exposed. Absent from the run object, the jobs and
-#     steps API, the run page HTML and the job page HTML.
-#   * run logs -- not exposed. The REST logs endpoint answers 403 "Must have
-#     admin rights to Repository" even on this public repository.
-# Annotations, step summaries, job and step names and the concurrency group are
-# in the list because they are rendered surfaces, whether or not a particular
-# one was observable on a run that never produced them.
+#: Field names that identify a buyer or grant access. None may be a
+#: workflow_dispatch input of any workflow in this repository.
+BUYER_FIELDS = (
+    "bundle_id",
+    "deliver_to",
+    "program_name",
+    "logo",
+    "promised_by",
+    "download_url",
+    "email",
+    "buyer_email",
+    "customer_email",
+    "organization",
+    "order_id",
+    "session_id",
+    "checkout_session",
+)
+#: Shell variable names that would carry one of them. An echo or printf of any
+#: of these, in any step of the fulfillment workflow, is a finding whatever the
+#: step's env says, and so is declaring one in an env block.
+PII_VARIABLES = (
+    "BUYER_EMAIL",
+    "CUSTOMER_EMAIL",
+    "EMAIL",
+    "DELIVER_TO",
+    "IN_DELIVER_TO",
+    "BUNDLE_ID",
+    "IN_BUNDLE_ID",
+    "PROGRAM_NAME",
+    "IN_PROGRAM_NAME",
+    "ORGANIZATION",
+    "ORG_NAME",
+    "LOGO",
+    "IN_LOGO",
+    "AGENCY_IDS",
+    "IN_AGENCY_IDS",
+    "DOWNLOAD_URL",
+    "PROMISED_BY",
+    "SESSION_ID",
+    "CHECKOUT_SESSION",
+)
+#: The one input the fulfillment workflow may take.
+ORDER_REF_INPUT = "order_ref"
+#: The command that masks the collected order. It must run before anything
+#: else reads the file.
+MASK_COMMAND = "bundle_order mask request.json"
+
+_INPUT_REF = re.compile(r"inputs\.([A-Za-z_][A-Za-z0-9_-]*)")
+_XTRACE = re.compile(r"(^|[\s;&|(])set\s+(-[a-zA-Z]*x[a-zA-Z]*|-o\s+xtrace)\b|\bbash\s+-[a-zA-Z]*x")
+_VERBOSE_CURL = re.compile(r"\bcurl\b[^\n]*\s(-[a-zA-Z]*v[a-zA-Z]*|--verbose|--trace\S*)(\s|$)")
+_PRINTS = re.compile(r"\b(echo|printf|cat|tee)\b|\$GITHUB_STEP_SUMMARY|::(error|warning|notice)")
 
 
 def _steps(workflow: dict[str, Any]) -> list[tuple[str, dict[str, Any]]]:
     return [(job, step) for job, spec in workflow["jobs"].items() for step in spec.get("steps", [])]
 
 
-def _protected_env(step: dict[str, Any]) -> set[str]:
-    """Shell variable names in this step that carry a capability input."""
-    return {
-        name
-        for name, value in (step.get("env") or {}).items()
-        if any(f"inputs.{field}" in str(value) for field in CAPABILITY_INPUTS)
-    }
+def _dispatch_inputs(workflow: dict[Any, Any]) -> list[str]:
+    # PyYAML reads the bare key `on:` as the boolean True (YAML 1.1).
+    triggers = workflow.get("on", workflow.get(True)) or {}
+    dispatch = triggers.get("workflow_dispatch") if isinstance(triggers, dict) else None
+    return sorted((dispatch or {}).get("inputs") or {}) if isinstance(dispatch, dict) else []
 
 
-def _rendered_lines(run: str) -> list[str]:
-    """Lines of a run block whose text GitHub shows on the run page.
+def _strings(value: Any) -> list[str]:
+    """Every key and string value in a parsed workflow, recursively."""
+    if isinstance(value, dict):
+        return [s for k, v in value.items() for s in (str(k), *_strings(v))]
+    if isinstance(value, list):
+        return [s for item in value for s in _strings(item)]
+    return [value] if isinstance(value, str) else []
 
-    A workflow command becomes an annotation; an `echo` inside a step that
-    writes `$GITHUB_STEP_SUMMARY` becomes the run summary. Both are read by
-    anybody who can open the run, which for a public repository is anybody.
-    """
-    lines = run.splitlines()
-    writes_summary = any("$GITHUB_STEP_SUMMARY" in line for line in lines)
-    return [
-        line
-        for line in lines
-        if any(cmd in line for cmd in ("::error", "::warning", "::notice"))
-        or (writes_summary and re.search(r"\b(echo|printf)\b", line))
+
+def _foreign_inputs(value: object) -> list[str]:
+    """Input references in a string, other than the order reference."""
+    return [ref for ref in _INPUT_REF.findall(str(value)) if ref != ORDER_REF_INPUT]
+
+
+def _workflow_findings(workflow: dict[Any, Any]) -> list[str]:
+    """The declared inputs and the strings rendered for the whole run."""
+    findings: list[str] = []
+    inputs = _dispatch_inputs(workflow)
+    if inputs != [ORDER_REF_INPUT]:
+        findings.append(f"declares inputs {inputs}; it may take {ORDER_REF_INPUT} alone")
+    for field in ("name", "run-name"):
+        findings += [
+            f"the workflow {field} renders inputs.{r}"
+            for r in _foreign_inputs(workflow.get(field) or "")
+        ]
+    group = (workflow.get("concurrency") or {}).get("group") or ""
+    findings += [f"the concurrency group renders inputs.{r}" for r in _foreign_inputs(group)]
+    return findings
+
+
+def _step_field_findings(label: str, step: dict[str, Any]) -> list[str]:
+    """What a step carries in its env block and its rendered fields."""
+    findings: list[str] = []
+    for name, value in (step.get("env") or {}).items():
+        if str(name) in PII_VARIABLES:
+            findings.append(f"{label} puts {name} in an env block, which the log prints")
+        findings += [f"{label} env {name} carries inputs.{r}" for r in _foreign_inputs(value)]
+    rendered = [step.get("name") or "", step.get("if") or ""]
+    rendered += list((step.get("with") or {}).values())
+    for value in rendered:
+        findings += [f"{label} renders inputs.{r}" for r in _foreign_inputs(value)]
+    if "upload-artifact" in str(step.get("uses") or ""):
+        findings.append(f"{label} publishes a run artifact")
+    return findings
+
+
+def _script_findings(label: str, run: str) -> list[str]:
+    """What a step's script could print."""
+    findings = [
+        f"{label} interpolates inputs.{ref} into its script; use env"
+        for ref in _INPUT_REF.findall(run)
     ]
+    if _XTRACE.search(run):
+        findings.append(f"{label} turns on xtrace, which prints every expanded command")
+    if _VERBOSE_CURL.search(run):
+        findings.append(f"{label} runs a verbose curl, which prints headers and URLs")
+    printing = [line for line in run.splitlines() if _PRINTS.search(line)]
+    findings += [
+        f"{label} prints ${var}: {line.strip()}"
+        for line in printing
+        for var in PII_VARIABLES
+        if re.search(rf"\${{?{var}\b", line)
+    ]
+    if "/download/" in run or "--download-url" in run:
+        findings.append(f"{label} puts the download link on a command line")
+    return findings
+
+
+def _mask_order_findings(steps: list[tuple[str, dict[str, Any]]]) -> list[str]:
+    """The step that masks the collected order must be the first to read it,
+    and must mask before it does anything else with the file."""
+    for job, step in steps:
+        run = str(step.get("run") or "")
+        if "request.json" not in run:
+            continue
+        label = f"{job}/{step.get('name') or '?'}"
+        if MASK_COMMAND not in run:
+            return [f"{label} reads the order before any step has masked it"]
+        before = run[: run.index(MASK_COMMAND)].splitlines()
+        early = [
+            line.strip()
+            for line in before
+            if "request.json" in line and not line.strip().startswith("aws s3 cp ")
+        ]
+        return [f"{label} uses the order before masking it: {early[0]}"] if early else []
+    return ["no step masks the collected order"]
+
+
+def pii_log_findings(workflow: dict[Any, Any]) -> list[str]:
+    """Every way the fulfillment workflow could put a buyer's details into a
+    public run log. Empty means none was found.
+
+    Checked: the declared inputs (the order reference alone); input references
+    in env blocks and rendered fields (the order reference alone); inputs
+    interpolated straight into a script; env variables named for a buyer
+    field; xtrace and verbose curl, which print what a script expands; any
+    echo, printf, cat, tee, annotation or summary line that expands a buyer
+    variable; the download link on a command line; a run artifact; and the
+    order of operations, so that the step that masks the collected order is
+    the first to read it and masks before doing anything else with it.
+    """
+    steps = _steps(workflow)
+    findings = _workflow_findings(workflow)
+    for job, step in steps:
+        label = f"{job}/{step.get('name') or step.get('uses') or '?'}"
+        findings += _step_field_findings(label, step)
+        findings += _script_findings(label, str(step.get("run") or ""))
+    return findings + _mask_order_findings(steps)
 
 
 def _report_bundle() -> dict[str, Any]:
@@ -1282,95 +1420,126 @@ def _report_bundle() -> dict[str, Any]:
     return loaded
 
 
-def test_the_concurrency_group_does_not_name_the_download_capability() -> None:
-    """Part of the regression guard for the leak found on 2026-09-12.
-
-    A concurrency expression cannot hash anything, so the only way to keep
-    per-bundle grouping without naming the bundle is a key derived by the
-    dispatcher. Grouping has to stay per bundle: one shared group would make
-    two buyers' builds queue, and GitHub keeps a single pending run per group,
-    so a third arrival would evict a queued paid order.
-    """
-    workflow = _report_bundle()
-    for field in ("name", "run-name"):
-        value = str(workflow.get(field) or "")
-        for capability in CAPABILITY_INPUTS:
-            assert f"inputs.{capability}" not in value, f"{field} publishes {capability}"
-
-    group = str((workflow.get("concurrency") or {}).get("group") or "")
-    assert group, "report-bundle.yml must keep a concurrency group"
-    for capability in CAPABILITY_INPUTS:
-        assert f"inputs.{capability}" not in group, f"the concurrency group names {capability}"
-    assert "inputs.dispatch_key" in group, "grouping must stay per bundle, via the derived key"
+def test_the_fulfillment_workflow_cannot_print_buyer_details() -> None:
+    """The lint, on the real file. See pii_log_findings for what it checks."""
+    assert pii_log_findings(_report_bundle()) == []
 
 
-def test_no_rendered_field_of_a_step_names_the_download_capability() -> None:
-    """The artifact name is a `with:` value, and that is how this leaked:
-    every run published `program-bundle-<the 32-hex capability>` to anyone
-    reading the Actions tab."""
-    workflow = _report_bundle()
-    for job, step in _steps(workflow):
-        rendered = [str(step.get("name") or ""), str(step.get("if") or "")]
-        rendered += [str(value) for value in (step.get("with") or {}).values()]
-        for value in rendered:
-            for capability in CAPABILITY_INPUTS:
-                assert f"inputs.{capability}" not in value, (
-                    f"{job}/{step.get('name')} publishes {capability} in a rendered field: {value}"
-                )
+def test_no_workflow_takes_a_buyer_field_as_a_dispatch_input() -> None:
+    """Not only the fulfillment workflow: any workflow_dispatch input of any
+    workflow in a public repository is printed in that run's log."""
+    import yaml
+
+    for path in sorted((ROOT / ".github" / "workflows").glob("*.y*ml")):
+        declared = _dispatch_inputs(yaml.safe_load(path.read_text(encoding="utf-8")))
+        leaked = sorted(set(declared) & set(BUYER_FIELDS))
+        assert not leaked, f"{path.name} takes buyer field(s) {leaked} as dispatch inputs"
 
 
-def test_a_capability_reaches_a_shell_only_through_env() -> None:
-    """So that the check below has a variable name to look for. An input
-    interpolated straight into a command can be echoed by accident and no
-    rule can see it coming."""
-    workflow = _report_bundle()
-    for job, step in _steps(workflow):
-        run = str(step.get("run") or "")
-        for capability in CAPABILITY_INPUTS:
-            assert f"inputs.{capability}" not in run, (
-                f"{job}/{step.get('name')} interpolates {capability} into a shell command; "
-                "pass it through env:"
-            )
+def test_the_concurrency_group_is_per_order_and_names_only_the_reference() -> None:
+    """GitHub keeps one pending run per concurrency group, so a shared group
+    would let a third arrival evict a queued, paid order. Scoped per order, an
+    eviction can only drop a duplicate run of the same build. The reference
+    is random and not derived from the bundle id, so naming it here publishes
+    nothing."""
+    group = str((_report_bundle().get("concurrency") or {}).get("group") or "")
+    assert group == "report-bundle-${{ inputs.order_ref }}", group
 
 
-def test_nothing_the_run_prints_carries_the_download_capability() -> None:
-    """Annotations and the run summary are rendered on the run page, which on
-    a public repository means published. This is the rule that stops the leak
-    coming back through a helpful error message rather than through a name."""
-    workflow = _report_bundle()
-    for job, step in _steps(workflow):
-        protected = _protected_env(step)
-        for line in _rendered_lines(str(step.get("run") or "")):
-            for name in protected:
-                assert name not in line, (
-                    f"{job}/{step.get('name')} writes {name} into an annotation or the run "
-                    f"summary, which is public: {line.strip()}"
-                )
+# The negative controls. Each one re-introduces a leak into the real file's
+# text, proves the edit landed (a sabotage that silently no-ops would read as
+# a pass), and requires the lint to report it.
+_SABOTAGE = {
+    "echo of a buyer variable": (
+        "bundle_order email request.json manifest.json\n",
+        'bundle_order email request.json manifest.json\n          echo "$BUYER_EMAIL"\n',
+        'echo "$BUYER_EMAIL"',
+    ),
+    "a buyer field back as an input": (
+        "  workflow_dispatch:\n    inputs:\n",
+        "  workflow_dispatch:\n    inputs:\n      deliver_to:\n"
+        '        description: "x"\n        required: false\n        type: string\n',
+        "deliver_to",
+    ),
+    "a buyer input carried in env": (
+        "          ORDER_REF: ${{ inputs.order_ref }}\n        run: |\n"
+        '          set -euo pipefail\n          aws s3 cp "s3://',
+        "          ORDER_REF: ${{ inputs.order_ref }}\n"
+        "          DELIVER_TO: ${{ inputs.deliver_to }}\n        run: |\n"
+        '          set -euo pipefail\n          aws s3 cp "s3://',
+        "DELIVER_TO",
+    ),
+    "xtrace": (
+        '          set -euo pipefail\n          aws s3 cp "s3://${ARTIFACTS_BUCKET}/program-requests/',
+        '          set -euxo pipefail\n          aws s3 cp "s3://${ARTIFACTS_BUCKET}/program-requests/',
+        "set -euxo pipefail",
+    ),
+    "verbose curl": (
+        "          : > unhydrated.txt\n",
+        "          curl -v https://example.org/ping\n          : > unhydrated.txt\n",
+        "curl -v",
+    ),
+    "the order read before it is masked": (
+        "          uv run python -m scorecard_pipeline.bundle_order mask request.json\n",
+        "          jq . request.json\n"
+        "          uv run python -m scorecard_pipeline.bundle_order mask request.json\n",
+        "jq . request.json",
+    ),
+    "the download link on a command line": (
+        "bundle_order email request.json manifest.json\n",
+        "bundle_order email request.json manifest.json "
+        '--download-url "${BUNDLE_API_BASE}/download/x"\n',
+        "--download-url",
+    ),
+}
 
 
-def test_the_fulfillment_workflow_carries_the_promise_into_the_delivery_email() -> None:
-    """The refund promise is computed once, in the Lambda, and travels as an
-    input. This is the leg nothing else can check.
+@pytest.mark.parametrize("case", sorted(_SABOTAGE))
+def test_the_lint_catches_each_leak_put_back(case: str) -> None:
+    import yaml
 
-    `setup_handler` puts the spoken date in `promised_by`, and a unit test
-    holds `delivery_email` to printing it -- but between them sits a workflow
-    step, and a dropped `env:` line or a dropped flag there would silently
-    ship every delivery email without the date it was due. The buyer would
-    then be the only party to the promise who cannot see it, on a page that
-    offers a refund for missing it. Nothing fails; the line just stops
-    appearing.
-    """
-    workflow = _workflow("report-bundle.yml")
-    assert "promised_by:" in workflow, "the workflow must accept the promised date"
+    anchor, replacement, marker = _SABOTAGE[case]
+    raw = _workflow("report-bundle.yml")
+    assert raw.count(anchor) == 1, f"the sabotage anchor for {case!r} no longer matches the file"
+    mutated_text = raw.replace(anchor, replacement)
+    assert mutated_text != raw and marker in mutated_text
+    assert pii_log_findings(yaml.safe_load(raw)) == [], "the control needs a clean baseline"
+    mutated: dict[str, Any] = yaml.safe_load(mutated_text)
+    # The mutation reached the parsed workflow, not just the text.
+    assert any(marker in s for s in _strings(mutated)), f"{case!r} did not survive parsing"
+    findings = pii_log_findings(mutated)
+    assert findings, f"the lint did not notice {case}"
 
-    email_at = workflow.index("Email the download link")
-    step = workflow[email_at : workflow.index("      - name: Say when delivery is off")]
-    assert "PROMISED_BY: ${{ inputs.promised_by }}" in step, (
-        "the promised date must reach the email step's environment"
-    )
-    assert '--promised-by "$PROMISED_BY"' in step, (
-        "the promised date must reach the email itself, not just the step"
-    )
+
+def test_the_lint_catches_an_echo_of_the_buyer_address_in_any_form() -> None:
+    """The specific regression named in the incident: an `echo "$BUYER_EMAIL"`
+    reintroduced anywhere. Braced, unbraced, printf and a summary write are
+    all the same leak."""
+    base = _report_bundle()
+    for line in (
+        'echo "$BUYER_EMAIL"',
+        'echo "sent to ${BUYER_EMAIL}"',
+        'printf "%s\\n" "$DELIVER_TO"',
+        'echo "$PROGRAM_NAME" >> "$GITHUB_STEP_SUMMARY"',
+        'echo "::notice::link ${DOWNLOAD_URL}"',
+    ):
+        mutated = copy.deepcopy(base)
+        step = next(s for _j, s in _steps(mutated) if s.get("name") == "Email the download link")
+        step["run"] = f"{step['run']}{line}\n"
+        assert line in step["run"] and line not in json.dumps(base, default=str)
+        findings = pii_log_findings(mutated)
+        assert any(" prints $" in finding for finding in findings), f"the lint missed: {line}"
+
+
+def test_the_delivery_email_is_built_from_the_stored_order() -> None:
+    """The refund promise is computed once, in the Lambda, and travels inside
+    the stored order: setup_handler stores ``promised_by``, bundle_order's
+    email command reads it back, and test_bundle_order.py holds the email to
+    printing it. What this pins is the step between them. It must hand the
+    email command the collected order, or every delivery email would ship
+    without the date it was due and nothing would fail."""
+    run = str(_named_step("Email the download link")["run"])
+    assert "bundle_order email request.json manifest.json" in run
 
 
 def test_the_watchdog_watches_the_workflow_that_delivers_paid_orders() -> None:
@@ -1546,30 +1715,26 @@ def test_an_artifact_s3_would_not_answer_for_does_not_ship_as_not_published(
 # ---------------------------------------------------------------------------
 
 
-_BASH = shutil.which("bash") or "/bin/bash"
-
-
-def _email_step() -> dict[str, Any]:
+def _named_step(name: str) -> dict[str, Any]:
     for _job, step in _steps(_report_bundle()):
-        if str(step.get("name") or "") == "Email the download link":
+        if str(step.get("name") or "") == name:
             return step
-    raise AssertionError("report-bundle.yml no longer has an 'Email the download link' step")
+    raise AssertionError(f"report-bundle.yml no longer has a {name!r} step")
 
 
-def _run_email_step(tmp_path: Path, **env: str) -> subprocess.CompletedProcess[str]:
-    """Run the delivery step's own script with `uv` and `date` stubbed.
+def _run_named_step(name: str, tmp_path: Path, **env: str) -> subprocess.CompletedProcess[str]:
+    """Run one step's own script with `uv` and `aws` stubbed.
 
     The script is executed rather than pattern-matched, because what is being
-    checked is a decision it makes at run time: whether it sends, and whether
-    it fails when it cannot. The stub records its arguments, so "no email was
-    attempted" is an observation and not an inference.
+    checked is a decision it makes at run time: whether it proceeds, and
+    whether it fails when it cannot. The stubs record their arguments, so "no
+    email was attempted" is an observation and not an inference.
     """
     stubs = tmp_path / "stubs"
     stubs.mkdir(parents=True)
-    (stubs / "uv").write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$STUB_LOG"\nexit 0\n')
-    (stubs / "date").write_text("#!/bin/sh\necho 2026-10-13\n")
-    for stub in stubs.iterdir():
-        stub.chmod(0o755)
+    for tool in ("uv", "aws"):
+        (stubs / tool).write_text(f'#!/bin/sh\nprintf "{tool} %s\\n" "$*" >> "$STUB_LOG"\nexit 0\n')
+        (stubs / tool).chmod(0o755)
     log = tmp_path / "stub.log"
     environment = {
         **os.environ,
@@ -1579,7 +1744,7 @@ def _run_email_step(tmp_path: Path, **env: str) -> subprocess.CompletedProcess[s
         **env,
     }
     done = subprocess.run(  # noqa: S603 - fixed shell and a repository-owned workflow step
-        [_BASH, "-c", str(_email_step()["run"])],
+        [_BASH, "-c", str(_named_step(name)["run"])],
         cwd=tmp_path,
         env=environment,
         capture_output=True,
@@ -1589,69 +1754,71 @@ def _run_email_step(tmp_path: Path, **env: str) -> subprocess.CompletedProcess[s
     return done
 
 
-def test_the_delivery_step_is_gated_only_on_the_bucket_it_uploaded_to() -> None:
-    """A missing delivery variable must not silently skip the send.
+_GATE = "Refuse to start without the delivery configuration"
+_CONFIGURED = {
+    "ARTIFACTS_BUCKET": "example-artifacts",
+    "BUNDLE_API_BASE": "https://api.example/",
+    "SES_FROM": "reports@example",
+    "ORDER_REF": "f" * 32,
+}
 
-    Gated in the `if:` on all three variables, a blank BUNDLE_API_BASE or
-    SES_FROM skipped this step, the job ended green, and the archive sat in
-    S3 -- which is the only thing the daily reconciler looks at
-    (`_capability_finding` asks S3 whether the object exists). Nothing in this
-    system measures whether the mail was sent, so one deleted repository
-    variable would have stopped delivery for every paid order without a single
-    red run, alarm or finding, while each buyer had been told on the setup form
-    that their build had started.
+
+def test_the_delivery_configuration_is_checked_before_anything_runs() -> None:
+    """A missing delivery variable must fail the run, not skip a step.
+
+    Gated in a step's `if:`, a blank BUNDLE_API_BASE or SES_FROM skipped the
+    send, the job ended green, and the archive sat in S3 -- which is the only
+    thing the daily reconciler looks at (`_capability_finding` asks S3 whether
+    the object exists). One deleted repository variable would have stopped
+    delivery for every paid order without a red run, an alarm or a finding.
+    So the check is the first step, and no delivery step is conditional.
     """
-    condition = str(_email_step().get("if") or "")
-    assert "vars.ARTIFACTS_BUCKET" in condition, "the step still needs the upload to have happened"
-    for gate in ("vars.BUNDLE_API_BASE", "vars.SES_FROM"):
-        assert gate not in condition, (
-            f"{gate} in the step's `if:` turns a broken delivery route into a skipped step and a "
-            "green run; it must be checked inside the step, where it can fail"
-        )
-    off = [
-        step
-        for _job, step in _steps(_report_bundle())
-        if str(step.get("name") or "") == "Say when delivery is off"
-    ]
-    assert off and "BUNDLE_API_BASE" not in str(off[0].get("if") or ""), (
-        "a bucket with no delivery route is an undelivered paid order, not a degraded mode"
-    )
+    steps = [step for _job, step in _steps(_report_bundle())]
+    assert str(steps[0].get("name") or "") == _GATE, "the configuration gate must run first"
+    assert "if" not in steps[0]
+    for name in ("Upload the archive behind its capability key", "Email the download link"):
+        condition = str(_named_step(name).get("if") or "")
+        assert not condition, f"{name!r} is conditional ({condition}); a skip reads as delivered"
 
 
 def test_a_blank_delivery_route_fails_the_run_and_sends_nothing(tmp_path: Path) -> None:
-    """Run the step. Blank route: non-zero exit, and no send attempted."""
-    for blank in ("BUNDLE_API_BASE", "SES_FROM"):
-        env = {
-            "BUNDLE_API_BASE": "https://api.example",
-            "SES_FROM": "reports@example",
-            "BUNDLE_ID": "a" * 32,
-            "PROMISED_BY": "Tuesday 16 September",
-        }
-        env[blank] = ""
-        done = _run_email_step(tmp_path / blank, **env)
+    """Run the gate. Any blank variable: non-zero exit, an annotation saying
+    why, and no tool invoked."""
+    for blank in ("ARTIFACTS_BUCKET", "BUNDLE_API_BASE", "SES_FROM"):
+        env = {**_CONFIGURED, blank: ""}
+        done = _run_named_step(_GATE, tmp_path / blank, **env)
         assert done.returncode != 0, f"a blank {blank} left the run green"
         assert "::error::" in done.stdout, f"a blank {blank} failed without saying why"
-        assert "bundle-email" not in done.stdout, (
-            f"a blank {blank} still attempted a send: {done.stdout}"
-        )
+        assert "uv " not in done.stdout and "aws " not in done.stdout
 
 
-def test_a_configured_delivery_route_still_sends_the_link(tmp_path: Path) -> None:
-    """And the send is unchanged when the route is there: same download URL,
-    same promised date, same from address. A guard that also broke the happy
-    path would be worse than the hole it closes."""
-    done = _run_email_step(
-        tmp_path,
-        BUNDLE_API_BASE="https://api.example/",
-        SES_FROM="reports@example",
-        BUNDLE_ID="b" * 32,
-        PROMISED_BY="Tuesday 16 September",
-    )
+def test_the_gate_refuses_anything_but_an_order_reference(tmp_path: Path) -> None:
+    """The reference is interpolated into an S3 key and printed in the failure
+    summary, so a value that is not 32 lowercase hex characters never gets
+    that far -- including one a person pasted a buyer's address into."""
+    for n, bad in enumerate(("", "F" * 32, "f" * 31, "buyer@example.org", "../" + "f" * 29)):
+        done = _run_named_step(_GATE, tmp_path / str(n), **{**_CONFIGURED, "ORDER_REF": bad})
+        assert done.returncode != 0, f"the gate accepted {bad!r}"
+        assert bad == "" or bad not in done.stdout.split("::error::")[-1]
+    ok = _run_named_step(_GATE, tmp_path / "ok", **_CONFIGURED)
+    assert ok.returncode == 0, ok.stderr
+
+
+def test_the_email_step_builds_the_link_inside_python(tmp_path: Path) -> None:
+    """The download link and the buyer's address never appear on a command
+    line or in the step's environment: the step names two files, and the
+    stored order and the environment supply the rest inside Python. A guard
+    that also broke the send would be worse than the hole it closes, so the
+    send is observed too."""
+    step = _named_step("Email the download link")
+    assert set(step.get("env") or {}) == {"BUNDLE_API_BASE", "SES_FROM"}
+    done = _run_named_step("Email the download link", tmp_path, **_CONFIGURED)
     assert done.returncode == 0, done.stderr
-    assert "bundle-email" in done.stdout
-    assert f"--download-url https://api.example/download/{'b' * 32}" in done.stdout
-    assert "--promised-by Tuesday 16 September" in done.stdout
-    assert "--send --from reports@example" in done.stdout
+    assert (
+        "uv run --with boto3 python -m scorecard_pipeline.bundle_order email "
+        "request.json manifest.json"
+    ) in done.stdout
+    assert "/download/" not in done.stdout and "--download-url" not in done.stdout
 
 
 def test_the_built_archive_is_never_kept_on_the_run() -> None:
@@ -1660,16 +1827,10 @@ def test_the_built_archive_is_never_kept_on_the_run() -> None:
     The archive is the paid deliverable. Its README.txt and manifest.json both
     print the 32-hex bundle id, which is the download capability that fetches
     it from S3 for thirty days (setup_handler: "the capability in the email is
-    the credential"), and the manifest also names the buying program. This
-    repository is public: every signed-in GitHub account has read access, so
-    every one of them could download that artifact for its whole retention
-    window, and the REST artifact listing answers with no token at all.
-
-    Renaming the artifact took the capability off the run *page* (#407). It did
-    not take it out of the *file*, and the file was still being published. The
-    delivery route needs none of it: the archive goes to the artifacts bucket
-    behind the presigning download route, and a failed run is repaired by
-    re-running this workflow with the same inputs.
+    the credential"), and request.json names the buyer. This repository is
+    public: every signed-in GitHub account has read access, so every one of
+    them could download that artifact for its whole retention window, and the
+    REST artifact listing answers with no token at all.
     """
     workflow = _report_bundle()
     for job, step in _steps(workflow):
@@ -1680,15 +1841,9 @@ def test_the_built_archive_is_never_kept_on_the_run() -> None:
             "carries its own download capability"
         )
         paths = str((step.get("with") or {}).get("path") or "")
-        for built in ("bundle.zip", "manifest.json"):
+        for built in ("bundle.zip", "manifest.json", "request.json"):
             assert built not in paths, f"{job}/{step.get('name')} publishes {built}"
 
-    # And the summary must not tell a reader to go and get it there, because
-    # after this change it is not there -- and if it ever is again, the test
-    # above fails first.
+    # And no summary tells a reader to go and get it there.
     raw = _workflow("report-bundle.yml")
-    off_at = raw.index("Say when delivery is off")
-    off = raw[off_at : raw.index("      - name: Say that a paid order failed")]
-    assert "attached to this run instead" not in off, (
-        "the delivery-off summary promises an archive the run no longer keeps"
-    )
+    assert "attached to this run" not in raw.replace("is not attached to this run", "")

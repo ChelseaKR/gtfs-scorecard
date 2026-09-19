@@ -28,7 +28,8 @@ Environment (set by Terraform):
                         variable here.
   SUBSCRIPTIONS_TABLE   DynamoDB table of subscriptions (hash: id)
   BUNDLES_TABLE         DynamoDB table of bundle capabilities (hash: bundle_id)
-  ARTIFACTS_BUCKET      where report-bundle.yml puts program-bundles/<id>/bundle.zip
+  ARTIFACTS_BUCKET      private bucket: orders in program-requests/, archives
+                        in program-bundles/
   ALLOW_ORIGIN          CORS origin of the setup form (never '*')
 """
 
@@ -39,6 +40,8 @@ import hashlib
 import hmac
 import json
 import os
+import re
+import secrets
 import time
 import urllib.error
 import urllib.parse
@@ -51,6 +54,13 @@ STRIPE_API = "https://api.stripe.com"
 # Kept in step with scorecard_pipeline.bundle.DOWNLOAD_DAYS and the S3
 # lifecycle rule for program-bundles/ in infra/artifacts/main.tf.
 DOWNLOAD_DAYS = 30
+# Where a validated order is stored for report-bundle.yml to collect, and the
+# shape of the reference that names it. The prefix is outside the CloudFront
+# allow-list and expires with the same 30-day rule as the archives (infra/
+# artifacts/main.tf): an order lives only as long as the capability row that
+# can re-dispatch it.
+REQUESTS_PREFIX = "program-requests/"
+ORDER_REF_RE = re.compile(r"^[a-f0-9]{32}$")
 # Stripe's own recommended replay tolerance for the signed timestamp.
 SIGNATURE_TOLERANCE_SECONDS = 300
 
@@ -170,12 +180,52 @@ def _request(
     return json.loads(raw) if raw.strip() else {}
 
 
-def dispatch_bundle_workflow(inputs: dict[str, str]) -> None:
-    """POST a workflow_dispatch for report-bundle.yml with the given inputs.
+def new_order_ref() -> str:
+    """A fresh 128-bit name for one dispatched order. Not the bundle id, and not derived from
+    it: it appears in a public run log, so it must reveal nothing, and on its own it grants
+    nothing (the object it names is readable only by the workflow's AWS role)."""
+    return secrets.token_hex(16)
 
-    GitHub returns 204 with no body on success. Inputs are the workflow's
-    declared inputs and nothing else; the workflow re-validates every one.
+
+def request_key(order_ref: str) -> str:
+    """Where :func:`store_request` puts an order, and where report-bundle.yml reads it."""
+    if not ORDER_REF_RE.fullmatch(order_ref):
+        raise ValueError("an order reference is 32 lowercase hex characters")
+    return f"{REQUESTS_PREFIX}{order_ref}.json"
+
+
+def store_request(order_ref: str, request: dict[str, Any]) -> None:
+    """Write one validated order to the private bucket for the workflow to collect.
+
+    Raises UpstreamError when the write fails, so the caller answers "could not start" and the
+    buyer can resend the same checkout, exactly as for a failed dispatch.
     """
+    body = json.dumps(request, sort_keys=True).encode()
+    try:
+        import boto3
+
+        s3 = boto3.client("s3", region_name=os.environ.get("AWS_REGION", "us-west-2"))
+        s3.put_object(
+            Bucket=os.environ["ARTIFACTS_BUCKET"],
+            Key=request_key(order_ref),
+            Body=body,
+            ContentType="application/json",
+            ServerSideEncryption="AES256",
+        )
+    except Exception as err:  # botocore ClientError, EndpointConnectionError, a missing bucket
+        raise UpstreamError(f"storing the order request failed: {type(err).__name__}") from err
+
+
+def dispatch_bundle_workflow(order_ref: str) -> None:
+    """POST a workflow_dispatch for report-bundle.yml naming one stored order.
+
+    The one input is the order reference. Nothing a buyer typed and nothing
+    that grants access (the bundle id is the download capability) travels in
+    the dispatch, because GitHub prints a step's environment in the run log
+    and this repository's run logs are public. GitHub returns 204 with no body
+    on success.
+    """
+    request_key(order_ref)  # refuses a malformed reference before anything is sent
     repo = os.environ["GITHUB_REPO"]
     workflow = os.environ.get("WORKFLOW_FILE", "report-bundle.yml")
     ref = os.environ.get("WORKFLOW_REF", "main")
@@ -186,24 +236,8 @@ def dispatch_bundle_workflow(inputs: dict[str, str]) -> None:
             "Authorization": f"Bearer {os.environ['GITHUB_TOKEN']}",
             "Accept": "application/vnd.github+json",
         },
-        {"ref": ref, "inputs": inputs},
+        {"ref": ref, "inputs": {"order_ref": order_ref}},
     )
-
-
-def dispatch_key(bundle_id: str) -> str:
-    """A public, one-way name for one bundle's workflow runs.
-
-    The bundle id is the download capability, and this repository is public, so
-    it cannot be the artifact name or the concurrency group in
-    report-bundle.yml. Those two strings need something that is stable per
-    bundle and safe to render, and a GitHub concurrency expression cannot hash
-    anything, so the derivation happens here and travels as an input.
-
-    sha256 over a 128-bit token, truncated to 64 bits: enough to separate every
-    bundle this product will ever sell, and no help at all to somebody trying
-    to recover the id it came from.
-    """
-    return hashlib.sha256(bundle_id.encode()).hexdigest()[:16]
 
 
 def github_request(method: str, path: str, payload: dict[str, Any] | None = None) -> Any:
@@ -222,31 +256,6 @@ def github_request(method: str, path: str, payload: dict[str, Any] | None = None
         },
         payload,
     )
-
-
-def workflow_inputs(request: dict[str, Any]) -> dict[str, str]:
-    """The workflow_dispatch inputs for a stored or validated request dict."""
-    agency_ids = request.get("agency_ids") or []
-    if isinstance(agency_ids, list | tuple):
-        agency_ids = ",".join(str(a) for a in agency_ids)
-    bundle_id = str(request["bundle_id"])
-    return {
-        "bundle_id": bundle_id,
-        "program_name": str(request["program_name"]),
-        "accent": str(request.get("accent") or ""),
-        "logo": str(request.get("logo") or ""),
-        "agency_ids": str(agency_ids),
-        "deliver_to": str(request["deliver_to"]),
-        "cadence": str(request.get("cadence") or "one_time"),
-        # Declared in report-bundle.yml with a default, so the workflow change
-        # can reach main before this Lambda is redeployed. The reverse order
-        # would be a 422 on every dispatch.
-        "dispatch_key": dispatch_key(bundle_id),
-        # The date this order was committed to, as the buyer was told it,
-        # carried rather than recomputed in the workflow. Blank for a
-        # subscription refresh, which made no such promise.
-        "promised_by": str(request.get("promised_by") or ""),
-    }
 
 
 # ---------------------------------------------------------------------------
@@ -410,9 +419,15 @@ def bundle_row(
     source: str,
     session_id: str = "",
     deliver_by_epoch: int | None = None,
+    order_ref: str = "",
 ) -> dict[str, Any]:
     """The capability row for one bundle: who it is for, when it expires, and
     when it was promised by.
+
+    ``order_ref`` is the reference to the stored order object the fulfillment
+    workflow reads (``store_request``). It is written here, before the
+    dispatch, so a make-good re-run of report-bundle.yml has a handle to the
+    order even when the run that should have consumed it never started.
 
     ``deliver_by_epoch`` is written once, at checkout, and never recomputed.
     A promise recalculated later is a promise that moves, and this one carries
@@ -429,6 +444,7 @@ def bundle_row(
         "session_id": session_id,
         "created_at": now_iso(),
         "expires_at": epoch_in(DOWNLOAD_DAYS),
+        "order_ref": order_ref,
     }
     if deliver_by_epoch is not None:
         row["deliver_by_epoch"] = int(deliver_by_epoch)

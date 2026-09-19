@@ -78,6 +78,7 @@ def breached_orders(
                 "promised_by": day.isoformat() if day else "",
                 "days_late": round(late, 1),
                 "archive_key": archive_key(bundle_id),
+                "order_ref": str(row.get("order_ref") or ""),
             }
         )
     found.sort(key=lambda order: float(order["days_late"]), reverse=True)
@@ -119,13 +120,14 @@ def render(orders: list[dict[str, Any]], *, now: dt.datetime | None = None) -> s
         f"as at {current.date().isoformat()}.",
         "",
         "/bundle/ says the purchase is refunded if delivery is later than that.",
-        "Either build it (re-dispatch report-bundle.yml with the bundle id) or",
-        "refund it. This command does neither; it only tells you which.",
+        "Either build it (re-dispatch report-bundle.yml with the order_ref on",
+        "the row) or refund it. This command does neither; it only tells you which.",
     ]
     for order in orders:
         lines += [
             "",
             f"  bundle_id   {order['bundle_id']}",
+            f"  order_ref   {order.get('order_ref') or '(not recorded on this row)'}",
             f"  promised by {order['promised_by']}  ({order['days_late']} days late)",
             f"  program     {order['program_name']}",
             f"  deliver to  {order['deliver_to']}",

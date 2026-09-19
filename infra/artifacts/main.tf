@@ -135,6 +135,22 @@ resource "aws_s3_bucket_lifecycle_configuration" "artifacts" {
       days = 30
     }
   }
+  # Stored paid orders (infra/program-bundle/common.store_request): the JSON
+  # report-bundle.yml reads under its own OIDC role. Each one lives only as
+  # long as the capability row that can re-dispatch it, which carries the
+  # same 30-day TTL, so the order expires with the link it built. The prefix
+  # is outside the CloudFront allow-list, so the only way to an order is the
+  # workflow's role.
+  rule {
+    id     = "expire-program-requests"
+    status = "Enabled"
+    filter {
+      prefix = "program-requests/"
+    }
+    expiration {
+      days = 30
+    }
+  }
   rule {
     id     = "expire-structure-staging"
     status = "Enabled"
