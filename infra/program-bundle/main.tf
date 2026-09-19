@@ -394,6 +394,22 @@ data "aws_s3_bucket" "artifacts" {
   bucket = var.artifacts_bucket
 }
 
+# Lambda's direct zip upload caps at 70167211 bytes, and the package crossed
+# it when the ads-conversion handler brought in the google-ads dependency
+# tree (82 MB zipped, 2026-09-18; every UpdateFunctionCode returned 413).
+# Deliver the same archive through S3, whose limit is 250 MB. The object is
+# private — the bucket blocks public access, the CloudFront edge function
+# serves only the artifact prefixes, and nothing tags it
+# artifact-class=dated, so no lifecycle rule expires it out from under a
+# future apply. The build script (scripts/build-lambda-package.sh) is
+# unchanged: terraform zips build/ exactly as before and uploads it first.
+resource "aws_s3_object" "lambda_package" {
+  bucket = data.aws_s3_bucket.artifacts.bucket
+  key    = "lambda-packages/program-bundle.zip"
+  source = data.archive_file.package.output_path
+  etag   = data.archive_file.package.output_md5
+}
+
 resource "aws_iam_role" "lambda" {
   name = "${var.project}-program-bundle"
   assume_role_policy = jsonencode({
@@ -481,14 +497,16 @@ locals {
 }
 
 resource "aws_lambda_function" "setup" {
-  function_name    = "${var.project}-program-bundle-setup"
-  role             = aws_iam_role.lambda.arn
-  runtime          = "python3.12"
-  handler          = "setup_handler.handler"
-  filename         = data.archive_file.package.output_path
-  source_code_hash = data.archive_file.package.output_base64sha256
-  timeout          = 20
-  memory_size      = 256
+  function_name     = "${var.project}-program-bundle-setup"
+  role              = aws_iam_role.lambda.arn
+  runtime           = "python3.12"
+  handler           = "setup_handler.handler"
+  s3_bucket         = data.aws_s3_bucket.artifacts.bucket
+  s3_key            = aws_s3_object.lambda_package.key
+  s3_object_version = aws_s3_object.lambda_package.version_id
+  source_code_hash  = data.archive_file.package.output_base64sha256
+  timeout           = 20
+  memory_size       = 256
 
   environment {
     variables = local.common_env
@@ -496,14 +514,16 @@ resource "aws_lambda_function" "setup" {
 }
 
 resource "aws_lambda_function" "webhook" {
-  function_name    = "${var.project}-program-bundle-webhook"
-  role             = aws_iam_role.lambda.arn
-  runtime          = "python3.12"
-  handler          = "webhook_handler.handler"
-  filename         = data.archive_file.package.output_path
-  source_code_hash = data.archive_file.package.output_base64sha256
-  timeout          = 10
-  memory_size      = 128
+  function_name     = "${var.project}-program-bundle-webhook"
+  role              = aws_iam_role.lambda.arn
+  runtime           = "python3.12"
+  handler           = "webhook_handler.handler"
+  s3_bucket         = data.aws_s3_bucket.artifacts.bucket
+  s3_key            = aws_s3_object.lambda_package.key
+  s3_object_version = aws_s3_object.lambda_package.version_id
+  source_code_hash  = data.archive_file.package.output_base64sha256
+  timeout           = 10
+  memory_size       = 128
 
   environment {
     variables = local.common_env
@@ -511,14 +531,16 @@ resource "aws_lambda_function" "webhook" {
 }
 
 resource "aws_lambda_function" "refresh" {
-  function_name    = "${var.project}-program-bundle-refresh"
-  role             = aws_iam_role.lambda.arn
-  runtime          = "python3.12"
-  handler          = "refresh_handler.handler"
-  filename         = data.archive_file.package.output_path
-  source_code_hash = data.archive_file.package.output_base64sha256
-  timeout          = 60
-  memory_size      = 128
+  function_name     = "${var.project}-program-bundle-refresh"
+  role              = aws_iam_role.lambda.arn
+  runtime           = "python3.12"
+  handler           = "refresh_handler.handler"
+  s3_bucket         = data.aws_s3_bucket.artifacts.bucket
+  s3_key            = aws_s3_object.lambda_package.key
+  s3_object_version = aws_s3_object.lambda_package.version_id
+  source_code_hash  = data.archive_file.package.output_base64sha256
+  timeout           = 60
+  memory_size       = 128
 
   environment {
     variables = local.common_env
@@ -526,12 +548,14 @@ resource "aws_lambda_function" "refresh" {
 }
 
 resource "aws_lambda_function" "ads_conversion_upload" {
-  function_name    = "${var.project}-program-bundle-ads-upload"
-  role             = aws_iam_role.lambda.arn
-  runtime          = "python3.12"
-  handler          = "ads_conversion_upload_handler.handler"
-  filename         = data.archive_file.package.output_path
-  source_code_hash = data.archive_file.package.output_base64sha256
+  function_name     = "${var.project}-program-bundle-ads-upload"
+  role              = aws_iam_role.lambda.arn
+  runtime           = "python3.12"
+  handler           = "ads_conversion_upload_handler.handler"
+  s3_bucket         = data.aws_s3_bucket.artifacts.bucket
+  s3_key            = aws_s3_object.lambda_package.key
+  s3_object_version = aws_s3_object.lambda_package.version_id
+  source_code_hash  = data.archive_file.package.output_base64sha256
   # One gRPC call to Google Ads carrying at most a handful of rows (this
   # product's weekly purchase volume); 60s matches refresh's own timeout for
   # a comparably small, comparably occasional upstream call.
@@ -548,12 +572,14 @@ resource "aws_lambda_function" "ads_conversion_upload" {
 # ---------------------------------------------------------------------------
 
 resource "aws_lambda_function" "reconcile" {
-  function_name    = "${var.project}-program-bundle-reconcile"
-  role             = aws_iam_role.lambda.arn
-  runtime          = "python3.12"
-  handler          = "reconcile_handler.handler"
-  filename         = data.archive_file.package.output_path
-  source_code_hash = data.archive_file.package.output_base64sha256
+  function_name     = "${var.project}-program-bundle-reconcile"
+  role              = aws_iam_role.lambda.arn
+  runtime           = "python3.12"
+  handler           = "reconcile_handler.handler"
+  s3_bucket         = data.aws_s3_bucket.artifacts.bucket
+  s3_key            = aws_s3_object.lambda_package.key
+  s3_object_version = aws_s3_object.lambda_package.version_id
+  source_code_hash  = data.archive_file.package.output_base64sha256
   # It heads one S3 object per capability row. A scan of a table this size
   # plus a few hundred HEADs fits inside a minute; the timeout is there to
   # stop a wedged call, not to bound the work.

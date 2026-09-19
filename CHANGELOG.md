@@ -191,6 +191,18 @@ the declared public surface).
 
 ### Fixed
 
+- **The bundle Lambdas deploy again: the package outgrew Lambda's direct
+  upload.** Adding the ads-conversion handler pulled the google-ads
+  dependency tree into the shared zip, which reached 82 MB against Lambda's
+  70,167,211-byte direct-upload cap; the 2026-09-18 program-bundle apply
+  returned 413 for every function and the five Lambdas kept their 09-13
+  code. Terraform now uploads the same archive (still built by
+  `scripts/build-lambda-package.sh`) to the private artifacts bucket under
+  `lambda-packages/` and points every function at it; S3 accepts up to
+  250 MB. The object carries no secrets (tokens and Stripe keys stay in
+  Lambda environment variables), nothing serves it, and no lifecycle rule
+  expires it.
+
 - **The intraday refresh overlaps its waiting instead of timing out on it.**
   The watchdog's bound check failed on 2026-09-18: Intraday refresh run
   35316236534 took 160 of its 175 minutes. That run was the tail of four days
