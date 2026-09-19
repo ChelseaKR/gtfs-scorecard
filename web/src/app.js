@@ -31,6 +31,13 @@ import {
   VALIDATOR_RULES_PAGE,
 } from "./generated/constants.js";
 import { compareText, formatDate, formatLanguageName, formatNumber } from "./locale.js";
+import {
+  CONTEXT_HEADING,
+  NOT_A_RANKING,
+  feedConsequence,
+  feedContext,
+  findingReach,
+} from "./consequence.js";
 import { initStrings, t } from "./i18n.js";
 
 /** Candidate locations for published artifacts. A configured CDN base
@@ -2791,7 +2798,8 @@ function renderScorecard(artifact, history, dirRecord) {
   const cats = CATEGORY_ORDER.map((key, i) =>
     categoryCard(key, artifact.categories[key], i, artifact),
   ).join("");
-  const fixes = topFixes(artifact.top_fixes);
+  const recordHasConsequence = feedConsequence(artifact) !== null;
+  const fixes = topFixes(artifact.top_fixes, artifact, recordHasConsequence);
   const findings = collectFindings(artifact);
   const recsHtml = recommendationsSection(artifact);
   const autofixHtml = autofixSection(artifact);
@@ -2855,7 +2863,7 @@ function renderScorecard(artifact, history, dirRecord) {
       </dl>
     </section>`;
 
-  setupFindings(findings);
+  setupFindings(findings, recordHasConsequence);
 }
 
 /** A closed, presentation-only rider summary derived from existing artifact fields.
@@ -3450,8 +3458,57 @@ function categoryCard(key, cat, index, artifact) {
   </div>`;
 }
 
-/** Top fixes as prioritized "service alerts". @param {any[]} fixes */
-function topFixes(fixes) {
+/** The reach sentence under one finding, marked as measured or absent so the
+ *  two never look alike to a script or a test. A record with no consequence
+ *  blocks at all says so once, in the block under the fixes; this only speaks
+ *  for a finding that lacks its block while its neighbors have one.
+ *  @param {any} finding @param {boolean} recordHasConsequence @param {string} cls */
+function reachParagraph(finding, recordHasConsequence, cls) {
+  const reach = findingReach(finding);
+  if (!reach && !recordHasConsequence) return "";
+  const text = reach ? reach.text : t("consequence_reach_missing");
+  const state = reach && reach.known ? "measured" : "absent";
+  return `<p class="${cls}" data-consequence="reach" data-state="${state}">${esc(text)}</p>`;
+}
+
+/** Rider-trips and transit need for the feed behind the fixes. This view holds
+ *  neither number, so each line is the reason it is not shown here, and the
+ *  agency page (which joins dated snapshots when it renders) is linked.
+ *  @param {any} artifact */
+function consequenceContext(artifact) {
+  const block = feedConsequence(artifact);
+  const agencyId = String(artifact.agency?.id || "");
+  const agencyName = String(artifact.agency?.name || agencyId);
+  let items = "";
+  let pointer = Boolean(agencyId);
+  if (block) {
+    const context = feedContext(block, {
+      ridership: t("consequence_ridership_not_joined"),
+      need: t("consequence_need_not_joined"),
+    });
+    items = `<ul>
+        <li data-consequence="ridership" data-state="absent">${esc(context.ridership)}</li>
+        <li data-consequence="need" data-state="absent">${esc(context.need)}</li>
+      </ul>`;
+    pointer = pointer && context.pointsToAgencyPage;
+  } else {
+    items = `<p data-consequence="record" data-state="absent">${esc(t("consequence_legacy_note"))}</p>`;
+  }
+  const link = pointer
+    ? `<p class="consequence-more"><a href="/agency/${escAttr(encodeURIComponent(agencyId))}/">${esc(
+        t("consequence_agency_page_link", { agency: agencyName }),
+      )}</a></p>`
+    : "";
+  return `<div class="consequence">
+      <h3 id="consequence-h">${esc(CONTEXT_HEADING)}</h3>
+      ${items}${link}
+      <p class="fineprint">${esc(NOT_A_RANKING)}</p>
+    </div>`;
+}
+
+/** Top fixes as prioritized "service alerts".
+ *  @param {any[]} fixes @param {any} artifact @param {boolean} recordHasConsequence */
+function topFixes(fixes, artifact, recordHasConsequence) {
   if (!fixes.length) {
     return `<p class="all-clear">Nothing urgent. This feed passed every check we
     translate into fixes — keep publishing on schedule.</p>`;
@@ -3471,11 +3528,12 @@ function topFixes(fixes) {
         <div>
           <p class="afix">${esc(f.fix)}${owner}</p>
           <p class="awhy">${esc(f.what)} ${esc(f.why)}</p>
+          ${reachParagraph(f, recordHasConsequence, "awhy")}
           <p class="aeta">⏱ ${esc(f.effort)}${worth}</p>
         </div>
       </div>`;
     })
-    .join("")}</div>`;
+    .join("")}</div>${consequenceContext(artifact)}`;
 }
 
 /** @param {any} artifact @returns {any[]} */
@@ -3495,8 +3553,8 @@ function collectFindings(artifact) {
   return all;
 }
 
-/** @param {any[]} findings */
-function setupFindings(findings) {
+/** @param {any[]} findings @param {boolean} recordHasConsequence */
+function setupFindings(findings, recordHasConsequence) {
   const bar = /** @type {HTMLElement} */ (main.querySelector(".filterbar"));
   const list = /** @type {HTMLElement} */ (main.querySelector(".findings"));
   const countEl = /** @type {HTMLElement} */ (main.querySelector(".findings-count"));
@@ -3539,6 +3597,7 @@ function setupFindings(findings) {
           </div>
           <p class="what">${esc(f.what)}</p>
           <p class="why">${esc(f.why)}</p>
+          ${reachParagraph(f, recordHasConsequence, "why")}
           <p class="how"><strong>Fix:</strong> ${esc(f.fix)} <em>(${esc(f.effort)})</em></p>
           <p class="code">Finding code: ${esc(f.code)} ·
             <a class="fix-guide" href="${escAttr(FIX_DOCS_BASE + encodeURIComponent(f.code))}.md"

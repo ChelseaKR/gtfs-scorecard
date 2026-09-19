@@ -50,7 +50,7 @@ from .comparisons import (
 from .completeness import WEIGHTS as COMPLETENESS_WEIGHTS
 from .config import Agency, artifacts_dir
 from .conformance import assess as conformance_assess
-from .consequence import FeedContext
+from .consequence import CONTEXT_HEADING, NOT_A_RANKING, FeedContext
 from .constants_export import GRADE_RANK
 from .directory import build_directory
 from .feed_provenance import feed_source_lede
@@ -3947,10 +3947,7 @@ def _reach_line(fix: dict[str, Any], artifact: dict[str, Any]) -> str:
 
 # Stated under every consequence block. It says what the two joined numbers are
 # not: a ranking, or an input to the grade or the fix order.
-_CONSEQUENCE_NOT_A_RANKING = (
-    "These describe this feed only. They do not rank agencies, and they do not change "
-    "the grade or the order of the fixes."
-)
+_CONSEQUENCE_NOT_A_RANKING = NOT_A_RANKING
 
 
 def _consequence_context_html(
@@ -3967,8 +3964,8 @@ def _consequence_context_html(
     context = feed_context if feed_context is not None else join_feed_context(artifact)
     items = "".join(f"<li>{esc(line)}</li>" for line in context.lines())
     return (
-        f'<div class="consequence"><h3 id="{esc(heading_id)}">Riders and need behind these '
-        f"fixes</h3><ul>{items}</ul>"
+        f'<div class="consequence"><h3 id="{esc(heading_id)}">{esc(CONTEXT_HEADING)}</h3>'
+        f"<ul>{items}</ul>"
         f'<p class="fineprint">{esc(_CONSEQUENCE_NOT_A_RANKING)}</p></div>'
     )
 

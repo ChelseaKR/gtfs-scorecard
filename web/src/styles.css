@@ -2740,6 +2740,16 @@ main:focus { outline: none; }
 .alert .aowner { margin-left: .5rem; font-size: .72rem; font-weight: 600; color: var(--ink-soft);
   background: var(--paper-deep); border-radius: 999px; padding: .1rem .5rem; white-space: nowrap; }
 
+/* The feed-level lines under the fixes: rider-trips and transit need, each a
+   number with its source and date or the plain reason there is none. Text
+   carries every meaning here; nothing is colored to say "measured" or "absent". */
+.consequence { margin: 1.1rem 0 0; padding-block-start: 1rem; border-block-start: 1.5px dashed var(--line); }
+.consequence h3 { font-family: var(--font-display); font-size: 1.05rem; font-weight: 700; margin: 0 0 .5rem; }
+.consequence ul { margin: 0; padding-inline-start: 1.2rem; }
+.consequence li { margin: 0 0 .45rem; color: var(--ink-soft); overflow-wrap: anywhere; }
+.consequence-more { margin: 0; }
+.consequence-more a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; overflow-wrap: anywhere; }
+
 @media (max-width: 640px) {
   .service-chart { padding-inline: 0.85rem; }
   .service-bar-head { align-items: start; gap: 0.5rem; }
@@ -2770,6 +2780,8 @@ main p,
 .group-note,
 .finding .why,
 .finding .how,
+.consequence li,
+.consequence .fineprint,
 .fix-card .fix-why,
 .alert .awhy,
 .cat-card .summary,

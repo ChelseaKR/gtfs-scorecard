@@ -91,6 +91,12 @@ HARDCODED_STRING_BASELINE = {
     # tier copy when the tier joins it.
     "bundle.js": 12,
     "config.js": 1,
+    # Worded consequence for the scorecard page (issue #367). New module, so a
+    # first baseline rather than an increase, and zero on purpose: every
+    # sentence it returns is filled from the shared copy the pipeline generates
+    # (consequence.py through constants.js) or from the app catalog, so it holds
+    # no English of its own to localize.
+    "consequence.js": 0,
     "es.js": 2,
     "i18n.js": 0,
     # The hand-authored landing page is not yet part of the generated SPA

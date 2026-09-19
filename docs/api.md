@@ -411,6 +411,15 @@ overlay (ADR 0015), so the page labels it as a statewide reading, not one for
 the feed's service area. The joined values are a description of one feed. They
 never rank agencies and never change a grade or the order of the fixes.
 
+The app's scorecard page (`#/agency/<id>`) shows each finding's reach and the
+reason for each of the other two, and it does not join the snapshots itself. It
+words a share only when the block says it is known: an empty `reason`, a
+`share` between 0 and 1, and counts that agree with it. Anything else, and any
+`ridership` or `served_area_need` value that arrives without a source and date
+beside it, reads as its reason in words. It links the agency page for the
+joined figures. Its wording comes from `CONSEQUENCE_COPY` in
+`web/src/generated/constants.js`, generated from `consequence.py`.
+
 ## Freshness fields
 
 The `freshness` category's `details` carry the feed's validity window, and two

@@ -80,6 +80,21 @@ the declared public surface).
   as statewide, because the ACS overlay is state-level. Fix order and grades
   are unchanged.
 
+- **The scorecard in the app now shows each finding's consequence
+  ([#367](https://github.com/ChelseaKR/gtfs-scorecard/issues/367)).** Under each
+  top fix and each finding in "Everything we checked", the app states how much
+  of the network the finding covers, in the same words as the agency page. Under
+  the fixes, a "Riders and need behind these fixes" block gives the reason each
+  of annual rider-trips and transit need is not shown in the app, and links the
+  agency page, which joins dated snapshots when it renders. Nothing in the app
+  is worded as a number unless the record says it is known: a null share, a
+  share that sits beside a reason, counts that disagree, and a value with no
+  source or date all read as words. A scorecard published before schema 1.19
+  says so once instead of going quiet. The wording now lives in one place,
+  `consequence.py`, and reaches the app through `web/src/generated/constants.js`
+  (`CONSEQUENCE_COPY`), so the two surfaces cannot drift. Static page output is
+  byte-identical. Fix order and grades are unchanged.
+
 - **The Action's `evidence-packet` input, and `scorecard retest --artifact`
   (#366).** Set `evidence-packet` to a packet from `scorecard evidence-packet
   --format json` and the Action retests the feed it has just scored against
