@@ -148,6 +148,13 @@ class Agency:
     # inspection) stay unchanged. Default False keeps every ordinary feed on the
     # tight standard caps. See fetch.LARGE_LIMITS and docs/global-coverage-roadmap.md.
     large_feed: bool = False
+    # Give this record a Daily shard to itself. It says nothing about the feed's
+    # size or trust, so it does not touch the archive ceilings the way
+    # ``large_feed`` does. It is for a source that takes minutes to serve one
+    # ordinary-sized feed (a server that builds the archive on each request), so
+    # the wait cannot use up the job budget of the ~64 records that would
+    # otherwise share its shard. See shards.plan_shards and registry/README.md.
+    own_shard: bool = False
     # A credential reference for a feed behind a registration wall (#371). None
     # is every ordinary keyless feed. When set, fetching fails closed without
     # the named environment variable and never falls back to a mirror. See

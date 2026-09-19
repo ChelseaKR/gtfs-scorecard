@@ -1155,7 +1155,11 @@ def test_the_watchdog_measures_publish_jobs_against_the_bounds_they_declare() ->
             r"^ +([a-z0-9-]+\.yml)\|([a-z0-9_-]+)\|(\d+)\|(\d+)$", step, re.MULTILINE
         )
     }
-    assert set(declared) == {("refresh.yml", "refresh"), ("scorecard.yml", "collect")}
+    assert set(declared) == {
+        ("refresh.yml", "refresh"),
+        ("scorecard.yml", "collect"),
+        ("scorecard.yml", "score"),
+    }
     for (workflow, job), (bound, _runs) in declared.items():
         assert bound == _job_timeout(_workflow(workflow), job), (
             f"the watchdog measures {workflow} {job} against {bound} minutes, which is not "
@@ -1177,6 +1181,85 @@ def test_the_watchdog_measures_publish_jobs_against_the_bounds_they_declare() ->
     assert "$((minutes * 10)) -ge $((bound * 9))" in step
     assert '[ "$measured" -eq 0 ]' in step, "measuring no job must be an error, not a pass"
     assert 'if [ -z "$ids" ]; then' in step
+
+
+#: 53 minutes of a 55-minute bound, the slowest Daily score shard on 2026-09-09; 52 on
+#: 2026-09-14. The shard held one feed (autolinee-toscane) that took 20.6 minutes
+#: alone, and it now has a shard of its own. Restated here as the evidence the
+#: watchdog's `score` row exists for, like the constants above.
+DAILY_SCORE_SHARD_WORST_OBSERVED_MINUTES = 53
+
+
+def _watchdog_jq_program(job: str) -> str:
+    """The jq program the bound check hands `gh api`, with $job filled in."""
+    watchdog = _workflow("watchdog.yml")
+    name = "- name: No scheduled publish job is running up against its own bound"
+    at = watchdog.index(name)
+    step = watchdog[at : watchdog.index("\n      - name:", at + len(name))]
+    quoted = re.search(r'--jq "(.*)" \\\n', step)
+    assert quoted, "the bound check no longer passes a --jq program to gh api"
+    return quoted.group(1).replace('\\"', '"').replace("$job", job)
+
+
+def _run_jq(program: str, document: dict[str, Any]) -> list[str]:
+    import json
+    import shutil
+    import subprocess
+
+    jq = shutil.which("jq")
+    assert jq, "jq is required; the workflow itself runs it on every hosted runner"
+    done = subprocess.run(  # noqa: S603 - a fixed jq binary and a program from this repository
+        [jq, "-r", program], input=json.dumps(document), capture_output=True, text=True, check=True
+    )
+    return done.stdout.splitlines()
+
+
+def _job(name: str, start: str, end: str, conclusion: str = "success") -> dict[str, Any]:
+    return {
+        "name": name,
+        "started_at": f"2026-09-14T{start}Z",
+        "completed_at": f"2026-09-14T{end}Z",
+        "conclusion": conclusion,
+        "steps": [{}, {}, {}],
+    }
+
+
+def test_the_watchdog_reads_the_slowest_matrix_leg_and_not_its_neighbors() -> None:
+    """The Daily's shards are named `score (<ids>)`, so an exact-name match never
+    saw them. The filter must take the longest leg, ignore jobs that merely start
+    with the same letters, and still match a job named exactly."""
+    jobs = {
+        "jobs": [
+            _job("plan", "13:31:28", "13:31:55"),
+            _job("score (a, b, c)", "13:31:58", "13:56:33"),
+            _job("score (slow-one, x)", "13:31:58", "14:24:49"),
+            _job("score (ovapi-netherlands)", "13:33:19", "13:38:29"),
+            _job("scoreboard", "13:00:00", "20:00:00"),
+            _job("collect", "14:24:50", "15:31:07", "cancelled"),
+            _job("score (unfinished)", "13:31:58", "13:31:58"),
+        ]
+    }
+    program = _watchdog_jq_program("score")
+    rows = [line.split("\t") for line in _run_jq(program, jobs)]
+    assert rows == [["2026-09-14T13:31:58Z", "2026-09-14T14:24:49Z", "success", "3"]]
+
+    exact = [line.split("\t") for line in _run_jq(_watchdog_jq_program("collect"), jobs)]
+    assert exact == [["2026-09-14T14:24:50Z", "2026-09-14T15:31:07Z", "cancelled", "3"]]
+
+    # Nothing to measure yields no row, which the step reports as an error.
+    assert _run_jq(program, {"jobs": [_job("plan", "13:31:28", "13:31:55")]}) == []
+
+
+def test_the_score_bound_would_have_flagged_the_shard_that_ran_at_53_of_55() -> None:
+    """The watchdog fails a job at 90% of its bound. Restating the bound's own
+    arithmetic here keeps the `score` row honest: the 2026-09-09 shard was already
+    past it, and the fix (a shard for the one slow feed) is what brings the
+    slowest shard back under."""
+    bound = _job_timeout(_workflow("scorecard.yml"), "score")
+    assert bound * 9 <= DAILY_SCORE_SHARD_WORST_OBSERVED_MINUTES * 10, (
+        "the recorded worst shard is under 90% of the bound; update the evidence "
+        "or the bound together"
+    )
 
 
 def test_the_watchdog_reads_a_job_timeout_as_a_failure_not_as_silence() -> None:

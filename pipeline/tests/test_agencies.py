@@ -975,6 +975,20 @@ def test_fare_free_must_be_boolean() -> None:
         parse_agencies(entry(fare_free="yes"))
 
 
+def test_own_shard_defaults_false_and_parses() -> None:
+    (default_agency,) = parse_agencies(VALID)
+    assert default_agency.own_shard is False
+    (agency,) = parse_agencies(entry(own_shard=True))
+    assert agency.own_shard is True
+    # It is not the large-feed tier: no ceiling moves with it.
+    assert agency.large_feed is False
+
+
+def test_own_shard_must_be_boolean() -> None:
+    with pytest.raises(AgencyConfigError, match="own_shard must be true or false"):
+        parse_agencies(entry(own_shard="yes"))
+
+
 def test_mdb_id_parsed() -> None:
     (agency,) = parse_agencies(entry(mdb_id="777"))
     assert agency.mdb_id == "777"

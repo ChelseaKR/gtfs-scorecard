@@ -87,10 +87,16 @@ jobs:
     # RELIABILITY (issue #297): a shard whose runner is killed mid-validation
     # (observed: ovapi-netherlands, "received a shutdown signal") previously had
     # no bound short of the platform's 360-minute default, so a hang was
-    # indistinguishable from a slow shard for six hours. Sized above the
-    # slowest recent successful shard (~32 min) with headroom for registry
-    # growth; a shard that blows through this is a hang worth surfacing, not
-    # ordinary variance.
+    # indistinguishable from a slow shard for six hours. This comment said the
+    # slowest recent shard took ~32 minutes; measured 2026-09-18 over the 11
+    # daily runs from 2026-09-09 it took 31 to 53, and the shard holding
+    # `autolinee-toscane` (one record, 20.6 minutes, mostly two
+    # source requests of about 9 minutes each) ran at 47 to 53 of these 55 on eight of them. That
+    # record now has a shard of its own (`own_shard` in the registry); the next
+    # slowest shard took 33 to 37 minutes. `watchdog.yml` reads the longest shard of
+    # each run against this bound and fails at 90%, so the margin is watched
+    # rather than argued from a number written once. A shard that blows through
+    # this is a hang worth surfacing, not ordinary variance.
     timeout-minutes: 55
     permissions:
       contents: read

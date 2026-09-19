@@ -49,6 +49,13 @@ must not be guessed merely to choose a shard.
 - `is_official`: `true` or `false` when catalog provenance establishes it.
 - `service_type`: `fixed` (default), `seasonal`, or `demand_response`.
 - `fare_free`: `true` only when fare-free operation is a verified policy.
+- `own_shard`: `true` gives the record a Daily scoring shard to itself. Use it
+  only for a source measured to take many minutes to serve one ordinary-sized
+  feed, such as a server that builds the archive on each request, so that its
+  wait cannot use up the time budget of the records that would share its shard.
+  It changes nothing about how the feed is fetched, validated, or scored, and
+  unlike `large_feed` it does not raise any size ceiling. Say in a YAML comment
+  what was measured and when.
 - `fetch_auth`: a credential reference for a feed behind a registration wall;
   see [Credentialed feeds](#credentialed-feeds-fetch_auth) below.
 

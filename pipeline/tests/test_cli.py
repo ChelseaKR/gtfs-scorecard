@@ -70,6 +70,39 @@ def test_shard_plan_excludes_retired_alias(
     assert json.loads(capsys.readouterr().out) == [[live.id]]
 
 
+def test_shards_gives_a_large_feed_and_an_own_shard_record_a_shard_each(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """`own_shard` isolates a slow source the way `large_feed` isolates a big
+    one, and does not need the large-feed ceilings to do it."""
+    from scorecard_pipeline import cli
+    from scorecard_pipeline.config import Agency
+
+    def make(agency_id: str, *, large_feed: bool = False, own_shard: bool = False) -> Agency:
+        return Agency(
+            id=agency_id,
+            name=agency_id,
+            static_gtfs_url=f"https://{agency_id}.example/gtfs.zip",
+            large_feed=large_feed,
+            own_shard=own_shard,
+        )
+
+    agencies = [
+        make("a"),
+        make("b"),
+        make("c"),
+        make("big", large_feed=True),
+        make("slow", own_shard=True),
+    ]
+    monkeypatch.setattr(cli, "AGENCIES", {a.id: a for a in agencies})
+
+    assert cli._cmd_shards(argparse.Namespace(count=2), argparse.ArgumentParser()) == 0
+    plan = json.loads(capsys.readouterr().out)
+    assert plan == [["a", "c"], ["b"], ["big"], ["slow"]]
+    assert agencies[-1].large_feed is False
+
+
 def test_run_all_excludes_retired_alias_but_keeps_explicit_reproduction(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
