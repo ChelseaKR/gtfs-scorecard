@@ -455,6 +455,7 @@ def publish(artifact: dict[str, Any]) -> Path:
     _write_json(agency_dir / "latest.json", artifact)
     _write_badge(agency_dir, artifact)
     _write_mark(agency_dir, artifact)
+    _write_explain(agency_dir, artifact)
     _update_index(agency_id, artifact)
     return dated
 
@@ -520,6 +521,24 @@ def _write_mark(agency_dir: Path, artifact: dict[str, Any]) -> None:
             file=sys.stderr,
         )
         mark_path.unlink()
+
+
+def _write_explain(agency_dir: Path, artifact: dict[str, Any]) -> None:
+    """Write the scoring explanation and audit trail next to the artifacts.
+
+    This reconstructs how the published grade was reached, one deduction at a
+    time, and writes it as JSON so the /explain and /audit API endpoints can
+    serve it.
+    """
+    from .explain import UnknownRubricVersion, build_trail, render_json
+
+    try:
+        trail = build_trail(artifact)
+        _write_atomic(agency_dir / "explain.json", render_json(trail))
+    except UnknownRubricVersion:
+        # Older rubric versions that this build cannot explain are skipped
+        # rather than producing a wrong trail.
+        log.debug("%s: skipping explain.json (unknown rubric version)", agency_dir.name)
 
 
 _CATEGORY_KEYS = ("correctness", "freshness", "completeness", "realtime")

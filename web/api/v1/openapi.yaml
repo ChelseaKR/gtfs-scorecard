@@ -134,6 +134,22 @@ paths:
       responses:
         "200": {$ref: "#/components/responses/JsonObject"}
         "404": {$ref: "#/components/responses/NoCurrentFile"}
+  /data/artifacts/{agency_id}/explain.json:
+    get:
+      operationId: getAgencyExplain
+      tags: [artifacts]
+      summary: The scoring explanation and audit trail for one feed record.
+      description: >-
+        Reconstructs how the published grade was reached, one deduction at a
+        time. Shows the full scoring breakdown by category, each finding with
+        its rule, severity, and weight, and the calculation steps that produced
+        the final grade. Useful for understanding why a specific score was given
+        and for contesting or debugging the scoring methodology.
+      parameters:
+        - $ref: "#/components/parameters/agency_id"
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+        "404": {$ref: "#/components/responses/NoCurrentFile"}
   /data/artifacts/rollups/index.json:
     get:
       operationId: getRollupIndex
