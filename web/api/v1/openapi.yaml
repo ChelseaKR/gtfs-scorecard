@@ -150,6 +150,21 @@ paths:
       responses:
         "200": {$ref: "#/components/responses/JsonObject"}
         "404": {$ref: "#/components/responses/NoCurrentFile"}
+  /data/artifacts/pair/{pair_id}/latest.json:
+    get:
+      operationId: getPairFindings
+      tags: [artifacts]
+      summary: Pair-level findings for two overlapping agencies.
+      description: Compares two agencies' GTFS data to find shared routes, overlapping stops, and schedule conflicts.
+      parameters:
+        - name: pair_id
+          in: path
+          required: true
+          schema: {type: string}
+          description: "{agency_a}-{agency_b} sorted alphabetically"
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+        "404": {$ref: "#/components/responses/NoCurrentFile"}
   /data/artifacts/rollups/index.json:
     get:
       operationId: getRollupIndex

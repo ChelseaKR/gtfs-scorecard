@@ -4129,6 +4129,91 @@ def _cmd_explain(args: argparse.Namespace, parser: argparse.ArgumentParser) -> i
     return 0
 
 
+def _cmd_pair_findings(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
+    """Compare two agencies' GTFS data for shared stops, routes, and trips."""
+    from .config import raw_dir
+    from .gtfs import read_tables
+    from .pair_findings import build_pair_findings
+
+    agency_a = args.agency_a
+    agency_b = args.agency_b
+
+    if agency_a == agency_b:
+        log.error("Cannot compare an agency with itself")
+        return 2
+
+    # Find the most recent dated artifact for each agency
+    artifacts_root = artifacts_dir()
+
+    def _find_latest_gtfs_path(agency_id: str) -> Path | None:
+        agency_dir = artifacts_root / agency_id
+        if not agency_dir.is_dir():
+            return None
+        dated_dirs = sorted(
+            (d for d in agency_dir.iterdir() if d.is_dir() and d.name[0].isdigit()),
+            key=lambda d: d.name,
+            reverse=True,
+        )
+        for dated_dir in dated_dirs:
+            gtfs_path = dated_dir / "gtfs.zip"
+            if gtfs_path.exists():
+                return gtfs_path
+        # Also check raw directory
+        raw_path = raw_dir() / agency_id
+        if raw_path.is_dir():
+            for dated_dir in sorted(raw_path.iterdir(), reverse=True):
+                if dated_dir.is_dir():
+                    gtfs_path = dated_dir / "gtfs.zip"
+                    if gtfs_path.exists():
+                        return gtfs_path
+        return None
+
+    path_a = _find_latest_gtfs_path(agency_a)
+    path_b = _find_latest_gtfs_path(agency_b)
+
+    if path_a is None:
+        log.error("No GTFS data found for %s", agency_a)
+        return 2
+    if path_b is None:
+        log.error("No GTFS data found for %s", agency_b)
+        return 2
+
+    log.info("Loading GTFS for %s from %s", agency_a, path_a)
+    log.info("Loading GTFS for %s from %s", agency_b, path_b)
+
+    tables_a = read_tables(str(path_a), ["routes.txt", "stops.txt", "trips.txt"])
+    tables_b = read_tables(str(path_b), ["routes.txt", "stops.txt", "trips.txt"])
+
+    result = build_pair_findings(agency_a, agency_b, tables_a, tables_b)
+
+    if args.format == "json":
+        print(json.dumps(result.to_json(), indent=2, sort_keys=True))
+    else:
+        _print_pair_findings_text(result)
+    return 0
+
+
+def _print_pair_findings_text(result: Any) -> None:
+    """Print pair findings as human-readable text."""
+    print(f"Pair findings: {result.agency_a} vs {result.agency_b}")
+    print(f"  Shared stops: {result.shared_stops}")
+    print(f"  Shared routes: {result.shared_routes}")
+    print(f"  Shared trips: {result.shared_trips}")
+    print()
+    if not result.findings:
+        print("No findings.")
+        return
+    for f in result.findings:
+        print(f"[{f.severity}] {f.code}")
+        print(f"  What: {f.what}")
+        print(f"  Why: {f.why}")
+        print(f"  Fix: {f.fix}")
+        print(f"  Effort: {f.effort}")
+        if f.details:
+            print(f"  Details: {json.dumps(f.details, indent=4)}")
+        print()
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="scorecard", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -5112,6 +5197,20 @@ def main(argv: list[str] | None = None) -> int:
     )
     explain.set_defaults(registry_free=True)
 
+    pair_findings = sub.add_parser(
+        "pair-findings",
+        help="compare two agencies' GTFS data for shared stops, routes, and trips",
+    )
+    pair_findings.add_argument("agency_a", help="first agency id")
+    pair_findings.add_argument("agency_b", help="second agency id")
+    pair_findings.add_argument(
+        "--format",
+        choices=("text", "json"),
+        default="text",
+        help="output format (default: text)",
+    )
+    pair_findings.set_defaults(registry_free=False)
+
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s: %(message)s")
 
@@ -5224,6 +5323,7 @@ def _dispatch(args: argparse.Namespace, parser: argparse.ArgumentParser) -> int:
         "rt-archive": _cmd_rt_archive,
         "reproduce": _cmd_reproduce,
         "explain": _cmd_explain,
+        "pair-findings": _cmd_pair_findings,
     }
     handler = handlers.get(args.command)
     if handler is None:
