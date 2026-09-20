@@ -150,6 +150,27 @@ paths:
       responses:
         "200": {$ref: "#/components/responses/JsonObject"}
         "404": {$ref: "#/components/responses/NoCurrentFile"}
+  /data/artifacts/{agency_id}/diffs/{date}.json:
+    get:
+      operationId: getAgencyDiff
+      tags: [artifacts]
+      summary: Snapshot-to-snapshot diff for one agency.
+      description: >-
+        Structured diff between two consecutive scorecard snapshots for one
+        agency. Shows newly appeared findings, cleared findings, changed
+        finding counts, grade movement, score delta, and whether the feed file
+        was re-published. The date parameter identifies the newer snapshot;
+        the older is the immediately preceding dated artifact.
+      parameters:
+        - $ref: "#/components/parameters/agency_id"
+        - name: date
+          in: path
+          required: true
+          schema: {type: string, pattern: "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"}
+          description: "The newer snapshot date (YYYY-MM-DD)"
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+        "404": {$ref: "#/components/responses/NoCurrentFile"}
   /data/artifacts/pair/{pair_id}/latest.json:
     get:
       operationId: getPairFindings
@@ -162,6 +183,26 @@ paths:
           required: true
           schema: {type: string}
           description: "{agency_a}-{agency_b} sorted alphabetically"
+      responses:
+        "200": {$ref: "#/components/responses/JsonObject"}
+        "404": {$ref: "#/components/responses/NoCurrentFile"}
+  /data/artifacts/{agency_id}/retests/{packet_id}.json:
+    get:
+      operationId: getRetestResult
+      tags: [artifacts]
+      summary: Retest result for one evidence packet.
+      description: >-
+        Shows whether each finding in an evidence packet was cleared, is still
+        present, or could not be compared after rescoring the feed. The packet_id
+        identifies the original evidence packet; the retest result is the
+        comparison between the packet's acceptance tests and the new artifact.
+      parameters:
+        - $ref: "#/components/parameters/agency_id"
+        - name: packet_id
+          in: path
+          required: true
+          schema: {type: string}
+          description: "The evidence packet identifier"
       responses:
         "200": {$ref: "#/components/responses/JsonObject"}
         "404": {$ref: "#/components/responses/NoCurrentFile"}
