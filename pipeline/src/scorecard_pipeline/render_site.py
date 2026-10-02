@@ -5625,7 +5625,11 @@ def _program_offer_section(
         f"<p><strong>{esc(offer.label)}:</strong> {esc(offer.amount)}, paid once"
         f"{delivery}.{more}</p>"
         '<p class="report-actions">'
-        '<a class="report-action report-action-primary" href="/bundle/">'
+        # data-measure opts this one link into the click event web/src/measure.js
+        # sends (ADR 0055), so a panel click is counted as its own event; the
+        # privacy statement on /about/ names it.
+        '<a class="report-action report-action-primary" href="/bundle/" '
+        'data-measure="bundle_panel_click">'
         "See the program report bundle</a></p>"
         '<p><a href="/bundle/sample/">See a sample bundle report</a>: a real agency\'s current '
         "grade, with placeholder branding.</p>"

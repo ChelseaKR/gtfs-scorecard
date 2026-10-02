@@ -5,7 +5,11 @@
 Analytics 4 in a second, separate block, so this script is no longer the whole
 of what the site collects, and the site is no longer cookieless outside the
 EEA, the UK and Switzerland. The PostHog block described here changes only to
-honor the footer "Opt out of analytics" link that ADR 0056 adds.
+honor the footer "Opt out of analytics" link that ADR 0056 adds. Amended
+2026-10-02: a third event, `bundle_panel_click`, counts the link to `/bundle/`
+in the program panel on agency scorecards (ADR 0058), and a page opened with
+`?measure=off`, as the weekly production Lighthouse audit opens every route,
+measures nothing.
 
 ## Context
 
@@ -33,7 +37,7 @@ without a banner.
 ## Decision
 
 One first-party script, `web/src/measure.js`, is the whole of what the site
-collects about a visit. It sends two kinds of event to PostHog Cloud US:
+collects about a visit. It sends these events to PostHog Cloud US:
 
 - `$pageview`, once per page load, with the page path (never the query string
   or fragment), a page family (`home`, `agency`, `program`, `bundle`, `support`,
@@ -43,6 +47,10 @@ collects about a visit. It sends two kinds of event to PostHog Cloud US:
   Payment Link on `/bundle/` is followed. `web/src/bundle.js` marks those links
   with `data-measure` and `data-measure-plan`; the script reports nothing else a
   reader clicks.
+- `bundle_panel_click`, with no properties beyond the page view's, when the
+  link to `/bundle/` in the program panel at the end of an agency scorecard is
+  followed (added 2026-10-02). `render_site.py` marks that one link with
+  `data-measure`.
 
 It is cookieless by construction. There is no SDK, so there is no autocapture
 and no session recording. The visit id is a random UUIDv7 kept in
