@@ -147,6 +147,20 @@ Effective expiry = the earlier of `feed_info.feed_end_date` and the last
 service date found in `calendar.txt` / `calendar_dates.txt` added service.
 Using the earlier of the two catches both failure shapes: a feed_info window
 that outlives actual service, and service that outlives a stale feed_info.
+The second shape follows the GTFS reference, which says consumers should treat
+schedule data outside the `feed_start_date` to `feed_end_date` window as not
+authoritative. Freshness therefore scores the declared window.
+
+The rule is not silent about which date it used. `expiry_limited_by` in the
+freshness details names it (`feed_end_date`, `service_calendar`, or `both`).
+When `feed_end_date` is the earlier date, the calendar runs past it, and the
+feed has expired or has under 30 days left, the finding is
+`scorecard_feed_end_date_before_calendar` in place of the expired or expiring
+finding. It names both dates and asks the agency to correct `feed_end_date`,
+since the service data is already published. Severity and points match the
+finding it replaces, so the score and the fix order are unchanged. A short
+`feed_end_date` with 30 or more days left raises nothing: GTFS recommends
+publishing service past the window as a preview (ADR 0061).
 
 Scoring:
 - 60 or more days of runway: 100. Sixty days is double the Caltrans
@@ -371,7 +385,10 @@ Rubric 1.4 corrects a second headsign false negative. TriMet's feed of
 `stop_headsign` on all 3,402,538 stop times, and the scorecard read that as no
 headsigns at all, docking 15 rider-experience points. A trip whose every stop
 time carries `stop_headsign` now counts as headed. See
-[ADR 0060](decisions/0060-stop-headsign-counts-as-a-headsign.md).
+[ADR 0060](decisions/0060-stop-headsign-counts-as-a-headsign.md). Rubric 1.4
+also names the date behind an expiry: when `feed_info` ends before a calendar
+that runs on, the expiry finding says so and asks for the one-field correction.
+That change moves no score ([ADR 0061](decisions/0061-feed-end-date-before-calendar.md)).
 
 The rubric itself is versioned: the current `RUBRIC_VERSION` is `1.4`
 (`pipeline/src/scorecard_pipeline/__init__.py`), stamped on every artifact,

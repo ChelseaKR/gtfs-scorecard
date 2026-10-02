@@ -93,7 +93,10 @@ METHODOLOGY_CHANGELOG: list[dict[str, str]] = [
             "reference allows. Feeds that publish destinations only per stop, such "
             "as TriMet's, were scored as having none. Artifacts keep the literal "
             "trip_headsign share and add a count of trips credited through "
-            "stop_headsign. See ADR 0060."
+            "stop_headsign. See ADR 0060. When feed_info's end date is earlier than "
+            "a service calendar that runs on, the expiry finding now names both "
+            "dates and asks for that one field to be corrected. Freshness still "
+            "scores the declared end date, so no score moves (ADR 0061)."
         ),
     },
     {
@@ -268,6 +271,7 @@ def grade_margins(score: float) -> tuple[float | None, float]:
 _OPERATIONAL_CODES = (
     "scorecard_feed_expired",
     "scorecard_feed_expiring_soon",
+    "scorecard_feed_end_date_before_calendar",
     "scorecard_no_expiry_date",
 )
 

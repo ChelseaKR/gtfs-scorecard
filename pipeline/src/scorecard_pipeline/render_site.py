@@ -1416,7 +1416,11 @@ def _confidence_section(artifact: dict[str, Any]) -> str:
     )
 
 
-_OUTREACH_CODES = ("scorecard_feed_expired", "scorecard_feed_expiring_soon")
+_OUTREACH_CODES = (
+    "scorecard_feed_expired",
+    "scorecard_feed_expiring_soon",
+    "scorecard_feed_end_date_before_calendar",
+)
 
 
 def _outreach_note(artifact: dict[str, Any], canonical: str) -> str | None:

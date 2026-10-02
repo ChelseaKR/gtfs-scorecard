@@ -175,6 +175,12 @@ export const RULE_LINKS = {
     "kind": "validator",
     "url": "https://gtfs-validator.mobilitydata.org/rules.html#route_color_contrast-rule"
   },
+  "scorecard_feed_end_date_before_calendar": {
+    "authority": "GTFS Schedule reference",
+    "canonical": null,
+    "kind": "reference",
+    "url": "https://gtfs.org/schedule/reference/#feed_infotxt"
+  },
   "scorecard_feed_expired": {
     "authority": "GTFS Best Practices",
     "canonical": null,

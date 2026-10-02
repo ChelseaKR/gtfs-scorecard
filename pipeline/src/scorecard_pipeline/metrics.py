@@ -347,6 +347,48 @@ def operating_signal(status: str, consecutive_failures: int) -> str:
     return "unreachable" if consecutive_failures >= UNREACHABLE_STREAK_CHECKS else "reachable"
 
 
+def _iso(value: dt.date | None) -> str:
+    return value.isoformat() if value else "an unknown date"
+
+
+def _end_date_before_calendar(
+    dates: FeedDates, expiry: dt.date, days_left: int
+) -> tuple[str, Finding]:
+    """Summary and finding when feed_info's end date, not the calendar, sets expiry.
+
+    The score is unchanged: GTFS says data past feed_end_date is not
+    authoritative, so freshness still runs to the earlier date. What changes is
+    the fix. The calendar already reaches further, so the agency needs to correct
+    one field rather than re-export a longer calendar (ADR 0061). An ended feed
+    keeps the ERROR severity and full deduction of ``scorecard_feed_expired``;
+    one ending within 30 days keeps the WARNING and the display estimate of
+    ``scorecard_feed_expiring_soon``.
+    """
+    last = _iso(dates.last_service_date)
+    ended = days_left <= 0
+    when = f"{-days_left} day(s) ago" if ended else f"in {days_left} day(s)"
+    summary = (
+        f"Your feed_info end date, {expiry.isoformat()}, is earlier than your "
+        f"service calendar, which runs to {last}. The feed is read as ending on "
+        f"that earlier date, {when}."
+    )
+    finding = Finding(
+        code="scorecard_feed_end_date_before_calendar",
+        severity="ERROR" if ended else "WARNING",
+        count=1,
+        what=f"feed_info.txt says this feed ends on {expiry.isoformat()}. Your "
+        f"service calendar runs to {last}.",
+        why="The GTFS standard tells apps to trust a feed only up to its end date. "
+        "So apps may stop showing your service on the earlier date, even though "
+        "the calendar goes on.",
+        fix=f"Correct feed_end_date in feed_info.txt. Set it to {last}, the last "
+        "day in your calendar, or to the last day your schedule is reliable.",
+        effort="One field in feed_info.txt, often an export setting.",
+        deduction=100.0 if ended else round((1 - days_left / 60) * 60 + 20, 1),
+    )
+    return summary, finding
+
+
 def freshness(
     dates: FeedDates, today: dt.date, service_type: str = "fixed"
 ) -> CategoryResult | None:
@@ -408,6 +450,12 @@ def freshness(
     expiry = dates.effective_expiry()
     horizon_status = service_horizon_status(expiry, today)
     details["effective_expiry_date"] = expiry.isoformat() if expiry else None
+    # Which date set the expiry. When feed_info ends before a calendar that runs
+    # on, the fix is to correct one field, not to re-export a longer calendar,
+    # so the expiry findings below say that instead (ADR 0061).
+    limited_by = dates.expiry_limited_by()
+    details["expiry_limited_by"] = limited_by
+    end_date_short = limited_by == "feed_end_date" and dates.last_service_date is not None
     details["service_horizon_status"] = horizon_status
     details["service_horizon_review_years"] = SERVICE_HORIZON_REVIEW_YEARS
     if expiry is None:
@@ -494,6 +542,10 @@ def freshness(
                     deduction=round(100.0 - score, 1),
                 )
             )
+    elif days_left < 30 and end_date_short:
+        # Expired or expiring only because feed_info ends before the calendar.
+        summary, finding = _end_date_before_calendar(dates, expiry, days_left)
+        findings.append(finding)
     elif days_left <= 0:
         summary = (
             f"Service data ended {-days_left} day(s) ago. Trip planners have "

@@ -55,6 +55,7 @@ _EXCLUDED_CODES = frozenset(
     {
         "scorecard_feed_expired",
         "scorecard_feed_expiring_soon",
+        "scorecard_feed_end_date_before_calendar",
         "scorecard_no_expiry_date",
         "feed_expiration_date7_days",
         "feed_expiration_date30_days",

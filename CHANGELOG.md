@@ -268,6 +268,18 @@ the declared public surface).
 
 ### Fixed
 
+- **A `feed_end_date` earlier than the service calendar is named as its own
+  fix (ADR 0061).** Freshness takes the earlier of `feed_info.feed_end_date`
+  and the last calendar date, and said nothing about which one it used. BART's
+  feed says it ends 2026-08-30 while its weekday service runs to 2027-01-08,
+  so its top fix read "service data ended 32 days ago, re-export the feed".
+  When `feed_end_date` sets an expiry that has passed or is under 30 days away
+  and the calendar runs past it, the finding is now
+  `scorecard_feed_end_date_before_calendar`: it names both dates and asks for
+  `feed_end_date` to be corrected. The score still reads the declared date, as
+  the GTFS reference directs, so no grade moves. Freshness details add
+  `expiry_limited_by`.
+
 - **A `stop_headsign` at every stop now counts as a headsign (rubric 1.4,
   ADR 0060).** The headsign component read `trip_headsign` only. TriMet
   publishes no `trip_headsign` and a `stop_headsign` on every stop time, so it
