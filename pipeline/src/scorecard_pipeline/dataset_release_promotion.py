@@ -170,6 +170,7 @@ class GitHubReleaseClient:
                 "body": desired.body,
                 "draft": True,
                 "prerelease": False,
+                "make_latest": "false",
             },
         )
         return self._object(response, "created draft")
@@ -205,8 +206,17 @@ class GitHubReleaseClient:
         return self._object(response, "immutable release setting").get("enabled") is True
 
     def publish(self, release_id: int) -> dict[str, Any]:
+        # A dataset release must never become the repository's "Latest"
+        # release. GitHub defaults make_latest to true when a draft is
+        # published, and the Latest release is what the GitHub Marketplace
+        # listing offers as the action version to use, so publishing
+        # dataset-2026-08 once made the listing tell users to pin
+        # `uses: ChelseaKR/gtfs-scorecard@dataset-2026-08`, a data tag rather
+        # than an action release. The value is the string GitHub's API expects.
         response = self._request(
-            "PATCH", f"{self.api}/releases/{release_id}", json={"draft": False}
+            "PATCH",
+            f"{self.api}/releases/{release_id}",
+            json={"draft": False, "make_latest": "false"},
         )
         return self._object(response, "published release")
 

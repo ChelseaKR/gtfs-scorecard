@@ -17,9 +17,13 @@ on:
     # RELIABILITY (2026-09-13): a monthly job gets one attempt a year at each
     # month, and it spent 2026-09's. Run 33553673342 (2026-09-01) failed in
     # "Assemble the release bundle" — `expected-latest-ids` and
-    # `actual-latest-ids` differed at line 294, the index/latest straddle
-    # pages.yml now re-reads through (#420) — and `dataset-2026-09` does not
-    # exist. Nothing retried it and nothing says it is missing: this workflow
+    # `actual-latest-ids` differed at line 294 — and `dataset-2026-09` does not
+    # exist. That was first read as the index/latest straddle pages.yml
+    # re-reads through (#420), but 2026-10-01 (run 36902743318) failed the
+    # same way at line 324: the extra id was `changes`, the site-wide
+    # changes/latest.json, not an agency. The check now lives in
+    # scorecard_pipeline.dataset_release, which skips reserved namespaces.
+    # Nothing retried it and nothing says it is missing: this workflow
     # has no cadence to go stale against and no page that looks wrong when it
     # stops. Two more fires, same time of day. The `decide` job below makes
     # them no-ops once the month has been cut, so a healthy month still runs
@@ -345,17 +349,13 @@ jobs:
             "$source/release-manifest.json" | (cd "$site" && sha256sum --check -)
 
           # Both the run-bound Pages artifact and the manually hydrated site
-          # must contain exactly one current latest.json for every indexed id.
-          jq -er '.agencies | keys[]' "$site/data/artifacts/index.json" \
-            | LC_ALL=C sort > "$source/expected-latest-ids"
-          find "$site/data/artifacts" -mindepth 2 -maxdepth 2 -type f \
-            -name latest.json -exec dirname {} \; | sed 's#.*/##' \
-            | LC_ALL=C sort > "$source/actual-latest-ids"
-          cmp "$source/expected-latest-ids" "$source/actual-latest-ids"
-          while IFS= read -r id; do
-            jq -e --arg id "$id" '.agency.id == $id' \
-              "$site/data/artifacts/$id/latest.json" >/dev/null
-          done < "$source/expected-latest-ids"
+          # must contain exactly one current latest.json for every indexed id,
+          # and each must name its own id. The validator below checks both
+          # (dataset_release._require_latest_coverage and the identity check
+          # in _canonical_ntd_artifacts). A shell `find */latest.json` listing
+          # used to check the first here and counted the site-wide
+          # changes/latest.json as an agency, which refused the 2026-09-01 and
+          # 2026-10-01 cuts.
 
           # Cross-check JSON, both CSVs, and Parquet against the downloaded
           # authoritative index and the active canonical registry before the

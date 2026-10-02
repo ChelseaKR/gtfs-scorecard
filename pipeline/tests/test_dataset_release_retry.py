@@ -1,9 +1,10 @@
 """A monthly job gets one attempt a year at each month, and 2026-09 spent it.
 
 Run 33553673342 (2026-09-01) failed in "Assemble the release bundle" —
-`expected-latest-ids` and `actual-latest-ids` differed at line 294, the
-index/latest straddle `pages.yml` now re-reads through — and `dataset-2026-09`
-does not exist. Nothing retried it and nothing noticed: this workflow is not
+`expected-latest-ids` and `actual-latest-ids` differed at line 294 — and
+`dataset-2026-09` does not exist. (The cause was the site-wide
+`changes/latest.json` counted as an agency; test_dataset_release.py holds the
+fix.) Nothing retried it and nothing noticed: this workflow is not
 read by any page and has no cadence to go stale against, so a failed cut is
 invisible until somebody opens the Actions tab a month later.
 

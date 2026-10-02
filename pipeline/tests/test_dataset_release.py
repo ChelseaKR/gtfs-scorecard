@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -520,7 +521,9 @@ def test_release_rejects_ntd_sections_without_canonical_current_artifacts(
     artifacts, web, _repo, _current = _release_tree(tmp_path)
     (artifacts / "current-agency" / "latest.json").unlink()
 
-    with pytest.raises(DatasetReleaseError, match="canonical current artifact"):
+    # Refused before the NTD sections are read: the indexed id has no current
+    # artifact at all.
+    with pytest.raises(DatasetReleaseError, match=r"1 indexed without one \['current-agency'\]"):
         validate_release_inputs(
             artifacts_root=artifacts,
             web_root=web,
@@ -544,3 +547,141 @@ def test_release_rejects_retired_identifier_references_outside_id_columns(
             current_registry=_registry(),
             retired_registry_ids={"retired-alias"},
         )
+
+
+# --- the latest.json set (the 2026-09-01 and 2026-10-01 refusals) ----------
+
+
+def _shell_listing(artifacts: Path) -> list[str]:
+    """What the workflow's removed shell check listed: every directory one
+    level down that holds a latest.json, by name (`find -mindepth 2
+    -maxdepth 2 -name latest.json`, then `dirname`, then the last part)."""
+    return sorted(path.parent.name for path in artifacts.glob("*/latest.json"))
+
+
+def _with_site_namespaces(artifacts: Path) -> None:
+    """The site-wide namespaces a real Pages build carries beside the agency
+    directories. changes/latest.json has been in every build since 2026-08-06;
+    rollups/ and run/ hold no latest.json."""
+    (artifacts / "changes").mkdir()
+    (artifacts / "changes" / "latest.json").write_text(
+        json.dumps({"changes": [{"id": "current-agency", "from_grade": "B"}]}),
+        encoding="utf-8",
+    )
+    (artifacts / "changes" / "2026-10-01.json").write_text("{}", encoding="utf-8")
+    (artifacts / "rollups").mkdir()
+    (artifacts / "rollups" / "all.json").write_text("{}", encoding="utf-8")
+    (artifacts / "run").mkdir()
+
+
+def test_release_accepts_the_site_wide_changes_namespace(tmp_path: Path) -> None:
+    artifacts, web, _repo, _current = _release_tree(tmp_path)
+    _with_site_namespaces(artifacts)
+    index = json.loads((artifacts / "index.json").read_text(encoding="utf-8"))
+
+    # The mismatch the 2026-10-01 run (36902743318) reported, reproduced: the
+    # shell listing has one id the index does not, and it is `changes`.
+    assert _shell_listing(artifacts) == ["changes", "current-agency"]
+    assert sorted(index["agencies"]) == ["current-agency"]
+
+    summary = validate_release_inputs(
+        artifacts_root=artifacts,
+        web_root=web,
+        current_registry=_registry(),
+        retired_registry_ids={"retired-alias"},
+    )
+    assert summary.agencies == 1
+
+
+def test_release_still_rejects_an_unindexed_agency_with_a_current_artifact(
+    tmp_path: Path,
+) -> None:
+    """Skipping the reserved namespaces must not skip agencies: a directory the
+    index does not list that still has a latest.json is refused."""
+    artifacts, web, _repo, _current = _release_tree(tmp_path)
+    _with_site_namespaces(artifacts)
+    (artifacts / "stray-agency").mkdir()
+    (artifacts / "stray-agency" / "latest.json").write_text("{}", encoding="utf-8")
+
+    with pytest.raises(DatasetReleaseError, match=r"1 not indexed \['stray-agency'\]"):
+        validate_release_inputs(
+            artifacts_root=artifacts,
+            web_root=web,
+            current_registry=_registry(),
+            retired_registry_ids={"retired-alias"},
+        )
+
+
+def test_an_agency_directory_without_latest_json_is_not_counted(tmp_path: Path) -> None:
+    """A retired agency keeps its dated history but loses latest.json
+    (artifact_lifecycle). Its directory alone is not a current artifact."""
+    artifacts, web, _repo, _current = _release_tree(tmp_path)
+    (artifacts / "retired-alias").mkdir()
+    (artifacts / "retired-alias" / "2026-07-01.json").write_text("{}", encoding="utf-8")
+
+    summary = validate_release_inputs(
+        artifacts_root=artifacts,
+        web_root=web,
+        current_registry=_registry(),
+        retired_registry_ids={"retired-alias"},
+    )
+    assert summary.agencies == 1
+
+
+# --- retired identifiers: ids and site paths, not words ---------------------
+
+
+def test_retired_ids_that_are_ordinary_words_do_not_match_names_or_feed_urls(
+    tmp_path: Path,
+) -> None:
+    """Retired registry ids include plain words and agency names (citilink,
+    embark, mta, metra, xpress). A case-insensitive word search over the file
+    text matched current rows' names ("Citilink", "Altamont Corridor Express")
+    and third-party feed URLs (web.mta.info), and refused the 2026-10-01
+    artifact. Here the fixture's own name, feed host and state play that part."""
+    artifacts, web, _repo, _current = _release_tree(tmp_path)
+    summary = validate_release_inputs(
+        artifacts_root=artifacts,
+        web_root=web,
+        current_registry=_registry(),
+        retired_registry_ids={"retired-alias", "example", "california", "agency"},
+    )
+    assert summary.agencies == 1
+
+
+@pytest.mark.parametrize(
+    ("relative", "path"),
+    [
+        ("catalog.json", "https://gtfsscorecard.org/agency/retired-alias/"),
+        ("ntd.json", "https://gtfsscorecard.org/data/artifacts/retired-alias/latest.json"),
+    ],
+)
+def test_a_retired_id_in_one_of_the_sites_own_paths_is_refused(
+    tmp_path: Path, relative: str, path: str
+) -> None:
+    from scorecard_pipeline.dataset_release import _require_no_retired_references
+
+    _artifacts, web, _repo, _current = _release_tree(tmp_path)
+    document = json.loads((web / relative).read_text(encoding="utf-8"))
+    document["note"] = f"see {path}"
+    (web / relative).write_text(json.dumps(document), encoding="utf-8")
+
+    with pytest.raises(DatasetReleaseError, match=re.escape(f"{relative} cites a retired")):
+        _require_no_retired_references(web, {"retired-alias"})
+
+
+def test_a_retired_id_as_a_whole_csv_cell_or_json_key_is_refused(tmp_path: Path) -> None:
+    from scorecard_pipeline.dataset_release import _require_no_retired_references
+
+    _artifacts, web, _repo, _current = _release_tree(tmp_path)
+    original = (web / "dataset.csv").read_text(encoding="utf-8")
+    (web / "dataset.csv").write_text(original + "retired-alias\n", encoding="utf-8")
+    with pytest.raises(DatasetReleaseError, match=r"dataset\.csv cites a retired"):
+        _require_no_retired_references(web, {"retired-alias"})
+
+    (web / "dataset.csv").write_text(original, encoding="utf-8")
+    ntd = json.loads((web / "ntd.json").read_text(encoding="utf-8"))
+    ntd["by_agency"] = {"retired-alias": "ready"}
+    (web / "ntd.json").write_text(json.dumps(ntd), encoding="utf-8")
+    with pytest.raises(DatasetReleaseError, match=r"ntd\.json cites a retired"):
+        _require_no_retired_references(web, {"retired-alias"})

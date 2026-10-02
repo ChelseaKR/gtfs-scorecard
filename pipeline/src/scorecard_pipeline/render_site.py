@@ -7135,17 +7135,41 @@ _canonical_state = canonical_state
 def _states_by_agency() -> dict[str, str]:
     """Map each tracked agency to its US state for the directory's browse-by-place.
 
-    A curator's `state` in the registry wins. The Mobility Database cohort,
-    which has no hand-set state, is filled from the catalog's subdivision via the
-    pinned mdb_id, normalized to a recognized state name (a stray city or region
-    in the catalog drops to unlocated rather than becoming its own chip). The
-    catalog is only downloaded when at least one agency actually needs it (so
-    tests and the pilot registry never hit the network), and any catalog failure
-    degrades to unlocated rather than breaking the render.
+    A curator's `state` in the registry wins. Next comes the registry's own
+    curated US subdivision (`subdivision_code` / `subdivision_name`), read the
+    way the published location is (resolve_published_location), so a record's
+    state always agrees with its own subdivision columns. This is also exactly
+    what the dataset release validator expects (dataset_release
+    _validate_catalog_surfaces). Before 2026-10-02 this step was missing: 95 US
+    records with a curated subdivision but no `state` published a blank state,
+    and 4 published the Mobility Database's different one (County Connection
+    as Tennessee, Norwalk Transit District as California), which made every
+    monthly dataset cut refuse with "catalog.json geography disagrees with the
+    canonical registry".
+
+    Only a record with neither falls back to the Mobility Database: the
+    catalog's subdivision via the pinned mdb_id, normalized to a recognized
+    state name (a stray city or region in the catalog drops to unlocated rather
+    than becoming its own chip). The catalog is only downloaded when at least
+    one agency actually needs it (so tests and the pilot registry never hit the
+    network), and any catalog failure degrades to unlocated rather than
+    breaking the render.
     """
     from .config import AGENCIES
 
     states = {aid: a.state for aid, a in AGENCIES.items() if a.state}
+    for aid, agency in AGENCIES.items():
+        if aid in states:
+            continue
+        location = resolve_published_location(
+            registry_country=agency.country,
+            registry_subdivision_code=agency.subdivision_code,
+            registry_subdivision_name=agency.subdivision_name,
+        )
+        if location.country_code == "US" and location.subdivision_name:
+            curated = _canonical_state(location.subdivision_name)
+            if curated:
+                states[aid] = curated
     needs_catalog = any(a.mdb_id and aid not in states for aid, a in AGENCIES.items())
     if not needs_catalog:
         return states
