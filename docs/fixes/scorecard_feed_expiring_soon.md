@@ -16,7 +16,7 @@ less than 30 days away.
 
 When `feed_end_date` is the earlier date and your calendar runs past it, the
 scorecard shows
-[your feed_info end date is earlier than your service calendar](scorecard_feed_end_date_before_calendar.md)
+[feed_info ends earlier than your service calendar](scorecard_feed_end_date_before_calendar.md)
 instead, because the fix there is one field rather than a new export.
 
 ## Why it matters
