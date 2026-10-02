@@ -218,6 +218,43 @@ def test_similar_language_provider_cannot_substitute_mirror_bytes(
     assert seen == [uruguay.static_gtfs_url]
 
 
+def test_expired_certificate_does_not_score_a_deprecated_mirror(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """SacRT, 2026-10-02: iportal.sacrt.com's certificate expired, and the
+    fallback scored mdb-1296's hosted copy, a September 2024 export of a record
+    the catalog had deprecated. The origin failure must surface instead, so the
+    run records the feed as unreachable and publishes no grade for old bytes."""
+    from scorecard_pipeline import mobilitydb
+
+    sacrt = Agency(
+        id="sacramento-regional-transit-sacrt",
+        name="Sacramento Regional Transit (SacRT)",
+        static_gtfs_url="https://iportal.sacrt.com/GTFS/SRTD/google_transit.zip",
+        mdb_id="1296",
+    )
+    catalog = (
+        "mdb_source_id,data_type,provider,name,urls.direct_download,urls.latest,status,redirect.id\n"
+        "1296,gtfs,Sacramento Regional Transit,,"
+        "http://iportal.sacrt.com/GTFS/SRTD/google_transit.zip,"
+        "https://mirror.example.org/sacrt-1296.zip,deprecated,2137\n"
+    )
+    monkeypatch.setattr(mobilitydb, "load_catalog", lambda **_: mobilitydb.parse_catalog(catalog))
+    seen: list[str] = []
+
+    def fake_safe_get(url: str, **_: object) -> bytes:
+        seen.append(url)
+        if url == sacrt.static_gtfs_url:
+            raise requests.exceptions.SSLError("certificate has expired")
+        return _zip_bytes()
+
+    monkeypatch.setattr(fetchmod, "safe_get", fake_safe_get)
+
+    with pytest.raises(requests.exceptions.SSLError, match="certificate has expired"):
+        _invoke_download(sacrt, tmp_path)
+    assert seen == [sacrt.static_gtfs_url]
+
+
 def test_unsafe_url_is_never_mirrored(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     mirror_calls = {"n": 0}
 

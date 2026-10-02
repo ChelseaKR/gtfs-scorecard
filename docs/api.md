@@ -343,7 +343,10 @@ This field is required on schema 1.18 artifacts and absent on older snapshots.
 The `fetch` block states how the graded bytes were obtained. When an origin
 403s or times out, the pipeline scores the MobilityData hosted mirror instead
 of dropping the agency; `"source": "mirror"` makes that visible, since a mirror
-copy can lag what the agency republished. The block is additive within schema
+copy can lag what the agency republished. The mirror of a catalog record that
+MobilityData has marked deprecated is never used: that copy is no longer kept
+in step with the URL, so the run records the origin as unreachable and
+publishes no new grade. The block is additive within schema
 1.4 (consumers tolerate added fields, per the versioning rule above).
 
 The `confidence` block states how much of this grade the pipeline could

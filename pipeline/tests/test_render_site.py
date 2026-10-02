@@ -3681,6 +3681,27 @@ def test_liveness_note_shows_checked_and_changed_freshness() -> None:
     # An outage status is surfaced.
     down = _liveness_note({"checked_at": "2026-06-20T11:30:00+00:00", "status": 403}, now)
     assert "HTTP 403" in down
+    # A failure with no HTTP status (an expired certificate) is surfaced too,
+    # not left reading as a clean check.
+    tls = _liveness_note(
+        {
+            "checked_at": "2026-06-20T11:30:00+00:00",
+            "changed_at": "2026-06-18T12:00:00+00:00",
+            "status": None,
+            "consecutive_failures": 41,
+        },
+        now,
+    )
+    assert "the last 41 checks could not download the feed" in tls
+    one = _liveness_note(
+        {"checked_at": "2026-06-20T11:30:00+00:00", "status": None, "consecutive_failures": 1},
+        now,
+    )
+    assert "the last check could not download the feed" in one
+    assert "could not download" not in _liveness_note(
+        {"checked_at": "2026-06-20T11:30:00+00:00", "status": None, "consecutive_failures": 0},
+        now,
+    )
     # Not yet checked: nothing rather than a blank claim.
     assert _liveness_note(None, now) == ""
     assert _liveness_note({"status": 200}, now) == ""

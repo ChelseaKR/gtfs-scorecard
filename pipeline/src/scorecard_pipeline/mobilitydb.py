@@ -1049,12 +1049,27 @@ def hosted_mirror_url(
     deliberately stricter than discovery: only a pinned exact ``mdb_id`` or an
     exact normalized current download URL may select a mirror. Names are never
     an identity boundary.
+
+    A row the catalog has marked ``deprecated`` never supplies a mirror. The
+    catalog deprecates a record when another record replaces it, and the hosted
+    copy of the replaced record is no longer kept in step with the URL the
+    registry still fetches. SacRT showed the cost: the registry keeps mdb-1296's
+    iportal URL as canonical because it serves the current feed, so when that
+    host's certificate expired, the fallback scored mdb-1296's hosted copy, a
+    September 2024 export last refreshed on 2024-10-17, and published it as the
+    agency's feed. Grading a copy that old as today's feed blames the agency for
+    an expiry that is not theirs. With no mirror, the run records the origin as
+    unreachable instead.
     """
     try:
         feeds = load_catalog()
     except Exception:
         return None
-    schedule = [feed for feed in feeds if feed.data_type == "gtfs" and feed.hosted_url]
+    schedule = [
+        feed
+        for feed in feeds
+        if feed.data_type == "gtfs" and feed.hosted_url and feed.status != "deprecated"
+    ]
 
     def current_mirror_url(feed: CatalogFeed) -> str:
         """Upgrade legacy numeric mirror records to the current V2 endpoint."""

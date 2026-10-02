@@ -1146,6 +1146,51 @@ def test_hosted_mirror_url_keeps_nonlegacy_catalog_url(
     )
 
 
+def test_hosted_mirror_url_skips_a_deprecated_catalog_row(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A replaced catalog record's hosted copy is not a stand-in for its URL.
+
+    SacRT's registry record pins mdb-1296, which the catalog deprecated in
+    favor of mdb-2137. Its hosted copy stopped at a September 2024 export, so
+    scoring it when iportal.sacrt.com's certificate expired published a feed
+    the agency had replaced two years earlier. Neither the pinned id nor the
+    URL match may select that row.
+    """
+    from scorecard_pipeline import mobilitydb as m
+
+    feeds = [replace(parse_catalog(MIRROR_CATALOG)[0], status="deprecated", redirect_ids=("2137",))]
+    monkeypatch.setattr(m, "load_catalog", lambda **_: feeds)
+
+    assert (
+        m.hosted_mirror_url(
+            "yolobus", "Yolobus", "https://unreachable.example.org/feed.zip", "1295"
+        )
+        is None
+    )
+    assert (
+        m.hosted_mirror_url("yolobus", "Yolobus", "https://www.yolobus.com/GTFS/google_transit.zip")
+        is None
+    )
+
+
+@pytest.mark.parametrize("status", ["", "active", "inactive"])
+def test_hosted_mirror_url_still_uses_a_row_that_is_not_deprecated(
+    monkeypatch: pytest.MonkeyPatch, status: str
+) -> None:
+    from scorecard_pipeline import mobilitydb as m
+
+    feeds = [replace(parse_catalog(MIRROR_CATALOG)[0], status=status)]
+    monkeypatch.setattr(m, "load_catalog", lambda **_: feeds)
+
+    assert (
+        m.hosted_mirror_url(
+            "yolobus", "Yolobus", "https://unreachable.example.org/feed.zip", "1295"
+        )
+        == "https://files.mobilitydatabase.org/mdb-1295/latest.zip"
+    )
+
+
 @pytest.mark.parametrize(
     "current_url",
     [
