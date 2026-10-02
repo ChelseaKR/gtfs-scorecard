@@ -632,6 +632,19 @@ the declared public surface).
   `--retry-all-errors`, and `test_workflow_download_retry.py` holds that for
   every workflow.
 
+### Removed
+
+- **The committed `web/dataset.csv`, a frozen 2026-07-10 copy.** Data commits
+  stopped at the S3 cutover (ADR 0002, ADR 0030); since then `render-site`
+  writes `dataset.csv` in the Pages, a11y and e2e jobs from the S3 artifacts,
+  and the deployed file is current (2,477 rows dated 2026-10-02 on
+  2026-10-01). The repository copy still listed 1,128 rows, the retired `mta`
+  Metro-North record, and NJ Transit's bare "Bus" and "Rail" names, so it
+  misled anyone who read the checkout as the dataset. Nothing reads it from a
+  checkout: the dataset release reads the Pages artifact or the deployed
+  site, and the tests render into a temporary root. It is now ignored so a
+  local render does not add it back.
+
 ### Added
 
 - **Coverage for the delivery pipeline behind `/bundle/`, measured rather than
