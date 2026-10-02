@@ -3,7 +3,7 @@ date_published: "2026-10-01"
 date_modified: "2026-10-01"
 ---
 
-# Fix: your feed_info end date is earlier than your service calendar
+# Fix: feed_info ends earlier than your service calendar
 
 Code: `scorecard_feed_end_date_before_calendar`
 
