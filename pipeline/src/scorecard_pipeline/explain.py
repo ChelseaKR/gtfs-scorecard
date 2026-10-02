@@ -76,6 +76,17 @@ __all__ = [
 ]
 
 
+# Rubric versions whose scoring constants (category weights, grade bands,
+# severity deductions, count multipliers, component weights) are identical, so
+# one build's arithmetic explains an artifact from any of them. Rubric 1.4
+# changed what the headsign component counts (ADR 0060), not any constant this
+# module applies, so a 1.3 artifact's trail is still exact. Add a version here
+# only after checking that every constant matches; otherwise it is refused.
+SAME_CONSTANTS: dict[str, frozenset[str]] = {
+    "1.4": frozenset({"1.3", "1.4"}),
+}
+
+
 class UnknownRubricVersion(ValueError):
     """The artifact was scored under a rubric this build has no constants for.
 
@@ -437,7 +448,8 @@ def build_trail(artifact: dict[str, Any], *, rubric_version: str | None = None) 
 
     ``rubric_version`` is the version whose constants this build carries; it
     defaults to the package's own. An artifact declaring anything else is
-    refused.
+    refused, unless ``SAME_CONSTANTS`` records that version as carrying the
+    identical constants.
     """
     if rubric_version is None:
         from . import RUBRIC_VERSION
@@ -445,7 +457,7 @@ def build_trail(artifact: dict[str, Any], *, rubric_version: str | None = None) 
         rubric_version = RUBRIC_VERSION
 
     declared = str(artifact.get("rubric_version") or "")
-    if declared != rubric_version:
+    if declared not in SAME_CONSTANTS.get(rubric_version, frozenset({rubric_version})):
         raise UnknownRubricVersion(
             f"artifact was scored under rubric version {declared or 'an unstated version'}; "
             f"this build carries constants for {rubric_version} only. "

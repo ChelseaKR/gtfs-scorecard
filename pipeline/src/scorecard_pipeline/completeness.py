@@ -129,6 +129,34 @@ def _trip_stop_patterns(
     return patterns_by_trip
 
 
+def _trips_headed_by_stop_headsign(
+    stop_times: Iterable[dict[str, str]], candidate_trip_ids: set[str]
+) -> set[str]:
+    """Trips whose every stop time carries a non-empty ``stop_headsign``.
+
+    GTFS lets ``stop_times.stop_headsign`` carry the destination text instead of
+    ``trips.trip_headsign``. A ``stop_headsign`` applies only to its own row, so a
+    rider sees a headsign at every stop only when every row on the trip has one.
+    That is the rule here: one blank row leaves the trip uncredited.
+
+    Memory is bounded by the number of candidate trips, not by the table, so the
+    caller can stream a national-size ``stop_times.txt`` without a byte cap. A
+    table with no ``stop_headsign`` column stops after its first row.
+    """
+    seen: set[str] = set()
+    blank: set[str] = set()
+    for index, row in enumerate(stop_times):
+        if index == 0 and "stop_headsign" not in row:
+            return set()
+        trip_id = (row.get("trip_id") or "").strip()
+        if trip_id not in candidate_trip_ids:
+            continue
+        seen.add(trip_id)
+        if not (row.get("stop_headsign") or "").strip():
+            blank.add(trip_id)
+    return seen - blank
+
+
 def _has_loop_candidate_metadata(route_trips: list[dict[str, str]]) -> bool:
     """Whether cheap trip metadata supports reading stop-pattern evidence."""
     if any(trip.get("trip_headsign", "").strip() for trip in route_trips):
@@ -204,6 +232,47 @@ def _single_pattern_loop_headsign_exemptions(
         if _is_single_pattern_loop(route_trips, patterns_by_trip):
             exempt.update(trip.get("trip_id", "").strip() for trip in route_trips)
     return exempt
+
+
+def _headsign_credit(
+    gtfs_zip_path: str, trips: list[dict[str, str]]
+) -> tuple[set[str], set[str], set[str]]:
+    """Split headed trips by how they earn headsign credit, each counted once.
+
+    Returns trips with ``trip_headsign``, trips without it whose every stop time
+    carries ``stop_headsign`` (ADR 0060), and remaining trips on provably
+    unambiguous loops (ADR 0041). Each pass reads ``stop_times.txt`` only when
+    the earlier ones leave trips uncredited.
+    """
+    headsign_trip_ids = {
+        row.get("trip_id", "").strip() for row in trips if row.get("trip_headsign", "").strip()
+    }
+    stop_headsign_trip_ids: set[str] = set()
+    if len(headsign_trip_ids) < len(trips):
+        unheaded = {row.get("trip_id", "").strip() for row in trips} - headsign_trip_ids
+        unheaded.discard("")
+        # No byte cap: the aggregate holds trip IDs, not rows (gtfs.iter_table_rows).
+        stop_headsign_trip_ids = _trips_headed_by_stop_headsign(
+            iter_table_rows(gtfs_zip_path, "stop_times.txt", max_member_bytes=None),
+            unheaded,
+        )
+    loop_exempt_trip_ids: set[str] = set()
+    if len(headsign_trip_ids) + len(stop_headsign_trip_ids) < len(trips):
+        try:
+            stop_times = iter_table_rows(
+                gtfs_zip_path,
+                "stop_times.txt",
+                max_member_bytes=HEADSIGN_STOP_TIMES_MAX_BYTES,
+            )
+            loop_exempt_trip_ids = _single_pattern_loop_headsign_exemptions(trips, stop_times)
+        except TableTooLargeError:
+            # Preserve the ordinary check rather than failing scoring or
+            # granting an exemption without inspecting complete evidence.
+            loop_exempt_trip_ids = set()
+    # A route can qualify as a loop while some of its trips are already headed by
+    # stop_headsign; count each trip once.
+    loop_exempt_trip_ids -= headsign_trip_ids | stop_headsign_trip_ids
+    return headsign_trip_ids, stop_headsign_trip_ids, loop_exempt_trip_ids
 
 
 def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult | None:  # noqa: C901 - tracked, see docs/lint-complexity-ratchet.md
@@ -354,31 +423,22 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult 
             )
         )
 
-    # Headsigns on trips. Single-pattern, single-direction loops are credited
-    # without inventing a direction label or copying the route name into a field
-    # where GTFS Best Practices says it does not belong.
-    headsign_trip_ids = {
-        row.get("trip_id", "").strip() for row in trips if row.get("trip_headsign", "").strip()
-    }
-    loop_exempt_trip_ids: set[str] = set()
-    if len(headsign_trip_ids) < len(trips):
-        try:
-            stop_times = iter_table_rows(
-                gtfs_zip_path,
-                "stop_times.txt",
-                max_member_bytes=HEADSIGN_STOP_TIMES_MAX_BYTES,
-            )
-            loop_exempt_trip_ids = _single_pattern_loop_headsign_exemptions(trips, stop_times)
-        except TableTooLargeError:
-            # Preserve the ordinary check rather than failing scoring or
-            # granting an exemption without inspecting complete evidence.
-            loop_exempt_trip_ids = set()
+    # Headsigns on trips. A trip is headed when it carries trip_headsign, or when
+    # every one of its stop times carries stop_headsign (GTFS lets the per-stop
+    # field stand in for the trip field; ADR 0060). Single-pattern,
+    # single-direction loops are credited without inventing a direction label or
+    # copying the route name into a field where GTFS Best Practices says it does
+    # not belong.
+    headsign_trip_ids, stop_headsign_trip_ids, loop_exempt_trip_ids = _headsign_credit(
+        gtfs_zip_path, trips
+    )
+    credited = len(headsign_trip_ids) + len(stop_headsign_trip_ids) + len(loop_exempt_trip_ids)
     # None when there are no trips at all: nothing to check (issue #286),
     # not a feed that failed to publish any headsign.
     hs_published = len(headsign_trip_ids) / len(trips) if trips else None
-    hs_scored = (len(headsign_trip_ids) + len(loop_exempt_trip_ids)) / len(trips) if trips else None
+    hs_scored = credited / len(trips) if trips else None
     parts["headsigns"] = hs_scored * WEIGHTS["headsigns"] if hs_scored is not None else None
-    missing = len(trips) - len(headsign_trip_ids) - len(loop_exempt_trip_ids)
+    missing = len(trips) - credited
     # trips is non-empty whenever missing > 0, so hs_scored was computed above;
     # the None check narrows the type without a bare assert (S101).
     if missing and hs_scored is not None:
@@ -388,7 +448,8 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult 
                 severity="WARNING",
                 count=missing,
                 what=f"{missing} of {len(trips)} trips have no headsign, the text "
-                "that tells riders where the bus is going.",
+                "that tells riders where the bus is going. A trip counts when it has "
+                "trip_headsign or a stop_headsign at every stop.",
                 why="When a route has multiple directions or patterns, the route "
                 "name alone may not tell riders which service is coming.",
                 fix="Add the destination, direction, or 'via' label riders actually "
@@ -555,6 +616,10 @@ def completeness(gtfs_zip_path: str, fare_free: bool = False) -> CategoryResult 
             "headsign_scored_pct": pct(hs_scored),
             "headsign_applicable_trips": len(trips) - len(loop_exempt_trip_ids),
             "headsign_loop_exempt_trips": len(loop_exempt_trip_ids),
+            # Trips with no trip_headsign that carry stop_headsign on every stop
+            # time, credited as headed (ADR 0060). headsign_pct stays the literal
+            # trip_headsign share.
+            "headsign_stop_headsign_trips": len(stop_headsign_trip_ids),
             "mixed_case_stop_name_pct": pct(mixed),
         },
     )

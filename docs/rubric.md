@@ -8,7 +8,7 @@ sync with this page; every metric's docstring links back here.
 ## Sources the rubric maps to
 
 This is a project-authored scoring profile, identified in artifacts as
-`gtfs-scorecard-1.3`. Its weights, deductions, thresholds, grade bands, and fix
+`gtfs-scorecard-1.4`. Its weights, deductions, thresholds, grade bands, and fix
 ranking are GTFS Scorecard choices. California guidance informed those choices
 and is the normative quality bar for California agencies; it is not worldwide
 authority. A score outside California is a feed-quality assessment under this
@@ -39,7 +39,7 @@ it. The validator owns specification and best-practice notices as GTFS evolves.
 The scorecard consumes those notice codes for correctness and links users back
 to their canonical rule documentation.
 
-This project owns the separate `gtfs-scorecard-1.3` policy layer: category
+This project owns the separate `gtfs-scorecard-1.4` policy layer: category
 weights, deductions, thresholds, grade bands, fix ordering, freshness and
 rider-facing completeness measures, and optional realtime observations. Those
 choices are versioned and inspectable, but they are not presented as an
@@ -192,8 +192,19 @@ a values statement and the most common real gap in small-agency feeds.
 | `wheelchair_accessible` on trips | 15 | share of trips marked 1 or 2 |
 | Fare data present | 15 | fare_attributes.txt or Fares v2 files non-empty; an agency marked fare-free is credited here, not docked |
 | Readable stop names | 15 | share of stop names not written in ALL CAPS (4+ letter words; short tokens like "4 & B" don't count) |
-| Headsigns | 15 | share of trips with `trip_headsign`; single-pattern, single-direction loops are credited when every trip on the route omits it and one stop pattern and shape show there is nothing to distinguish |
+| Headsigns | 15 | share of trips with a headsign: `trip_headsign`, or `stop_headsign` on every one of the trip's stop times; single-pattern, single-direction loops are credited when every trip on the route omits it and one stop pattern and shape show there is nothing to distinguish |
 | Contact | 15 | half for a working agency_url, half for feed_contact_email/url in feed_info (v4.0 Recommended) |
+
+GTFS gives a trip's destination text two homes. `trip_headsign` holds it for
+the whole trip, and `stop_times.stop_headsign` holds it stop by stop, overriding
+the trip value where the sign changes. A `stop_headsign` applies only to its own
+row, so the scorecard credits a trip through `stop_headsign` only when every one
+of its stop times carries one: then a rider sees a destination at every stop.
+California's guidelines ask that "trip headsigns" match the signs riders see
+without naming a field, so either home satisfies them. This pass streams
+`stop_times.txt` and keeps only trip IDs, so it runs on feeds of any size
+(ADR 0060). Artifacts keep `headsign_pct` as the literal `trip_headsign` share
+and add `headsign_stop_headsign_trips`.
 
 Loop applicability is optional, conservative analysis. The scorecard streams
 `stop_times.txt` and only retains patterns for candidate trips. If the table is
@@ -355,17 +366,24 @@ before/after evidence and conservative loop-applicability rule are recorded in
 [ADR 0041](decisions/0041-context-aware-loop-headsigns.md). The literal field
 presence remains published separately from the context-adjusted score.
 
-The rubric itself is versioned: the current `RUBRIC_VERSION` is `1.3`
+Rubric 1.4 corrects a second headsign false negative. TriMet's feed of
+2026-09-24 publishes no `trip_headsign` on any of its 67,510 trips and a
+`stop_headsign` on all 3,402,538 stop times, and the scorecard read that as no
+headsigns at all, docking 15 rider-experience points. A trip whose every stop
+time carries `stop_headsign` now counts as headed. See
+[ADR 0060](decisions/0060-stop-headsign-counts-as-a-headsign.md).
+
+The rubric itself is versioned: the current `RUBRIC_VERSION` is `1.4`
 (`pipeline/src/scorecard_pipeline/__init__.py`), stamped on every artifact,
 and the dated `METHODOLOGY_CHANGELOG` in `score.py` records what each version
 changed, so a trend reader can tell a feed change apart from a methodology
 change.
 
 Every artifact also carries a `scoring_profile` block with the stable profile
-identifier `gtfs-scorecard-1.3`, the rubric version, and this provenance boundary.
+identifier `gtfs-scorecard-1.4`, the rubric version, and this provenance boundary.
 The profile metadata is additive: it does not recalculate, rename, or move the
 overall score, category scores, grade, or top fixes. Jurisdiction overlays are
 not implemented by this contract.
 
-Last verified: 2026-07-24 (guidelines v4.0, validator v8.0.1, rubric v1.3) ·
+Last verified: 2026-10-01 (guidelines v4.0, validator v8.0.1, rubric v1.4) ·
 Recheck cadence: before each phase and before the rubric is cited publicly.

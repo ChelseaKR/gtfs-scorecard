@@ -108,6 +108,14 @@ def test_an_artifact_from_another_rubric_is_refused(declared: str) -> None:
         build_trail(art)
 
 
+@pytest.mark.parametrize("declared", ["1.3", "1.4"])
+def test_a_rubric_with_identical_constants_is_explained(declared: str) -> None:
+    """Rubric 1.4 changed what the headsign component counts, not a constant."""
+    art = _artifact()
+    art["rubric_version"] = declared
+    assert build_trail(art, rubric_version="1.4").rubric_version == declared
+
+
 def test_the_refusal_names_both_versions() -> None:
     art = _artifact()
     art["rubric_version"] = "1.1"

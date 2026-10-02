@@ -85,6 +85,18 @@ def published_overall(score: float) -> dict[str, Any]:
 # upgrades").
 METHODOLOGY_CHANGELOG: list[dict[str, str]] = [
     {
+        "rubric_version": "1.4",
+        "effective_date": "2026-10-01",
+        "summary": (
+            "A trip now counts as having a headsign when it carries trip_headsign or "
+            "when every one of its stop times carries stop_headsign, as the GTFS "
+            "reference allows. Feeds that publish destinations only per stop, such "
+            "as TriMet's, were scored as having none. Artifacts keep the literal "
+            "trip_headsign share and add a count of trips credited through "
+            "stop_headsign. See ADR 0060."
+        ),
+    },
+    {
         "rubric_version": "1.3",
         "effective_date": "2026-07-24",
         "summary": (

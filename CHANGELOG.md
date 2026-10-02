@@ -268,6 +268,16 @@ the declared public surface).
 
 ### Fixed
 
+- **A `stop_headsign` at every stop now counts as a headsign (rubric 1.4,
+  ADR 0060).** The headsign component read `trip_headsign` only. TriMet
+  publishes no `trip_headsign` and a `stop_headsign` on every stop time, so it
+  scored 0% headsigns and lost 15 rider-experience points for destinations its
+  riders do see. A trip now counts when it has `trip_headsign` or a
+  `stop_headsign` on every one of its stop times. The pass streams
+  `stop_times.txt` keeping only trip IDs, so it runs on feeds of any size.
+  Artifacts keep `headsign_pct` as the literal `trip_headsign` share and add
+  `headsign_stop_headsign_trips`.
+
 - **The Daily's slowest score shard no longer runs within two minutes of its
   bound, and the Watchdog now measures it.** The `ovapi-netherlands` runner
   death last occurred on 2026-09-05; every daily run since has finished its
