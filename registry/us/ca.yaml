@@ -711,13 +711,29 @@ agencies:
     mdb_id: 2210
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # The catalog URL, https://elkgrovetransit.com/gtfs, no longer serves a feed:
+  # on 2026-10-01 it redirected to an unrelated commercial website. SacRT now
+  # runs Elk Grove service and publishes its feed on SacRT's transit data portal
+  # (linked there as apps.sacrt.com/gtfs/eg/; the iportal path below serves the
+  # same bytes, feed_version "e-tran_August26", service 2026-08-16 to 2027-01-02).
   - id: elk-grove-transit
     name: Elk Grove Transit
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: https://elkgrovetransit.com/gtfs
+    static_gtfs_url: https://iportal.sacrt.com/GTFS/EG/google_transit.zip
     mdb_id: 2136
-    license_note: "License: https://www.sacrt.com/gtfs/"
+    license_note: >-
+      Sacramento Regional Transit District (SacRT) transit data portal grants
+      non-exclusive rights to use, reproduce, and redistribute the data:
+      https://www.sacrt.com/transit-data-portal/
+    operating_note: >-
+      The old address, elkgrovetransit.com/gtfs, now leads to an unrelated
+      website, so this record reads SacRT's Elk Grove feed. Checked 2026-10-01:
+      the security certificate on iportal.sacrt.com, which
+      serves this feed, expired on 2026-09-20, so a download that checks
+      certificates fails until SacRT renews it. The scorecard keeps checking
+      certificates; while the check fails, the run records the failure and the
+      artifact names any mirror copy it scored instead.
     rt_urls:
       trip_updates: https://bustime.sacrt.com/EG_gtfsrt/trips
       vehicle_positions: https://bustime.sacrt.com/EG_gtfsrt/vehicles
@@ -1772,32 +1788,60 @@ agencies:
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://iportal.sacrt.com/gtfs/Roseville/google_transit.zip
-    license_note: "License: http://www.sacrt.com/gtfs.stm"
+    # sacrt.com/gtfs.stm is retired and redirects to SacRT's transit data
+    # portal, which (2026-10-01) offers SacRT, Elk Grove, and SCT/Link feeds but
+    # not Roseville's, so the portal grant is not recorded as covering this file.
+    license_note: No stated data license for the Roseville file; verify before publishing.
+    operating_note: >-
+      Checked 2026-10-01: the security certificate on iportal.sacrt.com, which
+      serves this feed, expired on 2026-09-20, so a download that checks
+      certificates fails until SacRT renews it. The scorecard keeps checking
+      certificates; while the check fails, the run records the failure and the
+      artifact names any mirror copy it scored instead.
     rt_urls:
       trip_updates: https://cityofroseville.tripshot.com/v1/gtfs/realtime/tripUpdate/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
       vehicle_positions: https://cityofroseville.tripshot.com/v1/gtfs/realtime/vehiclePosition/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
       service_alerts: https://cityofroseville.tripshot.com/v1/gtfs/realtime/serviceAlert/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
 
-  # Mobility Database mdb-1296 is deprecated and redirects to mdb-2137.
+  # Mobility Database mdb-1296 is deprecated and redirects to mdb-2137, but the
+  # catalog has the pair backwards. Checked 2026-10-01: this iportal URL serves
+  # SacRT's current feed (feed_version "SEP26", service 2026-08-09 to
+  # 2027-01-02, Last-Modified 2026-09-04), and SacRT's transit data portal links
+  # the same bytes (apps.sacrt.com/gtfs/srtd/). The mdb-2137 wp-content URL
+  # serves a January 2025 file whose service ended 2025-04-05. So mdb-2137 is
+  # the retired alias, and the weekly sync cannot re-apply the catalog redirect
+  # because its target is no longer a canonical record.
   - id: sacramento-regional-transit-sacrt
     ntd_id: "90019"
     name: Sacramento Regional Transit (SacRT)
-    alias_of: sacramento-regional-transit-sacrt-2137
-    feed_status: deprecated
     organization_id: sacramento-regional-transit-district
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://iportal.sacrt.com/GTFS/SRTD/google_transit.zip
     mdb_id: 1296
-    license_note: No stated data license in the Mobility Database; verify before publishing.
+    license_note: >-
+      Sacramento Regional Transit District (SacRT) transit data portal grants
+      non-exclusive rights to use, reproduce, and redistribute the data:
+      https://www.sacrt.com/transit-data-portal/
+    operating_note: >-
+      Checked 2026-10-01: the security certificate on iportal.sacrt.com, which
+      serves this feed, expired on 2026-09-20, so a download that checks
+      certificates fails until SacRT renews it. The scorecard keeps checking
+      certificates; while the check fails, the run records the failure and the
+      artifact names any mirror copy it scored instead.
     rt_urls:
       trip_updates: https://bustime.sacrt.com/gtfsrt/trips
       vehicle_positions: https://bustime.sacrt.com/gtfsrt/vehicles
       service_alerts: https://bustime.sacrt.com/gtfsrt/alerts
 
+  # Retired 2026-10-01 in favour of the iportal record above: this wp-content
+  # copy is SacRT's January 2025 export (Last-Modified 2025-01-08, service
+  # 2025-01-05 to 2025-04-05) and SacRT's transit data portal no longer links it.
   - id: sacramento-regional-transit-sacrt-2137
     ntd_id: "90019"
     name: Sacramento Regional Transit (SacRT)
+    alias_of: sacramento-regional-transit-sacrt
+    feed_status: deprecated
     organization_id: sacramento-regional-transit-district
     subdivision_code: US-CA
     subdivision_name: California
@@ -2172,6 +2216,12 @@ agencies:
     mdb_id: 817
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Curated 2026-07-18 from the untracked-US review. SacRT-hosted canonical feed
+  # for South County Transit (SCT/Link), the Galt-to-Sacramento service. Distinct
+  # from the Trillium mirror already tracked as south-county-transit-link
+  # (mdb 817). The SacRT source was verified live with a current calendar (service
+  # through 2026-12-31), and SacRT's transit data portal states an explicit reuse
+  # grant reviewed for the reuse_evidence block below.
   - id: south-county-transit-link-2203
     name: South County Transit Link
     organization_id: sacramento-county
@@ -2182,6 +2232,12 @@ agencies:
     license_note: >-
       Sacramento Regional Transit District (SacRT) transit data portal grants
       non-exclusive rights to use, reproduce, and redistribute the data.
+    operating_note: >-
+      Checked 2026-10-01: the security certificate on iportal.sacrt.com, which
+      serves this feed, expired on 2026-09-20, so a download that checks
+      certificates fails until SacRT renews it. The scorecard keeps checking
+      certificates; while the check fails, the run records the failure and the
+      artifact names any mirror copy it scored instead.
     reuse_evidence:
       decision: approved
       source_kind: official_portal
@@ -2532,20 +2588,20 @@ agencies:
     mdb_id: 78
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Retired 2026-10-01: http://www.yolobus.com/GTFS/google_transit.zip
+  # (mdb 1295) returns 404 (again on 2026-10-01; docs/feeds.md already records
+  # it as dead). Yolobus publishes its current feed at avl.yctd.org, tracked as
+  # the yolobus record below.
   - id: yolo-county-transportation-district-yolobus
     name: Yolo County Transportation District (Yolobus)
+    alias_of: yolobus
+    feed_status: deprecated
     organization_id: yolo-county-transportation-district
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: http://www.yolobus.com/GTFS/google_transit.zip
     mdb_id: 1295
     license_note: No stated data license in the Mobility Database; verify before publishing.
-  # Curated 2026-07-18 from the untracked-US review. SacRT-hosted canonical feed
-  # for South County Transit (SCT/Link), the Galt-to-Sacramento service. Distinct
-  # from the Trillium mirror already tracked as south-county-transit-link
-  # (mdb 817). The SacRT source was verified live with a current calendar (service
-  # through 2026-12-31), and SacRT's transit data portal states an explicit reuse
-  # grant reviewed for the reuse_evidence block below.
 
   - id: yolobus
     name: Yolobus (Yolo County Transportation District)
