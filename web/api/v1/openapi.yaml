@@ -234,7 +234,10 @@ paths:
       operationId: getAgencies
       tags: [api-v1]
       summary: Every published feed record's latest check in one list.
-      description: "`realtime` is null when not measured."
+      description: >-
+        `realtime` is null when not measured. `expiry_status` says whether the
+        feed has expired; `service_horizon_status` only flags an implausibly
+        distant end date and reads `within_review_threshold` for an expired feed.
       responses:
         "200": {$ref: "#/components/responses/JsonObject"}
   /api/v1/agencies.parquet:

@@ -50,7 +50,9 @@ def sync_detailed(
 ) -> Response[GetAgenciesResponse200]:
     """Every published feed record's latest check in one list.
 
-     `realtime` is null when not measured.
+     `realtime` is null when not measured. `expiry_status` says whether the feed has expired;
+    `service_horizon_status` only flags an implausibly distant end date and reads
+    `within_review_threshold` for an expired feed.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -75,7 +77,9 @@ def sync(
 ) -> GetAgenciesResponse200 | None:
     """Every published feed record's latest check in one list.
 
-     `realtime` is null when not measured.
+     `realtime` is null when not measured. `expiry_status` says whether the feed has expired;
+    `service_horizon_status` only flags an implausibly distant end date and reads
+    `within_review_threshold` for an expired feed.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -96,7 +100,9 @@ async def asyncio_detailed(
 ) -> Response[GetAgenciesResponse200]:
     """Every published feed record's latest check in one list.
 
-     `realtime` is null when not measured.
+     `realtime` is null when not measured. `expiry_status` says whether the feed has expired;
+    `service_horizon_status` only flags an implausibly distant end date and reads
+    `within_review_threshold` for an expired feed.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
@@ -119,7 +125,9 @@ async def asyncio(
 ) -> GetAgenciesResponse200 | None:
     """Every published feed record's latest check in one list.
 
-     `realtime` is null when not measured.
+     `realtime` is null when not measured. `expiry_status` says whether the feed has expired;
+    `service_horizon_status` only flags an implausibly distant end date and reads
+    `within_review_threshold` for an expired feed.
 
     Raises:
         errors.UnexpectedStatus: If the server returns an undocumented status code and Client.raise_on_unexpected_status is True.
