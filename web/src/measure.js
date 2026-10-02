@@ -52,8 +52,8 @@
 //   and forget its cookies. Opting back in clears the stored choice. The
 //   page stays stopped, and both tools start again from the next page.
 // - A page opened with the flag measure=off in its query string is marked
-//   stopped for that page alone, and nothing is stored. The site's own
-//   production Lighthouse audit (lighthouserc.production.json, run weekly by
+//   stopped for that page alone, and nothing is stored. The weekly
+//   production Lighthouse audit (lighthouserc.production.json, run by
 //   .github/workflows/watchdog.yml) opens every route with this flag, so the
 //   site never counts its own audits as visitors. The query string is only
 //   tested for that one flag; neither block below reads or sends it.
