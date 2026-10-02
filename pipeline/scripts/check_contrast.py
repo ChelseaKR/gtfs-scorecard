@@ -17,6 +17,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from scorecard_pipeline.badge import _FALLBACK_COLOR, _GRADE_COLOR
+from scorecard_pipeline.embed_badge import _INK as _EMBED_INK
+from scorecard_pipeline.embed_badge import _INK_SOFT as _EMBED_INK_SOFT
+from scorecard_pipeline.embed_badge import _PAPER as _EMBED_PAPER
 
 
 def _lin(c: float) -> float:
@@ -139,6 +142,12 @@ PAIRS: list[tuple[str, str, str, bool]] = [
         for grade, hexcolor in _GRADE_COLOR.items()
     ),
     ("badge white text on fallback (unknown grade) fill", "#ffffff", _FALLBACK_COLOR, False),
+    # ---- named, dated embed badge SVG (scorecard_pipeline/embed_badge.py) ----
+    # Same fixed-palette reasoning. The grade letter is white on the grade
+    # fills checked above; the name and score lines are ink on paper, and the
+    # date line is the soft ink on paper at 11px.
+    ("embed badge name and score (ink) on paper", _EMBED_INK, _EMBED_PAPER, False),
+    ("embed badge date line (soft ink) on paper", _EMBED_INK_SOFT, _EMBED_PAPER, False),
 ]
 
 THEMES: dict[str, dict[str, str]] = {

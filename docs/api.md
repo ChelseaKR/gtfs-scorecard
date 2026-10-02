@@ -827,6 +827,26 @@ When the feed has expired or is expiring, the badge appends a status segment
 ("feed expired" or "expires soon") and its accessible name gains the status in
 parentheses, so a stale feed reads at a glance, not only by its letter.
 
+### Named badge for an agency's own site
+
+`https://gtfsscorecard.org/agency/<agency>/badge.svg` is a larger badge
+(320 by 58 pixels) served beside each scorecard page. It names the agency and
+shows the grade letter, the score out of 100, and the date of the check, the
+same values the scorecard shows. Each agency page offers it as a copy-paste
+HTML or Markdown snippet that links back to that page:
+
+```html
+<a href="https://gtfsscorecard.org/agency/yolobus/"><img src="https://gtfsscorecard.org/agency/yolobus/badge.svg" width="320" height="58" alt="Yolobus: current GTFS data quality score from GTFS Scorecard"></a>
+```
+
+When the record has no usable grade and score, or its last check is more than
+14 days old, the badge says "No current score" and, when known, the date of
+the last check. It never shows a letter or a number in that case. The snippet's
+alt text names the agency but no grade, because pasted markup is never updated.
+The file is static: no script, cookie, external resource, or tracking
+parameter. It regenerates with each site render and is served with the site's
+normal caching.
+
 `<agency>/badge.json` carries the same grade in the
 [Shields.io endpoint format](https://shields.io/badges/endpoint-badge)
 (`{ "schemaVersion": 1, "label": "GTFS quality", "message": "B 84.1", "color": "green" }`),

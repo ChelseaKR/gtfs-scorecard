@@ -2914,33 +2914,34 @@ def test_history_section_leads_with_a_dated_grade_story_paragraph() -> None:
     assert html.index('class="grade-story"') < html.index("newest first")
 
 
-def test_embed_section_offers_a_live_badge_and_copyable_markdown() -> None:
+def test_embed_section_offers_a_live_badge_and_copyable_snippets() -> None:
     from scorecard_pipeline.render_site import _embed_section
 
-    html = _embed_section("demo-transit", "Demo Transit", "B")
+    html = _embed_section("demo-transit", "Demo Transit")
     assert "Show your grade" in html
-    # A live badge preview and a copyable Markdown snippet pointing at the
-    # published badge.svg and the agency page.
-    assert "/data/artifacts/demo-transit/badge.svg" in html
+    # A live badge preview and copyable HTML and Markdown snippets pointing at
+    # the badge served beside the agency page, and at the page itself.
+    assert 'src="/agency/demo-transit/badge.svg"' in html
+    assert "https://gtfsscorecard.org/agency/demo-transit/badge.svg" in html
     assert "https://gtfsscorecard.org/agency/demo-transit/" in html
-    assert 'class="copy-btn"' in html and 'data-copy="embed-md"' in html
+    assert 'data-copy="embed-html"' in html and 'data-copy="embed-md"' in html
     # The shields.io endpoint alternative points at badge.json.
     assert "img.shields.io/endpoint" in html and "badge.json" in html
     assert "Demo Transit" in html  # alt text names the agency
 
 
-def test_embed_section_markdown_alt_text_names_the_agency_and_grade() -> None:
+def test_embed_section_copied_alt_text_names_the_agency_but_no_grade() -> None:
     from scorecard_pipeline.render_site import _embed_section
 
-    html = _embed_section("demo-transit", "Demo Transit", "B")
-    # The copied Markdown's own alt text (inside the textarea, HTML-escaped)
-    # names the agency and its grade, not a generic "GTFS data quality" with
-    # no link context -- so a screen reader or a stripped-image client still
-    # gets the badge's content, and a README gets a real anchor.
-    assert "[![Demo Transit GTFS data quality grade: B]" in html
+    html = _embed_section("demo-transit", "Demo Transit")
+    # The copied snippets' alt text names the agency, so a screen reader or a
+    # stripped-image client still gets a real anchor. It carries no grade:
+    # pasted markup never updates, so a grade there would outlive the badge's
+    # own and become a stale number on the agency's site (#24 put one in).
+    alt = "Demo Transit: current GTFS data quality score from GTFS Scorecard"
+    assert f"[![{alt}]" in html
+    assert "grade: B" not in html
     assert "![GTFS data quality]" not in html
-    # The live preview's own alt attribute matches.
-    assert 'alt="Demo Transit GTFS data quality grade: B"' in html
 
 
 def test_recommendations_section_lists_items_and_is_empty_without_any() -> None:
