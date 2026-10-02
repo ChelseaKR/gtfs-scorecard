@@ -31,11 +31,19 @@ project published on a given day, including when it was wrong, and
 docs/listing-policy.md already says they are not presented as an agency's
 current condition.
 
-The cause on every entry is verified per feed, never assumed. The two causes
-below are the only ones found across the nineteen, and they need different
-answers: an archive whose tables sit in a subfolder is a readable feed the
-reader failed to open, while an archive with no tables at all cannot be given a
-number by anyone. The second gets ``not_measured``, not a different score.
+The cause on every entry is verified per feed, never assumed. The first two
+causes below are the only ones found across the nineteen, and they need
+different answers: an archive whose tables sit in a subfolder is a readable feed
+the reader failed to open, while an archive with no tables at all cannot be
+given a number by anyone. The second gets ``not_measured``, not a different
+score.
+
+The third is a different mistake with the same consequence. On 2026-10-02 the
+fetch could not reach SacRT's own feed and scored the Mobility Database's hosted
+copy of a catalog record marked deprecated, a 2024 export, and published that
+as SacRT's grade. The bytes were read; they were the wrong bytes. #492 stopped
+the fallback using deprecated records; the entry takes back the grade it had
+already published.
 """
 
 from __future__ import annotations
@@ -52,9 +60,11 @@ CORRECTIONS_FILENAME = "corrections.yaml"
 CORRECTIONS_SCHEMA_VERSION = 1
 
 #: Why a published grade was wrong. Verified per feed from the artifact's own
-#: validator findings and, where the feed is still reachable, from the archive.
+#: record (validator findings, fetch provenance) and, where the feed is still
+#: reachable, from the archive.
 TABLES_IN_A_SUBFOLDER = "tables_in_a_subfolder"
 NO_SCHEDULE_TABLES = "no_schedule_tables"
+DEPRECATED_CATALOG_MIRROR = "deprecated_catalog_mirror"
 
 CAUSES: dict[str, str] = {
     TABLES_IN_A_SUBFOLDER: (
@@ -63,6 +73,11 @@ CAUSES: dict[str, str] = {
     ),
     NO_SCHEDULE_TABLES: (
         "the archive carries no stops and no trips, so there was no service to measure"
+    ),
+    DEPRECATED_CATALOG_MIRROR: (
+        "the agency's own feed could not be downloaded, and the scorer graded an old "
+        "catalog copy from a record the Mobility Database had marked deprecated instead "
+        "of the agency's current feed"
     ),
 }
 

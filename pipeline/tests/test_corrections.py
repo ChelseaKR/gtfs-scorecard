@@ -449,7 +449,11 @@ def test_every_cause_and_outcome_has_reader_facing_wording() -> None:
     for entry in read_corrections(REPO_ROOT).withdrawn.values():
         assert entry.cause_text and entry.cause_text[0].islower()
         assert entry.outcome_text
-    assert set(CAUSES) == {corrections.TABLES_IN_A_SUBFOLDER, corrections.NO_SCHEDULE_TABLES}
+    assert set(CAUSES) == {
+        corrections.TABLES_IN_A_SUBFOLDER,
+        corrections.NO_SCHEDULE_TABLES,
+        corrections.DEPRECATED_CATALOG_MIRROR,
+    }
     assert set(OUTCOMES) == {corrections.NOT_MEASURED, corrections.DELISTED}
 
 
