@@ -4,7 +4,12 @@ This repo is governed by the shared portfolio standards vendored at
 [`docs/standards/`](standards/) and pinned by
 [`docs/standards/.standards-version`](standards/.standards-version). The
 `standards-pin` required check verifies every vendored byte against the reviewed
-v2.0.0 manifest. Vendored files are not edited locally.
+v3.0.1 manifest. Vendored files are not edited locally.
+
+The pin moved from v2.0.0 to v3.0.1 on 2026-10-02. The rows below were last
+re-assessed against v2.0.0 and have not yet been re-run against the v3.0.1
+checker, which adds a seventeenth document (Discovery and Adoption) and
+tightens several gates.
 
 This is the applicability declaration required by the standards. It records
 honest review items, not an aspirational percentage. Evidence lives in the
