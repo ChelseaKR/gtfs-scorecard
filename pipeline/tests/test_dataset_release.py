@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -665,7 +666,7 @@ def test_a_retired_id_in_one_of_the_sites_own_paths_is_refused(
     document["note"] = f"see {path}"
     (web / relative).write_text(json.dumps(document), encoding="utf-8")
 
-    with pytest.raises(DatasetReleaseError, match=f"{relative} cites a retired"):
+    with pytest.raises(DatasetReleaseError, match=re.escape(f"{relative} cites a retired")):
         _require_no_retired_references(web, {"retired-alias"})
 
 
@@ -675,12 +676,12 @@ def test_a_retired_id_as_a_whole_csv_cell_or_json_key_is_refused(tmp_path: Path)
     _artifacts, web, _repo, _current = _release_tree(tmp_path)
     original = (web / "dataset.csv").read_text(encoding="utf-8")
     (web / "dataset.csv").write_text(original + "retired-alias\n", encoding="utf-8")
-    with pytest.raises(DatasetReleaseError, match="dataset.csv cites a retired"):
+    with pytest.raises(DatasetReleaseError, match=r"dataset\.csv cites a retired"):
         _require_no_retired_references(web, {"retired-alias"})
 
     (web / "dataset.csv").write_text(original, encoding="utf-8")
     ntd = json.loads((web / "ntd.json").read_text(encoding="utf-8"))
     ntd["by_agency"] = {"retired-alias": "ready"}
     (web / "ntd.json").write_text(json.dumps(ntd), encoding="utf-8")
-    with pytest.raises(DatasetReleaseError, match="ntd.json cites a retired"):
+    with pytest.raises(DatasetReleaseError, match=r"ntd\.json cites a retired"):
         _require_no_retired_references(web, {"retired-alias"})
