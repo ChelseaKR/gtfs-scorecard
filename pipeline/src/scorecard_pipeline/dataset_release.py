@@ -27,6 +27,7 @@ from typing import Any, cast
 
 from . import DATA_ATTRIBUTION, DATA_LICENSE, SCHEMA_VERSION
 from .agencies import load_agencies
+from .artifact_lifecycle import RESERVED_ARTIFACT_DIRS
 from .config import AGENCIES, Agency
 from .dataset import COLUMNS, build_quality_dataset, to_csv
 from .instance import BASE_URL
@@ -134,6 +135,43 @@ def _index_current(index: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
             raise DatasetReleaseError("artifact index contains an agency without current history")
         current[agency_id] = history[-1]
     return current
+
+
+def _latest_artifact_ids(artifacts_root: Path) -> set[str]:
+    """The agency ids that have a current ``latest.json`` in ``artifacts_root``.
+
+    The artifact tree also carries site-wide namespaces beside the agency
+    directories (``RESERVED_ARTIFACT_DIRS``). ``changes/latest.json``, the
+    export diff the alerts read, is one of them: it has been in every Pages
+    build since 2026-08-06, it is not an agency, and the index never lists it.
+    Counting it as an agency is what refused the 2026-09-01 and 2026-10-01
+    monthly cuts (one extra id, ``changes``, in the sorted list).
+    """
+    try:
+        children = list(artifacts_root.iterdir())
+    except OSError as exc:
+        raise DatasetReleaseError(f"artifact root is unreadable: {exc}") from exc
+    return {
+        child.name
+        for child in children
+        if child.name not in RESERVED_ARTIFACT_DIRS
+        and child.is_dir()
+        and (child / "latest.json").is_file()
+    }
+
+
+def _require_latest_coverage(artifacts_root: Path, expected_ids: set[str]) -> None:
+    """Every indexed id has exactly one current ``latest.json``, and no agency
+    directory outside the index still carries one."""
+    present = _latest_artifact_ids(artifacts_root)
+    missing = sorted(expected_ids - present)
+    extra = sorted(present - expected_ids)
+    if missing or extra:
+        raise DatasetReleaseError(
+            "current latest.json set disagrees with the artifact index: "
+            f"{len(missing)} indexed without one {missing[:5]}, "
+            f"{len(extra)} not indexed {extra[:5]}"
+        )
 
 
 def _require_exact_ids(rows: Mapping[str, object], expected_ids: set[str], label: str) -> None:
@@ -628,6 +666,7 @@ def validate_release_inputs(
         raise DatasetReleaseError("authoritative current index is empty")
     if not expected_ids <= set(current_registry):
         raise DatasetReleaseError("artifact index contains retired or unregistered ids")
+    _require_latest_coverage(artifacts_root, expected_ids)
 
     expected_dataset = build_quality_dataset(index, agencies=current_registry.values())
     expected_rows = _rows_by_id(expected_dataset.get("rows"), "canonical dataset rows")
