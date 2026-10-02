@@ -298,6 +298,16 @@ the declared public surface).
   Artifacts keep `headsign_pct` as the literal `trip_headsign` share and add
   `headsign_stop_headsign_trips`.
 
+- **Program bundle Payment Links now offer card and Link only.**
+  `scripts/stripe-setup.sh` creates its Payment Links with an explicit
+  `payment_method_types` of `card` and `link`. Without it a link follows the
+  account's default payment method configuration, which offered Cash App Pay
+  and Amazon Pay to an organizational buyer; the only live checkout attempt
+  (2026-09-18) used Cash App Pay and expired unpaid. Card still carries
+  Apple Pay and Google Pay. The four live links in `web/bundle/plan.json`
+  predate this and are updated in the Stripe account by the owner, not by
+  this script, which never touches a link that is already selling.
+
 - **The Daily's slowest score shard no longer runs within two minutes of its
   bound, and the Watchdog now measures it.** The `ovapi-netherlands` runner
   death last occurred on 2026-09-05; every daily run since has finished its
