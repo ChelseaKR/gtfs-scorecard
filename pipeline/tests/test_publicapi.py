@@ -70,6 +70,23 @@ def test_agencies_endpoint_is_the_flat_list() -> None:
     assert all(row["comparison_eligible"] is True for row in ep["agencies"])
 
 
+def test_agencies_endpoint_carries_expiry_status_beside_the_horizon() -> None:
+    # An expired feed reads "within_review_threshold" on the horizon check, so
+    # the row must also say it has expired. Same bucket the catalog publishes.
+    index = _index()
+    index["agencies"]["alpha"]["history"][-1]["days_until_expiry"] = -2381
+    index["agencies"]["bravo"]["history"][-1]["days_until_expiry"] = -14
+    ep = agencies_endpoint(build_quality_dataset(index))
+    rows = {row["id"]: row for row in ep["agencies"]}
+    assert "expiry_status" in ep["fields"]
+    assert ep["fields"].index("expiry_status") == ep["fields"].index("service_horizon_status") + 1
+    assert rows["alpha"]["service_horizon_status"] == "within_review_threshold"
+    assert rows["alpha"]["expiry_status"] == "stale"
+    assert rows["bravo"]["service_horizon_status"] == "within_review_threshold"
+    assert rows["bravo"]["expiry_status"] == "lapsed"
+    assert rows["charlie"]["expiry_status"] == "current"
+
+
 def test_leaderboard_suppresses_absolute_lists_but_keeps_guarded_movers() -> None:
     idx = _index()
     board = leaderboard(idx, build_quality_dataset(idx), min_cohort=1)

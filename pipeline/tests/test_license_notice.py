@@ -353,7 +353,7 @@ def _registry() -> list[Agency]:
 def test_the_export_has_no_notice_column_until_a_record_carries_a_notice() -> None:
     plain = build_quality_dataset(_sample_index(), agencies=[agency("a-share"), agency("b-plain")])
     assert plain["generated_fields"] == list(COLUMNS)
-    assert plain["schema_version"] == SCHEMA_VERSION_BASE == "1.3"
+    assert plain["schema_version"] == SCHEMA_VERSION_BASE == "1.5"
     assert all(NOTICE_COLUMN not in row for row in plain["rows"])
     assert to_csv(plain).splitlines()[0] == ",".join(COLUMNS)
     # ...and with no registry at all, as several callers build it.
@@ -363,7 +363,7 @@ def test_the_export_has_no_notice_column_until_a_record_carries_a_notice() -> No
 def test_the_export_carries_the_notice_for_share_alike_records_only() -> None:
     dataset = build_quality_dataset(_sample_index(), agencies=_registry())
     assert dataset["generated_fields"] == [*COLUMNS, NOTICE_COLUMN]
-    assert dataset["schema_version"] == SCHEMA_VERSION_WITH_NOTICE == "1.4"
+    assert dataset["schema_version"] == SCHEMA_VERSION_WITH_NOTICE == "1.6"
     rows = {row["id"]: row for row in dataset["rows"]}
     expected = notice_for_block(block())
     assert expected is not None
@@ -470,7 +470,7 @@ def test_rendering_with_one_share_alike_record_changes_only_the_files_that_carry
     assert escape(TITLE) in page
     assert "license-notice" not in plain["agency/unitrans/index.html"].decode()
     dataset = json.loads(marked["dataset.json"])
-    assert dataset["schema_version"] == "1.4"
+    assert dataset["schema_version"] == "1.6"
     unitrans = next(row for row in dataset["rows"] if row["id"] == "unitrans")
     assert "Open Database License (ODbL) 1.0" in unitrans["license_notice"]
     assert all(row["license_notice"] is None for row in dataset["rows"] if row["id"] != "unitrans")

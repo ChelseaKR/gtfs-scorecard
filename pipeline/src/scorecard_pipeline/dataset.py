@@ -18,6 +18,11 @@ produces, so the artifact is reproducible and safe to re-run:
          "categories": {...}, "days_until_expiry", "service_horizon_status"}, ...
     ]}}}
 
+Each row also carries ``expiry_status``, bucketed from ``days_until_expiry`` by
+the same ``metrics.expiry_status`` the catalog uses, so an expired feed's row
+says so next to ``service_horizon_status`` (which only flags implausibly
+distant end dates).
+
 Each history point carries category scores under "categories"; "realtime" is
 absent when an agency publishes no realtime feed, and is reported as None rather
 than zero so a missing feed is not mistaken for a failing one.
@@ -35,7 +40,7 @@ from .comparisons import build_comparison_cohort, reader_archive_profile
 from .config import Agency
 from .identity import resolve_published_agency_name
 from .license_notice import notice_for_agency
-from .metrics import resolve_service_horizon_status
+from .metrics import expiry_status, resolve_service_horizon_status
 
 # The four rubric categories, flattened into their own columns. "realtime" is
 # optional: an agency with no realtime feed has no realtime score, reported as
@@ -60,17 +65,22 @@ COLUMNS: tuple[str, ...] = (
     *_CATEGORY_KEYS,
     "days_until_expiry",
     "service_horizon_status",
+    "expiry_status",
 )
 
 # The reuse-notice column (issue #372). It is not in COLUMNS on purpose: it is
 # added to a build only when at least one row carries a notice, so until a record
 # has a share-alike license block recorded, every export is byte-for-byte what it
 # was. When it is present it is the last column, on every row, and the dataset's
-# schema_version is 1.4. An empty value means no share-alike license is recorded
+# schema_version is 1.6. An empty value means no share-alike license is recorded
 # for that record; it does not mean the license is known or permissive.
+#
+# Flat export versions: 1.3 added reader_archive_profile; 1.4 was 1.3 plus
+# license_notice; 1.5 adds expiry_status after service_horizon_status; 1.6 is
+# 1.5 plus license_notice. The version alone therefore names the column set.
 NOTICE_COLUMN = "license_notice"
-SCHEMA_VERSION_BASE = "1.3"
-SCHEMA_VERSION_WITH_NOTICE = "1.4"
+SCHEMA_VERSION_BASE = "1.5"
+SCHEMA_VERSION_WITH_NOTICE = "1.6"
 
 # The grades the rubric can assign, in order. Fixing the set means the
 # distribution always reports every grade, including the ones at zero, so a
@@ -103,6 +113,10 @@ def _row_for_agency(agency_id: str, entry: dict[str, Any]) -> dict[str, Any] | N
         "feed_sha256": latest.get("feed_sha256"),
         "days_until_expiry": latest.get("days_until_expiry"),
         "service_horizon_status": resolve_service_horizon_status(latest),
+        # The catalog's own bucket, from the same days_until_expiry. The horizon
+        # status above reads "within_review_threshold" for an expired feed too,
+        # so this is the field that says whether the feed has lapsed.
+        "expiry_status": expiry_status(latest.get("days_until_expiry")),
     }
     for key in _CATEGORY_KEYS:
         row[key] = categories.get(key)
@@ -120,14 +134,15 @@ def build_quality_dataset(
     One row per published feed record, holding its most recent check: overall grade
     and score, methodology and feed-byte identity, the four category scores
     (realtime None when not published), days until the feed's service expires,
-    whether that horizon is unusually distant, and whether the row belongs to
+    whether that horizon is unusually distant, the expiry bucket (current,
+    expiring_soon, lapsed, stale, or unknown), and whether the row belongs to
     the current producer-, category-, and identity-safe comparison cohort. Rows
     are sorted by feed id so the artifact is deterministic and diffs cleanly
     between runs. Feed records with no history are skipped.
 
     `schema_version` versions the dataset's own shape, independent of the
     pipeline's SCHEMA_VERSION, so a downstream citation can pin the table layout.
-    Left unset it is 1.3, or 1.4 when the `license_notice` column is present.
+    Left unset it is 1.5, or 1.6 when the `license_notice` column is present.
 
     `license_notice` (issue #372) carries the plain-language reuse notice for a
     record whose recorded license is share-alike, and is empty for every other
