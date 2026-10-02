@@ -73,9 +73,19 @@ success="${SITE}/bundle/setup/?session_id={CHECKOUT_SESSION_ID}"
 # update <id>` by hand once the Dashboard setting is in place. Neither is done
 # here: recreating spends new ids for no reason, and this script must not
 # touch a live Payment Link that is already selling.
+#
+# Payment methods are listed explicitly: card (which carries Apple Pay and
+# Google Pay) and Link. Without this field a Payment Link follows the
+# account's default payment method configuration, which on the live account
+# offered Cash App Pay and Amazon Pay to an organizational buyer; the one live
+# checkout attempt (2026-09-18) chose Cash App Pay and expired unpaid. An
+# explicit list also keeps a later dashboard toggle from adding a method this
+# purchase does not want. The four live links predate this; the owner applies
+# the same two values to each with `stripe payment_links update <id>`.
 link() {
   api payment_links create \
     -d "line_items[0][price]=$1" -d "line_items[0][quantity]=1" \
+    -d "payment_method_types[0]=card" -d "payment_method_types[1]=link" \
     -d "after_completion[type]=redirect" \
     -d "after_completion[redirect][url]=$success" \
     -d "consent_collection[terms_of_service]=required" \

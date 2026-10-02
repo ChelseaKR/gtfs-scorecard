@@ -53,6 +53,7 @@ from __future__ import annotations
 import datetime as dt
 import importlib.util
 import json
+import re
 import sys
 import zipfile
 from pathlib import Path
@@ -318,6 +319,21 @@ def test_a_payment_link_can_only_send_a_buyer_to_the_page_that_finishes_the_orde
     assert len(set(urls)) == len(urls) == 4, "four products, four distinct checkouts"
     for url in urls:
         assert url.startswith("https://buy.stripe.com/"), f"{url} is not a Stripe Payment Link"
+
+
+def test_a_payment_link_offers_card_and_link_only() -> None:
+    """The buyer is an organization, so the checkout offers card and Link.
+
+    A Payment Link created without ``payment_method_types`` follows the
+    account's default payment method configuration, which offered Cash App Pay
+    and Amazon Pay; the first live checkout attempt chose Cash App Pay and
+    expired unpaid. The one helper that creates every link must name the list.
+    """
+    script = STRIPE_SETUP.read_text(encoding="utf-8")
+    named = re.findall(r'-d "payment_method_types\[(\d+)\]=(\w+)"', script)
+    assert named == [("0", "card"), ("1", "link")], (
+        "every Payment Link must list card and Link as its only payment methods"
+    )
 
 
 def test_the_setup_page_accepts_the_reference_stripe_substitutes() -> None:
