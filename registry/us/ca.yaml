@@ -11,14 +11,35 @@ agencies:
     mdb_id: 27
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Retired 2026-10-01: transitfeeds.com no longer serves this download (403
+  # on 2026-10-01), so the record was scored from the Mobility Database mirror,
+  # whose copy ended 2024-03-02. AC Transit's own feed is the record below.
   - id: alameda-contra-costa-transit-district-ac-transit
     ntd_id: "90014"
     name: Alameda-Contra Costa Transit District (AC Transit)
+    alias_of: ac-transit
+    feed_status: deprecated
+    organization_id: alameda-contra-costa-transit-district
     subdivision_code: US-CA
     subdivision_name: California
     static_gtfs_url: https://transitfeeds.com/p/ac-transit/1269/latest/download
     mdb_id: 1244
     license_note: "License: https://www.actransit.org/data-terms-and-conditions/"
+
+  # AC Transit's own static feed, linked with its public token from AC
+  # Transit's Data, API & Resource Center
+  # (https://www.actransit.org/data-api-resource-center). Checked 2026-10-01:
+  # feed_version S1000256, service 2026-08-09 to 2027-04-03, 123 routes,
+  # 4,692 stops, 13,695 trips.
+  - id: ac-transit
+    ntd_id: "90014"
+    name: Alameda-Contra Costa Transit District (AC Transit)
+    organization_id: alameda-contra-costa-transit-district
+    subdivision_code: US-CA
+    subdivision_name: California
+    static_gtfs_url: https://api.actransit.org/transit/gtfs/download?token=2512B81107A09D2DC44895CDDC650D47
+    license_note: "License: https://www.actransit.org/data-terms-and-conditions/"
+    rt_note: This agency publishes realtime through 511 and its own developer API; neither is configured here yet. Nothing here counts against the grade.
 
   - id: alcatraz-cruises-hornblower-angel-island-tiburon-ferry-blue-gold-fleet
     name: Alcatraz Cruises - Hornblower, Angel Island Tiburon Ferry, Blue & Gold Fleet
@@ -180,11 +201,11 @@ agencies:
     name: Bay Area Rapid Transit (BART)
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: http://www.bart.gov/dev/schedules/google_transit.zip
+    static_gtfs_url: https://www.bart.gov/dev/schedules/google_transit.zip
     mdb_id: 53
     rt_urls:
-      trip_updates: http://api.bart.gov/gtfsrt/tripupdate.aspx
-      service_alerts: http://api.bart.gov/gtfsrt/alerts.aspx
+      trip_updates: https://api.bart.gov/gtfsrt/tripupdate.aspx
+      service_alerts: https://api.bart.gov/gtfsrt/alerts.aspx
     license_note: "License: http://www.bart.gov/schedules/developers/developer-license-agreement"
 
   - id: beach-cities-transit
@@ -1226,18 +1247,28 @@ agencies:
       vehicle_positions: https://s3.amazonaws.com/etatransit.gtfs/mantecatransit.etaspot.net/position_updates.pb
       service_alerts: https://s3.amazonaws.com/etatransit.gtfs/mantecatransit.etaspot.net/alerts.pb
 
+  # Marin Transit's developer page (https://marintransit.gov/developers) links
+  # https://marintransit.gov/data/google_transit.zip; the old marintransit.org
+  # address redirects there. Trip updates and vehicle positions are on Swiftly
+  # (401 without a key on 2026-10-01) and 511.
   - id: marin-transit
     ntd_id: "90234"
     name: Marin Transit
     organization_id: marin-county-transit-district
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: http://www.marintransit.org/data/google_transit.zip
+    static_gtfs_url: https://marintransit.gov/data/google_transit.zip
+    rt_note: This agency publishes realtime, but the feed needs an access key we don't have yet. Nothing here counts against the grade.
     license_note: No stated data license in the Mobility Database; verify before publishing.
 
+  # Retired 2026-10-01: the same agency (NTD 90234) and the same static file as
+  # marin-transit above (byte-identical on 2026-10-01). Its marintransit.net
+  # realtime URLs return 404.
   - id: marin-transit-2937
     ntd_id: "90234"
     name: Marin Transit
+    alias_of: marin-transit
+    feed_status: deprecated
     organization_id: marin-county-transit-district
     subdivision_code: US-CA
     subdivision_name: California
@@ -1631,6 +1662,12 @@ agencies:
     static_gtfs_url: https://data.trilliumtransit.com/gtfs/petalumatransit-petaluma-ca-us/petalumatransit-petaluma-ca-us.zip
     mdb_id: 72
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    operating_note: >-
+      The file at this address was last updated 2022-12-01 and its service
+      ended 2023-06-30 (checked 2026-10-01), so this grade describes an old
+      file, not today's service. The current schedule may be published only
+      through 511, which lists Petaluma Transit and needs a key we don't have
+      yet.
 
   - id: placer-county-transit
     name: Placer County Transit
@@ -1834,7 +1871,7 @@ agencies:
       vehicle_positions: https://bustime.sacrt.com/gtfsrt/vehicles
       service_alerts: https://bustime.sacrt.com/gtfsrt/alerts
 
-  # Retired 2026-10-01 in favour of the iportal record above: this wp-content
+  # Retired 2026-10-01 in favor of the iportal record above: this wp-content
   # copy is SacRT's January 2025 export (Last-Modified 2025-01-08, service
   # 2025-01-05 to 2025-04-05) and SacRT's transit data portal no longer links it.
   - id: sacramento-regional-transit-sacrt-2137
@@ -1861,9 +1898,15 @@ agencies:
     mdb_id: 113
     license_note: "License: http://sagestage.com/gtfs-data/"
 
+  # Retired 2026-10-01: 511's datafeeds endpoint needs an API key (401 without
+  # one), so this record was scored from the Mobility Database mirror, whose
+  # copy ended 2026-08-01. SamTrans' own keyless file is the canonical record
+  # (san-mateo-county-transit-district-samtrans) until a 511 key exists.
   - id: samtrans
     ntd_id: "90009"
     name: SamTrans
+    alias_of: san-mateo-county-transit-district-samtrans
+    feed_status: deprecated
     organization_id: san-mateo-county-transit-district
     subdivision_code: US-CA
     subdivision_name: California
@@ -2000,18 +2043,21 @@ agencies:
       vehicle_positions: http://slo.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/vehicleposition
       service_alerts: http://slo.connexionz.net/rtt/public/utility/gtfsrealtime.aspx/alert
 
-  # Mobility Database mdb-49 is deprecated and redirects to mdb-2708.
+  # Mobility Database mdb-49 is deprecated and redirects to mdb-2708 (511,
+  # keyed). Reversed 2026-10-01: this keyless file is SamTrans' current feed
+  # (feed_version Revision2, service 2026-09-20 to 2026-11-14). SamTrans'
+  # developer page links it as /media/37770/download, which served the same
+  # bytes on 2026-10-01; this stable Assets path is kept because the media id
+  # changes with each revision (it was /media/37078 for the June feed).
   - id: san-mateo-county-transit-district-samtrans
     ntd_id: "90009"
     name: San Mateo County Transit District (samTrans)
-    alias_of: samtrans
-    feed_status: deprecated
     organization_id: san-mateo-county-transit-district
     subdivision_code: US-CA
     subdivision_name: California
-    static_gtfs_url: http://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip
+    static_gtfs_url: https://www.samtrans.com/Assets/GTFS/samtrans/ST-GTFS.zip
     mdb_id: 49
-    license_note: "License: http://www.samtrans.com/Developer.html"
+    license_note: "License: https://www.samtrans.com/developer"
 
   - id: santa-barbara-metropolitan-transit-district-mtd
     name: Santa Barbara Metropolitan Transit District (MTD)
@@ -2100,9 +2146,14 @@ agencies:
       vehicle_positions: https://smrt.tripshot.com/v1/gtfs/realtime/vehiclePosition/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
       service_alerts: https://smrt.tripshot.com/v1/gtfs/realtime/serviceAlert/CA558DDC-D7F2-4B48-9CAC-DEEA1134F820
 
+  # Retired 2026-10-01: DocumentCenter/View/21635 returns 404, and the
+  # Mobility Database redirects this record (mdb-73) to mdb-1986, the
+  # santa-rosa-citybus-1986 record below (same agency, NTD 90017).
   - id: santa-rosa-citybus
     ntd_id: "90017"
     name: Santa Rosa CityBus
+    alias_of: santa-rosa-citybus-1986
+    feed_status: deprecated
     organization_id: city-of-santa-rosa
     subdivision_code: US-CA
     subdivision_name: California
@@ -2118,6 +2169,12 @@ agencies:
     subdivision_name: California
     static_gtfs_url: https://www.srcity.org/DocumentCenter/View/38683/Santa_Rosa_GTFS
     license_note: No stated data license in the Mobility Database; verify before publishing.
+    operating_note: >-
+      CityBus still runs. The file at this address is the city's 2023 export,
+      whose service ended 2024-07-30 (checked 2026-10-01), so this grade
+      describes an old file, not today's service. The current schedule may be
+      published only through 511, which lists Santa Rosa CityBus and needs a
+      key we don't have yet.
 
   - id: santa-ynez-valley-transit
     name: Santa Ynez Valley Transit
