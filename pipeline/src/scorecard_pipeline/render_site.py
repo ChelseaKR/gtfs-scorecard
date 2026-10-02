@@ -1335,6 +1335,15 @@ def _liveness_note(record: dict[str, Any] | None, now: dt.datetime | None = None
     status = record.get("status")
     if isinstance(status, int) and status not in (200, 304):
         parts.append(f"last fetch returned HTTP {status}")
+    elif status is None:
+        # A failure with no HTTP status (an expired certificate, a refused
+        # connection, a timeout) used to print only "Checked for changes ...",
+        # which reads as a clean check. SacRT's page did exactly that while
+        # every check of iportal.sacrt.com failed on its expired certificate.
+        failures = record.get("consecutive_failures")
+        if isinstance(failures, int) and failures > 0:
+            checks = "check" if failures == 1 else f"{failures} checks"
+            parts.append(f"the last {checks} could not download the feed")
     return f'<p class="monitoring-note">{esc("; ".join(parts))}.</p>'
 
 
